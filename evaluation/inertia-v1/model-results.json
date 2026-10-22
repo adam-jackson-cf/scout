@@ -1,0 +1,355 @@
+{
+ "n_files": 1732,
+ "counts": {
+  "axum": 58,
+  "caddy": 135,
+  "eShopOnWeb": 147,
+  "fastapi": 23,
+  "junit5": 536,
+  "nest": 304,
+  "webpack": 529
+ },
+ "y_mean_by_repo": {
+  "axum": 0.7697874716083059,
+  "caddy": 0.5937336801288708,
+  "eShopOnWeb": 0.0,
+  "fastapi": 0.39409382007817834,
+  "junit5": 0.03847857533582642,
+  "nest": 0.2983044648712706,
+  "webpack": 0.09505674809988153
+ },
+ "frac_any_by_repo": {
+  "axum": 0.6206896551724138,
+  "caddy": 0.5333333333333333,
+  "eShopOnWeb": 0.0,
+  "fastapi": 0.391304347826087,
+  "junit5": 0.05037313432835821,
+  "nest": 0.28618421052631576,
+  "webpack": 0.09640831758034027
+ },
+ "clone_pct_missing_repos": [],
+ "alphas_base": {
+  "fastapi": 316.22776601683796,
+  "webpack": 316.22776601683796,
+  "nest": 1000.0,
+  "caddy": 316.22776601683796,
+  "axum": 1000.0,
+  "junit5": 1000.0,
+  "eShopOnWeb": 1000.0
+ },
+ "alphas_quality": {
+  "fastapi": 1000.0,
+  "webpack": 1000.0,
+  "nest": 1000.0,
+  "caddy": 1000.0,
+  "axum": 1000.0,
+  "junit5": 1000.0,
+  "eShopOnWeb": 1000.0
+ },
+ "main": {
+  "name": "baseline+quality",
+  "predictors": [
+   "erosion",
+   "cc_max",
+   "log_n_high_cc",
+   "clone_pct",
+   "rework"
+  ],
+  "pooled_mse_base": 0.18025198635502945,
+  "pooled_mse_model": 0.17812738910832873,
+  "rel_reduction": 0.011786817386389595,
+  "ci95": [
+   -0.006185335077275601,
+   0.03242280613576413
+  ],
+  "per_repo": {
+   "fastapi": 0.06370436142963103,
+   "webpack": 0.03931554824117603,
+   "nest": 0.00706090555307656,
+   "caddy": 0.01086391680957725,
+   "axum": 0.013116719482461417,
+   "junit5": -0.030247275769452256,
+   "eShopOnWeb": 0.01895250015846727
+  },
+  "repos_improved": 6,
+  "support": false,
+  "coefs_in_full_model": {
+   "erosion": {
+    "coef": -0.000688889757754768,
+    "ci95": [
+     -0.014887639420666048,
+     0.01230563330472638
+    ]
+   },
+   "cc_max": {
+    "coef": 0.021951799883890757,
+    "ci95": [
+     0.005853126807698829,
+     0.0385473198096066
+    ]
+   },
+   "log_n_high_cc": {
+    "coef": 0.034985238860498626,
+    "ci95": [
+     0.018218589199758647,
+     0.053522663127764714
+    ]
+   },
+   "clone_pct": {
+    "coef": -0.004172592110142603,
+    "ci95": [
+     -0.013220589160199098,
+     0.005308637623935611
+    ]
+   },
+   "rework": {
+    "coef": -0.010929648713777508,
+    "ci95": [
+     -0.024006464386163374,
+     0.0031908637230090163
+    ]
+   }
+  }
+ },
+ "ablations": [
+  {
+   "name": "baseline+erosion",
+   "predictors": [
+    "erosion"
+   ],
+   "pooled_mse_base": 0.18025198635502945,
+   "pooled_mse_model": 0.1784821806503908,
+   "rel_reduction": 0.009818508746709767,
+   "ci95": [
+    0.0007116960900106368,
+    0.019715809433933286
+   ],
+   "per_repo": {
+    "fastapi": 0.014755976109333187,
+    "webpack": 0.027928671001361757,
+    "nest": 0.0050344813384791,
+    "caddy": 0.007525434886890058,
+    "axum": 0.005006702238172931,
+    "junit5": -0.0011581903070912954,
+    "eShopOnWeb": 0.02489213432080274
+   },
+   "repos_improved": 6,
+   "support": false,
+   "coef": -0.02607777559113372,
+   "coef_ci95": [
+    -0.04761021396460472,
+    -0.007528173334711169
+   ],
+   "coef_alpha": 1000.0,
+   "expected_sign": -1,
+   "construct_invalid": false
+  },
+  {
+   "name": "baseline+cc_max",
+   "predictors": [
+    "cc_max"
+   ],
+   "pooled_mse_base": 0.18025198635502945,
+   "pooled_mse_model": 0.1789187182582431,
+   "rel_reduction": 0.007396690176608165,
+   "ci95": [
+    -0.0032464259278315007,
+    0.018478946840842166
+   ],
+   "per_repo": {
+    "fastapi": 0.02757991084673407,
+    "webpack": 0.039612054070902854,
+    "nest": 0.008428049307796599,
+    "caddy": -0.0028533432681765464,
+    "axum": 0.006872817820441842,
+    "junit5": -0.014976827692381409,
+    "eShopOnWeb": -0.047375230734360785
+   },
+   "repos_improved": 4,
+   "support": false,
+   "coef": 0.03542031082244686,
+   "coef_ci95": [
+    0.016250565165524318,
+    0.055633600876890246
+   ],
+   "coef_alpha": 1000.0,
+   "expected_sign": 1,
+   "construct_invalid": false
+  },
+  {
+   "name": "baseline+log_n_high_cc",
+   "predictors": [
+    "log_n_high_cc"
+   ],
+   "pooled_mse_base": 0.18025198635502945,
+   "pooled_mse_model": 0.17680430517589243,
+   "rel_reduction": 0.019127007967315087,
+   "ci95": [
+    0.0038629443912101898,
+    0.03675397378061415
+   ],
+   "per_repo": {
+    "fastapi": 0.03888688028441615,
+    "webpack": 0.04824465906158391,
+    "nest": 0.005385085530620474,
+    "caddy": 0.02401399046290894,
+    "axum": 0.00981346914839819,
+    "junit5": -0.0061386093372471475,
+    "eShopOnWeb": 0.0600234553583549
+   },
+   "repos_improved": 6,
+   "support": false,
+   "coef": 0.04323819370130983,
+   "coef_ci95": [
+    0.02233644999989648,
+    0.06594262198071658
+   ],
+   "coef_alpha": 1000.0,
+   "expected_sign": 1,
+   "construct_invalid": false
+  },
+  {
+   "name": "baseline+clone_pct",
+   "predictors": [
+    "clone_pct"
+   ],
+   "pooled_mse_base": 0.18025198635502945,
+   "pooled_mse_model": 0.1793615760097628,
+   "rel_reduction": 0.004939808782538901,
+   "ci95": [
+    -0.0003220656661736314,
+    0.009881755875172085
+   ],
+   "per_repo": {
+    "fastapi": -0.022588809961957085,
+    "webpack": 0.03121780211800821,
+    "nest": 0.00025277513455792394,
+    "caddy": 0.0004069245555165093,
+    "axum": -0.0011627155483131628,
+    "junit5": -0.003093684224049805,
+    "eShopOnWeb": 0.00207155512943232
+   },
+   "repos_improved": 4,
+   "support": false,
+   "coef": -0.004227268310096199,
+   "coef_ci95": [
+    -0.013337959164742728,
+    0.005728153729992319
+   ],
+   "coef_alpha": 1000.0,
+   "expected_sign": 1,
+   "construct_invalid": false
+  },
+  {
+   "name": "baseline+rework",
+   "predictors": [
+    "rework"
+   ],
+   "pooled_mse_base": 0.18025198635502945,
+   "pooled_mse_model": 0.1804266148036137,
+   "rel_reduction": -0.0009688017986125387,
+   "ci95": [
+    -0.004858233258382602,
+    0.0027964705776970344
+   ],
+   "per_repo": {
+    "fastapi": -0.016745742480329926,
+    "webpack": -0.009721915845731174,
+    "nest": -0.0013197838979333782,
+    "caddy": 0.0033841554948074275,
+    "axum": 0.002831250574625159,
+    "junit5": 0.0028993565962944444,
+    "eShopOnWeb": -0.00205662622131172
+   },
+   "repos_improved": 3,
+   "support": false,
+   "coef": -0.011739060999883224,
+   "coef_ci95": [
+    -0.025146047762633263,
+    0.002497332325111113
+   ],
+   "coef_alpha": 1000.0,
+   "expected_sign": 1,
+   "construct_invalid": false
+  }
+ ],
+ "baseline_coefs": {
+  "log_sloc": 0.0717245773241587,
+  "log_prior_commits": 0.025844353064704905,
+  "log_prior_fix": 0.03316607323527759,
+  "log_prior_lines": 0.019704640324118047,
+  "log_age_days": 0.012098488265076856,
+  "log_prior_authors": 0.007312130337335193
+ },
+ "auroc": {
+  "pooled_base": 0.6422230374174616,
+  "pooled_quality": 0.6227537295182196,
+  "delta": -0.01946930789924195,
+  "delta_ci95": [
+   -0.026575647455552256,
+   -0.0123449745177638
+  ],
+  "per_repo": {
+   "fastapi": {
+    "base": 0.7777777777777777,
+    "quality": 0.8015873015873015
+   },
+   "webpack": {
+    "base": 0.7530150135367956,
+    "quality": 0.7367298383788663
+   },
+   "nest": {
+    "base": 0.7987446368981408,
+    "quality": 0.783886858414111
+   },
+   "caddy": {
+    "base": 0.7958553791887125,
+    "quality": 0.7943121693121693
+   },
+   "axum": {
+    "base": 0.7449494949494949,
+    "quality": 0.7386363636363636
+   },
+   "junit5": {
+    "base": 0.8262751946445462,
+    "quality": 0.8093574910863712
+   },
+   "eShopOnWeb": {
+    "base": NaN,
+    "quality": NaN
+   }
+  },
+  "mean_per_repo_base": 0.7827695828325779,
+  "mean_per_repo_quality": 0.7774183370691973
+ },
+ "descriptive_spearman": {
+  "erosion": {
+   "mean_within_repo_spearman": -0.2823655994065849,
+   "n_repos": 6
+  },
+  "cc_max": {
+   "mean_within_repo_spearman": 0.34838159247768224,
+   "n_repos": 6
+  },
+  "log_n_high_cc": {
+   "mean_within_repo_spearman": 0.31405403425292455,
+   "n_repos": 6
+  },
+  "clone_pct": {
+   "mean_within_repo_spearman": 0.08609918216551621,
+   "n_repos": 6
+  },
+  "rework": {
+   "mean_within_repo_spearman": 0.12286623546960962,
+   "n_repos": 6
+  },
+  "log_sloc": {
+   "mean_within_repo_spearman": 0.43987862772587333,
+   "n_repos": 6
+  },
+  "log_prior_fix": {
+   "mean_within_repo_spearman": 0.2431417476169887,
+   "n_repos": 6
+  }
+ }
+}

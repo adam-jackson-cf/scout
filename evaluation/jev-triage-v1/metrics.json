@@ -1,0 +1,609 @@
+[
+ {
+  "file": "raw/jev_v1_choice_1.13.jsonl",
+  "variant": "v1_choice",
+  "requested": "typesafe/jev-1.13-20260917",
+  "resolved": [
+   "typesafe/jev-1.13-20260917"
+  ],
+  "calls": 66,
+  "failed": 0,
+  "cost_per_1k_usd": 0.0507,
+  "latency_ms_p50": 290,
+  "latency_ms_p95": 537,
+  "splits": {
+   "all": {
+    "n": 22,
+    "pos": 9,
+    "acc_all(cannot_tell=wrong)": "17/22",
+    "wilson95": [
+     0.566,
+     0.899
+    ],
+    "coverage(non-cannot_tell)": "21/22",
+    "acc_on_decided": "17/21",
+    "wilson95_decided": [
+     0.6,
+     0.923
+    ],
+    "auroc_meanP": 0.957,
+    "rep_agreement": "21/22",
+    "confusion": {
+     "false_positive->false_positive": 9,
+     "real_defect->false_positive": 1,
+     "real_defect->real_defect": 8,
+     "false_positive->real_defect": 3,
+     "false_positive->cannot_tell": 1
+    },
+    "mean_rep_acc": 0.758,
+    "wrong_cases": [
+     "security-python-multipart-redos-test-extra-d666ccb6",
+     "typescript-architecture-loopback-url-676c98ca",
+     "typescript-quality-route-params-complexity-676c98ca",
+     "rust-quality-documented-query-overlap-false-positive-562fa206",
+     "csharp-architecture-generated-migration-length-4da8212"
+    ]
+   },
+   "tuning": {
+    "n": 10,
+    "pos": 4,
+    "acc_all(cannot_tell=wrong)": "7/10",
+    "wilson95": [
+     0.397,
+     0.892
+    ],
+    "coverage(non-cannot_tell)": "9/10",
+    "acc_on_decided": "7/9",
+    "wilson95_decided": [
+     0.453,
+     0.937
+    ],
+    "auroc_meanP": 0.958,
+    "rep_agreement": "10/10",
+    "confusion": {
+     "real_defect->false_positive": 1,
+     "false_positive->false_positive": 4,
+     "false_positive->real_defect": 1,
+     "real_defect->real_defect": 3,
+     "false_positive->cannot_tell": 1
+    },
+    "mean_rep_acc": 0.7,
+    "wrong_cases": [
+     "security-python-multipart-redos-test-extra-d666ccb6",
+     "typescript-architecture-loopback-url-676c98ca",
+     "csharp-architecture-generated-migration-length-4da8212"
+    ]
+   },
+   "heldout": {
+    "n": 12,
+    "pos": 5,
+    "acc_all(cannot_tell=wrong)": "10/12",
+    "wilson95": [
+     0.552,
+     0.953
+    ],
+    "coverage(non-cannot_tell)": "12/12",
+    "acc_on_decided": "10/12",
+    "wilson95_decided": [
+     0.552,
+     0.953
+    ],
+    "auroc_meanP": 0.971,
+    "rep_agreement": "11/12",
+    "confusion": {
+     "false_positive->false_positive": 5,
+     "real_defect->real_defect": 5,
+     "false_positive->real_defect": 2
+    },
+    "mean_rep_acc": 0.806,
+    "wrong_cases": [
+     "typescript-quality-route-params-complexity-676c98ca",
+     "rust-quality-documented-query-overlap-false-positive-562fa206"
+    ]
+   }
+  }
+ },
+ {
+  "file": "raw/jev_v2_noul_1.13.jsonl",
+  "variant": "v2_noul",
+  "requested": "typesafe/jev-1.13-20260917",
+  "resolved": [
+   "typesafe/jev-1.13-20260917"
+  ],
+  "calls": 66,
+  "failed": 0,
+  "cost_per_1k_usd": 0.0493,
+  "latency_ms_p50": 291,
+  "latency_ms_p95": 418,
+  "splits": {
+   "all": {
+    "n": 22,
+    "pos": 9,
+    "acc_all(cannot_tell=wrong)": "14/22",
+    "wilson95": [
+     0.43,
+     0.803
+    ],
+    "coverage(non-cannot_tell)": "16/22",
+    "acc_on_decided": "14/16",
+    "wilson95_decided": [
+     0.64,
+     0.965
+    ],
+    "auroc_meanP": 0.932,
+    "rep_agreement": "18/22",
+    "confusion": {
+     "false_positive->cannot_tell": 5,
+     "real_defect->cannot_tell": 1,
+     "real_defect->real_defect": 8,
+     "false_positive->false_positive": 6,
+     "false_positive->real_defect": 2
+    },
+    "mean_rep_acc": 0.652,
+    "wrong_cases": [
+     "architecture-routing-utils-cycle-d666ccb6",
+     "security-python-multipart-redos-test-extra-d666ccb6",
+     "typescript-architecture-loopback-url-676c98ca",
+     "typescript-quality-route-params-complexity-676c98ca",
+     "rust-architecture-benchmark-blocking-false-positive-562fa206",
+     "rust-quality-documented-query-overlap-false-positive-562fa206",
+     "csharp-architecture-generated-migration-length-4da8212",
+     "csharp-quality-generated-migration-length-4da8212"
+    ]
+   },
+   "tuning": {
+    "n": 10,
+    "pos": 4,
+    "acc_all(cannot_tell=wrong)": "7/10",
+    "wilson95": [
+     0.397,
+     0.892
+    ],
+    "coverage(non-cannot_tell)": "8/10",
+    "acc_on_decided": "7/8",
+    "wilson95_decided": [
+     0.529,
+     0.978
+    ],
+    "auroc_meanP": 0.917,
+    "rep_agreement": "9/10",
+    "confusion": {
+     "real_defect->cannot_tell": 1,
+     "false_positive->false_positive": 4,
+     "false_positive->real_defect": 1,
+     "real_defect->real_defect": 3,
+     "false_positive->cannot_tell": 1
+    },
+    "mean_rep_acc": 0.667,
+    "wrong_cases": [
+     "security-python-multipart-redos-test-extra-d666ccb6",
+     "typescript-architecture-loopback-url-676c98ca",
+     "csharp-architecture-generated-migration-length-4da8212"
+    ]
+   },
+   "heldout": {
+    "n": 12,
+    "pos": 5,
+    "acc_all(cannot_tell=wrong)": "7/12",
+    "wilson95": [
+     0.32,
+     0.807
+    ],
+    "coverage(non-cannot_tell)": "8/12",
+    "acc_on_decided": "7/8",
+    "wilson95_decided": [
+     0.529,
+     0.978
+    ],
+    "auroc_meanP": 1.0,
+    "rep_agreement": "9/12",
+    "confusion": {
+     "false_positive->cannot_tell": 4,
+     "real_defect->real_defect": 5,
+     "false_positive->real_defect": 1,
+     "false_positive->false_positive": 2
+    },
+    "mean_rep_acc": 0.639,
+    "wrong_cases": [
+     "architecture-routing-utils-cycle-d666ccb6",
+     "typescript-quality-route-params-complexity-676c98ca",
+     "rust-architecture-benchmark-blocking-false-positive-562fa206",
+     "rust-quality-documented-query-overlap-false-positive-562fa206",
+     "csharp-quality-generated-migration-length-4da8212"
+    ]
+   }
+  }
+ },
+ {
+  "file": "raw/jev_v3_choice_1.13.jsonl",
+  "variant": "v3_choice",
+  "requested": "typesafe/jev-1.13-20260917",
+  "resolved": [
+   "typesafe/jev-1.13-20260917"
+  ],
+  "calls": 66,
+  "failed": 0,
+  "cost_per_1k_usd": 0.0535,
+  "latency_ms_p50": 310,
+  "latency_ms_p95": 389,
+  "splits": {
+   "all": {
+    "n": 22,
+    "pos": 9,
+    "acc_all(cannot_tell=wrong)": "21/22",
+    "wilson95": [
+     0.782,
+     0.992
+    ],
+    "coverage(non-cannot_tell)": "22/22",
+    "acc_on_decided": "21/22",
+    "wilson95_decided": [
+     0.782,
+     0.992
+    ],
+    "auroc_meanP": 0.991,
+    "rep_agreement": "21/22",
+    "confusion": {
+     "false_positive->false_positive": 12,
+     "real_defect->real_defect": 9,
+     "false_positive->real_defect": 1
+    },
+    "mean_rep_acc": 0.939,
+    "wrong_cases": [
+     "rust-quality-documented-query-overlap-false-positive-562fa206"
+    ]
+   },
+   "tuning": {
+    "n": 10,
+    "pos": 4,
+    "acc_all(cannot_tell=wrong)": "10/10",
+    "wilson95": [
+     0.722,
+     1.0
+    ],
+    "coverage(non-cannot_tell)": "10/10",
+    "acc_on_decided": "10/10",
+    "wilson95_decided": [
+     0.722,
+     1.0
+    ],
+    "auroc_meanP": 1.0,
+    "rep_agreement": "10/10",
+    "confusion": {
+     "real_defect->real_defect": 4,
+     "false_positive->false_positive": 6
+    },
+    "mean_rep_acc": 1.0,
+    "wrong_cases": []
+   },
+   "heldout": {
+    "n": 12,
+    "pos": 5,
+    "acc_all(cannot_tell=wrong)": "11/12",
+    "wilson95": [
+     0.646,
+     0.985
+    ],
+    "coverage(non-cannot_tell)": "12/12",
+    "acc_on_decided": "11/12",
+    "wilson95_decided": [
+     0.646,
+     0.985
+    ],
+    "auroc_meanP": 0.971,
+    "rep_agreement": "11/12",
+    "confusion": {
+     "false_positive->false_positive": 6,
+     "real_defect->real_defect": 5,
+     "false_positive->real_defect": 1
+    },
+    "mean_rep_acc": 0.889,
+    "wrong_cases": [
+     "rust-quality-documented-query-overlap-false-positive-562fa206"
+    ]
+   }
+  }
+ },
+ {
+  "file": "raw/jev_v1_choice_1.14.jsonl",
+  "variant": "v1_choice",
+  "requested": "typesafe/jev-1.14-20261014",
+  "resolved": [
+   "typesafe/jev-1.14-20261014"
+  ],
+  "calls": 66,
+  "failed": 0,
+  "cost_per_1k_usd": 0.0507,
+  "latency_ms_p50": 285,
+  "latency_ms_p95": 427,
+  "splits": {
+   "all": {
+    "n": 22,
+    "pos": 9,
+    "acc_all(cannot_tell=wrong)": "17/22",
+    "wilson95": [
+     0.566,
+     0.899
+    ],
+    "coverage(non-cannot_tell)": "21/22",
+    "acc_on_decided": "17/21",
+    "wilson95_decided": [
+     0.6,
+     0.923
+    ],
+    "auroc_meanP": 0.94,
+    "rep_agreement": "21/22",
+    "confusion": {
+     "false_positive->false_positive": 9,
+     "real_defect->false_positive": 1,
+     "real_defect->real_defect": 8,
+     "false_positive->real_defect": 3,
+     "false_positive->cannot_tell": 1
+    },
+    "mean_rep_acc": 0.758,
+    "wrong_cases": [
+     "security-python-multipart-redos-test-extra-d666ccb6",
+     "typescript-architecture-loopback-url-676c98ca",
+     "typescript-quality-route-params-complexity-676c98ca",
+     "rust-quality-documented-query-overlap-false-positive-562fa206",
+     "csharp-architecture-generated-migration-length-4da8212"
+    ]
+   },
+   "tuning": {
+    "n": 10,
+    "pos": 4,
+    "acc_all(cannot_tell=wrong)": "7/10",
+    "wilson95": [
+     0.397,
+     0.892
+    ],
+    "coverage(non-cannot_tell)": "9/10",
+    "acc_on_decided": "7/9",
+    "wilson95_decided": [
+     0.453,
+     0.937
+    ],
+    "auroc_meanP": 0.917,
+    "rep_agreement": "9/10",
+    "confusion": {
+     "real_defect->false_positive": 1,
+     "false_positive->false_positive": 4,
+     "false_positive->real_defect": 1,
+     "real_defect->real_defect": 3,
+     "false_positive->cannot_tell": 1
+    },
+    "mean_rep_acc": 0.667,
+    "wrong_cases": [
+     "security-python-multipart-redos-test-extra-d666ccb6",
+     "typescript-architecture-loopback-url-676c98ca",
+     "csharp-architecture-generated-migration-length-4da8212"
+    ]
+   },
+   "heldout": {
+    "n": 12,
+    "pos": 5,
+    "acc_all(cannot_tell=wrong)": "10/12",
+    "wilson95": [
+     0.552,
+     0.953
+    ],
+    "coverage(non-cannot_tell)": "12/12",
+    "acc_on_decided": "10/12",
+    "wilson95_decided": [
+     0.552,
+     0.953
+    ],
+    "auroc_meanP": 0.943,
+    "rep_agreement": "12/12",
+    "confusion": {
+     "false_positive->false_positive": 5,
+     "real_defect->real_defect": 5,
+     "false_positive->real_defect": 2
+    },
+    "mean_rep_acc": 0.833,
+    "wrong_cases": [
+     "typescript-quality-route-params-complexity-676c98ca",
+     "rust-quality-documented-query-overlap-false-positive-562fa206"
+    ]
+   }
+  }
+ },
+ {
+  "file": "raw/jev_v2_noul_1.14.jsonl",
+  "variant": "v2_noul",
+  "requested": "typesafe/jev-1.14-20261014",
+  "resolved": [
+   "typesafe/jev-1.14-20261014"
+  ],
+  "calls": 66,
+  "failed": 0,
+  "cost_per_1k_usd": 0.0493,
+  "latency_ms_p50": 275,
+  "latency_ms_p95": 362,
+  "splits": {
+   "all": {
+    "n": 22,
+    "pos": 9,
+    "acc_all(cannot_tell=wrong)": "16/22",
+    "wilson95": [
+     0.518,
+     0.868
+    ],
+    "coverage(non-cannot_tell)": "18/22",
+    "acc_on_decided": "16/18",
+    "wilson95_decided": [
+     0.672,
+     0.969
+    ],
+    "auroc_meanP": 0.949,
+    "rep_agreement": "21/22",
+    "confusion": {
+     "false_positive->false_positive": 9,
+     "real_defect->cannot_tell": 2,
+     "real_defect->real_defect": 7,
+     "false_positive->real_defect": 2,
+     "false_positive->cannot_tell": 2
+    },
+    "mean_rep_acc": 0.727,
+    "wrong_cases": [
+     "security-python-multipart-redos-test-extra-d666ccb6",
+     "security-auto-public-path-dom-clobbering",
+     "typescript-architecture-loopback-url-676c98ca",
+     "typescript-quality-route-params-complexity-676c98ca",
+     "rust-quality-documented-query-overlap-false-positive-562fa206",
+     "rust-performance-websocket-demo-resource-false-positive-562fa206"
+    ]
+   },
+   "tuning": {
+    "n": 10,
+    "pos": 4,
+    "acc_all(cannot_tell=wrong)": "7/10",
+    "wilson95": [
+     0.397,
+     0.892
+    ],
+    "coverage(non-cannot_tell)": "8/10",
+    "acc_on_decided": "7/8",
+    "wilson95_decided": [
+     0.529,
+     0.978
+    ],
+    "auroc_meanP": 0.917,
+    "rep_agreement": "9/10",
+    "confusion": {
+     "real_defect->cannot_tell": 1,
+     "false_positive->false_positive": 4,
+     "false_positive->real_defect": 1,
+     "real_defect->real_defect": 3,
+     "false_positive->cannot_tell": 1
+    },
+    "mean_rep_acc": 0.7,
+    "wrong_cases": [
+     "security-python-multipart-redos-test-extra-d666ccb6",
+     "typescript-architecture-loopback-url-676c98ca",
+     "rust-performance-websocket-demo-resource-false-positive-562fa206"
+    ]
+   },
+   "heldout": {
+    "n": 12,
+    "pos": 5,
+    "acc_all(cannot_tell=wrong)": "9/12",
+    "wilson95": [
+     0.468,
+     0.911
+    ],
+    "coverage(non-cannot_tell)": "10/12",
+    "acc_on_decided": "9/10",
+    "wilson95_decided": [
+     0.596,
+     0.982
+    ],
+    "auroc_meanP": 0.971,
+    "rep_agreement": "12/12",
+    "confusion": {
+     "false_positive->false_positive": 5,
+     "real_defect->real_defect": 4,
+     "real_defect->cannot_tell": 1,
+     "false_positive->cannot_tell": 1,
+     "false_positive->real_defect": 1
+    },
+    "mean_rep_acc": 0.75,
+    "wrong_cases": [
+     "security-auto-public-path-dom-clobbering",
+     "typescript-quality-route-params-complexity-676c98ca",
+     "rust-quality-documented-query-overlap-false-positive-562fa206"
+    ]
+   }
+  }
+ },
+ {
+  "file": "raw/jev_v3_choice_1.14.jsonl",
+  "variant": "v3_choice",
+  "requested": "typesafe/jev-1.14-20261014",
+  "resolved": [
+   "typesafe/jev-1.14-20261014"
+  ],
+  "calls": 66,
+  "failed": 0,
+  "cost_per_1k_usd": 0.0535,
+  "latency_ms_p50": 278,
+  "latency_ms_p95": 387,
+  "splits": {
+   "all": {
+    "n": 22,
+    "pos": 9,
+    "acc_all(cannot_tell=wrong)": "21/22",
+    "wilson95": [
+     0.782,
+     0.992
+    ],
+    "coverage(non-cannot_tell)": "22/22",
+    "acc_on_decided": "21/22",
+    "wilson95_decided": [
+     0.782,
+     0.992
+    ],
+    "auroc_meanP": 0.991,
+    "rep_agreement": "21/22",
+    "confusion": {
+     "false_positive->false_positive": 12,
+     "real_defect->real_defect": 9,
+     "false_positive->real_defect": 1
+    },
+    "mean_rep_acc": 0.939,
+    "wrong_cases": [
+     "rust-quality-documented-query-overlap-false-positive-562fa206"
+    ]
+   },
+   "tuning": {
+    "n": 10,
+    "pos": 4,
+    "acc_all(cannot_tell=wrong)": "10/10",
+    "wilson95": [
+     0.722,
+     1.0
+    ],
+    "coverage(non-cannot_tell)": "10/10",
+    "acc_on_decided": "10/10",
+    "wilson95_decided": [
+     0.722,
+     1.0
+    ],
+    "auroc_meanP": 1.0,
+    "rep_agreement": "9/10",
+    "confusion": {
+     "real_defect->real_defect": 4,
+     "false_positive->false_positive": 6
+    },
+    "mean_rep_acc": 0.967,
+    "wrong_cases": []
+   },
+   "heldout": {
+    "n": 12,
+    "pos": 5,
+    "acc_all(cannot_tell=wrong)": "11/12",
+    "wilson95": [
+     0.646,
+     0.985
+    ],
+    "coverage(non-cannot_tell)": "12/12",
+    "acc_on_decided": "11/12",
+    "wilson95_decided": [
+     0.646,
+     0.985
+    ],
+    "auroc_meanP": 0.971,
+    "rep_agreement": "12/12",
+    "confusion": {
+     "false_positive->false_positive": 6,
+     "real_defect->real_defect": 5,
+     "false_positive->real_defect": 1
+    },
+    "mean_rep_acc": 0.917,
+    "wrong_cases": [
+     "rust-quality-documented-query-overlap-false-positive-562fa206"
+    ]
+   }
+  }
+ }
+]

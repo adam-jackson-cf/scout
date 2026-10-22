@@ -1,0 +1,5766 @@
+{
+ "area": {
+  "o1": {
+   "outcome": "o1",
+   "n": 60,
+   "counts": {
+    "caddy": 14,
+    "fastapi": 2,
+    "junit5": 8,
+    "nest": 26,
+    "webpack": 10
+   },
+   "repos_ge10": [
+    "webpack",
+    "nest",
+    "caddy"
+   ],
+   "y_mean_by_repo": {
+    "caddy": 2.5564410100097654,
+    "fastapi": 1.6749520436373024,
+    "junit5": 2.8541664055692513,
+    "nest": 1.9880946534402448,
+    "webpack": 2.3254736174142954
+   },
+   "comparisons": {
+    "level": {
+     "name": "base vs base+level",
+     "added": [
+      "erosion",
+      "log_n_high_cc",
+      "clone_pct",
+      "hotspot"
+     ],
+     "mse_base": 0.5828502863006332,
+     "mse_model": 0.5854288143745361,
+     "rel_reduction": -0.004423997267409607,
+     "ci95": [
+      -0.027189821615905913,
+      0.014229044517461495
+     ],
+     "p_one_sided": 0.6786606696651675,
+     "per_repo": {
+      "fastapi": 0.04843237156398206,
+      "webpack": 0.02182357345026098,
+      "nest": 3.348426771543345e-05,
+      "caddy": 8.86768133121496e-05,
+      "junit5": -0.07414084381166108
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "degradation": {
+     "name": "base+level vs base+level+degradation",
+     "added": [
+      "d_erosion",
+      "d_log_n_high_cc",
+      "d_clone_pct"
+     ],
+     "mse_base": 0.5854288143745361,
+     "mse_model": 0.5825841904277275,
+     "rel_reduction": 0.0048590432806895345,
+     "ci95": [
+      -0.02890041298244672,
+      0.0433014146832779
+     ],
+     "p_one_sided": 0.431784107946027,
+     "per_repo": {
+      "fastapi": -0.0704488170594113,
+      "webpack": 0.009808061047121175,
+      "nest": 2.7167203644595794e-05,
+      "caddy": -4.956249968079973e-05,
+      "junit5": 0.027597569769782115
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 316.22776601683796
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.5828502863006332,
+     "mse_model": 0.5900912037163489,
+     "rel_reduction": -0.012423288768843355,
+     "ci95": [
+      -0.09075072533313344,
+      0.060392442174448994
+     ],
+     "p_one_sided": 0.6206896551724138,
+     "per_repo": {
+      "fastapi": -0.09569434428171708,
+      "webpack": 0.0030669878865530187,
+      "nest": -0.03429751398655956,
+      "caddy": 2.959209487707337e-05,
+      "junit5": 0.012240287696377417
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.5828502863006332,
+     "mse_model": 0.58512409849994,
+     "rel_reduction": -0.0039011942736422167,
+     "ci95": [
+      -0.014312997651305726,
+      0.0053498293007177644
+     ],
+     "p_one_sided": 0.7981009495252374,
+     "per_repo": {
+      "fastapi": -0.049317737017444685,
+      "webpack": -0.006051783045936121,
+      "nest": 4.4393593556790734e-07,
+      "caddy": 2.462552760151837e-06,
+      "junit5": -0.0003992050410668302
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    }
+   },
+   "mse_base": 0.5828502863006332,
+   "ablations": {
+    "erosion": {
+     "name": "base vs base+erosion",
+     "added": [
+      "erosion"
+     ],
+     "mse_base": 0.5828502863006332,
+     "mse_model": 0.5730014111532191,
+     "rel_reduction": 0.01689777869017639,
+     "ci95": [
+      -0.03493846186148994,
+      0.06349890409747354
+     ],
+     "p_one_sided": 0.2638680659670165,
+     "per_repo": {
+      "fastapi": 0.1351123340955631,
+      "webpack": 0.034714979680557145,
+      "nest": 0.01994766421868821,
+      "caddy": 4.846919780943093e-05,
+      "junit5": -0.030774701838934604
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "log_n_high_cc": {
+     "name": "base vs base+log_n_high_cc",
+     "added": [
+      "log_n_high_cc"
+     ],
+     "mse_base": 0.5828502863006332,
+     "mse_model": 0.5840807588456921,
+     "rel_reduction": -0.0021111296914149147,
+     "ci95": [
+      -0.01129288364804235,
+      0.006707152651914594
+     ],
+     "p_one_sided": 0.6841579210394803,
+     "per_repo": {
+      "fastapi": -0.060457788184959504,
+      "webpack": 0.00839771394438682,
+      "nest": 1.4003365997772299e-05,
+      "caddy": 3.1151395616157984e-05,
+      "junit5": -0.010962355385547351
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "clone_pct": {
+     "name": "base vs base+clone_pct",
+     "added": [
+      "clone_pct"
+     ],
+     "mse_base": 0.5828502863006332,
+     "mse_model": 0.5837485468463668,
+     "rel_reduction": -0.001541151418891662,
+     "ci95": [
+      -0.007355603388509208,
+      0.003835027600994143
+     ],
+     "p_one_sided": 0.6776611694152923,
+     "per_repo": {
+      "fastapi": 0.006343898822822602,
+      "webpack": -0.002379149364591049,
+      "nest": -4.183725272888239e-07,
+      "caddy": -6.291492846033364e-06,
+      "junit5": -0.006684014023151663
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "hotspot": {
+     "name": "base vs base+hotspot",
+     "added": [
+      "hotspot"
+     ],
+     "mse_base": 0.5828502863006332,
+     "mse_model": 0.5863410939533185,
+     "rel_reduction": -0.005989201231831887,
+     "ci95": [
+      -0.02396486528647541,
+      0.006433046320308192
+     ],
+     "p_one_sided": 0.8085957021489255,
+     "per_repo": {
+      "fastapi": 0.026739042706088956,
+      "webpack": 0.005737974196428519,
+      "nest": 4.932576974092662e-06,
+      "caddy": 1.5426625607606326e-05,
+      "junit5": -0.05121308188870155
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "d_erosion": {
+     "name": "base vs base+d_erosion",
+     "added": [
+      "d_erosion"
+     ],
+     "mse_base": 0.5828502863006332,
+     "mse_model": 0.5653925831267923,
+     "rel_reduction": 0.02995229406962363,
+     "ci95": [
+      -0.008034071941599785,
+      0.07135890947400877
+     ],
+     "p_one_sided": 0.06346826586706647,
+     "per_repo": {
+      "fastapi": -0.17832255267137032,
+      "webpack": 0.040985902278373954,
+      "nest": 0.02345230430982248,
+      "caddy": 0.0721597607863399,
+      "junit5": 0.033415169110894594
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "d_log_n_high_cc": {
+     "name": "base vs base+d_log_n_high_cc",
+     "added": [
+      "d_log_n_high_cc"
+     ],
+     "mse_base": 0.5828502863006332,
+     "mse_model": 0.585011241602459,
+     "rel_reduction": -0.0037075649658533383,
+     "ci95": [
+      -0.018878372258017417,
+      0.014183575079457415
+     ],
+     "p_one_sided": 0.6681659170414792,
+     "per_repo": {
+      "fastapi": 0.00511764897551259,
+      "webpack": -0.014585922374810156,
+      "nest": 1.05538929083826e-05,
+      "caddy": 1.6221206085909046e-05,
+      "junit5": 0.0010093677524534161
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "d_clone_pct": {
+     "name": "base vs base+d_clone_pct",
+     "added": [
+      "d_clone_pct"
+     ],
+     "mse_base": 0.5828502863006332,
+     "mse_model": 0.5876610603448746,
+     "rel_reduction": -0.008253876093594403,
+     "ci95": [
+      -0.020346599368708584,
+      0.007791024449780065
+     ],
+     "p_one_sided": 0.862568715642179,
+     "per_repo": {
+      "fastapi": -0.05030613719077137,
+      "webpack": -0.008460701821198846,
+      "nest": 2.8665051300391653e-06,
+      "caddy": 0.0003638188825108024,
+      "junit5": -0.021997471251474776
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 1000.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.5828502863006332,
+     "mse_model": 0.5900912037163489,
+     "rel_reduction": -0.012423288768843355,
+     "ci95": [
+      -0.09075072533313344,
+      0.060392442174448994
+     ],
+     "p_one_sided": 0.6206896551724138,
+     "per_repo": {
+      "fastapi": -0.09569434428171708,
+      "webpack": 0.0030669878865530187,
+      "nest": -0.03429751398655956,
+      "caddy": 2.959209487707337e-05,
+      "junit5": 0.012240287696377417
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.5828502863006332,
+     "mse_model": 0.58512409849994,
+     "rel_reduction": -0.0039011942736422167,
+     "ci95": [
+      -0.014312997651305726,
+      0.0053498293007177644
+     ],
+     "p_one_sided": 0.7981009495252374,
+     "per_repo": {
+      "fastapi": -0.049317737017444685,
+      "webpack": -0.006051783045936121,
+      "nest": 4.4393593556790734e-07,
+      "caddy": 2.462552760151837e-06,
+      "junit5": -0.0003992050410668302
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    }
+   },
+   "coefs_level_model": {
+    "erosion": {
+     "coef": -0.045344717262445086,
+     "ci95": [
+      -0.09760817240394813,
+      -0.0030438141850319166
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 0.016292305352430075,
+     "ci95": [
+      -0.020876809156858092,
+      0.057791048460636145
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": -0.012679001318189352,
+     "ci95": [
+      -0.06910909721192568,
+      0.05051827769784976
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 0.008932007318416674,
+     "ci95": [
+      -0.03106906964735021,
+      0.05656949901132632
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_full_model": {
+    "erosion": {
+     "coef": -0.018832749444073992,
+     "ci95": [
+      -0.042606321196834857,
+      0.00048344789435006115
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 0.009898862806008097,
+     "ci95": [
+      -0.007217700901992221,
+      0.027494244255743105
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": -0.00527640798475441,
+     "ci95": [
+      -0.03146983362774211,
+      0.021709825724341044
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 0.006192229704365481,
+     "ci95": [
+      -0.012543797122949939,
+      0.027499453692974987
+     ],
+     "construct_invalid": false
+    },
+    "d_erosion": {
+     "coef": -0.017736198417948375,
+     "ci95": [
+      -0.03925338072169175,
+      0.004810800045826719
+     ],
+     "construct_invalid": false
+    },
+    "d_log_n_high_cc": {
+     "coef": 0.007616435343226086,
+     "ci95": [
+      -0.00865964981544256,
+      0.026162780959740593
+     ],
+     "construct_invalid": false
+    },
+    "d_clone_pct": {
+     "coef": 0.003810777865898782,
+     "ci95": [
+      -0.016176420883484515,
+      0.02836743665940547
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_coupling_model": {
+    "coupling": {
+     "coef": -0.03989059646417905,
+     "ci95": [
+      -0.09703546135475673,
+      0.01962212051012221
+     ],
+     "construct_invalid": false
+    }
+   }
+  },
+  "o2": {
+   "outcome": "o2",
+   "n": 60,
+   "counts": {
+    "caddy": 14,
+    "fastapi": 2,
+    "junit5": 8,
+    "nest": 26,
+    "webpack": 10
+   },
+   "repos_ge10": [
+    "webpack",
+    "nest",
+    "caddy"
+   ],
+   "y_mean_by_repo": {
+    "caddy": 1.0218503483469816,
+    "fastapi": 0.6931471805599453,
+    "junit5": 0.9642788931061357,
+    "nest": 1.2833243114903572,
+    "webpack": 0.8147867129923947
+   },
+   "comparisons": {
+    "level": {
+     "name": "base vs base+level",
+     "added": [
+      "erosion",
+      "log_n_high_cc",
+      "clone_pct",
+      "hotspot"
+     ],
+     "mse_base": 0.22647739946343556,
+     "mse_model": 0.2176887401578932,
+     "rel_reduction": 0.038805899954539536,
+     "ci95": [
+      -0.030276196586105475,
+      0.11441267389370159
+     ],
+     "p_one_sided": 0.1374312843578211,
+     "per_repo": {
+      "fastapi": 0.0007415094078379036,
+      "webpack": 0.2247899779664304,
+      "nest": -2.0227946922135587e-05,
+      "caddy": 0.021216823698634202,
+      "junit5": -1.9334628703182588e-05
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "degradation": {
+     "name": "base+level vs base+level+degradation",
+     "added": [
+      "d_erosion",
+      "d_log_n_high_cc",
+      "d_clone_pct"
+     ],
+     "mse_base": 0.2176887401578932,
+     "mse_model": 0.21882923114969893,
+     "rel_reduction": -0.00523909041404047,
+     "ci95": [
+      -0.01681192510927041,
+      0.0029918205078997458
+     ],
+     "p_one_sided": 0.8685657171414293,
+     "per_repo": {
+      "fastapi": -6.439876854003046e-09,
+      "webpack": -0.03960402277613251,
+      "nest": -1.3894034252004417e-06,
+      "caddy": 1.3216188820330821e-05,
+      "junit5": -1.0447020644122063e-05
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.22647739946343556,
+     "mse_model": 0.22602159561654503,
+     "rel_reduction": 0.002012579833442163,
+     "ci95": [
+      -0.02526824440164983,
+      0.024776354486638282
+     ],
+     "p_one_sided": 0.40679660169915044,
+     "per_repo": {
+      "fastapi": -0.009299061382336271,
+      "webpack": 0.005545487810483141,
+      "nest": 0.005066704212767226,
+      "caddy": -0.021953473357293918,
+      "junit5": 4.6405431576301837e-05
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 316.22776601683796
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.22647739946343556,
+     "mse_model": 0.22709142049296724,
+     "rel_reduction": -0.0027111801485992792,
+     "ci95": [
+      -0.05060900394604429,
+      0.04123324989402266
+     ],
+     "p_one_sided": 0.5082458770614693,
+     "per_repo": {
+      "fastapi": 0.0006747933390044425,
+      "webpack": -0.06434500338726479,
+      "nest": 0.0029994201844051327,
+      "caddy": 0.049108787239808493,
+      "junit5": 0.021236818368190802
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    }
+   },
+   "mse_base": 0.22647739946343556,
+   "ablations": {
+    "erosion": {
+     "name": "base vs base+erosion",
+     "added": [
+      "erosion"
+     ],
+     "mse_base": 0.22647739946343556,
+     "mse_model": 0.22331942871465865,
+     "rel_reduction": 0.013943867053660464,
+     "ci95": [
+      -0.008554949861874644,
+      0.03729715546287149
+     ],
+     "p_one_sided": 0.11894052973513243,
+     "per_repo": {
+      "fastapi": 0.0007415166082839209,
+      "webpack": 0.08738317495961057,
+      "nest": -4.893993881260883e-07,
+      "caddy": -0.004430715109734917,
+      "junit5": -1.9286952406050162e-05
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "log_n_high_cc": {
+     "name": "base vs base+log_n_high_cc",
+     "added": [
+      "log_n_high_cc"
+     ],
+     "mse_base": 0.22647739946343556,
+     "mse_model": 0.22409259264620296,
+     "rel_reduction": 0.010529999120806877,
+     "ci95": [
+      -0.019924873602814513,
+      0.03893414969999654
+     ],
+     "p_one_sided": 0.248375812093953,
+     "per_repo": {
+      "fastapi": 0.0007298615767912242,
+      "webpack": 0.0987691874064387,
+      "nest": 1.8064515094895484e-07,
+      "caddy": -0.062370379964551415,
+      "junit5": 1.111137124598649e-05
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10000.0
+    },
+    "clone_pct": {
+     "name": "base vs base+clone_pct",
+     "added": [
+      "clone_pct"
+     ],
+     "mse_base": 0.22647739946343556,
+     "mse_model": 0.2200093834672425,
+     "rel_reduction": 0.02855921169846054,
+     "ci95": [
+      -0.03889664244535087,
+      0.10234055146993523
+     ],
+     "p_one_sided": 0.21239380309845077,
+     "per_repo": {
+      "fastapi": 0.0007415105687393897,
+      "webpack": 0.2205401338156635,
+      "nest": -0.010526408060967052,
+      "caddy": -0.007936610790416854,
+      "junit5": -1.150158365548215e-05
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 316.22776601683796
+    },
+    "hotspot": {
+     "name": "base vs base+hotspot",
+     "added": [
+      "hotspot"
+     ],
+     "mse_base": 0.22647739946343556,
+     "mse_model": 0.22784584984832706,
+     "rel_reduction": -0.0060423264667184284,
+     "ci95": [
+      -0.02080985623241523,
+      0.006680432339179815
+     ],
+     "p_one_sided": 0.8350824587706147,
+     "per_repo": {
+      "fastapi": 0.0007415211653134524,
+      "webpack": -0.04754191365218485,
+      "nest": -7.0450243276898306e-06,
+      "caddy": 0.019103198624144113,
+      "junit5": 3.3046485803378545e-07
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "d_erosion": {
+     "name": "base vs base+d_erosion",
+     "added": [
+      "d_erosion"
+     ],
+     "mse_base": 0.22647739946343556,
+     "mse_model": 0.227480815182912,
+     "rel_reduction": -0.004430533562526318,
+     "ci95": [
+      -0.013167157675529183,
+      0.0021969772751293027
+     ],
+     "p_one_sided": 0.8770614692653673,
+     "per_repo": {
+      "fastapi": 0.0007414980166379204,
+      "webpack": -0.025676606669993607,
+      "nest": -1.0522679736446605e-06,
+      "caddy": -0.0025840093191127345,
+      "junit5": -9.848779083831971e-06
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "d_log_n_high_cc": {
+     "name": "base vs base+d_log_n_high_cc",
+     "added": [
+      "d_log_n_high_cc"
+     ],
+     "mse_base": 0.22647739946343556,
+     "mse_model": 0.22783507069737244,
+     "rel_reduction": -0.005994731647190665,
+     "ci95": [
+      -0.027036685626835966,
+      0.01838935501150525
+     ],
+     "p_one_sided": 0.7301349325337332,
+     "per_repo": {
+      "fastapi": 0.000655106149918594,
+      "webpack": -0.03925486233579045,
+      "nest": -2.0752566420867424e-07,
+      "caddy": 0.004693755729354154,
+      "junit5": 6.0704552495849384e-09
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 3162.2776601683795
+    },
+    "d_clone_pct": {
+     "name": "base vs base+d_clone_pct",
+     "added": [
+      "d_clone_pct"
+     ],
+     "mse_base": 0.22647739946343556,
+     "mse_model": 0.22647674201841778,
+     "rel_reduction": 2.9029166678240514e-06,
+     "ci95": [
+      -0.0006087339288356808,
+      0.0005918673811223879
+     ],
+     "p_one_sided": 0.5027486256871564,
+     "per_repo": {
+      "fastapi": 1.9048297716928175e-05,
+      "webpack": 0.00025259926156984136,
+      "nest": -1.302936207814298e-07,
+      "caddy": -0.00042614319996192584,
+      "junit5": -5.428822587028037e-07
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 1000.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.22647739946343556,
+     "mse_model": 0.22602159561654503,
+     "rel_reduction": 0.002012579833442163,
+     "ci95": [
+      -0.02526824440164983,
+      0.024776354486638282
+     ],
+     "p_one_sided": 0.40679660169915044,
+     "per_repo": {
+      "fastapi": -0.009299061382336271,
+      "webpack": 0.005545487810483141,
+      "nest": 0.005066704212767226,
+      "caddy": -0.021953473357293918,
+      "junit5": 4.6405431576301837e-05
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 316.22776601683796
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.22647739946343556,
+     "mse_model": 0.22709142049296724,
+     "rel_reduction": -0.0027111801485992792,
+     "ci95": [
+      -0.05060900394604429,
+      0.04123324989402266
+     ],
+     "p_one_sided": 0.5082458770614693,
+     "per_repo": {
+      "fastapi": 0.0006747933390044425,
+      "webpack": -0.06434500338726479,
+      "nest": 0.0029994201844051327,
+      "caddy": 0.049108787239808493,
+      "junit5": 0.021236818368190802
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    }
+   },
+   "coefs_level_model": {
+    "erosion": {
+     "coef": 6.168989614899575e-06,
+     "ci95": [
+      -3.5854216084848256e-05,
+      5.331910735144646e-05
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": -1.632850491963596e-05,
+     "ci95": [
+      -6.517722140811346e-05,
+      3.109637503666847e-05
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": 2.089302097743471e-06,
+     "ci95": [
+      -6.735619774607702e-05,
+      8.628933422439988e-05
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": -9.36129412928939e-06,
+     "ci95": [
+      -5.395142462698299e-05,
+      3.351701894566367e-05
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_full_model": {
+    "erosion": {
+     "coef": 6.1616475851612324e-06,
+     "ci95": [
+      -3.5854405326297e-05,
+      5.331864609362588e-05
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": -1.632104430529355e-05,
+     "ci95": [
+      -6.513914946588551e-05,
+      3.1086372655381055e-05
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": 2.090893984820067e-06,
+     "ci95": [
+      -6.735510283067992e-05,
+      8.628628079997205e-05
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": -9.354659647982041e-06,
+     "ci95": [
+      -5.394898351039699e-05,
+      3.3517764907501614e-05
+     ],
+     "construct_invalid": false
+    },
+    "d_erosion": {
+     "coef": 6.008382002481189e-06,
+     "ci95": [
+      -3.434412991229969e-05,
+      5.122070856610653e-05
+     ],
+     "construct_invalid": false
+    },
+    "d_log_n_high_cc": {
+     "coef": -2.208615681193265e-05,
+     "ci95": [
+      -6.43869155765386e-05,
+      1.5485975247271545e-05
+     ],
+     "construct_invalid": false
+    },
+    "d_clone_pct": {
+     "coef": 1.8106952570737104e-06,
+     "ci95": [
+      -4.6475440583115446e-05,
+      4.7675461858919904e-05
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_coupling_model": {
+    "coupling": {
+     "coef": 0.01270436868514592,
+     "ci95": [
+      -0.00515908940455276,
+      0.027639771349001873
+     ],
+     "construct_invalid": false
+    }
+   }
+  },
+  "o3": {
+   "outcome": "o3",
+   "n": 60,
+   "counts": {
+    "caddy": 14,
+    "fastapi": 2,
+    "junit5": 8,
+    "nest": 26,
+    "webpack": 10
+   },
+   "repos_ge10": [
+    "webpack",
+    "nest",
+    "caddy"
+   ],
+   "y_mean_by_repo": {
+    "caddy": 0.2522652192527969,
+    "fastapi": 0.3399122807017544,
+    "junit5": 0.48412189662189664,
+    "nest": 0.31963319362009723,
+    "webpack": 0.42653409090909095
+   },
+   "comparisons": {
+    "level": {
+     "name": "base vs base+level",
+     "added": [
+      "erosion",
+      "log_n_high_cc",
+      "clone_pct",
+      "hotspot"
+     ],
+     "mse_base": 0.04128784601334865,
+     "mse_model": 0.04166748803085187,
+     "rel_reduction": -0.009195006622057189,
+     "ci95": [
+      -0.06329514325883306,
+      0.03537934151474963
+     ],
+     "p_one_sided": 0.6356821589205397,
+     "per_repo": {
+      "fastapi": -0.25609057435621696,
+      "webpack": 0.010519253189836264,
+      "nest": 0.00010534371044224056,
+      "caddy": 0.03791020520121169,
+      "junit5": -0.058375904909941045
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    },
+    "degradation": {
+     "name": "base+level vs base+level+degradation",
+     "added": [
+      "d_erosion",
+      "d_log_n_high_cc",
+      "d_clone_pct"
+     ],
+     "mse_base": 0.04166748803085187,
+     "mse_model": 0.042825915173886835,
+     "rel_reduction": -0.02780170338507637,
+     "ci95": [
+      -0.23608518282403249,
+      0.13545429817622875
+     ],
+     "p_one_sided": 0.6071964017991005,
+     "per_repo": {
+      "fastapi": 0.25631238858439365,
+      "webpack": -0.07656936463281361,
+      "nest": 6.302853150463861e-05,
+      "caddy": -0.14111250656224783,
+      "junit5": 0.03642449539806902
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.04128784601334865,
+     "mse_model": 0.0406707983807373,
+     "rel_reduction": 0.014945018745028738,
+     "ci95": [
+      -0.032309121930961894,
+      0.05681004782920047
+     ],
+     "p_one_sided": 0.2563718140929535,
+     "per_repo": {
+      "fastapi": 0.2489468742678539,
+      "webpack": -0.00791982590195861,
+      "nest": 1.5981718464952444e-05,
+      "caddy": 0.06150184589572738,
+      "junit5": 0.01630912693835951
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.04128784601334865,
+     "mse_model": 0.042000816639036126,
+     "rel_reduction": -0.017268293082108643,
+     "ci95": [
+      -0.06351380407454806,
+      0.02357784711982945
+     ],
+     "p_one_sided": 0.784607696151924,
+     "per_repo": {
+      "fastapi": -0.37964904663806087,
+      "webpack": -0.01992096746775851,
+      "nest": -8.115805596231596e-06,
+      "caddy": -0.0079449572507444,
+      "junit5": -0.015032875477718921
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    }
+   },
+   "mse_base": 0.04128784601334865,
+   "ablations": {
+    "erosion": {
+     "name": "base vs base+erosion",
+     "added": [
+      "erosion"
+     ],
+     "mse_base": 0.04128784601334865,
+     "mse_model": 0.04200859128020255,
+     "rel_reduction": -0.017456596467175123,
+     "ci95": [
+      -0.07087380065218263,
+      0.03018209674317783
+     ],
+     "p_one_sided": 0.767616191904048,
+     "per_repo": {
+      "fastapi": -0.3670630259901613,
+      "webpack": 0.006378379869486528,
+      "nest": 1.959482372093646e-05,
+      "caddy": -0.007897486025901346,
+      "junit5": -0.05075169213698261
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    },
+    "log_n_high_cc": {
+     "name": "base vs base+log_n_high_cc",
+     "added": [
+      "log_n_high_cc"
+     ],
+     "mse_base": 0.04128784601334865,
+     "mse_model": 0.04086756858208795,
+     "rel_reduction": 0.010179204580564094,
+     "ci95": [
+      -0.03711080644063856,
+      0.047279473600369104
+     ],
+     "p_one_sided": 0.30334832583708143,
+     "per_repo": {
+      "fastapi": 0.21369712928083595,
+      "webpack": 0.03809397342213994,
+      "nest": 5.1931611764644003e-05,
+      "caddy": 0.06209975213277941,
+      "junit5": -0.061357785300536705
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    },
+    "clone_pct": {
+     "name": "base vs base+clone_pct",
+     "added": [
+      "clone_pct"
+     ],
+     "mse_base": 0.04128784601334865,
+     "mse_model": 0.04169729508225772,
+     "rel_reduction": -0.009916939449364559,
+     "ci95": [
+      -0.039957918454985655,
+      0.023344065726995794
+     ],
+     "p_one_sided": 0.7236381809095452,
+     "per_repo": {
+      "fastapi": -0.15690872432112912,
+      "webpack": -0.026443333117621037,
+      "nest": -7.615414845396629e-07,
+      "caddy": 0.0028824248547933973,
+      "junit5": 0.0012009495871686537
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    },
+    "hotspot": {
+     "name": "base vs base+hotspot",
+     "added": [
+      "hotspot"
+     ],
+     "mse_base": 0.04128784601334865,
+     "mse_model": 0.041728801922918037,
+     "rel_reduction": -0.01068004151698343,
+     "ci95": [
+      -0.0439587807506753,
+      0.01843094525301685
+     ],
+     "p_one_sided": 0.7466266866566716,
+     "per_repo": {
+      "fastapi": -0.4308177905285051,
+      "webpack": -0.009646431915947717,
+      "nest": 3.46448954194889e-05,
+      "caddy": 0.02766999632283751,
+      "junit5": -0.01876227940008368
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    },
+    "d_erosion": {
+     "name": "base vs base+d_erosion",
+     "added": [
+      "d_erosion"
+     ],
+     "mse_base": 0.04128784601334865,
+     "mse_model": 0.0410184633789161,
+     "rel_reduction": 0.006524502013145916,
+     "ci95": [
+      -0.06327566343280637,
+      0.07018560959755281
+     ],
+     "p_one_sided": 0.39730134932533734,
+     "per_repo": {
+      "fastapi": 0.3903833038136785,
+      "webpack": -0.0517228720682652,
+      "nest": 4.121049546923494e-05,
+      "caddy": 0.006309131387807199,
+      "junit5": 0.06087258501596726
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    },
+    "d_log_n_high_cc": {
+     "name": "base vs base+d_log_n_high_cc",
+     "added": [
+      "d_log_n_high_cc"
+     ],
+     "mse_base": 0.04128784601334865,
+     "mse_model": 0.04126953214918313,
+     "rel_reduction": 0.00044356550253554783,
+     "ci95": [
+      -0.043858292332049596,
+      0.0410421513833658
+     ],
+     "p_one_sided": 0.4782608695652174,
+     "per_repo": {
+      "fastapi": -0.09257935675225482,
+      "webpack": 0.008968985595576018,
+      "nest": 1.0953438091987344e-05,
+      "caddy": -0.01850481365295842,
+      "junit5": 0.009379221252434178
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    },
+    "d_clone_pct": {
+     "name": "base vs base+d_clone_pct",
+     "added": [
+      "d_clone_pct"
+     ],
+     "mse_base": 0.04128784601334865,
+     "mse_model": 0.041574143187021045,
+     "rel_reduction": -0.006934175582321123,
+     "ci95": [
+      -0.043722509296922646,
+      0.023725743032317923
+     ],
+     "p_one_sided": 0.6291854072963519,
+     "per_repo": {
+      "fastapi": 0.0635162506905782,
+      "webpack": 0.004567403089418165,
+      "nest": 1.0909974997863614e-05,
+      "caddy": -0.04987779534720094,
+      "junit5": -0.008713747320655774
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.04128784601334865,
+     "mse_model": 0.0406707983807373,
+     "rel_reduction": 0.014945018745028738,
+     "ci95": [
+      -0.032309121930961894,
+      0.05681004782920047
+     ],
+     "p_one_sided": 0.2563718140929535,
+     "per_repo": {
+      "fastapi": 0.2489468742678539,
+      "webpack": -0.00791982590195861,
+      "nest": 1.5981718464952444e-05,
+      "caddy": 0.06150184589572738,
+      "junit5": 0.01630912693835951
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.04128784601334865,
+     "mse_model": 0.042000816639036126,
+     "rel_reduction": -0.017268293082108643,
+     "ci95": [
+      -0.06351380407454806,
+      0.02357784711982945
+     ],
+     "p_one_sided": 0.784607696151924,
+     "per_repo": {
+      "fastapi": -0.37964904663806087,
+      "webpack": -0.01992096746775851,
+      "nest": -8.115805596231596e-06,
+      "caddy": -0.0079449572507444,
+      "junit5": -0.015032875477718921
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    }
+   },
+   "coefs_level_model": {
+    "erosion": {
+     "coef": 0.00985667593087258,
+     "ci95": [
+      -0.026395142400469657,
+      0.05758053125937512
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 0.03660148305033053,
+     "ci95": [
+      0.002090569831170897,
+      0.07347937426233014
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": -0.009377585106523001,
+     "ci95": [
+      -0.04115173080025037,
+      0.02169029240676041
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 0.007533331726669924,
+     "ci95": [
+      -0.031199644493542386,
+      0.04562591674441639
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_full_model": {
+    "erosion": {
+     "coef": 0.020748450969005627,
+     "ci95": [
+      -0.01548323436804452,
+      0.0638672623308372
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 0.0352500281816218,
+     "ci95": [
+      -0.0031587060109720512,
+      0.07202683279280193
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": -0.011584458545643833,
+     "ci95": [
+      -0.0439699811197,
+      0.018196649456412084
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 0.01173315735639968,
+     "ci95": [
+      -0.024925182132831344,
+      0.04798176650805515
+     ],
+     "construct_invalid": false
+    },
+    "d_erosion": {
+     "coef": -0.03698792019291155,
+     "ci95": [
+      -0.07713659416465135,
+      0.005333267590702815
+     ],
+     "construct_invalid": false
+    },
+    "d_log_n_high_cc": {
+     "coef": -0.002550471491223673,
+     "ci95": [
+      -0.045722858967986724,
+      0.04445000671595545
+     ],
+     "construct_invalid": false
+    },
+    "d_clone_pct": {
+     "coef": -0.007720840984384867,
+     "ci95": [
+      -0.03805087048744878,
+      0.03136560862032805
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_coupling_model": {
+    "coupling": {
+     "coef": -0.022337770570381853,
+     "ci95": [
+      -0.06493262337777327,
+      0.02073814241928624
+     ],
+     "construct_invalid": false
+    }
+   }
+  },
+  "o4a": {
+   "outcome": "o4a",
+   "n": 35,
+   "counts": {
+    "caddy": 11,
+    "fastapi": 2,
+    "junit5": 1,
+    "nest": 15,
+    "webpack": 6
+   },
+   "repos_ge10": [
+    "nest",
+    "caddy"
+   ],
+   "y_mean_by_repo": {
+    "caddy": 1.1129061383376249,
+    "fastapi": 1.4978661367769956,
+    "junit5": 2.0794415416798357,
+    "nest": 1.1499680766181817,
+    "webpack": 1.1141019546113213
+   },
+   "comparisons": {
+    "level": {
+     "name": "base vs base+level",
+     "added": [
+      "erosion",
+      "log_n_high_cc",
+      "clone_pct",
+      "hotspot"
+     ],
+     "mse_base": 0.11740107135611393,
+     "mse_model": 0.11772011757649636,
+     "rel_reduction": -0.002717575033150066,
+     "ci95": [
+      -0.03545454874699708,
+      0.027263254786728218
+     ],
+     "p_one_sided": 0.5342328835582209,
+     "per_repo": {
+      "fastapi": 9.037580346316076e-07,
+      "webpack": -0.00832566047485761,
+      "nest": -6.498280983979754e-05,
+      "caddy": -1.771019991325673e-06,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "degradation": {
+     "name": "base+level vs base+level+degradation",
+     "added": [
+      "d_erosion",
+      "d_log_n_high_cc",
+      "d_clone_pct"
+     ],
+     "mse_base": 0.11772011757649636,
+     "mse_model": 0.11364754456230262,
+     "rel_reduction": 0.034595386906127734,
+     "ci95": [
+      -0.016592957120911717,
+      0.08885189469290956
+     ],
+     "p_one_sided": 0.09295352323838081,
+     "per_repo": {
+      "fastapi": 2.915851572160566e-05,
+      "webpack": 0.105881639805812,
+      "nest": -5.941489363037178e-05,
+      "caddy": -1.0927569493057732e-05,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.11740107135611393,
+     "mse_model": 0.1145948140883468,
+     "rel_reduction": 0.023903165749270427,
+     "ci95": [
+      -0.0409222728209471,
+      0.08557615681673016
+     ],
+     "p_one_sided": 0.23938030984507747,
+     "per_repo": {
+      "fastapi": -0.19660459990794288,
+      "webpack": 0.11088915493891072,
+      "nest": 5.3483927231146033e-05,
+      "caddy": 6.959377813309242e-05,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.11740107135611393,
+     "mse_model": 0.12057341477172308,
+     "rel_reduction": -0.02702141793907864,
+     "ci95": [
+      -0.07284821946143731,
+      0.018309837742818656
+     ],
+     "p_one_sided": 0.8680659670164917,
+     "per_repo": {
+      "fastapi": 1.2345293568749582e-05,
+      "webpack": -0.08313308828712862,
+      "nest": 4.47413195725499e-06,
+      "caddy": -1.2439510736816928e-05,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    }
+   },
+   "mse_base": 0.11740107135611393,
+   "ablations": {
+    "erosion": {
+     "name": "base vs base+erosion",
+     "added": [
+      "erosion"
+     ],
+     "mse_base": 0.11740107135611393,
+     "mse_model": 0.11757782667969148,
+     "rel_reduction": -0.0015055682332012488,
+     "ci95": [
+      -0.005075148554344639,
+      0.0017977244413523786
+     ],
+     "p_one_sided": 0.8280859570214892,
+     "per_repo": {
+      "fastapi": -1.4543476092310215e-06,
+      "webpack": -0.004631358839816135,
+      "nest": -1.2032960203800513e-06,
+      "caddy": 9.549251833718131e-08,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "log_n_high_cc": {
+     "name": "base vs base+log_n_high_cc",
+     "added": [
+      "log_n_high_cc"
+     ],
+     "mse_base": 0.11740107135611393,
+     "mse_model": 0.11691497861907944,
+     "rel_reduction": 0.004140445495254608,
+     "ci95": [
+      -0.0024746981117502787,
+      0.012882361792095167
+     ],
+     "p_one_sided": 0.15542228885557222,
+     "per_repo": {
+      "fastapi": -2.177651291734861e-06,
+      "webpack": 0.012743010378340136,
+      "nest": -5.037943099805986e-06,
+      "caddy": -1.3340055888821922e-06,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "clone_pct": {
+     "name": "base vs base+clone_pct",
+     "added": [
+      "clone_pct"
+     ],
+     "mse_base": 0.11740107135611393,
+     "mse_model": 0.11667960656928043,
+     "rel_reduction": 0.00614529985544221,
+     "ci95": [
+      -0.01377899530800708,
+      0.025439773578515935
+     ],
+     "p_one_sided": 0.2703648175912044,
+     "per_repo": {
+      "fastapi": 1.479443824781157e-05,
+      "webpack": 0.018928516738164092,
+      "nest": -5.1270140911663376e-05,
+      "caddy": 4.484870383403283e-06,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "hotspot": {
+     "name": "base vs base+hotspot",
+     "added": [
+      "hotspot"
+     ],
+     "mse_base": 0.11740107135611393,
+     "mse_model": 0.11764700973466921,
+     "rel_reduction": -0.0020948563391665065,
+     "ci95": [
+      -0.0040691034165061205,
+      -0.000401227165714785
+     ],
+     "p_one_sided": 0.9945027486256871,
+     "per_repo": {
+      "fastapi": -1.0259648901111973e-05,
+      "webpack": -0.006435792302005083,
+      "nest": -7.467854805875973e-06,
+      "caddy": -5.016334615248752e-06,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "d_erosion": {
+     "name": "base vs base+d_erosion",
+     "added": [
+      "d_erosion"
+     ],
+     "mse_base": 0.11740107135611393,
+     "mse_model": 0.11697572920385771,
+     "rel_reduction": 0.003622983566870741,
+     "ci95": [
+      -0.0021950842127058724,
+      0.009986851970165628
+     ],
+     "p_one_sided": 0.11694152923538231,
+     "per_repo": {
+      "fastapi": 1.74960418855008e-05,
+      "webpack": 0.011146589496132564,
+      "nest": -1.0512132523343709e-05,
+      "caddy": 3.5734988849123184e-06,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "d_log_n_high_cc": {
+     "name": "base vs base+d_log_n_high_cc",
+     "added": [
+      "d_log_n_high_cc"
+     ],
+     "mse_base": 0.11740107135611393,
+     "mse_model": 0.11739796801360391,
+     "rel_reduction": 2.6433681346915705e-05,
+     "ci95": [
+      -1.1208055946443362e-05,
+      6.448418775089337e-05
+     ],
+     "p_one_sided": 0.08695652173913043,
+     "per_repo": {
+      "fastapi": -2.274529009582693e-09,
+      "webpack": 8.530161484066046e-05,
+      "nest": -1.3661712446433327e-05,
+      "caddy": 4.5936289041481615e-06,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "d_clone_pct": {
+     "name": "base vs base+d_clone_pct",
+     "added": [
+      "d_clone_pct"
+     ],
+     "mse_base": 0.11740107135611393,
+     "mse_model": 0.11526791015729027,
+     "rel_reduction": 0.0181698614346808,
+     "ci95": [
+      -0.011495759579516424,
+      0.05180644159102344
+     ],
+     "p_one_sided": 0.13043478260869565,
+     "per_repo": {
+      "fastapi": 1.1678027504902211e-05,
+      "webpack": 0.05593351225216037,
+      "nest": -3.5163870840682065e-05,
+      "caddy": -1.9078928349181012e-05,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.11740107135611393,
+     "mse_model": 0.1145948140883468,
+     "rel_reduction": 0.023903165749270427,
+     "ci95": [
+      -0.0409222728209471,
+      0.08557615681673016
+     ],
+     "p_one_sided": 0.23938030984507747,
+     "per_repo": {
+      "fastapi": -0.19660459990794288,
+      "webpack": 0.11088915493891072,
+      "nest": 5.3483927231146033e-05,
+      "caddy": 6.959377813309242e-05,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.11740107135611393,
+     "mse_model": 0.12057341477172308,
+     "rel_reduction": -0.02702141793907864,
+     "ci95": [
+      -0.07284821946143731,
+      0.018309837742818656
+     ],
+     "p_one_sided": 0.8680659670164917,
+     "per_repo": {
+      "fastapi": 1.2345293568749582e-05,
+      "webpack": -0.08313308828712862,
+      "nest": 4.47413195725499e-06,
+      "caddy": -1.2439510736816928e-05,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    }
+   },
+   "coefs_level_model": {
+    "erosion": {
+     "coef": 1.4066358525918967e-06,
+     "ci95": [
+      -2.6966200965097027e-05,
+      3.0225510058865935e-05
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 9.85462234776533e-07,
+     "ci95": [
+      -2.685475934805329e-05,
+      3.060065297272362e-05
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": 1.0657810640955154e-05,
+     "ci95": [
+      -1.7018045731918983e-05,
+      3.61795325168955e-05
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 3.608319652152367e-06,
+     "ci95": [
+      -2.148618813051323e-05,
+      3.187722174404273e-05
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_full_model": {
+    "erosion": {
+     "coef": 1.4103066152559495e-06,
+     "ci95": [
+      -2.6961977306055502e-05,
+      3.023291455932219e-05
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 9.818807907263533e-07,
+     "ci95": [
+      -2.685305836886498e-05,
+      3.059313036359684e-05
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": 1.0653747058876675e-05,
+     "ci95": [
+      -1.7017490602718467e-05,
+      3.616698342453944e-05
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 3.6045284507043456e-06,
+     "ci95": [
+      -2.14914374413265e-05,
+      3.186273186765901e-05
+     ],
+     "construct_invalid": false
+    },
+    "d_erosion": {
+     "coef": -1.218826818355327e-05,
+     "ci95": [
+      -4.024213463088352e-05,
+      1.4327857244186473e-05
+     ],
+     "construct_invalid": false
+    },
+    "d_log_n_high_cc": {
+     "coef": 1.014766114186871e-05,
+     "ci95": [
+      -1.147506691471155e-05,
+      3.0061635407816538e-05
+     ],
+     "construct_invalid": false
+    },
+    "d_clone_pct": {
+     "coef": 8.876215972422583e-06,
+     "ci95": [
+      -1.372964099527263e-05,
+      3.297586105719334e-05
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_coupling_model": {
+    "coupling": {
+     "coef": 0.025686816923483166,
+     "ci95": [
+      -0.004378926988836367,
+      0.05184324756270462
+     ],
+     "construct_invalid": false
+    }
+   }
+  },
+  "o4b": {
+   "outcome": "o4b",
+   "n": 35,
+   "counts": {
+    "caddy": 11,
+    "fastapi": 2,
+    "junit5": 1,
+    "nest": 15,
+    "webpack": 6
+   },
+   "repos_ge10": [
+    "nest",
+    "caddy"
+   ],
+   "y_mean_by_repo": {
+    "caddy": 0.8870277311234588,
+    "fastapi": 0.2027325540540822,
+    "junit5": 2.302585092994046,
+    "nest": 0.9223934165074673,
+    "webpack": 1.3970100862374568
+   },
+   "comparisons": {
+    "level": {
+     "name": "base vs base+level",
+     "added": [
+      "erosion",
+      "log_n_high_cc",
+      "clone_pct",
+      "hotspot"
+     ],
+     "mse_base": 0.3374984964557113,
+     "mse_model": 0.3368031044437025,
+     "rel_reduction": 0.002060429955426657,
+     "ci95": [
+      -0.08815968481414249,
+      0.0759681263500024
+     ],
+     "p_one_sided": 0.46026986506746626,
+     "per_repo": {
+      "fastapi": 0.02391386935639961,
+      "webpack": 0.00011821550504864664,
+      "nest": 0.0001102575679184925,
+      "caddy": -0.0043625715936861376,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "degradation": {
+     "name": "base+level vs base+level+degradation",
+     "added": [
+      "d_erosion",
+      "d_log_n_high_cc",
+      "d_clone_pct"
+     ],
+     "mse_base": 0.3368031044437025,
+     "mse_model": 0.3505937171575808,
+     "rel_reduction": -0.040945622329272346,
+     "ci95": [
+      -0.11239826944694964,
+      0.02278328742458308
+     ],
+     "p_one_sided": 0.8930534732633684,
+     "per_repo": {
+      "fastapi": -0.024392884276722038,
+      "webpack": 3.902772974406776e-05,
+      "nest": 2.9928284957958518e-05,
+      "caddy": -0.16597353301937856,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.3374984964557113,
+     "mse_model": 0.34485958623963214,
+     "rel_reduction": -0.021810733562443785,
+     "ci95": [
+      -0.04546622595025552,
+      0.0006851975950190476
+     ],
+     "p_one_sided": 0.9675162418790605,
+     "per_repo": {
+      "fastapi": 6.467375366692174e-06,
+      "webpack": -3.78930357758378e-07,
+      "nest": -3.452029271189261e-05,
+      "caddy": -0.09590521000283614,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.3374984964557113,
+     "mse_model": 0.34115729599817074,
+     "rel_reduction": -0.010840935828997367,
+     "ci95": [
+      -0.024530231581529244,
+      0.004936081276177985
+     ],
+     "p_one_sided": 0.9090454772613693,
+     "per_repo": {
+      "fastapi": -6.244912102992828e-07,
+      "webpack": 1.429182616696778e-07,
+      "nest": -1.6912400526924998e-05,
+      "caddy": -0.04766779051600478,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    }
+   },
+   "mse_base": 0.3374984964557113,
+   "ablations": {
+    "erosion": {
+     "name": "base vs base+erosion",
+     "added": [
+      "erosion"
+     ],
+     "mse_base": 0.3374984964557113,
+     "mse_model": 0.3389574688527224,
+     "rel_reduction": -0.0043229004346172495,
+     "ci95": [
+      -0.12555597763059906,
+      0.08993489795506703
+     ],
+     "p_one_sided": 0.5212393803098451,
+     "per_repo": {
+      "fastapi": 0.04505112431394098,
+      "webpack": 4.847377692673849e-05,
+      "nest": 4.711024901760119e-05,
+      "caddy": -0.04394852435588548,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "log_n_high_cc": {
+     "name": "base vs base+log_n_high_cc",
+     "added": [
+      "log_n_high_cc"
+     ],
+     "mse_base": 0.3374984964557113,
+     "mse_model": 0.3360549371845196,
+     "rel_reduction": 0.004277231710219209,
+     "ci95": [
+      -0.029295738975228348,
+      0.03497410893105259
+     ],
+     "p_one_sided": 0.38130934532733635,
+     "per_repo": {
+      "fastapi": -2.2818030892990393e-05,
+      "webpack": 1.764695423311924e-05,
+      "nest": 1.7422477517237134e-05,
+      "caddy": 0.01878985172958536,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "clone_pct": {
+     "name": "base vs base+clone_pct",
+     "added": [
+      "clone_pct"
+     ],
+     "mse_base": 0.3374984964557113,
+     "mse_model": 0.3387240889294358,
+     "rel_reduction": -0.0036314012850287014,
+     "ci95": [
+      -0.029609821223827337,
+      0.022087291236662802
+     ],
+     "p_one_sided": 0.5847076461769115,
+     "per_repo": {
+      "fastapi": -2.1466244517931443e-05,
+      "webpack": 1.869861051728705e-05,
+      "nest": 1.8721508585506363e-05,
+      "caddy": -0.016003061886300074,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "hotspot": {
+     "name": "base vs base+hotspot",
+     "added": [
+      "hotspot"
+     ],
+     "mse_base": 0.3374984964557113,
+     "mse_model": 0.337070433626683,
+     "rel_reduction": 0.001268339958618081,
+     "ci95": [
+      -0.03260751865438706,
+      0.033947411456640236
+     ],
+     "p_one_sided": 0.4302848575712144,
+     "per_repo": {
+      "fastapi": 2.1995633998406205e-05,
+      "webpack": 3.3472094183251144e-05,
+      "nest": 2.704439571710182e-05,
+      "caddy": 0.005502460148977262,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "d_erosion": {
+     "name": "base vs base+d_erosion",
+     "added": [
+      "d_erosion"
+     ],
+     "mse_base": 0.3374984964557113,
+     "mse_model": 0.3410235110686844,
+     "rel_reduction": -0.010444534271979222,
+     "ci95": [
+      -0.05667102282051324,
+      0.02231005986157084
+     ],
+     "p_one_sided": 0.6676661669165417,
+     "per_repo": {
+      "fastapi": -2.2198078859281267e-05,
+      "webpack": 2.5989512876689602e-05,
+      "nest": 1.2988467477881294e-05,
+      "caddy": -0.04597315328531404,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "d_log_n_high_cc": {
+     "name": "base vs base+d_log_n_high_cc",
+     "added": [
+      "d_log_n_high_cc"
+     ],
+     "mse_base": 0.3374984964557113,
+     "mse_model": 0.34694034383374067,
+     "rel_reduction": -0.02797596871448116,
+     "ci95": [
+      -0.16042291887821938,
+      0.04574235198358581
+     ],
+     "p_one_sided": 0.6541729135432284,
+     "per_repo": {
+      "fastapi": 3.7948233444495827e-10,
+      "webpack": 4.0862371449401635e-05,
+      "nest": 3.116008579306939e-05,
+      "caddy": -0.12314135769745649,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "d_clone_pct": {
+     "name": "base vs base+d_clone_pct",
+     "added": [
+      "d_clone_pct"
+     ],
+     "mse_base": 0.3374984964557113,
+     "mse_model": 0.32694580060174133,
+     "rel_reduction": 0.03126738626924441,
+     "ci95": [
+      -0.004486694027584154,
+      0.06164296104976519
+     ],
+     "p_one_sided": 0.043478260869565216,
+     "per_repo": {
+      "fastapi": -1.1294117201465781e-05,
+      "webpack": -2.7742807727326735e-05,
+      "nest": -1.4211643310835242e-05,
+      "caddy": 0.13759320364809302,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.3374984964557113,
+     "mse_model": 0.34485958623963214,
+     "rel_reduction": -0.021810733562443785,
+     "ci95": [
+      -0.04546622595025552,
+      0.0006851975950190476
+     ],
+     "p_one_sided": 0.9675162418790605,
+     "per_repo": {
+      "fastapi": 6.467375366692174e-06,
+      "webpack": -3.78930357758378e-07,
+      "nest": -3.452029271189261e-05,
+      "caddy": -0.09590521000283614,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.3374984964557113,
+     "mse_model": 0.34115729599817074,
+     "rel_reduction": -0.010840935828997367,
+     "ci95": [
+      -0.024530231581529244,
+      0.004936081276177985
+     ],
+     "p_one_sided": 0.9090454772613693,
+     "per_repo": {
+      "fastapi": -6.244912102992828e-07,
+      "webpack": 1.429182616696778e-07,
+      "nest": -1.6912400526924998e-05,
+      "caddy": -0.04766779051600478,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    }
+   },
+   "coefs_level_model": {
+    "erosion": {
+     "coef": -0.059625242986310036,
+     "ci95": [
+      -0.10855338174108083,
+      -0.0023229263140533175
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 0.03864470823489957,
+     "ci95": [
+      -0.00807520468644746,
+      0.08211868761318847
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": 0.03147683147935141,
+     "ci95": [
+      -0.03525834499759215,
+      0.09552895515007997
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 0.026193858787158065,
+     "ci95": [
+      -0.05067024390749364,
+      0.1022745743300961
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_full_model": {
+    "erosion": {
+     "coef": -0.029805616163466307,
+     "ci95": [
+      -0.05194594276024224,
+      -0.003363157250634965
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 0.018253490785245324,
+     "ci95": [
+      -0.002916362076926238,
+      0.03572829099498493
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": 0.01602098966909468,
+     "ci95": [
+      -0.012968175549848986,
+      0.04232983420024884
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 0.018596665816162636,
+     "ci95": [
+      -0.017984351913072686,
+      0.05097922162161885
+     ],
+     "construct_invalid": false
+    },
+    "d_erosion": {
+     "coef": -0.01284818172885346,
+     "ci95": [
+      -0.04962736101309159,
+      0.02212549179370753
+     ],
+     "construct_invalid": false
+    },
+    "d_log_n_high_cc": {
+     "coef": 0.024647137574260916,
+     "ci95": [
+      -0.003514808765699657,
+      0.050927336899638326
+     ],
+     "construct_invalid": false
+    },
+    "d_clone_pct": {
+     "coef": 0.004014010910011223,
+     "ci95": [
+      -0.03380860374680136,
+      0.04049055945266292
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_coupling_model": {
+    "coupling": {
+     "coef": 1.5856765448003896e-05,
+     "ci95": [
+      -4.59546915409508e-05,
+      8.359210376473783e-05
+     ],
+     "construct_invalid": false
+    }
+   }
+  },
+  "o4c": {
+   "outcome": "o4c",
+   "n": 35,
+   "counts": {
+    "caddy": 11,
+    "fastapi": 2,
+    "junit5": 1,
+    "nest": 15,
+    "webpack": 6
+   },
+   "repos_ge10": [
+    "nest",
+    "caddy"
+   ],
+   "y_mean_by_repo": {
+    "caddy": 4.034294176733869,
+    "fastapi": 8.121100352570634,
+    "junit5": 6.393205599892379,
+    "nest": 4.701422686996754,
+    "webpack": 5.335494724031285
+   },
+   "comparisons": {
+    "level": {
+     "name": "base vs base+level",
+     "added": [
+      "erosion",
+      "log_n_high_cc",
+      "clone_pct",
+      "hotspot"
+     ],
+     "mse_base": 2.448884749252523,
+     "mse_model": 2.2272026501050637,
+     "rel_reduction": 0.09052369623156986,
+     "ci95": [
+      -0.028860402309266203,
+      0.1803950600992582
+     ],
+     "p_one_sided": 0.05847076461769116,
+     "per_repo": {
+      "fastapi": -0.007303116133191789,
+      "webpack": 0.00019675649210992852,
+      "nest": -0.044804791017588164,
+      "caddy": 0.241038222952913,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "degradation": {
+     "name": "base+level vs base+level+degradation",
+     "added": [
+      "d_erosion",
+      "d_log_n_high_cc",
+      "d_clone_pct"
+     ],
+     "mse_base": 2.2272026501050637,
+     "mse_model": 2.2031385126654217,
+     "rel_reduction": 0.01080464655450497,
+     "ci95": [
+      -0.06406241650274433,
+      0.07301628969370662
+     ],
+     "p_one_sided": 0.37231384307846077,
+     "per_repo": {
+      "fastapi": -0.002155871110376628,
+      "webpack": 0.00012083993921652159,
+      "nest": -0.03288973078506641,
+      "caddy": 0.04861821580662429,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 2.448884749252523,
+     "mse_model": 2.3508451827294103,
+     "rel_reduction": 0.040034373423672776,
+     "ci95": [
+      -0.0160932847088239,
+      0.09390283304893716
+     ],
+     "p_one_sided": 0.07746126936531735,
+     "per_repo": {
+      "fastapi": 0.0004893477583595152,
+      "webpack": -4.593768967420253e-05,
+      "nest": 0.07241114021946404,
+      "caddy": 0.07338991065610401,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 2.448884749252523,
+     "mse_model": 2.5262502229606305,
+     "rel_reduction": -0.03159212524465338,
+     "ci95": [
+      -0.062172828334062444,
+      0.0018051481358028474
+     ],
+     "p_one_sided": 0.9625187406296851,
+     "per_repo": {
+      "fastapi": 0.0004878597517352645,
+      "webpack": -1.2266003738048425e-05,
+      "nest": -0.0676951752565611,
+      "caddy": -0.054991939338277174,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    }
+   },
+   "mse_base": 2.448884749252523,
+   "ablations": {
+    "erosion": {
+     "name": "base vs base+erosion",
+     "added": [
+      "erosion"
+     ],
+     "mse_base": 2.448884749252523,
+     "mse_model": 2.2885248495155635,
+     "rel_reduction": 0.06548282837152974,
+     "ci95": [
+      -0.019609399988140642,
+      0.13455834671357894
+     ],
+     "p_one_sided": 0.06846576711644178,
+     "per_repo": {
+      "fastapi": -0.005560595220795106,
+      "webpack": 6.778948166941134e-05,
+      "nest": -0.02985898386281227,
+      "caddy": 0.17373093613185364,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "log_n_high_cc": {
+     "name": "base vs base+log_n_high_cc",
+     "added": [
+      "log_n_high_cc"
+     ],
+     "mse_base": 2.448884749252523,
+     "mse_model": 2.419317263654545,
+     "rel_reduction": 0.01207385754148016,
+     "ci95": [
+      -0.04484756936200547,
+      0.06927163849940444
+     ],
+     "p_one_sided": 0.28235882058970513,
+     "per_repo": {
+      "fastapi": -0.017698142655807825,
+      "webpack": 6.385072166148476e-05,
+      "nest": 0.03262689852880374,
+      "caddy": 0.03088214200158912,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "clone_pct": {
+     "name": "base vs base+clone_pct",
+     "added": [
+      "clone_pct"
+     ],
+     "mse_base": 2.448884749252523,
+     "mse_model": 2.458883763682184,
+     "rel_reduction": -0.004083089019486286,
+     "ci95": [
+      -0.015162210829606549,
+      0.008450926071477802
+     ],
+     "p_one_sided": 0.7491254372813593,
+     "per_repo": {
+      "fastapi": -0.0013449506653577803,
+      "webpack": 1.2331586657587934e-05,
+      "nest": 0.004979327395453814,
+      "caddy": -0.010703430875559361,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 1000.0
+    },
+    "hotspot": {
+     "name": "base vs base+hotspot",
+     "added": [
+      "hotspot"
+     ],
+     "mse_base": 2.448884749252523,
+     "mse_model": 2.269250311915112,
+     "rel_reduction": 0.07335356937162574,
+     "ci95": [
+      -0.032659414982770106,
+      0.1606207647324107
+     ],
+     "p_one_sided": 0.07246376811594203,
+     "per_repo": {
+      "fastapi": -0.0025981616090799964,
+      "webpack": 5.290367672061702e-05,
+      "nest": -0.098915908286207,
+      "caddy": 0.2138828947851662,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 316.22776601683796
+    },
+    "d_erosion": {
+     "name": "base vs base+d_erosion",
+     "added": [
+      "d_erosion"
+     ],
+     "mse_base": 2.448884749252523,
+     "mse_model": 2.239860460709474,
+     "rel_reduction": 0.08535489006040409,
+     "ci95": [
+      -0.0576557973954392,
+      0.20384024311607268
+     ],
+     "p_one_sided": 0.10394802598700649,
+     "per_repo": {
+      "fastapi": -0.020972009714280038,
+      "webpack": 4.588120611215274e-05,
+      "nest": 0.034240676229387534,
+      "caddy": 0.21163927451050457,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "d_log_n_high_cc": {
+     "name": "base vs base+d_log_n_high_cc",
+     "added": [
+      "d_log_n_high_cc"
+     ],
+     "mse_base": 2.448884749252523,
+     "mse_model": 2.265706266651201,
+     "rel_reduction": 0.074800777234304,
+     "ci95": [
+      -0.03800484651923559,
+      0.16116171771563023
+     ],
+     "p_one_sided": 0.09345327336331834,
+     "per_repo": {
+      "fastapi": -0.012513235858141014,
+      "webpack": 6.952865312126466e-05,
+      "nest": 0.050448844137249926,
+      "caddy": 0.17459603816823976,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "d_clone_pct": {
+     "name": "base vs base+d_clone_pct",
+     "added": [
+      "d_clone_pct"
+     ],
+     "mse_base": 2.448884749252523,
+     "mse_model": 2.3518231529997333,
+     "rel_reduction": 0.039635020097379514,
+     "ci95": [
+      -0.014317712542100236,
+      0.07929932742215573
+     ],
+     "p_one_sided": 0.06696651674162919,
+     "per_repo": {
+      "fastapi": 0.0004892646048548777,
+      "webpack": 5.532526196505572e-06,
+      "nest": -0.02952824074792537,
+      "caddy": 0.10630672864196689,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 2.448884749252523,
+     "mse_model": 2.3508451827294103,
+     "rel_reduction": 0.040034373423672776,
+     "ci95": [
+      -0.0160932847088239,
+      0.09390283304893716
+     ],
+     "p_one_sided": 0.07746126936531735,
+     "per_repo": {
+      "fastapi": 0.0004893477583595152,
+      "webpack": -4.593768967420253e-05,
+      "nest": 0.07241114021946404,
+      "caddy": 0.07338991065610401,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 2.448884749252523,
+     "mse_model": 2.5262502229606305,
+     "rel_reduction": -0.03159212524465338,
+     "ci95": [
+      -0.062172828334062444,
+      0.0018051481358028474
+     ],
+     "p_one_sided": 0.9625187406296851,
+     "per_repo": {
+      "fastapi": 0.0004878597517352645,
+      "webpack": -1.2266003738048425e-05,
+      "nest": -0.0676951752565611,
+      "caddy": -0.054991939338277174,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    }
+   },
+   "coefs_level_model": {
+    "erosion": {
+     "coef": -0.07228610260735492,
+     "ci95": [
+      -0.16859686321538286,
+      0.02933188026811946
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 0.060338457835979534,
+     "ci95": [
+      -0.02300327788944313,
+      0.13791682748856904
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": 0.006258459016465296,
+     "ci95": [
+      -0.0883016057174645,
+      0.09777184902702014
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 0.05426764855802951,
+     "ci95": [
+      -0.04879277463722506,
+      0.15228031044190676
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_full_model": {
+    "erosion": {
+     "coef": -0.06420100405275399,
+     "ci95": [
+      -0.15984211805248982,
+      0.03847937483645882
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 0.05350413508675773,
+     "ci95": [
+      -0.02728648006283081,
+      0.12761027453337692
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": 0.002044006576852831,
+     "ci95": [
+      -0.07996227541886423,
+      0.08449636253284204
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 0.04829185593222257,
+     "ci95": [
+      -0.05201649241504536,
+      0.14543294778596547
+     ],
+     "construct_invalid": false
+    },
+    "d_erosion": {
+     "coef": -0.05217088929632901,
+     "ci95": [
+      -0.1511381213521832,
+      0.044404414717001496
+     ],
+     "construct_invalid": false
+    },
+    "d_log_n_high_cc": {
+     "coef": 0.07008051033155702,
+     "ci95": [
+      0.007019003606316211,
+      0.1390276939825864
+     ],
+     "construct_invalid": false
+    },
+    "d_clone_pct": {
+     "coef": -0.03785722887671174,
+     "ci95": [
+      -0.14634466176734764,
+      0.07126023847162996
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_coupling_model": {
+    "coupling": {
+     "coef": 3.8538113692732464e-05,
+     "ci95": [
+      -0.00010316853402402061,
+      0.00017843622230289115
+     ],
+     "construct_invalid": false
+    }
+   }
+  },
+  "o5a": {
+   "outcome": "o5a",
+   "n": 60,
+   "counts": {
+    "caddy": 14,
+    "fastapi": 2,
+    "junit5": 8,
+    "nest": 26,
+    "webpack": 10
+   },
+   "repos_ge10": [
+    "webpack",
+    "nest",
+    "caddy"
+   ],
+   "y_mean_by_repo": {
+    "caddy": 2.0018351332537416,
+    "fastapi": 1.8809419382019814,
+    "junit5": 2.1558324893812117,
+    "nest": 1.7597544287202642,
+    "webpack": 1.5568953235822756
+   },
+   "comparisons": {
+    "level": {
+     "name": "base vs base+level",
+     "added": [
+      "erosion",
+      "log_n_high_cc",
+      "clone_pct",
+      "hotspot"
+     ],
+     "mse_base": 0.5184837242608806,
+     "mse_model": 0.4973206301680408,
+     "rel_reduction": 0.0408172775780159,
+     "ci95": [
+      -0.09703314818217747,
+      0.14367623842831662
+     ],
+     "p_one_sided": 0.2868565717141429,
+     "per_repo": {
+      "fastapi": -0.7270886967266392,
+      "webpack": 0.0960226239131502,
+      "nest": -0.010581093338090541,
+      "caddy": 0.1868714825025788,
+      "junit5": 0.05240788220922121
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "degradation": {
+     "name": "base+level vs base+level+degradation",
+     "added": [
+      "d_erosion",
+      "d_log_n_high_cc",
+      "d_clone_pct"
+     ],
+     "mse_base": 0.4973206301680408,
+     "mse_model": 0.48674691167517053,
+     "rel_reduction": 0.021261371138570073,
+     "ci95": [
+      -0.06547206514217316,
+      0.14411383951862256
+     ],
+     "p_one_sided": 0.3268365817091454,
+     "per_repo": {
+      "fastapi": 0.28893937255824775,
+      "webpack": 0.2396969783239583,
+      "nest": -0.022935677574688063,
+      "caddy": -0.04598388476378257,
+      "junit5": -0.0011341594186731196
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.5184837242608806,
+     "mse_model": 0.5127589428718713,
+     "rel_reduction": 0.011041390734434775,
+     "ci95": [
+      -0.030979975842530795,
+      0.050270954340813516
+     ],
+     "p_one_sided": 0.28085957021489255,
+     "per_repo": {
+      "fastapi": -0.49203609961609884,
+      "webpack": 0.03324972655609826,
+      "nest": 0.0010832883890625755,
+      "caddy": 0.038926547688852065,
+      "junit5": 0.005873963203595678
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.5184837242608806,
+     "mse_model": 0.5120227234157202,
+     "rel_reduction": 0.012461337825735663,
+     "ci95": [
+      -0.023745288692709598,
+      0.057127444022547165
+     ],
+     "p_one_sided": 0.24437781109445278,
+     "per_repo": {
+      "fastapi": 0.828536052632673,
+      "webpack": 0.060398015965256624,
+      "nest": 0.01128271855494134,
+      "caddy": -0.05227457374069089,
+      "junit5": 0.0036922886186117054
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 3.1622776601683795
+    }
+   },
+   "mse_base": 0.5184837242608806,
+   "ablations": {
+    "erosion": {
+     "name": "base vs base+erosion",
+     "added": [
+      "erosion"
+     ],
+     "mse_base": 0.5184837242608806,
+     "mse_model": 0.5074093191147627,
+     "rel_reduction": 0.021359214625116585,
+     "ci95": [
+      -0.016018594027450532,
+      0.06697568570303336
+     ],
+     "p_one_sided": 0.12843578210894552,
+     "per_repo": {
+      "fastapi": 0.8957867673436868,
+      "webpack": 0.015673780586239916,
+      "nest": 0.007993475595513666,
+      "caddy": 0.06442724030374958,
+      "junit5": 0.0169240929317106
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 3.1622776601683795
+    },
+    "log_n_high_cc": {
+     "name": "base vs base+log_n_high_cc",
+     "added": [
+      "log_n_high_cc"
+     ],
+     "mse_base": 0.5184837242608806,
+     "mse_model": 0.5091426900077667,
+     "rel_reduction": 0.01801606070938866,
+     "ci95": [
+      -0.019800471114126472,
+      0.057110534964094066
+     ],
+     "p_one_sided": 0.15642178910544727,
+     "per_repo": {
+      "fastapi": -0.6632614287828662,
+      "webpack": 0.025768723809072136,
+      "nest": 0.007130038726173349,
+      "caddy": 0.06952304664090458,
+      "junit5": 0.01471422008101353
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 3.1622776601683795
+    },
+    "clone_pct": {
+     "name": "base vs base+clone_pct",
+     "added": [
+      "clone_pct"
+     ],
+     "mse_base": 0.5184837242608806,
+     "mse_model": 0.5111821517456684,
+     "rel_reduction": 0.014082549120748022,
+     "ci95": [
+      -0.13701969101625197,
+      0.13097858948153956
+     ],
+     "p_one_sided": 0.4362818590704648,
+     "per_repo": {
+      "fastapi": -0.8295209398984933,
+      "webpack": -0.008691211520456488,
+      "nest": -0.015813017046912625,
+      "caddy": 0.15853073634088444,
+      "junit5": 0.04169770840229492
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "hotspot": {
+     "name": "base vs base+hotspot",
+     "added": [
+      "hotspot"
+     ],
+     "mse_base": 0.5184837242608806,
+     "mse_model": 0.5179285846216084,
+     "rel_reduction": 0.0010706982944616028,
+     "ci95": [
+      -0.016167915442583135,
+      0.01453453122015408
+     ],
+     "p_one_sided": 0.43728135932033985,
+     "per_repo": {
+      "fastapi": 0.23871390237959544,
+      "webpack": -0.01907822952960969,
+      "nest": 0.0009097711671931519,
+      "caddy": 0.027715306412099516,
+      "junit5": -0.009023728195095782
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "d_erosion": {
+     "name": "base vs base+d_erosion",
+     "added": [
+      "d_erosion"
+     ],
+     "mse_base": 0.5184837242608806,
+     "mse_model": 0.5184567354111361,
+     "rel_reduction": 5.20534174587306e-05,
+     "ci95": [
+      -0.009827673598656356,
+      0.00973882015241739
+     ],
+     "p_one_sided": 0.4987506246876562,
+     "per_repo": {
+      "fastapi": -0.008737542769089668,
+      "webpack": 0.002545088943729845,
+      "nest": -0.0006325000446496531,
+      "caddy": 0.0017474293397851115,
+      "junit5": -0.002402784949910197
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "d_log_n_high_cc": {
+     "name": "base vs base+d_log_n_high_cc",
+     "added": [
+      "d_log_n_high_cc"
+     ],
+     "mse_base": 0.5184837242608806,
+     "mse_model": 0.5274013538161981,
+     "rel_reduction": -0.017199439708603936,
+     "ci95": [
+      -0.040179507997183325,
+      -0.003995650807624509
+     ],
+     "p_one_sided": 0.9955022488755623,
+     "per_repo": {
+      "fastapi": 0.007445331579651104,
+      "webpack": -0.03122009524331415,
+      "nest": 0.00016375877366803238,
+      "caddy": -0.08192282250098559,
+      "junit5": -0.00013002234346171093
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "d_clone_pct": {
+     "name": "base vs base+d_clone_pct",
+     "added": [
+      "d_clone_pct"
+     ],
+     "mse_base": 0.5184837242608806,
+     "mse_model": 0.5404416344014519,
+     "rel_reduction": -0.04235023996533949,
+     "ci95": [
+      -0.10904109797912126,
+      0.0091793085162986
+     ],
+     "p_one_sided": 0.9525237381309345,
+     "per_repo": {
+      "fastapi": -0.33581937421546204,
+      "webpack": -0.11529047330604558,
+      "nest": -0.03802656287365891,
+      "caddy": 0.061880021337647806,
+      "junit5": -0.08043795011832522
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.5184837242608806,
+     "mse_model": 0.5127589428718713,
+     "rel_reduction": 0.011041390734434775,
+     "ci95": [
+      -0.030979975842530795,
+      0.050270954340813516
+     ],
+     "p_one_sided": 0.28085957021489255,
+     "per_repo": {
+      "fastapi": -0.49203609961609884,
+      "webpack": 0.03324972655609826,
+      "nest": 0.0010832883890625755,
+      "caddy": 0.038926547688852065,
+      "junit5": 0.005873963203595678
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.5184837242608806,
+     "mse_model": 0.5120227234157202,
+     "rel_reduction": 0.012461337825735663,
+     "ci95": [
+      -0.023745288692709598,
+      0.057127444022547165
+     ],
+     "p_one_sided": 0.24437781109445278,
+     "per_repo": {
+      "fastapi": 0.828536052632673,
+      "webpack": 0.060398015965256624,
+      "nest": 0.01128271855494134,
+      "caddy": -0.05227457374069089,
+      "junit5": 0.0036922886186117054
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 3.1622776601683795
+    }
+   },
+   "coefs_level_model": {
+    "erosion": {
+     "coef": 0.04477854223565359,
+     "ci95": [
+      -0.013362224184772044,
+      0.11239364176956615
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": -0.022073928940130938,
+     "ci95": [
+      -0.07867335492646291,
+      0.037112602975386794
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": -0.0749005566897511,
+     "ci95": [
+      -0.1528163366433346,
+      0.013833391866622706
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 0.00501636503198353,
+     "ci95": [
+      -0.06548367667312209,
+      0.06721527826682032
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_full_model": {
+    "erosion": {
+     "coef": 0.05340258383122168,
+     "ci95": [
+      -0.00944235538438619,
+      0.11529012392007404
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": -0.031556810784951456,
+     "ci95": [
+      -0.08887865901195499,
+      0.027648827129610275
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": -0.0788190202055744,
+     "ci95": [
+      -0.15605176445697547,
+      0.012011129140302668
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 0.0012253092093905012,
+     "ci95": [
+      -0.07145996377722211,
+      0.06165224872949396
+     ],
+     "construct_invalid": false
+    },
+    "d_erosion": {
+     "coef": -0.01875090619788992,
+     "ci95": [
+      -0.11477734553664415,
+      0.058889751909646106
+     ],
+     "construct_invalid": false
+    },
+    "d_log_n_high_cc": {
+     "coef": 0.0074145092279822985,
+     "ci95": [
+      -0.04445156285919323,
+      0.063218340127508
+     ],
+     "construct_invalid": false
+    },
+    "d_clone_pct": {
+     "coef": 0.02957405479274911,
+     "ci95": [
+      -0.06641170178953008,
+      0.10593994048293251
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_coupling_model": {
+    "coupling": {
+     "coef": 0.05874876443999441,
+     "ci95": [
+      -0.117752418391883,
+      0.2177574442797386
+     ],
+     "construct_invalid": false
+    }
+   }
+  },
+  "o5b": {
+   "outcome": "o5b",
+   "n": 35,
+   "counts": {
+    "caddy": 11,
+    "fastapi": 2,
+    "junit5": 1,
+    "nest": 15,
+    "webpack": 6
+   },
+   "repos_ge10": [
+    "nest",
+    "caddy"
+   ],
+   "y_mean_by_repo": {
+    "caddy": 2.768167698829608,
+    "fastapi": 1.5921829830958498,
+    "junit5": 1.4094842423324914,
+    "nest": 2.606530808410931,
+    "webpack": 2.440406917924532
+   },
+   "comparisons": {
+    "level": {
+     "name": "base vs base+level",
+     "added": [
+      "erosion",
+      "log_n_high_cc",
+      "clone_pct",
+      "hotspot"
+     ],
+     "mse_base": 0.8846307054780969,
+     "mse_model": 0.9326774992200786,
+     "rel_reduction": -0.05431282618210154,
+     "ci95": [
+      -0.12971874061771263,
+      0.007659182930543728
+     ],
+     "p_one_sided": 0.9615192403798101,
+     "per_repo": {
+      "fastapi": 2.8639949783526575e-05,
+      "webpack": 0.002026423691445234,
+      "nest": 2.5864968993816184e-05,
+      "caddy": -0.13349138502300084,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "degradation": {
+     "name": "base+level vs base+level+degradation",
+     "added": [
+      "d_erosion",
+      "d_log_n_high_cc",
+      "d_clone_pct"
+     ],
+     "mse_base": 0.9326774992200786,
+     "mse_model": 0.9067442721177021,
+     "rel_reduction": 0.02780513856511202,
+     "ci95": [
+      -0.0037898796515370534,
+      0.06318169485135289
+     ],
+     "p_one_sided": 0.046476761619190406,
+     "per_repo": {
+      "fastapi": -3.820026364986795e-05,
+      "webpack": 0.00013973986520110504,
+      "nest": 0.0001017729555596869,
+      "caddy": 0.06276466987517104,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.8846307054780969,
+     "mse_model": 0.8841097927353596,
+     "rel_reduction": 0.0005888476847022428,
+     "ci95": [
+      -0.0016937237215244039,
+      0.0027187787257212295
+     ],
+     "p_one_sided": 0.3168415792103948,
+     "per_repo": {
+      "fastapi": -4.884107844826957e-07,
+      "webpack": 0.0020959358939470762,
+      "nest": -1.6972029182049653e-05,
+      "caddy": -1.984170176139166e-05,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.8846307054780969,
+     "mse_model": 0.8841264760715075,
+     "rel_reduction": 0.0005699885878558408,
+     "ci95": [
+      -0.0017067096559925,
+      0.002712051586911507
+     ],
+     "p_one_sided": 0.3258370814592704,
+     "per_repo": {
+      "fastapi": 8.754703405000619e-06,
+      "webpack": 0.0020900821439898687,
+      "nest": -9.497243339451344e-05,
+      "caddy": -2.6996875280849153e-05,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    }
+   },
+   "mse_base": 0.8846307054780969,
+   "ablations": {
+    "erosion": {
+     "name": "base vs base+erosion",
+     "added": [
+      "erosion"
+     ],
+     "mse_base": 0.8846307054780969,
+     "mse_model": 0.9067639623742595,
+     "rel_reduction": -0.025019770124529828,
+     "ci95": [
+      -0.06037751445649365,
+      0.011976641731647395
+     ],
+     "p_one_sided": 0.9145427286356822,
+     "per_repo": {
+      "fastapi": 2.4880679561856134e-05,
+      "webpack": 0.0021103813874969735,
+      "nest": 2.8632176563792022e-05,
+      "caddy": -0.062323462752343906,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "log_n_high_cc": {
+     "name": "base vs base+log_n_high_cc",
+     "added": [
+      "log_n_high_cc"
+     ],
+     "mse_base": 0.8846307054780969,
+     "mse_model": 0.9058708833005912,
+     "rel_reduction": -0.024010219960672874,
+     "ci95": [
+      -0.05313198404427553,
+      0.002336461632243351
+     ],
+     "p_one_sided": 0.960519740129935,
+     "per_repo": {
+      "fastapi": -1.175406986098082e-05,
+      "webpack": 0.002086662764025804,
+      "nest": -1.5928714438562253e-06,
+      "caddy": -0.059832103438087536,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "clone_pct": {
+     "name": "base vs base+clone_pct",
+     "added": [
+      "clone_pct"
+     ],
+     "mse_base": 0.8846307054780969,
+     "mse_model": 0.8841190555469481,
+     "rel_reduction": 0.000578376861644414,
+     "ci95": [
+      -0.0016943103608038856,
+      0.0026777298159232823
+     ],
+     "p_one_sided": 0.32083958020989506,
+     "per_repo": {
+      "fastapi": 2.7204708514805276e-06,
+      "webpack": 0.0020735391410073856,
+      "nest": -1.0980374823832406e-05,
+      "caddy": -3.301459597282452e-05,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "hotspot": {
+     "name": "base vs base+hotspot",
+     "added": [
+      "hotspot"
+     ],
+     "mse_base": 0.8846307054780969,
+     "mse_model": 0.9156836919103879,
+     "rel_reduction": -0.03510276801381029,
+     "ci95": [
+      -0.07433853785426618,
+      -0.0012785597667224597
+     ],
+     "p_one_sided": 0.9765117441279361,
+     "per_repo": {
+      "fastapi": 1.2789538484936358e-05,
+      "webpack": 0.002068977572060038,
+      "nest": 9.810926072106874e-06,
+      "caddy": -0.0868010472778542,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "d_erosion": {
+     "name": "base vs base+d_erosion",
+     "added": [
+      "d_erosion"
+     ],
+     "mse_base": 0.8846307054780969,
+     "mse_model": 0.8841434047483157,
+     "rel_reduction": 0.0005508521541967015,
+     "ci95": [
+      -0.014876266194723093,
+      0.023523482177936508
+     ],
+     "p_one_sided": 0.4917541229385307,
+     "per_repo": {
+      "fastapi": -0.0028331733997708497,
+      "webpack": 0.0007587899395780084,
+      "nest": 5.967813126017685e-05,
+      "caddy": 0.0012532011555863587,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 316.22776601683796
+    },
+    "d_log_n_high_cc": {
+     "name": "base vs base+d_log_n_high_cc",
+     "added": [
+      "d_log_n_high_cc"
+     ],
+     "mse_base": 0.8846307054780969,
+     "mse_model": 0.9327177295354259,
+     "rel_reduction": -0.0543583031422592,
+     "ci95": [
+      -0.17038232566661113,
+      0.024646333154117118
+     ],
+     "p_one_sided": 0.9045477261369316,
+     "per_repo": {
+      "fastapi": 0.022475985500636342,
+      "webpack": 0.0072458882552430826,
+      "nest": -0.3400907191518443,
+      "caddy": 0.016704478327702055,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "d_clone_pct": {
+     "name": "base vs base+d_clone_pct",
+     "added": [
+      "d_clone_pct"
+     ],
+     "mse_base": 0.8846307054780969,
+     "mse_model": 0.8841096972828074,
+     "rel_reduction": 0.0005889555857184758,
+     "ci95": [
+      -0.0016956758548294926,
+      0.002710119292974715
+     ],
+     "p_one_sided": 0.31434282858570717,
+     "per_repo": {
+      "fastapi": 1.1005442915879016e-05,
+      "webpack": 0.002106264753214404,
+      "nest": -4.904525842897023e-05,
+      "caddy": -1.3810637052191765e-05,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.8846307054780969,
+     "mse_model": 0.8841097927353596,
+     "rel_reduction": 0.0005888476847022428,
+     "ci95": [
+      -0.0016937237215244039,
+      0.0027187787257212295
+     ],
+     "p_one_sided": 0.3168415792103948,
+     "per_repo": {
+      "fastapi": -4.884107844826957e-07,
+      "webpack": 0.0020959358939470762,
+      "nest": -1.6972029182049653e-05,
+      "caddy": -1.984170176139166e-05,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.8846307054780969,
+     "mse_model": 0.8841264760715075,
+     "rel_reduction": 0.0005699885878558408,
+     "ci95": [
+      -0.0017067096559925,
+      0.002712051586911507
+     ],
+     "p_one_sided": 0.3258370814592704,
+     "per_repo": {
+      "fastapi": 8.754703405000619e-06,
+      "webpack": 0.0020900821439898687,
+      "nest": -9.497243339451344e-05,
+      "caddy": -2.6996875280849153e-05,
+      "junit5": 0.0
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 1,
+     "n_big": 2,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    }
+   },
+   "coefs_level_model": {
+    "erosion": {
+     "coef": 6.194189043029918e-05,
+     "ci95": [
+      -3.940781830214484e-05,
+      0.0001706502374472891
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": -2.2532640732024607e-05,
+     "ci95": [
+      -0.0001355489132582011,
+      7.762554808565674e-05
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": 1.0870493925609174e-05,
+     "ci95": [
+      -8.275810271304854e-05,
+      9.53689461495313e-05
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": -3.4052272758909214e-05,
+     "ci95": [
+      -0.00013257474654113677,
+      6.0106835702671856e-05
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_full_model": {
+    "erosion": {
+     "coef": 6.191002112972707e-05,
+     "ci95": [
+      -3.944823308895751e-05,
+      0.00017059262992090635
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": -2.25031590017436e-05,
+     "ci95": [
+      -0.0001355169138687119,
+      7.760952192255553e-05
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": 1.0895075509827783e-05,
+     "ci95": [
+      -8.269110659808417e-05,
+      9.538015211885709e-05
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": -3.402397007873624e-05,
+     "ci95": [
+      -0.0001325312355218871,
+      6.0105194927264456e-05
+     ],
+     "construct_invalid": false
+    },
+    "d_erosion": {
+     "coef": 0.00010893516622757543,
+     "ci95": [
+      5.2349799428617876e-06,
+      0.00022108947952196196
+     ],
+     "construct_invalid": true
+    },
+    "d_log_n_high_cc": {
+     "coef": -0.00012709443075558128,
+     "ci95": [
+      -0.00023465854868571397,
+      -2.9341940912586796e-05
+     ],
+     "construct_invalid": true
+    },
+    "d_clone_pct": {
+     "coef": 2.9974619494227378e-05,
+     "ci95": [
+      -5.268976924082408e-05,
+      0.00011858261073634264
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_coupling_model": {
+    "coupling": {
+     "coef": -3.4488092415351163e-06,
+     "ci95": [
+      -9.648005990502007e-05,
+      9.457333134310397e-05
+     ],
+     "construct_invalid": false
+    }
+   }
+  }
+ },
+ "file": {
+  "o1": {
+   "outcome": "o1",
+   "n": 103,
+   "counts": {
+    "caddy": 39,
+    "fastapi": 6,
+    "junit5": 4,
+    "nest": 43,
+    "webpack": 11
+   },
+   "repos_ge10": [
+    "webpack",
+    "nest",
+    "caddy"
+   ],
+   "y_mean_by_repo": {
+    "caddy": 2.296776929563644,
+    "fastapi": 1.8056628339683494,
+    "junit5": 2.634738163188747,
+    "nest": 2.0348427183839575,
+    "webpack": 2.4117641869254047
+   },
+   "comparisons": {
+    "level": {
+     "name": "base vs base+level",
+     "added": [
+      "erosion",
+      "log_n_high_cc",
+      "clone_pct",
+      "hotspot"
+     ],
+     "mse_base": 0.41520189654779227,
+     "mse_model": 0.43767904285450604,
+     "rel_reduction": -0.05413546155159854,
+     "ci95": [
+      -0.1233823632380942,
+      0.013835047037953099
+     ],
+     "p_one_sided": 0.9445277361319341,
+     "per_repo": {
+      "fastapi": 0.0009087517863735073,
+      "webpack": -0.1110570652508136,
+      "nest": 0.030777678578903678,
+      "caddy": -0.0478105876482493,
+      "junit5": -0.26178858012673634
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "degradation": {
+     "name": "base+level vs base+level+degradation",
+     "added": [
+      "d_erosion",
+      "d_log_n_high_cc",
+      "d_clone_pct"
+     ],
+     "mse_base": 0.43767904285450604,
+     "mse_model": 0.4488039540535721,
+     "rel_reduction": -0.025417966385848256,
+     "ci95": [
+      -0.07373264113831435,
+      0.024934853050472647
+     ],
+     "p_one_sided": 0.8375812093953023,
+     "per_repo": {
+      "fastapi": -0.17499176887725731,
+      "webpack": -7.293837421817884e-06,
+      "nest": -0.02960907177871608,
+      "caddy": -0.0054379623551530365,
+      "junit5": -0.05693699494575655
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 1000.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.41520189654779227,
+     "mse_model": 0.41719241800970275,
+     "rel_reduction": -0.004794104936563848,
+     "ci95": [
+      -0.037856949039500085,
+      0.02590821812288174
+     ],
+     "p_one_sided": 0.6146926536731634,
+     "per_repo": {
+      "fastapi": -0.11977231892502083,
+      "webpack": 0.007062961122926148,
+      "nest": -0.009676420885845971,
+      "caddy": -0.007992377804526107,
+      "junit5": 0.034087218302777944
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.41520189654779227,
+     "mse_model": 0.4030154458267871,
+     "rel_reduction": 0.02935066246645246,
+     "ci95": [
+      -0.02609410154117215,
+      0.08021138411388193
+     ],
+     "p_one_sided": 0.13193403298350825,
+     "per_repo": {
+      "fastapi": 0.13798393318647317,
+      "webpack": 0.09459996515018798,
+      "nest": -0.018910972563448647,
+      "caddy": 0.004660819867272736,
+      "junit5": 0.0815040485506755
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    }
+   },
+   "mse_base": 0.41520189654779227,
+   "ablations": {
+    "erosion": {
+     "name": "base vs base+erosion",
+     "added": [
+      "erosion"
+     ],
+     "mse_base": 0.41520189654779227,
+     "mse_model": 0.4153242703168607,
+     "rel_reduction": -0.0002947331649636453,
+     "ci95": [
+      -0.017105181954407238,
+      0.012889036580972076
+     ],
+     "p_one_sided": 0.496751624187906,
+     "per_repo": {
+      "fastapi": -0.01108522703882131,
+      "webpack": 0.014119723967191189,
+      "nest": 0.015173057190972061,
+      "caddy": 0.01447284158367479,
+      "junit5": -0.11174487599763472
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "log_n_high_cc": {
+     "name": "base vs base+log_n_high_cc",
+     "added": [
+      "log_n_high_cc"
+     ],
+     "mse_base": 0.41520189654779227,
+     "mse_model": 0.4161254239145835,
+     "rel_reduction": -0.00222428503932659,
+     "ci95": [
+      -0.027174059638925684,
+      0.016274289318564276
+     ],
+     "p_one_sided": 0.5832083958020989,
+     "per_repo": {
+      "fastapi": 0.020369961856756547,
+      "webpack": 0.016234399876582817,
+      "nest": 0.018752565640204777,
+      "caddy": 0.01883727582313144,
+      "junit5": -0.16610372008867746
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "clone_pct": {
+     "name": "base vs base+clone_pct",
+     "added": [
+      "clone_pct"
+     ],
+     "mse_base": 0.41520189654779227,
+     "mse_model": 0.43251213422078516,
+     "rel_reduction": -0.04169113343874242,
+     "ci95": [
+      -0.07559279098885159,
+      -0.01558572623230019
+     ],
+     "p_one_sided": 0.999000499750125,
+     "per_repo": {
+      "fastapi": -0.026332687999894855,
+      "webpack": -0.111062198220927,
+      "nest": 0.013002790465775016,
+      "caddy": 0.0024813337137002955,
+      "junit5": -0.19343275002837457
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "hotspot": {
+     "name": "base vs base+hotspot",
+     "added": [
+      "hotspot"
+     ],
+     "mse_base": 0.41520189654779227,
+     "mse_model": 0.4154634999240391,
+     "rel_reduction": -0.0006300630570859056,
+     "ci95": [
+      -0.027791325558716017,
+      0.027170656841361003
+     ],
+     "p_one_sided": 0.5377311344327836,
+     "per_repo": {
+      "fastapi": -0.006609756359617691,
+      "webpack": 0.04789112019479447,
+      "nest": 0.0123649030861267,
+      "caddy": -0.032315004335345066,
+      "junit5": -0.06895269096064216
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "d_erosion": {
+     "name": "base vs base+d_erosion",
+     "added": [
+      "d_erosion"
+     ],
+     "mse_base": 0.41520189654779227,
+     "mse_model": 0.4264502291291208,
+     "rel_reduction": -0.027091236034452404,
+     "ci95": [
+      -0.045594641669415986,
+      -0.012886081063226107
+     ],
+     "p_one_sided": 1.0,
+     "per_repo": {
+      "fastapi": -0.05148874294025174,
+      "webpack": -0.09318009467800259,
+      "nest": -0.0007481479055262419,
+      "caddy": -0.01097532493894926,
+      "junit5": -0.01198046389902796
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "d_log_n_high_cc": {
+     "name": "base vs base+d_log_n_high_cc",
+     "added": [
+      "d_log_n_high_cc"
+     ],
+     "mse_base": 0.41520189654779227,
+     "mse_model": 0.42192251192024494,
+     "rel_reduction": -0.016186379273147367,
+     "ci95": [
+      -0.03310944329035489,
+      -0.0027941218617660085
+     ],
+     "p_one_sided": 0.9880059970014993,
+     "per_repo": {
+      "fastapi": -0.05271209842752178,
+      "webpack": -0.01179446178693544,
+      "nest": -0.010263698553701683,
+      "caddy": -0.03169219805470336,
+      "junit5": 0.0021900621787120933
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "d_clone_pct": {
+     "name": "base vs base+d_clone_pct",
+     "added": [
+      "d_clone_pct"
+     ],
+     "mse_base": 0.41520189654779227,
+     "mse_model": 0.4267535738395716,
+     "rel_reduction": -0.027821831710852063,
+     "ci95": [
+      -0.10047624551979217,
+      0.04377516439111183
+     ],
+     "p_one_sided": 0.7791104447776112,
+     "per_repo": {
+      "fastapi": -0.13828035016618045,
+      "webpack": -0.05585439578308926,
+      "nest": 0.02868686606751325,
+      "caddy": -0.09712533475685814,
+      "junit5": 0.030058403285090463
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.41520189654779227,
+     "mse_model": 0.41719241800970275,
+     "rel_reduction": -0.004794104936563848,
+     "ci95": [
+      -0.037856949039500085,
+      0.02590821812288174
+     ],
+     "p_one_sided": 0.6146926536731634,
+     "per_repo": {
+      "fastapi": -0.11977231892502083,
+      "webpack": 0.007062961122926148,
+      "nest": -0.009676420885845971,
+      "caddy": -0.007992377804526107,
+      "junit5": 0.034087218302777944
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.41520189654779227,
+     "mse_model": 0.4030154458267871,
+     "rel_reduction": 0.02935066246645246,
+     "ci95": [
+      -0.02609410154117215,
+      0.08021138411388193
+     ],
+     "p_one_sided": 0.13193403298350825,
+     "per_repo": {
+      "fastapi": 0.13798393318647317,
+      "webpack": 0.09459996515018798,
+      "nest": -0.018910972563448647,
+      "caddy": 0.004660819867272736,
+      "junit5": 0.0815040485506755
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    }
+   },
+   "coefs_level_model": {
+    "erosion": {
+     "coef": -0.0178752424797228,
+     "ci95": [
+      -0.0539427006600384,
+      0.01858215837033985
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 0.025785477070615008,
+     "ci95": [
+      -0.008255991809708495,
+      0.059273949785126366
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": 0.025088641285277057,
+     "ci95": [
+      -0.034177303350063394,
+      0.08124858380856866
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 0.014688380665857719,
+     "ci95": [
+      -0.028447475817663225,
+      0.055615917541211826
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_full_model": {
+    "erosion": {
+     "coef": -0.005187578476999437,
+     "ci95": [
+      -0.012457310834942675,
+      0.0020512040446741906
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 0.0049374567716190705,
+     "ci95": [
+      -0.0018895199509149222,
+      0.011659675638289173
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": 0.005458053524727111,
+     "ci95": [
+      -0.006142807997492702,
+      0.019095105223154205
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 0.0022678530296030954,
+     "ci95": [
+      -0.006430070093120771,
+      0.012401629760623725
+     ],
+     "construct_invalid": false
+    },
+    "d_erosion": {
+     "coef": 0.00184584813514437,
+     "ci95": [
+      -0.005467491613031232,
+      0.009215698491847276
+     ],
+     "construct_invalid": false
+    },
+    "d_log_n_high_cc": {
+     "coef": -0.0015341242753894161,
+     "ci95": [
+      -0.00782032310173371,
+      0.005412625524184618
+     ],
+     "construct_invalid": false
+    },
+    "d_clone_pct": {
+     "coef": 0.005613403796883373,
+     "ci95": [
+      -0.0054482319719442555,
+      0.015392599701469502
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_coupling_model": {
+    "coupling": {
+     "coef": -0.03307484314999501,
+     "ci95": [
+      -0.0920990196905979,
+      0.02198559179763653
+     ],
+     "construct_invalid": false
+    }
+   }
+  },
+  "o2": {
+   "outcome": "o2",
+   "n": 103,
+   "counts": {
+    "caddy": 39,
+    "fastapi": 6,
+    "junit5": 4,
+    "nest": 43,
+    "webpack": 11
+   },
+   "repos_ge10": [
+    "webpack",
+    "nest",
+    "caddy"
+   ],
+   "y_mean_by_repo": {
+    "caddy": 1.2518185674340083,
+    "fastapi": 0.9215715145852372,
+    "junit5": 0.9678002527269728,
+    "nest": 1.3272421051558771,
+    "webpack": 1.0797789616871034
+   },
+   "comparisons": {
+    "level": {
+     "name": "base vs base+level",
+     "added": [
+      "erosion",
+      "log_n_high_cc",
+      "clone_pct",
+      "hotspot"
+     ],
+     "mse_base": 0.20812507328227325,
+     "mse_model": 0.2092089673386002,
+     "rel_reduction": -0.005207897536001704,
+     "ci95": [
+      -0.028673257438253885,
+      0.017935904637314395
+     ],
+     "p_one_sided": 0.68015992003998,
+     "per_repo": {
+      "fastapi": 0.004263390347485574,
+      "webpack": 0.04322352019863451,
+      "nest": -0.013397139850556128,
+      "caddy": -0.00950760143088658,
+      "junit5": -0.11236929449791733
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "degradation": {
+     "name": "base+level vs base+level+degradation",
+     "added": [
+      "d_erosion",
+      "d_log_n_high_cc",
+      "d_clone_pct"
+     ],
+     "mse_base": 0.2092089673386002,
+     "mse_model": 0.21195171742790608,
+     "rel_reduction": -0.013110098119583968,
+     "ci95": [
+      -0.05135905378753008,
+      0.02196046213446417
+     ],
+     "p_one_sided": 0.7721139430284858,
+     "per_repo": {
+      "fastapi": 0.0931446665589275,
+      "webpack": -0.08018074356786031,
+      "nest": -0.0008706461718861469,
+      "caddy": -7.791567373960362e-05,
+      "junit5": -0.24429303578306083
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.20812507328227325,
+     "mse_model": 0.20882967595789134,
+     "rel_reduction": -0.0033854771292378683,
+     "ci95": [
+      -0.037664910296494665,
+      0.026026822889687943
+     ],
+     "p_one_sided": 0.5817091454272864,
+     "per_repo": {
+      "fastapi": -0.08797157429143732,
+      "webpack": -0.11202490329633141,
+      "nest": 0.014175326404533561,
+      "caddy": 0.039819697331580306,
+      "junit5": 0.01915557760781328
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.20812507328227325,
+     "mse_model": 0.20055784408063132,
+     "rel_reduction": 0.03635904642483301,
+     "ci95": [
+      0.007729152991944358,
+      0.06311933044000725
+     ],
+     "p_one_sided": 0.010994502748625687,
+     "per_repo": {
+      "fastapi": -0.022432789467971004,
+      "webpack": 0.09223490817674884,
+      "nest": 0.031128525107959826,
+      "caddy": 0.02853886319927379,
+      "junit5": 0.007408885908627649
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    }
+   },
+   "mse_base": 0.20812507328227325,
+   "ablations": {
+    "erosion": {
+     "name": "base vs base+erosion",
+     "added": [
+      "erosion"
+     ],
+     "mse_base": 0.20812507328227325,
+     "mse_model": 0.20886063569313393,
+     "rel_reduction": -0.0035342325615090875,
+     "ci95": [
+      -0.012283746359546937,
+      0.005439031704985464
+     ],
+     "p_one_sided": 0.7781109445277361,
+     "per_repo": {
+      "fastapi": -0.002010168013122593,
+      "webpack": 0.007728767382638502,
+      "nest": -0.0032586748141334443,
+      "caddy": -0.006009641242414654,
+      "junit5": -0.06211864430890501
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 1.0
+    },
+    "log_n_high_cc": {
+     "name": "base vs base+log_n_high_cc",
+     "added": [
+      "log_n_high_cc"
+     ],
+     "mse_base": 0.20812507328227325,
+     "mse_model": 0.2080278416282941,
+     "rel_reduction": 0.00046717895372117013,
+     "ci95": [
+      -0.0041786698642865775,
+      0.005413899374113038
+     ],
+     "p_one_sided": 0.4407796101949025,
+     "per_repo": {
+      "fastapi": 0.015939121866239025,
+      "webpack": 0.010795976989780187,
+      "nest": -0.001605856662923122,
+      "caddy": 0.0002513043896485989,
+      "junit5": -0.054031223264045636
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 3.1622776601683795
+    },
+    "clone_pct": {
+     "name": "base vs base+clone_pct",
+     "added": [
+      "clone_pct"
+     ],
+     "mse_base": 0.20812507328227325,
+     "mse_model": 0.2106371563054029,
+     "rel_reduction": -0.012070064329647412,
+     "ci95": [
+      -0.02239142805100216,
+      -0.00189157279828583
+     ],
+     "p_one_sided": 0.9860069965017492,
+     "per_repo": {
+      "fastapi": -0.009971469863645055,
+      "webpack": -0.014746621547266248,
+      "nest": -0.013275054574798828,
+      "caddy": -0.009520201485775814,
+      "junit5": 0.0008696524010342044
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 1.0
+    },
+    "hotspot": {
+     "name": "base vs base+hotspot",
+     "added": [
+      "hotspot"
+     ],
+     "mse_base": 0.20812507328227325,
+     "mse_model": 0.20981663201515677,
+     "rel_reduction": -0.008127606665580878,
+     "ci95": [
+      -0.02043806880333852,
+      0.003656090739163616
+     ],
+     "p_one_sided": 0.9180409795102449,
+     "per_repo": {
+      "fastapi": 0.005317550750089994,
+      "webpack": 0.006517944241900664,
+      "nest": -0.012907995591464383,
+      "caddy": -0.009519265113948183,
+      "junit5": -0.009046538755227429
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 10.0
+    },
+    "d_erosion": {
+     "name": "base vs base+d_erosion",
+     "added": [
+      "d_erosion"
+     ],
+     "mse_base": 0.20812507328227325,
+     "mse_model": 0.20994654459301162,
+     "rel_reduction": -0.00875181102407585,
+     "ci95": [
+      -0.025231211876164294,
+      0.007455057165640927
+     ],
+     "p_one_sided": 0.8525737131434283,
+     "per_repo": {
+      "fastapi": 0.031721739717208375,
+      "webpack": -0.018272624082983357,
+      "nest": -0.013680230849062225,
+      "caddy": 0.001108131351340691,
+      "junit5": -0.03350316815376653
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 3.1622776601683795
+    },
+    "d_log_n_high_cc": {
+     "name": "base vs base+d_log_n_high_cc",
+     "added": [
+      "d_log_n_high_cc"
+     ],
+     "mse_base": 0.20812507328227325,
+     "mse_model": 0.21517166478535107,
+     "rel_reduction": -0.03385748479002704,
+     "ci95": [
+      -0.07717119442332249,
+      0.006939968916876319
+     ],
+     "p_one_sided": 0.9440279860069966,
+     "per_repo": {
+      "fastapi": 0.09081596720245477,
+      "webpack": -0.15757334589225303,
+      "nest": -0.014250187419263094,
+      "caddy": -0.0077160062435350785,
+      "junit5": -0.25032301881071484
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 316.22776601683796
+    },
+    "d_clone_pct": {
+     "name": "base vs base+d_clone_pct",
+     "added": [
+      "d_clone_pct"
+     ],
+     "mse_base": 0.20812507328227325,
+     "mse_model": 0.2111983236653762,
+     "rel_reduction": -0.01476636300776124,
+     "ci95": [
+      -0.043476762858786704,
+      0.013824744861982917
+     ],
+     "p_one_sided": 0.8430784607696152,
+     "per_repo": {
+      "fastapi": 0.05437634282188708,
+      "webpack": -0.04732857461754447,
+      "nest": -0.014252165451542842,
+      "caddy": -0.00015738790606323327,
+      "junit5": -0.13405170173085423
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.20812507328227325,
+     "mse_model": 0.20882967595789134,
+     "rel_reduction": -0.0033854771292378683,
+     "ci95": [
+      -0.037664910296494665,
+      0.026026822889687943
+     ],
+     "p_one_sided": 0.5817091454272864,
+     "per_repo": {
+      "fastapi": -0.08797157429143732,
+      "webpack": -0.11202490329633141,
+      "nest": 0.014175326404533561,
+      "caddy": 0.039819697331580306,
+      "junit5": 0.01915557760781328
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.20812507328227325,
+     "mse_model": 0.20055784408063132,
+     "rel_reduction": 0.03635904642483301,
+     "ci95": [
+      0.007729152991944358,
+      0.06311933044000725
+     ],
+     "p_one_sided": 0.010994502748625687,
+     "per_repo": {
+      "fastapi": -0.022432789467971004,
+      "webpack": 0.09223490817674884,
+      "nest": 0.031128525107959826,
+      "caddy": 0.02853886319927379,
+      "junit5": 0.007408885908627649
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 31.622776601683793
+    }
+   },
+   "coefs_level_model": {
+    "erosion": {
+     "coef": -0.03224182634126444,
+     "ci95": [
+      -0.07908569797694501,
+      0.018021312964411257
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 0.002657463182747068,
+     "ci95": [
+      -0.04232393534559165,
+      0.04201710762660922
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": -0.005652238487684267,
+     "ci95": [
+      -0.048299927144694596,
+      0.033869443343312294
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": -0.022114031929466073,
+     "ci95": [
+      -0.07641860315308481,
+      0.03858678689667751
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_full_model": {
+    "erosion": {
+     "coef": -3.7880507740628035e-05,
+     "ci95": [
+      -9.521584434471286e-05,
+      2.0499145829139598e-05
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 2.1756902522636774e-05,
+     "ci95": [
+      -3.5878861414971835e-05,
+      7.388186516858426e-05
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": -1.844270496803317e-06,
+     "ci95": [
+      -5.3132450755627084e-05,
+      4.089681656471955e-05
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": -4.038479590169957e-06,
+     "ci95": [
+      -6.622116437610814e-05,
+      5.7205386029854464e-05
+     ],
+     "construct_invalid": false
+    },
+    "d_erosion": {
+     "coef": 6.347777500008875e-05,
+     "ci95": [
+      -7.191268713811607e-06,
+      0.00015190758198840612
+     ],
+     "construct_invalid": false
+    },
+    "d_log_n_high_cc": {
+     "coef": -4.587175104115142e-05,
+     "ci95": [
+      -0.0001381346261072165,
+      2.414820702402251e-05
+     ],
+     "construct_invalid": false
+    },
+    "d_clone_pct": {
+     "coef": -3.281203047622996e-05,
+     "ci95": [
+      -7.850300216639006e-05,
+      2.288893101390162e-05
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_coupling_model": {
+    "coupling": {
+     "coef": 0.07950166529059458,
+     "ci95": [
+      0.031673473020128316,
+      0.12867530539301583
+     ],
+     "construct_invalid": false
+    }
+   }
+  },
+  "o3": {
+   "outcome": "o3",
+   "n": 103,
+   "counts": {
+    "caddy": 39,
+    "fastapi": 6,
+    "junit5": 4,
+    "nest": 43,
+    "webpack": 11
+   },
+   "repos_ge10": [
+    "webpack",
+    "nest",
+    "caddy"
+   ],
+   "y_mean_by_repo": {
+    "caddy": 0.27743704545919357,
+    "fastapi": 0.4090909090909091,
+    "junit5": 0.640032679738562,
+    "nest": 0.4255147452717785,
+    "webpack": 0.5957431457431457
+   },
+   "comparisons": {
+    "level": {
+     "name": "base vs base+level",
+     "added": [
+      "erosion",
+      "log_n_high_cc",
+      "clone_pct",
+      "hotspot"
+     ],
+     "mse_base": 0.0608884021596835,
+     "mse_model": 0.06204847708295746,
+     "rel_reduction": -0.019052477682557578,
+     "ci95": [
+      -0.07457564390904439,
+      0.013317895613987052
+     ],
+     "p_one_sided": 0.7511244377811095,
+     "per_repo": {
+      "fastapi": -0.00016827565035226755,
+      "webpack": 2.2648344989439906e-05,
+      "nest": -0.04959275802315788,
+      "caddy": -5.188550387114077e-07,
+      "junit5": -6.349289708817984e-05
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "degradation": {
+     "name": "base+level vs base+level+degradation",
+     "added": [
+      "d_erosion",
+      "d_log_n_high_cc",
+      "d_clone_pct"
+     ],
+     "mse_base": 0.06204847708295746,
+     "mse_model": 0.059558764628270984,
+     "rel_reduction": 0.04012527900334739,
+     "ci95": [
+      -0.005095167276318052,
+      0.10698241510186705
+     ],
+     "p_one_sided": 0.054972513743128434,
+     "per_repo": {
+      "fastapi": 0.009339471355130358,
+      "webpack": 8.261970956935372e-06,
+      "nest": 0.10024449022060544,
+      "caddy": 0.0006091437140106626,
+      "junit5": 0.0018791435872844708
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 3162.2776601683795
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.0608884021596835,
+     "mse_model": 0.06050655213225583,
+     "rel_reduction": 0.006271309705684902,
+     "ci95": [
+      -0.022964704820287195,
+      0.0360213392920594
+     ],
+     "p_one_sided": 0.3488255872063968,
+     "per_repo": {
+      "fastapi": 3.754542065026456e-06,
+      "webpack": 2.7627138646790783e-05,
+      "nest": 0.016302642613174156,
+      "caddy": 9.496765919769778e-06,
+      "junit5": 2.3384009224636237e-05
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.0608884021596835,
+     "mse_model": 0.061936972754280444,
+     "rel_reduction": -0.01722118757274993,
+     "ci95": [
+      -0.06433395282155352,
+      0.029127325178417467
+     ],
+     "p_one_sided": 0.7636181909045477,
+     "per_repo": {
+      "fastapi": -0.00027973011489490496,
+      "webpack": 8.42043659909919e-06,
+      "nest": -0.04482067511075449,
+      "caddy": -1.0466013826926357e-05,
+      "junit5": 1.0869976281746574e-05
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    }
+   },
+   "mse_base": 0.0608884021596835,
+   "ablations": {
+    "erosion": {
+     "name": "base vs base+erosion",
+     "added": [
+      "erosion"
+     ],
+     "mse_base": 0.0608884021596835,
+     "mse_model": 0.06198377209807731,
+     "rel_reduction": -0.017989796078424547,
+     "ci95": [
+      -0.06551190807417823,
+      0.00897416969739177
+     ],
+     "p_one_sided": 0.7706146926536732,
+     "per_repo": {
+      "fastapi": -4.103114878972747e-06,
+      "webpack": -9.397449178827344e-06,
+      "nest": -0.04682152072857426,
+      "caddy": -7.863500541827051e-06,
+      "junit5": -1.0255861663699406e-05
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "log_n_high_cc": {
+     "name": "base vs base+log_n_high_cc",
+     "added": [
+      "log_n_high_cc"
+     ],
+     "mse_base": 0.0608884021596835,
+     "mse_model": 0.0614060777823109,
+     "rel_reduction": -0.008502039867457345,
+     "ci95": [
+      -0.030366845709269202,
+      0.006584414521335369
+     ],
+     "p_one_sided": 0.8105947026486756,
+     "per_repo": {
+      "fastapi": -7.893356630361836e-05,
+      "webpack": 2.2133660047551906e-05,
+      "nest": -0.022134723075765805,
+      "caddy": 5.9181845466493854e-06,
+      "junit5": -6.173755943916781e-05
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "clone_pct": {
+     "name": "base vs base+clone_pct",
+     "added": [
+      "clone_pct"
+     ],
+     "mse_base": 0.0608884021596835,
+     "mse_model": 0.06148362434197252,
+     "rel_reduction": -0.009775624933103355,
+     "ci95": [
+      -0.03630707121498466,
+      0.009833443535397128
+     ],
+     "p_one_sided": 0.7926036981509246,
+     "per_repo": {
+      "fastapi": 1.3720554093432646e-05,
+      "webpack": 5.9362988912292636e-06,
+      "nest": -0.025455864792921945,
+      "caddy": -1.9195561584695042e-08,
+      "junit5": 1.7530349075700613e-05
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "hotspot": {
+     "name": "base vs base+hotspot",
+     "added": [
+      "hotspot"
+     ],
+     "mse_base": 0.0608884021596835,
+     "mse_model": 0.06148348346271009,
+     "rel_reduction": -0.009773311204093638,
+     "ci95": [
+      -0.04429855415522192,
+      0.017452200499533742
+     ],
+     "p_one_sided": 0.6986506746626686,
+     "per_repo": {
+      "fastapi": -9.916291229394858e-05,
+      "webpack": 3.9675173021391785e-06,
+      "nest": -0.025442531737756235,
+      "caddy": 1.4459314046089133e-06,
+      "junit5": -9.167118678599095e-06
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "d_erosion": {
+     "name": "base vs base+d_erosion",
+     "added": [
+      "d_erosion"
+     ],
+     "mse_base": 0.0608884021596835,
+     "mse_model": 0.06053613169420788,
+     "rel_reduction": 0.005785510096845137,
+     "ci95": [
+      -0.008789776661688647,
+      0.027345317719966903
+     ],
+     "p_one_sided": 0.29985007496251875,
+     "per_repo": {
+      "fastapi": 0.00021415778883060455,
+      "webpack": -1.5327768179140833e-05,
+      "nest": 0.015042311297881694,
+      "caddy": 1.034771162555792e-05,
+      "junit5": 4.715076250350059e-05
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "d_log_n_high_cc": {
+     "name": "base vs base+d_log_n_high_cc",
+     "added": [
+      "d_log_n_high_cc"
+     ],
+     "mse_base": 0.0608884021596835,
+     "mse_model": 0.06098510533992219,
+     "rel_reduction": -0.0015882036119962972,
+     "ci95": [
+      -0.00750404869038499,
+      0.0018435314132872827
+     ],
+     "p_one_sided": 0.6701649175412294,
+     "per_repo": {
+      "fastapi": 4.871883093349183e-05,
+      "webpack": -8.737893660848428e-06,
+      "nest": -0.004129641330325118,
+      "caddy": -3.2155268263611703e-06,
+      "junit5": 7.565488235883322e-10
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "d_clone_pct": {
+     "name": "base vs base+d_clone_pct",
+     "added": [
+      "d_clone_pct"
+     ],
+     "mse_base": 0.0608884021596835,
+     "mse_model": 0.0604983428587219,
+     "rel_reduction": 0.006406134618849757,
+     "ci95": [
+      -0.023213424515368113,
+      0.04484221616407919
+     ],
+     "p_one_sided": 0.3873063468265867,
+     "per_repo": {
+      "fastapi": 0.006354035247524759,
+      "webpack": 3.240637225265797e-05,
+      "nest": 0.015612938928720732,
+      "caddy": 0.00047399445337070745,
+      "junit5": 0.0020899954796114173
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 3162.2776601683795
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.0608884021596835,
+     "mse_model": 0.06050655213225583,
+     "rel_reduction": 0.006271309705684902,
+     "ci95": [
+      -0.022964704820287195,
+      0.0360213392920594
+     ],
+     "p_one_sided": 0.3488255872063968,
+     "per_repo": {
+      "fastapi": 3.754542065026456e-06,
+      "webpack": 2.7627138646790783e-05,
+      "nest": 0.016302642613174156,
+      "caddy": 9.496765919769778e-06,
+      "junit5": 2.3384009224636237e-05
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.0608884021596835,
+     "mse_model": 0.061936972754280444,
+     "rel_reduction": -0.01722118757274993,
+     "ci95": [
+      -0.06433395282155352,
+      0.029127325178417467
+     ],
+     "p_one_sided": 0.7636181909045477,
+     "per_repo": {
+      "fastapi": -0.00027973011489490496,
+      "webpack": 8.42043659909919e-06,
+      "nest": -0.04482067511075449,
+      "caddy": -1.0466013826926357e-05,
+      "junit5": 1.0869976281746574e-05
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    }
+   },
+   "coefs_level_model": {
+    "erosion": {
+     "coef": 1.3785238681533947e-06,
+     "ci95": [
+      -4.0872821693460904e-05,
+      3.740572542076854e-05
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 1.961310439435424e-05,
+     "ci95": [
+      -1.4892115197884147e-05,
+      6.078653116814024e-05
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": -1.2695135020212517e-05,
+     "ci95": [
+      -4.828862715192516e-05,
+      1.9920299370630888e-05
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 8.6833941975647e-06,
+     "ci95": [
+      -2.7992491314975116e-05,
+      4.904253794742865e-05
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_full_model": {
+    "erosion": {
+     "coef": 9.180786127459953e-05,
+     "ci95": [
+      -0.001013828327549992,
+      0.0011469505771129838
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 0.0005538720694667951,
+     "ci95": [
+      -0.00044238136552667907,
+      0.001605902614237029
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": -0.0004157426214224217,
+     "ci95": [
+      -0.0014396920363585557,
+      0.0005063931564272293
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 0.0002125068820629824,
+     "ci95": [
+      -0.0008299501021896014,
+      0.0012717958453000873
+     ],
+     "construct_invalid": false
+    },
+    "d_erosion": {
+     "coef": -0.0007221475413725994,
+     "ci95": [
+      -0.0018111670233225796,
+      0.00024239756615368325
+     ],
+     "construct_invalid": false
+    },
+    "d_log_n_high_cc": {
+     "coef": 0.00020980000164689717,
+     "ci95": [
+      -0.0008170021462674017,
+      0.0013232850569276017
+     ],
+     "construct_invalid": false
+    },
+    "d_clone_pct": {
+     "coef": 0.0009633804812852867,
+     "ci95": [
+      5.439504374027714e-05,
+      0.0019568995615822527
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_coupling_model": {
+    "coupling": {
+     "coef": -2.312413637077904e-05,
+     "ci95": [
+      -6.834262564030592e-05,
+      2.0404924465158196e-05
+     ],
+     "construct_invalid": false
+    }
+   }
+  },
+  "o5a": {
+   "outcome": "o5a",
+   "n": 103,
+   "counts": {
+    "caddy": 39,
+    "fastapi": 6,
+    "junit5": 4,
+    "nest": 43,
+    "webpack": 11
+   },
+   "repos_ge10": [
+    "webpack",
+    "nest",
+    "caddy"
+   ],
+   "y_mean_by_repo": {
+    "caddy": 1.890069369736462,
+    "fastapi": 1.306062504756876,
+    "junit5": 1.56485293029598,
+    "nest": 1.630022637626138,
+    "webpack": 1.3113030012706366
+   },
+   "comparisons": {
+    "level": {
+     "name": "base vs base+level",
+     "added": [
+      "erosion",
+      "log_n_high_cc",
+      "clone_pct",
+      "hotspot"
+     ],
+     "mse_base": 0.43321483529776544,
+     "mse_model": 0.4076003884538149,
+     "rel_reduction": 0.05912643048418398,
+     "ci95": [
+      0.016618956572100975,
+      0.11230264105062453
+     ],
+     "p_one_sided": 0.00399800099950025,
+     "per_repo": {
+      "fastapi": -2.2504013837520986e-05,
+      "webpack": -1.4468697784320028e-06,
+      "nest": -1.0645000178666209e-05,
+      "caddy": 0.13092838325737932,
+      "junit5": -0.00014057732585448512
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "degradation": {
+     "name": "base+level vs base+level+degradation",
+     "added": [
+      "d_erosion",
+      "d_log_n_high_cc",
+      "d_clone_pct"
+     ],
+     "mse_base": 0.4076003884538149,
+     "mse_model": 0.4185520852027825,
+     "rel_reduction": -0.026868710283892483,
+     "ci95": [
+      -0.061359738437482915,
+      -0.006513876430494537
+     ],
+     "p_one_sided": 0.9995002498750625,
+     "per_repo": {
+      "fastapi": -3.842995423286588e-05,
+      "webpack": -4.5406771594258544e-05,
+      "nest": -6.618704436078815e-06,
+      "caddy": -0.06437049198505318,
+      "junit5": -0.00010062085165429835
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.43321483529776544,
+     "mse_model": 0.4328759093968867,
+     "rel_reduction": 0.0007823506335967734,
+     "ci95": [
+      -0.008778151755933994,
+      0.00937520958332868
+     ],
+     "p_one_sided": 0.4052973513243378,
+     "per_repo": {
+      "fastapi": -3.5609291120231035e-06,
+      "webpack": 8.234745629831508e-06,
+      "nest": 8.08942668406587e-09,
+      "caddy": 0.0017382511373316145,
+      "junit5": -7.434839056030818e-05
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.43321483529776544,
+     "mse_model": 0.43126309072098584,
+     "rel_reduction": 0.0045052579407584,
+     "ci95": [
+      -0.010730245123971416,
+      0.019168481187757908
+     ],
+     "p_one_sided": 0.2843578210894553,
+     "per_repo": {
+      "fastapi": 7.718194679617874e-05,
+      "webpack": 4.296464055353333e-05,
+      "nest": 1.237263536935096e-05,
+      "caddy": 0.009963786090812166,
+      "junit5": -0.0001543445091396478
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    }
+   },
+   "mse_base": 0.43321483529776544,
+   "ablations": {
+    "erosion": {
+     "name": "base vs base+erosion",
+     "added": [
+      "erosion"
+     ],
+     "mse_base": 0.43321483529776544,
+     "mse_model": 0.41994218915237974,
+     "rel_reduction": 0.030637561468232932,
+     "ci95": [
+      0.00811502846054564,
+      0.05981128245406958
+     ],
+     "p_one_sided": 0.004997501249375313,
+     "per_repo": {
+      "fastapi": -1.5390400551096306e-05,
+      "webpack": -8.042152115361745e-06,
+      "nest": -9.780323513286504e-07,
+      "caddy": 0.06784269251949315,
+      "junit5": -9.235984641309258e-05
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "log_n_high_cc": {
+     "name": "base vs base+log_n_high_cc",
+     "added": [
+      "log_n_high_cc"
+     ],
+     "mse_base": 0.43321483529776544,
+     "mse_model": 0.4185912368144466,
+     "rel_reduction": 0.033755996544456934,
+     "ci95": [
+      0.01124432122821368,
+      0.06256402536658777
+     ],
+     "p_one_sided": 0.0009995002498750624,
+     "per_repo": {
+      "fastapi": -1.3770608207286372e-05,
+      "webpack": 2.160366723846785e-06,
+      "nest": 3.610902971074026e-07,
+      "caddy": 0.07473843364679034,
+      "junit5": -3.542858788141423e-05
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "clone_pct": {
+     "name": "base vs base+clone_pct",
+     "added": [
+      "clone_pct"
+     ],
+     "mse_base": 0.43321483529776544,
+     "mse_model": 0.4052583385033866,
+     "rel_reduction": 0.06453263950474653,
+     "ci95": [
+      0.020160037844475894,
+      0.11851936662975192
+     ],
+     "p_one_sided": 0.0029985007496251873,
+     "per_repo": {
+      "fastapi": 1.936917419231854e-06,
+      "webpack": 5.965045664080293e-06,
+      "nest": -5.584276654868603e-06,
+      "caddy": 0.14287722911198286,
+      "junit5": -1.2368983528965316e-05
+     },
+     "repos_improved_big": 2,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": true,
+     "alpha_median": 100000.0
+    },
+    "hotspot": {
+     "name": "base vs base+hotspot",
+     "added": [
+      "hotspot"
+     ],
+     "mse_base": 0.43321483529776544,
+     "mse_model": 0.4318744541333469,
+     "rel_reduction": 0.003094033387608386,
+     "ci95": [
+      0.0010271587521429038,
+      0.005962244629063063
+     ],
+     "p_one_sided": 0.001999000499750125,
+     "per_repo": {
+      "fastapi": 4.685320406649929e-06,
+      "webpack": -1.542386580011268e-06,
+      "nest": -4.442643694924087e-06,
+      "caddy": 0.00685368069368153,
+      "junit5": -6.4219166273638e-07
+     },
+     "repos_improved_big": 1,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "d_erosion": {
+     "name": "base vs base+d_erosion",
+     "added": [
+      "d_erosion"
+     ],
+     "mse_base": 0.43321483529776544,
+     "mse_model": 0.4356844381217192,
+     "rel_reduction": -0.00570064232046974,
+     "ci95": [
+      -0.017353573113832725,
+      0.003679860022456998
+     ],
+     "p_one_sided": 0.8690654672663668,
+     "per_repo": {
+      "fastapi": -2.3665052283350363e-05,
+      "webpack": -2.4959469557161995e-05,
+      "nest": -1.0883289585095213e-06,
+      "caddy": -0.012610189398460037,
+      "junit5": -3.658447278431787e-05
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "d_log_n_high_cc": {
+     "name": "base vs base+d_log_n_high_cc",
+     "added": [
+      "d_log_n_high_cc"
+     ],
+     "mse_base": 0.43321483529776544,
+     "mse_model": 0.43326998927349497,
+     "rel_reduction": -0.00012731322022152547,
+     "ci95": [
+      -0.0013556696669665524,
+      0.0012121570712935084
+     ],
+     "p_one_sided": 0.551224387806097,
+     "per_repo": {
+      "fastapi": -9.556113597097848e-06,
+      "webpack": -1.2490212322191496e-05,
+      "nest": -2.85207885752925e-07,
+      "caddy": -0.0002786768955995722,
+      "junit5": 1.1883967143688778e-09
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "d_clone_pct": {
+     "name": "base vs base+d_clone_pct",
+     "added": [
+      "d_clone_pct"
+     ],
+     "mse_base": 0.43321483529776544,
+     "mse_model": 0.45776787614139397,
+     "rel_reduction": -0.056676362033521555,
+     "ci95": [
+      -0.1461394859233848,
+      -0.009149125999109735
+     ],
+     "p_one_sided": 0.9995002498750625,
+     "per_repo": {
+      "fastapi": -5.3255640919402936e-06,
+      "webpack": -8.002209574753394e-06,
+      "nest": -5.247228651361624e-06,
+      "caddy": -0.12546654588862904,
+      "junit5": -6.388434583914915e-05
+     },
+     "repos_improved_big": 0,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "coupling": {
+     "name": "base vs base+coupling",
+     "added": [
+      "coupling"
+     ],
+     "mse_base": 0.43321483529776544,
+     "mse_model": 0.4328759093968867,
+     "rel_reduction": 0.0007823506335967734,
+     "ci95": [
+      -0.008778151755933994,
+      0.00937520958332868
+     ],
+     "p_one_sided": 0.4052973513243378,
+     "per_repo": {
+      "fastapi": -3.5609291120231035e-06,
+      "webpack": 8.234745629831508e-06,
+      "nest": 8.08942668406587e-09,
+      "caddy": 0.0017382511373316145,
+      "junit5": -7.434839056030818e-05
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    },
+    "ownership": {
+     "name": "base vs base+ownership",
+     "added": [
+      "ownership"
+     ],
+     "mse_base": 0.43321483529776544,
+     "mse_model": 0.43126309072098584,
+     "rel_reduction": 0.0045052579407584,
+     "ci95": [
+      -0.010730245123971416,
+      0.019168481187757908
+     ],
+     "p_one_sided": 0.2843578210894553,
+     "per_repo": {
+      "fastapi": 7.718194679617874e-05,
+      "webpack": 4.296464055353333e-05,
+      "nest": 1.237263536935096e-05,
+      "caddy": 0.009963786090812166,
+      "junit5": -0.0001543445091396478
+     },
+     "repos_improved_big": 3,
+     "repos_needed": 2,
+     "n_big": 3,
+     "rule_met": false,
+     "alpha_median": 100000.0
+    }
+   },
+   "coefs_level_model": {
+    "erosion": {
+     "coef": 9.839604298188915e-06,
+     "ci95": [
+      -9.260415310895162e-05,
+      0.00011775587882016791
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 1.178254469870484e-05,
+     "ci95": [
+      -9.382403942035438e-05,
+      0.00011269260418685002
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": 2.0556409450333638e-05,
+     "ci95": [
+      -7.960713949737769e-05,
+      0.00010004026450098294
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 1.4747356769685373e-05,
+     "ci95": [
+      -0.00010104268871738943,
+      0.0001168454115199001
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_full_model": {
+    "erosion": {
+     "coef": 9.833564619808375e-06,
+     "ci95": [
+      -9.261819755349983e-05,
+      0.00011770927034730569
+     ],
+     "construct_invalid": false
+    },
+    "log_n_high_cc": {
+     "coef": 1.178871567099598e-05,
+     "ci95": [
+      -9.379182071337119e-05,
+      0.00011268108584536378
+     ],
+     "construct_invalid": false
+    },
+    "clone_pct": {
+     "coef": 2.0559397324730294e-05,
+     "ci95": [
+      -7.960598611427443e-05,
+      9.999434653787436e-05
+     ],
+     "construct_invalid": false
+    },
+    "hotspot": {
+     "coef": 1.4752356431538503e-05,
+     "ci95": [
+      -0.00010100969046934501,
+      0.00011684911260972235
+     ],
+     "construct_invalid": false
+    },
+    "d_erosion": {
+     "coef": 1.1404363169890986e-05,
+     "ci95": [
+      -6.32189883090766e-05,
+      8.523129917292582e-05
+     ],
+     "construct_invalid": false
+    },
+    "d_log_n_high_cc": {
+     "coef": -2.033382310194708e-06,
+     "ci95": [
+      -6.686153249315087e-05,
+      6.164499923429545e-05
+     ],
+     "construct_invalid": false
+    },
+    "d_clone_pct": {
+     "coef": -1.015655711147459e-06,
+     "ci95": [
+      -8.22836183212149e-05,
+      0.00010775396108889599
+     ],
+     "construct_invalid": false
+    }
+   },
+   "coefs_coupling_model": {
+    "coupling": {
+     "coef": -2.3880679067835385e-05,
+     "ci95": [
+      -0.00017113106831827463,
+      0.00011889854119883421
+     ],
+     "construct_invalid": false
+    }
+   }
+  }
+ },
+ "decision": {
+  "family_p_bonferroni_within": {
+   "O1": 0.863568215892054,
+   "O2": 0.2748625687156422,
+   "O3": 0.7691154422788605,
+   "O4": 0.35082458770614694,
+   "O5": 0.18590704647676162
+  },
+  "family_p_holm": {
+   "O5": 0.9295352323838081,
+   "O2": 1.0,
+   "O4": 1.0,
+   "O3": 1.0,
+   "O1": 1.0
+  },
+  "decisions": {
+   "H1_primary_O1": {
+    "level": false,
+    "degradation": false
+   },
+   "H1_supported": false,
+   "H1_partial_secondary": {
+    "o2": {
+     "level": false,
+     "degradation": false
+    },
+    "o3": {
+     "level": false,
+     "degradation": false
+    },
+    "o4a": {
+     "level": false,
+     "degradation": false
+    },
+    "o4b": {
+     "level": false,
+     "degradation": false
+    },
+    "o4c": {
+     "level": false,
+     "degradation": false
+    }
+   },
+   "H2_O5": {
+    "o5a": {
+     "level": false,
+     "degradation": false
+    },
+    "o5b": {
+     "level": false,
+     "degradation": false
+    }
+   },
+   "H2_supported": false,
+   "H4_coupling_O3": false,
+   "H4_supported": false,
+   "construct_invalid": [
+    "o5b:d_erosion(coefs_full_model)",
+    "o5b:d_log_n_high_cc(coefs_full_model)"
+   ]
+  }
+ },
+ "file_secondary_rule_met": {
+  "o1": {
+   "level": false,
+   "degradation": false,
+   "coupling": false,
+   "ownership": false
+  },
+  "o2": {
+   "level": false,
+   "degradation": false,
+   "coupling": false,
+   "ownership": false
+  },
+  "o3": {
+   "level": false,
+   "degradation": false,
+   "coupling": false,
+   "ownership": false
+  },
+  "o5a": {
+   "level": false,
+   "degradation": false,
+   "coupling": false,
+   "ownership": false
+  }
+ }
+}

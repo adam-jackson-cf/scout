@@ -1,0 +1,19 @@
+rules:
+  - id: scout.security.python.yaml-unsafe-load
+    languages:
+      - python
+    message: >-
+      Unsafe PyYAML loader can construct arbitrary Python objects when parsing
+      untrusted data.
+    metadata:
+      cwe:
+        - "CWE-502: Deserialization of Untrusted Data"
+      scout_issue_class: dangerous-deserialization
+    patterns:
+      - pattern-either:
+          - pattern: yaml.unsafe_load($INPUT)
+          - pattern: yaml.load($INPUT, Loader=yaml.UnsafeLoader)
+          - pattern: yaml.load($INPUT, Loader=yaml.Loader)
+          - pattern: yaml.load($INPUT, yaml.UnsafeLoader)
+          - pattern: yaml.load($INPUT, yaml.Loader)
+    severity: ERROR

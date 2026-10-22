@@ -1,0 +1,16 @@
+rules:
+  - id: scout.security.actions.mutable-ref
+    languages:
+      - yaml
+    message: >-
+      GitHub Actions resolves this action through a mutable ref. Pin the action
+      to a reviewed full commit SHA before running repository workflows.
+    metadata:
+      scout_issue_class: workflow-supply-chain
+    patterns:
+      - pattern: |
+          uses: $ACTION
+      - metavariable-regex:
+          metavariable: $ACTION
+          regex: '^[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)+@(?![A-Fa-f0-9]{40}$)[A-Za-z0-9_.-]+$'
+    severity: WARNING

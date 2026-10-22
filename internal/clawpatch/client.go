@@ -1,0 +1,283 @@
+// Package clawpatch integrates Scout with the pinned Clawpatch CLI.
+package clawpatch
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"io/fs"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"strings"
+	"sync"
+
+	"scout/internal/domain"
+)
+
+const (
+	Revision = "734f81bc1514b52a0627edb0c24ebe1a18b36105"
+	Version  = "0.7.3"
+
+	defaultMapCodexTimeoutMS = "900000"
+)
+
+var (
+	// ErrExternalStateRequiresAttachment prevents Scout from initializing over
+	// developer-owned Clawpatch records.
+	ErrExternalStateRequiresAttachment = errors.New("external Clawpatch state must already be initialized")
+)
+
+// Config identifies the reviewed executable and state location. BinaryPath is
+// intentionally an absolute JavaScript entrypoint, never a command name.
+type Config struct {
+	BinaryPath         string
+	NodePath           string
+	StateDir           string
+	AllowExternalState bool
+	// EgressAuthorized explicitly permits Clawpatch map/review provider requests.
+	EgressAuthorized bool
+}
+
+// Client serializes all state-mutating Clawpatch calls for one assessment root.
+type Client struct {
+	root             string
+	stateDir         string
+	binaryPath       string
+	nodePath         string
+	externalState    bool
+	egressAuthorized bool
+
+	mu          sync.Mutex
+	initialized bool
+	identityOK  bool
+}
+
+// New creates a client without invoking Clawpatch. Init performs the first
+// connection and initialization when Scout owns the state directory.
+func New(root string, config Config) (*Client, error) {
+	absoluteRoot, err := filepath.Abs(root)
+	if err != nil {
+		return nil, fmt.Errorf("resolve assessment root: %w", err)
+	}
+	info, err := os.Stat(absoluteRoot)
+	if err != nil {
+		return nil, fmt.Errorf("stat assessment root: %w", err)
+	}
+	if !info.IsDir() {
+		return nil, fmt.Errorf("assessment root is not a directory: %s", absoluteRoot)
+	}
+	if config.BinaryPath == "" || !filepath.IsAbs(config.BinaryPath) {
+		return nil, errors.New("Clawpatch binary path must be absolute")
+	}
+	binaryPath, err := filepath.EvalSymlinks(config.BinaryPath)
+	if err != nil {
+		return nil, fmt.Errorf("resolve Clawpatch binary: %w", err)
+	}
+	if err := validatePinnedBinaryPath(binaryPath); err != nil {
+		return nil, err
+	}
+
+	stateDir := config.StateDir
+	ownedState := filepath.Join(absoluteRoot, ".scout", "clawpatch")
+	if stateDir == "" {
+		stateDir = ownedState
+	}
+	if !filepath.IsAbs(stateDir) {
+		return nil, errors.New("Clawpatch state directory must be absolute")
+	}
+	stateDir = filepath.Clean(stateDir)
+	externalState := stateDir != ownedState
+	if externalState && !config.AllowExternalState {
+		return nil, errors.New("external Clawpatch state requires explicit opt-in")
+	}
+
+	nodePath := config.NodePath
+	if nodePath == "" {
+		nodePath, err = exec.LookPath("node")
+		if err != nil {
+			return nil, fmt.Errorf("locate Node runtime: %w", err)
+		}
+	}
+	if !filepath.IsAbs(nodePath) {
+		return nil, errors.New("Node runtime path must be absolute")
+	}
+	nodeInfo, err := os.Stat(nodePath)
+	if err != nil || !nodeInfo.Mode().IsRegular() || nodeInfo.Mode().Perm()&0o111 == 0 {
+		return nil, errors.New("Node runtime is not an executable file")
+	}
+
+	return &Client{
+		root:             absoluteRoot,
+		stateDir:         stateDir,
+		binaryPath:       binaryPath,
+		nodePath:         nodePath,
+		externalState:    externalState,
+		egressAuthorized: config.EgressAuthorized,
+	}, nil
+}
+
+// Root returns the immutable assessment root.
+func (c *Client) Root() string { return c.root }
+
+// StateDir returns the configured Clawpatch state directory.
+func (c *Client) StateDir() string { return c.stateDir }
+
+// Init verifies the exact reviewed executable and initializes Scout-owned state
+// exactly once. Existing external state is attached without reinitialization.
+func (c *Client) Init(ctx context.Context) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.initialized {
+		return nil
+	}
+	if err := c.verifyIdentityLocked(ctx); err != nil {
+		return err
+	}
+	projectPath := filepath.Join(c.stateDir, "project.json")
+	_, err := os.Stat(projectPath)
+	switch {
+	case err == nil:
+		c.initialized = true
+		return nil
+	case !errors.Is(err, fs.ErrNotExist):
+		return fmt.Errorf("stat Clawpatch project state: %w", err)
+	case c.externalState:
+		return ErrExternalStateRequiresAttachment
+	}
+	if err := os.MkdirAll(c.stateDir, 0o700); err != nil {
+		return fmt.Errorf("create Clawpatch state directory: %w", err)
+	}
+	if _, err := c.invokeLocked(ctx, "init"); err != nil {
+		return fmt.Errorf("initialize Clawpatch state: %w", err)
+	}
+	c.initialized = true
+	return nil
+}
+
+// Map uses Clawpatch's canonical automatic mapper only when its inputs changed.
+// On an unchanged map it reads the prior authoritative records without a model
+// or mapper invocation.
+func (c *Client) Map(ctx context.Context, inputsChanged bool) (MapResult, error) {
+	if !inputsChanged {
+		features, err := loadFeatures(c.stateDir)
+		if err != nil {
+			return MapResult{Status: MapBlocked, Reason: "canonical Clawpatch records are unavailable"}, err
+		}
+		return MapResult{Status: MapReused, Features: features}, nil
+	}
+	if !c.egressAuthorized {
+		return MapResult{Status: MapBlocked, Reason: "Clawpatch mapping provider egress is not authorized"}, errors.New("Clawpatch mapping provider egress is not authorized")
+	}
+	if err := c.verifyReviewSafetyPatch(); err != nil {
+		return MapResult{Status: MapBlocked, Reason: err.Error()}, err
+	}
+	if err := c.Init(ctx); err != nil {
+		return MapResult{Status: MapBlocked, Reason: err.Error()}, err
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if _, err := c.invokeEnvLocked(ctx, mapEnvironment(), "map", "--source", "auto"); err != nil {
+		features, loadErr := loadFeatures(c.stateDir)
+		if loadErr != nil {
+			return MapResult{Status: MapBlocked, Reason: "pinned Clawpatch map did not complete"}, errors.Join(err, loadErr)
+		}
+		return MapResult{
+			Status:   MapBlocked,
+			Features: features,
+			Reason:   "pinned Clawpatch map did not complete; prior canonical records were retained",
+		}, err
+	}
+	features, err := loadFeatures(c.stateDir)
+	if err != nil {
+		return MapResult{Status: MapBlocked, Reason: "canonical Clawpatch records are unavailable"}, err
+	}
+	return MapResult{Status: MapMapped, Features: features}, nil
+}
+
+// CheckPrerequisites verifies the pinned executable without creating target
+// state or contacting a provider.
+func (c *Client) CheckPrerequisites(ctx context.Context) error {
+	if err := c.verifyReviewSafetyPatch(); err != nil {
+		return err
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.verifyIdentityLocked(ctx)
+}
+
+func (c *Client) verifyIdentityLocked(ctx context.Context) error {
+	if c.identityOK {
+		return nil
+	}
+	output, err := c.invokeLocked(ctx, "--version")
+	if err != nil {
+		return fmt.Errorf("verify pinned Clawpatch identity: %w", err)
+	}
+	if strings.TrimSpace(string(output)) != Version {
+		return fmt.Errorf("Clawpatch reports a non-pinned version; expected %s", Version)
+	}
+	c.identityOK = true
+	return nil
+}
+
+func (c *Client) invokeLocked(ctx context.Context, args ...string) ([]byte, error) {
+	return c.invokeEnvLocked(ctx, nil, args...)
+}
+
+// mapEnvironment returns the Clawpatch codex timeout for the map invocation.
+// CLAWPATCH_CODEX_TIMEOUT_MS from Scout's environment wins; otherwise 900000.
+func mapEnvironment() []string {
+	timeout := strings.TrimSpace(os.Getenv("CLAWPATCH_CODEX_TIMEOUT_MS"))
+	if timeout == "" {
+		timeout = defaultMapCodexTimeoutMS
+	}
+	return []string{"CLAWPATCH_CODEX_TIMEOUT_MS=" + timeout}
+}
+
+func (c *Client) invokeEnvLocked(ctx context.Context, extraEnv []string, args ...string) ([]byte, error) {
+	commandArgs := make([]string, 0, len(args)+6)
+	commandArgs = append(commandArgs, c.binaryPath, "--root", c.root, "--state-dir", c.stateDir, "--json")
+	commandArgs = append(commandArgs, args...)
+	command := exec.CommandContext(ctx, c.nodePath, commandArgs...)
+	if len(extraEnv) > 0 {
+		command.Env = append(os.Environ(), extraEnv...)
+	}
+	output, err := command.Output()
+	if err != nil {
+		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+			return nil, context.DeadlineExceeded
+		}
+		return nil, errors.New("pinned Clawpatch command failed")
+	}
+	return output, nil
+}
+
+func validatePinnedBinaryPath(path string) error {
+	if filepath.Base(path) != "cli.js" || filepath.Base(filepath.Dir(path)) != "dist" {
+		return errors.New("Clawpatch binary must be the pinned dist/cli.js entrypoint")
+	}
+	if filepath.Base(filepath.Dir(filepath.Dir(path))) != Revision {
+		return fmt.Errorf("Clawpatch binary must be built from pinned revision %s", Revision)
+	}
+	return nil
+}
+
+// MapStatus distinguishes an executed canonical map from record reuse.
+type MapStatus string
+
+const (
+	MapMapped  MapStatus = "mapped"
+	MapReused  MapStatus = "reused"
+	MapBlocked MapStatus = "blocked"
+)
+
+// MapResult never substitutes a partial map for a successful map.
+type MapResult struct {
+	Status   MapStatus
+	Features []Feature
+	Reason   string
+}
+
+// Feature is a canonical Clawpatch record in Scout's shared domain contract.
+type Feature = domain.Feature

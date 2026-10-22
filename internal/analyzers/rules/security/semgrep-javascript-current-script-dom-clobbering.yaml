@@ -1,0 +1,25 @@
+rules:
+  - id: scout.security.javascript.current-script-dom-clobbering
+    languages:
+      - generic
+    message: >-
+      This webpack-style public-path runtime template reads
+      document.currentScript.src without verifying that currentScript is a
+      SCRIPT element. A named DOM element can clobber currentScript and supply
+      an attacker-controlled script URL.
+    metadata:
+      cwe:
+        - "CWE-79: Improper Neutralization of Input During Web Page Generation"
+      scout_issue_class: dom-clobbering
+      applicability: >-
+        JavaScript runtime templates that emit the unguarded
+        document.currentScript-to-scriptUrl assignment used by auto public
+        path resolution.
+      negative_boundary: >-
+        Templates with the documented SCRIPT tag-name guard do not match.
+        General currentScript uses and unrelated URL assignment patterns are
+        outside this rule.
+    patterns:
+      - pattern-regex: |-
+          (?s)Template\.indent\(\[\s*`if\s*\(document\.currentScript\)`,\s*Template\.indent\(`scriptUrl\s*=\s*document\.currentScript\.src;`\)
+    severity: ERROR

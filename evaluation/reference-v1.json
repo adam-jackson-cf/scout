@@ -1,0 +1,734 @@
+{
+  "schemaVersion": "scout.eval.corpus/v1",
+  "corpusVersion": "reference-v1",
+  "entries": [
+    {
+      "id": "python-architecture-d666ccb6",
+      "target": {
+        "repository": "https://github.com/fastapi/fastapi.git",
+        "revision": "d666ccb62216e45ca78643b52c235ba0d2c53986"
+      },
+      "language": "Python",
+      "family": "architecture",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "architecture-routing-utils-cycle-d666ccb6",
+          "mechanism": "static import-cycle classification",
+          "path": "fastapi/routing.py",
+          "behavior": "The reported routing/utils circular import is not a runtime cycle: utils imports APIRoute only beneath TYPE_CHECKING, while routing imports utilities normally.",
+          "adjudication": "false_positive",
+          "evidence": "Deterministic provenance: architecture/deterministic-findings.json ARCHITECTURE007. Source at d666ccb6: fastapi/routing.py:35-41 imports utils; fastapi/utils.py:16-17 guards the routing import with TYPE_CHECKING. Only selected findings were source-reviewed; the 674 deterministic signals have no complete canonical gap/disposition model."
+        }
+      ]
+    },
+    {
+      "id": "python-security-d666ccb6",
+      "target": {
+        "repository": "https://github.com/fastapi/fastapi.git",
+        "revision": "d666ccb62216e45ca78643b52c235ba0d2c53986"
+      },
+      "language": "Python",
+      "family": "security",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "security-python-multipart-redos-test-extra-d666ccb6",
+          "mechanism": "form-data parsing through a dependency range that forces known-vulnerable python-multipart releases",
+          "path": "pyproject.toml",
+          "behavior": "The test extra constrains python-multipart to >=0.0.5,<0.0.7. Every permitted version is affected by CVE-2024-24762; FastAPI calls request.form() for Form body fields, so a form-parsing test environment resolves a dependency with the Content-Type ReDoS. This does not establish an installed production version because the runtime extra can resolve a patched release and no lockfile was present.",
+          "adjudication": "validated_true",
+          "evidence": "Source at d666ccb6: pyproject.toml:53-70 contains the test-extra range; fastapi/routing.py:183-198 selects Form fields and awaits request.form(). Primary advisory GHSA-2jv5-9r88-3w3p / CVE-2024-24762 states python-multipart <=0.0.6 is affected and 0.0.7 is patched. FastAPI fix 9d34ad0ee8a0dfbbcce06f76c2d5d851085024fc raises the all extra and test constraint to 0.0.7. OSV deterministic output had no lockfile findings, so this adjudication is limited to the source-declared test dependency."
+        },
+        {
+          "id": "security-unpinned-publish-actions-d666ccb6",
+          "mechanism": "GitHub Actions execution via mutable version tags",
+          "path": ".github/workflows/publish.yml",
+          "behavior": "The release-publish workflow executes checkout, setup-python, cache, and PyPI publishing actions referenced by mutable tags rather than immutable commit IDs; a retagged upstream action can alter privileged CI execution.",
+          "adjudication": "validated_true",
+          "evidence": "Deterministic provenance: security/deterministic-findings.json SECURITY022-SECURITY025. Source at d666ccb6: .github/workflows/publish.yml:16-34 uses actions/checkout@v3, actions/setup-python@v4, actions/cache@v3, and pypa/gh-action-pypi-publish@v1.6.4; lines 34-36 show the publish action receives the PyPI token."
+        }
+      ]
+    },
+    {
+      "id": "python-quality-d666ccb6",
+      "target": {
+        "repository": "https://github.com/fastapi/fastapi.git",
+        "revision": "d666ccb62216e45ca78643b52c235ba0d2c53986"
+      },
+      "language": "Python",
+      "family": "quality",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "quality-long-openapi-test-fixture-d666ccb6",
+          "mechanism": "line-count-only long-function detection",
+          "path": "tests/test_generate_unique_id_function.py",
+          "behavior": "The selected long-function finding is an assertion-heavy OpenAPI fixture, not evidence of a complex production control-flow defect.",
+          "adjudication": "false_positive",
+          "evidence": "Deterministic provenance: quality/deterministic-findings.json COMPLEXITY001 reports 194 lines and cyclomatic complexity 1. Source at d666ccb6: tests/test_generate_unique_id_function.py:32-50 creates the test application then begins one expected OpenAPI document assertion. Quality deterministic output contains 134 complexity and 2,200 duplication signals, including documentation assets; they were not completely adjudicated."
+        }
+      ]
+    },
+    {
+      "id": "python-performance-d666ccb6",
+      "target": {
+        "repository": "https://github.com/fastapi/fastapi.git",
+        "revision": "d666ccb62216e45ca78643b52c235ba0d2c53986"
+      },
+      "language": "Python",
+      "family": "performance",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "performance-jsonable-encoder-append-loop-d666ccb6",
+          "mechanism": "list construction in recursive response serialization",
+          "path": "fastapi/encoders.py",
+          "behavior": "The encoder appends recursively encoded items in a loop. The static PERF401 signal identifies an alternative list-comprehension form, but the checked-out source alone does not establish a material regression or hot-path impact for real response shapes.",
+          "adjudication": "incomplete",
+          "evidence": "Deterministic provenance: performance/performance-ruff.json PERFORMANCE001 (PERF401) at line 130. Source at d666ccb6: fastapi/encoders.py:127-143 initializes encoded_list and appends one recursive jsonable_encoder result per item. No workload profile or benchmark was run; 798 deterministic signals, mainly low-severity documentation/frontend observations, remain unadjudicated."
+        }
+      ]
+    },
+    {
+      "id": "javascript-architecture-9ac1728e",
+      "target": {
+        "repository": "https://github.com/webpack/webpack.git",
+        "revision": "9ac1728ee359efbbd1eb317f4a12c0f8136a690e"
+      },
+      "language": "JavaScript",
+      "family": "architecture",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "architecture-detector-review-incomplete",
+          "mechanism": "The deterministic architecture output contains 98 structural metric findings, including test-template fan-in/fan-out, but the corpus review did not independently adjudicate every flagged source mechanism.",
+          "path": "test/TestCases.template.js",
+          "behavior": "Selected coupling records describe test-harness reuse rather than, by themselves, a production architecture defect.",
+          "adjudication": "incomplete",
+          "evidence": "Artifact provenance: /tmp/scout-reference-corpus/javascript/artifacts/architecture/architecture-deterministic-summary.json lines 3-15; selected inspection of architecture-coupling.json lines 11-78. Limitation: remaining deterministic records were not source-traced."
+        }
+      ]
+    },
+    {
+      "id": "javascript-security-9ac1728e",
+      "target": {
+        "repository": "https://github.com/webpack/webpack.git",
+        "revision": "9ac1728ee359efbbd1eb317f4a12c0f8136a690e"
+      },
+      "language": "JavaScript",
+      "family": "security",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "security-auto-public-path-dom-clobbering",
+          "mechanism": "Auto public-path runtime trusts document.currentScript without verifying that it is a SCRIPT element, permitting named-element DOM clobbering to supply an attacker-controlled src.",
+          "path": "lib/runtime/AutoPublicPathRuntimeModule.js",
+          "behavior": "For non-module output with publicPath 'auto', the generated runtime derives __webpack_require__.p from the clobbered element and later chunk loading can use the attacker-controlled base URL, enabling XSS when scriptless attacker HTML is accepted by the host page.",
+          "adjudication": "validated_true",
+          "evidence": "Revision 9ac1728ee359efbbd1eb317f4a12c0f8136a690e: lib/RuntimePlugin.js:194-207 installs AutoPublicPathRuntimeModule for publicPath 'auto'; lib/runtime/AutoPublicPathRuntimeModule.js:41-63 reads document.currentScript.src without a tag check and assigns the public path. In-scope artifact provenance: security/project-structure.json:1877-1916. Upstream GHSA-4vvj-4cpr-p986 documents affected versions <5.94.0 and a patch in 5.94.0; v5.94.0 adds currentScript.tagName.toUpperCase() === 'SCRIPT'."
+        },
+        {
+          "id": "security-detector-review-incomplete",
+          "mechanism": "The deterministic security workflow retained 63 findings, including 57 Semgrep and 6 detect-secrets records; detector outputs are not independent issue adjudications.",
+          "path": "lib/",
+          "behavior": "The confirmed DOM-clobbering issue is recorded separately; no clean conclusion is made for the remaining records.",
+          "adjudication": "incomplete",
+          "evidence": "Artifact provenance: security/security-deterministic-summary.json:2-18; security/semgrep.json:924-997; security/osv.json:10-48. Limitation: remaining findings were not fully source-traced, and raw detect-secrets records are intentionally not echoed."
+        }
+      ]
+    },
+    {
+      "id": "javascript-quality-9ac1728e",
+      "target": {
+        "repository": "https://github.com/webpack/webpack.git",
+        "revision": "9ac1728ee359efbbd1eb317f4a12c0f8136a690e"
+      },
+      "language": "JavaScript",
+      "family": "quality",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "quality-detector-review-incomplete",
+          "mechanism": "Complexity and clone detectors returned broad metric sets that require source-level change-risk adjudication; detector labels alone are not issue truth.",
+          "path": "lib/Compiler.js",
+          "behavior": "Selected lifecycle review found explicit concurrent-compilation guarding, but it does not adjudicate the remaining complexity and duplication records.",
+          "adjudication": "incomplete",
+          "evidence": "Artifact provenance: quality/quality-lizard-summary.json:18-60 reports 60 complexity findings; quality/quality-jscpd-summary.json:18-47 reports 424 clone fragments; quality/quality-react-doctor-summary.json:18-31 reports two findings. Source inspected: lib/Compiler.js:409-443. Limitation: all retained records were not independently source-traced."
+        }
+      ]
+    },
+    {
+      "id": "javascript-performance-9ac1728e",
+      "target": {
+        "repository": "https://github.com/webpack/webpack.git",
+        "revision": "9ac1728ee359efbbd1eb317f4a12c0f8136a690e"
+      },
+      "language": "JavaScript",
+      "family": "performance",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "performance-analyzer-coverage-incomplete",
+          "mechanism": "The performance Semgrep artifact reports an invalid JSON shape, so its reported heuristic records cannot provide reliable full coverage; broad frontend findings were not independently workload-validated.",
+          "path": "lib/cache/MemoryWithGcCachePlugin.js",
+          "behavior": "Selected cache source shows bounded generations and Map-based cache state, but does not establish system-wide operational impact or resolve the remaining heuristic findings.",
+          "adjudication": "incomplete",
+          "evidence": "Artifact provenance: performance/performance-semgrep.json:964-999 records coverage_failed=true and 'semgrep JSON error 0 has an invalid shape'; performance/performance-deterministic-summary.json:2-13 reports 568 total records. Source inspected: lib/cache/MemoryWithGcCachePlugin.js:15-32 and lib/Compiler.js:409-443. Limitation: no workload/runtime evidence and invalid Semgrep coverage prevent full adjudication."
+        }
+      ]
+    },
+    {
+      "id": "typescript-architecture-676c98ca",
+      "target": {
+        "repository": "https://github.com/nestjs/nest.git",
+        "revision": "676c98ca91212a8fd81ab37f7d7f8d12ad3dd005"
+      },
+      "language": "TypeScript",
+      "family": "architecture",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "typescript-architecture-loopback-url-676c98ca",
+          "mechanism": "The scalability detector classifies the loopback substitution as hardcoded configuration.",
+          "path": "packages/core/nest-application.ts",
+          "behavior": "false positive: formatAddress converts a wildcard listener address to a connectable loopback URL; it does not set listener configuration.",
+          "adjudication": "false_positive",
+          "evidence": "Revision 676c98ca91212a8fd81ab37f7d7f8d12ad3dd005; architecture/architecture-scalability.json finding ARCHITECTURE001 reports line 361, while packages/core/nest-application.ts:344-365 shows the value is only assigned within URL formatting after httpServer.address()."
+        }
+      ]
+    },
+    {
+      "id": "typescript-security-676c98ca",
+      "target": {
+        "repository": "https://github.com/nestjs/nest.git",
+        "revision": "676c98ca91212a8fd81ab37f7d7f8d12ad3dd005"
+      },
+      "language": "TypeScript",
+      "family": "security",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "typescript-security-mutable-github-actions-676c98ca",
+          "mechanism": "Repository CI executes third-party GitHub Actions referenced by mutable major-version tags rather than immutable commit SHAs.",
+          "path": ".github/workflows/codeql-analysis.yml",
+          "behavior": "If an action owner repoints a referenced tag, the CodeQL workflow can execute the replacement code with the job's security-events: write token permission.",
+          "adjudication": "validated_true",
+          "evidence": "Revision 676c98ca91212a8fd81ab37f7d7f8d12ad3dd005; security/semgrep.json findings SECURITY003-SECURITY006 identify the four mutable action references; .github/workflows/codeql-analysis.yml:17-24 grants security-events: write and invokes actions/checkout@v3, and lines 35-61 invoke github/codeql-action/*@v2."
+        }
+      ]
+    },
+    {
+      "id": "typescript-quality-676c98ca",
+      "target": {
+        "repository": "https://github.com/nestjs/nest.git",
+        "revision": "676c98ca91212a8fd81ab37f7d7f8d12ad3dd005"
+      },
+      "language": "TypeScript",
+      "family": "quality",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "typescript-quality-route-params-complexity-676c98ca",
+          "mechanism": "Complexity analysis flags an exhaustive request-parameter dispatch switch as high cyclomatic complexity.",
+          "path": "packages/core/router/route-params-factory.ts",
+          "behavior": "false positive: each RouteParamtypes enum case maps directly to a framework request field; the fixed exhaustive dispatch is the public routing contract, not an uncontrolled decision tree.",
+          "adjudication": "false_positive",
+          "evidence": "Revision 676c98ca91212a8fd81ab37f7d7f8d12ad3dd005; quality/deterministic-findings.json finding ref quality-lizard.json:11 reports cyclomatic complexity 21 at line 9; packages/core/router/route-params-factory.ts:4-43 shows the bounded enum-to-request-field mapping."
+        }
+      ]
+    },
+    {
+      "id": "typescript-performance-676c98ca",
+      "target": {
+        "repository": "https://github.com/nestjs/nest.git",
+        "revision": "676c98ca91212a8fd81ab37f7d7f8d12ad3dd005"
+      },
+      "language": "TypeScript",
+      "family": "performance",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "typescript-performance-sponsor-images-676c98ca",
+          "mechanism": "Frontend static analysis flags sponsor images in repository Markdown as unoptimized image formats.",
+          "path": "Readme.md",
+          "behavior": "false positive for the server framework: these are externally hosted documentation sponsor assets, not a runtime application request path; no serving, load, or viewport evidence was collected.",
+          "adjudication": "false_positive",
+          "evidence": "Revision 676c98ca91212a8fd81ab37f7d7f8d12ad3dd005; performance/performance-frontend.json finding PERFORMANCE012 reports Readme.md:63; Readme.md:58-83 places the PNG URLs in the sponsor table."
+        }
+      ]
+    },
+    {
+      "id": "go-architecture-0db29e2c",
+      "target": {
+        "repository": "https://github.com/caddyserver/caddy.git",
+        "revision": "0db29e2ce9799f652f3d16fd5aed6e426d23bd0a"
+      },
+      "language": "Go",
+      "family": "architecture",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "go-architecture-coverage-incomplete-0db29e2c",
+          "mechanism": "incomplete-independent-adjudication",
+          "behavior": "The deterministic phase retained 53 structural signals, but a repository-wide human coverage grid and source review sufficient to classify every signal were not completed; this is not a clean result.",
+          "adjudication": "incomplete",
+          "evidence": "Revision 0db29e2ce9799f652f3d16fd5aed6e426d23bd0a; /tmp/scout-reference-corpus/go/artifacts/architecture/architecture-deterministic-summary.json reports 53 findings, and analyzer-status.txt records all four architecture analyzers completed."
+        }
+      ]
+    },
+    {
+      "id": "go-security-0db29e2c",
+      "target": {
+        "repository": "https://github.com/caddyserver/caddy.git",
+        "revision": "0db29e2ce9799f652f3d16fd5aed6e426d23bd0a"
+      },
+      "language": "Go",
+      "family": "security",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "go-security-release-mutable-actions-0db29e2c",
+          "mechanism": "mutable-github-action-reference-in-privileged-release-job",
+          "path": ".github/workflows/release.yml",
+          "behavior": "The release job grants id-token: write and contents: write, then executes third-party action references pinned only to mutable tags or branches. If an action owner retargets such a ref, the substituted action code executes with the release job's credentials.",
+          "adjudication": "validated_true",
+          "evidence": "Revision 0db29e2ce9799f652f3d16fd5aed6e426d23bd0a: .github/workflows/release.yml#L25-L39 grants id-token and contents write while using actions/setup-go@v3 and actions/checkout@v3; #L97-L119 uses actions/cache@v3, sigstore/cosign-installer@main, anchore/sbom-action/download-syft@main, and goreleaser/goreleaser-action@v4. Direct source trace establishes the mutable-reference invariant and credential-bearing execution context. Deterministic provenance: /tmp/scout-reference-corpus/go/artifacts/security/semgrep.json, finding SECURITY002 and related mutable-action findings."
+        },
+        {
+          "id": "go-security-coverage-incomplete-0db29e2c",
+          "mechanism": "incomplete-independent-adjudication",
+          "behavior": "Only the release-workflow mechanism was source-adjudicated. The remaining static and dependency findings require package reachability, deployment, and source-flow review before they can be classified; this is not a clean result.",
+          "adjudication": "incomplete",
+          "evidence": "Revision 0db29e2ce9799f652f3d16fd5aed6e426d23bd0a; /tmp/scout-reference-corpus/go/artifacts/security/security-deterministic-summary.json reports 273 findings across semgrep and OSV, while detect-secrets reported no findings."
+        }
+      ]
+    },
+    {
+      "id": "go-quality-0db29e2c",
+      "target": {
+        "repository": "https://github.com/caddyserver/caddy.git",
+        "revision": "0db29e2ce9799f652f3d16fd5aed6e426d23bd0a"
+      },
+      "language": "Go",
+      "family": "quality",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "go-quality-coverage-incomplete-0db29e2c",
+          "mechanism": "incomplete-independent-adjudication",
+          "behavior": "Complexity and duplicate-code signals were retained, but their source context and the repository-wide quality coverage required to distinguish intentional test fixtures from maintenance defects were not fully adjudicated; this is not a clean result.",
+          "adjudication": "incomplete",
+          "evidence": "Revision 0db29e2ce9799f652f3d16fd5aed6e426d23bd0a; /tmp/scout-reference-corpus/go/artifacts/quality/quality-lizard-summary.json reports 30 complexity findings and quality-jscpd-summary.json reports 24 duplication findings."
+        }
+      ]
+    },
+    {
+      "id": "go-performance-0db29e2c",
+      "target": {
+        "repository": "https://github.com/caddyserver/caddy.git",
+        "revision": "0db29e2ce9799f652f3d16fd5aed6e426d23bd0a"
+      },
+      "language": "Go",
+      "family": "performance",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "go-performance-golangci-incomplete-0db29e2c",
+          "mechanism": "failed-go-performance-analyzer",
+          "behavior": "The Go-specific performance analyzer failed, leaving no Go performance findings to adjudicate. The SQL analyzer completed but provides no coverage for this Go HTTP server; no clean result is asserted.",
+          "adjudication": "incomplete",
+          "evidence": "Revision 0db29e2ce9799f652f3d16fd5aed6e426d23bd0a; /tmp/scout-reference-corpus/go/artifacts/performance/performance-golangci-lint.json records success=false and error 'golangci-lint failed with exit code 3'; analyzer-status.txt records performance:golangci-lint=1."
+        }
+      ]
+    },
+    {
+      "id": "rust-architecture-562fa206",
+      "target": {
+        "repository": "https://github.com/tokio-rs/axum.git",
+        "revision": "562fa206f09514e7503e898decf73024f5ce6fd4"
+      },
+      "language": "Rust",
+      "family": "architecture",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "rust-architecture-benchmark-blocking-false-positive-562fa206",
+          "mechanism": "A blocking child-process wait in a standalone benchmark runner",
+          "path": "axum/benches/benches.rs",
+          "behavior": "The detector labels child.wait() as a scalability problem, but it runs after streaming the benchmark subprocess output in a synchronous benchmark executable, not in Axum request-serving tasks.",
+          "adjudication": "false_positive",
+          "evidence": "Source at 562fa206f09514e7503e898decf73024f5ce6fd4 axum/benches/benches.rs:191-208 shows Command::spawn, synchronous stdout draining, then child.wait in BenchmarkBuilder::run. Provenance: architecture/architecture-scalability.json finding ARCHITECTURE001 (lines 12-25)."
+        },
+        {
+          "id": "rust-architecture-coverage-incomplete-562fa206",
+          "mechanism": "Complete manual architecture coverage was not established",
+          "path": ".",
+          "behavior": "Deterministic scanning covered 132 areas and 417 scoped files, but the required area-by-category manual gap/disposition model was not authored; detector records alone are not reference truth.",
+          "adjudication": "incomplete",
+          "evidence": "Provenance: architecture/project-structure.json (132 areas, 417 scoped files), architecture/deterministic-findings.json (21 threshold-qualified records), and failed validate-artifacts assessment on 2026-09-24: required gap-analysis.json and finding-dispositions.json were absent."
+        }
+      ]
+    },
+    {
+      "id": "rust-security-562fa206",
+      "target": {
+        "repository": "https://github.com/tokio-rs/axum.git",
+        "revision": "562fa206f09514e7503e898decf73024f5ce6fd4"
+      },
+      "language": "Rust",
+      "family": "security",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "rust-security-mutable-action-references-562fa206",
+          "mechanism": "CI executes third-party GitHub Actions through mutable branch/tag references instead of immutable commit SHAs",
+          "path": ".github/workflows/CI.yml",
+          "behavior": "An action owner can retarget a referenced branch or tag; subsequent repository CI runs execute the retargeted action code.",
+          "adjudication": "validated_true",
+          "evidence": "Source at 562fa206f09514e7503e898decf73024f5ce6fd4 .github/workflows/CI.yml:13-29 and :39-69 uses actions/checkout@master plus v1/v2/stable action references. GitHub Actions security guidance states a full commit SHA is the only immutable action release (https://docs.github.com/github-ae%40latest/actions/security-guides/security-hardening-for-github-actions). Provenance: security/semgrep.json and security/deterministic-findings.json SECURITY001-SECURITY049."
+        },
+        {
+          "id": "rust-security-local-websocket-test-false-positive-562fa206",
+          "mechanism": "Plain ws:// connection in a loopback-only integration test",
+          "path": "examples/testing-websockets/src/main.rs",
+          "behavior": "The detector labels ws:// insecure, but the test binds an ephemeral local listener then connects to its own local address; no network transit is involved.",
+          "adjudication": "false_positive",
+          "evidence": "Source at 562fa206f09514e7503e898decf73024f5ce6fd4 examples/testing-websockets/src/main.rs:94-112 binds Ipv4Addr::UNSPECIFIED port 0, obtains local_addr, and immediately connects ws://{addr}. Provenance: security/deterministic-findings.json SECURITY053."
+        },
+        {
+          "id": "rust-security-coverage-incomplete-562fa206",
+          "mechanism": "Complete manual security coverage was not established",
+          "path": ".",
+          "behavior": "The 54 Semgrep detections were not all independently dispositioned; OSV and detect-secrets reported zero but this scoped evidence does not support a clean family result.",
+          "adjudication": "incomplete",
+          "evidence": "Provenance: security/security-deterministic-summary.json lines 7-18 (54 Semgrep records, zero OSV and detect-secrets) and failed validate-artifacts assessment on 2026-09-24: required gap-analysis.json and finding-dispositions.json were absent."
+        }
+      ]
+    },
+    {
+      "id": "rust-quality-562fa206",
+      "target": {
+        "repository": "https://github.com/tokio-rs/axum.git",
+        "revision": "562fa206f09514e7503e898decf73024f5ce6fd4"
+      },
+      "language": "Rust",
+      "family": "quality",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "rust-quality-documented-query-overlap-false-positive-562fa206",
+          "mechanism": "Shared extractor documentation flagged as duplicate code",
+          "path": "axum/src/extract/query.rs",
+          "behavior": "The duplicated documentation is paired with a distinct axum-extra Query extractor whose documented behavior explicitly differs by using serde_html_form for multi-value fields; a common implementation would erase the public API distinction.",
+          "adjudication": "false_positive",
+          "evidence": "Source at 562fa206f09514e7503e898decf73024f5ce6fd4 axum/src/extract/query.rs:7-44 and axum-extra/src/extract/query.rs:11-52: the latter documents a deliberate different extractor and serde_html_form multi-value semantics. Provenance: quality/deterministic-findings.json QUALITY209-QUALITY210."
+        },
+        {
+          "id": "rust-quality-coverage-incomplete-562fa206",
+          "mechanism": "Complete manual code-quality coverage was not established",
+          "path": ".",
+          "behavior": "Lizard and jscpd produced 309 threshold-qualified records, while React Doctor was skipped; the required manual gap/disposition model was not authored, so no clean result is claimed.",
+          "adjudication": "incomplete",
+          "evidence": "Provenance: quality/deterministic-findings.json (309 records), quality/analyzer-status.txt (quality:react-doctor=skipped), and failed validate-artifacts assessment on 2026-09-24: required gap-analysis.json and finding-dispositions.json were absent."
+        }
+      ]
+    },
+    {
+      "id": "rust-performance-562fa206",
+      "target": {
+        "repository": "https://github.com/tokio-rs/axum.git",
+        "revision": "562fa206f09514e7503e898decf73024f5ce6fd4"
+      },
+      "language": "Rust",
+      "family": "performance",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "rust-performance-websocket-demo-resource-false-positive-562fa206",
+          "mechanism": "One-shot timers and socket-lifetime event listeners in a WebSocket demo flagged as resource leaks",
+          "path": "examples/websockets/assets/script.js",
+          "behavior": "The two timers execute once and release naturally; the event listeners belong to one socket that the second timer closes, so their presence alone does not establish an accumulating resource leak.",
+          "adjudication": "false_positive",
+          "evidence": "Source at 562fa206f09514e7503e898decf73024f5ce6fd4 examples/websockets/assets/script.js:1-25 creates one socket, schedules callbacks at 12 and 21, and closes that socket at 24. Provenance: performance/performance-frontend.json PERFORMANCE001-PERFORMANCE004 (lines 10-74)."
+        },
+        {
+          "id": "rust-performance-clippy-coverage-incomplete-562fa206",
+          "mechanism": "Rust performance lint coverage unavailable",
+          "path": ".",
+          "behavior": "The Clippy phase failed with exit code 101 and no results, so the deterministic pass cannot support a complete Rust performance adjudication.",
+          "adjudication": "incomplete",
+          "evidence": "Provenance: performance/performance-clippy.json lines 2-24: success=false, exit_code=1, and cargo clippy failed with exit code 101; performance/analyzer-status.txt line 3 records performance:clippy=1. Artifact validation also failed because gap-analysis.json and finding-dispositions.json were not authored."
+        }
+      ]
+    },
+    {
+      "id": "java-architecture-8ed3c66",
+      "target": {
+        "repository": "https://github.com/junit-team/junit5",
+        "revision": "8ed3c66c7eb20b835cf92f50a7bf8830838c462e"
+      },
+      "language": "Java",
+      "family": "architecture",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "java-architecture-fixture-pom-parse-8ed3c66",
+          "mechanism": "The dependency analyzer parses a test resource named pom.xml as a production dependency manifest.",
+          "path": "platform-tests/src/test/resources/listeners/uidtracking/maven/pom.xml",
+          "behavior": "The one-line resource is intentionally a UniqueIdTrackingListener fixture, not a Maven POM, so the reported XML parse failure does not describe an architectural dependency defect.",
+          "adjudication": "false_positive",
+          "evidence": "revision 8ed3c66c7eb20b835cf92f50a7bf8830838c462e; source line 1 states that the file is used in UniqueIdTrackingListener tests; deterministic provenance /tmp/scout-reference-corpus/java-artifacts/architecture/architecture-dependency.json:11-24 records the parser signal. Full coverage model was not authored; validate-artifacts therefore required gap-analysis.json and finding-dispositions.json."
+        }
+      ]
+    },
+    {
+      "id": "java-security-8ed3c66",
+      "target": {
+        "repository": "https://github.com/junit-team/junit5",
+        "revision": "8ed3c66c7eb20b835cf92f50a7bf8830838c462e"
+      },
+      "language": "Java",
+      "family": "security",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "java-security-unpinned-github-actions-8ed3c66",
+          "mechanism": "Trusted CI executes third-party GitHub Actions referenced by mutable version tags rather than immutable commit SHAs while workflow credentials are available.",
+          "path": ".github/workflows/main.yml",
+          "behavior": "A change to an action tag upstream can change code executed by CI without a repository revision change; the Linux job uses mutable third-party actions at lines 23, 31, and 46, while the workflow declares credentials at lines 12-16. Composite build setup also uses mutable setup-java and Gradle action tags at .github/actions/run-gradle/action.yml:11-16.",
+          "adjudication": "validated_true",
+          "evidence": "revision 8ed3c66c7eb20b835cf92f50a7bf8830838c462e; direct source trace .github/workflows/main.yml:12-16,22-46 and .github/actions/run-gradle/action.yml:9-24; deterministic provenance /tmp/scout-reference-corpus/java-artifacts/security/security-deterministic-summary.json:7-18 and security semgrep findings SECURITY001-SECURITY030. The action-tag mechanism is source-verifiable, but complete family coverage and canonical disposition artifacts were not produced; validate-artifacts required gap-analysis.json and finding-dispositions.json."
+        }
+      ]
+    },
+    {
+      "id": "java-quality-8ed3c66",
+      "target": {
+        "repository": "https://github.com/junit-team/junit5",
+        "revision": "8ed3c66c7eb20b835cf92f50a7bf8830838c462e"
+      },
+      "language": "Java",
+      "family": "quality",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "java-quality-snapshot-duplication-8ed3c66",
+          "mechanism": "The duplicate-code detector treats intentionally similar ASCII and Unicode console-output fixtures as duplicate implementation code.",
+          "path": "platform-tests/src/test/resources/console/details/skip/Skip-skipWithSingleLineReason-summary-unicode.out.txt",
+          "behavior": "The paired summary-unicode and summary-ascii expected-output fixtures legitimately share the same test summary lines; this selected duplicate signal is not a maintainability defect in production code.",
+          "adjudication": "false_positive",
+          "evidence": "revision 8ed3c66c7eb20b835cf92f50a7bf8830838c462e; direct source comparison of summary-unicode.out.txt:2-14 and summary-ascii.out.txt:2-14 shows identical expected test output; deterministic quality ledger contains 216 low-severity JSCPD records, including fixture pairs. Lizard completed with zero findings, but no full inspection/disposition model was authored; validate-artifacts required gap-analysis.json and finding-dispositions.json."
+        }
+      ]
+    },
+    {
+      "id": "java-performance-8ed3c66",
+      "target": {
+        "repository": "https://github.com/junit-team/junit5",
+        "revision": "8ed3c66c7eb20b835cf92f50a7bf8830838c462e"
+      },
+      "language": "Java",
+      "family": "performance",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "java-performance-doc-css-signals-8ed3c66",
+          "mechanism": "Static frontend rules flag documentation stylesheet selector complexity and an external font import, but no workload or browser trace establishes a user-visible regression.",
+          "path": "documentation/src/javadoc/junit-stylesheet.css",
+          "behavior": "The analyzer reported six low-severity CSS signals; source lines 5 and 111-118 show the external font import and external-link pseudo-element selectors. Their operational cost depends on generated documentation page size and browser/network behavior, which was not exercised.",
+          "adjudication": "pending_review",
+          "evidence": "revision 8ed3c66c7eb20b835cf92f50a7bf8830838c462e; direct source trace documentation/src/javadoc/junit-stylesheet.css:5,31,111-118; deterministic provenance /tmp/scout-reference-corpus/java-artifacts/performance/performance-deterministic-summary.json:7-94 reports exactly six low signals. No browser workload/reproduction was run and canonical coverage/disposition artifacts are absent; validate-artifacts required gap-analysis.json and finding-dispositions.json."
+        }
+      ]
+    },
+    {
+      "id": "csharp-architecture-4da8212",
+      "target": {
+        "repository": "https://github.com/dotnet-architecture/eShopOnWeb.git",
+        "revision": "4da8212117e87d808d4bbc7da6286fd2147ce606"
+      },
+      "language": "C#",
+      "family": "architecture",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "csharp-architecture-generated-migration-length-4da8212",
+          "mechanism": "An EF Core migration's generated schema-declaration method exceeds a generic method-length threshold.",
+          "path": "src/Infrastructure/Data/Migrations/20201202111507_InitialModel.cs",
+          "behavior": "This is generated, linear CreateSequence/CreateTable migration content rather than an application architectural boundary with decomposable control flow.",
+          "adjudication": "false_positive",
+          "evidence": "Revision 4da8212117e87d808d4bbc7da6286fd2147ce606: source lines 6-10 declare Migration.InitialModel.Up and lines 10-30 are sequential schema declarations; architecture/deterministic-findings.json rule ARCHITECTURE060 (architecture-patterns.json:59) reports the same generated method. Deterministic phase completed, but no full area-by-category manual gap/disposition model was authored, so the family remains incomplete."
+        }
+      ]
+    },
+    {
+      "id": "csharp-quality-4da8212",
+      "target": {
+        "repository": "https://github.com/dotnet-architecture/eShopOnWeb.git",
+        "revision": "4da8212117e87d808d4bbc7da6286fd2147ce606"
+      },
+      "language": "C#",
+      "family": "quality",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "csharp-quality-generated-migration-length-4da8212",
+          "mechanism": "A generic function-length metric classifies an EF Core generated migration as a high-severity code-quality issue.",
+          "path": "src/Infrastructure/Data/Migrations/20201202111507_InitialModel.cs",
+          "behavior": "The 152-line Up method is generated migration DDL with cyclomatic complexity 1, so splitting it would not improve an application-maintained abstraction.",
+          "adjudication": "false_positive",
+          "evidence": "Revision 4da8212117e87d808d4bbc7da6286fd2147ce606: source lines 6-10 identify an EF Migration and lines 10-30 show declarative migration-builder calls; quality/deterministic-findings.json rule COMPLEXITY008 records 152 lines and complexity 1 from quality-lizard.json:7. Deterministic Lizard and JSCPD phases completed; full gap/disposition coverage was intentionally not fabricated, so the family remains incomplete."
+        }
+      ]
+    },
+    {
+      "id": "csharp-security-4da8212",
+      "target": {
+        "repository": "https://github.com/dotnet-architecture/eShopOnWeb.git",
+        "revision": "4da8212117e87d808d4bbc7da6286fd2147ce606"
+      },
+      "language": "C#",
+      "family": "security",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "csharp-security-mutable-actions-4da8212",
+          "mechanism": "GitHub Actions workflow resolves privileged build dependencies through mutable version tags rather than immutable commit SHAs.",
+          "path": ".github/workflows/dotnetcore.yml",
+          "behavior": "The push and pull-request workflow resolves actions/checkout@v2 and actions/setup-dotnet@v1 at run time; a retargeted tag can change code executed by the CI job without a repository commit.",
+          "adjudication": "validated_true",
+          "evidence": "Revision 4da8212117e87d808d4bbc7da6286fd2147ce606: .github/workflows/dotnetcore.yml lines 3 and 11-15 define push/pull_request triggers and the two mutable action references. security/deterministic-findings.json rules SECURITY002 and SECURITY003, sourced from semgrep.json findings 1 and 2, independently flag those lines."
+        },
+        {
+          "id": "csharp-security-data-protection-key-pending-review-4da8212",
+          "mechanism": "A committed ASP.NET Core Data Protection key file matches a generic API-key detector.",
+          "path": "src/Web/key-768c1632-cf7b-41a9-bb7a-bff228ae8fba.xml",
+          "behavior": "The artifact is an expired Data Protection master-key descriptor rather than an API credential, but it might still decrypt ciphertext issued while the key was active if it was ever used by a deployed key ring.",
+          "adjudication": "pending_review",
+          "evidence": "Revision 4da8212117e87d808d4bbc7da6286fd2147ce606: sanitized XML metadata identifies a key element with DataProtection descriptor type, creation/activation/expiration metadata, and a master-key element; the descriptor's expiration is in 2022. src/Web/Web.csproj lines 1-85 has no Content rule for this file, and no PersistKeysTo configuration exists under src/Web. Runtime key-ring provenance, prior deployment use, and exposure of past protected ciphertext remain unverified; raw key material was not retained or emitted."
+        },
+        {
+          "id": "csharp-security-container-user-unverified-4da8212",
+          "mechanism": "Final application image stages omit an explicit USER instruction.",
+          "path": "src/Web/Dockerfile",
+          "behavior": "Whether the final process is root depends on the external base-image default, which was not executed or inspected.",
+          "adjudication": "pending_review",
+          "evidence": "Revision 4da8212117e87d808d4bbc7da6286fd2147ce606: src/Web/Dockerfile lines 20-27 define the final runtime stage and ENTRYPOINT with no USER. security/deterministic-findings.json rule SECURITY014 (semgrep.json:13) labels it critical, but detector output alone cannot establish the base image's effective user."
+        }
+      ]
+    },
+    {
+      "id": "csharp-performance-4da8212",
+      "target": {
+        "repository": "https://github.com/dotnet-architecture/eShopOnWeb.git",
+        "revision": "4da8212117e87d808d4bbc7da6286fd2147ce606"
+      },
+      "language": "C#",
+      "family": "performance",
+      "input": {
+        "supported": true
+      },
+      "adjudicationStatus": "incomplete",
+      "issues": [
+        {
+          "id": "csharp-performance-identity-height-transition-4da8212",
+          "mechanism": "The served identity-menu stylesheet transitions the layout-affecting height property on hover.",
+          "path": "src/Web/wwwroot/css/shared/components/identity/identity.css",
+          "behavior": "Hover expands the dropdown from 10px to 14rem over 0.35 seconds, requiring layout work on animation frames instead of compositor-only transform or opacity work.",
+          "adjudication": "validated_true",
+          "evidence": "Revision 4da8212117e87d808d4bbc7da6286fd2147ce606: identity.css lines 30-45 set transition: height and change height in the hover rule; Views/Shared/_Layout.cshtml lines 19-24 serves the production site.min.css bundle containing this compiled selector. performance/deterministic-findings.json rules PERFORMANCE013-PERFORMANCE016, sourced from performance-frontend.json, flag the same height transition."
+        },
+        {
+          "id": "csharp-performance-catalog-cache-key-reachability-4da8212",
+          "mechanism": "Paged and unpaged catalog reads share the same browser-local cache key.",
+          "path": "src/BlazorAdmin/Services/CachedCatalogItemServiceDecorator.cs",
+          "behavior": "ListPaged and List both use the items key, so a fresh value written by one method can be returned by the other; static caller search found no invocation outside the interface/decorator, leaving production reachability unproven.",
+          "adjudication": "pending_review",
+          "evidence": "Revision 4da8212117e87d808d4bbc7da6286fd2147ce606: CachedCatalogItemServiceDecorator.cs lines 27-47 and 51-72 both read/write the same items key, while CatalogItemService.cs lines 59-75 accepts pageSize but requests a fixed page size. Direct source evidence establishes the collision mechanism; no target runtime was executed and no external caller was found in the pinned checkout."
+        }
+      ]
+    }
+  ]
+}

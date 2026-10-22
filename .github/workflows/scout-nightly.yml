@@ -1,0 +1,237 @@
+name: Scout assessment
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '23 3 * * *'
+  workflow_dispatch:
+    inputs:
+      full:
+        description: Force a full assessment instead of reusing a valid baseline
+        required: false
+        default: false
+        type: boolean
+      initialize_baseline:
+        description: Explicitly permit creation of the first durable baseline
+        required: false
+        default: false
+        type: boolean
+      authorize_egress:
+        description: Explicitly authorize configured provider source egress for this dispatch
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: scout-assessment-${{ github.repository }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  GO_VERSION: 1.25.0
+  NODE_VERSION: 22.18.0
+  PNPM_VERSION: 11.25.0
+  PYTHON_VERSION: 3.11.11
+  CLAWPATCH_REVISION: 734f81bc1514b52a0627edb0c24ebe1a18b36105
+  CLAWPATCH_REPOSITORY: https://github.com/openclaw/clawpatch.git
+  SCOUT_BASELINE_BUCKET: ${{ vars.SCOUT_BASELINE_BUCKET }}
+  SCOUT_BASELINE_PREFIX: ${{ vars.SCOUT_BASELINE_PREFIX }}
+  SCOUT_AWS_REGION: ${{ vars.SCOUT_AWS_REGION }}
+  SCOUT_AWS_ROLE_ARN: ${{ vars.SCOUT_AWS_ROLE_ARN }}
+  SCOUT_FAIL_ON: ${{ vars.SCOUT_FAIL_ON || 'high' }}
+
+jobs:
+  assess:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      REQUESTED_FULL: ${{ inputs.full || 'false' }}
+      ALLOW_INITIAL_BASELINE: ${{ inputs.initialize_baseline || 'false' }}
+      ALLOW_EGRESS: ${{ inputs.authorize_egress || 'false' }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Validate durable baseline configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          for variable in SCOUT_BASELINE_BUCKET SCOUT_BASELINE_PREFIX SCOUT_AWS_REGION SCOUT_AWS_ROLE_ARN; do
+            if [[ -z "${!variable}" ]]; then
+              echo "::error::Durable baseline prerequisite is missing: repository variable $variable must be configured."
+              exit 3
+            fi
+          done
+
+      - name: Configure durable baseline access
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ env.SCOUT_AWS_ROLE_ARN }}
+          aws-region: ${{ env.SCOUT_AWS_REGION }}
+          role-session-name: scout-assessment
+
+      - name: Verify durable baseline storage
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v aws >/dev/null || { echo '::error::AWS CLI is unavailable on this runner.'; exit 3; }
+          aws s3api list-objects-v2 \
+            --bucket "$SCOUT_BASELINE_BUCKET" \
+            --prefix "${SCOUT_BASELINE_PREFIX%/}/${GITHUB_REPOSITORY}/" \
+            --max-keys 1 >/dev/null
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          check-latest: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          check-latest: false
+
+      - name: Set up scanner Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          check-latest: false
+
+      - name: Provision pinned eligible scanners outside source
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y bubblewrap
+          mkdir -p "$RUNNER_TEMP/scout-tools"
+          GOBIN="$RUNNER_TEMP/scout-tools" GOPATH="$RUNNER_TEMP/scout-gopath" go install github.com/gitleaks/gitleaks/v8@v8.30.1
+          python -m venv "$RUNNER_TEMP/scout-python"
+          "$RUNNER_TEMP/scout-python/bin/pip" install --disable-pip-version-check 'setuptools==80.9.0' 'ruff==0.15.8' 'semgrep==1.100.0'
+          printf '%s\n' "$RUNNER_TEMP/scout-tools" >> "$GITHUB_PATH"
+          printf '%s\n' "$RUNNER_TEMP/scout-python/bin" >> "$GITHUB_PATH"
+
+      - name: Set up pnpm
+        shell: bash
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+          [[ "$(pnpm --version)" == "$PNPM_VERSION" ]] || { echo '::error::Pinned pnpm activation failed.'; exit 3; }
+
+      - name: Build Scout outside the assessed repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          go build -trimpath -buildvcs=false -o "$RUNNER_TEMP/scout" ./cmd/scout
+
+      - name: Build the pinned Clawpatch bundle
+        id: clawpatch
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_dir="$RUNNER_TEMP/clawpatch-source"
+          git clone --no-checkout "$CLAWPATCH_REPOSITORY" "$source_dir"
+          git -C "$source_dir" fetch --depth=1 origin "$CLAWPATCH_REVISION"
+          git -C "$source_dir" checkout --detach FETCH_HEAD
+          clawpatch_cli="$(CLAWPATCH_SOURCE="$source_dir" CLAWPATCH_OUTPUT_DIR="$RUNNER_TEMP/clawpatch" ./scripts/build-clawpatch.sh)"
+          printf 'path=%s\n' "$clawpatch_cli" >> "$GITHUB_OUTPUT"
+
+      - name: Restore the durable baseline
+        id: baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          key="${SCOUT_BASELINE_PREFIX%/}/${GITHUB_REPOSITORY}/scout-state-v1/baseline.tar.gz"
+          archive="$RUNNER_TEMP/baseline.tar.gz"
+          if aws s3 cp "s3://${SCOUT_BASELINE_BUCKET}/${key}" "$archive"; then
+            aws s3 cp "s3://${SCOUT_BASELINE_BUCKET}/${key}.sha256" "$archive.sha256"
+            ./scripts/bundle-state.sh extract --state-dir "$GITHUB_WORKSPACE/.scout" --input "$archive"
+            printf 'available=true\n' >> "$GITHUB_OUTPUT"
+          elif [[ "$ALLOW_INITIAL_BASELINE" == 'true' ]]; then
+            echo 'No durable baseline was restored; this explicitly authorized run will establish the initial baseline.'
+            printf 'available=false\n' >> "$GITHUB_OUTPUT"
+          else
+            echo '::error::Durable baseline is unavailable. Restore it or run workflow_dispatch with initialize_baseline=true to create the first baseline.'
+            exit 3
+          fi
+
+      - name: Assess repository
+        id: assessment
+        shell: bash
+        env:
+          SCOUT_PROVIDER_ENDPOINT: ${{ vars.SCOUT_PROVIDER_ENDPOINT }}
+          SCOUT_PROVIDER_MODEL: ${{ vars.SCOUT_PROVIDER_MODEL }}
+          SCOUT_PROVIDER_PROMPT_VERSION: ${{ vars.SCOUT_PROVIDER_PROMPT_VERSION }}
+          SCOUT_PROVIDER_CREDENTIAL_ENV: SCOUT_PROVIDER_TOKEN
+          SCOUT_PROVIDER_TOKEN: ${{ inputs.authorize_egress && secrets.SCOUT_PROVIDER_TOKEN || '' }}
+          CLAWPATCH_PROVIDER: ${{ vars.CLAWPATCH_PROVIDER }}
+          OPENAI_API_KEY: ${{ inputs.authorize_egress && secrets.CLAWPATCH_OPENAI_API_KEY || '' }}
+          ANTHROPIC_API_KEY: ${{ inputs.authorize_egress && secrets.CLAWPATCH_ANTHROPIC_API_KEY || '' }}
+        run: |
+          set -euo pipefail
+          args=(assess --root . --clawpatch "${{ steps.clawpatch.outputs.path }}" --json)
+          if [[ "$ALLOW_EGRESS" == 'true' ]]; then
+            args+=(--allow-egress)
+          fi
+          args+=(--fail-on "$SCOUT_FAIL_ON")
+          if [[ "${{ steps.baseline.outputs.available }}" != 'true' || "$REQUESTED_FULL" == 'true' ]]; then
+            args+=(--full)
+          fi
+          set +e
+          "$RUNNER_TEMP/scout" "${args[@]}" > "$RUNNER_TEMP/scout-assessment.json" 2> "$RUNNER_TEMP/scout-assessment.stderr"
+          exit_code=$?
+          set -e
+          printf 'exit_code=%s\n' "$exit_code" >> "$GITHUB_OUTPUT"
+
+      - name: Bundle run state as evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -d "$GITHUB_WORKSPACE/.scout" ]]; then
+            ./scripts/bundle-state.sh create --state-dir "$GITHUB_WORKSPACE/.scout" --output "$RUNNER_TEMP/scout-run-state.tar.gz"
+          fi
+
+      - name: Retain assessment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scout-assessment-${{ github.run_id }}
+          if-no-files-found: warn
+          retention-days: 90
+          path: |
+            ${{ runner.temp }}/scout-assessment.json
+            ${{ runner.temp }}/scout-assessment.stderr
+            ${{ runner.temp }}/scout-run-state.tar.gz
+            ${{ runner.temp }}/scout-run-state.tar.gz.sha256
+
+      - name: Publish a complete state baseline
+        if: steps.assessment.outputs.exit_code == '0' || steps.assessment.outputs.exit_code == '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          key="${SCOUT_BASELINE_PREFIX%/}/${GITHUB_REPOSITORY}/scout-state-v1/baseline.tar.gz"
+          archive="$RUNNER_TEMP/scout-run-state.tar.gz"
+          [[ -f "$archive" && -f "$archive.sha256" ]] || { echo '::error::Assessment did not produce a state bundle.'; exit 3; }
+          aws s3 cp "$archive" "s3://${SCOUT_BASELINE_BUCKET}/${key}"
+          aws s3 cp "$archive.sha256" "s3://${SCOUT_BASELINE_BUCKET}/${key}.sha256"
+
+      - name: Enforce assessment result
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${{ steps.assessment.outputs.exit_code }}" in
+            0) exit 0 ;;
+            2)
+              echo '::error::Scout returned a partial assessment. Evidence was retained; this is not a complete assessment.'
+              exit 2
+              ;;
+            3) echo '::error::Scout reported a readiness or configuration failure.'; exit 3 ;;
+            1) echo '::error::Scout CI gate failed.'; exit 1 ;;
+            *) echo '::error::Scout did not return a recognized assessment status.'; exit 1 ;;
+          esac

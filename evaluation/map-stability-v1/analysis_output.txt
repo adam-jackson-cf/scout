@@ -1,0 +1,590 @@
+
+## fastapi
+
+| run | rc | s | total | heuristic-src | agent-mapper | stale-status | result(new/changed/stale) | inventory |
+|---|---|---|---|---|---|---|---|---|
+| H1 | 0 | 1.2 | 154 | 154 | 0 | 0 | 154/0/0 | files=1728 sourceFiles=716 ownedSourceFiles=65 weak=true elapsed=0s |
+| H2 | 0 | 1.1 | 154 | 154 | 0 | 0 | 154/0/0 | files=1728 sourceFiles=716 ownedSourceFiles=65 weak=true elapsed=0s |
+| H3 | 0 | 1.0 | 154 | 154 | 0 | 0 | 154/0/0 | files=1728 sourceFiles=716 ownedSourceFiles=65 weak=true elapsed=0s |
+| A1 | 0 | 153.2 | 187 | 154 | 33 | 0 | 187/0/0 | files=1728 sourceFiles=716 ownedSourceFiles=65 weak=true elapsed=0s |
+| A2 | 0 | 140.1 | 185 | 154 | 31 | 0 | 185/0/0 | files=1728 sourceFiles=716 ownedSourceFiles=65 weak=true elapsed=0s |
+| A3 | 0 | 265.5 | 202 | 154 | 48 | 0 | 202/0/0 | files=1728 sourceFiles=716 ownedSourceFiles=65 weak=true elapsed=0s |
+| A1_rerun1 | 0 | 153.3 | 218 | 154 | 64 | 0 | 31/3/30 | files=1728 sourceFiles=716 ownedSourceFiles=65 weak=true elapsed=0s |
+| A1_rerun2 | 0 | 155.3 | 244 | 154 | 90 | 0 | 26/12/52 | files=1728 sourceFiles=716 ownedSourceFiles=65 weak=true elapsed=0s |
+| M1_content | 0 | 297.3 | 267 | 154 | 113 | 0 | 23/14/76 | files=1728 sourceFiles=716 ownedSourceFiles=65 weak=true elapsed=0s |
+| M2_struct | 0 | 215.4 | 296 | 154 | 142 | 0 | 29/13/102 | files=1729 sourceFiles=717 ownedSourceFiles=66 weak=true elapsed=0s |
+
+{
+ "heur_jaccard": [
+  1.0,
+  1.0
+ ],
+ "fresh_all_jaccard": {
+  "A1-A2": 0.7465,
+  "A1-A3": 0.684,
+  "A2-A3": 0.7354
+ },
+ "fresh_agent_only_jaccard": {
+  "A1-A2": 0.0847,
+  "A1-A3": 0.0519,
+  "A2-A3": 0.1449
+ },
+ "fresh_agent_n": {
+  "A1": 33,
+  "A2": 31,
+  "A3": 48
+ },
+ "fresh_agent_survival_A1_in": {
+  "A2": 0.1515,
+  "A3": 0.1212
+ },
+ "same_all_jaccard": {
+  "A1-A1_rerun1": 0.8578,
+  "A1_rerun1-A1_rerun2": 0.8934
+ },
+ "same_agent_only_jaccard": {
+  "A1-A1_rerun1": 0.5156,
+  "A1_rerun1-A1_rerun2": 0.7111
+ },
+ "same_agent_survival": {
+  "A1->A1_rerun1": 1.0,
+  "A1_rerun1->A1_rerun2": 1.0
+ },
+ "coverage": {
+  "H1": [
+   306,
+   1132
+  ],
+  "A1": [
+   508,
+   1132
+  ],
+  "A2": [
+   435,
+   1132
+  ],
+  "A3": [
+   742,
+   1132
+  ],
+  "A1_rerun2": [
+   610,
+   1132
+  ]
+ },
+ "ownership_change_fresh": {
+  "A1-A2": {
+   "files_owned_both": 427,
+   "owner_set_changed": 209,
+   "only_in_first": 144,
+   "only_in_second": 48
+  },
+  "A1-A3": {
+   "files_owned_both": 569,
+   "owner_set_changed": 294,
+   "only_in_first": 2,
+   "only_in_second": 250
+  },
+  "A2-A3": {
+   "files_owned_both": 475,
+   "owner_set_changed": 208,
+   "only_in_first": 0,
+   "only_in_second": 344
+  }
+ },
+ "ownership_change_same": {
+  "A1->A1_rerun1": {
+   "files_owned_both": 571,
+   "owner_set_changed": 240,
+   "only_in_first": 0,
+   "only_in_second": 105
+  },
+  "A1_rerun1->A1_rerun2": {
+   "files_owned_both": 676,
+   "owner_set_changed": 203,
+   "only_in_first": 0,
+   "only_in_second": 1
+  }
+ },
+ "mut_content": {
+  "prev": 244,
+  "now": 267,
+  "removed_from_state": [],
+  "new": [
+   [
+    "feat_config_f09efa40eb",
+    "agent-mapper",
+    "Project validation and dependency configuration",
+    [
+     "pyproject.toml",
+     ".pre-commit-config.yaml",
+     ".github/workflows/test.yml"
+    ]
+   ],
+   [
+    "feat_infra_1c26a12f85",
+    "agent-mapper",
+    "Documentation preview deployment and PR reporting",
+    [
+     ".github/workflows/preview-docs.yml",
+     ".github/actions/watch-previews/action.yml",
+     ".github/actions/watch-previews/app/main.py"
+    ]
+   ],
+   [
+    "feat_library_095c687080",
+    "agent-mapper",
+    "Middleware, CORS, and exception handling",
+    [
+     "docs_src/middleware/tutorial001.py",
+     "docs_src/advanced_middleware/tutorial001.py",
+     "docs_src/advanced_middleware/tutorial002.py"
+    ]
+   ],
+   [
+    "feat_library_134e9f46df",
+    "agent-mapper",
+    "OpenAPI customization and operation identity",
+    [
+     "docs_src/conditional_openapi/tutorial001.py",
+     "docs_src/extending_openapi/tutorial001.py",
+     "docs_src/extending_openapi/tutorial002.py"
+    ]
+   ],
+   [
+    "feat_library_1671dc94ea",
+    "agent-mapper",
+    "Application events and background tasks",
+    [
+     "docs_src/events/tutorial001.py",
+     "docs_src/events/tutorial002.py",
+     "docs_src/events/tutorial003.py"
+    ]
+   ],
+   [
+    "feat_library_1f17dee8d8",
+    "agent-mapper",
+    "Custom response classes and bodyless statuses",
+    [
+     "docs_src/custom_response/tutorial001.py",
+     "docs_src/custom_response/tutorial001b.py",
+     "docs_src/custom_response/tutorial002.py"
+    ]
+   ],
+   [
+    "feat_library_3211a060dd",
+    "agent-mapper",
+    "First steps and basic parameter routing examples",
+    [
+     "docs_src/first_steps/tutorial001.py",
+     "docs_src/first_steps/tutorial002.py",
+     "docs_src/first_steps/tutorial003.py"
+    ]
+   ],
+   [
+    "feat_library_366165b415",
+    "agent-mapper",
+    "Header and cookie parameter examples",
+    [
+     "docs_src/cookie_params/tutorial001.py",
+     "docs_src/cookie_params/tutorial001_an.py",
+     "docs_src/cookie_params/tutorial001_an_py310.py"
+    ]
+   ],
+   [
+    "feat_library_3a36e5b29b",
+    "agent-mapper",
+    "Proxy roots and OpenAPI servers",
+    [
+     "docs_src/behind_a_proxy/tutorial001.py",
+     "docs_src/behind_a_proxy/tutorial002.py",
+     "docs_src/behind_a_proxy/tutorial003.py"
+    ]
+   ],
+   [
+    "feat_library_3ca5c858b1",
+    "agent-mapper",
+    "Multipart uploads and installation checks",
+    [
+     "docs_src/request_files/tutorial001.py",
+     "docs_src/request_files/tutorial001_02.py",
+     "docs_src/request_files/tutorial001_02_an.py"
+    ]
+   ],
+   [
+    "feat_library_83b190d5fe",
+    "agent-mapper",
+    "Numeric path validation examples",
+    [
+     "docs_src/path_params_numeric_validations/tutorial001.py",
+     "docs_src/path_params_numeric_validations/tutorial001_an.py",
+     "docs_src/path_params_numeric_validations/tutorial001_an_py310.py"
+    ]
+   ],
+   [
+    "feat_library_adf108d76a",
+    "agent-mapper",
+    "Nested request models and partial updates",
+    [
+     "docs_src/body_nested_models/tutorial001.py",
+     "docs_src/body_nested_models/tutorial001_py310.py",
+     "docs_src/body_nested_models/tutorial002.py"
+    ]
+   ],
+   [
+    "feat_library_e01c51f0df",
+    "agent-mapper",
+    "Additional response schemas",
+    [
+     "docs_src/additional_responses/tutorial001.py",
+     "docs_src/additional_responses/tutorial002.py",
+     "docs_src/additional_responses/tutorial003.py"
+    ]
+   ],
+   [
+    "feat_library_f25466c93b",
+    "agent-mapper",
+    "Request body models and field metadata",
+    [
+     "docs_src/body/tutorial001.py",
+     "docs_src/body/tutorial001_py310.py",
+     "docs_src/body/tutorial002.py"
+    ]
+   ],
+   [
+    "feat_library_fc3626c7e6",
+    "agent-mapper",
+    "JSON encoding and alternate model types",
+    [
+     "docs_src/encoder/tutorial001.py",
+     "docs_src/encoder/tutorial001_py310.py",
+     "docs_src/dataclasses/tutorial001.py"
+    ]
+   ],
+   [
+    "feat_test-suite_0d3230a932",
+    "agent-mapper",
+    "Response model validation and filtering",
+    [
+     "tests/test_response_model_as_return_annotation.py",
+     "tests/test_response_model_include_exclude.py",
+     "tests/test_response_model_invalid.py"
+    ]
+   ],
+   [
+    "feat_test-suite_187d41095c",
+    "agent-mapper",
+    "Schema model name collisions",
+    [
+     "tests/test_duplicate_models_openapi.py",
+     "tests/test_modules_same_name_body/app/a.py",
+     "tests/t
+
+## axum
+
+| run | rc | s | total | heuristic-src | agent-mapper | stale-status | result(new/changed/stale) | inventory |
+|---|---|---|---|---|---|---|---|---|
+| H1 | 0 | 0.5 | 52 | 52 | 0 | 0 | 52/0/0 | files=417 sourceFiles=158 ownedSourceFiles=51 weak=false elapsed=0s |
+| H2 | 0 | 0.6 | 52 | 52 | 0 | 0 | 52/0/0 | files=417 sourceFiles=158 ownedSourceFiles=51 weak=false elapsed=0s |
+| H3 | 0 | 0.5 | 52 | 52 | 0 | 0 | 52/0/0 | files=417 sourceFiles=158 ownedSourceFiles=51 weak=false elapsed=0s |
+| A1 | 0 | 183.5 | 101 | 52 | 49 | 0 | 101/0/0 | files=417 sourceFiles=158 ownedSourceFiles=51 weak=false elapsed=0s |
+| A2 | 0 | 157.2 | 97 | 52 | 45 | 0 | 97/0/0 | files=417 sourceFiles=158 ownedSourceFiles=51 weak=false elapsed=0s |
+| A3 | 0 | 159.7 | 97 | 52 | 45 | 0 | 97/0/0 | files=417 sourceFiles=158 ownedSourceFiles=51 weak=false elapsed=0s |
+| A1_rerun1 | 0 | 141.8 | 130 | 52 | 78 | 0 | 29/9/40 | files=417 sourceFiles=158 ownedSourceFiles=51 weak=false elapsed=0s |
+| A1_rerun2 | 0 | 140.7 | 151 | 52 | 99 | 0 | 21/23/55 | files=417 sourceFiles=158 ownedSourceFiles=51 weak=false elapsed=0s |
+| M1_content | 0 | 119.4 | 170 | 52 | 118 | 0 | 19/19/80 | files=417 sourceFiles=158 ownedSourceFiles=51 weak=false elapsed=0s |
+| M2_struct | 0 | 153.5 | 183 | 52 | 131 | 0 | 13/32/86 | files=418 sourceFiles=159 ownedSourceFiles=51 weak=false elapsed=0s |
+
+{
+ "heur_jaccard": [
+  1.0,
+  1.0
+ ],
+ "fresh_all_jaccard": {
+  "A1-A2": 0.5115,
+  "A1-A3": 0.4667,
+  "A2-A3": 0.6303
+ },
+ "fresh_agent_only_jaccard": {
+  "A1-A2": 0.1899,
+  "A1-A3": 0.1325,
+  "A2-A3": 0.3433
+ },
+ "fresh_agent_n": {
+  "A1": 49,
+  "A2": 45,
+  "A3": 45
+ },
+ "fresh_agent_survival_A1_in": {
+  "A2": 0.3061,
+  "A3": 0.2245
+ },
+ "same_all_jaccard": {
+  "A1-A1_rerun1": 0.7769,
+  "A1_rerun1-A1_rerun2": 0.8609
+ },
+ "same_agent_only_jaccard": {
+  "A1-A1_rerun1": 0.6282,
+  "A1_rerun1-A1_rerun2": 0.7879
+ },
+ "same_agent_survival": {
+  "A1->A1_rerun1": 1.0,
+  "A1_rerun1->A1_rerun2": 1.0
+ },
+ "coverage": {
+  "H1": [
+   50,
+   264
+  ],
+  "A1": [
+   153,
+   264
+  ],
+  "A2": [
+   153,
+   264
+  ],
+  "A3": [
+   153,
+   264
+  ],
+  "A1_rerun2": [
+   153,
+   264
+  ]
+ },
+ "ownership_change_fresh": {
+  "A1-A2": {
+   "files_owned_both": 180,
+   "owner_set_changed": 125,
+   "only_in_first": 46,
+   "only_in_second": 4
+  },
+  "A1-A3": {
+   "files_owned_both": 180,
+   "owner_set_changed": 145,
+   "only_in_first": 46,
+   "only_in_second": 8
+  },
+  "A2-A3": {
+   "files_owned_both": 184,
+   "owner_set_changed": 118,
+   "only_in_first": 0,
+   "only_in_second": 4
+  }
+ },
+ "ownership_change_same": {
+  "A1->A1_rerun1": {
+   "files_owned_both": 226,
+   "owner_set_changed": 142,
+   "only_in_first": 0,
+   "only_in_second": 0
+  },
+  "A1_rerun1->A1_rerun2": {
+   "files_owned_both": 226,
+   "owner_set_changed": 74,
+   "only_in_first": 0,
+   "only_in_second": 12
+  }
+ },
+ "mut_content": {
+  "prev": 151,
+  "now": 170,
+  "removed_from_state": [],
+  "new": [
+   [
+    "feat_config_2a61b77aaa",
+    "agent-mapper",
+    "Crate integration and public API surfaces",
+    [
+     "axum-core/src/lib.rs",
+     "axum-core/build.rs",
+     "axum-core/Cargo.toml"
+    ]
+   ],
+   [
+    "feat_infra_b48588bb23",
+    "agent-mapper",
+    "Workspace quality and contribution configuration",
+    [
+     "Cargo.toml",
+     ".github/workflows/CI.yml",
+     ".github/workflows/patch.toml"
+    ]
+   ],
+   [
+    "feat_library_27fe445312",
+    "agent-mapper",
+    "Typed path and state projection derives",
+    [
+     "axum-macros/src/typed_path.rs",
+     "axum-macros/src/from_ref.rs"
+    ]
+   ],
+   [
+    "feat_library_5a42d2e8a2",
+    "agent-mapper",
+    "Body extraction and structured payloads",
+    [
+     "axum/src/extract/mod.rs",
+     "axum/src/extract/rejection.rs",
+     "axum/src/body/mod.rs"
+    ]
+   ],
+   [
+    "feat_library_6d9ce52b64",
+    "agent-mapper",
+    "HTTP method routing",
+    [
+     "axum/src/routing/method_filter.rs",
+     "axum/src/routing/method_routing.rs"
+    ]
+   ],
+   [
+    "feat_library_a50f927278",
+    "agent-mapper",
+    "Core bodies and response conversion",
+    [
+     "axum-core/src/body.rs",
+     "axum-core/src/error.rs",
+     "axum-core/src/response/mod.rs"
+    ]
+   ],
+   [
+    "feat_library_c07af41e58",
+    "agent-mapper",
+    "Path, query, and request metadata extractors",
+    [
+     "axum/src/extract/path/mod.rs",
+     "axum/src/extract/path/de.rs",
+     "axum/src/extract/query.rs"
+    ]
+   ],
+   [
+    "feat_library_d581e03e52",
+    "agent-mapper",
+    "Router topology and path dispatch",
+    [
+     "axum/src/routing/mod.rs",
+     "axum/src/routing/route.rs",
+     "axum/src/routing/not_found.rs"
+    ]
+   ],
+   [
+    "feat_library_f21338f2a7",
+    "agent-mapper",
+    "Handlers and server service adapters",
+    [
+     "axum/src/handler/mod.rs",
+     "axum/src/handler/future.rs",
+     "axum/src/handler/service.rs"
+    ]
+   ],
+   [
+    "feat_release_0fa002f9bc",
+    "agent-mapper",
+    "Release and ecosystem documentation",
+    [
+     "CHANGELOG.md",
+     "axum/CHANGELOG.md",
+     "axum-core/CHANGELOG.md"
+    ]
+   ],
+   [
+    "feat_service_0ee1c40c80",
+    "agent-mapper",
+    "Body parsing examples",
+    [
+     "examples/form/src/main.rs",
+     "examples/multipart-form/src/main.rs",
+     "examples/parse-body-based-on-content-type/src/main.rs"
+    ]
+   ],
+   [
+    "feat_service_11a5835f5e",
+    "agent-mapper",
+    "Filesystem and template applications",
+    [
+     "examples/static-file-server/src/main.rs",
+     "examples/static-file-server/assets/index.html",
+     "examples/static-file-server/assets/script.js"
+    ]
+   ],
+   [
+    "feat_service_2e6de9406f",
+    "agent-mapper",
+    "Error customization examples",
+    [
+     "examples/anyhow-error-response/src/main.rs",
+     "examples/customize-extractor-error/src/main.rs",
+     "examples/customize-extractor-error/src/custom_extractor.rs"
+    ]
+   ],
+   [
+    "feat_service_5641509b15",
+    "agent-mapper",
+    "In-memory resource applications",
+    [
+     "examples/key-value-store/src/main.rs",
+     "examples/todos/src/main.rs"
+    ]
+   ],
+   [
+    "feat_service_5d180b9d53",
+    "agent-mapper",
+    "OAuth and session examples",
+    [
+     "examples/oauth/src/main.rs",
+     "examples/sessions/src/main.rs"
+    ]
+   ],
+   [
+    "feat_service_60131fe287",
+    "agent-mapper",
+    "WebSocket and chat applications",
+    [
+     "examples/websockets/src/main.rs",
+     "examples/websockets/src/client.rs",
+     "examples/websockets/assets/script.js"
+    ]
+   ],
+   [
+    "feat_service_8d34a9b333",
+    "agent-mapper",
+    "Listener and server lifecycle examples",
+    [
+     "examples/graceful-shutdown/src/main.rs",
+     "examples/listen-multiple-addrs/src/main.rs",
+     "examples/unix-domain-socket/src/main.rs"
+    ]
+   ],
+   [
+    "feat_service_d599150fb6",
+    "agent-mapper",
+    "Basic application and routing examples",
+    [
+     "examples/hello-world/src/main.rs",
+     "examples/readme/src/main.rs",
+     "examples/routes-and-handlers-close-together/src/main.rs"
+    ]
+   ],
+   [
+    "feat_test-suite_b8908f5225",
+    "agent-mapper",
+    "Framework test infrastructure and benchmarks",
+    [
+     "axum/src/test_helpers/mod.rs",
+     "axum/src/test_helpers/test_client.rs",
+     "axum/src/util.rs"
+    ]
+   ]
+  ],
+  "newly_stale_status": [],
+  "survival_all": 1.0,
+  "agent_survival": 1.0,
+  "heur_survival": 1.0,
+  "result": {
+   "features": 90,
+   "new": 19,
+   "changed": 19,
+   "stale":

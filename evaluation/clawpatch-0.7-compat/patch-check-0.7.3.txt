@@ -1,0 +1,38 @@
+Checking patch src/app.ts...
+error: while searching for:
+import { mapFeatures } from "./mapper.js";
+import { emitProgress } from "./progress.js";
+import { providerByName, type DroppedFinding } from "./provider.js";
+import { buildFixPrompt, buildReviewPromptBundle, buildRevalidatePrompt } from "./prompt.js";
+import type { ReviewMode, ReviewPromptManifest } from "./prompt.js";
+import {
+  evidenceLabel,
+
+error: patch failed: src/app.ts:23
+error: src/app.ts: patch does not apply
+Checking patch src/prompt.ts...
+Hunk #1 succeeded at 268 (offset 12 lines).
+Hunk #2 succeeded at 685 (offset 168 lines).
+Hunk #3 succeeded at 780 (offset 168 lines).
+Checking patch src/agent-mapper.ts...
+error: while searching for:
+import { isAbsolute, join } from "node:path";
+import { buildAgentMapPrompt } from "./prompt.js";
+import { ClawpatchError } from "./errors.js";
+import { Provider, ProviderOptions } from "./provider.js";
+import { AgentMapOutput, FeatureRecord, ProjectRecord } from "./types.js";
+
+error: patch failed: src/agent-mapper.ts:1
+error: src/agent-mapper.ts: patch does not apply
+Checking patch src/mappers/shared.ts...
+error: while searching for:
+    }
+    const rel = normalize(relative(realRoot, canonicalStart));
+    if (info.isFile()) {
+      if (!seen.has(rel) && !skipPath(rel)) {
+        seen.add(rel);
+        files.push(rel);
+      }
+
+error: patch failed: src/mappers/shared.ts:175
+error: src/mappers/shared.ts: patch does not apply

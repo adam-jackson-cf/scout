@@ -1,0 +1,139 @@
+name: Scout release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scout-release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  GO_VERSION: 1.25.0
+  NODE_VERSION: 22.18.0
+  PNPM_VERSION: 11.25.0
+  CLAWPATCH_REVISION: 734f81bc1514b52a0627edb0c24ebe1a18b36105
+  CLAWPATCH_VERSION: 0.7.3
+  CLAWPATCH_REPOSITORY: https://github.com/openclaw/clawpatch.git
+
+jobs:
+  scout-binary:
+    name: scout-${{ matrix.goos }}-${{ matrix.goarch }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+          - goos: linux
+            goarch: arm64
+          - goos: darwin
+            goarch: amd64
+          - goos: darwin
+            goarch: arm64
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          check-latest: false
+      - name: Build and checksum binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/release"
+          asset="$RUNNER_TEMP/release/scout-${{ matrix.goos }}-${{ matrix.goarch }}"
+          CGO_ENABLED=0 GOOS="${{ matrix.goos }}" GOARCH="${{ matrix.goarch }}" \
+            go build -trimpath -buildvcs=false -o "$asset" ./cmd/scout
+          shasum -a 256 "$asset" > "$asset.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scout-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: ${{ runner.temp }}/release/
+          if-no-files-found: error
+
+  clawpatch-bundle:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          check-latest: false
+      - name: Set up pinned pnpm
+        shell: bash
+        run: |
+          set -euo pipefail
+          corepack enable
+          corepack prepare "pnpm@${PNPM_VERSION}" --activate
+          [[ "$(pnpm --version)" == "$PNPM_VERSION" ]] || { echo '::error::Pinned pnpm activation failed.'; exit 1; }
+      - name: Build and checksum pinned bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_dir="$RUNNER_TEMP/clawpatch-source"
+          release_dir="$RUNNER_TEMP/release"
+          mkdir -p "$release_dir"
+          git clone --no-checkout "$CLAWPATCH_REPOSITORY" "$source_dir"
+          git -C "$source_dir" fetch --depth=1 origin "$CLAWPATCH_REVISION"
+          git -C "$source_dir" checkout --detach FETCH_HEAD
+          built_cli="$(CLAWPATCH_SOURCE="$source_dir" CLAWPATCH_OUTPUT_DIR="$RUNNER_TEMP/clawpatch" ./scripts/build-clawpatch.sh)"
+          [[ "$built_cli" == "$RUNNER_TEMP/clawpatch/$CLAWPATCH_REVISION/dist/cli.js" ]] || { echo '::error::Unexpected Clawpatch build layout.'; exit 1; }
+          asset="$release_dir/clawpatch-${CLAWPATCH_VERSION}-${CLAWPATCH_REVISION}.tar.gz"
+          tar -czf "$asset" -C "$RUNNER_TEMP/clawpatch" "$CLAWPATCH_REVISION"
+          asset_sha256="$(shasum -a 256 "$asset" | cut -d ' ' -f1)"
+          printf '%s  %s\n' "$asset_sha256" "$(basename "$asset")" > "$asset.sha256"
+          cat > "$release_dir/clawpatch-manifest.json" <<EOF
+          {
+            "schemaVersion": 1,
+            "name": "clawpatch",
+            "version": "${CLAWPATCH_VERSION}",
+            "revision": "${CLAWPATCH_REVISION}",
+            "node": ">=22",
+            "buildNode": "$(node --version)",
+            "pnpm": "${PNPM_VERSION}",
+            "asset": "$(basename "$asset")",
+            "entrypoint": "${CLAWPATCH_REVISION}/dist/cli.js",
+            "safetyPatchSha256": "f39d73dad42b5d6701b1fee51f7784d3eb2b1548808d1ee47d8ef146ca97a865",
+            "sha256": "${asset_sha256}"
+          }
+          EOF
+          shasum -a 256 "$release_dir/clawpatch-manifest.json" > "$release_dir/clawpatch-manifest.json.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: clawpatch-bundle
+          path: ${{ runner.temp }}/release/
+          if-no-files-found: error
+
+  publish:
+    needs: [scout-binary, clawpatch-bundle]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          path: release
+          merge-multiple: true
+      - name: Verify release checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd release
+          for checksum in *.sha256; do
+            shasum -a 256 -c "$checksum"
+          done
+      - name: Create GitHub release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh release create "$GITHUB_REF_NAME" release/* \
+            --verify-tag \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes

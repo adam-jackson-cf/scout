@@ -1,0 +1,796 @@
+#0 junit5 ce509d4da5 files=5
+SUBJ: Modernize JRE tests so they actually get executed
+BODY: ''
+STAT:
+  .../api/condition/DisabledForJreRangeConditionTests.java     | 34 +++++++++--------------
+   .../api/condition/DisabledForJreRangeIntegrationTests.java   | 42 ++++++++++++----------------
+   .../api/condition/EnabledForJreRangeConditionTests.java      | 35 +++++++++---------------
+   .../api/condition/EnabledForJreRangeIntegrationTests.java    | 47 +++++++++++++-------------------
+   .../test/java/org/junit/jupiter/api/condition/JRETests.java  | 28 +++++++++++++++++++
+   5 files changed, 90 insertions(+), 96 deletions(-)
+
+#1 nest 6f550ca25d files=28
+SUBJ: chore(deps): update dependency @types/jest to v27
+BODY: ''
+STAT:
+  sample/01-cats-app/package-lock.json                         | Bin 354270 -> 354268 bytes
+   sample/01-cats-app/package.json                              |   2 +-
+   sample/19-auth-jwt/package-lock.json                         | Bin 354916 -> 354914 bytes
+   sample/19-auth-jwt/package.json                              |   2 +-
+   sample/25-dynamic-modules/package-lock.json                  | Bin 347787 -> 347785 bytes
+   sample/25-dynamic-modules/package.json                       |   2 +-
+   28 files changed, 14 insertions(+), 14 deletions(-)
+
+#2 fastapi 7f0e2f6cfa files=1
+SUBJ: 📝 Update release notes
+BODY: ''
+STAT:
+  docs/en/docs/release-notes.md | 23 +++++++++++++++++------
+   1 file changed, 17 insertions(+), 6 deletions(-)
+
+#3 fastapi cf5e67590a files=1
+SUBJ: ⬆ Upgrade required Python version to >= 3.6.1, needed by typing.Deque, used by Pydantic (#2733)
+BODY: 'Co-authored-by: Taneli Hukkinen <hukkinj1@users.noreply.github.com>\nCo-authored-by: Sebastián Ramírez <tiangolo@gmail.com>'
+STAT:
+  pyproject.toml | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#4 eShopOnWeb e2b909aeef files=1
+SUBJ: only index C#
+BODY: ''
+STAT:
+  .github/workflows/codeindex.yml | 1 +
+   1 file changed, 1 insertion(+)
+
+#5 nest 25a92ccce1 files=1
+SUBJ: Update Readme.md
+BODY: ''
+STAT:
+  Readme.md | 1 +
+   1 file changed, 1 insertion(+)
+
+#6 webpack adc10a5636 files=1
+SUBJ: make ESM tracking info message less verbose
+BODY: ''
+STAT:
+  lib/FileSystemInfo.js | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#7 fastapi 292b8c8ce9 files=1
+SUBJ: 📝 Update release notes
+BODY: ''
+STAT:
+  docs/en/docs/release-notes.md | 1 +
+   1 file changed, 1 insertion(+)
+
+#8 caddy d21e88ae3a files=2
+SUBJ: Minor tweaks
+BODY: ''
+STAT:
+  modules/caddypki/ca.go        | 4 ++--
+   modules/caddytls/pemloader.go | 2 +-
+   2 files changed, 3 insertions(+), 3 deletions(-)
+
+#9 nest 3dc080bd77 files=1
+SUBJ: Update packages/common/pipes/file/parse-file.pipe.ts
+BODY: 'Co-authored-by: Kamil Mysliwiec <mail@kamilmysliwiec.com>'
+STAT:
+  packages/common/pipes/file/parse-file.pipe.ts | 7 ++++---
+   1 file changed, 4 insertions(+), 3 deletions(-)
+
+#10 eShopOnWeb 4304545f19 files=1
+SUBJ: Fix Multiple DbContext Registration (#703)
+BODY: 'Hi, i noticed that in the WebTestFixture used for FunctionalTests the DbContexts were registered without removing the existing ones in Program.cs\nwhich leads to duplication'
+STAT:
+  tests/FunctionalTests/Web/WebTestFixture.cs | 10 ++++++++++
+   1 file changed, 10 insertions(+)
+
+#11 fastapi 38802eefeb files=21
+SUBJ: 📝 Quote `pip install` command for Zsh compatibility in multiple languages (#5214)
+BODY: 'Co-authored-by: Sebastián Ramírez <tiangolo@gmail.com>'
+STAT:
+  docs/de/docs/index.md               | 2 +-
+   docs/es/docs/index.md               | 2 +-
+   docs/es/docs/tutorial/index.md      | 4 ++--
+   docs/fr/docs/index.md               | 2 +-
+   docs/id/docs/index.md               | 2 +-
+   docs/it/docs/index.md               | 2 +-
+   21 files changed, 25 insertions(+), 25 deletions(-)
+
+#12 nest 2890a34080 files=8
+SUBJ: fix(deps): update dependency @nestjs/graphql to v7.10.6
+BODY: ''
+STAT:
+  package-lock.json                                | Bin 1089776 -> 1085167 bytes
+   package.json                                     |   2 +-
+   sample/12-graphql-schema-first/package-lock.json | Bin 401592 -> 394489 bytes
+   sample/12-graphql-schema-first/package.json      |   2 +-
+   sample/22-graphql-prisma/package-lock.json       | Bin 581248 -> 574126 bytes
+   sample/22-graphql-prisma/package.json            |   2 +-
+   8 files changed, 4 insertions(+), 4 deletions(-)
+
+#13 caddy bf380d00ab files=1
+SUBJ: caddyhttp: Reject absurd methods (#4538)
+BODY: '* caddyhttp: Reject absurdly long methods\n\n* Limit method to 32 chars and truncate\n\n* Just reject the request and debug-log it\n\n* Log remote address'
+STAT:
+  modules/caddyhttp/server.go | 11 +++++++++++
+   1 file changed, 11 insertions(+)
+
+#14 junit5 bbdbef1d47 files=2
+SUBJ: Only build docs as part of Linux CI build
+BODY: ''
+STAT:
+  .github/workflows/main.yml             | 1 +
+   documentation/documentation.gradle.kts | 4 ----
+   2 files changed, 1 insertion(+), 4 deletions(-)
+
+#15 caddy bbe3663167 files=1
+SUBJ: caddyconfig: Fix httploader leak from unused responses (#5159)
+BODY: 'fixes #5158\n\nSigned-off-by: Chris Lahaye <mail@chrislahaye.com>\n\nSigned-off-by: Chris Lahaye <mail@chrislahaye.com>'
+STAT:
+  caddyconfig/httploader.go | 4 ++--
+   1 file changed, 2 insertions(+), 2 deletions(-)
+
+#16 axum 4c846488c2 files=1
+SUBJ: Update expected stderr of trybuild test (#1402)
+BODY: ''
+STAT:
+  axum-macros/tests/typed_path/fail/not_deserialize.stderr | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#17 nest b46efe6388 files=10
+SUBJ: chore(@nestjs) publish v9.3.0-beta.3 release
+BODY: ''
+STAT:
+  lerna.json                               | 2 +-
+   packages/common/package.json             | 2 +-
+   packages/core/package.json               | 4 ++--
+   packages/microservices/package.json      | 6 +++---
+   packages/platform-express/package.json   | 6 +++---
+   packages/platform-fastify/package.json   | 2 +-
+   10 files changed, 17 insertions(+), 17 deletions(-)
+
+#18 webpack e2f2fcfc4b files=2
+SUBJ: fix memory leaks in mini-css
+BODY: ''
+STAT:
+  package.json | 2 +-
+   yarn.lock    | 8 ++++----
+   2 files changed, 5 insertions(+), 5 deletions(-)
+
+#19 webpack bb1f0ca17f files=6
+SUBJ: fix: logic with espaced
+BODY: ''
+STAT:
+  cspell.json                                              |   1 +
+   lib/css/CssParser.js                                     |   8 +-
+   lib/css/walkCssTokens.js                                 |  42 ++++--
+   test/__snapshots__/ConfigCacheTestCases.longtest.js.snap | 256 ++++++++++++++++++++++++++++++++++-
+   test/__snapshots__/ConfigTestCases.basictest.js.snap     |   4 +
+   test/configCases/css/urls/spacing.css                    |   7 +
+   6 files changed, 301 insertions(+), 17 deletions(-)
+
+#20 caddy b4e28af953 files=2
+SUBJ: replacer: working directory global placeholder (#5127)
+BODY: ''
+STAT:
+  replacer.go      | 4 ++++
+   replacer_test.go | 5 +++++
+   2 files changed, 9 insertions(+)
+
+#21 caddy 3a1e81dbf6 files=1
+SUBJ: fileserver: Better handling of HTTP status override (#4132)
+BODY: ''
+STAT:
+  modules/caddyhttp/fileserver/staticfiles.go | 46 ++++++++++++++++++++++++++++++----------------
+   1 file changed, 30 insertions(+), 16 deletions(-)
+
+#22 caddy f20a8e7aa0 files=1
+SUBJ: cmd: replace deprecate func use (#5170)
+BODY: ''
+STAT:
+  cmd/commands.go | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#23 nest 1625875e75 files=1
+SUBJ: chore(deps): bump json5 from 1.0.1 to 1.0.2 in /sample/06-mongoose
+BODY: 'Bumps [json5](https://github.com/json5/json5) from 1.0.1 to 1.0.2.\n- [Release notes](https://github.com/json5/json5/releases)\n- [Changelog](https://github.com/json5/json5/blob/main/CHANGELOG.md)\n- [Commits](https://github.com/json5/json5/compare/v1.0.1...v1.0.2)\n\n---\nupdated-dependencies:\n- dependency-name: json5\n  dependency-type: indirect\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>'
+STAT:
+  sample/06-mongoose/package-lock.json | Bin 604394 -> 604394 bytes
+   1 file changed, 0 insertions(+), 0 deletions(-)
+
+#24 caddy ff137d17d0 files=1
+SUBJ: caddyconfig: Support placeholders in HTTP loader
+BODY: ''
+STAT:
+  caddyconfig/httploader.go | 13 ++++++++++---
+   1 file changed, 10 insertions(+), 3 deletions(-)
+
+#25 webpack 189a8863cd files=5
+SUBJ: chore: Allow passing a typePrefix to ContextElementDependency
+BODY: 'This is needed to tell different usages apart. The added information is\nused by the lazy compilation feature.'
+STAT:
+  lib/ContextModule.js                         | 1 +
+   lib/ContextModuleFactory.js                  | 4 +++-
+   lib/dependencies/ContextElementDependency.js | 7 ++++++-
+   lib/dependencies/ImportParserPlugin.js       | 1 +
+   lib/hmr/LazyCompilationPlugin.js             | 1 +
+   5 files changed, 12 insertions(+), 2 deletions(-)
+
+#26 fastapi 3d201623dd files=1
+SUBJ: ✏ 🌐 Fix typo in Portuguese translation for `docs/pt/docs/tutorial/path-params.md` (#4722)
+BODY: 'Co-authored-by: Sebastián Ramírez <tiangolo@gmail.com>'
+STAT:
+  docs/pt/docs/tutorial/path-params.md | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#27 eShopOnWeb 4edf24df36 files=1
+SUBJ: Bump xunit.runner.console from 2.6.6 to 2.7.0
+BODY: 'Bumps [xunit.runner.console](https://github.com/xunit/xunit) from 2.6.6 to 2.7.0.\n- [Commits](https://github.com/xunit/xunit/compare/2.6.6...2.7.0)\n\n---\nupdated-dependencies:\n- dependency-name: xunit.runner.console\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>'
+STAT:
+  Directory.Packages.props | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#28 caddy 1c8ea00828 files=4
+SUBJ: go.mod: Migrate to golang.org/x/term (#4073)
+BODY: 'golang.org/x/crypto/ssh/terminal is deprecated in favor of golang.org/x/term\n\nSee https://github.com/caddyserver/caddy/pull/4073/checks?check_run_id=2152150495\nError: SA1019: package golang.org/x/crypto/ssh/terminal is deprecated: this package moved to golang.org/x/term.  (staticcheck)\n\nSee https://github.com/caddyserver/caddy/pull/4073/checks?check_run_id=2152228516\nError: SA1019: package golang.'
+STAT:
+  go.mod                                 |  1 +
+   go.sum                                 |  3 +++
+   logging.go                             |  4 ++--
+   modules/caddyhttp/caddyauth/command.go | 12 ++++++------
+   4 files changed, 12 insertions(+), 8 deletions(-)
+
+#29 nest f9a4c646ac files=9
+SUBJ: chore(): update readme
+BODY: ''
+STAT:
+  packages/common/Readme.md             | 6 +++---
+   packages/core/Readme.md               | 6 +++---
+   packages/microservices/Readme.md      | 6 +++---
+   packages/platform-express/Readme.md   | 6 +++---
+   packages/platform-fastify/Readme.md   | 6 +++---
+   packages/platform-socket.io/Readme.md | 6 +++---
+   9 files changed, 27 insertions(+), 27 deletions(-)
+
+#30 eShopOnWeb dbc19cf611 files=1
+SUBJ: Update README.md
+BODY: 'Update .NET 6 reference to .NET 7\nNote that the PDF will need to be created and published before it will have the latest .NET 7 changes in it.'
+STAT:
+  README.md | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#31 junit5 b3d5182633 files=4
+SUBJ: Fix reporting of Enclosed Parameterized tests in Vintage engine
+BODY: 'Fixes #3083.'
+STAT:
+  .../src/docs/asciidoc/release-notes/release-notes-5.9.2.adoc |  3 +-
+   .../junit/vintage/engine/execution/RunListenerAdapter.java   |  2 +-
+   .../vintage/engine/VintageTestEngineExecutionTests.java      | 34 ++++++++++++++++++
+   .../EnclosedWithParameterizedChildrenJUnit4TestCase.java     | 59 ++++++++++++++++++++++++++++++++
+   4 files changed, 96 insertions(+), 2 deletions(-)
+
+#32 nest 55d9edc21f files=2
+SUBJ: fix(deps): update dependency @nestjs/swagger to v5.0.8
+BODY: ''
+STAT:
+  sample/11-swagger/package-lock.json | Bin 320637 -> 320637 bytes
+   sample/11-swagger/package.json      |   2 +-
+   2 files changed, 1 insertion(+), 1 deletion(-)
+
+#33 junit5 10f8ceb211 files=2
+SUBJ: Create release notes for 5.8.2
+BODY: ''
+STAT:
+  documentation/src/docs/asciidoc/release-notes/index.adoc     |  2 ++
+   .../src/docs/asciidoc/release-notes/release-notes-5.8.2.adoc | 58 ++++++++++++++++++++++++++++++++
+   2 files changed, 60 insertions(+)
+
+#34 webpack 0a47e34d77 files=1
+SUBJ: Improve grammar of warning message
+BODY: "- if used with does or doesn't present means to 'make a presentation'\n- a singular countable word takes an article, except for special cases"
+STAT:
+  lib/NodeStuffPlugin.js | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#35 junit5 66564c4110 files=3
+SUBJ: Log synthetic extensions under a dedicated category
+BODY: 'Issue: #2679'
+STAT:
+  .../jupiter/engine/descriptor/ClassBasedTestDescriptor.java  |  2 +-
+   .../junit/jupiter/engine/extension/ExtensionRegistrar.java   | 10 ++++++++++
+   .../jupiter/engine/extension/MutableExtensionRegistry.java   |  5 +++++
+   3 files changed, 16 insertions(+), 1 deletion(-)
+
+#36 fastapi 326837443f files=1
+SUBJ: 📝 Update release notes
+BODY: ''
+STAT:
+  docs/en/docs/release-notes.md | 1 +
+   1 file changed, 1 insertion(+)
+
+#37 junit5 19c5be59c0 files=13
+SUBJ: Update Javadoc for custom disabled reasons in condition annotations
+BODY: ''
+STAT:
+  .../org/junit/jupiter/api/condition/DisabledForJreRange.java | 9 ++++++++-
+   .../java/org/junit/jupiter/api/condition/DisabledIf.java     | 6 +++++-
+   .../jupiter/api/condition/DisabledIfEnvironmentVariable.java | 9 ++++++++-
+   .../jupiter/api/condition/DisabledIfSystemProperty.java      | 9 ++++++++-
+   .../java/org/junit/jupiter/api/condition/DisabledOnJre.java  | 9 ++++++++-
+   .../java/org/junit/jupiter/api/condition/DisabledOnOs.java   | 9 ++++++++-
+   13 files changed, 93 insertions(+), 13 deletions(-)
+
+#38 axum e2dc6b3147 files=1
+SUBJ: Remove outdated documentation (#793)
+BODY: 'Fixes: #792'
+STAT:
+  axum/src/extract/request_parts.rs | 8 --------
+   1 file changed, 8 deletions(-)
+
+#39 webpack f09cd1a88a files=2
+SUBJ: chore: debug
+BODY: ''
+STAT:
+  .github/workflows/test.yml |  1 +
+   tooling/debug.js           | 25 +++++++++++++++++++++++++
+   2 files changed, 26 insertions(+)
+
+#40 nest 918da9470f files=2
+SUBJ: chore(deps): update dependency artillery to v1.7.7
+BODY: ''
+STAT:
+  package-lock.json | Bin 1015796 -> 1016139 bytes
+   package.json      |   2 +-
+   2 files changed, 1 insertion(+), 1 deletion(-)
+
+#41 junit5 5ec6242d1c files=1
+SUBJ: Document concurrency for TestExecutionListener implementations
+BODY: "Add a note about concurrency considerations for\n`TestExecutionListener` implementations to this interface's Javadoc.\n\nIssue: #2539\nCo-authored-by: Marc Philipp <mail@marcphilipp.de>"
+STAT:
+  .../org/junit/platform/launcher/TestExecutionListener.java   | 10 ++++++++++
+   1 file changed, 10 insertions(+)
+
+#42 eShopOnWeb 2bd115930b files=1
+SUBJ: add readme to sln
+BODY: ''
+STAT:
+  Everything.sln | 31 ++++++++++++++++++-------------
+   1 file changed, 18 insertions(+), 13 deletions(-)
+
+#43 axum a8eb26b672 files=1
+SUBJ: Fix typos in rejection messages
+BODY: ''
+STAT:
+  src/extract/rejection.rs | 4 ++--
+   1 file changed, 2 insertions(+), 2 deletions(-)
+
+#44 junit5 d3f8e4ad9e files=3
+SUBJ: Prepare 5.9 release notes
+BODY: ''
+STAT:
+  .../docs/asciidoc/release-notes/release-notes-5.9.0-M1.adoc  | 111 -----------------------------
+   .../docs/asciidoc/release-notes/release-notes-5.9.0-RC1.adoc |  73 -------------------
+   .../src/docs/asciidoc/release-notes/release-notes-5.9.0.adoc | 118 ++++++++++++++++++++++++++-----
+   3 files changed, 102 insertions(+), 200 deletions(-)
+
+#45 fastapi 97a2ebc219 files=1
+SUBJ: 📝 Update release notes
+BODY: ''
+STAT:
+  docs/en/docs/release-notes.md | 1 +
+   1 file changed, 1 insertion(+)
+
+#46 caddy c2327161f7 files=1
+SUBJ: cmd: Set Origin header properly on API requests
+BODY: 'Ref. https://caddy.community/t/bug-in-enforce-origin/15417'
+STAT:
+  cmd/commandfuncs.go | 4 ++--
+   1 file changed, 2 insertions(+), 2 deletions(-)
+
+#47 axum 16ee83a799 files=1
+SUBJ: Add Jotsy to project showcase (#746)
+BODY: ''
+STAT:
+  ECOSYSTEM.md | 1 +
+   1 file changed, 1 insertion(+)
+
+#48 axum c0bf77cbe4 files=2
+SUBJ: Update readme
+BODY: ''
+STAT:
+  README.md       | 94 ++++++++++++++++++++++++++++++++++++++++++++++++++++-------------------------
+   src/response.rs |  5 ++++-
+   2 files changed, 68 insertions(+), 31 deletions(-)
+
+#49 nest 29a18ef5d7 files=1
+SUBJ: chore(deps): bump http-cache-semantics
+BODY: 'Bumps [http-cache-semantics](https://github.com/kornelski/http-cache-semantics) from 4.1.0 to 4.1.1.\n- [Release notes](https://github.com/kornelski/http-cache-semantics/releases)\n- [Commits](https://github.com/kornelski/http-cache-semantics/commits)\n\n---\nupdated-dependencies:\n- dependency-name: http-cache-semantics\n  dependency-type: indirect\n...\n\nSigned-off-by: dependabot[bot] <support@github.com'
+STAT:
+  .../gateway/package-lock.json                                | Bin 744427 -> 744427 bytes
+   1 file changed, 0 insertions(+), 0 deletions(-)
+
+#50 axum 50f42d8071 files=1
+SUBJ: Fix path route in extractor docs (#711)
+BODY: ''
+STAT:
+  axum/src/docs/extract.md | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#51 caddy d4b2f1bcee files=1
+SUBJ: caddyhttp: Fix fallback for the error handler chain (#4131)
+BODY: '* caddyhttp: Fix fallback for the error handler chain\n\nThe fix I went with in the end (after realizing some mistaken assumptions in #4131) is to just make the routes fall back to errorEmptyHandler instead of the non-error empty handler, if Terminal is true, making the routes error-aware. Ultimately this was probably just an oversight when errors was implemented at some point in the early betas of'
+STAT:
+  modules/caddyhttp/routes.go | 6 +++++-
+   1 file changed, 5 insertions(+), 1 deletion(-)
+
+#52 eShopOnWeb d3e1bcd956 files=1
+SUBJ: Bump Microsoft.VisualStudio.Web.CodeGeneration.Design
+BODY: 'Bumps [Microsoft.VisualStudio.Web.CodeGeneration.Design](https://github.com/dotnet/Scaffolding) from 7.0.2 to 7.0.4.\n- [Release notes](https://github.com/dotnet/Scaffolding/releases)\n- [Commits](https://github.com/dotnet/Scaffolding/commits)\n\n---\nupdated-dependencies:\n- dependency-name: Microsoft.VisualStudio.Web.CodeGeneration.Design\n  dependency-type: direct:production\n  update-type: version-upd'
+STAT:
+  Directory.Packages.props | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#53 eShopOnWeb 2a67d21396 files=2
+SUBJ: update readme
+BODY: ''
+STAT:
+  README.md          | 55 ++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+   src/Web/Program.cs |  5 ++++-
+   2 files changed, 58 insertions(+), 2 deletions(-)
+
+#54 eShopOnWeb 2e2c0316d0 files=1
+SUBJ: Bump FluentValidation from 11.4.0 to 11.5.1
+BODY: 'Bumps [FluentValidation](https://github.com/JeremySkinner/fluentvalidation) from 11.4.0 to 11.5.1.\n- [Release notes](https://github.com/JeremySkinner/fluentvalidation/releases)\n- [Changelog](https://github.com/FluentValidation/FluentValidation/blob/main/Changelog.txt)\n- [Commits](https://github.com/JeremySkinner/fluentvalidation/compare/11.4.0...11.5.1)\n\n---\nupdated-dependencies:\n- dependency-name'
+STAT:
+  Directory.Packages.props | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#55 junit5 b5e2f16916 files=1
+SUBJ: Update ArchUnit to 0.20.0 (#2658)
+BODY: ''
+STAT:
+  gradle/libs.versions.toml | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#56 junit5 0dad5f937a files=5
+SUBJ: Assert that @TempDir fields are not final
+BODY: 'Closes #2839'
+STAT:
+  .../docs/asciidoc/release-notes/release-notes-5.9.0-M1.adoc  |  4 ++-
+   .../src/docs/asciidoc/user-guide/writing-tests.adoc          |  6 ++--
+   .../src/main/java/org/junit/jupiter/api/io/TempDir.java      |  4 +--
+   .../org/junit/jupiter/engine/extension/TempDirectory.java    |  8 ++++-
+   .../engine/extension/TempDirectoryPreconditionTests.java     | 58 ++++++++++++++++++++++++++++++--
+   5 files changed, 71 insertions(+), 9 deletions(-)
+
+#57 axum 015de21a52 files=1
+SUBJ: feat: Add axum-casbin-auth and axum-middleware-example (#1357)
+BODY: 'Co-authored-by: David Pedersen <david.pdrsn@gmail.com>'
+STAT:
+  ECOSYSTEM.md | 2 ++
+   1 file changed, 2 insertions(+)
+
+#58 nest dd3d85ae8a files=1
+SUBJ: feat(microservices): exposes base context on the main package
+BODY: ''
+STAT:
+  packages/microservices/ctx-host/index.ts | 1 +
+   1 file changed, 1 insertion(+)
+
+#59 caddy a8fdc0a998 files=1
+SUBJ: core: Initialize logging before admin
+BODY: "We'll see how this goes.\n\nhttps://caddy.community/t/calling-the-admin-api-from-within-a-route-route-causes-a-deadlock/11319"
+STAT:
+  caddy.go | 22 +++++++++++-----------
+   1 file changed, 11 insertions(+), 11 deletions(-)
+
+#60 fastapi c15fce3248 files=1
+SUBJ: 📝 Update release notes
+BODY: ''
+STAT:
+  docs/en/docs/release-notes.md | 1 +
+   1 file changed, 1 insertion(+)
+
+#61 nest 6ccd5e1711 files=2
+SUBJ: chore(deps-dev): bump nats from 2.5.0 to 2.6.0
+BODY: 'Bumps [nats](https://github.com/nats-io/nats.js) from 2.5.0 to 2.6.0.\n- [Release notes](https://github.com/nats-io/nats.js/releases)\n- [Commits](https://github.com/nats-io/nats.js/compare/v2.5.0...v2.6.0)\n\n---\nupdated-dependencies:\n- dependency-name: nats\n  dependency-type: direct:development\n  update-type: version-update:semver-minor\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>'
+STAT:
+  package-lock.json | Bin 992936 -> 992783 bytes
+   package.json      |   8 ++++----
+   2 files changed, 4 insertions(+), 4 deletions(-)
+
+#62 axum 6d0abd447c files=2
+SUBJ: axum-debug: Version 0.2.2 (#553)
+BODY: '- Fix regression causing errors when `#[debug_handler]` was used on functions with multiple\n  extractors ([#552])\n\n[#552]: https://github.com/tokio-rs/axum/pull/552'
+STAT:
+  axum-debug/CHANGELOG.md | 8 +++++++-
+   axum-debug/Cargo.toml   | 2 +-
+   2 files changed, 8 insertions(+), 2 deletions(-)
+
+#63 junit5 a58ff5d355 files=1
+SUBJ: Upgrade ArchUnit to 0.17.0
+BODY: ''
+STAT:
+  gradle.properties | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#64 webpack b5b92dc20e files=1
+SUBJ: update example
+BODY: ''
+STAT:
+  examples/css/README.md | 44 ++++++++++++++++++++++----------------------
+   1 file changed, 22 insertions(+), 22 deletions(-)
+
+#65 webpack 52fc3312a5 files=1
+SUBJ: chore(deps): bump acorn from 8.4.0 to 8.4.1
+BODY: 'Bumps [acorn](https://github.com/acornjs/acorn) from 8.4.0 to 8.4.1.\n- [Release notes](https://github.com/acornjs/acorn/releases)\n- [Commits](https://github.com/acornjs/acorn/compare/8.4.0...8.4.1)\n\n---\nupdated-dependencies:\n- dependency-name: acorn\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>'
+STAT:
+  yarn.lock | 6 +++---
+   1 file changed, 3 insertions(+), 3 deletions(-)
+
+#66 nest 1566b4a8ee files=1
+SUBJ: feat: add a log for undefined dependencies
+BODY: ''
+STAT:
+  packages/core/injector/injector.ts | 3 +++
+   1 file changed, 3 insertions(+)
+
+#67 eShopOnWeb f45283a30e files=1
+SUBJ: Bump MSTest.TestAdapter from 3.2.0 to 3.2.2
+BODY: 'Bumps [MSTest.TestAdapter](https://github.com/microsoft/testfx) from 3.2.0 to 3.2.2.\n- [Release notes](https://github.com/microsoft/testfx/releases)\n- [Changelog](https://github.com/microsoft/testfx/blob/main/docs/Changelog.md)\n- [Commits](https://github.com/microsoft/testfx/compare/v.3.2.0...v3.2.2)\n\n---\nupdated-dependencies:\n- dependency-name: MSTest.TestAdapter\n  dependency-type: direct:product'
+STAT:
+  Directory.Packages.props | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#68 fastapi ca2fae0588 files=4
+SUBJ: ✨ Add support for `FrozenSet` in parameters (e.g. query) (#2938)
+BODY: 'Co-authored-by: saborisov <borisov_s@tass.ru>\nCo-authored-by: Sebastián Ramírez <tiangolo@gmail.com>'
+STAT:
+  fastapi/dependencies/utils.py |  2 ++
+   tests/main.py                 |  7 ++++++-
+   tests/test_application.py     | 35 +++++++++++++++++++++++++++++++++++
+   tests/test_query.py           |  1 +
+   4 files changed, 44 insertions(+), 1 deletion(-)
+
+#69 caddy a3ae146cbd files=1
+SUBJ: fileserver: Reject non-GET/HEAD requests (close #5166) (#5167)
+BODY: '* fileserver: Reject non-GET/HEAD requests (close #5166)\n\n* Set Allow header according to RFC 9110 10.2.1'
+STAT:
+  modules/caddyhttp/fileserver/staticfiles.go | 8 ++++++++
+   1 file changed, 8 insertions(+)
+
+#70 eShopOnWeb 3e0ca9869d files=2
+SUBJ: update variable
+BODY: ''
+STAT:
+  src/Web/Program.cs       | 14 +++++++-------
+   src/Web/appsettings.json |  1 +
+   2 files changed, 8 insertions(+), 7 deletions(-)
+
+#71 webpack a7e5f3a73b files=2
+SUBJ: fix node.js because of v8 bug
+BODY: 'https://bugs.chromium.org/p/v8/issues/detail?id=12188'
+STAT:
+  .github/workflows/test.yml | 16 ++++++++--------
+   azure-pipelines.yml        | 14 +++++++-------
+   2 files changed, 15 insertions(+), 15 deletions(-)
+
+#72 eShopOnWeb a4906806a9 files=1
+SUBJ: Bump Microsoft.AspNetCore.Components.WebAssembly from 7.0.5 to 7.0.8 (#910)
+BODY: 'Bumps [Microsoft.AspNetCore.Components.WebAssembly](https://github.com/dotnet/aspnetcore) from 7.0.5 to 7.0.8.\n- [Release notes](https://github.com/dotnet/aspnetcore/releases)\n- [Changelog](https://github.com/dotnet/aspnetcore/blob/main/docs/ReleasePlanning.md)\n- [Commits](https://github.com/dotnet/aspnetcore/compare/v7.0.5...v7.0.8)\n\n---\nupdated-dependencies:\n- dependency-name: Microsoft.AspNetCo'
+STAT:
+  Directory.Packages.props | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#73 webpack c2b6f7866e files=4
+SUBJ: fix test cases for node 17
+BODY: ''
+STAT:
+  test/WasmHashes.unittest.js                           | 5 ++++-
+   test/__snapshots__/StatsTestCases.basictest.js.snap   | 4 ++--
+   test/statsCases/exclude-with-loader/webpack.config.js | 3 +++
+   test/statsCases/real-content-hash/test.config.js      | 5 ++---
+   4 files changed, 11 insertions(+), 6 deletions(-)
+
+#74 caddy 0b6f764356 files=2
+SUBJ: forwardauth: Support renaming copied headers, block support (#4783)
+BODY: ''
+STAT:
+  .../caddyfile_adapt/forward_auth_rename_headers.txt          | 116 +++++++++++++++++++++++++++++++
+   modules/caddyhttp/reverseproxy/forwardauth/caddyfile.go      |  33 +++++++--
+   2 files changed, 142 insertions(+), 7 deletions(-)
+
+#75 axum 8084b242d5 files=4
+SUBJ: Add `response::ErrorResponse` and `response::Result` (#921)
+BODY: '* feat: add response::{Error, Result}\n\nThis type makes for efficient use of the `?` operator when in a function\nwith multiple return error types that all implement `IntoResponse`.\n\nSigned-off-by: Nathaniel McCallum <nathaniel@profian.com>\n\n* misc adjustments from PR review\n\n* Rename to `ErrorResponse` and `ResultResponse`\n\n* nitpicky docs changes\n\n* update changelog\n\n* changelog wording\n\n* Apply s'
+STAT:
+  axum-core/CHANGELOG.md        |   5 ++-
+   axum-core/src/response/mod.rs | 108 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+   axum/CHANGELOG.md             |   5 ++-
+   axum/src/response/mod.rs      |   2 +-
+   4 files changed, 117 insertions(+), 3 deletions(-)
+
+#76 fastapi 87e29ec2c5 files=1
+SUBJ: 📝 Update release notes
+BODY: ''
+STAT:
+  docs/en/docs/release-notes.md | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#77 axum 8e439b17f3 files=1
+SUBJ: Clean up deny.toml (#597)
+BODY: ''
+STAT:
+  deny.toml | 14 +-------------
+   1 file changed, 1 insertion(+), 13 deletions(-)
+
+#78 axum fa36b49769 files=1
+SUBJ: Add hint for on further details for WebSocket (#1779)
+BODY: ''
+STAT:
+  axum/src/extract/ws.rs | 2 ++
+   1 file changed, 2 insertions(+)
+
+#79 fastapi add7c4800c files=1
+SUBJ: ⬆️ Upgrade test dependencies: Black, HTTPX, databases, types-ujson (#5399)
+BODY: ''
+STAT:
+  pyproject.toml | 8 ++++----
+   1 file changed, 4 insertions(+), 4 deletions(-)
+
+#80 fastapi 233214795a files=2
+SUBJ: 👥 Update FastAPI People (#4752)
+BODY: 'Co-authored-by: github-actions <github-actions@github.com>'
+STAT:
+  docs/en/data/github_sponsors.yml | 42 ++++++++--------------------------
+   docs/en/data/people.yml          | 74 +++++++++++++++++++++++++++++++++---------------------------
+   2 files changed, 50 insertions(+), 66 deletions(-)
+
+#81 caddy 6cadb60fa2 files=1
+SUBJ: templates: Document .OriginalReq
+BODY: 'Close caddyserver/website#91'
+STAT:
+  modules/caddyhttp/templates/templates.go | 4 ++++
+   1 file changed, 4 insertions(+)
+
+#82 eShopOnWeb 8bc7fcb69d files=1
+SUBJ: Migrated to dotnet 8 and Updated packages
+BODY: ''
+STAT:
+  Directory.Packages.props | 40 ++++++++++++++++++++--------------------
+   1 file changed, 20 insertions(+), 20 deletions(-)
+
+#83 axum d417910a16 files=2
+SUBJ: Add `Field::chunk` (#901)
+BODY: '* Added chunk function to multipart field\n\nThis fixes not being able to stream data from a multipart directly into a file or other output.\n\n* doc comment for clarification of usage and &mut self\n\n* fixed formatting\n\n* Corrected example to reflex best practices\n\n* Removed unwrap\n\n* clean up docs\n\n* update changelog\n\nCo-authored-by: David Pedersen <david.pdrsn@gmail.com>'
+STAT:
+  axum/CHANGELOG.md             |  5 ++++-
+   axum/src/extract/multipart.rs | 45 +++++++++++++++++++++++++++++++++++++++++++++
+   2 files changed, 49 insertions(+), 1 deletion(-)
+
+#84 caddy dce81e85d5 files=1
+SUBJ: docs: use backticks to not italicise glob path (#4460)
+BODY: ''
+STAT:
+  modules/caddyhttp/fileserver/staticfiles.go | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#85 eShopOnWeb 9f77f194d3 files=1
+SUBJ: Bump System.IdentityModel.Tokens.Jwt from 6.25.1 to 6.27.0
+BODY: 'Bumps [System.IdentityModel.Tokens.Jwt](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet) from 6.25.1 to 6.27.0.\n- [Release notes](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/releases)\n- [Changelog](https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/blob/dev/CHANGELOG.md)\n- [Commits](http'
+STAT:
+  Directory.Packages.props | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#86 junit5 fd93eeca94 files=1
+SUBJ: Fix seed property name documentation in ClassOrderer.Random
+BODY: 'Prior to this commit, the class-level Javadoc for ClassOrderer.Random\nincorrectly stated that the property name for the random seed was\n`junit.jupiter.execution.class.order.random.seed`, but it is actually\n`junit.jupiter.execution.order.random.seed`.\n\nThis commit fixes the documentation.\n\nFixes #2731'
+STAT:
+  .../src/main/java/org/junit/jupiter/api/ClassOrderer.java    | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#87 nest 721372f0c6 files=10
+SUBJ: chore(@nestjs) publish v9.0.8 release
+BODY: ''
+STAT:
+  lerna.json                               | 2 +-
+   packages/common/package.json             | 2 +-
+   packages/core/package.json               | 4 ++--
+   packages/microservices/package.json      | 6 +++---
+   packages/platform-express/package.json   | 6 +++---
+   packages/platform-fastify/package.json   | 2 +-
+   10 files changed, 17 insertions(+), 17 deletions(-)
+
+#88 junit5 73dbfa54bb files=1
+SUBJ: Upgradle to 7.3.3
+BODY: ''
+STAT:
+  gradle/wrapper/gradle-wrapper.properties | 4 ++--
+   1 file changed, 2 insertions(+), 2 deletions(-)
+
+#89 webpack 828722dcbb files=1
+SUBJ:  bug fix, implement solution mentioned in issue #16045
+BODY: ''
+STAT:
+  lib/Compilation.js | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#90 fastapi 462014e296 files=2
+SUBJ: 🌐 Add Korean translation for Tutorial - Path Parameters (#2355)
+BODY: ''
+STAT:
+  docs/ko/docs/tutorial/path-params.md | 244 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+   docs/ko/mkdocs.yml                   |   1 +
+   2 files changed, 245 insertions(+)
+
+#91 junit5 1150d6b389 files=2
+SUBJ: Update Test Distribution Gradle plugin to 2.3.2
+BODY: ''
+STAT:
+  buildSrc/build.gradle.kts | 2 +-
+   settings.gradle.kts       | 2 +-
+   2 files changed, 2 insertions(+), 2 deletions(-)
+
+#92 axum 1ace8554ce files=1
+SUBJ: Add ws example showing how to pass data to callback (#1185)
+BODY: ''
+STAT:
+  axum/src/extract/ws.rs | 31 +++++++++++++++++++++++++++++++
+   1 file changed, 31 insertions(+)
+
+#93 fastapi 95cbb43b06 files=1
+SUBJ: ⬆️ Upgrade dependencies for doc and dev internal extras: Typer, Uvicorn (#5400)
+BODY: ''
+STAT:
+  pyproject.toml | 4 ++--
+   1 file changed, 2 insertions(+), 2 deletions(-)
+
+#94 nest 9d63732763 files=1
+SUBJ: test(fastify): add specs for sse
+BODY: ''
+STAT:
+  integration/nest-application/sse/e2e/fastify.spec.ts | 86 ++++++++++++++++++++++++++++++++++++++++
+   1 file changed, 86 insertions(+)
+
+#95 webpack a9cf0d070e files=2
+SUBJ: fix context
+BODY: ''
+STAT:
+  lib/ContextModule.js                                | 2 +-
+   test/__snapshots__/StatsTestCases.basictest.js.snap | 4 ++--
+   2 files changed, 3 insertions(+), 3 deletions(-)
+
+#96 eShopOnWeb 8ec89a1c5f files=1
+SUBJ: Bump AutoMapper.Extensions.Microsoft.DependencyInjection (#891)
+BODY: 'Bumps [AutoMapper.Extensions.Microsoft.DependencyInjection](https://github.com/AutoMapper/AutoMapper.Extensions.Microsoft.DependencyInjection) from 12.0.0 to 12.0.1.\n- [Release notes](https://github.com/AutoMapper/AutoMapper.Extensions.Microsoft.DependencyInjection/releases)\n- [Commits](https://github.com/AutoMapper/AutoMapper.Extensions.Microsoft.DependencyInjection/compare/v12.0.0...v12.0.1)\n\n--'
+STAT:
+  Directory.Packages.props | 2 +-
+   1 file changed, 1 insertion(+), 1 deletion(-)
+
+#97 webpack 97887aba04 files=16
+SUBJ: separate test cases
+BODY: '- add cjs test cases\n- add esm test cases, filter them for now'
+STAT:
+  .../cases/loaders/{package-type => cjs-loader-type}/index.js | 11 ++---------
+   .../loaders/{package-type => cjs-loader-type}/loader.cjs     |  0
+   .../loaders/{package-type => cjs-loader-type}/loader.js      |  0
+   .../node_modules/cjs/loader.cjs                              |  0
+   .../node_modules/cjs/loader.js                               |  0
+   .../node_modules/cjs/package.json                            |  0
+   16 files changed, 25 insertions(+), 10 deletions(-)
+
+#98 webpack dfd79cb7f6 files=1
+SUBJ: chore: revert terser
+BODY: ''
+STAT:
+  yarn.lock | 13 +++++++++++--
+   1 file changed, 11 insertions(+), 2 deletions(-)
+
+#99 axum 2b386c0baa files=2
+SUBJ: Panic on overlapping routes in `MethodRouter` (#1102)
+BODY: "* Panic on overlapping routes in `MethodRouter`\n\n* changelog link\n\n* add test to ensure `head` and `get` don't overlap"
+STAT:
+  axum/CHANGELOG.md                  |   2 ++
+   axum/src/routing/method_routing.rs | 100 ++++++++++++++++++++++++++++++++++++++-------------------
+   2 files changed, 69 insertions(+), 33 deletions(-)

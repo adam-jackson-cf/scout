@@ -1,0 +1,21 @@
+rules:
+  - id: scout.performance.css.layout-height-transition
+    languages:
+      - generic
+    message: >-
+      Transitioning the CSS height property requires layout work on animation
+      frames. Prefer a compositor-friendly transform or opacity transition when
+      the visual behavior permits it.
+    metadata:
+      scout_issue_class: frontend-layout-animation
+      applicability: >-
+        Explicit transition or transition-property declarations that name the
+        layout-affecting height property in CSS source.
+      negative_boundary: >-
+        Transform, opacity, width, max-height, min-height, and transition: all
+        declarations are not matched; this is a static costly-pattern finding,
+        not a measured timing claim.
+    patterns:
+      - pattern-regex: |-
+          (?s:/\*.*?\*/)(*SKIP)(*F)|(?mi)(?:^|[;{])[ \t]*transition(?:-property)?[ \t]*:[ \t]*[^;{}\r\n]*(?:[\s,:])height(?:\s|,|;|$)
+    severity: WARNING

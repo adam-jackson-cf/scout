@@ -1,0 +1,116 @@
+{
+ "raw/llm_v1_choice.jsonl": {
+  "calls": 22,
+  "parsed": 22,
+  "cost_total_usd": 1.4261,
+  "cost_per_1k_usd": 64.82,
+  "latency_ms_p50": 8222,
+  "latency_ms_p95": 10375,
+  "models": [
+   "claude-opus-5-5"
+  ],
+  "splits": {
+   "all": {
+    "acc": "21/22",
+    "wilson95": [
+     0.782,
+     0.992
+    ],
+    "confusion": {
+     "false_positive->false_positive": 13,
+     "real_defect->false_positive": 1,
+     "real_defect->real_defect": 8
+    },
+    "wrong": [
+     "security-python-multipart-redos-test-extra-d666ccb6"
+    ]
+   },
+   "tuning": {
+    "acc": "9/10",
+    "wilson95": [
+     0.596,
+     0.982
+    ],
+    "confusion": {
+     "real_defect->false_positive": 1,
+     "false_positive->false_positive": 6,
+     "real_defect->real_defect": 3
+    },
+    "wrong": [
+     "security-python-multipart-redos-test-extra-d666ccb6"
+    ]
+   },
+   "heldout": {
+    "acc": "12/12",
+    "wilson95": [
+     0.757,
+     1.0
+    ],
+    "confusion": {
+     "false_positive->false_positive": 7,
+     "real_defect->real_defect": 5
+    },
+    "wrong": []
+   }
+  }
+ },
+ "raw/llm_v3_choice.jsonl": {
+  "calls": 22,
+  "parsed": 22,
+  "cost_total_usd": 1.2087,
+  "cost_per_1k_usd": 54.94,
+  "latency_ms_p50": 9149,
+  "latency_ms_p95": 11952,
+  "models": [
+   "claude-opus-5-5"
+  ],
+  "splits": {
+   "all": {
+    "acc": "20/22",
+    "wilson95": [
+     0.722,
+     0.975
+    ],
+    "confusion": {
+     "false_positive->false_positive": 13,
+     "real_defect->false_positive": 2,
+     "real_defect->real_defect": 7
+    },
+    "wrong": [
+     "security-python-multipart-redos-test-extra-d666ccb6",
+     "security-auto-public-path-dom-clobbering"
+    ]
+   },
+   "tuning": {
+    "acc": "9/10",
+    "wilson95": [
+     0.596,
+     0.982
+    ],
+    "confusion": {
+     "real_defect->false_positive": 1,
+     "false_positive->false_positive": 6,
+     "real_defect->real_defect": 3
+    },
+    "wrong": [
+     "security-python-multipart-redos-test-extra-d666ccb6"
+    ]
+   },
+   "heldout": {
+    "acc": "11/12",
+    "wilson95": [
+     0.646,
+     0.985
+    ],
+    "confusion": {
+     "false_positive->false_positive": 7,
+     "real_defect->real_defect": 4,
+     "real_defect->false_positive": 1
+    },
+    "wrong": [
+     "security-auto-public-path-dom-clobbering"
+    ]
+   }
+  }
+ }
+}

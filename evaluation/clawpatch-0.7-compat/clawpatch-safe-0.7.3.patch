@@ -1,0 +1,304 @@
+diff --git a/src/agent-mapper.ts b/src/agent-mapper.ts
+index c8d2fcf..0d025de 100644
+--- a/src/agent-mapper.ts
++++ b/src/agent-mapper.ts
+@@ -1,5 +1,5 @@
+ import { isAbsolute, join } from "node:path";
+-import { buildAgentMapPrompt } from "./prompt.js";
++import { buildAgentMapPrompt, sanitizeSensitiveText } from "./prompt.js";
+ import { ClawpatchError } from "./errors.js";
+ import type { Provider, ProviderOptions } from "./provider-types.js";
+ import { AgentMapOutput, FeatureRecord, ProjectRecord } from "./types.js";
+@@ -217,7 +217,9 @@ async function agentMap(
+     files: inventory.fileSamples,
+     summary: inventorySummary(inventory),
+   });
+-  const output = await provider.map(root, prompt, providerOptions);
++  const output = sanitizeAgentMapOutput(
++    await provider.map(root, sanitizeSensitiveText(prompt), providerOptions),
++  );
+   const seeds = await Promise.all(
+     output.features.map((feature) => toSeed(root, feature, inventory.allFiles)),
+   );
+@@ -229,6 +231,44 @@ async function agentMap(
+     : mapFeatureSeeds(root, project, existing, mappedSeeds, { filters });
+ }
+ 
++// Keep all path and identity-bearing values unchanged so Clawpatch stable IDs
++// remain canonical; redact only provider-authored descriptive metadata before
++// it can become a feature record.
++function sanitizeAgentMapOutput(output: AgentMapOutput): AgentMapOutput {
++  return {
++    features: output.features.map((feature) => ({
++      ...feature,
++      title: sanitizeSensitiveText(feature.title),
++      summary: sanitizeSensitiveText(feature.summary),
++      entrypoints: feature.entrypoints.map((entrypoint) => ({
++        ...entrypoint,
++        symbol: sanitizeOptionalText(entrypoint.symbol),
++        route: sanitizeOptionalText(entrypoint.route),
++        command: sanitizeOptionalText(entrypoint.command),
++      })),
++      ownedFiles: feature.ownedFiles.map((file) => ({
++        ...file,
++        reason: sanitizeSensitiveText(file.reason),
++      })),
++      contextFiles: feature.contextFiles.map((file) => ({
++        ...file,
++        reason: sanitizeSensitiveText(file.reason),
++      })),
++      tests: feature.tests.map((test) => ({
++        ...test,
++        command: sanitizeOptionalText(test.command),
++      })),
++      tags: feature.tags.map(sanitizeSensitiveText),
++      reason: sanitizeSensitiveText(feature.reason),
++    })),
++    notes: output.notes.map(sanitizeSensitiveText),
++  };
++}
++
++function sanitizeOptionalText(value: string | null): string | null {
++  return value === null ? null : sanitizeSensitiveText(value);
++}
++
+ async function toSeed(
+   root: string,
+   feature: AgentMapOutput["features"][number],
+diff --git a/src/mappers/shared.ts b/src/mappers/shared.ts
+index 86222fa..392341d 100644
+--- a/src/mappers/shared.ts
++++ b/src/mappers/shared.ts
+@@ -237,7 +237,7 @@ export async function walkByPolicy<Key extends string>(
+     const rel = normalize(relative(realRoot, canonicalStart));
+     if (info.isFile()) {
+       for (const state of states) {
+-        if (!state.seen.has(rel) && !state.skipPath(rel)) {
++        if (!state.seen.has(rel) && !state.skipPath(rel) && !isScoutStatePath(rel)) {
+           state.seen.add(rel);
+           state.files.push(rel);
+         }
+@@ -273,7 +273,7 @@ async function walkDirByPolicy<Key extends string>(
+     return;
+   }
+   const relDir = normalize(relative(root, dir));
+-  const activeStates = states.filter((state) => !state.skipPath(relDir));
++  const activeStates = states.filter((state) => !state.skipPath(relDir) && !isScoutStatePath(relDir));
+   if (activeStates.length === 0) {
+     return;
+   }
+@@ -282,7 +282,7 @@ async function walkDirByPolicy<Key extends string>(
+     const full = join(dir, entry);
+     const rel = normalize(relative(root, full));
+     const entryStates = activeStates.filter(
+-      (state) => !state.seen.has(rel) && !state.skipPath(rel),
++      (state) => !state.seen.has(rel) && !state.skipPath(rel) && !isScoutStatePath(rel),
+     );
+     if (entryStates.length === 0) {
+       continue;
+@@ -333,12 +333,18 @@ export function pathInsideRoot(root: string, path: string): boolean {
+   return rel === "" || (rel !== ".." && !rel.startsWith(`..${sep}`) && !isAbsolute(rel));
+ }
+ 
++// Scout's persistent state is never mapper input, even when callers provide
++// custom skip predicates or remove it from configuration exclusions.
++function isScoutStatePath(path: string): boolean {
++  return /(^|\/)\.scout(\/|$)/u.test(path);
++}
++
+ export function shouldSkip(path: string): boolean {
+   if (path === "") {
+     return false;
+   }
+   return (
+-    /(^|\/)(node_modules|dist|build|coverage|\.build|\.git|\.clawpatch|\.worktrees|\.turbo|\.next|\.vercel|\.venv(?:-[^/]+)?|venv|Pods|Carthage|SourcePackages|DerivedData|__pycache__)(\/|$)/u.test(
++    /(^|\/)(node_modules|dist|build|coverage|\.build|\.git|\.clawpatch|\.scout|\.worktrees|\.turbo|\.next|\.vercel|\.venv(?:-[^/]+)?|venv|Pods|Carthage|SourcePackages|DerivedData|__pycache__)(\/|$)/u.test(
+       path,
+     ) ||
+     path === "target" ||
+diff --git a/src/prompt.ts b/src/prompt.ts
+index 9878942..0c9d8e1 100644
+--- a/src/prompt.ts
++++ b/src/prompt.ts
+@@ -268,9 +268,10 @@ JSON shape:
+ 
+ Files:
+ ${fileBlocks.join("\n\n")}`;
+-  const promptBytes = Buffer.byteLength(prompt, "utf8");
++  const sanitizedPrompt = sanitizeSensitiveText(prompt);
++  const promptBytes = Buffer.byteLength(sanitizedPrompt, "utf8");
+   return {
+-    prompt,
++    prompt: sanitizedPrompt,
+     manifest: {
+       ...promptContext,
+       includedFiles,
+@@ -684,7 +685,7 @@ async function fileBlockWithManifest(
+     };
+   }
+   const bytes = Buffer.byteLength(contents, "utf8");
+-  const excerpt = prefixExcerpt(contents);
++  const excerpt = prefixExcerpt(sanitizeSensitiveText(contents));
+   return {
+     block: `--- ${path} (${role}, ${rangeLabel(excerpt.includedLineRanges)}${
+       excerpt.truncated ? ", truncated" : ""
+@@ -779,3 +780,45 @@ function isInside(root: string, candidate: string): boolean {
+   const relativePath = relative(root, candidate);
+   return relativePath === "" || (!relativePath.startsWith("..") && !isAbsolute(relativePath));
+ }
++
++
++// sanitizeSensitiveText redacts credential-shaped values before any provider
++// prompt, output, error, finding, run, or report can be persisted.
++// Redaction preserves line breaks so source evidence line ranges remain valid.
++export function sanitizeSensitiveText(value: string): string {
++  return value
++    .replace(/-----BEGIN [^-]+-----[\s\S]*?-----END [^-]+-----/gu, redactMultilineSecret)
++    .replace(
++      /\b(api[_-]?key|access[_-]?token|auth(?:entication|orization)?|client[_-]?secret|password|passwd|private[_-]?key|secret|session[_-]?token)\b(\s*[:=]\s*)(?:"(?:\\.|[^"\\\r\n])*"|'(?:\\.|[^'\\\r\n])*'|[^\s,;)}\]]+)/giu,
++      (_match, name: string, separator: string) => `${name}${separator}[SCOUT_REDACTED_SECRET]`,
++    )
++    .replace(/\bBearer\s+[A-Za-z0-9._~+/=-]+\b/giu, "Bearer [SCOUT_REDACTED_SECRET]")
++    .replace(/\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/gu, "[SCOUT_REDACTED_JWT]")
++    .replace(/\bgh[pousr]_[A-Za-z0-9_]{20,}\b/gu, "[SCOUT_REDACTED_TOKEN]")
++    .replace(/\bsk-[A-Za-z0-9_-]{16,}\b/gu, "[SCOUT_REDACTED_TOKEN]")
++    .replace(/\bAKIA[0-9A-Z]{16}\b/gu, "[SCOUT_REDACTED_AWS_KEY]");
++}
++
++// sanitizeProviderReviewOutput applies the same redaction before validated
++// findings, dropped-finding samples, and provider diagnostics reach state.
++export function sanitizeProviderReviewOutput<T>(value: T): T {
++  if (typeof value === "string") {
++    return sanitizeSensitiveText(value) as T;
++  }
++  if (Array.isArray(value)) {
++    return value.map((item) => sanitizeProviderReviewOutput(item)) as T;
++  }
++  if (value !== null && typeof value === "object") {
++    return Object.fromEntries(
++      Object.entries(value as Record<string, unknown>).map(([key, item]) => [
++        key,
++        sanitizeProviderReviewOutput(item),
++      ]),
++    ) as T;
++  }
++  return value;
++}
++
++function redactMultilineSecret(value: string): string {
++  return `[SCOUT_REDACTED_SECRET]${value.replace(/[^\r\n]/gu, "")}`;
++}
+diff --git a/src/review.ts b/src/review.ts
+index b2459d9..b564a7c 100644
+--- a/src/review.ts
++++ b/src/review.ts
+@@ -12,7 +12,13 @@ import { runId } from "./id.js";
+ import { emitProgress } from "./progress.js";
+ import { providerByName } from "./provider.js";
+ import type { DroppedFinding } from "./provider-types.js";
+-import { buildReviewPromptBundle, type ReviewMode, type ReviewPromptManifest } from "./prompt.js";
++import {
++  buildReviewPromptBundle,
++  sanitizeProviderReviewOutput,
++  sanitizeSensitiveText,
++  type ReviewMode,
++  type ReviewPromptManifest,
++} from "./prompt.js";
+ import { renderReport } from "./reporting.js";
+ import {
+   buildRegistryVerifierValidator,
+@@ -81,6 +87,7 @@ export async function reviewCommand(
+   run.claimedFeatureIds = features.map((feature) => feature.featureId);
+   await writeRun(loaded.paths, run);
+   const findingIds: string[] = [];
++  const reviewManifests: Array<{ featureId: string; manifest: ReviewPromptManifest }> = [];
+   const errors: Array<{
+     message: string;
+     code: string | null;
+@@ -128,6 +135,7 @@ export async function reviewCommand(
+               hasFileFilter(flags),
+           });
+           findingIds.push(...reviewed.findingIds);
++          reviewManifests.push({ featureId: feature.featureId, manifest: reviewed.manifest });
+           for (const dropped of reviewed.droppedFindings) {
+             const code =
+               dropped.layer === "validation"
+@@ -205,6 +213,8 @@ export async function reviewCommand(
+     findings: findingIds.length,
+     jobs,
+     report: reportPath,
++    reviewManifests,
++    errors: errors.map(({ message, code }) => ({ message, code })),
+     ...(exportPath === null ? {} : { exportTribunalLedger: exportPath }),
+     next: findingIds.length > 0 ? `clawpatch fix --finding ${findingIds[0]}` : "clawpatch status",
+   };
+@@ -298,9 +308,15 @@ type ReviewFeatureOptions = {
+   allowNonPendingFeatureReview: boolean;
+ };
+ 
++type ReviewFeatureResult = {
++  findingIds: string[];
++  droppedFindings: DroppedFinding[];
++  manifest: ReviewPromptManifest;
++};
++
+ async function reviewFeature(
+   options: ReviewFeatureOptions,
+-): Promise<{ findingIds: string[]; droppedFindings: DroppedFinding[] }> {
++): Promise<ReviewFeatureResult> {
+   const {
+     context,
+     loaded,
+@@ -354,12 +370,21 @@ async function reviewFeature(
+       limiter,
+     });
+     // Layer 1 drops: per-finding schema violations from parseReviewOutput.
+-    const droppedFindings: DroppedFinding[] = [...providerOutput.droppedFindings];
++    // Sanitize before their samples become run error records.
++    const droppedFindings: DroppedFinding[] = sanitizeProviderReviewOutput([
++      ...providerOutput.droppedFindings,
++    ]);
++    const modeFindings = reviewFindingsForMode(providerOutput.findings, mode);
++    if (modeFindings.length > config.review.maxFindingsPerFeature) {
++      droppedFindings.push({
++        path: ["findings"],
++        message: "provider result exceeded the configured finding cap",
++        sample: "",
++        layer: "validation",
++      });
++    }
+     const reviewOutput = {
+-      findings: reviewFindingsForMode(providerOutput.findings, mode).slice(
+-        0,
+-        config.review.maxFindingsPerFeature,
+-      ),
++      findings: modeFindings.slice(0, config.review.maxFindingsPerFeature),
+       inspected: providerOutput.inspected,
+     };
+     // Layer 2 drops: per-finding evidence validation (line ranges, quotes,
+@@ -377,8 +402,11 @@ async function reviewFeature(
+       reviewOutput,
+       validatePartitionedOptions,
+     );
+-    droppedFindings.push(...validated.droppedFindings);
+-    const records = validated.findings.map((finding) =>
++    // Validate raw quotes and ranges against the snapshot before removing raw
++    // quote text; only sanitized findings may reach persistent state.
++    const sanitizedValidated = sanitizeProviderReviewOutput(validated);
++    droppedFindings.push(...sanitizedValidated.droppedFindings);
++    const records = sanitizedValidated.findings.map((finding) =>
+       findingFromOutput(finding, lockedFeature.featureId, currentRunId),
+     );
+     const findingIds: string[] = [];
+@@ -419,9 +447,9 @@ async function reviewFeature(
+       findings: findingIds.length,
+       elapsed: `${Math.round((Date.now() - started) / 1000)}s`,
+     });
+-    return { findingIds, droppedFindings };
++    return { findingIds, droppedFindings, manifest: reviewPrompt.manifest };
+   } catch (error: unknown) {
+-    const message = error instanceof Error ? error.message : String(error);
++    const message = sanitizeSensitiveText(error instanceof Error ? error.message : String(error));
+     if (locked !== null) {
+       try {
+         await writeFeature(loaded.paths, {

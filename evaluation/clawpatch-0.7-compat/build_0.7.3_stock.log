@@ -1,0 +1,28 @@
+? Verifying lockfile against supply-chain policies (133 entries)...
+Lockfile is up to date, resolution step is skipped
+Progress: resolved 1, reused 0, downloaded 0, added 0
+Packages: +54
+++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Packages are cloned from the content-addressable store to the virtual store.
+  Content-addressable store is at: /Users/adamjackson/Library/pnpm/store/v11
+  Virtual store is at:             node_modules/.pnpm
+Progress: resolved 54, reused 15, downloaded 30, added 45
+✓ Lockfile passes supply-chain policies (133 entries in 1.6s)
+Progress: resolved 54, reused 15, downloaded 35, added 50
+Progress: resolved 54, reused 15, downloaded 38, added 53
+Progress: resolved 54, reused 15, downloaded 39, added 54, done
+
+dependencies:
++ proper-lockfile 4.1.2
++ zod 4.5.4
+
+devDependencies:
++ @types/node 26.4.1
++ @types/proper-lockfile 4.1.4
++ oxfmt 0.66.0
++ oxlint 1.81.0
++ typescript 7.0.2
++ vitest 5.0.0
+
+Done in 3.4s using pnpm v11.25.0
+$ node -e "require('fs').rmSync('dist',{recursive:true,force:true})" && tsc -p tsconfig.build.json
