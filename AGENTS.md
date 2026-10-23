@@ -61,10 +61,11 @@ codebase inertia (H*, HA*, HQ*) are not run here: they belong to inertia-bench
 - **Toolchain.** Work inside the pinned toolchain: `git submodule update --init`, `scripts/bootstrap-tools.sh`,
   `source .tools/activate`. Tool versions change only in `toolchain/versions.env` (Clawpatch: the
   `third_party/clawpatch` submodule); a scanner or Clawpatch version change needs a compatibility review.
-- **Jev labelling.** Labels for any Jev question get a blind agent first pass (two independent sessions,
-  one `claude -p` and one `codex exec`, a frozen guide, adjudication), then the user reviews every case and
-  confirms or changes it (provenance per the `jev-actions` skill, `labeling-cases.md`). Labels are appended,
-  never edited; no Jev-versus-label comparison runs outside a signed-off preregistration.
+- **Jev labelling.** Labels for any Jev question come from the agent protocol: a blind pass by two
+  independent sessions (one `claude -p`, one `codex exec`) following a frozen guide, plus an adjudicating
+  session where they disagree. The user does not review each case (user decision 2026-10-23,
+  `docs/STATUS.md` §6.9); these labels stay provenance `agent_reviewed`, never `human`. Labels are
+  appended, never edited; no Jev-versus-label comparison runs outside a signed-off preregistration.
 - Never print, log or commit secrets; use presence checks only.
 - **Model use.** OpenRouter is used only for TypeSafe Jev. Every other model call (Scout lanes, scripts,
   experiments, agents) goes through `claude -p` or `codex exec` with Anthropic or OpenAI models only; no
