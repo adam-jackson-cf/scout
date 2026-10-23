@@ -12,13 +12,8 @@ concurrency:
   group: scout-release-${{ github.ref }}
   cancel-in-progress: false
 
-env:
-  GO_VERSION: 1.25.0
-  NODE_VERSION: 22.18.0
-  PNPM_VERSION: 11.25.0
-  CLAWPATCH_REVISION: 734f81bc1514b52a0627edb0c24ebe1a18b36105
-  CLAWPATCH_VERSION: 0.7.3
-  CLAWPATCH_REPOSITORY: https://github.com/openclaw/clawpatch.git
+# Tool versions come from toolchain/versions.env, go.mod and the third_party/clawpatch submodule
+# through scripts/bootstrap-tools.sh; no version pins live in this workflow.
 
 jobs:
   scout-binary:
@@ -40,7 +35,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-go@v6
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: go.mod
           check-latest: false
       - name: Build and checksum binary
         shell: bash
@@ -61,31 +56,23 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          check-latest: false
-      - name: Set up pinned pnpm
-        shell: bash
-        run: |
-          set -euo pipefail
-          corepack enable
-          corepack prepare "pnpm@${PNPM_VERSION}" --activate
-          [[ "$(pnpm --version)" == "$PNPM_VERSION" ]] || { echo '::error::Pinned pnpm activation failed.'; exit 1; }
+          submodules: true
       - name: Build and checksum pinned bundle
         shell: bash
         run: |
           set -euo pipefail
-          source_dir="$RUNNER_TEMP/clawpatch-source"
+          export SCOUT_TOOLS_DIR="$RUNNER_TEMP/scout-tools"
+          ./scripts/bootstrap-tools.sh
+          source "$SCOUT_TOOLS_DIR/activate"
+          CLAWPATCH_REVISION="$(git ls-files -s third_party/clawpatch | awk '$1 == "160000" { print $2 }')"
+          CLAWPATCH_VERSION="$(awk -F '=' '$1 == "CLAWPATCH_VERSION" { print $2 }' toolchain/versions.env)"
+          PNPM_VERSION="$(awk -F '=' '$1 == "PNPM_VERSION" { print $2 }' toolchain/versions.env)"
+          [[ "$SCOUT_CLAWPATCH_BINARY" == "$SCOUT_TOOLS_DIR/clawpatch/$CLAWPATCH_REVISION/dist/cli.js" ]] || { echo '::error::Unexpected Clawpatch build layout.'; exit 1; }
           release_dir="$RUNNER_TEMP/release"
           mkdir -p "$release_dir"
-          git clone --no-checkout "$CLAWPATCH_REPOSITORY" "$source_dir"
-          git -C "$source_dir" fetch --depth=1 origin "$CLAWPATCH_REVISION"
-          git -C "$source_dir" checkout --detach FETCH_HEAD
-          built_cli="$(CLAWPATCH_SOURCE="$source_dir" CLAWPATCH_OUTPUT_DIR="$RUNNER_TEMP/clawpatch" ./scripts/build-clawpatch.sh)"
-          [[ "$built_cli" == "$RUNNER_TEMP/clawpatch/$CLAWPATCH_REVISION/dist/cli.js" ]] || { echo '::error::Unexpected Clawpatch build layout.'; exit 1; }
           asset="$release_dir/clawpatch-${CLAWPATCH_VERSION}-${CLAWPATCH_REVISION}.tar.gz"
-          tar -czf "$asset" -C "$RUNNER_TEMP/clawpatch" "$CLAWPATCH_REVISION"
+          tar -czf "$asset" -C "$SCOUT_TOOLS_DIR/clawpatch" "$CLAWPATCH_REVISION"
           asset_sha256="$(shasum -a 256 "$asset" | cut -d ' ' -f1)"
           printf '%s  %s\n' "$asset_sha256" "$(basename "$asset")" > "$asset.sha256"
           cat > "$release_dir/clawpatch-manifest.json" <<EOF

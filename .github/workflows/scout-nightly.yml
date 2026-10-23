@@ -32,12 +32,8 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  GO_VERSION: 1.25.0
-  NODE_VERSION: 22.18.0
-  PNPM_VERSION: 11.25.0
-  PYTHON_VERSION: 3.11.11
-  CLAWPATCH_REVISION: 734f81bc1514b52a0627edb0c24ebe1a18b36105
-  CLAWPATCH_REPOSITORY: https://github.com/openclaw/clawpatch.git
+  # Tool versions come from toolchain/versions.env, go.mod and the third_party/clawpatch submodule
+  # through scripts/bootstrap-tools.sh; no version pins live in this workflow.
   SCOUT_BASELINE_BUCKET: ${{ vars.SCOUT_BASELINE_BUCKET }}
   SCOUT_BASELINE_PREFIX: ${{ vars.SCOUT_BASELINE_PREFIX }}
   SCOUT_AWS_REGION: ${{ vars.SCOUT_AWS_REGION }}
@@ -54,6 +50,8 @@ jobs:
       ALLOW_EGRESS: ${{ inputs.authorize_egress || 'false' }}
     steps:
       - uses: actions/checkout@v5
+        with:
+          submodules: true
 
       - name: Validate durable baseline configuration
         shell: bash
@@ -86,59 +84,27 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: ${{ env.GO_VERSION }}
+          go-version-file: go.mod
           check-latest: false
 
-      - name: Set up Node
-        uses: actions/setup-node@v5
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          check-latest: false
-
-      - name: Set up scanner Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          check-latest: false
-
-      - name: Provision pinned eligible scanners outside source
+      - name: Provision the pinned toolchain outside source
+        id: clawpatch
         shell: bash
         run: |
           set -euo pipefail
           sudo apt-get update -qq
           sudo apt-get install -y bubblewrap
-          mkdir -p "$RUNNER_TEMP/scout-tools"
-          GOBIN="$RUNNER_TEMP/scout-tools" GOPATH="$RUNNER_TEMP/scout-gopath" go install github.com/gitleaks/gitleaks/v8@v8.30.1
-          python -m venv "$RUNNER_TEMP/scout-python"
-          "$RUNNER_TEMP/scout-python/bin/pip" install --disable-pip-version-check 'setuptools==80.9.0' 'ruff==0.15.8' 'semgrep==1.100.0'
-          printf '%s\n' "$RUNNER_TEMP/scout-tools" >> "$GITHUB_PATH"
-          printf '%s\n' "$RUNNER_TEMP/scout-python/bin" >> "$GITHUB_PATH"
-
-      - name: Set up pnpm
-        shell: bash
-        run: |
-          set -euo pipefail
-          corepack enable
-          corepack prepare "pnpm@${PNPM_VERSION}" --activate
-          [[ "$(pnpm --version)" == "$PNPM_VERSION" ]] || { echo '::error::Pinned pnpm activation failed.'; exit 3; }
+          export SCOUT_TOOLS_DIR="$RUNNER_TEMP/scout-tools"
+          ./scripts/bootstrap-tools.sh
+          source "$SCOUT_TOOLS_DIR/activate"
+          printf '%s\n' "$SCOUT_TOOLS_DIR/bin" >> "$GITHUB_PATH"
+          printf 'path=%s\n' "$SCOUT_CLAWPATCH_BINARY" >> "$GITHUB_OUTPUT"
 
       - name: Build Scout outside the assessed repository
         shell: bash
         run: |
           set -euo pipefail
           go build -trimpath -buildvcs=false -o "$RUNNER_TEMP/scout" ./cmd/scout
-
-      - name: Build the pinned Clawpatch bundle
-        id: clawpatch
-        shell: bash
-        run: |
-          set -euo pipefail
-          source_dir="$RUNNER_TEMP/clawpatch-source"
-          git clone --no-checkout "$CLAWPATCH_REPOSITORY" "$source_dir"
-          git -C "$source_dir" fetch --depth=1 origin "$CLAWPATCH_REVISION"
-          git -C "$source_dir" checkout --detach FETCH_HEAD
-          clawpatch_cli="$(CLAWPATCH_SOURCE="$source_dir" CLAWPATCH_OUTPUT_DIR="$RUNNER_TEMP/clawpatch" ./scripts/build-clawpatch.sh)"
-          printf 'path=%s\n' "$clawpatch_cli" >> "$GITHUB_OUTPUT"
 
       - name: Restore the durable baseline
         id: baseline

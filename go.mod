@@ -2,6 +2,8 @@ module scout
 
 go 1.25
 
+toolchain go1.25.6
+
 require modernc.org/sqlite v1.39.1
 
 require (

@@ -1,19 +1,28 @@
 #!/usr/bin/env bash
 # Builds the reviewed Clawpatch CLI without modifying its source checkout.
+# The revision is the third_party/clawpatch submodule gitlink; versions come from toolchain/versions.env.
 set -euo pipefail
 
-readonly CLAWPATCH_REVISION="734f81bc1514b52a0627edb0c24ebe1a18b36105"
-readonly CLAWPATCH_VERSION="0.7.3"
-readonly PNPM_VERSION="11.25.0"
-readonly SCOUT_REVIEW_SAFETY_PATCH_VERSION="scout-review-sanitize-v2"
-readonly SCOUT_REVIEW_SAFETY_PATCH_SHA256="f39d73dad42b5d6701b1fee51f7784d3eb2b1548808d1ee47d8ef146ca97a865"
-readonly DEFAULT_SOURCE="/Users/adamjackson/Projects/examples/clawpatch"
-
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+repo_root="$(cd "$script_dir/.." && pwd -P)"
 safety_patch="$script_dir/clawpatch-safe.patch"
 
-source_input="${CLAWPATCH_SOURCE:-$DEFAULT_SOURCE}"
-output_input="${CLAWPATCH_OUTPUT_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/scout/clawpatch}"
+manifest_value() {
+  awk -F '=' -v key="$1" '$1 == key { print $2 }' "$repo_root/toolchain/versions.env"
+}
+
+CLAWPATCH_REVISION="$(git -C "$repo_root" ls-files -s third_party/clawpatch | awk '$1 == "160000" { print $2 }')"
+CLAWPATCH_VERSION="$(manifest_value CLAWPATCH_VERSION)"
+PNPM_VERSION="$(manifest_value PNPM_VERSION)"
+readonly CLAWPATCH_REVISION CLAWPATCH_VERSION PNPM_VERSION
+readonly SCOUT_REVIEW_SAFETY_PATCH_VERSION="scout-review-sanitize-v2"
+readonly SCOUT_REVIEW_SAFETY_PATCH_SHA256="f39d73dad42b5d6701b1fee51f7784d3eb2b1548808d1ee47d8ef146ca97a865"
+
+[[ "$CLAWPATCH_REVISION" =~ ^[0-9a-f]{40}$ ]] || { printf 'build-clawpatch: third_party/clawpatch is not a registered submodule\n' >&2; exit 1; }
+[[ -n "$CLAWPATCH_VERSION" && -n "$PNPM_VERSION" ]] || { printf 'build-clawpatch: toolchain/versions.env lacks CLAWPATCH_VERSION or PNPM_VERSION\n' >&2; exit 1; }
+
+source_input="${CLAWPATCH_SOURCE:-$repo_root/third_party/clawpatch}"
+output_input="${CLAWPATCH_OUTPUT_DIR:-${SCOUT_TOOLS_DIR:-$repo_root/.tools}/clawpatch}"
 
 usage() {
   cat >&2 <<'USAGE'
