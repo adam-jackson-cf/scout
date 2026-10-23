@@ -22,17 +22,34 @@ C7b, the experiment estimators and samplers, is carried forward as binding input
   - The heuristic map runs offline.
   - Scanners are batched per adapter (`36d1023` adds Gitleaks batching with per-file trace proof).
   - Approval machinery and `internal/codex` are removed.
-- **Phase 2, part done (`fccc137`):**
+- **Phase 2 is done** (`fccc137` plus the Phase 2 completion commit):
   - `scout export/import` (state/v1, byte-identical round trip) and `scout state publish|restore` on `scout/state`, with expected-parent compare-and-swap; publishing requires `--trusted`.
   - Lane registry and health; exit codes 0/1/2/3; `scout diff --base` attribution against the published baseline (`comparison: baseline`, or `recomputed` with a reason).
   - Report/guardian profiles; `.scout/policy.yaml` read from the base ref; shadow window; maintainer-only overrides.
   - `would_block` (schema v6); `guardrails.SUPPRESS.added.unscoped`.
-  - **Not started (now unblocked by 2.2):** the `decisions` adapter and Jev ranking, `scout init`/consent, the model-CLI contextual adapter that replaces `internal/contextual`'s HTTP client, and `scout-guardian.yml` plus release-sourced binaries.
+  - `internal/decisions`: typed `noul|choice|score` questions with the §6 version key; OpenRouter `alpha/decisions` client; resolved-model pin (mismatch → `incomplete`); retries for 429/529 only; the 2,000-call cap in §6 order; the deterministic baseline; the audit draw with stored inclusion probability. Schema v8 adds the annotation, ranking, audit and disposition-context tables.
+  - Ranking hook (`engine.RankingOf`): Jev only when consented, keyed, egress allowed and not a fork. Otherwise the run reports `ranking: deterministic (<reason>)`, and a fork is reported first.
+  - Model-CLI adapter (`internal/modelcli`, `internal/contextual`): tool-less `claude -p` or `codex exec` with a credential-scrubbed environment. The `SCOUT_PROVIDER_*` HTTP client is removed.
+  - Clawpatch runs only with `--provider codex|claude` and `CLAWPATCH_CLAUDE_AUTH_CONTEXT=host`. The `contextual` and `clawpatch-review` lanes run only when opted in through `model_cli.lanes`; otherwise they report `skipped (not opted in)` or `skipped (no model CLI)`, and the exit code is unchanged.
+  - `scout init` records consent: profile `report`, `decisions`, `model_cli`. It is idempotent and keeps activations and comments.
+  - `.github/workflows/scout-guardian.yml` is the reusable workflow. It installs a pinned, sha256-verified release, never builds from the PR, and only the trusted job sees the Jev secret and publishes. `.github/actions/scout/` is the composite action. `scout-nightly.yml` is now a dogfood caller; AWS, S3 and the model API keys are removed. `release.yml` writes basename checksums, so its `shasum -c` step works.
+  - **§11 Phase 2 scenario passed on 2026-10-23** (`/tmp/scout-p2/phase2-scenario.sh` plus `report.sh`, throwaway):
+    - PR A exits 0 with 2 `would_block` (PAT and `SUPPRESS`).
+    - After activation, the identical PR exits 1 with only `SUPPRESS` active, and the PAT is still `would_block`.
+    - PR B exits 0.
+    - Fork PR C reports `deterministic (fork)`, and its untrusted publish exits 3.
+    - PR D's `scout-override` from a non-maintainer is rejected and logged; the maintainer control exits 0.
+    - A tampered baseline digest gives `comparison: recomputed`.
+    - Two concurrent publishes give 2 commits (one retried via CAS).
+    - Export → import → export is byte-identical.
+    - Moving the activation's version back returns the check to shadow (exit 0).
+  - **Deviation from the §11 text:** the digest-mismatch PR is attributed `introduced`, not `unknown`. The paired recompute rescans the merge base under head's digests, which meets §7.3's definition of `introduced`. `unknown` is produced only when no comparable base exists (`gate.go:178`). Any change to the §11 wording needs a council round (§6).
+  - Workflow assumptions: `release-repo` defaults to `inflight/scout` because there is no git remote; the dogfood caller pins `v0.1.0`, which is not tagged yet; `refresh-map` forces `--full` until Phase 4; SARIF is uploaded only if present.
 - **Phase 3, part done (`4bab5c0`):**
   - Signal store (schema v7) and `scout signals`; `scout.cc`, `complex_burden`, `burden_density`, `dup_pct` (lizard and jscpd); `cycle_mass` (Go/Python/TS import graph); §8.3 history measures in calendar quarters.
   - `ActiveHours` reproduces E1b `active_hours` for all 598 nest/webpack panel PRs (max error 8.9e-16 h).
   - **Not started:** artifacts (LCOV/Cobertura/JUnit, CRAP), the remaining guardrail mechanisms, PR-metadata ingestion, `delta` rules, `readiness --matrix`, the 9/13 corpus regression check.
-- **Acceptance figures:** fastapi `d666ccb`, every lane, no egress. 455 s after Phase 1, 537 s after Phase 3's lanes, **143 s** after Gitleaks batching; 74 issues, exit 0. Phase 1 scenario: `/tmp/scout-p1/scenario.sh`. Phase 2 baseline smoke: `/tmp/scout-p2/baseline-smoke.sh`.
+- **Acceptance figures:** fastapi `d666ccb`, every lane, no egress. 455 s after Phase 1, 537 s after Phase 3's lanes, 143 s after Gitleaks batching, **125 s** after Phase 2 (2026-10-23); 74 issues, exit 0 each time. With no policy, the contextual and clawpatch-review lanes read `skipped (not opted in)` and decisions reads `skipped (decisions not enabled)`. Phase 1 scenario: `/tmp/scout-p1/scenario.sh`. Phase 2 scenario: `/tmp/scout-p2/phase2-scenario.sh`.
 - **Known gaps:**
   - If agent mapping succeeds with zero features, heuristic output is not re-merged (Phase 4).
   - An issue left unmatched during a rename keeps its old anchor path.
@@ -86,7 +103,7 @@ Owners: **Council** = innovation-council review loop; **Impl** = a coding sessio
 |---|---|---|---|---|
 | 0 | ~~Decide the §6 conflicts; council re-scope round~~ **done**: rev 2.2 adopted 2026-10-23 (round 6, zero issues) | — | — | — |
 | 1 | ~~**Phase 1**~~ **done** (`945ac4d`, `36d1023`) | — | — | fastapi 143 s; §1 |
-| 2 | **Phase 2 remainder**: `decisions` adapter (rev 2.2 §6: version key, pinned model, failure → lane health, cap, deterministic fallback, audit capture), model-CLI contextual adapter (C1), `scout init`/consent, `scout-guardian.yml` + composite action from a pinned release; then the full §11 Phase 2 scenario (PR A–D incl. fork PR C) | rev 2.2 adopted | Impl | §11 Phase 2 |
+| 2 | ~~**Phase 2**~~ **done** 2026-10-23: §11 scenario passed (§1); one wording deviation (digest mismatch → `introduced` after a valid recompute) | — | — | §11 Phase 2 |
 | 3 | **Phase 3 remainder**: artifacts, CRAP, remaining guardrails (all three languages), PR metadata, `delta` rules, `readiness --matrix`, corpus regression, TS `paths` acceptance | #2 for PR metadata in CI | Impl | §11 Phase 3 |
 | 3b | **Subject interface** principles adopted (rev 2.2 §8.7); exact schema needs its own council round after inertia-bench signs off | bench design signed off; #3 measures | Council → Impl | §11 Phase 3b |
 | 4 | **Phase 4** — mapping refresh triggers + areas (X2) | #1, #3 scopes | Impl | §11 Phase 4 |
@@ -124,4 +141,4 @@ Commands (run from repo root):
 - `shasum -a 256 docs/scout-design.md` — must print `f81b2601…` (rev 2.2) until a new council round adopts a change.
 - Clawpatch upgrade: move the submodule to the new commit and update `clawpatch.Revision`/`Version` and `CLAWPATCH_VERSION` together. This needs a compatibility review (CP07 pattern, design R9). The parity test blocks a partial bump.
 - Jev or study runs: `infisical run --projectId 052b4c81-b9cc-4694-9019-d131ec3817cc --env dev --silent -- <command>` (`AGENTS.md:56-58`); presence checks only.
-- Rules to keep: council sign-off before any design change or experiment; ledgers updated when a source/hypothesis is used; never print secrets; never touch `.codegraph`; no git commits unless the user asks.
+- Rules to keep: council sign-off before any design change or experiment; ledgers updated when a source/hypothesis is used; never print secrets; never touch `.codegraph`; commits in logical pieces with a staged Gitleaks scan first (`gitleaks git --pre-commit --staged --no-banner --redact .`).
