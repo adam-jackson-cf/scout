@@ -213,6 +213,16 @@ func TestAgentMapUsesCodexOrClaudeInHostAuthContextWithoutAPIKeys(t *testing.T) 
 				t.Fatalf("agent map argv = %q", argv)
 			}
 			assertCredentialFreeHostEnv(t, log+".env")
+			env, err := os.ReadFile(log + ".env")
+			if err != nil {
+				t.Fatal(err)
+			}
+			// Clawpatch's claude default is 180 s, too short for an agent map.
+			for _, want := range []string{"CLAWPATCH_CODEX_TIMEOUT_MS=900000", "CLAWPATCH_CLAUDE_TIMEOUT_MS=900000"} {
+				if !strings.Contains(string(env), want) {
+					t.Fatalf("agent map env lacks %s", want)
+				}
+			}
 		})
 	}
 }

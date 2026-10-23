@@ -20,7 +20,7 @@ const (
 	Revision = "734f81bc1514b52a0627edb0c24ebe1a18b36105"
 	Version  = "0.7.3"
 
-	defaultMapCodexTimeoutMS = "900000"
+	defaultMapTimeoutMS = "900000"
 )
 
 var (
@@ -285,14 +285,21 @@ func (c *Client) invokeLocked(ctx context.Context, args ...string) ([]byte, erro
 	return c.invokeEnvLocked(ctx, nil, args...)
 }
 
-// mapEnvironment returns the Clawpatch codex timeout for the map invocation.
-// CLAWPATCH_CODEX_TIMEOUT_MS from Scout's environment wins; otherwise 900000.
+// mapEnvironment returns the Clawpatch provider timeouts for the map
+// invocation. Clawpatch's own defaults (codex 300 s, claude 180 s) are too
+// short for an agent map (2–7 min observed), so both providers get 900000 ms
+// unless Scout's environment sets CLAWPATCH_CODEX_TIMEOUT_MS /
+// CLAWPATCH_CLAUDE_TIMEOUT_MS, which win.
 func mapEnvironment() []string {
-	timeout := strings.TrimSpace(os.Getenv("CLAWPATCH_CODEX_TIMEOUT_MS"))
-	if timeout == "" {
-		timeout = defaultMapCodexTimeoutMS
+	env := make([]string, 0, 2)
+	for _, name := range []string{"CLAWPATCH_CODEX_TIMEOUT_MS", "CLAWPATCH_CLAUDE_TIMEOUT_MS"} {
+		timeout := strings.TrimSpace(os.Getenv(name))
+		if timeout == "" {
+			timeout = defaultMapTimeoutMS
+		}
+		env = append(env, name+"="+timeout)
 	}
-	return []string{"CLAWPATCH_CODEX_TIMEOUT_MS=" + timeout}
+	return env
 }
 
 func (c *Client) invokeEnvLocked(ctx context.Context, extraEnv []string, args ...string) ([]byte, error) {
