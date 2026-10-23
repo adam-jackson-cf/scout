@@ -1,0 +1,95 @@
+# Design review — Clawpatch review-safety patch pin v2 → v3, revision 2.4 — round 2
+
+Scope: `docs/design-reviews/2026-10-23-clawpatch-patch-v3/scout-design.proposed.md` (468 lines, round-2 draft) vs `scout-design.base.md` (466 lines, = `docs/scout-design.md` revision 2.3, signed off in `docs/design-reviews/2026-10-23-decisions/round-7.md`), `proposed.diff` (45 lines; hunks `-1,12 +1,14`, `-94,14 +96,14`, `-451,7 +453,7`; 5 `-` lines, 7 `+` lines of which one blank), `PROPOSAL.md`, `DRAFT-NOTES.md`, `round-1-response.md`. The council re-read every changed proposed line raw (`:3`, `:9`, `:11`, `:99`, `:106`, `:456`), the whole `proposed.diff` raw, every round-1 location named in `round-1-response.md`, and verified each code cite against the working tree (`internal/clawpatch/client.go:20-21,23`, `internal/clawpatch/review.go:20-21`, `scripts/build-clawpatch.sh:18-19`, `.github/workflows/release.yml:89`, `toolchain/versions.env:10`, `scripts/clawpatch-safe.patch:329-337`, `third_party/clawpatch/src/providers/claude.ts:73,144,160,244-247,258,268-270`, `.github/workflows/scout-nightly.yml:40,49`, `docs/STATUS.md:5,53,72,94`). Two independent analysts (`innovation-challenger` `CouncilR2v24.AstraVerify`, `experiment-peer` `CouncilR2v24.PeerVerify`) ran in parallel without seeing the council's leaning; §4 records where they changed it.
+
+Reviewed files (SHA-256): `scout-design.base.md` `75ef1e66521b1f129e872f651bd0f8bb9989e38867fb5335ec5ad43158fb3061`; `scout-design.proposed.md` `49935688a9247a2a3f454919ccd8a3e17acedf941f3ca3873afea22a2281720c`; `proposed.diff` `f5b84bec91b63711ccefb0b0c564a382889d8c8a9951e1d9781c074ee1319663`; `PROPOSAL.md` `010658c8a42c22a50357faad464fcb81daec81a345c7e05242bc8a39913e62bf`; `DRAFT-NOTES.md` `41b84378bfc6aa99c1970535c5b542d9d3a6e0e3ee92a1842dd57607ebea68c4`
+
+Digests stated by the drafter (`round-1-response.md:19`, `DRAFT-NOTES.md:7-10`; strings consistent between the two files, not recomputed by the council): base `75ef1e66521b1f129e872f651bd0f8bb9989e38867fb5335ec5ad43158fb3061`; `scout-design.proposed.md` `49935688a9247a2a3f454919ccd8a3e17acedf941f3ca3873afea22a2281720c`; `proposed.diff` `f5b84bec91b63711ccefb0b0c564a382889d8c8a9951e1d9781c074ee1319663`; `PROPOSAL.md` `010658c8a42c22a50357faad464fcb81daec81a345c7e05242bc8a39913e62bf`. Base digest equals the round-7 sign-off digest.
+
+Limits of this round: the council has no shell. `scout-nightly.yml:40,49` and `release.yml:89` were read from the working tree, which the main agent reports carries another session's uncommitted workflow edits; `round-1-response.md:17` states `git show HEAD:` agrees (`v0.1.4`), and `docs/STATUS.md:53,94` independently state `v0.1.4`. The main agent's `git show HEAD:.github/workflows/{scout-nightly,release}.yml` check and the `shasum`/`cmp` recomputation remain conditions of any later sign-off.
+
+## 1. Verdict: 9 ISSUES
+
+**Recommendation.** Do not adopt yet; one more fix-and-review cycle. Every code fact in the design file is now right: all five cites on `:106` resolve to the values quoted, `:99` names the constant that exists, `:3` repeats `docs/STATUS.md:72` and `:94` verbatim, `:456` is consistent with `:11`. What remains is nine nits: two wording defects on the Revision 2.4 paragraph (`:9`) — a self-contradictory scope sentence and an ambiguous bare `client.go` cite, both traceable to the round-1 required-fix text — and seven bookkeeping errors in the artifacts (a wrong line number for the §4 refresh line repeated in three files, a wrong blank-line count, a stale judgement call, a stale status line, an off-by-one shift sentence, an incomplete OAuth-token condition, and a mislabelled/under-cited P5 row). Four of the nine (1 in part, 2, 7, 8) originate in wording the council itself prescribed in round 1; the bar is zero issues on the artifacts regardless of origin, so they are recorded and the council owns them.
+
+**Alternatives considered.** (a) Sign off now and treat issues 3–9 as artifact-only noise — rejected: `AGENTS.md` design rule 2 makes the review record part of what is signed, and issues 1–2 are in the design file. (b) Fix only 1–2 and leave the artifacts — rejected for the same reason; and `DRAFT-NOTES.md`/`round-1-response.md` currently point reviewers at the wrong design line (`:101`), which would mislead the adoption step. Recommended: apply all nine (two edits to `:9`, seven to artifacts), regenerate the diff and digests, round 3.
+
+## 2. Round-1 verification
+
+| # | Round-1 required fix | Verified at | Result |
+|---|---|---|---|
+| 1 | Cite `internal/clawpatch/client.go:20-21` | `proposed.md:106` raw; `client.go:20` `Revision = "734f81bc…"`, `:21` `Version = "0.7.3"`; `PROPOSAL.md:18` "Now" | fixed |
+| 2 | Add `toolchain/versions.env:10` to the pnpm parenthetical | `:106` "pnpm 11.25.0 `toolchain/versions.env:10`"; `versions.env:10` `PNPM_VERSION=11.25.0` | fixed |
+| 3 | Qualify or delete the universal-failure clause | Clause absent from `:9`; `PROPOSAL.md:8` "Claude Code 2.1.309 on macOS failed every call (observed 2026-10-23; not in the design)" | fixed |
+| 4 | Status line `v0.1.4` + Revision 2.4 clause + PROPOSAL row + DRAFT-NOTES | `:3` "release `v0.1.2` exists for CI to install and the dogfood caller pins `v0.1.4`, `docs/STATUS.md` §1" = `STATUS.md:72` + `:94`; `scout-nightly.yml:40,49` `v0.1.4` (working tree); `:9` carries the clause; P5 row at `PROPOSAL.md:20` | fixed with new defects: the clause now contradicts "pin only" (issue 1); P5 row mislabelled and under-cited (issue 9) |
+| 5 | `defaultMapTimeoutMS = "900000"`, `internal/clawpatch/client.go:23` | `proposed.md:99` raw (base `:97`); `client.go:23`, used `:304`; grep: no `defaultMapCodexTimeoutMS` under `internal/`, `cmd/` | fixed in the design; location recorded as 101/base 99 in three artifacts (issue 3); `:9` cites it as bare `client.go:23` (issue 2) |
+| 6 | "revision 2.1, 2.2, 2.3 or 2.4" | `:11` raw; `proposed.diff:16` | fixed |
+| 7 | "proposed line 9" | `PROPOSAL.md:17` | fixed |
+| 8 | Shift sentence per council wording | `DRAFT-NOTES.md:27` is the council's wording verbatim | fixed as prescribed; the prescribed wording is itself off by one (issue 7) |
+| 9 | State last-5 vs last-4 | `PROPOSAL.md:24` "`first 8…last 5` … rev 2.3 line's `f39d73da…a865` used last 4"; `review.go:21` ends `…dae6ce3`, CP07 `f39d73da…a865` | fixed |
+| 10 | Host-only block wording incl. `CLAUDE_CODE_OAUTH_TOKEN` | `PROPOSAL.md:28`; patch `:332` sets `HOME`, `:333-334` copy `USERPROFILE`/`CLAUDE_CONFIG_DIR`, `:335-336` `+USER`/`+LOGNAME`; `claude.ts:268-270` | fixed as prescribed; the prescribed wording omits the `includeAuth` guard at `claude.ts:258` (issue 8) |
+
+## 3. Issues
+
+Severity: blocker / major / minor / nit (nits count toward the zero-issue bar, as in rounds 1 and `2026-10-23-decisions/round-6.md` → round 7).
+
+| # | Severity | Location | Evidence | Required fix |
+|---|---|---|---|---|
+| 1 | nit | `scout-design.proposed.md:9`: "corrects the Clawpatch review-safety patch pin **only**: … Also refreshes two code facts … no other statement changes" | The paragraph's scope sentence contradicts its own third sentence; the rev 2.3 paragraph (`:7` (6)) calls the same kind of drift fix a correction. "No other statement changes" is also not exhaustive: `:11` changes in the same revision (`proposed.diff:13,16`). Round 1 issue 4 prescribed the "Also refreshes…" clause without removing "only" (council-originated) | "corrects the Clawpatch review-safety patch pin: `scout-review-sanitize-v3`, …" (delete " only"); end "…; apart from revision bookkeeping (status line, evidence notation), no other statement changes." Mirror in `PROPOSAL.md:17` (P2) |
+| 2 | nit | `scout-design.proposed.md:9`: "`client.go:23`" | Three `client.go` files exist under `internal/` (`clawpatch`, `decisions`, `contextual`; glob); the bare form is ambiguous where the two other rev 2.4 cites of the same package are qualified (`:99` `internal/clawpatch/client.go:23`, `:106` `internal/clawpatch/review.go:20-21`). The bare form was in round 1 issue 4's prescribed text (council-originated) | "`internal/clawpatch/client.go:23`" |
+| 3 | nit | `PROPOSAL.md:21` (P6) "(base 99)"; `DRAFT-NOTES.md:23` "Line 101 … (base 99)"; `round-1-response.md:11` "proposed:101" | The §4 refresh line is the 4th line of hunk `-94,14 +96,14` (`proposed.diff:20,24-25`): base `:97` → proposed `:99` (grep `^- \*\*Refresh triggers`: base 97, proposed 99). Proposed `:101` and base `:99` are the unchanged "Measurement scopes" bullet. Round 1 issue 5 cited `proposed:99`, correctly | "base 97" / "Line 99 … (base 97)" / "proposed:99" |
+| 4 | nit | `DRAFT-NOTES.md:9` "7 insertions (incl. 2 blank)"; `:12` "+7 lines (5 text, 2 blank in context shifts excluded by diff)" | `+` lines are `proposed.diff:7,14,15,16,25,33,42`; only `:15` is blank → 6 text, 1 blank. 5 deletions and the hunk headers are correct | "7 insertions (6 text, 1 blank), 5 deletions" in both places; drop the "context shifts" parenthetical |
+| 5 | nit | `DRAFT-NOTES.md:32` (judgement call 2): "it makes no claim beyond the pin and the v3 change" | `:9` now also claims the two drift refreshes (`DRAFT-NOTES.md:21` itself says so) | "…beyond the pin, the v3 change and the two drift refreshes (P5, P6)" |
+| 6 | nit | `PROPOSAL.md:3`: "Status: **round-1 draft, awaiting innovation-council review**" | `DRAFT-NOTES.md:3` "Round-2 draft (round-1 issues fixed, `round-1-response.md`)"; round 1 is closed | "**round-2 draft (round-1 issues fixed, `round-1-response.md`), awaiting innovation-council review**" |
+| 7 | nit | `DRAFT-NOTES.md:27`: "(base line 8 onward) shifts by +2 (… at proposed 9–10)" | Under the stated insertion point (proposed 9–10), base `:8` (blank) is the unchanged context line `proposed.diff:12` and stays proposed `:8`; the shift begins at base `:9` (evidence notation → `:11`). The wording was round 1 issue 8's required fix (council-originated) | "Every base line from the evidence-notation line (base line 9) onward shifts by +2 (the new paragraph and its blank line at proposed 9–10)" |
+| 8 | nit | `PROPOSAL.md:28`: "upstream additionally copies `CLAUDE_CODE_OAUTH_TOKEN` in host context (`third_party/clawpatch/src/providers/claude.ts:268-270`)" | The copy is inside `if (includeAuth)` (`claude.ts:258`), which is `true` for the prompt run (`:144`) and `false` for the `--version` probes (`:73`, `:160`); round 1 issue 10's evidence column said "when auth is included" but its required-fix text dropped the condition (council-originated) | "…copies `CLAUDE_CODE_OAUTH_TOKEN` in host context when auth is included (`third_party/clawpatch/src/providers/claude.ts:258,268-270`)" |
+| 9 | nit | `PROPOSAL.md:20` (P5): "Where" = "Status line 3 (unchanged base text)"; "Evidence" = `scout-nightly.yml:40,49`, `docs/STATUS.md:94` | A Was/Now row that rewrites the text cannot be labelled "unchanged base text" (round 1 used the phrase to mean "text the pin change did not touch"); the "Now" phrase "exists for CI to install" is quoted from `docs/STATUS.md:72`, which the row does not cite (`:94` has only the pin) | "Status line 3 (drift since revision 2.3, not from `06c9154`)"; add `docs/STATUS.md:72` to the evidence |
+
+Issues 1–2 change `scout-design.proposed.md` (line 9 only) and therefore `proposed.diff` and both digests; 3–9 change only the artifacts.
+
+Not raised (considered, declined):
+- P3 "Was" cell's gloss "`client.go:19-20` cited on the same line" (peer): the column paraphrases rather than quotes; base `:104` does carry that cite. Holds.
+- P3 "Pin/Version cite" (peer): the bullet is labelled "Pin:" and the field is `Version`; not false. Holds.
+- P3 evidence column not repeating `client.go:20-21` / `versions.env:10` (peer): both cites are in the row's "Now" cell and were verified under round-1 issues 1–2. Holds.
+- `PROPOSAL.md:8` two consecutive parentheticals (peer): awkward, accurate. Holds.
+- `:9` cites the dogfood pin only via the status line, which cites `docs/STATUS.md` §1 (peer): acceptable chain. Holds.
+- No `R-NNN` for rev 2.4: the driver is a defect/fix in Scout's own code (`06c9154`), not a source under the ledger rule's categories; `PROPOSAL.md:3` states "no ledger source is added". Holds.
+- Appendix 7 "(CP07 §7; v2 → v3 by revision 2.4)" (re-checked): CP07 §7 `RESULTS.md:101-107` names v2; the parenthetical separates the port record from the bump; consistent with `:11`. Holds (as in round 1).
+
+## 4. Checked and found correct
+
+| Check | Verified against | Result |
+|---|---|---|
+| `:106` cites | `client.go:20` `Revision`, `:21` `Version`; `review.go:20` `reviewSafetyPatchVersion = "scout-review-sanitize-v3"`, `:21` `…SHA256 = "dc867503f80cdb336681d72c221ec1dea24006f121b4cae56bf0fb284dae6ce3"`; `build-clawpatch.sh:18-19` both `readonly` pins; `release.yml:89` `"safetyPatchSha256": "dc867503…"`; `versions.env:10` | All resolve; `dc867503…e6ce3` is first 8 / last 5 of the full digest |
+| `:99` | `client.go:23` `defaultMapTimeoutMS = "900000"`, used `:304`; grep `defaultMapCodexTimeoutMS` finds only `docs/scout-design.md:97` and review-directory copies | Correct |
+| `:3` | Only change vs base: the `v0.1.2`/`v0.1.4` clause and the revision list/bold; `STATUS.md:5` §1 heading, `:72` "release `v0.1.2` exists for CI to install", `:53,:94` "the dogfood caller pins `v0.1.4`"; working-tree `scout-nightly.yml:40,49` `scout-version: v0.1.4` | Correct (HEAD check pending, see Limits) |
+| `:9` facts | Patch hunk header `:331`, host block `:332-336`, `+copyEnv(env, "USER")` `:335`, `+copyEnv(env, "LOGNAME")` `:336`; upstream host block `claude.ts:244-247` | "v3 adds `USER` and `LOGNAME` to the host auth context that the patched `claudeEnv` copies" holds |
+| `:11`, `:456` | Raw; CP07 §7 `RESULTS.md:101`, §8 `:115` | Correct |
+| `proposed.diff` bookkeeping | 45 lines; hunks `-1,12 +1,14`, `-94,14 +96,14`, `-451,7 +453,7`; 5 `-`, 7 `+` (6 text + 1 blank); 466 → 468; line map base 3→3, 9→11, 97→99, 104→106, 454→456 | Holds (DRAFT-NOTES wrong only on issues 3, 4, 7) |
+| Residual drift sweep (peer) | `:154` `bootstrap-tools.sh:210-214` (version log `:213`, loop `:212-215`); `:341` `client.go:168-170` is qualified "at rev 2.1"; `v0.1.2` statements at `:7`, `:188`, `:199` match `STATUS.md:53`; `review.go:` / `release.yml:` cites appear only on `:106`; neither drifted fact appears in `SCOUT_REBUILD_REQUIREMENTS.md`, `docs/scout-allowlist.md`, `docs/scout-design-brief.md` | No further drift; no `requirements.proposed.diff` needed |
+| PROPOSAL fact 1 mechanics (challenger) | `build-clawpatch.sh:96-111,137` (own git repo, `apply --check`, `apply`, `--check --reverse`, marker); `bootstrap-tools.sh:150-153`; `release.yml:65` `$RUNNER_TEMP` | As described |
+| Digest strings | `round-1-response.md:19` vs `DRAFT-NOTES.md:7-10` | Consistent as strings; not recomputed |
+
+## 5. Challenger and peer synthesis
+
+The challenger (`CouncilR2v24.AstraVerify`) returned 7 findings: "pin only" (rated minor) plus the `:11` exhaustiveness gap, bare `client.go:23`, the 99/101 line error in three files, the blank-line count, the shift sentence off-by-one, the stale PROPOSAL status, and the `includeAuth` guard. It confirmed round-1 issue 4 against the working tree and `STATUS.md:72,94`.
+
+The peer (`CouncilR2v24.PeerVerify`) tested 10 hypotheses, refuted every "code fact still false" hypothesis with file:line evidence, and returned 7 findings: the `:9` scope contradiction and exhaustiveness, bare `client.go:23` (with the three-`client.go` ambiguity argument), the 99/101 error, the blank count, judgement call 2, the PROPOSAL status, and the P3/P5 row defects. It rated the shift sentence correct and declined the `includeAuth` point as the council's own wording.
+
+Where the analysts changed the council's findings: my own pass had issues 1 (the "only" contradiction alone), 3, 4, 5 and 6. The peer's `:11` exhaustiveness point was folded into issue 1's required fix. Issue 2 was initially declined on the precedent of bare `base_gaps_test.go` at `:3`; the peer's observation that three `client.go` files exist under `internal/` (confirmed by glob) is decisive, so it is raised. Issue 7 was resolved against the peer by reading `proposed.diff:12` raw: base `:8` is unchanged context, so the shift starts at base `:9`. Issue 8 was resolved against the peer's decline: council authorship of the wording does not lower the bar, and `claude.ts:258` makes the condition real. Issue 9 takes the peer's P5 findings; its P3 findings are declined (§3 "Not raised"). Severity resolved against the challenger on issue 1: nit, not minor — each clause is individually true, the fix is one word plus a qualifier, and no decision is touched.
+
+## 6. Risks and reversibility
+
+- Fixing issues 1–2 changes `scout-design.proposed.md:9` only, but that changes the proposed-file and `proposed.diff` digests; `DRAFT-NOTES.md` and the round-2 response must carry recomputed `shasum -a 256` values, and the diff must be regenerated with the exact command in `DRAFT-NOTES.md:14`. Round 3 names the new digests.
+- Four of the nine issues (1 in part, 2, 7, 8) are council-originated wording; round 3 should re-read the fixed text against this round's required-fix column rather than round 1's.
+- The working-tree-vs-`main` gap for `.github/workflows/` is unverified by the council; if `git show HEAD:.github/workflows/release.yml` does not carry `safetyPatchSha256` on line 89, `:106` needs a line correction before sign-off.
+- Operational consequences of the v3 bump (fingerprint change, local rebuild, `v0.1.4` bundle still v2) are unchanged from round 1 §5 and remain outside the design.
+- Reversibility: nothing adopted; `docs/scout-design.md` untouched (base digest `75ef1e66…` per `DRAFT-NOTES.md:7`).
+
+## 7. Execution outline (main agent)
+
+1. `scout-design.proposed.md:9`: delete " only"; qualify the closing clause per issue 1; `client.go:23` → `internal/clawpatch/client.go:23` (issue 2).
+2. `PROPOSAL.md`: `:3` status (6); `:17` P2 mirror (1); `:20` P5 "Where" and `STATUS.md:72` (9); `:21` P6 "base 97" (3); `:28` `includeAuth` wording and cite `:258,268-270` (8).
+3. `DRAFT-NOTES.md`: `:9`, `:12` counts (4); `:23` "Line 99 … (base 97)" (3); `:27` shift sentence (7); `:32` judgement call 2 (5). `round-1-response.md:11` "proposed:99" (3).
+4. Regenerate `proposed.diff` with `/usr/bin/diff -u --label scout-design.base.md --label scout-design.proposed.md scout-design.base.md scout-design.proposed.md > proposed.diff`; confirm `/usr/bin/diff … | cmp - proposed.diff`; recompute `shasum -a 256` for the proposed file, the diff, `PROPOSAL.md`, `DRAFT-NOTES.md`; confirm `docs/scout-design.md` and `scout-design.base.md` still hash to `75ef1e66…`; run `git show HEAD:.github/workflows/scout-nightly.yml | sed -n '40p;49p'` and `git show HEAD:.github/workflows/release.yml | sed -n '89p'` and record the result in the response.
+5. Write `round-2-response.md` (issue → fix → line, new digests), then request round 3. Round 3 re-reads `:9` raw, the nine artifact locations, and names the proposed-file digest in its sign-off if zero issues remain.
