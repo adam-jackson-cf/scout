@@ -84,7 +84,7 @@ func emit(flags *commonFlags, status string, code int, result any, err error) in
 func main() { os.Exit(run(context.Background(), os.Args[1:])) }
 func run(ctx context.Context, args []string) int {
 	if len(args) == 0 {
-		fmt.Fprintln(os.Stderr, "usage: scout <readiness|assess|issues|issue|mapping|coverage|triage|serve> [flags]")
+		fmt.Fprintln(os.Stderr, "usage: scout <readiness|assess|diff|issues|issue|mapping|coverage|triage|serve> [flags]")
 		return exitUnavailable
 	}
 	switch args[0] {
@@ -92,6 +92,8 @@ func run(ctx context.Context, args []string) int {
 		return readiness(ctx, args[1:])
 	case "assess":
 		return assess(ctx, args[1:])
+	case "diff":
+		return diff(ctx, args[1:])
 	case "issues":
 		return listIssues(ctx, args[1:])
 	case "issue":
@@ -102,6 +104,12 @@ func run(ctx context.Context, args []string) int {
 		return coverage(ctx, args[1:])
 	case "triage":
 		return triage(ctx, args[1:])
+	case "export":
+		return exportCmd(ctx, args[1:])
+	case "import":
+		return importCmd(ctx, args[1:])
+	case "state":
+		return stateCmd(ctx, args[1:])
 	case "serve":
 		return serve(ctx, args[1:])
 	default:
@@ -157,14 +165,13 @@ func assess(ctx context.Context, args []string) int {
 	set := flag.NewFlagSet("assess", flag.ContinueOnError)
 	flags := common(set)
 	var full, authorized bool
-	var kind, from, to, gate string
+	var kind, from, to string
 	var paths, excludes, families stringsFlag
 	set.BoolVar(&full, "full", false, "force full rescan")
 	set.BoolVar(&authorized, "allow-egress", false, "authorize source egress for providers")
 	set.StringVar(&kind, "scope", "repository", "repository|subpath|staged|commit_range|paths")
 	set.StringVar(&from, "from", "", "commit-range start")
 	set.StringVar(&to, "to", "", "commit-range end")
-	set.StringVar(&gate, "fail-on", "", "gate unresolved issues at or above severity")
 	set.Var(&paths, "path", "selected relative path (repeatable)")
 	set.Var(&excludes, "exclude", "excluded relative path (repeatable)")
 	set.Var(&families, "family", "selected family (repeatable)")
@@ -175,14 +182,12 @@ func assess(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	threshold := domain.Severity(gate)
-	if gate != "" && !threshold.Valid() {
-		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("invalid severity gate"))
-	}
-	result, err := engine.Assess(ctx, engine.Config{Root: flags.root, ClawpatchBinary: flags.binary, ClawpatchEgressAuthorized: authorized, Provider: providerConfig(authorized)}, engine.Options{Scope: scope, ForceFull: full, Exclusions: excludes})
+	result, err := engine.Assess(ctx, engine.Config{Root: flags.root, ClawpatchBinary: flags.binary, ClawpatchEgressAuthorized: authorized, Provider: providerConfig(authorized)}, engine.Options{Scope: scope, ForceFull: full, Exclusions: excludes, Trigger: domain.TriggerPush})
 	if err != nil {
-		return emit(flags, "partial", exitPartial, nil, err)
+		unavailable := engine.UnavailableReport(err)
+		return emit(flags, unavailable.Gate.Status, unavailable.Gate.ExitCode, unavailable, err)
 	}
+	verdict := assessGate(result)
 	report := struct {
 		Run           domain.Run             `json:"run"`
 		Plan          domain.Plan            `json:"plan"`
@@ -191,18 +196,12 @@ func assess(ctx context.Context, args []string) int {
 		MappingGaps   []inventory.MappingGap `json:"mappingGaps"`
 		Issues        []domain.Issue         `json:"issues"`
 		Adapters      []domain.AdapterResult `json:"adapters"`
-	}{result.Run, result.Plan, result.Diff, result.Map.Status, result.MappingGaps, result.Issues, result.Adapters}
-	if result.Run.State != domain.RunComplete {
-		return emit(flags, "partial", exitPartial, report, nil)
-	}
-	if gate != "" {
-		for _, issue := range result.Issues {
-			if issue.State != domain.IssueResolved && issue.State != domain.IssueFalsePositive && issue.State != domain.IssueWontFix && issue.EffectiveSeverity.Rank() >= threshold.Rank() {
-				return emit(flags, "gated", exitGate, report, nil)
-			}
-		}
-	}
-	return emit(flags, "complete", exitComplete, report, nil)
+		Gate          domain.Gate            `json:"gate"`
+		Health        []domain.LaneHealth    `json:"health"`
+		WouldBlock    []domain.WouldBlock    `json:"would_block"`
+		Ranking       engine.Ranking         `json:"ranking"`
+	}{result.Run, result.Plan, result.Diff, result.Map.Status, result.MappingGaps, result.Issues, result.Adapters, verdict.Gate, result.Lanes, []domain.WouldBlock{}, engine.RankingOf(verdict.Issues)}
+	return emit(flags, verdict.Gate.Status, verdict.Gate.ExitCode, report, nil)
 }
 
 type capability struct {

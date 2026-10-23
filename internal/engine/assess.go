@@ -30,7 +30,7 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 		options.Scope.Kind = domain.ScopeRepository
 	}
 	if len(options.Scope.SelectedFamilies) == 0 {
-		options.Scope.SelectedFamilies = []domain.Family{domain.FamilyArchitecture, domain.FamilySecurity, domain.FamilyQuality, domain.FamilyPerformance}
+		options.Scope.SelectedFamilies = DefaultFamilies()
 	}
 	if err := options.Scope.Validate(); err != nil {
 		return result, err
@@ -438,8 +438,19 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 		inventoryFailures = append(inventoryFailures, failure)
 		run.Failures = append(run.Failures, failure)
 	}
+	var inlineHealth []domain.LaneHealth
 	if !committed[finalJob.JobID] {
-		if err := store.CommitRunJob(ctx, runID, state.RunJobCommit{JobID: finalJob.JobID, Failures: inventoryFailures, CommittedAt: time.Now().UTC()}); err != nil {
+		var inlineObservations []domain.Observation
+		for _, lane := range options.Inline {
+			found, laneErr := lane.Run(ctx, runID)
+			inlineHealth = append(inlineHealth, inlineLaneHealth(lane, len(found), laneErr))
+			if laneErr == nil {
+				inlineObservations = append(inlineObservations, found...)
+			}
+		}
+		observationStart := len(observations)
+		observations = append(observations, inlineObservations...)
+		if err := store.CommitRunJob(ctx, runID, state.RunJobCommit{JobID: finalJob.JobID, Observations: observations[observationStart:], Failures: inventoryFailures, CommittedAt: time.Now().UTC()}); err != nil {
 			return result, fmt.Errorf("persist final source check: %w", err)
 		}
 	}
@@ -483,6 +494,9 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 		return result, err
 	}
 	observed := make(map[string]struct{})
+	for _, observation := range observations {
+		observed[observation.ObservationID] = struct{}{}
+	}
 	for _, row := range run.Coverage {
 		for _, id := range row.ObservationIDs {
 			observed[id] = struct{}{}
@@ -497,6 +511,7 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 			}
 		}
 	}
+	result.Lanes = LaneHealthOf(options.Trigger, result.Run, inlineHealth)
 	return result, nil
 }
 

@@ -38,7 +38,6 @@ env:
   SCOUT_BASELINE_PREFIX: ${{ vars.SCOUT_BASELINE_PREFIX }}
   SCOUT_AWS_REGION: ${{ vars.SCOUT_AWS_REGION }}
   SCOUT_AWS_ROLE_ARN: ${{ vars.SCOUT_AWS_ROLE_ARN }}
-  SCOUT_FAIL_ON: ${{ vars.SCOUT_FAIL_ON || 'high' }}
 
 jobs:
   assess:
@@ -115,7 +114,11 @@ jobs:
           archive="$RUNNER_TEMP/baseline.tar.gz"
           if aws s3 cp "s3://${SCOUT_BASELINE_BUCKET}/${key}" "$archive"; then
             aws s3 cp "s3://${SCOUT_BASELINE_BUCKET}/${key}.sha256" "$archive.sha256"
-            ./scripts/bundle-state.sh extract --state-dir "$GITHUB_WORKSPACE/.scout" --input "$archive"
+            [[ "$(cut -d ' ' -f1 "$archive.sha256")" == "$(sha256sum "$archive" | cut -d ' ' -f1)" ]] || { echo '::error::Durable baseline checksum mismatch.'; exit 3; }
+            restore_dir="$RUNNER_TEMP/scout-restore"
+            rm -rf "$restore_dir" && mkdir -p "$restore_dir"
+            tar -C "$restore_dir" -xzf "$archive"
+            "$RUNNER_TEMP/scout" import --root "$GITHUB_WORKSPACE" --from "$restore_dir"
             printf 'available=true\n' >> "$GITHUB_OUTPUT"
           elif [[ "$ALLOW_INITIAL_BASELINE" == 'true' ]]; then
             echo 'No durable baseline was restored; this explicitly authorized run will establish the initial baseline.'
@@ -143,7 +146,6 @@ jobs:
           if [[ "$ALLOW_EGRESS" == 'true' ]]; then
             args+=(--allow-egress)
           fi
-          args+=(--fail-on "$SCOUT_FAIL_ON")
           if [[ "${{ steps.baseline.outputs.available }}" != 'true' || "$REQUESTED_FULL" == 'true' ]]; then
             args+=(--full)
           fi
@@ -159,7 +161,11 @@ jobs:
         run: |
           set -euo pipefail
           if [[ -d "$GITHUB_WORKSPACE/.scout" ]]; then
-            ./scripts/bundle-state.sh create --state-dir "$GITHUB_WORKSPACE/.scout" --output "$RUNNER_TEMP/scout-run-state.tar.gz"
+            export_dir="$RUNNER_TEMP/scout-export"
+            rm -rf "$export_dir"
+            "$RUNNER_TEMP/scout" export --root "$GITHUB_WORKSPACE" --out "$export_dir"
+            tar -C "$export_dir" -czf "$RUNNER_TEMP/scout-run-state.tar.gz" state/v1
+            printf '%s  %s\n' "$(sha256sum "$RUNNER_TEMP/scout-run-state.tar.gz" | cut -d ' ' -f1)" scout-run-state.tar.gz > "$RUNNER_TEMP/scout-run-state.tar.gz.sha256"
           fi
 
       - name: Retain assessment evidence

@@ -22,6 +22,11 @@ type Options struct {
 	Scope      domain.Scope
 	ForceFull  bool
 	Exclusions []string
+	// Trigger selects which lanes are required; empty means push.
+	Trigger domain.LaneTrigger
+	// Inline lanes run in-process after the scanner jobs and persist their
+	// observations with the run (e.g. guardrails over a base/head diff).
+	Inline []InlineLane
 }
 
 type Result struct {
@@ -32,6 +37,7 @@ type Result struct {
 	MappingGaps []inventory.MappingGap `json:"mappingGaps,omitempty"`
 	Adapters    []domain.AdapterResult `json:"adapters,omitempty"`
 	Issues      []domain.Issue         `json:"issues,omitempty"`
+	Lanes       []domain.LaneHealth    `json:"lanes,omitempty"`
 }
 
 // Capability reports whether a prerequisite for the selected work is available.
