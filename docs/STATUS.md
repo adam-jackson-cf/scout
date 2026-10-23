@@ -45,11 +45,27 @@ C7b, the experiment estimators and samplers, is carried forward as binding input
     - Moving the activation's version back returns the check to shadow (exit 0).
   - **Deviation from the §11 text:** the digest-mismatch PR is attributed `introduced`, not `unknown`. The paired recompute rescans the merge base under head's digests, which meets §7.3's definition of `introduced`. `unknown` is produced only when no comparable base exists (`gate.go:178`). Any change to the §11 wording needs a council round (§6).
   - Workflow assumptions: `release-repo` defaults to `inflight/scout` because there is no git remote; the dogfood caller pins `v0.1.0`, which is not tagged yet; `refresh-map` forces `--full` until Phase 4; SARIF is uploaded only if present.
-- **Phase 3, part done (`4bab5c0`):**
+- **Phase 3 is done except one CI item** (`4bab5c0` plus the Phase 3 completion commit):
   - Signal store (schema v7) and `scout signals`; `scout.cc`, `complex_burden`, `burden_density`, `dup_pct` (lizard and jscpd); `cycle_mass` (Go/Python/TS import graph); §8.3 history measures in calendar quarters.
   - `ActiveHours` reproduces E1b `active_hours` for all 598 nest/webpack panel PRs (max error 8.9e-16 h).
-  - **Not started:** artifacts (LCOV/Cobertura/JUnit, CRAP), the remaining guardrail mechanisms, PR-metadata ingestion, `delta` rules, `readiness --matrix`, the 9/13 corpus regression check.
-- **Acceptance figures:** fastapi `d666ccb`, every lane, no egress. 455 s after Phase 1, 537 s after Phase 3's lanes, 143 s after Gitleaks batching, **125 s** after Phase 2 (2026-10-23); 74 issues, exit 0 each time. With no policy, the contextual and clawpatch-review lanes read `skipped (not opted in)` and decisions reads `skipped (decisions not enabled)`. Phase 1 scenario: `/tmp/scout-p1/scenario.sh`. Phase 2 scenario: `/tmp/scout-p2/phase2-scenario.sh`.
+  - `internal/artifacts`: LCOV, Cobertura and JUnit ingestion, with provenance from `<file>.scout.json` or `--artifact-revision/--artifact-producer`. An artifact matches only on a clean tree at its revision.
+    - `scout.crap@1`: `crap_load`, plus `uncovered_cc_mass` = numerator ÷ denominator. It is `unmeasured` with a reason when the artifact is absent or mismatched, never 0. Schema v9 adds `ingested_artifacts`.
+  - Guardrails cover all four AL table-1 mechanisms for Go, Python and TS. Effective config is resolved through `extends`, and every finding carries base/head evidence. Tool slugs: `golangci`, `staticcheck`, `ruff`, `flake8`, `mypy`, `pyright`, `coverage`, `eslint`, `biome`, `tsconfig`, `jest`.
+  - `delta` rules `delta.cc-threshold@1` and `delta.dup-added@1` run on changed files. They are promoted to ledger issues with `claim: descriptive` and `rule` (schema v11), are never gated or `would_block`, and `delta.*` is rejected as an activation.
+  - `scout readiness --matrix` prints §5.3 with per-repository availability.
+  - PR-metadata ingestion (`internal/prmeta`, schema v10): `assess --pr-metadata <file>`, or `--fetch-pr-metadata --pr-repo` with `GITHUB_TOKEN`. Without it, `pr_effort` and `batch_size` are `unmeasured` with a reason, and windows with fewer than 5 linked PRs are `unmeasured` too.
+  - Corpus regression (`internal/eval/corpus_regression_test.go`): 9/9 true detected and 13/13 FP unflagged on replay, plus live Semgrep fixtures for the four rules behind the 9.
+  - TS import graph: array `extends`, `baseUrl`-only children and catch-all `*` paths are fixed; type-only edges are excluded from `cycle_mass`.
+  - **§11 Phase 3 scenario passed on 2026-10-23** (`/tmp/scout-p3/scenario.sh`, Go+Python+TS fixture with four quarterly windows):
+    - signals carry numerator, denominator and population digest per window;
+    - CRAP is 60.0 with a matched LCOV and `unmeasured` on the next run without one;
+    - `pr_effort` is `unmeasured` locally with a reason;
+    - the PR yields `delta.cc-threshold@1` (9 → 14) and `delta.dup-added@1` (`descriptive`);
+    - guardrails fire: `SUPPRESS` for `//nolint` and `@ts-nocheck`, `TESTQ` for `.only`, `strictness-lowered.{tsconfig,golangci}` and `ignores-added.ruff`;
+    - `readiness --matrix` prints.
+  - **Open, blocked on the user (design §15 item 2):** "`pr_effort` present in CI" needs `pull-requests: read`, `GITHUB_TOKEN` and `--fetch-pr-metadata --pr-repo ${{ github.repository }}` in the trusted job of `scout-guardian.yml`. The code is ready; the workflow is unchanged.
+  - **Scenario wording vs allow-list:** §11 says the PR "lowers `ruff` strictness". AL table 1 lists ruff only under `ignores-added` (a `select` shrink is not a mechanism), so the scenario lowers ruff by adding an ignore. Detecting a `select` shrink would mean changing the allow-list, which needs a council round.
+- **Acceptance figures:** fastapi `d666ccb`, every lane, no egress. 455 s after Phase 1, 537 s after Phase 3's first lanes, 143 s after Gitleaks batching, 125 s after Phase 2, **127 s** after Phase 3 (2026-10-23); 74 issues, exit 0 each time. With no policy, the contextual and clawpatch-review lanes read `skipped (not opted in)` and decisions reads `skipped (decisions not enabled)`; `guardrails` and `delta` run on `diff` only, so they read `skipped` on `assess`. Phase 1 scenario: `/tmp/scout-p1/scenario.sh`. Phase 2: `/tmp/scout-p2/phase2-scenario.sh`. Phase 3: `/tmp/scout-p3/scenario.sh`.
 - **Known gaps:**
   - If agent mapping succeeds with zero features, heuristic output is not re-merged (Phase 4).
   - An issue left unmatched during a rename keeps its old anchor path.
@@ -104,7 +120,7 @@ Owners: **Council** = innovation-council review loop; **Impl** = a coding sessio
 | 0 | ~~Decide the §6 conflicts; council re-scope round~~ **done**: rev 2.2 adopted 2026-10-23 (round 6, zero issues) | — | — | — |
 | 1 | ~~**Phase 1**~~ **done** (`945ac4d`, `36d1023`) | — | — | fastapi 143 s; §1 |
 | 2 | ~~**Phase 2**~~ **done** 2026-10-23: §11 scenario passed (§1); one wording deviation (digest mismatch → `introduced` after a valid recompute) | — | — | §11 Phase 2 |
-| 3 | **Phase 3 remainder**: artifacts, CRAP, remaining guardrails (all three languages), PR metadata, `delta` rules, `readiness --matrix`, corpus regression, TS `paths` acceptance | #2 for PR metadata in CI | Impl | §11 Phase 3 |
+| 3 | ~~**Phase 3**~~ **done** 2026-10-23 (§1), except "`pr_effort` present in CI" | user decides design §15 item 2 (`pull-requests: read`) | User → Impl (workflow change only) | §11 Phase 3 |
 | 3b | **Subject interface** principles adopted (rev 2.2 §8.7); exact schema needs its own council round after inertia-bench signs off | bench design signed off; #3 measures | Council → Impl | §11 Phase 3b |
 | 4 | **Phase 4** — mapping refresh triggers + areas (X2) | #1, #3 scopes | Impl | §11 Phase 4 |
 | 5 | **Phase 5** — trends, exploratory measures, rubric lane, self-evaluation (X1, X3–X5, X9, X10), blind-label collection | #2–#4; ≥100 blind labels for X1 | Impl | §11 Phase 5; X1 decision rule recorded (§13) |
