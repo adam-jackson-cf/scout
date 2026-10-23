@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"math"
+	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -19,6 +22,16 @@ const (
 	LaneClawpatchRev = "clawpatch-review"
 	// DefaultMaxPerRun is the Jev call cap (design §6, [ASSUMPTION]).
 	DefaultMaxPerRun = 2000
+	// DefaultMaxCostUSD is the cap on billed Jev cost per run, in US dollars
+	// [ASSUMPTION]: five times the ≈ $0.10 the default call cap costs at E2's
+	// $0.05 per 1k calls, so it binds only on a cost surprise, not on the
+	// call cap.
+	DefaultMaxCostUSD = 0.50
+	// DefaultModel is what `scout init --decisions` pins when no model is
+	// given: Jev 1.14 through OpenRouter. The slug is the dated endpoint name
+	// OpenRouter lists for `typesafe/jev-1.14` (the undated id and the
+	// `jev-latest`/`jev-preview` aliases move and are rejected).
+	DefaultModel = "typesafe/jev-1.14-20261014"
 )
 
 // Decisions is the consent and configuration for Jev (typed-decision) ranking.
@@ -28,6 +41,7 @@ type Decisions struct {
 	Provider           string
 	Model              string
 	MaxPerRun          int
+	MaxCostUSD         float64
 	EgressAcknowledged bool
 }
 
@@ -49,11 +63,12 @@ func (p Policy) ModelCLI() ModelCLI {
 func (p Policy) LaneOptedIn(lane string) bool { return slices.Contains(p.modelCLI.Lanes, lane) }
 
 type rawDecisions struct {
-	Enabled            bool   `yaml:"enabled"`
-	Provider           string `yaml:"provider"`
-	Model              string `yaml:"model"`
-	MaxPerRun          int    `yaml:"max_per_run"`
-	EgressAcknowledged bool   `yaml:"egress_acknowledged"`
+	Enabled            bool    `yaml:"enabled"`
+	Provider           string  `yaml:"provider"`
+	Model              string  `yaml:"model"`
+	MaxPerRun          int     `yaml:"max_per_run"`
+	MaxCostUSD         float64 `yaml:"max_cost_usd"`
+	EgressAcknowledged bool    `yaml:"egress_acknowledged"`
 }
 
 type rawModelCLI struct {
@@ -61,18 +76,26 @@ type rawModelCLI struct {
 	Lanes    []string `yaml:"lanes"`
 }
 
-// modelAliases are floating names that would make a pinned model unpinned.
-func isModelAlias(model string) bool {
+// undatedJev matches an OpenRouter Jev slug that names a release line, not a
+// build (`typesafe/jev-1.14`): OpenRouter re-points it at new dated builds and
+// reports the dated slug as the resolved model, so it can never be a pin.
+var undatedJev = regexp.MustCompile(`^(?:[^/]+/)?jev-\d+\.\d+$`)
+
+// IsModelAlias reports whether model is a floating name that would leave the
+// pinned model unpinned: `jev-latest`, `jev-preview`, `latest`, `preview`,
+// `auto`, any `-latest`/`-preview`/`:latest` suffix, or an undated release
+// line such as `typesafe/jev-1.14`.
+func IsModelAlias(model string) bool {
 	m := strings.ToLower(strings.TrimSpace(model))
 	switch m {
 	case "jev-latest", "jev-preview", "latest", "preview", "auto":
 		return true
 	}
-	return strings.HasSuffix(m, "-latest") || strings.HasSuffix(m, "-preview") || strings.HasSuffix(m, ":latest")
+	return strings.HasSuffix(m, "-latest") || strings.HasSuffix(m, "-preview") || strings.HasSuffix(m, ":latest") || undatedJev.MatchString(m)
 }
 
 func parseDecisions(r *rawDecisions) (Decisions, error) {
-	d := Decisions{Provider: ProviderJev, MaxPerRun: DefaultMaxPerRun}
+	d := Decisions{Provider: ProviderJev, MaxPerRun: DefaultMaxPerRun, MaxCostUSD: DefaultMaxCostUSD}
 	if r == nil {
 		return d, nil
 	}
@@ -81,6 +104,12 @@ func parseDecisions(r *rawDecisions) (Decisions, error) {
 			return Decisions{}, fmt.Errorf("decisions.provider %q must be %q", r.Provider, ProviderJev)
 		}
 	}
+	if r.MaxCostUSD < 0 || math.IsNaN(r.MaxCostUSD) || math.IsInf(r.MaxCostUSD, 0) {
+		return Decisions{}, errors.New("decisions.max_cost_usd must be a non-negative number")
+	}
+	if r.MaxCostUSD > 0 {
+		d.MaxCostUSD = r.MaxCostUSD
+	}
 	if r.MaxPerRun < 0 {
 		return Decisions{}, errors.New("decisions.max_per_run must not be negative")
 	}
@@ -88,7 +117,7 @@ func parseDecisions(r *rawDecisions) (Decisions, error) {
 		d.MaxPerRun = r.MaxPerRun
 	}
 	d.Enabled, d.Model, d.EgressAcknowledged = r.Enabled, strings.TrimSpace(r.Model), r.EgressAcknowledged
-	if d.Model != "" && isModelAlias(d.Model) {
+	if d.Model != "" && IsModelAlias(d.Model) {
 		return Decisions{}, fmt.Errorf("decisions.model %q is an alias; pin an exact model id", d.Model)
 	}
 	if d.Enabled {
@@ -135,6 +164,7 @@ type ConsentUpdate struct {
 	DecisionsEnabled   *bool
 	Model              *string
 	MaxPerRun          *int
+	MaxCostUSD         *float64
 	EgressAcknowledged *bool
 	ModelCLIProvider   *string
 	ModelCLILanes      *[]string
@@ -213,7 +243,7 @@ func ApplyConsent(existing []byte, u ConsentUpdate) ([]byte, bool, error) {
 	case !hasKey("profile"):
 		set(root, "profile", str(ProfileReport))
 	}
-	if u.DecisionsEnabled != nil || u.Model != nil || u.MaxPerRun != nil || u.EgressAcknowledged != nil {
+	if u.DecisionsEnabled != nil || u.Model != nil || u.MaxPerRun != nil || u.MaxCostUSD != nil || u.EgressAcknowledged != nil {
 		d := section("decisions")
 		if u.DecisionsEnabled != nil {
 			set(d, "enabled", boolean(*u.DecisionsEnabled))
@@ -224,6 +254,9 @@ func ApplyConsent(existing []byte, u ConsentUpdate) ([]byte, bool, error) {
 		}
 		if u.MaxPerRun != nil {
 			set(d, "max_per_run", &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!int", Value: fmt.Sprint(*u.MaxPerRun)})
+		}
+		if u.MaxCostUSD != nil {
+			set(d, "max_cost_usd", &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!float", Value: strconv.FormatFloat(*u.MaxCostUSD, 'f', -1, 64)})
 		}
 		if u.EgressAcknowledged != nil {
 			set(d, "egress_acknowledged", boolean(*u.EgressAcknowledged))

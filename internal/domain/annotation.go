@@ -24,6 +24,13 @@ type Annotation struct {
 	// (P of the question's positive answer).
 	Probability float64         `json:"probability"`
 	Answer      json.RawMessage `json:"answer"`
+	// StateDigest is the SHA-256 (hex) of the exact redacted state sent for
+	// the unit, so rows asked over the same state can be grouped and a stored
+	// state can be checked against its row.
+	StateDigest string `json:"stateDigest,omitempty"`
+	// LatencyMS is the end-to-end latency of the unit's call in milliseconds,
+	// on the first row of a fanned-out unit only, like Usage.
+	LatencyMS int64 `json:"latencyMs,omitempty"`
 	// RequestBody is the exact redacted request that was sent, plus the
 	// realised option order.
 	RequestBody json.RawMessage `json:"requestBody"`

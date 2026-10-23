@@ -102,8 +102,10 @@ maintainers: [alice]
 func TestInitRejectsInconsistentConsent(t *testing.T) {
 	for name, extra := range map[string][]string{
 		"alias model":             {"--decisions", "--decisions-model", "jev-latest", "--acknowledge-egress"},
+		"preview alias":           {"--decisions", "--decisions-model", "typesafe/jev-preview", "--acknowledge-egress"},
+		"undated release line":    {"--decisions", "--decisions-model", "typesafe/jev-1.14", "--acknowledge-egress"},
 		"enabled without egress":  {"--decisions", "--decisions-model", "jev-2026-10-01"},
-		"enabled without a model": {"--decisions", "--acknowledge-egress"},
+		"default model no egress": {"--decisions"},
 		"unknown model cli":       {"--model-cli", "gemini"},
 		"unknown lane":            {"--model-cli", "codex", "--lane", "nope"},
 	} {
@@ -128,5 +130,47 @@ func TestInitInteractiveRecordsAnswers(t *testing.T) {
 	p := loadCommitted(t, root)
 	if !p.Decisions().Enabled || p.ModelCLI().Provider != "codex" || !p.LaneOptedIn("contextual") || p.LaneOptedIn("clawpatch-review") {
 		t.Fatalf("answers not recorded: %+v %+v", p.Decisions(), p.ModelCLI())
+	}
+}
+
+// The pin defaults to Jev 1.14 through OpenRouter (user decision 2026-10-23):
+// the dated slug OpenRouter lists as the endpoint of `typesafe/jev-1.14`.
+func TestInitDecisionsPinsJev114ByDefaultAndKeepsAnExistingPin(t *testing.T) {
+	if policy.DefaultModel != "typesafe/jev-1.14-20261014" {
+		t.Fatalf("default pin %q", policy.DefaultModel)
+	}
+	root := newInitRepo(t)
+	if code := runInit(initArgs(root, "--decisions", "--acknowledge-egress"), strings.NewReader(""), os.Stderr); code != exitComplete {
+		t.Fatalf("exit %d", code)
+	}
+	d := loadCommitted(t, root).Decisions()
+	if !d.Enabled || d.Model != "typesafe/jev-1.14-20261014" || d.MaxCostUSD != policy.DefaultMaxCostUSD {
+		t.Fatalf("decisions %+v", d)
+	}
+	// Re-running without a model must not replace the pin, whatever it is.
+	writeRepoFile(t, root, policy.Path, "profile: report\ndecisions:\n  enabled: true\n  provider: jev\n  model: jev-2026-10-01\n  egress_acknowledged: true\n")
+	if code := runInit(initArgs(root, "--decisions", "--acknowledge-egress"), strings.NewReader(""), os.Stderr); code != exitComplete {
+		t.Fatalf("exit %d", code)
+	}
+	if got := loadCommitted(t, root).Decisions().Model; got != "jev-2026-10-01" {
+		t.Fatalf("existing pin replaced by %q", got)
+	}
+	// Interactive: an empty answer takes the default for a new pin.
+	fresh := newInitRepo(t)
+	if code := runInit([]string{"--root", fresh}, strings.NewReader("y\n\ny\nn\n"), &strings.Builder{}); code != exitComplete {
+		t.Fatalf("exit %d", code)
+	}
+	if got := loadCommitted(t, fresh).Decisions().Model; got != policy.DefaultModel {
+		t.Fatalf("interactive default %q", got)
+	}
+}
+
+func TestInitRecordsABilledCostCap(t *testing.T) {
+	root := newInitRepo(t)
+	if code := runInit(initArgs(root, "--decisions", "--acknowledge-egress", "--max-cost-usd", "0.25"), strings.NewReader(""), os.Stderr); code != exitComplete {
+		t.Fatalf("exit %d", code)
+	}
+	if got := loadCommitted(t, root).Decisions().MaxCostUSD; got != 0.25 {
+		t.Fatalf("cost cap %v", got)
 	}
 }

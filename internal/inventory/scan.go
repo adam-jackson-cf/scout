@@ -546,8 +546,14 @@ func languageFor(path string) string {
 	}
 }
 
+// IsScoutState reports whether a repository-relative path is Scout-managed
+// state (`.scout/`), which every lane and trigger excludes.
+func IsScoutState(path string) bool {
+	return path == ".scout" || strings.HasPrefix(path, ".scout/")
+}
+
 func excluded(path string, patterns []string) bool {
-	if path == ".scout" || strings.HasPrefix(path, ".scout/") {
+	if IsScoutState(path) {
 		return true
 	}
 	for _, pattern := range normalizedExclusions(patterns) {

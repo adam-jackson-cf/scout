@@ -13,10 +13,30 @@ import (
 	"scout/internal/domain"
 )
 
-// LoadFeatures imports the authoritative schema-v1 records written by the
-// pinned mapper. RawOriginal retains the exact canonical record bytes.
+// StaleStatus is the status Clawpatch writes on every record the latest map
+// did not emit; it never deletes records (third_party/clawpatch/src/app.ts:139-147).
+const StaleStatus = "skipped"
+
+// LoadFeatures imports the active schema-v1 records written by the pinned
+// mapper: the latest map's output, with stale (`skipped`) records excluded so
+// ownership never reads them (design §4). RawOriginal retains the exact
+// canonical record bytes.
 func LoadFeatures(stateDir string) ([]domain.Feature, error) {
-	return loadFeatures(stateDir)
+	return loadActiveFeatures(stateDir)
+}
+
+func loadActiveFeatures(stateDir string) ([]domain.Feature, error) {
+	all, err := loadFeatures(stateDir)
+	if err != nil {
+		return nil, err
+	}
+	active := all[:0]
+	for _, feature := range all {
+		if feature.Status != StaleStatus {
+			active = append(active, feature)
+		}
+	}
+	return active, nil
 }
 
 func loadFeatures(stateDir string) ([]domain.Feature, error) {

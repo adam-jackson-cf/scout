@@ -20,8 +20,9 @@
 //	decisions:                   # consent for Jev (OpenRouter) ranking, design §6
 //	  enabled: true
 //	  provider: jev
-//	  model: <pinned Jev model id; aliases such as jev-latest are rejected>
+//	  model: <pinned Jev model id; aliases and undated lines such as jev-latest or typesafe/jev-1.14 are rejected>
 //	  max_per_run: 2000
+//	  max_cost_usd: 0.5          # billed-cost cap per run (USD)
 //	  egress_acknowledged: true  # required when enabled
 //	model_cli:                   # opt-in for the model-CLI lanes (§6, lane 9)
 //	  provider: claude           # claude | codex
@@ -101,6 +102,7 @@ type Policy struct {
 	maintainers map[string]bool
 	decisions   Decisions
 	modelCLI    ModelCLI
+	mapping     Mapping
 	// HistoryBots is the history.bots passthrough.
 	HistoryBots []string
 }
@@ -112,7 +114,7 @@ func Default() Policy {
 		shadow:      ShadowConfig{MinDays: DefaultMinDays, MinPRRuns: DefaultMinPRRuns},
 		activations: map[string]Activation{},
 		maintainers: map[string]bool{},
-		decisions:   Decisions{Provider: ProviderJev, MaxPerRun: DefaultMaxPerRun},
+		decisions:   Decisions{Provider: ProviderJev, MaxPerRun: DefaultMaxPerRun, MaxCostUSD: DefaultMaxCostUSD},
 	}
 }
 
@@ -216,6 +218,7 @@ type rawPolicy struct {
 	Decisions    *rawDecisions `yaml:"decisions"`
 	ModelCLI     *rawModelCLI  `yaml:"model_cli"`
 	Architecture yaml.Node     `yaml:"architecture"`
+	Mapping      *rawMapping   `yaml:"mapping"`
 }
 
 // Parse validates policy bytes strictly.
@@ -273,6 +276,9 @@ func Parse(data []byte) (Policy, error) {
 		return Policy{}, fmt.Errorf("invalid policy: %w", err)
 	}
 	if p.modelCLI, err = parseModelCLI(raw.ModelCLI); err != nil {
+		return Policy{}, fmt.Errorf("invalid policy: %w", err)
+	}
+	if p.mapping, err = parseMapping(raw.Mapping); err != nil {
 		return Policy{}, fmt.Errorf("invalid policy: %w", err)
 	}
 	return p, nil

@@ -28,12 +28,14 @@ func runInit(args []string, in io.Reader, prompts io.Writer) int {
 	var yes, decisions, ack bool
 	var profile, model, cli string
 	var maxPerRun int
+	var maxCost float64
 	var lanes stringsFlag
 	set.BoolVar(&yes, "yes", false, "non-interactive: use flags only, never prompt")
 	set.StringVar(&profile, "profile", "", "report|guardian (new files default to report; an existing profile is kept)")
 	set.BoolVar(&decisions, "decisions", false, "enable Jev (OpenRouter) ranking; needs --decisions-model and --acknowledge-egress")
-	set.StringVar(&model, "decisions-model", "", "pinned Jev model id (aliases such as jev-latest are rejected)")
+	set.StringVar(&model, "decisions-model", "", "pinned Jev model id (a new pin defaults to "+policy.DefaultModel+"; aliases and undated lines such as jev-latest or typesafe/jev-1.14 are rejected)")
 	set.IntVar(&maxPerRun, "max-per-run", 0, "decisions.max_per_run call cap (default 2000)")
+	set.Float64Var(&maxCost, "max-cost-usd", 0, "decisions.max_cost_usd billed-cost cap per run in USD (default 0.5)")
 	set.BoolVar(&ack, "acknowledge-egress", false, "acknowledge that bounded, redacted code excerpts are sent to the provider")
 	set.StringVar(&cli, "model-cli", "", "claude|codex: CLI used by opted-in model-CLI lanes")
 	set.Var(&lanes, "lane", "model-CLI lane to opt in: contextual|clawpatch-review (repeatable)")
@@ -59,7 +61,7 @@ func runInit(args []string, in io.Reader, prompts io.Writer) int {
 		}
 		if decisions {
 			if !given["decisions-model"] {
-				model, given["decisions-model"] = ask.line("Pinned Jev model id (no aliases)"), true
+				model, given["decisions-model"] = ask.line("Pinned Jev model id, no aliases (empty = "+policy.DefaultModel+")"), true
 			}
 			if !given["acknowledge-egress"] {
 				ack, given["acknowledge-egress"] = ask.yesNo("Acknowledge that bounded, redacted code excerpts are sent to OpenRouter on trusted runs?"), true
@@ -76,6 +78,21 @@ func runInit(args []string, in io.Reader, prompts io.Writer) int {
 		}
 	}
 
+	if decisions && given["decisions"] && model == "" {
+		// A new pin defaults to Jev 1.14; an existing pin is never replaced or
+		// cleared, so re-running init stays idempotent.
+		existingModel := ""
+		if len(strings.TrimSpace(string(existing))) != 0 {
+			if p, err := policy.Parse(existing); err == nil {
+				existingModel = p.Decisions().Model
+			}
+		}
+		given["decisions-model"] = existingModel == ""
+		if existingModel == "" {
+			model = policy.DefaultModel
+		}
+	}
+
 	var u policy.ConsentUpdate
 	if given["profile"] {
 		u.Profile = &profile
@@ -88,6 +105,9 @@ func runInit(args []string, in io.Reader, prompts io.Writer) int {
 	}
 	if given["max-per-run"] {
 		u.MaxPerRun = &maxPerRun
+	}
+	if given["max-cost-usd"] {
+		u.MaxCostUSD = &maxCost
 	}
 	if given["acknowledge-egress"] || given["decisions"] {
 		u.EgressAcknowledged = &ack
@@ -118,7 +138,7 @@ func runInit(args []string, in io.Reader, prompts io.Writer) int {
 	d := p.Decisions()
 	return emit(flags, "complete", exitComplete, map[string]any{
 		"path": policy.Path, "changed": changed, "profile": p.Profile(),
-		"decisions": map[string]any{"enabled": d.Enabled, "model": d.Model, "maxPerRun": d.MaxPerRun, "egressAcknowledged": d.EgressAcknowledged},
+		"decisions": map[string]any{"enabled": d.Enabled, "model": d.Model, "maxPerRun": d.MaxPerRun, "maxCostUsd": d.MaxCostUSD, "egressAcknowledged": d.EgressAcknowledged},
 		"modelCli":  map[string]any{"provider": p.ModelCLI().Provider, "lanes": p.ModelCLI().Lanes},
 		"next":      "commit .scout/policy.yaml, add the scout-guardian workflow, then run a full default-branch run to publish the baseline",
 	}, nil)

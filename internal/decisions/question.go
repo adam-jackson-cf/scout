@@ -14,6 +14,7 @@ import (
 	"errors"
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -108,6 +109,7 @@ func sameSet(options []string, criteria map[string]string) bool {
 // versionPayload is the canonical JSON the version key hashes (design §6).
 // Field order is fixed by the struct; maps are marshalled with sorted keys.
 type versionPayload struct {
+	Kind            Kind              `json:"kind"`
 	Instructions    string            `json:"instructions"`
 	Criteria        map[string]string `json:"criteria"`
 	StateShape      []string          `json:"state_shape"`
@@ -116,12 +118,12 @@ type versionPayload struct {
 }
 
 // Version is `question_id@<sha256 of canonical JSON>`. Any change to the
-// instructions, criteria, state shape, option-order rule or the pinned model
-// changes it; the realised option order does not.
+// kind, instructions, criteria, state shape, option-order rule or the pinned
+// model changes it; the realised option order does not.
 func (q Question) Version(resolvedModelID string) string {
 	shape := append([]string(nil), q.StateShape...)
 	sort.Strings(shape)
-	raw, err := json.Marshal(versionPayload{q.Instructions, q.Criteria, shape, q.Order, resolvedModelID})
+	raw, err := json.Marshal(versionPayload{q.Kind, q.Instructions, q.Criteria, shape, q.Order, resolvedModelID})
 	if err != nil {
 		panic("decisions: version payload is not encodable: " + err.Error())
 	}
@@ -185,8 +187,9 @@ func (o orderedCriteria) MarshalJSON() ([]byte, error) {
 	return out.Bytes(), nil
 }
 
-// questionName is the only key the model ever sees for a question.
-const questionName = "q"
+// QuestionKey is the only key the model ever sees for the i-th question of a
+// request (zero-based): `q1`, `q2`, ... Question ids are for code only.
+func QuestionKey(i int) string { return "q" + strconv.Itoa(i+1) }
 
 type wireQuestion struct {
 	Type         Kind            `json:"type"`
@@ -201,17 +204,19 @@ type Request struct {
 	Questions map[string]wireQuestion `json:"questions"`
 }
 
-// BuildRequest renders the request body for one unit.
-func BuildRequest(q Question, model, unitID string, state json.RawMessage) Request {
-	order := q.RealisedOrder(unitID)
-	criteria := q.Criteria
-	if q.Kind == KindScore {
-		criteria = map[string]string{}
+// BuildRequest renders the one request of a unit: every independent question
+// over the same state, fanned out (compose-and-integrate: ask independent
+// questions over the same state together).
+func BuildRequest(questions []Question, model, unitID string, state json.RawMessage) Request {
+	wire := make(map[string]wireQuestion, len(questions))
+	for index, q := range questions {
+		criteria := q.Criteria
+		if q.Kind == KindScore {
+			criteria = map[string]string{}
+		}
+		wire[QuestionKey(index)] = wireQuestion{Type: q.Kind, Instructions: q.Instructions, Criteria: orderedCriteria{order: orderFor(q, q.RealisedOrder(unitID)), criteria: criteria}}
 	}
-	return Request{
-		Model: model, State: state,
-		Questions: map[string]wireQuestion{questionName: {Type: q.Kind, Instructions: q.Instructions, Criteria: orderedCriteria{order: orderFor(q, order), criteria: criteria}}},
-	}
+	return Request{Model: model, State: state, Questions: wire}
 }
 
 func orderFor(q Question, order []string) []string {

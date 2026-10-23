@@ -67,7 +67,7 @@ func (f *fake) count() int {
 
 func answer(w http.ResponseWriter, model string, p float64) {
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Fprintf(w, `{"id":"gen-1","model":%q,"answers":{"q":{"type":"noul","noul":%v}},"usage":{"input_tokens":10,"output_tokens":2,"cost":0.00005}}`, model, p)
+	fmt.Fprintf(w, `{"id":"gen-1","model":%q,"answers":{"q1":{"type":"noul","noul":%v}},"usage":{"input_tokens":10,"output_tokens":2,"cost":0.00005}}`, model, p)
 }
 
 // idOf reads the unit id the tests place at state.id.
@@ -83,7 +83,7 @@ func client(f *fake) (*Client, *[]time.Duration) {
 }
 
 func unit(id string, baseline float64) Unit {
-	return Unit{Family: FamilyTriage, Key: id, IssueID: id, Question: TriageRealDefect, State: json.RawMessage(fmt.Sprintf(`{"id":%q}`, id)), Baseline: baseline}
+	return Unit{Family: FamilyTriage, Key: id, IssueID: id, Questions: []Question{TriageRealDefect}, State: json.RawMessage(fmt.Sprintf(`{"id":%q}`, id)), Baseline: baseline}
 }
 
 type memorySink struct {
@@ -178,14 +178,15 @@ func TestChoicePermutationIsSeededByUnitAndStoredNotKeyed(t *testing.T) {
 		t.Fatal("order must depend on the unit id")
 	}
 	f := newFake(t, func(_ int, body map[string]any, w http.ResponseWriter) {
-		fmt.Fprintf(w, `{"model":%q,"answers":{"q":{"type":"choice","choice":"a","probabilities":{"a":0.7,"b":0.3},"confidence":0.4}}}`, testModel)
+		fmt.Fprintf(w, `{"model":%q,"answers":{"q1":{"type":"choice","choice":"a","probabilities":{"a":0.7,"b":0.3},"confidence":0.4}}}`, testModel)
 	})
 	c, _ := client(f)
-	response, err := c.Ask(context.Background(), q, testModel, "unit-1", json.RawMessage(`{"id":"x"}`))
+	reply, err := c.Ask(context.Background(), []Question{q}, testModel, "unit-1", json.RawMessage(`{"id":"x"}`))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if strings.Join(response.OptionOrder, "") != strings.Join(first, "") || response.Probability != 0.7 {
+	response := reply.Answers[0]
+	if strings.Join(response.OptionOrder, "") != strings.Join(first, "") || response.Probability != 0.7 || response.Choice != "a" || response.Probabilities["b"] != 0.3 {
 		t.Fatalf("order %v probability %v", response.OptionOrder, response.Probability)
 	}
 	last := -1
@@ -208,7 +209,7 @@ func TestRequestNeverCarriesQuestionIDOrKeyAndRedactsSecrets(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := c.Ask(context.Background(), TriageRealDefect, testModel, "u1", state); err != nil {
+	if _, err := c.Ask(context.Background(), []Question{TriageRealDefect}, testModel, "u1", state); err != nil {
 		t.Fatal(err)
 	}
 	body := f.bodies[0]
@@ -242,7 +243,7 @@ func TestResolvedModelMismatchIsDiscardedAndIncomplete(t *testing.T) {
 			mismatched = r
 		}
 	}
-	if mismatched.Status != UnitIncomplete || mismatched.Annotation != nil {
+	if mismatched.Status != UnitIncomplete || len(mismatched.Annotations) != 0 {
 		t.Fatalf("mismatch result %+v", mismatched)
 	}
 	if mode, text := out.Disclosure(mismatched); mode != ModeDeterministic || text != "deterministic (model mismatch)" {
@@ -269,7 +270,7 @@ func TestNonRetryableStatusesAreNotRetried(t *testing.T) {
 				io.WriteString(w, `{"error":"max_tokens_exceeded"}`)
 			})
 			c, sleeps := client(f)
-			_, err := c.Ask(context.Background(), TriageRealDefect, testModel, "u", json.RawMessage(`{}`))
+			_, err := c.Ask(context.Background(), []Question{TriageRealDefect}, testModel, "u", json.RawMessage(`{}`))
 			failure, ok := err.(*Failure)
 			if !ok || failure.Kind != FailNonRetryable || failure.Status != status {
 				t.Fatalf("error %v", err)
@@ -297,7 +298,7 @@ func TestRateLimitsRetryWithBackoffHonouringRetryAfter(t *testing.T) {
 		}
 	})
 	c, sleeps := client(f)
-	response, err := c.Ask(context.Background(), TriageRealDefect, testModel, "u", json.RawMessage(`{}`))
+	response, err := c.Ask(context.Background(), []Question{TriageRealDefect}, testModel, "u", json.RawMessage(`{}`))
 	if err != nil || response.Attempts != 3 {
 		t.Fatalf("response %+v err %v", response, err)
 	}
@@ -312,7 +313,7 @@ func TestRateLimitsRetryWithBackoffHonouringRetryAfter(t *testing.T) {
 	})
 	cg, sleepsG := client(g)
 	cg.MaxAttempts, cg.MaxWait = 3, 10*time.Second
-	_, err = cg.Ask(context.Background(), TriageRealDefect, testModel, "u", json.RawMessage(`{}`))
+	_, err = cg.Ask(context.Background(), []Question{TriageRealDefect}, testModel, "u", json.RawMessage(`{}`))
 	failure, ok := err.(*Failure)
 	if !ok || failure.Kind != FailRateLimited || g.count() != 3 {
 		t.Fatalf("error %v after %d requests: backoff must stop at MaxAttempts", err, g.count())
@@ -329,7 +330,7 @@ func TestOtherFailuresLeaveNoAnnotationAndNeverLeakTheKey(t *testing.T) {
 		"missing answer": func(w http.ResponseWriter) { fmt.Fprintf(w, `{"model":%q,"answers":{}}`, testModel) },
 		"out of range":   func(w http.ResponseWriter) { answer(w, testModel, 1.5) },
 		"wrong type": func(w http.ResponseWriter) {
-			fmt.Fprintf(w, `{"model":%q,"answers":{"q":{"type":"choice","choice":"x"}}}`, testModel)
+			fmt.Fprintf(w, `{"model":%q,"answers":{"q1":{"type":"choice","choice":"x"}}}`, testModel)
 		},
 	}
 	for name, respond := range cases {
@@ -338,7 +339,7 @@ func TestOtherFailuresLeaveNoAnnotationAndNeverLeakTheKey(t *testing.T) {
 			c, _ := client(f)
 			sink := &memorySink{}
 			out := Run(context.Background(), RunInput{Config: Config{Model: testModel}, Client: c, RunID: "r", Units: []Unit{unit("a", 1)}, Sink: sink})
-			if out.Failed != 1 || len(sink.rows) != 0 || out.Results[0].Annotation != nil {
+			if out.Failed != 1 || len(sink.rows) != 0 || len(out.Results[0].Annotations) != 0 {
 				t.Fatalf("outcome %+v", out)
 			}
 			if mode, text := out.Disclosure(out.Results[0]); mode != ModeDeterministic || !strings.HasPrefix(text, "deterministic (") {
@@ -356,7 +357,7 @@ func TestOtherFailuresLeaveNoAnnotationAndNeverLeakTheKey(t *testing.T) {
 	dead := newFake(t, func(int, map[string]any, http.ResponseWriter) {})
 	c, _ := client(dead)
 	dead.server.Close()
-	_, err := c.Ask(context.Background(), TriageRealDefect, testModel, "u", json.RawMessage(`{}`))
+	_, err := c.Ask(context.Background(), []Question{TriageRealDefect}, testModel, "u", json.RawMessage(`{}`))
 	if failure, ok := err.(*Failure); !ok || failure.Kind != FailNetwork || strings.Contains(err.Error(), testKey) {
 		t.Fatalf("error %v", err)
 	}

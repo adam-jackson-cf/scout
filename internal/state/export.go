@@ -15,6 +15,7 @@ import (
 	"sort"
 	"strings"
 
+	"scout/internal/areas"
 	"scout/internal/domain"
 )
 
@@ -123,6 +124,20 @@ func (s *Store) Export(ctx context.Context) (map[string][]byte, error) {
 	}
 	for path, data := range signalFiles {
 		files[path] = data
+	}
+	areaFile, err := s.exportAreas(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if areaFile != nil {
+		files[ExportAreas] = areaFile
+	}
+	refreshFile, err := s.ExportMappingRefreshFile(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if refreshFile != nil {
+		files[ExportMappingRefresh] = refreshFile
 	}
 	files[ExportManifest] = RenderManifest(meta, files)
 	return files, nil
@@ -240,7 +255,14 @@ func RenderManifest(meta ManifestMeta, files map[string][]byte) []byte {
 
 // absentFiles lists the planned export files the manifest does not carry.
 func absentFiles(paths []string) []string {
-	absent := []string{ExportDir + "/areas.jsonl"}
+	var absent []string
+	hasAreas := false
+	for _, path := range paths {
+		hasAreas = hasAreas || path == ExportAreas
+	}
+	if !hasAreas {
+		absent = append(absent, ExportAreas)
+	}
 	for _, path := range paths {
 		if strings.HasPrefix(path, ExportSignalsDir) {
 			return absent
@@ -397,7 +419,11 @@ func (s *Store) Import(ctx context.Context, files map[string][]byte) error {
 	if err != nil {
 		return err
 	}
-	return s.importRows(ctx, meta, issues, blocks, signals, files[ExportCoverageSummary])
+	areaList, err := decodeAreas(files)
+	if err != nil {
+		return err
+	}
+	return s.importRows(ctx, meta, issues, blocks, signals, files[ExportCoverageSummary], areaList, files[ExportMappingRefresh])
 }
 
 // decodeSignals reads every signals/*.jsonl file of an export, validated, in
@@ -480,7 +506,7 @@ func DecodeIssues(files map[string][]byte) ([]domain.Issue, error) {
 	return issues, nil
 }
 
-func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []domain.Issue, blocks []domain.WouldBlock, signals []domain.Signal, summary []byte) error {
+func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []domain.Issue, blocks []domain.WouldBlock, signals []domain.Signal, summary []byte, areaList []areas.Area, refresh []byte) error {
 	return s.withTransaction(ctx, func(tx *sql.Tx) error {
 		var count int
 		if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM issues`).Scan(&count); err != nil {
@@ -524,6 +550,12 @@ func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []doma
 			}
 		}
 		if err := insertSignals(ctx, tx, signals); err != nil {
+			return err
+		}
+		if err := insertAreas(ctx, tx, areaList); err != nil {
+			return err
+		}
+		if err := importMappingRefresh(ctx, tx, refresh); err != nil {
 			return err
 		}
 		if meta.Revision != "" || meta.ToolDigest != "" || meta.PolicyDigest != "" {

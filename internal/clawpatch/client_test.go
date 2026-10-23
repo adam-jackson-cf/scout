@@ -20,6 +20,11 @@ func TestMapReusesCanonicalRecordsWithoutExecutingClawpatch(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(featuresDir, "feature.json"), []byte(`{"schemaVersion":1,"featureId":"feature","kind":"service","source":"heuristic","confidence":"high"}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
+	// Clawpatch never deletes records; a record the latest map did not emit is
+	// rewritten with status "skipped" and must not reach ownership.
+	if err := os.WriteFile(filepath.Join(featuresDir, "stale.json"), []byte(`{"schemaVersion":1,"featureId":"stale","kind":"service","source":"agent-mapper","confidence":"high","status":"skipped"}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
 
 	binaryPath := filepath.Join(t.TempDir(), Revision, "dist", "cli.js")
 	if err := os.MkdirAll(filepath.Dir(binaryPath), 0o700); err != nil {
@@ -42,7 +47,11 @@ func TestMapReusesCanonicalRecordsWithoutExecutingClawpatch(t *testing.T) {
 		t.Fatal(err)
 	}
 	if result.Status != MapReused || len(result.Features) != 1 || result.Features[0].FeatureID != "feature" {
-		t.Fatalf("unchanged map did not reuse canonical records: %+v", result)
+		t.Fatalf("unchanged map did not reuse exactly the active canonical records: %+v", result)
+	}
+	loaded, err := LoadFeatures(stateDir)
+	if err != nil || len(loaded) != 1 || loaded[0].FeatureID != "feature" {
+		t.Fatalf("LoadFeatures must exclude stale records: %+v, %v", loaded, err)
 	}
 }
 

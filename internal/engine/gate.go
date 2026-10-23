@@ -370,25 +370,31 @@ func wouldBlockID(base, head, check, issue string) string {
 type Ranking struct {
 	// Method is the disclosure line: `deterministic (<reason>)`,
 	// `jev (unvalidated, X1 pending)`, or a partial form naming n/N.
-	Method             string        `json:"method"`
-	Mode               string        `json:"mode"`
-	Reason             string        `json:"reason,omitempty"`
-	RankFormulaVersion string        `json:"rank_formula_version"`
-	BaselineVersion    string        `json:"baseline_version"`
-	JevQuality         string        `json:"jev_quality,omitempty"`
-	Items              []RankingItem `json:"items"`
+	Method             string `json:"method"`
+	Mode               string `json:"mode"`
+	Reason             string `json:"reason,omitempty"`
+	RankFormulaVersion string `json:"rank_formula_version"`
+	BaselineVersion    string `json:"baseline_version"`
+	JevQuality         string `json:"jev_quality,omitempty"`
+	// Thresholds is the status of the threshold record in force for the Jev
+	// question (`provisional`, `ready`, or `provisional (stale: ...)`); empty
+	// when Jev did not run.
+	Thresholds string        `json:"thresholds,omitempty"`
+	Items      []RankingItem `json:"items"`
 }
 
 // RankingItem is one ranked issue. Ranking is the per-finding disclosure.
+// Score is the deterministic baseline's score and is absent for Jev-ranked
+// items: design §6 never shows Jev's probability (it stays in the state store
+// for X1), only the position and its disclosure.
 type RankingItem struct {
 	IssueID         string   `json:"issueId"`
 	Position        int      `json:"position"`
-	Score           float64  `json:"score"`
+	Score           *float64 `json:"score,omitempty"`
 	Reason          string   `json:"reason"`
 	Mode            string   `json:"mode"`
 	Ranking         string   `json:"ranking"`
 	BaselineScore   float64  `json:"baselineScore"`
-	Probability     *float64 `json:"probability,omitempty"`
 	QuestionVersion string   `json:"questionVersion,omitempty"`
 }
 

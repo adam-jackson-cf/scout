@@ -181,7 +181,7 @@ func (c *Client) Map(ctx context.Context, inputsChanged bool, source MapSource) 
 		return MapResult{Status: MapBlocked, Reason: err.Error()}, err
 	}
 	if !inputsChanged {
-		features, err := loadFeatures(c.stateDir)
+		features, err := loadActiveFeatures(c.stateDir)
 		if err != nil {
 			return MapResult{Status: MapBlocked, Source: source, Reason: "canonical Clawpatch records are unavailable"}, err
 		}
@@ -225,7 +225,7 @@ func (c *Client) Map(ctx context.Context, inputsChanged bool, source MapSource) 
 		fallback.Reason = "agent mapping did not complete; heuristic map kept and exploration is incomplete"
 		return fallback, nil
 	}
-	features, err := loadFeatures(c.stateDir)
+	features, err := loadActiveFeatures(c.stateDir)
 	if err != nil {
 		return MapResult{Status: MapBlocked, Source: source, Reason: "canonical Clawpatch records are unavailable"}, err
 	}
@@ -237,7 +237,7 @@ func (c *Client) Map(ctx context.Context, inputsChanged bool, source MapSource) 
 
 func (c *Client) mapHeuristicLocked(ctx context.Context) (MapResult, error) {
 	if _, err := c.invokeLocked(ctx, "map", "--source", "heuristic"); err != nil {
-		features, loadErr := loadFeatures(c.stateDir)
+		features, loadErr := loadActiveFeatures(c.stateDir)
 		if loadErr != nil {
 			return MapResult{Status: MapBlocked, Source: MapSourceHeuristic, Reason: "pinned Clawpatch map did not complete"}, errors.Join(err, loadErr)
 		}
@@ -248,7 +248,7 @@ func (c *Client) mapHeuristicLocked(ctx context.Context) (MapResult, error) {
 			Reason:   "pinned Clawpatch map did not complete; prior canonical records were retained",
 		}, err
 	}
-	features, err := loadFeatures(c.stateDir)
+	features, err := loadActiveFeatures(c.stateDir)
 	if err != nil {
 		return MapResult{Status: MapBlocked, Source: MapSourceHeuristic, Reason: "canonical Clawpatch records are unavailable"}, err
 	}

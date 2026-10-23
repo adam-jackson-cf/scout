@@ -104,6 +104,8 @@ func run(ctx context.Context, args []string) int {
 		return showIssue(ctx, args[1:])
 	case "mapping":
 		return mapping(ctx, args[1:])
+	case "map":
+		return mapCmd(ctx, args[1:])
 	case "coverage":
 		return coverage(ctx, args[1:])
 	case "triage":
@@ -428,8 +430,20 @@ func showIssue(ctx context.Context, args []string) int {
 func mapping(ctx context.Context, args []string) int {
 	set := flag.NewFlagSet("mapping", flag.ContinueOnError)
 	flags := common(set)
+	var listAreas, listUnowned bool
+	set.BoolVar(&listAreas, "areas", false, "list area labels")
+	set.BoolVar(&listUnowned, "unowned", false, "list directory scopes of files no heuristic feature owns")
 	if !parse(set, args, flags) {
 		return exitUnavailable
+	}
+	if listAreas && listUnowned {
+		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("--areas and --unowned are mutually exclusive"))
+	}
+	if listAreas {
+		return mappingAreas(ctx, flags)
+	}
+	if listUnowned {
+		return mappingUnowned(ctx, flags)
 	}
 	root, err := filepath.Abs(flags.root)
 	if err != nil {

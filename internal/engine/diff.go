@@ -252,7 +252,7 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 	reportIssues := append(output.Issues, deltaAttributed(pol, deltaIssues)...)
 	ranking, decisionsHealth, err := RankingOf(ctx, RankingInput{
 		Issues: output.Issues, Root: root, RunID: headResult.Run.RunID, Trigger: domain.TriggerPR, Policy: pol.Decisions(),
-		Key: cfg.JevKey, Fork: cfg.Fork, NoEgress: cfg.NoEgress, Store: store, Client: cfg.JevClient,
+		Key: cfg.JevKey, Fork: cfg.Fork, NoEgress: cfg.NoEgress, Store: store, Client: cfg.JevClient, ReadThresholds: CommittedThresholds(root, baseSHA),
 	})
 	if err != nil {
 		return fail(fmt.Errorf("ranking: %w", err))

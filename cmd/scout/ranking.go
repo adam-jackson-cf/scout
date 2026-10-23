@@ -33,7 +33,7 @@ func rankAssessment(ctx context.Context, flags *commonFlags, result engine.Resul
 	}
 	ranking, health, err := engine.RankingOf(ctx, engine.RankingInput{
 		Issues: verdict.Issues, Root: flags.root, RunID: result.Run.RunID, Trigger: domain.TriggerPush,
-		Policy: pol.Decisions(), Key: jevKey(),
+		Policy: pol.Decisions(), Key: jevKey(), ReadThresholds: engine.CommittedThresholds(flags.root, "HEAD"),
 	})
 	if err != nil {
 		return engine.Ranking{}, nil, err

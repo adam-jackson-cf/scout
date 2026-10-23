@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "decisions": [
+    {
+      "question_id": "triage.real_defect",
+      "gating": false,
+      "threshold": 0.3,
+      "min_precision": 0.8,
+      "min_recall": 0.9,
+      "minimums_provenance": "assumed",
+      "metric": "fbeta",
+      "beta": 2,
+      "label_set": {"summary": "none"},
+      "score_space": "raw",
+      "status": "provisional",
+      "cost_rule": "A miss costs more than a false action: a real defect ranked low is buried, while a false positive ranked high only costs a maintainer's glance. Fewer than about 30 labelled cases per label means the skill's provisional 0.3 for a costlier miss (building-eval-data), tuned on nothing.",
+      "assumptions": [
+        "Minimums are the skill's default 0.8 precision and 0.8 recall (threshold-tuning), recall raised to 0.9 because a miss costs more; the user declined to set per-decision minimums on 2026-10-23.",
+        "Launch uses P(real_defect) only to order findings, so nothing reads the threshold: gating is false, the finding is never closed, hidden or filtered by it.",
+        "No labelled cases exist: the label set is none, the threshold is untuned, and the status stays provisional until labels set per-decision minimums and a tuning run reports ready.",
+        "TODO (building-eval-data): collect at least 30 human, outcome or agent_reviewed labels per label (real_defect and false_positive), stratified by path role and rule and split dev/test by repository, label them blind from the frozen label guide, then tune on saved scores with `--beta 2` and replace this entry. Agent labels come from two independent sessions that never see Jev's answer.",
+        "This entry has no pinned version key: it is bound to the question's current version key when loaded. A file at .scout/decisions/thresholds.json pins one; a key that no longer matches the current version marks the entry stale."
+      ]
+    }
+  ]
+}

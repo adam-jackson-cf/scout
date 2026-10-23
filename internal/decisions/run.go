@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"scout/internal/domain"
+	"scout/internal/policy"
 )
 
 // LaneID is the decisions lane's id in lane health. The lane is optional
@@ -22,8 +23,11 @@ const LaneID = "decisions"
 type Config struct {
 	Enabled bool
 	// Model is the pinned Jev model id; aliases are rejected.
-	Model              string
-	MaxPerRun          int
+	Model     string
+	MaxPerRun int
+	// MaxCostUSD caps the billed cost of one run; it is checked before each
+	// call, so a run can exceed it by at most the call in flight.
+	MaxCostUSD         float64
 	EgressAcknowledged bool
 	Endpoint           string
 }
@@ -31,13 +35,16 @@ type Config struct {
 // DefaultMaxPerRun is the call cap of design §6 [ASSUMPTION].
 const DefaultMaxPerRun = 2000
 
+// DefaultMaxCostUSD mirrors policy.DefaultMaxCostUSD [ASSUMPTION]; an engine
+// test pins them equal.
+const DefaultMaxCostUSD = 0.50
+
 // Validate rejects a missing pin or an alias.
 func (c Config) Validate() error {
 	if c.Model == "" {
 		return errors.New("decisions model is required")
 	}
-	slug := c.Model[strings.LastIndex(c.Model, "/")+1:]
-	if slug == "jev-latest" || slug == "jev-preview" || strings.HasSuffix(slug, "-latest") || strings.HasSuffix(slug, "-preview") {
+	if policy.IsModelAlias(c.Model) {
 		return fmt.Errorf("decisions model %q is an alias; pin an exact model id", c.Model)
 	}
 	return nil
@@ -78,13 +85,14 @@ const (
 	FamilyUnowned
 )
 
-// Unit is one question about one thing.
+// Unit is one set of independent questions about one thing, asked in one
+// request (fan-out).
 type Unit struct {
-	Family   Family
-	Key      string // stable unit key; for triage the issue id
-	IssueID  string
-	Question Question
-	State    json.RawMessage
+	Family    Family
+	Key       string // stable unit key; for triage the issue id
+	IssueID   string
+	Questions []Question
+	State     json.RawMessage
 	// Baseline is the deterministic baseline score, used to order triage units.
 	Baseline float64
 }
@@ -118,7 +126,7 @@ func Order(units []Unit) []Unit {
 // UnitStatus is the outcome of one unit.
 type UnitStatus string
 
-// Unit outcomes. Only `annotated` yields an annotation.
+// Unit outcomes. Only `annotated` yields annotations.
 const (
 	UnitAnnotated  UnitStatus = "annotated"
 	UnitFailed     UnitStatus = "failed"
@@ -128,10 +136,15 @@ const (
 
 // UnitResult is what happened to one unit.
 type UnitResult struct {
-	Unit       Unit
-	Status     UnitStatus
-	Reason     string
-	Annotation *domain.Annotation
+	Unit   Unit
+	Status UnitStatus
+	Reason string
+	// Annotations holds one row per question, in question order, for an
+	// annotated unit. The call's billed usage is on the first row only, so
+	// summing rows never double-counts it.
+	Annotations []domain.Annotation
+	// CostUSD is the billed cost of the unit's call, when the reply reported it.
+	CostUSD float64
 }
 
 // Outcome is the whole run.
@@ -143,6 +156,14 @@ type Outcome struct {
 	Failed     int
 	Incomplete int
 	Capped     int
+	// CostUSD is the billed cost summed over the run's replies; CostCapped
+	// is set when the cost cap (or an unknowable cost), not the call cap,
+	// stopped the run.
+	CostUSD    float64
+	CostCapped bool
+	// ThresholdsStale is set by the caller when a stored threshold's version
+	// key no longer matches the question's current one.
+	ThresholdsStale bool
 }
 
 // Sink persists annotations as they are produced.
@@ -160,12 +181,18 @@ type RunInput struct {
 	Now    func() time.Time
 }
 
-// Run asks every unit in cap order until MaxPerRun calls were made. Failed,
-// mismatched and capped units get no annotation; none becomes a score.
+// Run asks every unit in cap order until MaxPerRun calls were made or the
+// billed cost reached MaxCostUSD. A reply that reports no billed cost stops the
+// run too, since the cost cap can no longer be enforced. Failed, mismatched
+// and capped units get no annotation; none becomes a score.
 func Run(ctx context.Context, in RunInput) Outcome {
 	cap := in.Config.MaxPerRun
 	if cap <= 0 {
 		cap = DefaultMaxPerRun
+	}
+	costCap := in.Config.MaxCostUSD
+	if costCap <= 0 {
+		costCap = DefaultMaxCostUSD
 	}
 	now := in.Now
 	if now == nil {
@@ -173,14 +200,33 @@ func Run(ctx context.Context, in RunInput) Outcome {
 	}
 	units := Order(in.Units)
 	out := Outcome{Total: len(units), Results: make([]UnitResult, 0, len(units))}
+	blind := false
 	for index, unit := range units {
-		if index >= cap {
+		reason := ""
+		switch {
+		case index >= cap:
+			reason = "call cap reached"
+		case blind:
+			reason = "billed cost unknown"
+		case out.CostUSD >= costCap:
+			reason = "cost cap reached"
+		}
+		if reason != "" {
 			out.Capped++
-			out.Results = append(out.Results, UnitResult{Unit: unit, Status: UnitCapped, Reason: "call cap reached"})
+			out.CostCapped = out.CostCapped || index < cap
+			out.Results = append(out.Results, UnitResult{Unit: unit, Status: UnitCapped, Reason: reason})
 			continue
 		}
 		out.Attempted++
-		result := ask(ctx, in, unit, now())
+		result, reply, replied := ask(ctx, in, unit, now())
+		if replied {
+			if reply.CostKnown {
+				result.CostUSD = reply.CostUSD
+				out.CostUSD += reply.CostUSD
+			} else {
+				blind = true
+			}
+		}
 		switch result.Status {
 		case UnitAnnotated:
 			out.Annotated++
@@ -194,42 +240,66 @@ func Run(ctx context.Context, in RunInput) Outcome {
 	return out
 }
 
-func ask(ctx context.Context, in RunInput, unit Unit, at time.Time) UnitResult {
-	response, err := in.Client.Ask(ctx, unit.Question, in.Config.Model, unit.Key, unit.State)
+// ask makes the one request of a unit. replied is true when the route
+// answered, whether or not the answer was usable, because that call was billed.
+func ask(ctx context.Context, in RunInput, unit Unit, at time.Time) (result UnitResult, reply Reply, replied bool) {
+	reply, err := in.Client.Ask(ctx, unit.Questions, in.Config.Model, unit.Key, unit.State)
+	replied = reply.Model != "" || len(reply.Usage) != 0
 	if err != nil {
 		var failure *Failure
 		if errors.As(err, &failure) {
 			if failure.Kind == FailModelMismatch {
-				return UnitResult{Unit: unit, Status: UnitIncomplete, Reason: "model mismatch"}
+				return UnitResult{Unit: unit, Status: UnitIncomplete, Reason: "model mismatch"}, reply, replied
 			}
-			return UnitResult{Unit: unit, Status: UnitFailed, Reason: failure.Reason}
+			return UnitResult{Unit: unit, Status: UnitFailed, Reason: failure.Reason}, reply, replied
 		}
-		return UnitResult{Unit: unit, Status: UnitFailed, Reason: err.Error()}
+		return UnitResult{Unit: unit, Status: UnitFailed, Reason: err.Error()}, reply, replied
 	}
-	sum := sha256.Sum256([]byte(in.RunID + "\x00" + unit.Key + "\x00" + unit.Question.ID))
-	annotation := domain.Annotation{
-		AnnotationID: "annotation:" + hex.EncodeToString(sum[:12]), RunID: in.RunID, IssueID: unit.IssueID, UnitKey: unit.Key,
-		QuestionID: unit.Question.ID, QuestionVersion: unit.Question.Version(response.Model), Kind: string(response.Kind),
-		ModelRequested: in.Config.Model, ModelResolved: response.Model, Probability: response.Probability,
-		Answer: response.Answer, RequestBody: response.RequestBody, OptionOrder: response.OptionOrder, Usage: response.Usage, CreatedAt: at,
+	stateDigest := sha256.Sum256(unit.State)
+	annotations := make([]domain.Annotation, 0, len(unit.Questions))
+	for index, q := range unit.Questions {
+		response := reply.Answers[index]
+		sum := sha256.Sum256([]byte(in.RunID + "\x00" + unit.Key + "\x00" + q.ID))
+		annotation := domain.Annotation{
+			AnnotationID: "annotation:" + hex.EncodeToString(sum[:12]), RunID: in.RunID, IssueID: unit.IssueID, UnitKey: unit.Key,
+			QuestionID: q.ID, QuestionVersion: q.Version(reply.Model), Kind: string(response.Kind),
+			ModelRequested: in.Config.Model, ModelResolved: reply.Model, Probability: response.Probability,
+			Answer: response.Answer, StateDigest: hex.EncodeToString(stateDigest[:]), RequestBody: reply.RequestBody,
+			OptionOrder: response.OptionOrder, CreatedAt: at,
+		}
+		if index == 0 {
+			annotation.Usage = reply.Usage
+			annotation.LatencyMS = reply.Latency.Milliseconds()
+		}
+		annotations = append(annotations, annotation)
 	}
 	if in.Sink != nil {
-		if err := in.Sink.RecordAnnotation(ctx, annotation); err != nil {
-			return UnitResult{Unit: unit, Status: UnitFailed, Reason: "annotation not persisted: " + err.Error()}
+		for _, annotation := range annotations {
+			if err := in.Sink.RecordAnnotation(ctx, annotation); err != nil {
+				return UnitResult{Unit: unit, Status: UnitFailed, Reason: "annotation not persisted: " + err.Error()}, reply, replied
+			}
 		}
 	}
-	return UnitResult{Unit: unit, Status: UnitAnnotated, Annotation: &annotation}
+	return UnitResult{Unit: unit, Status: UnitAnnotated, Annotations: annotations}, reply, replied
 }
+
+// Ranking disclosures of an annotated finding (design §6). A stale threshold
+// adds its note; nothing else changes the text.
+const (
+	JevDisclosure      = "jev (unvalidated, X1 pending)"
+	JevStaleDisclosure = "jev (unvalidated, X1 pending; thresholds stale)"
+)
 
 // Disclosure is the per-finding ranking text of design §6.
 func (o Outcome) Disclosure(result UnitResult) (mode, text string) {
 	switch result.Status {
 	case UnitAnnotated:
-		return ModeJev, "jev (unvalidated, X1 pending)"
+		if o.ThresholdsStale {
+			return ModeJev, JevStaleDisclosure
+		}
+		return ModeJev, JevDisclosure
 	case UnitCapped:
 		return ModePartial, fmt.Sprintf("partial (%d/%d)", o.Attempted, o.Total)
-	case UnitIncomplete:
-		return ModeDeterministic, "deterministic (" + result.Reason + ")"
 	}
 	return ModeDeterministic, "deterministic (" + result.Reason + ")"
 }
@@ -248,6 +318,9 @@ func (o Outcome) Health() domain.LaneHealth {
 		var parts []string
 		if o.Capped > 0 {
 			parts = append(parts, fmt.Sprintf("partial (%d/%d)", o.Attempted, o.Total))
+		}
+		if o.CostCapped {
+			parts = append(parts, fmt.Sprintf("cost cap reached ($%.4f billed)", o.CostUSD))
 		}
 		if o.Failed > 0 {
 			parts = append(parts, fmt.Sprintf("%d failed", o.Failed))

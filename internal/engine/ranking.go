@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"scout/internal/decisions"
+	"scout/internal/decisions/thresholds"
 	"scout/internal/domain"
 	"scout/internal/policy"
 	"scout/internal/state"
@@ -57,6 +58,11 @@ type RankingInput struct {
 	// Evidence returns the bounded evidence of one issue; nil reads the stored
 	// observations.
 	Evidence func(ctx context.Context, issue domain.AttributedIssue) (decisions.Evidence, error)
+	// ReadThresholds returns the repository's committed override of the
+	// decisions thresholds (thresholds.ReadCommitted at the same ref the policy
+	// came from); nil uses the embedded provisional defaults. An error is a
+	// disclosed deterministic fallback.
+	ReadThresholds func() ([]byte, error)
 	// Rand draws the audit sample; nil uses crypto/rand.
 	Rand          func() float64
 	Now           func() time.Time
@@ -94,8 +100,9 @@ func baselineRanking(issues []domain.AttributedIssue, reason string) (Ranking, [
 		BaselineVersion: BaselineVersion().String(), RankFormulaVersion: decisions.LaunchFormula().Version(""),
 	}
 	for _, r := range ranked {
+		score := r.Score
 		ranking.Items = append(ranking.Items, RankingItem{
-			IssueID: r.IssueID, Position: r.Position, Score: r.Score, Reason: reasons[r.IssueID], Mode: r.Mode, Ranking: r.Disclosure, BaselineScore: r.Baseline,
+			IssueID: r.IssueID, Position: r.Position, Score: &score, Reason: reasons[r.IssueID], Mode: r.Mode, Ranking: r.Disclosure, BaselineScore: r.Baseline,
 		})
 	}
 	return ranking, ranked
@@ -103,15 +110,32 @@ func baselineRanking(issues []domain.AttributedIssue, reason string) (Ranking, [
 
 func rankWithDecisions(ctx context.Context, in RankingInput) (Ranking, domain.LaneHealth, error) {
 	cfg := decisions.Config{
-		Enabled: in.Policy.Enabled, Model: in.Policy.Model, MaxPerRun: in.Policy.MaxPerRun, EgressAcknowledged: in.Policy.EgressAcknowledged,
+		Enabled: in.Policy.Enabled, Model: in.Policy.Model, MaxPerRun: in.Policy.MaxPerRun, MaxCostUSD: in.Policy.MaxCostUSD, EgressAcknowledged: in.Policy.EgressAcknowledged,
 	}
 	formula := decisions.LaunchFormula()
 	formulaVersion := formula.Version(cfg.Model)
 	eligibility := decisions.Eligibility{Enabled: cfg.Enabled, HasKey: in.Key != "", EgressAllowed: cfg.EgressAcknowledged && !in.NoEgress, Fork: in.Fork}
 	reason, ok := eligibility.Skip()
+	var resolution thresholds.Resolution
 	if ok {
 		if err := cfg.Validate(); err != nil {
 			reason, ok = err.Error(), false
+		}
+	}
+	if ok {
+		// Thresholds are configuration, never literals: the record in force is
+		// bound to the triage question's current version key. A file that is
+		// unreadable or invalid is a disclosed fallback, not a guess.
+		var override []byte
+		var err error
+		if in.ReadThresholds != nil {
+			override, err = in.ReadThresholds()
+		}
+		if err == nil {
+			resolution, err = thresholds.Resolve(override, decisions.TriageRealDefect.ID, decisions.TriageRealDefect.Version(cfg.Model))
+		}
+		if err != nil {
+			reason, ok = "thresholds invalid: "+err.Error(), false
 		}
 	}
 	store, closeStore, err := in.openStore()
@@ -152,7 +176,7 @@ func rankWithDecisions(ctx context.Context, in RankingInput) (Ranking, domain.La
 			if err != nil {
 				return Ranking{}, domain.LaneHealth{}, fmt.Errorf("state for %s: %w", item.IssueID, err)
 			}
-			units = append(units, decisions.Unit{Family: decisions.FamilyTriage, Key: item.IssueID, IssueID: item.IssueID, Question: decisions.TriageRealDefect, State: encoded, Baseline: item.RankingScore})
+			units = append(units, decisions.Unit{Family: decisions.FamilyTriage, Key: item.IssueID, IssueID: item.IssueID, Questions: []decisions.Question{decisions.TriageRealDefect}, State: encoded, Baseline: item.RankingScore})
 		}
 		client := in.Client
 		if client == nil {
@@ -163,6 +187,7 @@ func rankWithDecisions(ctx context.Context, in RankingInput) (Ranking, domain.La
 			sink = store
 		}
 		outcome = decisions.Run(ctx, decisions.RunInput{Config: cfg, Client: client, RunID: in.RunID, Units: units, Sink: sink, Now: now})
+		outcome.ThresholdsStale = resolution.Stale
 		health = outcome.Health()
 		items := make([]decisions.Item, 0, len(outcome.Results))
 		baselines := map[string]domain.AttributedIssue{}
@@ -173,8 +198,11 @@ func rankWithDecisions(ctx context.Context, in RankingInput) (Ranking, domain.La
 			results[result.Unit.IssueID] = result
 			mode, text := outcome.Disclosure(result)
 			item := decisions.Item{IssueID: result.Unit.IssueID, Baseline: result.Unit.Baseline, Mode: mode, Disclosure: text}
-			if result.Annotation != nil {
-				item.Answers = map[string]float64{result.Annotation.QuestionID: result.Annotation.Probability}
+			if len(result.Annotations) > 0 {
+				item.Answers = map[string]float64{}
+				for _, annotation := range result.Annotations {
+					item.Answers[annotation.QuestionID] = annotation.Probability
+				}
 			}
 			items = append(items, item)
 		}
@@ -183,8 +211,14 @@ func rankWithDecisions(ctx context.Context, in RankingInput) (Ranking, domain.La
 	}
 	ranking.RankFormulaVersion = formulaVersion
 	ranking.BaselineVersion = BaselineVersion().String()
-	if ok && outcome.Annotated > 0 {
-		ranking.JevQuality = "insufficient"
+	if ok {
+		ranking.Thresholds = resolution.Status
+		if resolution.Stale {
+			ranking.Thresholds += " (stale: version key changed)"
+		}
+		if outcome.Annotated > 0 {
+			ranking.JevQuality = "insufficient"
+		}
 	}
 
 	if store != nil {
@@ -193,9 +227,11 @@ func rankWithDecisions(ctx context.Context, in RankingInput) (Ranking, domain.La
 				RunID: in.RunID, IssueID: r.IssueID, Mode: r.Mode, Disclosure: r.Disclosure, BaselineScore: r.Baseline,
 				BaselineVersion: ranking.BaselineVersion, RankFormulaVersion: formulaVersion, RankPosition: r.Position, CreatedAt: now(),
 			}
-			if result, found := results[r.IssueID]; found && result.Annotation != nil {
-				p := result.Annotation.Probability
-				record.Probability, record.QuestionVersion = &p, result.Annotation.QuestionVersion
+			if result, found := results[r.IssueID]; found && len(result.Annotations) > 0 {
+				if annotation, weighted := formulaAnnotation(formula, result.Annotations); weighted {
+					p := annotation.Probability
+					record.Probability, record.QuestionVersion = &p, annotation.QuestionVersion
+				}
 			}
 			if err := store.RecordRanking(ctx, record); err != nil {
 				return Ranking{}, domain.LaneHealth{}, err
@@ -210,18 +246,41 @@ func rankWithDecisions(ctx context.Context, in RankingInput) (Ranking, domain.La
 	return ranking, health, nil
 }
 
+// formulaAnnotation is the annotation of the highest-weighted question of the
+// formula (ties by question id), the one a ranking record stores.
+func formulaAnnotation(formula decisions.Formula, annotations []domain.Annotation) (domain.Annotation, bool) {
+	var best domain.Annotation
+	found := false
+	for _, annotation := range annotations {
+		weight, weighted := formula.Weights[annotation.QuestionID]
+		if !weighted {
+			continue
+		}
+		if !found || weight > formula.Weights[best.QuestionID] || weight == formula.Weights[best.QuestionID] && annotation.QuestionID < best.QuestionID {
+			best, found = annotation, true
+		}
+	}
+	return best, found
+}
+
 func jevRanking(outcome decisions.Outcome, ranked []decisions.Ranked, results map[string]decisions.UnitResult, issues map[string]domain.AttributedIssue) Ranking {
 	ranking := Ranking{Items: make([]RankingItem, 0, len(ranked))}
 	for _, r := range ranked {
-		item := RankingItem{IssueID: r.IssueID, Position: r.Position, Score: r.Score, Reason: issues[r.IssueID].RankingReason, Mode: r.Mode, Ranking: r.Disclosure, BaselineScore: r.Baseline}
-		if result := results[r.IssueID]; result.Annotation != nil {
-			p := result.Annotation.Probability
-			item.Probability, item.QuestionVersion = &p, result.Annotation.QuestionVersion
+		item := RankingItem{IssueID: r.IssueID, Position: r.Position, Reason: issues[r.IssueID].RankingReason, Mode: r.Mode, Ranking: r.Disclosure, BaselineScore: r.Baseline}
+		if r.Mode == decisions.ModeDeterministic {
+			score := r.Score
+			item.Score = &score
+		}
+		if annotation, weighted := formulaAnnotation(decisions.LaunchFormula(), results[r.IssueID].Annotations); weighted {
+			item.QuestionVersion = annotation.QuestionVersion
 			item.Reason = "jev P(real_defect), ordinal; baseline " + issues[r.IssueID].RankingReason
 		}
 		ranking.Items = append(ranking.Items, item)
 	}
-	const jev = "jev (unvalidated, X1 pending)"
+	jev := decisions.JevDisclosure
+	if outcome.ThresholdsStale {
+		jev = decisions.JevStaleDisclosure
+	}
 	switch {
 	case outcome.Total == 0:
 		ranking.Mode, ranking.Method, ranking.Reason = decisions.ModeDeterministic, "deterministic (no units)", "no units"
@@ -336,4 +395,10 @@ func ApplyDecisionsHealth(health []domain.LaneHealth, row domain.LaneHealth) []d
 		}
 	}
 	return append(out, row)
+}
+
+// CommittedThresholds reads the thresholds override committed at ref, the ref
+// the policy was loaded from, never the working tree.
+func CommittedThresholds(root, ref string) func() ([]byte, error) {
+	return func() ([]byte, error) { return thresholds.ReadCommitted(root, ref) }
 }

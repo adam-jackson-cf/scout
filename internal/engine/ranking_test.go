@@ -65,7 +65,7 @@ func newRankFake(t *testing.T, p map[string]float64) *rankFake {
 		if strings.Contains(strings.Join(body.State.Excerpt, " "), "false positive") {
 			value = 0.02
 		}
-		fmt.Fprintf(w, `{"id":"gen-1","model":%q,"answers":{"q":{"type":"noul","noul":%v}},"usage":{"input_tokens":5,"output_tokens":1,"cost":0.00005}}`, f.model(body.State.Path), value)
+		fmt.Fprintf(w, `{"id":"gen-1","model":%q,"answers":{"q1":{"type":"noul","noul":%v}},"usage":{"input_tokens":5,"output_tokens":1,"cost":0.00005}}`, f.model(body.State.Path), value)
 	}))
 	t.Cleanup(f.server.Close)
 	return f
@@ -180,7 +180,7 @@ func TestFallbackIsDisclosedInJSONAndSummaryAndVersionsAreStored(t *testing.T) {
 				t.Fatalf("ranking %+v after %d calls", ranking, fake.count())
 			}
 			for _, item := range ranking.Items {
-				if item.Ranking != want || item.Probability != nil {
+				if item.Ranking != want || item.Score == nil {
 					t.Fatalf("item %+v", item)
 				}
 			}
@@ -226,7 +226,8 @@ func TestJevRanksByStoredAnswersAndStoresAnnotationsVersionsAndRequests(t *testi
 		t.Fatalf("versions %q %q", ranking.BaselineVersion, ranking.RankFormulaVersion)
 	}
 	for _, item := range ranking.Items {
-		if item.Probability == nil || item.BaselineScore == 0 || item.Ranking != "jev (unvalidated, X1 pending)" || !strings.HasPrefix(item.QuestionVersion, "triage.real_defect@") {
+		// Jev's probability is never shown (design §6): no score in the product output.
+		if item.Score != nil || item.BaselineScore == 0 || item.Ranking != "jev (unvalidated, X1 pending)" || !strings.HasPrefix(item.QuestionVersion, "triage.real_defect@") {
 			t.Fatalf("item %+v", item)
 		}
 	}
@@ -353,7 +354,7 @@ func TestResolvedModelMismatchDiscardsTheAnnotationAndLeavesTheUnitIncomplete(t 
 		t.Fatal("a mismatched answer must be discarded, never stored")
 	}
 	for _, item := range ranking.Items {
-		if item.IssueID == "issue:security:b" && (item.Ranking != "deterministic (model mismatch)" || item.Probability != nil) {
+		if item.IssueID == "issue:security:b" && (item.Ranking != "deterministic (model mismatch)" || item.Score == nil) {
 			t.Fatalf("item %+v", item)
 		}
 	}
