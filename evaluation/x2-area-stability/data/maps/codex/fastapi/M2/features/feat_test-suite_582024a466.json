@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_582024a466",
+  "title": "Same-name model module regression",
+  "summary": "Review model naming collisions across separate application modules.\n\nAgent mapper reason: The fixture modules and test are inseparable evidence for a specific naming regression.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_modules_same_name_body/app/a.py",
+      "reason": "First model module."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/b.py",
+      "reason": "Second model module."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/main.py",
+      "reason": "Fixture application assembly."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "Collision regression."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "reason": "Related model identity behavior."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "regression",
+    "models",
+    "openapi"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:04:09.582Z",
+  "updatedAt": "2026-10-23T19:12:00.171Z"
+}

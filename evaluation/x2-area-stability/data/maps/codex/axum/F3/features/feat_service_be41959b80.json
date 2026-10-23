@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_be41959b80",
+  "title": "Database integration examples",
+  "summary": "PostgreSQL access through SQLx and tokio-postgres.\n\nAgent mapper reason: Both demonstrate database connection management and query execution inside handlers.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "SQLx application integration."
+    },
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "reason": "tokio-postgres application integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "SQLx dependencies."
+    },
+    {
+      "path": "examples/tokio-postgres/Cargo.toml",
+      "reason": "PostgreSQL client dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "postgres",
+    "database"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "database",
+    "secrets",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

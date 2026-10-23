@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_673e7afbdf",
+  "title": "Extra extraction adapters and form decoding",
+  "summary": "Cached extraction, rejection customization, and alternative query, form, and multipart extractors.\n\nAgent mapper reason: These optional extractors extend the same request extraction and rejection contracts.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Extra extractor integration."
+    },
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Extraction result caching."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Rejection adaptation."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Extended form decoding."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Extended query decoding."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Extended multipart extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Implemented extractor contracts."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Rejection adaptation usage."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extraction",
+    "query",
+    "form"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:40:32.517Z"
+}

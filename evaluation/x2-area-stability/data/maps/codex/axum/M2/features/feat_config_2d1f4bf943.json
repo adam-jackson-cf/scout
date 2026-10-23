@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_2d1f4bf943",
+  "title": "Crate integration and public exports",
+  "summary": "Crate roots, handwritten build scripts, and feature integration for the core and main libraries.\n\nAgent mapper reason: These files connect independently reviewed modules into the published crates.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Core public API and crate configuration."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Core build-time integration."
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Main public API and crate configuration."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Main build-time integration."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Main crate implementation macros."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core feature declarations."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Main feature declarations."
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Published usage contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "public-api",
+    "features",
+    "build"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:37.014Z"
+}

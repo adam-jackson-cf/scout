@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0f42692916",
+  "title": "axum WebSocket upgrade",
+  "summary": "WebSocketUpgrade extractor and WebSocket message stream.\n\nAgent mapper reason: Protocol upgrade handling is a distinct network trust boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "symbol": "WebSocketUpgrade",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "websocket handshake and messaging"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "usage"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "usage tests"
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "websocket"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:37:18.735Z"
+}

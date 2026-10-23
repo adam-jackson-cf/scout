@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_bb7e2fa32a",
+  "title": "Handlers and service adapters",
+  "summary": "Handler invocation, state-aware service conversion, and connection metadata.\n\nAgent mapper reason: These adapters connect extracted arguments and application state to Tower service execution.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler contract and invocation."
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler future adaptation."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Handler-to-service conversion."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "State transfer into services."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Connection service construction."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service convenience adapters."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Connection metadata plumbing."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler contract."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Connection metadata lifecycle."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "tower",
+    "connections"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:55:36.923Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

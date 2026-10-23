@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_cli-command_d749f57ad7",
+  "title": "Docs build and maintenance scripts",
+  "summary": "MkDocs multi-language build tooling, test, lint, format and publish shell scripts, and the Gitter release bot.\n\nAgent mapper reason: Developer and CI tooling invoked by workflows. It runs shell commands and handles tokens.",
+  "kind": "cli-command",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "scripts/docs.py",
+      "symbol": null,
+      "route": null,
+      "command": "python ./scripts/docs.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "scripts/docs.py",
+      "reason": "docs build, new-lang, live server"
+    },
+    {
+      "path": "scripts/build-docs.sh",
+      "reason": "build wrapper"
+    },
+    {
+      "path": "scripts/docs-live.sh",
+      "reason": "live preview"
+    },
+    {
+      "path": "scripts/zip-docs.sh",
+      "reason": "packaging docs"
+    },
+    {
+      "path": "scripts/netlify-docs.sh",
+      "reason": "netlify deploy"
+    },
+    {
+      "path": "scripts/gitter_releases_bot.py",
+      "reason": "posts release notes to Gitter using a token"
+    },
+    {
+      "path": "scripts/notify.sh",
+      "reason": "notification"
+    },
+    {
+      "path": "scripts/publish.sh",
+      "reason": "publishes the package"
+    },
+    {
+      "path": "scripts/test.sh",
+      "reason": "test runner"
+    },
+    {
+      "path": "scripts/test-cov-html.sh",
+      "reason": "coverage"
+    },
+    {
+      "path": "scripts/lint.sh",
+      "reason": "lint"
+    },
+    {
+      "path": "scripts/format.sh",
+      "reason": "format"
+    },
+    {
+      "path": "scripts/clean.sh",
+      "reason": "cleanup"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "base docs config"
+    },
+    {
+      "path": "docs/es/mkdocs.yml",
+      "reason": "per-language config"
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "tool config"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "tooling",
+    "scripts"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "process-exec",
+    "secrets",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:13:38.963Z",
+  "updatedAt": "2026-10-23T19:17:08.936Z"
+}

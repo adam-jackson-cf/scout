@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_21695a1912",
+  "title": "axum-macros debug_handler",
+  "summary": "#[debug_handler] proc macro producing better handler type errors, with trybuild tests.\n\nAgent mapper reason: Single macro with dedicated pass/fail UI tests.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "symbol": "debug_handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "macro implementation"
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "iterator helper used by debug_handler"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "macro registration"
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "attr parsing"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/multiple_extractors.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/too_many_extractors.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/wrong_order.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/pass/multiple_extractors.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/too_many_extractors.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/wrong_order.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "debug_handler",
+    "trybuild"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:27:43.928Z",
+  "updatedAt": "2026-10-23T19:27:43.928Z"
+}

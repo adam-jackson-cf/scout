@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_fae9009705",
+  "title": "Project packaging and quality gates",
+  "summary": "Package metadata, development tooling, automated tests, and release publication.\n\nAgent mapper reason: These files jointly govern installation, verification, and publication of the project.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package and development environment configuration."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local quality checks."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Continuous integration test orchestration."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Distribution publication workflow."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Automated test report publication."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update policy."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow intent."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Security reporting policy."
+    },
+    {
+      "path": "LICENSE",
+      "reason": "Distribution licensing."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "ci",
+    "release",
+    "hatch"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "secrets",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:59:28.547Z",
+  "updatedAt": "2026-10-23T18:59:28.547Z"
+}

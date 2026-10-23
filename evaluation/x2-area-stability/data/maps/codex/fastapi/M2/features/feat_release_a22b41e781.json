@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_a22b41e781",
+  "title": "Package release configuration",
+  "summary": "Define packaging and publication boundaries, including the separately manifested package.\n\nAgent mapper reason: Publication should be assessed against both supplied manifests; the relationship between packages requires inspection.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Publication pipeline."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Root package metadata and build configuration."
+    },
+    {
+      "path": "x2_newpkg/pyproject.toml",
+      "reason": "Separate package manifest requiring explicit boundary review."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "README.md",
+      "reason": "Public package expectations."
+    },
+    {
+      "path": "LICENSE",
+      "reason": "Distribution terms."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "release",
+    "hatch"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "process-exec",
+    "secrets",
+    "external-api",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:12:00.054Z",
+  "updatedAt": "2026-10-23T19:12:00.054Z"
+}

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_efda66e886",
+  "title": "WebSocket chat application",
+  "summary": "Browser chat interface and concurrent message broadcasting.\n\nAgent mapper reason: The browser protocol and shared chat state form one bounded application.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Chat server and connection handling."
+    },
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "Browser chat interface."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/chat/Cargo.toml",
+      "reason": "WebSocket and concurrency dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "chat",
+    "websocket"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:50:54.305Z"
+}

@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8c167b36cc",
+  "title": "Encoders, responses and exception handling",
+  "summary": "jsonable_encoder, response classes (ORJSON/UJSON), UploadFile datastructures, HTTPException/RequestValidationError and default handlers.\n\nAgent mapper reason: Output serialization and error responses share concerns about what data leaks to clients.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/encoders.py",
+      "symbol": "jsonable_encoder",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/encoders.py",
+      "reason": "JSON-compatible encoding"
+    },
+    {
+      "path": "fastapi/responses.py",
+      "reason": "Response classes"
+    },
+    {
+      "path": "fastapi/datastructures.py",
+      "reason": "UploadFile, Default"
+    },
+    {
+      "path": "fastapi/exceptions.py",
+      "reason": "Exception types"
+    },
+    {
+      "path": "fastapi/exception_handlers.py",
+      "reason": "Default error handlers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/handling-errors.md",
+      "reason": "Error handling docs"
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "serialization",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:13:38.963Z",
+  "updatedAt": "2026-10-23T19:21:08.397Z"
+}

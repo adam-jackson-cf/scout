@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_7228c82775",
+  "title": "WebSocket applications and tests",
+  "summary": "Chat, browser sockets, a client, and executable WebSocket testing guidance.\n\nAgent mapper reason: Server, client, and tests jointly demonstrate the socket lifecycle and concurrent message flow.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Chat server"
+    },
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "Chat client"
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "Socket server"
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "Socket client"
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Browser socket behavior"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "Socket test application"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/chat/Cargo.toml",
+      "reason": "Chat dependencies"
+    },
+    {
+      "path": "examples/testing-websockets/Cargo.toml",
+      "reason": "Test dependencies"
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Protocol implementation"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "websocket",
+    "chat"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

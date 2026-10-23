@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_db2536595d",
+  "title": "Routing policy examples",
+  "summary": "Demonstrates CORS, global fallbacks, HEAD handling, and API versioning.\n\nAgent mapper reason: These small examples configure HTTP dispatch and request policy rather than application data storage.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "Cross-origin request policy."
+    },
+    {
+      "path": "examples/cors/Cargo.toml",
+      "reason": "CORS middleware dependencies."
+    },
+    {
+      "path": "examples/global-404-handler/src/main.rs",
+      "reason": "Global missing-route behavior."
+    },
+    {
+      "path": "examples/global-404-handler/Cargo.toml",
+      "reason": "Fallback example dependencies."
+    },
+    {
+      "path": "examples/handle-head-request/src/main.rs",
+      "reason": "HEAD request behavior."
+    },
+    {
+      "path": "examples/handle-head-request/Cargo.toml",
+      "reason": "HEAD example dependencies."
+    },
+    {
+      "path": "examples/versioning/src/main.rs",
+      "reason": "Versioned route composition."
+    },
+    {
+      "path": "examples/versioning/Cargo.toml",
+      "reason": "Versioning dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Router composition implementation."
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "HTTP method implementation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "routing",
+    "cors",
+    "versioning"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "permissions"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:53:04.529Z"
+}

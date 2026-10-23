@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_68dfd3f886",
+  "title": "HTTP method dispatch and route execution",
+  "summary": "Method filters, method routers, route services, and dispatch futures.\n\nAgent mapper reason: Method matching and route execution must agree on fallback, HEAD, and response behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Method router implementation."
+    },
+    {
+      "path": "axum/src/routing/method_filter.rs",
+      "reason": "Method selection."
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Executable route service."
+    },
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Route execution futures."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/method_routing/fallback.md",
+      "reason": "Method fallback contract."
+    },
+    {
+      "path": "axum/src/docs/method_routing/merge.md",
+      "reason": "Method merge contract."
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Layer contract."
+    },
+    {
+      "path": "axum/src/docs/method_routing/route_layer.md",
+      "reason": "Route layer contract."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "http-methods",
+    "routing",
+    "head"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

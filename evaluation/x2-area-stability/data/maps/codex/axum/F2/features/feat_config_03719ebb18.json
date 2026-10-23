@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_03719ebb18",
+  "title": "Workspace quality and contribution configuration",
+  "summary": "Workspace membership, CI, dependency policy, and contributor interfaces.\n\nAgent mapper reason: These files define repository-wide validation and contribution controls.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace configuration."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Automated checks."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Workflow support configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Dependency policy."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Repository artifact exclusions."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow."
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "Review submission guidance."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue intake configuration."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "reason": "Bug reporting contract."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "reason": "Feature request contract."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Main package feature matrix."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Macro diagnostic toolchain."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "workspace",
+    "policy"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

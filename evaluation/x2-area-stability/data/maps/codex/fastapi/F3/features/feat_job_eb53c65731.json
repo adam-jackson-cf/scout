@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_eb53c65731",
+  "title": "Issue intake and approval automation",
+  "summary": "Community issue intake, privileged reports, and approval labels.\n\nAgent mapper reason: Untrusted community input feeds permission-sensitive repository automation.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Issue management automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Approval labeling automation."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue entry configuration."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Privileged issue input form."
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/questions.yml",
+      "reason": "Question intake form."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "SECURITY.md",
+      "reason": "Sensitive report handling expectations."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github",
+    "triage"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "external-api",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:54:37.966Z",
+  "updatedAt": "2026-10-23T18:54:37.966Z"
+}

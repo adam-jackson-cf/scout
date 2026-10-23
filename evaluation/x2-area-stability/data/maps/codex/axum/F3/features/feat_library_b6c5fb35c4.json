@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b6c5fb35c4",
+  "title": "Core body, errors, and crate plumbing",
+  "summary": "Shared body representation, error wrapper, internal macros, and core crate setup.\n\nAgent mapper reason: Small shared primitives underpin both extraction and response conversion.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Core crate public surface."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Shared body abstraction."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Shared error abstraction."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Core implementation macros."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Core build configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Dependency and compilation contract."
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Crate purpose."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "body",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

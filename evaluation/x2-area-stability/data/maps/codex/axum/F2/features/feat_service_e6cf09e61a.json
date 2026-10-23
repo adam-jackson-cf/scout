@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e6cf09e61a",
+  "title": "REST and gRPC multiplexing example",
+  "summary": "Serve HTTP APIs and generated gRPC services through a shared dispatcher.\n\nAgent mapper reason: Schema compilation and protocol selection define one deployable example.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "Server assembly."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "Protocol dispatch."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "Schema compilation configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "Service schema."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/Cargo.toml",
+      "reason": "Protocol and build dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "grpc",
+    "multiplexing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

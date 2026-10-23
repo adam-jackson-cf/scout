@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_bbba8072db",
+  "title": "Path parameter deserialization",
+  "summary": "Decode captured URI parameters into typed values.\n\nAgent mapper reason: Parameter decoding and deserialization errors require focused review together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extractor"
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Parameter deserializer"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Captured parameter producer"
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Error customization example"
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "paths",
+    "serde"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:50:54.234Z"
+}

@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_dc9648c1f9",
+  "title": "Documentation site runtime",
+  "summary": "Build and render the English documentation website.\n\nAgent mapper reason: Site configuration, theme, and custom interaction code share a browser-facing surface.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build."
+    },
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Site navigation and configuration."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Theme customization."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Chat interface behavior."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Site interaction customization."
+    },
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Site presentation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/js/termynal.js",
+      "reason": "Terminal widget; provenance is unverified, so context only."
+    },
+    {
+      "path": "docs/en/docs/css/termynal.css",
+      "reason": "Terminal widget styling; provenance is unverified."
+    },
+    {
+      "path": "docs/en/docs/index.md",
+      "reason": "Primary landing content."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "mkdocs",
+    "website"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:04:09.582Z",
+  "updatedAt": "2026-10-23T19:04:09.582Z"
+}

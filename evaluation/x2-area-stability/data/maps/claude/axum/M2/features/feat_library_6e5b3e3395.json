@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6e5b3e3395",
+  "title": "axum-core response conversion",
+  "summary": "IntoResponse, IntoResponseParts, AppendHeaders implementations.\n\nAgent mapper reason: Cohesive response conversion layer.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "symbol": "IntoResponse",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "module root"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "IntoResponse impls"
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "IntoResponseParts impls"
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "header appending"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "tuple impl macros"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "response",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:37:18.735Z",
+  "updatedAt": "2026-10-23T19:37:18.735Z"
+}

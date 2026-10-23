@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_30899e045c",
+  "title": "Dependency resolution and lifetime regression suite",
+  "summary": "Cover dependency reuse, overrides, context handling, and cleanup exceptions.\n\nAgent mapper reason: Dependency resolution and lifetime share state, caching, and override contracts.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "Dependency reuse."
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "Class dependencies."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "Managed dependency lifetime."
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "Context propagation."
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "Repeated dependencies."
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "Dependency exception behavior."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "Override behavior."
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "Security dependency overrides."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Connection injection."
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "Parameter and dependency interaction."
+    },
+    {
+      "path": "tests/test_repeated_dependency_schema.py",
+      "reason": "Repeated dependency schema contract."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/dependencies/dependencies-with-yield.md",
+      "reason": "Documented lifetime semantics."
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependency-injection",
+    "lifecycle"
+  ],
+  "trustBoundaries": [
+    "concurrency",
+    "auth",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T19:12:00.054Z"
+}

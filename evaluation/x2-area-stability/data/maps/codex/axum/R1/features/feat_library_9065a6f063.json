@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9065a6f063",
+  "title": "Core body limits and rejection infrastructure",
+  "summary": "Body representation, extraction limits, shared errors, and rejection construction.\n\nAgent mapper reason: Body consumption limits and rejection reporting must be assessed together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Shared body representation."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Common error wrapper."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Default request body limits."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Core extraction failures."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Shared contract and rejection macros."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Consumers of body and rejection contracts."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "limits",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:48:23.711Z"
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8ed5ca265c",
+  "title": "Core request extension traits",
+  "summary": "Convenience operations on complete requests and request parts.\n\nAgent mapper reason: The moved directory is a coherent API unit whose module wiring deserves explicit review.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/ext_traits_x2moved/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/ext_traits_x2moved/mod.rs",
+      "reason": "Extension trait module boundary."
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request.rs",
+      "reason": "Complete request extension operations."
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request_parts.rs",
+      "reason": "Request parts extension operations."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Verify exposure of the unusually named module."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Underlying extraction contracts."
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "request",
+    "extension-traits"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:55:36.923Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

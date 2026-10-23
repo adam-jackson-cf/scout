@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_50ccae40bb",
+  "title": "Custom extraction rejection example",
+  "summary": "Compares custom extractors, derive-based extraction, and rejection wrappers.\n\nAgent mapper reason: These examples explain alternative implementations of the same rejection customization objective.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "Application wiring"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/custom_extractor.rs",
+      "reason": "Manual extraction"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Derived extraction"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Rejection adapter"
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Related path error customization"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-extractor-error/README.md",
+      "reason": "Comparison intent"
+    },
+    {
+      "path": "examples/customize-extractor-error/Cargo.toml",
+      "reason": "Required features"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "rejections"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:53:04.365Z",
+  "updatedAt": "2026-10-23T19:55:37.079Z"
+}

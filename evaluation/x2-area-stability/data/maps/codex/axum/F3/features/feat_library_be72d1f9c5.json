@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_be72d1f9c5",
+  "title": "Procedural macro infrastructure",
+  "summary": "Macro registration, shared attribute parsing, source positions, and compiler test support.\n\nAgent mapper reason: Shared parsing and registration affect all macros and warrant a separate cross-cutting review.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Macro entrypoints and registration."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parser."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Source position support."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Macro test support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Macro dependencies and features."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Compiler fixture toolchain."
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Macro package intent."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "test-infrastructure"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

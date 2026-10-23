@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_28f098f5ba",
+  "title": "Workspace CI and dependency policy",
+  "summary": "Workspace membership, automated checks, dependency policy, and patch workflow configuration.\n\nAgent mapper reason: These files determine which packages and checks actually participate in repository verification.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace membership and shared build configuration."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Automated verification workflow."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Patch workflow configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Dependency policy."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Repository artifact exclusions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor verification instructions."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Primary crate feature matrix."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional integration feature matrix."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Macro test dependencies."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "cargo",
+    "dependency-policy"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "permissions"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:53:04.470Z"
+}

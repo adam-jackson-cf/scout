@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_dd88673353",
+  "title": "axum responses, body and crate root",
+  "summary": "Redirect, SSE, StreamBody, boxed routes, util, macros, test client, crate root.\n\nAgent mapper reason: Remaining axum surface: output types and shared infra.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "root"
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "response"
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "SSE"
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "body"
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "StreamBody"
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "boxed"
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "util"
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "macros"
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "helpers"
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "TestClient"
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "build"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "manifest"
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "changes"
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "docs"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "response",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:30:20.528Z",
+  "updatedAt": "2026-10-23T19:37:18.777Z"
+}

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_fbae4deb8f",
+  "title": "HTTP proxy examples",
+  "summary": "Forward and reverse proxy request forwarding.\n\nAgent mapper reason: Both examples cross inbound and outbound HTTP boundaries and require forwarding-contract review.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "HTTP proxy behavior."
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Reverse proxy behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/http-proxy/Cargo.toml",
+      "reason": "Outbound HTTP dependencies."
+    },
+    {
+      "path": "examples/reverse-proxy/Cargo.toml",
+      "reason": "Reverse proxy dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "proxy"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:40:32.517Z"
+}

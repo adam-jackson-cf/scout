@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fe02f299b4",
+  "title": "axum-extra routing, handlers and middleware",
+  "summary": "RouterExt, Resource routing, TypedPath trait, the Or handler combinator and the option_layer middleware helper.\n\nAgent mapper reason: Extends the router and handler APIs. TypedPath ties into the macros crate.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "symbol": "RouterExt",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "RouterExt"
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "RESTful resource routing"
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "TypedPath trait"
+    },
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "HandlerCallWithExtractors"
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Or combinator"
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Middleware helpers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Derive that implements TypedPath"
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Underlying Router"
+    },
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "routing",
+    "handler"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:37:18.779Z"
+}

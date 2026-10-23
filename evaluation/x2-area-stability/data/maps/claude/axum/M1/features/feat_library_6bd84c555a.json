@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6bd84c555a",
+  "title": "axum-extra bodies and responses",
+  "summary": "AsyncReadBody, Either types, JsonLines, Protobuf, ErasedJson and the crate root.\n\nAgent mapper reason: Content-type and body codecs live together in axum-extra.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Crate root"
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Body module"
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "AsyncRead-backed body"
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either extractors/responses"
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "NDJSON streaming"
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protobuf extractor/response"
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Response module"
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Type-erased JSON"
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Manifest"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Crate docs"
+    },
+    {
+      "path": "axum-extra/CHANGELOG.md",
+      "reason": "Change history"
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Test fixture"
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Test fixture"
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Test fixture"
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "serialization",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:35:37.938Z"
+}

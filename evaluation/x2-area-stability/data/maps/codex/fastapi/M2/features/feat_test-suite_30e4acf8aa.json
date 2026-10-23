@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_30e4acf8aa",
+  "title": "Request body and multipart regression suite",
+  "summary": "Exercise request body extraction, multipart prerequisites, forms, and media types.\n\nAgent mapper reason: Body parsing and body model identity need review independently of response serialization.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Request body extraction."
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Form sequence handling."
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "Multipart dependency checks."
+    },
+    {
+      "path": "tests/test_put_no_body.py",
+      "reason": "Bodyless PUT behavior."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Body media type contract."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/__init__.py",
+      "reason": "Body collision fixture package."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/__init__.py",
+      "reason": "Fixture application package."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/a.py",
+      "reason": "First same-name body fixture."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/b.py",
+      "reason": "Second same-name body fixture."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/main.py",
+      "reason": "Fixture application wiring."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "Cross-module body model regression."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/request-forms-and-files.md",
+      "reason": "Documented body and multipart behavior."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "request-body",
+    "multipart",
+    "forms"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:12:00.054Z",
+  "updatedAt": "2026-10-23T19:12:00.054Z"
+}

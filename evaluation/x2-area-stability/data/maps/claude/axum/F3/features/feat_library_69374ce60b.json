@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_69374ce60b",
+  "title": "axum-core extractor traits and rejections",
+  "summary": "Core FromRequest/FromRequestParts traits, FromRef, tuple extractor impls, default body limit, core rejections, and request extension traits.\n\nAgent mapper reason: All core extraction contracts and limits live in axum-core/src/extract and ext_traits and are reviewed together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": "FromRequest",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "extractor trait definitions"
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "state substate derivation"
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "core rejection types"
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "built-in core extractors (Bytes, String, Method, etc.)"
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "tuple extractor impls"
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "body size limit enforcement"
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "extension trait module"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "RequestExt helpers"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "RequestPartsExt helpers"
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "rejection/tuple-generating macros"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "crate manifest"
+    },
+    {
+      "path": "axum-core/CHANGELOG.md",
+      "reason": "change history"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "extract",
+    "rejection"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:27:43.928Z",
+  "updatedAt": "2026-10-23T19:27:43.928Z"
+}

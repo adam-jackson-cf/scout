@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_dadd773f9d",
+  "title": "Structured request bodies and multipart extraction",
+  "summary": "JSON, form, raw form, and multipart parsing.\n\nAgent mapper reason: Content type validation, body consumption, size limits, and deserialization belong in one bounded parsing review.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON extraction and response serialization."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extraction and response serialization."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form extraction."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart field streaming."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Shared parsing failures."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Body limit enforcement contract."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/json.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/form.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "json",
+    "forms",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

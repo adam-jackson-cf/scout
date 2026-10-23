@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_4336e73956",
+  "title": "Workspace and continuous integration policy",
+  "summary": "Workspace configuration, CI checks, dependency policy, and contribution interfaces.\n\nAgent mapper reason: These files control how all packages are built, checked, and accepted into the repository.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace membership and shared configuration."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Main crate dependency and feature configuration."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core dependency and feature configuration."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Automated validation."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Workflow patch configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Dependency policy."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Repository artifact exclusions."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue workflow configuration."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "reason": "Bug reporting contract."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "reason": "Feature request contract."
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "Contribution review contract."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor validation instructions."
+    },
+    {
+      "path": "CHANGELOG.md",
+      "reason": "Workspace release history."
+    },
+    {
+      "path": "ECOSYSTEM.md",
+      "reason": "Integration ecosystem."
+    },
+    {
+      "path": "examples/README.md",
+      "reason": "Example organization."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "dependency-policy"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "permissions"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:55:37.015Z"
+}

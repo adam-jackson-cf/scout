@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_0044689666",
+  "title": "Additional response schema regression suite",
+  "summary": "Check declared alternative responses and validation-error schemas.\n\nAgent mapper reason: Alternative response declarations have a focused schema-merging contract.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_additional_responses_router.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_additional_responses_router.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_additional_response_extra.py",
+      "reason": "Extra response metadata."
+    },
+    {
+      "path": "tests/test_additional_responses_bad.py",
+      "reason": "Invalid response declarations."
+    },
+    {
+      "path": "tests/test_additional_responses_custom_model_in_callback.py",
+      "reason": "Callback response models."
+    },
+    {
+      "path": "tests/test_additional_responses_custom_validationerror.py",
+      "reason": "Custom error schema."
+    },
+    {
+      "path": "tests/test_additional_responses_default_validationerror.py",
+      "reason": "Default error schema."
+    },
+    {
+      "path": "tests/test_additional_responses_response_class.py",
+      "reason": "Response class integration."
+    },
+    {
+      "path": "tests/test_additional_responses_router.py",
+      "reason": "Router response declarations."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/additional-responses.md",
+      "reason": "Alternative response contract."
+    },
+    {
+      "path": "tests/test_additional_responses_router.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_additional_responses_router.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "openapi",
+    "responses"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T19:06:59.005Z"
+}

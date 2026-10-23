@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_b0349e12d0",
+  "title": "TLS server integration examples",
+  "summary": "OpenSSL, low-level Rustls, and higher-level Rustls server setup.\n\nAgent mapper reason: TLS configuration, key loading, and connection handshakes share a focused transport security boundary.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "OpenSSL handshake and serving integration."
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Low-level Rustls transport integration."
+    },
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "Rustls server configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/low-level-openssl/Cargo.toml",
+      "reason": "OpenSSL dependencies."
+    },
+    {
+      "path": "examples/low-level-rustls/Cargo.toml",
+      "reason": "Low-level Rustls dependencies."
+    },
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "reason": "TLS server dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "tls",
+    "transport"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "secrets",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

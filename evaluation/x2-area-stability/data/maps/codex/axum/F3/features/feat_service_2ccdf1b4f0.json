@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_2ccdf1b4f0",
+  "title": "WebSocket transport and testing examples",
+  "summary": "WebSocket server/client usage and executable transport tests.\n\nAgent mapper reason: Client interoperability and connection testing belong with the corresponding transport demonstration.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "WebSocket server example."
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "Rust WebSocket client."
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Browser WebSocket client."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "WebSocket testing example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/websockets/Cargo.toml",
+      "reason": "Client/server dependencies."
+    },
+    {
+      "path": "examples/testing-websockets/Cargo.toml",
+      "reason": "Test dependencies."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "websocket",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_717a199bb5",
+  "title": "In-memory key-value service",
+  "summary": "Concurrent key-value HTTP application.\n\nAgent mapper reason: HTTP operations and concurrent store mutation constitute one application feature.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "reason": "Store operations and shared state."
+    },
+    {
+      "path": "examples/key-value-store/Cargo.toml",
+      "reason": "Application dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Shared state integration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "key-value",
+    "state"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "concurrency",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:53:04.510Z"
+}

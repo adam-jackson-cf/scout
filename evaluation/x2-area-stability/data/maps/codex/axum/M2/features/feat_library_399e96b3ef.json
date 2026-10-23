@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_399e96b3ef",
+  "title": "Server-sent event responses",
+  "summary": "SSE event encoding, streaming, and keepalive behavior.\n\nAgent mapper reason: SSE has distinct framing and long-lived response behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "SSE response and event implementation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Browser-facing usage."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "sse",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:55:36.923Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0f42692916",
+  "title": "axum WebSocket upgrade",
+  "summary": "WebSocketUpgrade extractor, handshake validation and message stream.\n\nAgent mapper reason: Self-contained protocol upgrade feature with distinct security concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "symbol": "WebSocketUpgrade",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "websocket implementation"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "usage example"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "testing example"
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "websocket"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:34:24.827Z"
+}

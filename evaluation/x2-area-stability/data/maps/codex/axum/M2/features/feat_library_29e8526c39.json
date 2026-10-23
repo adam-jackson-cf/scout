@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_29e8526c39",
+  "title": "Path and query decoding",
+  "summary": "Typed path deserialization and raw or structured URL query extraction.\n\nAgent mapper reason: URL decoding and typed conversion share input validation and rejection concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extractor"
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Path deserializer"
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query decoding"
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query access"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Capture source"
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Rejection customization usage"
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "path",
+    "query",
+    "serde"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:53:04.365Z",
+  "updatedAt": "2026-10-23T19:55:37.023Z"
+}

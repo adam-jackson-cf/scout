@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b755987598",
+  "title": "Middleware and Starlette re-exports",
+  "summary": "CORS, GZip, HTTPS redirect, TrustedHost, WSGI, and AsyncExitStack middleware, plus staticfiles, templating, and testclient shims.\n\nAgent mapper reason: Mostly thin wrappers around Starlette, grouped together for a light review.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/middleware/__init__.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/middleware/__init__.py",
+      "reason": "Exports"
+    },
+    {
+      "path": "fastapi/middleware/asyncexitstack.py",
+      "reason": "Exit stack middleware"
+    },
+    {
+      "path": "fastapi/middleware/cors.py",
+      "reason": "CORS"
+    },
+    {
+      "path": "fastapi/middleware/gzip.py",
+      "reason": "GZip"
+    },
+    {
+      "path": "fastapi/middleware/httpsredirect.py",
+      "reason": "HTTPS redirect"
+    },
+    {
+      "path": "fastapi/middleware/trustedhost.py",
+      "reason": "Trusted host"
+    },
+    {
+      "path": "fastapi/middleware/wsgi.py",
+      "reason": "WSGI"
+    },
+    {
+      "path": "fastapi/staticfiles.py",
+      "reason": "Static files"
+    },
+    {
+      "path": "fastapi/templating.py",
+      "reason": "Templates"
+    },
+    {
+      "path": "fastapi/testclient.py",
+      "reason": "Test client"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/middleware.md",
+      "reason": "Docs"
+    },
+    {
+      "path": "docs/en/docs/tutorial/cors.md",
+      "reason": "CORS docs"
+    },
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial002.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial003.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial002.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial003.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "starlette"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:19:35.573Z",
+  "updatedAt": "2026-10-23T19:19:35.573Z"
+}

@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_57fd98cc83",
+  "title": "GitHub Actions automation",
+  "summary": "Docker-based custom actions (docs preview comments, translation notifications, people stats, preview watching) and CI/publish workflows.\n\nAgent mapper reason: CI automation handles tokens and untrusted PR events; reviewed as one infra unit.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "PR comment action"
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "action def"
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "action image"
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "translation notifier"
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "action def"
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "action image"
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "GraphQL people stats"
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "action def"
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "action image"
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "preview watcher"
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "action def"
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "action image"
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "workflow"
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "workflow"
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "workflow"
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "workflow"
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "workflow"
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "workflow"
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "workflow_run with secrets"
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "PyPI publish"
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "coverage upload"
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "CI tests"
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "dependency updates"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "output of people action"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "external-api",
+    "process-exec",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:18:30.939Z",
+  "updatedAt": "2026-10-23T19:19:35.632Z"
+}

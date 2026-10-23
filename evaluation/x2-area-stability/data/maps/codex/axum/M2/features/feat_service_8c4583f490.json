@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_8c4583f490",
+  "title": "Body consumption and content negotiation examples",
+  "summary": "Demonstrates body ownership in middleware and content-type-dependent parsing.\n\nAgent mapper reason: All three examples manipulate body streams and must preserve single-consumption semantics.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Body consumption and reconstruction."
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Content-type dispatch."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/Cargo.toml",
+      "reason": "Parsing example dependencies."
+    },
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Inspects request and response bodies."
+    },
+    {
+      "path": "examples/print-request-response/Cargo.toml",
+      "reason": "Inspection example dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware body flow."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "body",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:55:37.098Z"
+}

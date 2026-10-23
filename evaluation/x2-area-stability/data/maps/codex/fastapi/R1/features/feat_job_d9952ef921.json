@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_d9952ef921",
+  "title": "Issue and change management automation",
+  "summary": "Repository intake, approval labels, and change announcements.\n\nAgent mapper reason: These bounded workflows implement repository governance around untrusted contribution events.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Issue processing."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Approval label processing."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Change reporting."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue intake configuration."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Privileged issue intake."
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/questions.yml",
+      "reason": "Discussion intake."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "SECURITY.md",
+      "reason": "Sensitive report routing."
+    },
+    {
+      "path": "docs/en/docs/release-notes.md",
+      "reason": "Change publication context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "triage",
+    "repository-automation"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "external-api",
+    "secrets",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T18:59:28.547Z"
+}

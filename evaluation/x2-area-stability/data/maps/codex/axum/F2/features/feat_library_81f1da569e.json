@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_81f1da569e",
+  "title": "Streaming bodies and response helpers",
+  "summary": "HTTP body streams, server-sent events, redirects, and response exports.\n\nAgent mapper reason: These files construct response bodies and control streaming protocol output.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body exports."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Streaming body adapter."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response exports."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect responses."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent event encoding."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Underlying conversion contract."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "streaming",
+    "sse",
+    "responses"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

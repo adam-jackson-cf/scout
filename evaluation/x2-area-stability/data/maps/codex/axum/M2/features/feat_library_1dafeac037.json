@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1dafeac037",
+  "title": "Extra cookie extraction",
+  "summary": "Plain, signed, and encrypted cookie jars.\n\nAgent mapper reason: Cookie parsing, integrity, confidentiality, and response persistence share one security boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "Cookie jar extraction and response updates."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "Encrypted cookies."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "Authenticated cookies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Cookie feature configuration."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "cookies",
+    "cryptography"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "secrets",
+    "serialization",
+    "auth"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

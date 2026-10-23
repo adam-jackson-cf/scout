@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_794c70bbeb",
+  "title": "Starlette re-exports and middleware",
+  "summary": "Thin wrappers around Starlette: middleware (CORS, GZip, trusted host, HTTPS redirect, WSGI, AsyncExitStack), background tasks, concurrency, requests, websockets, static files, templating, test client.\n\nAgent mapper reason: Small modules mostly re-exporting Starlette; concurrency and exit-stack are the substantive parts.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/middleware/asyncexitstack.py",
+      "symbol": "AsyncExitStackMiddleware",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/middleware/__init__.py",
+      "reason": "Middleware export"
+    },
+    {
+      "path": "fastapi/middleware/asyncexitstack.py",
+      "reason": "Exit stack for yield deps"
+    },
+    {
+      "path": "fastapi/middleware/cors.py",
+      "reason": "CORS re-export"
+    },
+    {
+      "path": "fastapi/middleware/gzip.py",
+      "reason": "GZip re-export"
+    },
+    {
+      "path": "fastapi/middleware/httpsredirect.py",
+      "reason": "HTTPS redirect re-export"
+    },
+    {
+      "path": "fastapi/middleware/trustedhost.py",
+      "reason": "Trusted host re-export"
+    },
+    {
+      "path": "fastapi/middleware/wsgi.py",
+      "reason": "WSGI re-export"
+    },
+    {
+      "path": "fastapi/background.py",
+      "reason": "BackgroundTasks"
+    },
+    {
+      "path": "fastapi/concurrency.py",
+      "reason": "Threadpool/contextmanager helpers"
+    },
+    {
+      "path": "fastapi/requests.py",
+      "reason": "Request re-export"
+    },
+    {
+      "path": "fastapi/websockets.py",
+      "reason": "WebSocket re-export"
+    },
+    {
+      "path": "fastapi/staticfiles.py",
+      "reason": "StaticFiles re-export"
+    },
+    {
+      "path": "fastapi/templating.py",
+      "reason": "Jinja2 templates re-export"
+    },
+    {
+      "path": "fastapi/testclient.py",
+      "reason": "TestClient re-export"
+    },
+    {
+      "path": "fastapi/logger.py",
+      "reason": "Logger"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/middleware.md",
+      "reason": "Middleware docs"
+    },
+    {
+      "path": "tests/test_starlette_urlconvertors.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial001.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_starlette_urlconvertors.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial001.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "starlette",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:13:38.963Z",
+  "updatedAt": "2026-10-23T19:19:35.635Z"
+}

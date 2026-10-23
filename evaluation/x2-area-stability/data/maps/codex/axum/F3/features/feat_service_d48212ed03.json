@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d48212ed03",
+  "title": "Static content and template examples",
+  "summary": "Static asset serving and HTML template rendering.\n\nAgent mapper reason: File selection, template rendering, and browser assets jointly determine HTML response behavior.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Static file routing."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Served page."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Served script."
+    },
+    {
+      "path": "examples/templates/src/main.rs",
+      "reason": "Template response handler."
+    },
+    {
+      "path": "examples/templates/templates/hello.html",
+      "reason": "HTML template."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/static-file-server/Cargo.toml",
+      "reason": "Static serving dependencies."
+    },
+    {
+      "path": "examples/templates/Cargo.toml",
+      "reason": "Template engine dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "html",
+    "static-files"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "filesystem",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

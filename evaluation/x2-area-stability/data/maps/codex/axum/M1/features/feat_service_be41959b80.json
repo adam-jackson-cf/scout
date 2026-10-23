@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_be41959b80",
+  "title": "Database-backed applications",
+  "summary": "SQLx and tokio-postgres integration examples.\n\nAgent mapper reason: Both demonstrate request-scoped database access and shared connection management.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "SQLx application"
+    },
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "reason": "Postgres client application"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "SQLx runtime dependencies"
+    },
+    {
+      "path": "examples/tokio-postgres/Cargo.toml",
+      "reason": "Postgres runtime dependencies"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "postgres"
+  ],
+  "trustBoundaries": [
+    "database",
+    "secrets",
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

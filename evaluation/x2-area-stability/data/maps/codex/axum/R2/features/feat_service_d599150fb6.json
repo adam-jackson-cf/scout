@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d599150fb6",
+  "title": "Introductory routing examples",
+  "summary": "Minimal applications, route organization, fallback, HEAD, versioning, and WASM routing.\n\nAgent mapper reason: Small routing demonstrations can be reviewed together without mixing protocol or persistence concerns.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/hello-world/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/hello-world/src/main.rs",
+      "reason": "Minimal server"
+    },
+    {
+      "path": "examples/readme/src/main.rs",
+      "reason": "README application"
+    },
+    {
+      "path": "examples/routes-and-handlers-close-together/src/main.rs",
+      "reason": "Route organization"
+    },
+    {
+      "path": "examples/global-404-handler/src/main.rs",
+      "reason": "Global fallback"
+    },
+    {
+      "path": "examples/handle-head-request/src/main.rs",
+      "reason": "HEAD behavior"
+    },
+    {
+      "path": "examples/versioning/src/main.rs",
+      "reason": "Versioned routing"
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "WASM router integration"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Example catalog"
+    },
+    {
+      "path": "examples/hello-world/Cargo.toml",
+      "reason": "Example dependencies"
+    },
+    {
+      "path": "examples/simple-router-wasm/Cargo.toml",
+      "reason": "Target-specific dependencies"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "routing",
+    "wasm"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:50:54.234Z"
+}

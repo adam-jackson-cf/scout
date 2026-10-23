@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e5d97aa307",
+  "title": "Proxy and protocol interoperability examples",
+  "summary": "HTTP forwarding, Hyper integration, and REST/gRPC multiplexing.\n\nAgent mapper reason: These adapters bridge HTTP services or dispatch across protocol implementations.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "Forward proxy"
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Reverse proxy"
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "Hyper interoperability"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "Multiplex server"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "Protocol dispatch"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "Protocol code generation configuration"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "Authored protocol schema"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/Cargo.toml",
+      "reason": "gRPC and build dependencies"
+    },
+    {
+      "path": "examples/hyper-1-0/Cargo.toml",
+      "reason": "Hyper version integration"
+    },
+    {
+      "path": "examples/reverse-proxy/Cargo.toml",
+      "reason": "Proxy dependencies"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "proxy",
+    "grpc",
+    "hyper"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "external-api",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:50:54.234Z"
+}

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_3499f71db1",
+  "title": "GitHub Actions bots (docs preview, translations, people, watch previews)",
+  "summary": "Dockerized custom actions that call GitHub/Netlify APIs to comment previews, notify translation discussions and compute contributor stats.\n\nAgent mapper reason: Each action is a small bot handling tokens and untrusted PR/event data.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "PR comment bot"
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "action definition"
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "container"
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "translation notifier via GraphQL"
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "action definition"
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "container"
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "computes people.yml and commits"
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "action definition"
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "container"
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "waits for preview artifacts"
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "action definition"
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "container"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "invokes people action"
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "invokes notifier"
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "invokes preview comment"
+    },
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "generated output"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "automation",
+    "github-api"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "external-api",
+    "network",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:15:05.591Z",
+  "updatedAt": "2026-10-23T19:15:05.591Z"
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9d8c215d8a",
+  "title": "Axum crate integration and test infrastructure",
+  "summary": "Public crate assembly, internal macros, test client support, and benchmarks.\n\nAgent mapper reason: These cross-cutting files assemble the crate and provide its verification infrastructure.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Public exports and feature integration."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Internal implementation macros."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Authored crate build configuration."
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Shared test support."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "HTTP test client."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Performance harness."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Feature and target declarations."
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Public crate purpose."
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "Compatibility history."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "crate-integration",
+    "testing",
+    "benchmarks"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:55:37.036Z"
+}

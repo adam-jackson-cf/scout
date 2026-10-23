@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_f8e200d14d",
+  "title": "Workspace and continuous integration policy",
+  "summary": "Workspace membership, CI checks, dependency policy, and contribution configuration.\n\nAgent mapper reason: These files determine which packages and checks participate in repository-wide validation.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": "cargo check --workspace --all-targets"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace and shared package configuration."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Automated validation workflow."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Workflow-adjacent patch configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Dependency policy."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Repository artifact exclusions."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue intake configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor validation expectations."
+    },
+    {
+      "path": "ECOSYSTEM.md",
+      "reason": "Related package context."
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "Review expectations."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "dependency-policy"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:55:36.923Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

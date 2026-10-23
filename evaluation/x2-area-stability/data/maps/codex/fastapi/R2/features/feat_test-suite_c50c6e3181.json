@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_c50c6e3181",
+  "title": "JSON serialization regression suite",
+  "summary": "Check JSON-compatible encoding across models, dataclasses, and custom types.\n\nAgent mapper reason: Serialization conversions form a bounded contract separate from response field selection.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_jsonable_encoder.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "Encoder behavior."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom datetime conversion."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Model serialization."
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "Supporting data structures."
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "reason": "Custom class inheritance."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/encoder.md",
+      "reason": "Encoder usage contract."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "encoding",
+    "json"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T19:04:09.673Z"
+}

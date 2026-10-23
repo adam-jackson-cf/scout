@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_5df3d59bee",
+  "title": "Units utilities and utility crate integration",
+  "summary": "Unit-related utilities and exports for the additional crate.\n\nAgent mapper reason: Unit utilities are bounded; the small crate's export and manifest wiring fit alongside them.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "x2_newpkg/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "x2_newpkg/src/units.rs",
+      "reason": "Unit utility implementation"
+    },
+    {
+      "path": "x2_newpkg/src/lib.rs",
+      "reason": "Utility exports"
+    },
+    {
+      "path": "x2_newpkg/Cargo.toml",
+      "reason": "Package integration"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace relationship"
+    },
+    {
+      "path": "x2_newpkg/src/units.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "x2_newpkg/src/units.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "units",
+    "utilities"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:53:04.365Z",
+  "updatedAt": "2026-10-23T19:55:37.028Z"
+}

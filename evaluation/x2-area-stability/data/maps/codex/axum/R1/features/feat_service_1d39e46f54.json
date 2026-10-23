@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_1d39e46f54",
+  "title": "WebSocket client and server example",
+  "summary": "WebSocket server, Rust client, and browser-side messaging.\n\nAgent mapper reason: Both client implementations must agree with the server's messaging and connection behavior.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "WebSocket server lifecycle."
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "Rust socket client."
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Browser protocol client."
+    },
+    {
+      "path": "examples/websockets/Cargo.toml",
+      "reason": "Example targets and dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Underlying upgrade and message API."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "websocket",
+    "client-server"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:48:23.661Z"
+}

@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_6f83e5e5f0",
+  "title": "Response model validation and filtering",
+  "summary": "Review response validation, model inheritance, aliases, and field filtering.\n\nAgent mapper reason: These tests define the response model boundary and protection against unintended field exposure.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "reason": "Submodel field filtering."
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "ORM-compatible responses."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Response aliases."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Return annotation inference."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Explicit filtering."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid response rejection."
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Response subtype handling."
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Default field omission."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Model serialization."
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "reason": "Custom inherited type behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Public response filtering contract."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response-model",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:49:43.740Z",
+  "updatedAt": "2026-10-23T18:49:43.740Z"
+}

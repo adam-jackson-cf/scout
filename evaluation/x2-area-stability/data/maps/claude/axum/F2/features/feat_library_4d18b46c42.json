@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4d18b46c42",
+  "title": "axum-macros FromRequest derive",
+  "summary": "#[derive(FromRequest)] and #[derive(FromRequestParts)], including via, rejection and state attributes.\n\nAgent mapper reason: The derive code, its attribute parsing, and the trybuild pass/fail tests under tests/from_request.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "symbol": "expand",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "Derive implementation"
+    },
+    {
+      "path": "axum-macros/src/from_request/attr.rs",
+      "reason": "Attribute parsing"
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parsing"
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Proc-macro entry points"
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Test helper"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Pinned toolchain for trybuild"
+    },
+    {
+      "path": "axum-macros/CHANGELOG.md",
+      "reason": "Changelog"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Usage"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/override_rejection.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/state_infer_multiple_different_types.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/override_rejection.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/state_infer_multiple_different_types.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "proc-macro",
+    "derive"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:26:03.200Z",
+  "updatedAt": "2026-10-23T19:26:03.200Z"
+}

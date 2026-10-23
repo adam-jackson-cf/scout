@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_8de9371658",
+  "title": "OAuth authentication example",
+  "summary": "External identity authorization and callback handling.\n\nAgent mapper reason: Provider communication and callback validation constitute one authorization flow.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/oauth/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/oauth/src/main.rs",
+      "reason": "OAuth redirect and callback workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/oauth/Cargo.toml",
+      "reason": "OAuth client dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "oauth"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "external-api",
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:37.100Z"
+}

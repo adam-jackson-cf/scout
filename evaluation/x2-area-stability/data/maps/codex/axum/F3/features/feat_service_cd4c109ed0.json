@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_cd4c109ed0",
+  "title": "Session example",
+  "summary": "Session persistence and request session handling.\n\nAgent mapper reason: Session identity and state lifecycle warrant an independent review from token authentication.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sessions/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Session application behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sessions/Cargo.toml",
+      "reason": "Session dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "sessions"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "auth",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

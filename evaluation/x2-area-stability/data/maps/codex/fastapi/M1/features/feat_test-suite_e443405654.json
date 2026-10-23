@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_e443405654",
+  "title": "Interactive API documentation and server URL contracts",
+  "summary": "Swagger customization, local documentation assets, redirects, and OpenAPI server URLs.\n\nAgent mapper reason: These tests specify browser-facing API documentation configuration and deployment URL behavior.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_local_docs.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_local_docs.py tests/test_openapi_servers.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "reason": "Custom OAuth redirect behavior."
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "reason": "Disabled redirect behavior."
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "Swagger OAuth initialization."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "Local documentation asset configuration."
+    },
+    {
+      "path": "tests/test_openapi_servers.py",
+      "reason": "OpenAPI server declarations."
+    },
+    {
+      "path": "tests/test_deprecated_openapi_prefix.py",
+      "reason": "Legacy prefix compatibility."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/behind-a-proxy.md",
+      "reason": "Proxy URL deployment intent."
+    },
+    {
+      "path": "docs/en/docs/advanced/extending-openapi.md",
+      "reason": "Interactive documentation customization."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_openapi_servers.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_local_docs.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_openapi_servers.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "swagger",
+    "docs-ui",
+    "proxy"
+  ],
+  "trustBoundaries": [
+    "network",
+    "auth",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:59:28.547Z",
+  "updatedAt": "2026-10-23T19:06:59.030Z"
+}

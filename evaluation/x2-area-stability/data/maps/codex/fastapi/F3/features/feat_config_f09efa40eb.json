@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_f09efa40eb",
+  "title": "Package configuration and quality gates",
+  "summary": "Packaging, dependency declarations, linting, typing, and continuous test execution.\n\nAgent mapper reason: These files jointly define how changes are installed and checked.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package and development tool configuration."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Developer quality checks."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Continuous test execution."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Test coverage publishing workflow."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency maintenance configuration."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Repository artifact exclusions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow expectations."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "ci",
+    "quality"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:54:37.966Z",
+  "updatedAt": "2026-10-23T18:54:37.966Z"
+}

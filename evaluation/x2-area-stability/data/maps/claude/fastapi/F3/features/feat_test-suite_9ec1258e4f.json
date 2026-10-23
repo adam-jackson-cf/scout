@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_9ec1258e4f",
+  "title": "Docs tutorial source examples",
+  "summary": "Example apps in docs_src exercised by tests/test_tutorial.\n\nAgent mapper reason: Docs examples copied by users; reviewed for insecure patterns.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "symbol": "app",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "reason": "example app"
+    },
+    {
+      "path": "docs_src/bigger_applications/app/dependencies.py",
+      "reason": "example token deps"
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial001.py",
+      "reason": "proxy example"
+    },
+    {
+      "path": "docs_src/request_files/tutorial001.py",
+      "reason": "file upload example"
+    },
+    {
+      "path": "docs_src/app_testing/main.py",
+      "reason": "testing example"
+    },
+    {
+      "path": "docs_src/dependencies/tutorial008.py",
+      "reason": "yield deps example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "docs config"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "examples"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:15:55.980Z",
+  "updatedAt": "2026-10-23T19:15:55.980Z"
+}

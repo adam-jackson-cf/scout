@@ -1,0 +1,219 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f151ff986b",
+  "title": "Responses, encoders and exception handling",
+  "summary": "Response classes, jsonable_encoder, HTTPException/validation errors and their default handlers.\n\nAgent mapper reason: These modules cover the output side: encoding responses and turning errors into responses.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/encoders.py",
+      "symbol": "jsonable_encoder",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/responses.py",
+      "reason": "JSON/ORJSON/UJSON responses"
+    },
+    {
+      "path": "fastapi/encoders.py",
+      "reason": "jsonable_encoder"
+    },
+    {
+      "path": "fastapi/exceptions.py",
+      "reason": "exception types"
+    },
+    {
+      "path": "fastapi/exception_handlers.py",
+      "reason": "default handlers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "serialize_response caller"
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "serialization",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:21:08.311Z",
+  "updatedAt": "2026-10-23T19:21:08.311Z"
+}

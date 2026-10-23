@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_69374ce60b",
+  "title": "axum-core extractor traits and rejections",
+  "summary": "Core FromRequest/FromRequestParts traits, FromRef, tuple extractor impls, default body limit and core rejection types.\n\nAgent mapper reason: Shared extraction primitives; body limit is a DoS boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": "FromRequest",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "extractor trait definitions"
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "FromRef"
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "tuple impls"
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "core extractors"
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "rejections"
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "body limit"
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "macros"
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "ext traits"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "RequestExt"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "RequestPartsExt"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "manifest"
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "docs"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:35:37.937Z"
+}

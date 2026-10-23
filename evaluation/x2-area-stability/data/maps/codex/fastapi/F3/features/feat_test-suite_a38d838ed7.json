@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_a38d838ed7",
+  "title": "Application testing and dependency overrides",
+  "summary": "Synchronous and asynchronous application testing and dependency substitution examples.\n\nAgent mapper reason: These examples teach test client execution and controlled replacement of application dependencies.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/app_testing/test_main.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest docs_src/app_testing docs_src/async_tests"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/app_testing/main.py",
+      "reason": "Application under test."
+    },
+    {
+      "path": "docs_src/app_testing/test_main.py",
+      "reason": "Basic testing example."
+    },
+    {
+      "path": "docs_src/app_testing/tutorial001.py",
+      "reason": "Testing progression."
+    },
+    {
+      "path": "docs_src/app_testing/tutorial002.py",
+      "reason": "Testing progression."
+    },
+    {
+      "path": "docs_src/app_testing/tutorial003.py",
+      "reason": "Testing progression."
+    },
+    {
+      "path": "docs_src/app_testing/app_b/main.py",
+      "reason": "Larger test application."
+    },
+    {
+      "path": "docs_src/app_testing/app_b/test_main.py",
+      "reason": "Larger application tests."
+    },
+    {
+      "path": "docs_src/app_testing/app_b_an/main.py",
+      "reason": "Annotated application variant."
+    },
+    {
+      "path": "docs_src/app_testing/app_b_an/test_main.py",
+      "reason": "Annotated application tests."
+    },
+    {
+      "path": "docs_src/app_testing/app_b_an_py310/main.py",
+      "reason": "Python 3.10 Annotated application."
+    },
+    {
+      "path": "docs_src/app_testing/app_b_an_py310/test_main.py",
+      "reason": "Python 3.10 Annotated tests."
+    },
+    {
+      "path": "docs_src/app_testing/app_b_an_py39/main.py",
+      "reason": "Python 3.9 Annotated application."
+    },
+    {
+      "path": "docs_src/app_testing/app_b_an_py39/test_main.py",
+      "reason": "Python 3.9 Annotated tests."
+    },
+    {
+      "path": "docs_src/app_testing/app_b_py310/main.py",
+      "reason": "Python 3.10 application."
+    },
+    {
+      "path": "docs_src/app_testing/app_b_py310/test_main.py",
+      "reason": "Python 3.10 tests."
+    },
+    {
+      "path": "docs_src/async_tests/main.py",
+      "reason": "Async application example."
+    },
+    {
+      "path": "docs_src/async_tests/test_main.py",
+      "reason": "Async test example."
+    },
+    {
+      "path": "docs_src/dependency_testing/tutorial001.py",
+      "reason": "Dependency override example."
+    },
+    {
+      "path": "docs_src/dependency_testing/tutorial001_an.py",
+      "reason": "Annotated override variant."
+    },
+    {
+      "path": "docs_src/dependency_testing/tutorial001_an_py310.py",
+      "reason": "Python 3.10 Annotated override."
+    },
+    {
+      "path": "docs_src/dependency_testing/tutorial001_an_py39.py",
+      "reason": "Python 3.9 override."
+    },
+    {
+      "path": "docs_src/dependency_testing/tutorial001_py310.py",
+      "reason": "Python 3.10 override."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/testing.md",
+      "reason": "Testing instructions."
+    },
+    {
+      "path": "docs/en/docs/advanced/async-tests.md",
+      "reason": "Async testing instructions."
+    },
+    {
+      "path": "docs/en/docs/advanced/testing-dependencies.md",
+      "reason": "Override instructions."
+    },
+    {
+      "path": "docs_src/app_testing/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "docs_src/async_tests/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_async_tests/test_main.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "docs_src/app_testing/test_main.py",
+      "command": null
+    },
+    {
+      "path": "docs_src/async_tests/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_async_tests/test_main.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tutorial",
+    "testing",
+    "async"
+  ],
+  "trustBoundaries": [
+    "concurrency",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:54:37.966Z",
+  "updatedAt": "2026-10-23T18:54:37.966Z"
+}

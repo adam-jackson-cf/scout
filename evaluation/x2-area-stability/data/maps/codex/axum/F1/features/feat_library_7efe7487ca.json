@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_7efe7487ca",
+  "title": "Core extraction contracts and request extensions",
+  "summary": "Foundational extraction traits, tuple extraction, request decomposition, and extraction helpers.\n\nAgent mapper reason: These files jointly define how extractors consume and compose request data.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extraction contracts and exports."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Request-part extraction."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Extractor composition."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "State projection contract."
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Extension trait exports."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Request extraction helpers."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "Request-part extraction helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Dependency and feature configuration."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Public extraction semantics."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extraction",
+    "traits"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:40:32.517Z"
+}

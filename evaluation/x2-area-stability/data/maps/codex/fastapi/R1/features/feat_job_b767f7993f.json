@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_b767f7993f",
+  "title": "Translation notification automation",
+  "summary": "Notify contributors about documentation translations.\n\nAgent mapper reason: One independently triggered automation with its own runtime and external side effects.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Notification trigger and permissions."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Notification action contract."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Notification behavior."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Action runtime."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Canonical documentation structure."
+    },
+    {
+      "path": "docs/en/docs/contributing.md",
+      "reason": "Contributor-facing process."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "translations",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "permissions",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T18:59:28.547Z"
+}

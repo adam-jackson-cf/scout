@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_a00d9f34a7",
+  "title": "CI workflows and repo tooling config",
+  "summary": "GitHub workflows for tests, docs build/preview, coverage, issue management and dependabot; pre-commit config and dev scripts.\n\nAgent mapper reason: Workflow permissions and secret exposure are reviewed together.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "test matrix"
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "docs build"
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "workflow_run preview deploy"
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "coverage upload"
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "issue automation"
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "label automation"
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "release notes automation"
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "translation workflow"
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "people workflow"
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "dependency updates"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "lint hooks"
+    },
+    {
+      "path": "scripts/test.sh",
+      "reason": "test runner"
+    },
+    {
+      "path": "scripts/test-cov-html.sh",
+      "reason": "coverage"
+    },
+    {
+      "path": "scripts/lint.sh",
+      "reason": "lint"
+    },
+    {
+      "path": "scripts/format.sh",
+      "reason": "format"
+    },
+    {
+      "path": "scripts/clean.sh",
+      "reason": "cleanup"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "tool config"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "dev workflow"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:15:05.591Z",
+  "updatedAt": "2026-10-23T19:15:05.591Z"
+}

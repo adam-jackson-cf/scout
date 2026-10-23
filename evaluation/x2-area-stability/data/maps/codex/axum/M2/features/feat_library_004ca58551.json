@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_004ca58551",
+  "title": "Router composition and path dispatch",
+  "summary": "Router nesting, merging, fallback behavior, and path parameter propagation.\n\nAgent mapper reason: Nesting and merging jointly determine path selection, fallback resolution, and capture visibility.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Router composition and dispatch."
+    },
+    {
+      "path": "axum/src/routing/not_found.rs",
+      "reason": "Unmatched route behavior."
+    },
+    {
+      "path": "axum/src/routing/strip_prefix.rs",
+      "reason": "Nested path rewriting."
+    },
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Capture propagation."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Matched route metadata."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/nest.md",
+      "reason": "Nesting contract."
+    },
+    {
+      "path": "axum/src/docs/routing/merge.md",
+      "reason": "Merge contract."
+    },
+    {
+      "path": "axum/src/docs/routing/fallback.md",
+      "reason": "Fallback contract."
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "router",
+    "nesting",
+    "fallback"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

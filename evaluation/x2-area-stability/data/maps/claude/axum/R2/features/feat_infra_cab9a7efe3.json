@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_cab9a7efe3",
+  "title": "Workspace, CI and release config",
+  "summary": "Workspace manifest, CI, cargo-deny, contribution docs.\n\nAgent mapper reason: Build and dependency policy.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "workspace"
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "CI"
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "CI patching"
+    },
+    {
+      "path": "deny.toml",
+      "reason": "deny policy"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "issue config"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "guide"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "reason": "changes"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "supply-chain"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:34:24.825Z"
+}

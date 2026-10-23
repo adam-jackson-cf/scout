@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_31b0013c12",
+  "title": "Extra body and serialization formats",
+  "summary": "Async reader bodies, JSON lines, protobuf, and erased JSON responses.\n\nAgent mapper reason: Optional codecs and body adapters share serialization and streaming concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Optional API wiring."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Body exports."
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Async reader adapter."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Streaming JSON records."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protobuf conversion."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Response exports."
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Erased JSON serialization."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional codecs and features."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "serialization",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_bab9b8a888",
+  "title": "axum-macros FromRef derive",
+  "summary": "Derive FromRef for state substructs.\n\nAgent mapper reason: Small macro recently changed (generics error).",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "symbol": "derive_from_ref",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "reason": "derive impl"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "trait implemented"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/skip.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/skip.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "state"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:35:37.947Z"
+}

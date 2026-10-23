@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_673e7afbdf",
+  "title": "Extra extraction and rejection adapters",
+  "summary": "Alternative form/query parsing, multipart extraction, cached extractors, and custom rejections.\n\nAgent mapper reason: These extend extraction semantics without changing the core trait contracts.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Extra extractor exports."
+    },
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Request-local extraction cache."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Additional form semantics."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Additional query semantics."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Additional multipart handling."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Rejection conversion adapter."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Implemented extractor contracts."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional parsing dependencies."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "command": null
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "parsing",
+    "rejections"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

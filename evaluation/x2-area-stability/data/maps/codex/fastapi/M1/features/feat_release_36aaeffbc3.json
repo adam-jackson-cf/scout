@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_36aaeffbc3",
+  "title": "Package release publishing",
+  "summary": "Publish distribution releases.\n\nAgent mapper reason: Publishing warrants an independent review because it crosses the distribution trust boundary.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Release publishing workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package metadata and build configuration."
+    },
+    {
+      "path": "docs/en/docs/release-notes.md",
+      "reason": "Release history."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "release",
+    "packaging"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "permissions",
+    "external-api",
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T19:06:58.983Z"
+}

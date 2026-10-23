@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_7b8376920d",
+  "title": "Structured request bodies and response bodies",
+  "summary": "JSON, forms, multipart parsing, streaming bodies, redirects, and shared rejection behavior.\n\nAgent mapper reason: Body readers, encoders, and rejection mappings form a bounded HTTP payload handling surface.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON extraction and response encoding."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extraction and encoding."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form body access."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart streaming extraction."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Public extractor rejection types."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Public body exports."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Stream-to-body adapter."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Public response exports."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect response construction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Body consumption limits."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response composition contract."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/json.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "json",
+    "forms",
+    "multipart",
+    "bodies"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:55:36.923Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

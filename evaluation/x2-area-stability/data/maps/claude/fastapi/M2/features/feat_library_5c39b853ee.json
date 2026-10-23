@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_5c39b853ee",
+  "title": "Parameter declarations (Query/Path/Body/Header/Cookie/Form/File)",
+  "summary": "Public param functions and FieldInfo-based param classes plus upload datastructures used to declare and validate request inputs.\n\nAgent mapper reason: Declaration-side API for request inputs, reviewed together with its validation tests.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/param_functions.py",
+      "symbol": "Query",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/param_functions.py",
+      "reason": "public param helper functions"
+    },
+    {
+      "path": "fastapi/params.py",
+      "reason": "param classes"
+    },
+    {
+      "path": "fastapi/datastructures.py",
+      "reason": "UploadFile, DefaultPlaceholder"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "consumer of params"
+    },
+    {
+      "path": "docs/en/docs/tutorial/query-params-str-validations.md",
+      "reason": "documented param semantics"
+    },
+    {
+      "path": "docs/en/docs/tutorial/request-files.md",
+      "reason": "file upload docs"
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_params_repr.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_query.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_path.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_required_noneable.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_repeated_parameter_alias.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_union_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_union_inherited_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_param_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_params_repr.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_query.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_path.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_required_noneable.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_repeated_parameter_alias.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_union_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_union_inherited_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "params",
+    "validation",
+    "forms",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:18:30.939Z",
+  "updatedAt": "2026-10-23T19:21:08.394Z"
+}

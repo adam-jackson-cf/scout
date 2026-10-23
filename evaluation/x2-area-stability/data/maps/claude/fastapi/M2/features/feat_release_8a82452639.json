@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_8a82452639",
+  "title": "Dev scripts, packaging and release",
+  "summary": "Docs build tooling (scripts/docs.py), shell helpers, root pyproject, and pre-commit config.\n\nAgent mapper reason: Tooling outside the library that controls builds and publishing.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "scripts/docs.py",
+      "symbol": null,
+      "route": null,
+      "command": "python scripts/docs.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Root packaging/tool config"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Pre-commit hooks"
+    },
+    {
+      "path": "scripts/docs.py",
+      "reason": "Docs CLI"
+    },
+    {
+      "path": "scripts/gitter_releases_bot.py",
+      "reason": "Release bot"
+    },
+    {
+      "path": "scripts/publish.sh",
+      "reason": "Publish"
+    },
+    {
+      "path": "scripts/test.sh",
+      "reason": "Test runner"
+    },
+    {
+      "path": "scripts/lint.sh",
+      "reason": "Lint"
+    },
+    {
+      "path": "scripts/format.sh",
+      "reason": "Format"
+    },
+    {
+      "path": "scripts/build-docs.sh",
+      "reason": "Docs build"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Docs config used by scripts"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Dev workflow"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "tooling",
+    "release"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "filesystem",
+    "secrets"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:19:35.573Z",
+  "updatedAt": "2026-10-23T19:21:08.399Z"
+}

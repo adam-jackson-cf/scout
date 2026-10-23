@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_dd3bb7aa74",
+  "title": "Modular application composition examples",
+  "summary": "Review equivalent multi-module applications and their shared dependency structure.\n\nAgent mapper reason: Each application variant must be reviewed across its routers and dependencies to preserve composition semantics.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "reason": "Application composition."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/dependencies.py",
+      "reason": "Shared dependency definitions."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/internal/admin.py",
+      "reason": "Internal router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/items.py",
+      "reason": "Item router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/users.py",
+      "reason": "User router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/main.py",
+      "reason": "Annotated composition."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/dependencies.py",
+      "reason": "Annotated dependencies."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/internal/admin.py",
+      "reason": "Annotated internal router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/routers/items.py",
+      "reason": "Annotated item router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/routers/users.py",
+      "reason": "Annotated user router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/main.py",
+      "reason": "Python 3.9 composition."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/dependencies.py",
+      "reason": "Python 3.9 dependencies."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/internal/admin.py",
+      "reason": "Python 3.9 internal router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/routers/items.py",
+      "reason": "Python 3.9 item router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/routers/users.py",
+      "reason": "Python 3.9 user router."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/bigger-applications.md",
+      "reason": "Package architecture intent."
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an_py39.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an_py39.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routers",
+    "modularity",
+    "tutorials"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "auth"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:49:43.740Z",
+  "updatedAt": "2026-10-23T18:49:43.740Z"
+}

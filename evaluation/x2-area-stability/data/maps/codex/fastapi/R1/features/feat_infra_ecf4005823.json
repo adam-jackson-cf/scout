@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_ecf4005823",
+  "title": "Documentation preview deployment",
+  "summary": "Build documentation previews, observe deployments, and attach preview information to pull requests.\n\nAgent mapper reason: The workflows and local actions form one preview deployment and reporting flow.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build orchestration."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Preview orchestration."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Preview comment action interface."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Preview comment implementation."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Action execution environment."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Preview observer action interface."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Preview observer implementation."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Observer execution environment."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Documentation build configuration."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Documentation dependencies and tooling."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "docs",
+    "previews"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "external-api",
+    "secrets",
+    "permissions",
+    "process-exec",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:59:28.547Z",
+  "updatedAt": "2026-10-23T18:59:28.547Z"
+}

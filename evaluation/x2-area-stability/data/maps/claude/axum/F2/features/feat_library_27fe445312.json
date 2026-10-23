@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_27fe445312",
+  "title": "axum-macros TypedPath and FromRef derives",
+  "summary": "#[derive(TypedPath)], with route-capture validation and URL encoding, and #[derive(FromRef)].\n\nAgent mapper reason: Two smaller derives, each with its own trybuild suite.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "symbol": "expand",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "TypedPath derive"
+    },
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "reason": "FromRef derive"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Runtime TypedPath trait"
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Runtime FromRef trait"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/skip.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/skip.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "proc-macro",
+    "typed-routing"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:26:03.200Z",
+  "updatedAt": "2026-10-23T19:26:03.200Z"
+}

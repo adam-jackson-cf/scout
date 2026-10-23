@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_be72d1f9c5",
+  "title": "Macro exports, parsing utilities, and compile-test harness",
+  "summary": "Shared procedural macro infrastructure and test execution support.\n\nAgent mapper reason: Shared parsing and test infrastructure affect all macro features and warrant a separate integration review.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Macro exports and integration."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parser utilities."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Position-sensitive generation support."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Macro test support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Macro and test dependencies."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Compiler-sensitive diagnostic environment."
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Public macro usage."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "test-harness"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:40:32.517Z"
+}

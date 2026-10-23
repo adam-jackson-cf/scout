@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_cli-command_6bb5b6020d",
+  "title": "Dev and docs scripts",
+  "summary": "Docs build tooling (scripts/docs.py), release/publish and lint/test shell scripts.\n\nAgent mapper reason: Developer tooling and release config.",
+  "kind": "cli-command",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "scripts/docs.py",
+      "symbol": null,
+      "route": null,
+      "command": "python scripts/docs.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "scripts/docs.py",
+      "reason": "docs CLI"
+    },
+    {
+      "path": "scripts/gitter_releases_bot.py",
+      "reason": "release notifier"
+    },
+    {
+      "path": "scripts/publish.sh",
+      "reason": "publish"
+    },
+    {
+      "path": "scripts/test.sh",
+      "reason": "tests"
+    },
+    {
+      "path": "scripts/build-docs.sh",
+      "reason": "docs build"
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "project config"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "lint hooks"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "tooling",
+    "release"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "process-exec",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:15:55.980Z",
+  "updatedAt": "2026-10-23T19:15:55.980Z"
+}

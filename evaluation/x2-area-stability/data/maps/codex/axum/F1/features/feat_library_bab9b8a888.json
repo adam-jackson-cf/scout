@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_bab9b8a888",
+  "title": "State projection derive macro",
+  "summary": "Generate state projection implementations from struct fields.\n\nAgent mapper reason: This derive has a distinct, small state-projection contract and dedicated fixtures.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "reason": "State projection code generation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Implemented projection trait."
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.stderr",
+      "reason": "Expected unsupported-input diagnostic."
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/reference-types.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/skip.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/reference-types.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/skip.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "state"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:40:32.517Z"
+}

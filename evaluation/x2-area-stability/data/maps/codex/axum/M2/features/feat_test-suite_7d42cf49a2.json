@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_7d42cf49a2",
+  "title": "Shared HTTP test support and benchmarks",
+  "summary": "Reusable test server/client helpers and performance harness.\n\nAgent mapper reason: These files underpin behavioral verification and performance measurement across main-crate slices.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Shared test setup."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "HTTP test client."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Performance scenarios."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Test and benchmark dependencies."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "testing",
+    "benchmarks"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:37.132Z"
+}

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_3d413351f8",
+  "title": "Response classes, status codes, and exception contracts",
+  "summary": "Response defaults, status mutation, body restrictions, and exception handler integration.\n\nAgent mapper reason: These tests specify HTTP response construction and failure behavior independently of response model filtering.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_exception_handlers.py tests/test_response_code_no_body.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "Application response defaults."
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "reason": "Router response defaults."
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "Alternative JSON response integration."
+    },
+    {
+      "path": "tests/test_reponse_set_reponse_code_empty.py",
+      "reason": "Empty response status behavior."
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "Dynamic status mutation."
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "Media-type-free response behavior."
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "Bodyless status enforcement."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "Exception handler dispatch."
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "Starlette exception compatibility."
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "Middleware exception integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/custom-response.md",
+      "reason": "Response class intent."
+    },
+    {
+      "path": "docs/en/docs/tutorial/handling-errors.md",
+      "reason": "Error handling intent."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "status-codes",
+    "exceptions"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:59:28.547Z",
+  "updatedAt": "2026-10-23T19:12:00.168Z"
+}

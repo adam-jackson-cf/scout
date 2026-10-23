@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_7ae7803fe8",
+  "title": "axum path/query/form/json extractors",
+  "summary": "Deserialization-based extractors: Path with custom deserializer, Query, RawQuery, RawForm, Form, Json and their rejections.\n\nAgent mapper reason: These extractors parse untrusted input via serde and share rejection types.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extractor"
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "custom path param deserializer"
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query extractor"
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "RawQuery extractor"
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "RawForm extractor"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extractor/response"
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Json extractor/response"
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "rejection types"
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "extract module root"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "extractor docs"
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "core rejections"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extract",
+    "serde"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:27:43.928Z",
+  "updatedAt": "2026-10-23T19:27:43.928Z"
+}

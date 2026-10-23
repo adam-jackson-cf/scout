@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3ef10b6364",
+  "title": "axum-core: extractor and response traits",
+  "summary": "Core traits FromRequest/FromRequestParts, IntoResponse/IntoResponseParts, body type, error, rejections, default body limit, FromRef, and request ext traits.\n\nAgent mapper reason: Distinct crate defining foundational traits shared by axum and axum-extra.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "crate root"
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "body type"
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "error type"
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "rejection/tuple macros"
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "ext traits"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "RequestExt"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "RequestPartsExt"
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "extractor traits"
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "body size limiting"
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "FromRef"
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "core rejections"
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "builtin extractor impls"
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "tuple impls"
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "response module"
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "AppendHeaders"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "IntoResponse impls"
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "IntoResponseParts"
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "build script"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "manifest"
+    },
+    {
+      "path": "axum-core/CHANGELOG.md",
+      "reason": "changes"
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "docs"
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "extractors",
+    "responses"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:35:37.845Z",
+  "updatedAt": "2026-10-23T19:37:18.771Z"
+}

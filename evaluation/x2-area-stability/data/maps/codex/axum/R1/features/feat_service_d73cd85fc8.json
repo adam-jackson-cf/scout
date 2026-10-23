@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d73cd85fc8",
+  "title": "Low-level TLS transport examples",
+  "summary": "Manual TLS serving with OpenSSL and rustls.\n\nAgent mapper reason: These implementations demonstrate equivalent low-level encrypted transport integration with different TLS engines.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "OpenSSL handshake and serving."
+    },
+    {
+      "path": "examples/low-level-openssl/Cargo.toml",
+      "reason": "OpenSSL dependencies."
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "rustls handshake and serving."
+    },
+    {
+      "path": "examples/low-level-rustls/Cargo.toml",
+      "reason": "rustls dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service integration at the transport boundary."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "tls",
+    "openssl",
+    "rustls"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "filesystem",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:48:23.661Z"
+}

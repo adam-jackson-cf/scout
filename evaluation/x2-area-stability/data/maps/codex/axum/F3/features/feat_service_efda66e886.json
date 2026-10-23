@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_efda66e886",
+  "title": "WebSocket chat application",
+  "summary": "Interactive chat server and browser client.\n\nAgent mapper reason: The server and browser client jointly implement the chat protocol and shared messaging lifecycle.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Chat server and messaging behavior."
+    },
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "Browser chat interface."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/chat/Cargo.toml",
+      "reason": "Chat dependencies."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "WebSocket transport contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "chat",
+    "websocket"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

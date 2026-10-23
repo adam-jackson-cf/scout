@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_75df224583",
+  "title": "Stateful CRUD and HTTP testing examples",
+  "summary": "In-memory key/value and todo applications plus request-level testing patterns.\n\nAgent mapper reason: These examples expose state transitions through handlers and demonstrate request-level verification.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "reason": "Shared mutable store application."
+    },
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "CRUD route application."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "HTTP application testing example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/key-value-store/Cargo.toml",
+      "reason": "State and middleware dependencies."
+    },
+    {
+      "path": "examples/todos/Cargo.toml",
+      "reason": "CRUD example dependencies."
+    },
+    {
+      "path": "examples/testing/Cargo.toml",
+      "reason": "Testing dependencies."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "crud",
+    "testing",
+    "state"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "concurrency",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:55:36.923Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

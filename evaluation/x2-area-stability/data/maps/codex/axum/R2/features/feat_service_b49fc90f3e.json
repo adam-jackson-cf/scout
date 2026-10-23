@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_b49fc90f3e",
+  "title": "Upload and streamed file persistence examples",
+  "summary": "Multipart upload processing and streaming request bodies to files.\n\nAgent mapper reason: Both examples turn untrusted request bodies into incrementally consumed application data.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart upload workflow."
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Streamed filesystem writes."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/multipart-form/Cargo.toml",
+      "reason": "Multipart dependencies."
+    },
+    {
+      "path": "examples/stream-to-file/Cargo.toml",
+      "reason": "Streaming and file dependencies."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Underlying multipart behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "uploads",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:50:54.300Z"
+}

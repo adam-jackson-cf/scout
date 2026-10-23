@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_79ba15ad16",
+  "title": "axum WebSocket and multipart extractors",
+  "summary": "WebSocket upgrade and multipart streaming extractor.\n\nAgent mapper reason: Streaming protocol extractors with distinct risks.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "symbol": "WebSocketUpgrade",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "WebSocket"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "usage"
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "usage"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "websocket",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:30:20.528Z",
+  "updatedAt": "2026-10-23T19:30:20.528Z"
+}

@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_960508fc7d",
+  "title": "Response model filtering and serialization",
+  "summary": "Test response validation, model filtering, encoding, and alias behavior.\n\nAgent mapper reason: Output validation and field filtering jointly determine what application data reaches clients.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "reason": "Submodel filtering."
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "ORM object serialization."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Output aliases."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Return annotation inference."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Field selection."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid response detection."
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Subtype handling."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Serialization behavior."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass responses."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Model responses."
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Default field omission."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "JSON-compatible conversion."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom datetime encoding."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Public response filtering contract."
+    },
+    {
+      "path": "docs/en/docs/tutorial/encoder.md",
+      "reason": "Encoding intent."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "pydantic",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:06:58.891Z",
+  "updatedAt": "2026-10-23T19:12:00.177Z"
+}

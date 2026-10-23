@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_8d34a9b333",
+  "title": "Server lifecycle and alternative transports",
+  "summary": "Graceful shutdown, multiple listeners, Unix sockets, and Hyper integration.\n\nAgent mapper reason: These examples teach server transport adaptation and lifetime management.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Shutdown signaling and draining."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Multiple listener coordination."
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Unix socket serving."
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "Alternative Hyper server integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/graceful-shutdown/Cargo.toml",
+      "reason": "Signal and runtime dependencies."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/Cargo.toml",
+      "reason": "Listener dependencies."
+    },
+    {
+      "path": "examples/unix-domain-socket/Cargo.toml",
+      "reason": "Socket integration dependencies."
+    },
+    {
+      "path": "examples/hyper-1-0/Cargo.toml",
+      "reason": "Hyper compatibility dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "transport",
+    "shutdown"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:48:23.716Z"
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_c34ca4a0c1",
+  "title": "Core crate foundation and state projection",
+  "summary": "Core exports, body and error types, shared macros, and reference-based state conversion.\n\nAgent mapper reason: Small foundational types and exports underpin the separately reviewed extraction and response implementations.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Core public API and feature integration."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Core body abstraction."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Shared error representation."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Shared implementation helpers."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "State projection contract."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Authored crate build configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Build and dependency configuration."
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Crate purpose."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Consumer of state projection."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "state",
+    "body"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:48:23.661Z"
+}

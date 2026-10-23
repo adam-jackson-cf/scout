@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_cab9a7efe3",
+  "title": "Workspace CI and repo config",
+  "summary": "Workspace manifest, GitHub Actions CI, cargo-deny policy, templates.\n\nAgent mapper reason: Build/CI configuration.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "workspace manifest"
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "CI pipeline"
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "CI patch config"
+    },
+    {
+      "path": "deny.toml",
+      "reason": "dependency policy"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "issue template config"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "contrib guidelines"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "reason": "history"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "PR template"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "infra"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:27:43.928Z",
+  "updatedAt": "2026-10-23T19:27:43.928Z"
+}

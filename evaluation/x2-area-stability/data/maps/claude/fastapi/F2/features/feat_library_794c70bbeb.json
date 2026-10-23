@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_794c70bbeb",
+  "title": "Middleware and Starlette re-export shims",
+  "summary": "AsyncExitStack middleware plus thin re-exports of Starlette middleware, requests, websockets, background tasks, concurrency, static files, templating and test client.\n\nAgent mapper reason: Mostly Starlette glue; concurrency.py and asyncexitstack carry the real logic.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/middleware/asyncexitstack.py",
+      "symbol": "AsyncExitStackMiddleware",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/middleware/asyncexitstack.py",
+      "reason": "custom middleware managing dependency exit stacks"
+    },
+    {
+      "path": "fastapi/middleware/__init__.py",
+      "reason": "exports"
+    },
+    {
+      "path": "fastapi/middleware/cors.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/middleware/gzip.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/middleware/httpsredirect.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/middleware/trustedhost.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/middleware/wsgi.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/concurrency.py",
+      "reason": "threadpool helpers and contextmanager_in_threadpool"
+    },
+    {
+      "path": "fastapi/background.py",
+      "reason": "BackgroundTasks"
+    },
+    {
+      "path": "fastapi/requests.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/websockets.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/staticfiles.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/templating.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/testclient.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/logger.py",
+      "reason": "logger"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/middleware.md",
+      "reason": "docs"
+    },
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial001.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial001.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "concurrency"
+  ],
+  "trustBoundaries": [
+    "concurrency",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:15:05.591Z",
+  "updatedAt": "2026-10-23T19:15:05.591Z"
+}

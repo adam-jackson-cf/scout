@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1015bf936f",
+  "title": "Path, query, header, and request metadata extraction",
+  "summary": "Deserializes URL data and exposes request metadata with shared rejection types.\n\nAgent mapper reason: All consume request metadata and must consistently reject malformed external representations.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extractor exports."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extraction."
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Path deserializer."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query deserialization."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query access."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Host extraction."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Request metadata extractors."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Shared extractor rejection definitions."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Typed header extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extraction intent and ordering."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "url",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

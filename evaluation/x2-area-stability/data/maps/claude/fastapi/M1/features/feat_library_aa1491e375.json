@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_aa1491e375",
+  "title": "x2_newpkg utility package",
+  "summary": "New standalone package (x2-newpkg 0.0.1) with small helpers: slugify, format_money/parse_money, km_to_miles, celsius_to_fahrenheit.\n\nAgent mapper reason: Separate manifest and directory, added in the most recent commit, with no tests. parse_money handles untrusted text.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "x2_newpkg/__init__.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "x2_newpkg/pyproject.toml",
+      "reason": "Package manifest"
+    },
+    {
+      "path": "x2_newpkg/__init__.py",
+      "reason": "Package init"
+    },
+    {
+      "path": "x2_newpkg/slugs.py",
+      "reason": "slugify helper"
+    },
+    {
+      "path": "x2_newpkg/currency.py",
+      "reason": "Money formatting/parsing"
+    },
+    {
+      "path": "x2_newpkg/units.py",
+      "reason": "Unit conversions"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Root project config; new package is not wired into it"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "new-package",
+    "utilities",
+    "untested"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:19:35.573Z",
+  "updatedAt": "2026-10-23T19:19:35.573Z"
+}

@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_86b5ffd10f",
+  "title": "Request bodies and multipart contracts",
+  "summary": "Body extraction, body media types, multipart installation, and form sequences.\n\nAgent mapper reason: Body parsing and model construction share input media type and validation contracts.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_get_request_body.py tests/test_multipart_installation.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Body extraction."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Multiple body validation errors."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Body media type contract."
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Form collection handling."
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "Optional parser dependency checks."
+    },
+    {
+      "path": "tests/test_put_no_body.py",
+      "reason": "Empty PUT body handling."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/a.py",
+      "reason": "Body model collision fixture."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/b.py",
+      "reason": "Second body model collision fixture."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/main.py",
+      "reason": "Fixture route composition."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "Same-name body model regression."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/request-forms-and-files.md",
+      "reason": "Multipart request intent."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:54:37.966Z",
+  "updatedAt": "2026-10-23T18:54:37.966Z"
+}

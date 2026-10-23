@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4b96042277",
+  "title": "axum body streaming and multipart",
+  "summary": "Body types, StreamBody, and multipart form extraction.\n\nAgent mapper reason: Body-consuming streaming code with size/limit concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "symbol": "Multipart",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "body re-exports"
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "streaming response body"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "multipart extraction"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "body limit"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "body",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:27:43.928Z",
+  "updatedAt": "2026-10-23T19:27:43.928Z"
+}

@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_81f1da569e",
+  "title": "Streaming bodies, SSE, and redirects",
+  "summary": "Response helpers for streamed bodies, server-sent events, and redirects.\n\nAgent mapper reason: These files turn response data into HTTP output, including asynchronous streaming and header construction.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body API exports."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Stream-to-body adaptation."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response helper exports."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "SSE framing and keepalive."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect response construction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Response conversion dependency."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Streaming usage."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "streaming",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

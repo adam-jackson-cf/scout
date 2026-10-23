@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_fbae4deb8f",
+  "title": "Proxy application examples",
+  "summary": "Forward and reverse HTTP proxy services.\n\nAgent mapper reason: Both services translate inbound requests into outbound HTTP traffic.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "HTTP proxy request forwarding."
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Reverse proxy routing."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/http-proxy/Cargo.toml",
+      "reason": "HTTP client and transport dependencies."
+    },
+    {
+      "path": "examples/reverse-proxy/Cargo.toml",
+      "reason": "Proxy dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "proxy"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

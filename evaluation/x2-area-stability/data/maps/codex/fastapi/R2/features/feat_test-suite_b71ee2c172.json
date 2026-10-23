@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_b71ee2c172",
+  "title": "Request body and multipart regression suite",
+  "summary": "Check body extraction, multipart prerequisites, and request media types.\n\nAgent mapper reason: These regressions cover decoding request bodies into declared models.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_get_request_body.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Body extraction."
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Form sequence handling."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Body error aggregation."
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "Multipart dependency checks."
+    },
+    {
+      "path": "tests/test_put_no_body.py",
+      "reason": "Absent request bodies."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Body media type handling."
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "reason": "Tuple validation."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/a.py",
+      "reason": "Colliding model fixture."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/b.py",
+      "reason": "Colliding model fixture."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/main.py",
+      "reason": "Fixture application."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "Body model collision regression."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/request-forms-and-files.md",
+      "reason": "Multipart intent."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T19:04:09.673Z"
+}

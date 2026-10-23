@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6e5b3e3395",
+  "title": "Core response conversion",
+  "summary": "Response construction, response-part composition, and appended headers.\n\nAgent mapper reason: Conversions and header precedence must be reviewed together to preserve response composition semantics.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response API boundary."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Full response conversions."
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "Response metadata composition."
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "Header append semantics."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Response body representation."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

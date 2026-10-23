@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9f1d27f4ba",
+  "title": "SSE and redirect responses",
+  "summary": "Long-lived event responses and HTTP redirection.\n\nAgent mapper reason: These specialized response constructors control HTTP headers and wire output.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response exports"
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect construction"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Event encoding and keepalive"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "SSE usage"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "sse",
+    "redirect"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:53:04.482Z"
+}

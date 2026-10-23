@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_f09efa40eb",
+  "title": "Development and continuous integration configuration",
+  "summary": "Define packaging, checks, test execution, and dependency updates.\n\nAgent mapper reason: These files collectively determine which checks and dependency changes reach the project.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Project tooling and package configuration."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local quality checks."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "CI test execution."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Related CI reporting."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency maintenance configuration."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Repository artifact exclusions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Developer instructions."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "hatch",
+    "quality"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "permissions"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T18:59:28.616Z"
+}

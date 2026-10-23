@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_de1c274107",
+  "title": "Todo application",
+  "summary": "Todo resource handlers and application state.\n\nAgent mapper reason: Resource operations and their shared data model should be reviewed as one application.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/todos/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "Todo application routes and state."
+    },
+    {
+      "path": "examples/todos/Cargo.toml",
+      "reason": "Application dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Structured HTTP payload conversion."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "todos",
+    "rest"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:53:04.531Z"
+}

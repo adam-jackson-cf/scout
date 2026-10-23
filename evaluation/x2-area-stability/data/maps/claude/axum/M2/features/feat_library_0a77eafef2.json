@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0a77eafef2",
+  "title": "axum-macros debug_handler",
+  "summary": "#[debug_handler] proc macro producing better handler type errors, with trybuild UI tests.\n\nAgent mapper reason: Macro plus its pass/fail trybuild cases.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "symbol": "debug_handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "macro impl"
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "iterator helper used by debug_handler"
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "proc-macro entrypoints"
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "shared attribute parsing"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "manifest"
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "pinned toolchain for UI tests"
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "docs"
+    },
+    {
+      "path": "axum-macros/CHANGELOG.md",
+      "reason": "history"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/multiple_extractors.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/wrong_order.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/pass/multiple_extractors.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/wrong_order.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "diagnostics"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:37:18.769Z"
+}

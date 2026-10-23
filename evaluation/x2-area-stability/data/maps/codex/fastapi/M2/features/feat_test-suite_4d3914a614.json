@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_4d3914a614",
+  "title": "Interactive API documentation contracts",
+  "summary": "Test Swagger UI redirects, OAuth initialization, and documentation URL behavior.\n\nAgent mapper reason: Interactive API documentation has browser redirect and authentication configuration concerns.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "reason": "Custom redirect URLs."
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "reason": "Disabled redirects."
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "OAuth initialization."
+    },
+    {
+      "path": "tests/test_deprecated_openapi_prefix.py",
+      "reason": "Legacy prefix compatibility."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/behind-a-proxy.md",
+      "reason": "External URL and prefix intent."
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "swagger",
+    "documentation",
+    "oauth"
+  ],
+  "trustBoundaries": [
+    "network",
+    "auth"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:06:58.891Z",
+  "updatedAt": "2026-10-23T19:12:00.169Z"
+}

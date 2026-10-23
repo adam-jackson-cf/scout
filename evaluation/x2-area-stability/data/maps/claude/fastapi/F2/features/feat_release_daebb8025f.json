@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_daebb8025f",
+  "title": "Release and publishing",
+  "summary": "Package metadata, PyPI publish workflow/scripts and release notification bot.\n\nAgent mapper reason: Grouped by release pipeline.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "package metadata, deps, tool config"
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "PyPI publish"
+    },
+    {
+      "path": "scripts/publish.sh",
+      "reason": "publish script"
+    },
+    {
+      "path": "scripts/gitter_releases_bot.py",
+      "reason": "release announcement bot"
+    },
+    {
+      "path": "scripts/notify.sh",
+      "reason": "notification script"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/release-notes.md",
+      "reason": "release notes"
+    },
+    {
+      "path": "fastapi/__init__.py",
+      "reason": "version string"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "release",
+    "packaging"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:15:05.591Z",
+  "updatedAt": "2026-10-23T19:15:05.591Z"
+}

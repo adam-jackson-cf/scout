@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_3e117bfa43",
+  "title": "Request format and body consumption examples",
+  "summary": "Demonstrate forms, conditional body parsing, empty query values, and body-consuming middleware.\n\nAgent mapper reason: These demonstrations concern request decoding and the single-consumer body constraint.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Form handling example."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Content-type-dependent extraction."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Query decoding edge cases."
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Body ownership and reconstruction example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/form/Cargo.toml",
+      "reason": "Form example dependencies."
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/Cargo.toml",
+      "reason": "Body adapter dependencies."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extraction order and consumption contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "body",
+    "form",
+    "query"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:50:54.293Z"
+}

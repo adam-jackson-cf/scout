@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_7459c61c08",
+  "title": "Repository issue and change management",
+  "summary": "Configure issue intake, approval labels, and change reporting.\n\nAgent mapper reason: These files govern contributor input and repository workflow state.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Issue management automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Approval label automation."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Change reporting automation."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue intake configuration."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Privileged issue intake."
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/questions.yml",
+      "reason": "Support question intake."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor process."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Security reporting expectations."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "repository-management",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "external-api",
+    "permissions",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:12:00.054Z",
+  "updatedAt": "2026-10-23T19:12:00.054Z"
+}

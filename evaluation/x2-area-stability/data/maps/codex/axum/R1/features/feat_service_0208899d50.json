@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_0208899d50",
+  "title": "Forms, query values, and validation examples",
+  "summary": "Demonstrates structured request parsing and application validation.\n\nAgent mapper reason: These examples focus on translating structured request values into validated application inputs.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/form/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Form handling example."
+    },
+    {
+      "path": "examples/form/Cargo.toml",
+      "reason": "Form dependencies."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Empty query value semantics."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/Cargo.toml",
+      "reason": "Query example dependencies."
+    },
+    {
+      "path": "examples/validator/src/main.rs",
+      "reason": "Validated request extraction."
+    },
+    {
+      "path": "examples/validator/Cargo.toml",
+      "reason": "Validation dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form implementation."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query implementation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "validation",
+    "form",
+    "query"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:48:23.661Z"
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_6163fd7c29",
+  "title": "Reverse proxy deployment examples",
+  "summary": "Application examples for proxy prefixes and externally visible server URLs.\n\nAgent mapper reason: Proxy configuration is a separate deployment contract with its own URL and trust assumptions.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/behind_a_proxy/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/behind_a_proxy/tutorial001.py",
+      "reason": "Proxy deployment example."
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial002.py",
+      "reason": "Proxy configuration progression."
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial003.py",
+      "reason": "Proxy configuration progression."
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial004.py",
+      "reason": "Proxy configuration progression."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/behind-a-proxy.md",
+      "reason": "Proxy topology and URL semantics."
+    },
+    {
+      "path": "docs/en/docs/deployment/https.md",
+      "reason": "TLS termination context."
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial004.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial004.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tutorial",
+    "proxy",
+    "deployment"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:59:28.547Z",
+  "updatedAt": "2026-10-23T19:04:09.668Z"
+}

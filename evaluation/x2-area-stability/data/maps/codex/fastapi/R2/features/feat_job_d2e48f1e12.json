@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_d2e48f1e12",
+  "title": "Community people and sponsorship automation",
+  "summary": "Maintain contributor and sponsor presentation data.\n\nAgent mapper reason: Review the data-producing automation with its presentation contracts; keep potentially generated data contextual.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/people.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Community data update orchestration."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action interface."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "People data automation."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Action runtime."
+    },
+    {
+      "path": ".github/FUNDING.yml",
+      "reason": "Funding entrypoints."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Community data; potentially maintained by automation."
+    },
+    {
+      "path": "docs/en/data/github_sponsors.yml",
+      "reason": "Sponsor data; potentially generated."
+    },
+    {
+      "path": "docs/en/data/sponsors.yml",
+      "reason": "Sponsor presentation data."
+    },
+    {
+      "path": "docs/en/data/sponsors_badge.yml",
+      "reason": "Sponsor badge data."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "Community data consumer."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "community",
+    "sponsors",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "filesystem",
+    "permissions"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:59:28.547Z",
+  "updatedAt": "2026-10-23T19:04:09.658Z"
+}

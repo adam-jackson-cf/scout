@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_1109b8cd55",
+  "title": "Additional package manifest",
+  "summary": "Review the separately declared package configuration.\n\nAgent mapper reason: A distinct manifest merits its own slice; package implementation is absent from the supplied inventory.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "low",
+  "entrypoints": [
+    {
+      "path": "x2_newpkg/pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "x2_newpkg/pyproject.toml",
+      "reason": "Separate package manifest."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Parent project configuration for comparison."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "inventory-gap"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:06:58.891Z",
+  "updatedAt": "2026-10-23T19:12:00.134Z"
+}

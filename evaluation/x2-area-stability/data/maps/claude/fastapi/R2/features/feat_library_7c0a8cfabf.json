@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_7c0a8cfabf",
+  "title": "Dependency injection engine",
+  "summary": "Resolves path-operation dependencies, parameter analysis, sub-dependency caching, yield/contextmanager dependencies, overrides, and request param extraction/validation.\n\nAgent mapper reason: All dependency resolution logic and its async/threadpool lifecycle helpers form one cohesive, heavily-tested subsystem.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "symbol": "solve_dependencies",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "core dependency resolution and request param parsing"
+    },
+    {
+      "path": "fastapi/dependencies/models.py",
+      "reason": "Dependant/SecurityRequirement models"
+    },
+    {
+      "path": "fastapi/dependencies/__init__.py",
+      "reason": "package init"
+    },
+    {
+      "path": "fastapi/concurrency.py",
+      "reason": "threadpool / contextmanager helpers used by yield dependencies"
+    },
+    {
+      "path": "fastapi/middleware/asyncexitstack.py",
+      "reason": "AsyncExitStack middleware backing yield dependencies"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "caller of solve_dependencies"
+    },
+    {
+      "path": "fastapi/params.py",
+      "reason": "param classes analyzed by dependency engine"
+    },
+    {
+      "path": "docs/en/docs/tutorial/dependencies/dependencies-with-yield.md",
+      "reason": "documented yield semantics"
+    },
+    {
+      "path": "docs/en/docs/advanced/advanced-dependencies.md",
+      "reason": "documented behavior"
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_repeated_dependency_schema.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_repeated_dependency_schema.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "di",
+    "core"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "concurrency",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:18:30.939Z",
+  "updatedAt": "2026-10-23T19:18:30.939Z"
+}

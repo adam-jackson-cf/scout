@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_route_4f5468526d",
+  "title": "Examples: auth, sessions and OAuth",
+  "summary": "Example apps showing JWT auth, OAuth login and session handling.\n\nAgent mapper reason: Users copy these examples into real apps, so their security practices (secrets, token validation) matter.",
+  "kind": "route",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "reason": "JWT example"
+    },
+    {
+      "path": "examples/jwt/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/oauth/src/main.rs",
+      "reason": "OAuth example"
+    },
+    {
+      "path": "examples/oauth/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Sessions example"
+    },
+    {
+      "path": "examples/sessions/Cargo.toml",
+      "reason": "Manifest"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Examples index"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "Cookie handling used by auth flows"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "auth"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "external-api",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:35:37.954Z"
+}

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_940a5a5c41",
+  "title": "Core body, errors, and crate integration",
+  "summary": "Shared body and error abstractions plus core crate exports and build configuration.\n\nAgent mapper reason: Small foundational abstractions and package wiring form a bounded integration review.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Body abstraction"
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Shared error wrapper"
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Internal implementation macros"
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Crate integration"
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Build configuration"
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core feature and dependency contract"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/README.md",
+      "reason": "Package intent"
+    },
+    {
+      "path": "axum-core/CHANGELOG.md",
+      "reason": "Compatibility history"
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "body"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:53:04.365Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

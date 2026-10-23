@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_8af4562b13",
+  "title": "Introductory routing examples",
+  "summary": "Minimal applications and examples of route organization, versioning, HEAD, and fallback handling.\n\nAgent mapper reason: These small standalone applications illustrate basic routing contracts without external infrastructure.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/hello-world/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/hello-world/src/main.rs",
+      "reason": "Minimal server"
+    },
+    {
+      "path": "examples/readme/src/main.rs",
+      "reason": "README application"
+    },
+    {
+      "path": "examples/routes-and-handlers-close-together/src/main.rs",
+      "reason": "Route organization"
+    },
+    {
+      "path": "examples/versioning/src/main.rs",
+      "reason": "Versioned routing"
+    },
+    {
+      "path": "examples/handle-head-request/src/main.rs",
+      "reason": "HEAD behavior"
+    },
+    {
+      "path": "examples/global-404-handler/src/main.rs",
+      "reason": "Global fallback"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Example catalog"
+    },
+    {
+      "path": "examples/hello-world/Cargo.toml",
+      "reason": "Example dependencies"
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Router contract"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

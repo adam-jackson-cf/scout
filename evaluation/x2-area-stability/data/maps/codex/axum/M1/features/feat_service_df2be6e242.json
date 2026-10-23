@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_df2be6e242",
+  "title": "Server-sent event example",
+  "summary": "Streaming event server with a browser event consumer.\n\nAgent mapper reason: The event producer and browser consumer form one streaming protocol demonstration.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Event stream server."
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "Event display page."
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "Browser event consumer."
+    },
+    {
+      "path": "examples/sse/Cargo.toml",
+      "reason": "Streaming example dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "SSE encoding and keepalive implementation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "sse",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:53:04.533Z"
+}

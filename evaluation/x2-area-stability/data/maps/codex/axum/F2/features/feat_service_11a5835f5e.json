@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_11a5835f5e",
+  "title": "File serving, uploads, and templates",
+  "summary": "Static assets, streamed file uploads, and HTML template responses.\n\nAgent mapper reason: These small services cross the HTTP/filesystem boundary or construct file-backed HTML responses.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Static file routes."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Served HTML."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Served script."
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Streaming file writes."
+    },
+    {
+      "path": "examples/templates/src/main.rs",
+      "reason": "Template response integration."
+    },
+    {
+      "path": "examples/templates/templates/hello.html",
+      "reason": "Rendered HTML template."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/templates/Cargo.toml",
+      "reason": "Template engine configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "filesystem",
+    "html"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

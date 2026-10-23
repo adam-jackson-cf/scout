@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_2b9cc4fc68",
+  "title": "Encoders, responses, exceptions and Starlette re-exports",
+  "summary": "jsonable_encoder, response classes, HTTPException/validation errors and default handlers, plus thin re-exports of Starlette middleware, requests, websockets, static files, templating and TestClient.\n\nAgent mapper reason: Output encoding and error rendering, plus small re-export modules too thin to review on their own.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/encoders.py",
+      "symbol": "jsonable_encoder",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/encoders.py",
+      "reason": "JSON encoding of arbitrary objects"
+    },
+    {
+      "path": "fastapi/responses.py",
+      "reason": "ORJSON/UJSON responses"
+    },
+    {
+      "path": "fastapi/exceptions.py",
+      "reason": "exception types"
+    },
+    {
+      "path": "fastapi/exception_handlers.py",
+      "reason": "default error responses"
+    },
+    {
+      "path": "fastapi/requests.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/websockets.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/staticfiles.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/templating.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/testclient.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/middleware/__init__.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/middleware/cors.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/middleware/gzip.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/middleware/httpsredirect.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/middleware/trustedhost.py",
+      "reason": "re-export"
+    },
+    {
+      "path": "fastapi/middleware/wsgi.py",
+      "reason": "re-export"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/handling-errors.md",
+      "reason": "error handling docs"
+    },
+    {
+      "path": "docs/en/docs/tutorial/encoder.md",
+      "reason": "encoder docs"
+    },
+    {
+      "path": "docs/en/docs/advanced/custom-response.md",
+      "reason": "response classes"
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_starlette_urlconvertors.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_starlette_urlconvertors.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "serialization",
+    "errors",
+    "responses"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:17:08.936Z",
+  "updatedAt": "2026-10-23T19:18:30.993Z"
+}

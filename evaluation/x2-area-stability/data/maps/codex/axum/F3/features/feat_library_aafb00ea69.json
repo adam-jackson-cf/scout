@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_aafb00ea69",
+  "title": "Axum crate integration and test infrastructure",
+  "summary": "Crate exports, internal utilities, build setup, test clients, and benchmarks.\n\nAgent mapper reason: Shared integration and verification plumbing should be reviewed separately from individual HTTP features.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Public crate integration."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Internal type erasure."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Shared implementation macros."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Internal utilities."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Compilation configuration."
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Test support exports."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "HTTP test client."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Performance harness."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Feature and benchmark configuration."
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Public crate intent."
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/lib.rs",
+      "command": null
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "crate-integration",
+    "test-support",
+    "benchmarks"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

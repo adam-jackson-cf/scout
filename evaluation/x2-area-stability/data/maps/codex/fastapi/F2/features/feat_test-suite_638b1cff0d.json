@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_638b1cff0d",
+  "title": "Response classes and HTTP status semantics",
+  "summary": "Review custom response selection, defaults, and body suppression.\n\nAgent mapper reason: Response class selection and HTTP body/status rules jointly determine wire behavior.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_default_response_class.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "Application response defaults."
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "reason": "Router response defaults."
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "Alternate JSON response implementation."
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "Missing media type behavior."
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "Dynamic status codes."
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "Bodyless status codes."
+    },
+    {
+      "path": "tests/test_reponse_set_reponse_code_empty.py",
+      "reason": "Empty response status regression."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/custom-response.md",
+      "reason": "Response class intent."
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_default_response_class.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "http"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:49:43.740Z",
+  "updatedAt": "2026-10-23T18:49:43.740Z"
+}

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_5c612249e2",
+  "title": "axum-core responses, body, and errors",
+  "summary": "IntoResponse/IntoResponseParts traits, AppendHeaders, boxed body type, core Error, crate root.\n\nAgent mapper reason: Response-side primitives form a separate cohesive surface from extraction.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "response module"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "IntoResponse impls"
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "response parts composition"
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "header appending"
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "body type helpers"
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "core error type"
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "crate root"
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "build script"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "crate manifest"
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "crate docs"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "response",
+    "body"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:27:43.928Z",
+  "updatedAt": "2026-10-23T19:27:43.928Z"
+}

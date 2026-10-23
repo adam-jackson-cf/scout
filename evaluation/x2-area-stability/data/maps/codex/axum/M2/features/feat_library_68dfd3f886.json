@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_68dfd3f886",
+  "title": "HTTP method routing and route execution",
+  "summary": "Method filters, executable routes, and route future handling.\n\nAgent mapper reason: Method dispatch and response execution share HEAD and fallback behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Method dispatch and method-level fallback."
+    },
+    {
+      "path": "axum/src/routing/method_filter.rs",
+      "reason": "HTTP method matching."
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Route service execution."
+    },
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Route future adaptation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/method_routing/fallback.md",
+      "reason": "Method fallback semantics."
+    },
+    {
+      "path": "axum/src/docs/method_routing/merge.md",
+      "reason": "Method composition semantics."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "http-methods",
+    "head",
+    "services"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

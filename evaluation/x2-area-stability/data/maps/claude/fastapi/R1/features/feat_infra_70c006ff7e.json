@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_70c006ff7e",
+  "title": "CI workflows and repo config",
+  "summary": "GitHub workflows for test, docs build, publish, previews, issue management; dependabot, pre-commit, pyproject.\n\nAgent mapper reason: Pipeline and packaging config reviewed together for token handling and release integrity.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Test CI"
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Docs build"
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "PyPI publish"
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Preview deploy (workflow_run)"
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Coverage upload"
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Issue bot"
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Labeler"
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Release notes bot"
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Translation bot"
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "People job"
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency updates"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Lint hooks"
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Build, deps, tool config"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue config"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Issue template"
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/questions.yml",
+      "reason": "Discussion template"
+    },
+    {
+      "path": ".github/FUNDING.yml",
+      "reason": "Funding"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "release",
+    "config"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:13:38.963Z",
+  "updatedAt": "2026-10-23T19:17:08.996Z"
+}

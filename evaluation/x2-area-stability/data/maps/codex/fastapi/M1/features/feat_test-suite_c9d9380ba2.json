@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_c9d9380ba2",
+  "title": "Application construction and router composition contracts",
+  "summary": "Regression tests for application setup, route inclusion, prefixes, endpoint forms, and router defaults.\n\nAgent mapper reason: The implementation paths are absent from the supplied inventory; these tests form a bounded application and routing contract slice.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_application.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_application.py tests/test_include_route.py tests/test_include_router_defaults_overrides.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_application.py",
+      "reason": "Application construction contract."
+    },
+    {
+      "path": "tests/test_callable_endpoint.py",
+      "reason": "Callable endpoint support."
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "reason": "Empty router behavior."
+    },
+    {
+      "path": "tests/test_extra_routes.py",
+      "reason": "Additional route behavior."
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "Route inclusion."
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "reason": "Router default precedence."
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "reason": "Parameterized prefixes."
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "reason": "Route scope contract."
+    },
+    {
+      "path": "tests/test_operations_signatures.py",
+      "reason": "Operation signature contract."
+    },
+    {
+      "path": "tests/test_starlette_urlconvertors.py",
+      "reason": "Underlying URL converter integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/main.py",
+      "reason": "Shared test application context."
+    },
+    {
+      "path": "docs/en/docs/tutorial/bigger-applications.md",
+      "reason": "Router composition intent."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "application",
+    "regression"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:59:28.547Z",
+  "updatedAt": "2026-10-23T19:06:59.029Z"
+}

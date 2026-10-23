@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f09be1bc3a",
+  "title": "Service construction and connection metadata",
+  "summary": "Per-connection service creation and connection information extraction.\n\nAgent mapper reason: Connection metadata is established during service construction and consumed during extraction.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service construction extensions."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Make-service adapter."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Connection metadata propagation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Connection metadata contract."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "connections",
+    "services"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

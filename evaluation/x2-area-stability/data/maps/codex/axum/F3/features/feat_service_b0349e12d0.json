@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_b0349e12d0",
+  "title": "TLS server examples",
+  "summary": "TLS integration using OpenSSL, low-level rustls, and a rustls server adapter.\n\nAgent mapper reason: These implementations share certificate loading and TLS connection lifecycle concerns.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "OpenSSL connection handling."
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Low-level rustls connection handling."
+    },
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "Rustls server integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/low-level-openssl/Cargo.toml",
+      "reason": "OpenSSL dependencies."
+    },
+    {
+      "path": "examples/low-level-rustls/Cargo.toml",
+      "reason": "Low-level rustls dependencies."
+    },
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "reason": "TLS adapter dependencies."
+    },
+    {
+      "path": "examples/low-level-openssl/self_signed_certs/cert.pem",
+      "reason": "TLS certificate fixture."
+    },
+    {
+      "path": "examples/low-level-rustls/self_signed_certs/cert.pem",
+      "reason": "TLS certificate fixture."
+    },
+    {
+      "path": "examples/tls-rustls/self_signed_certs/cert.pem",
+      "reason": "TLS certificate fixture."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "tls"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "secrets",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

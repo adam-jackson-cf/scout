@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e21669aafa",
+  "title": "WebSocket server and client example",
+  "summary": "Browser and Rust clients communicating with a WebSocket server.\n\nAgent mapper reason: Client and server code should be reviewed together for message and connection lifecycle agreement.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "WebSocket server behavior."
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "Rust WebSocket client."
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Browser WebSocket interaction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/websockets/Cargo.toml",
+      "reason": "Client and server dependencies."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Protocol upgrade implementation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "websocket"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:48:23.720Z"
+}

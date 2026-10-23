@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_31b0013c12",
+  "title": "Extra body and serialization formats",
+  "summary": "Async reader bodies, JSON lines, protobuf, and erased JSON responses.\n\nAgent mapper reason: These optional adapters translate asynchronous data and structured formats across HTTP bodies.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Extra crate feature integration."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Body helper exports."
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Async reader body adaptation."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "JSON lines streaming format."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protobuf extraction and responses."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Response helper exports."
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Type-erased JSON serialization."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Format feature configuration."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Crate intent."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "command": null
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "streaming",
+    "json-lines",
+    "protobuf"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

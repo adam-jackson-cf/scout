@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_12486485ae",
+  "title": "Examples: realtime, proxies and streaming",
+  "summary": "Chat, websockets, SSE, HTTP/reverse proxies, REST+gRPC multiplexing, stream-to-file, static files, unix sockets and multiple listeners.\n\nAgent mapper reason: Network-heavy examples that exercise streaming and proxy paths.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Chat"
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "WebSocket server"
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "WebSocket client"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "WebSocket tests"
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "SSE"
+    },
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "CONNECT proxy"
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Reverse proxy"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "Multiplexing"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "Multiplex service"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "Protobuf codegen"
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Writes uploads to disk"
+    },
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Static files"
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "UDS"
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Multiple listeners"
+    },
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Shutdown"
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "hyper 1.0"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "Proto schema"
+    },
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "Frontend"
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "Frontend"
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Frontend"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "websocket",
+    "proxy",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:26:03.200Z",
+  "updatedAt": "2026-10-23T19:26:03.200Z"
+}

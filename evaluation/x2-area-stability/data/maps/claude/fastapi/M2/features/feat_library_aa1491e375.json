@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_aa1491e375",
+  "title": "x2_newpkg utility package",
+  "summary": "A new standalone package with currency, units and slug helpers and its own manifest; nothing in the repo owns it yet.\n\nAgent mapper reason: It has its own manifest, so it is a separate package; it was added in commit X2 M1 and has no tests.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "x2_newpkg/__init__.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "x2_newpkg/__init__.py",
+      "reason": "package init"
+    },
+    {
+      "path": "x2_newpkg/currency.py",
+      "reason": "currency helpers"
+    },
+    {
+      "path": "x2_newpkg/units.py",
+      "reason": "unit helpers"
+    },
+    {
+      "path": "x2_newpkg/slugs.py",
+      "reason": "slug helpers"
+    },
+    {
+      "path": "x2_newpkg/pyproject.toml",
+      "reason": "package manifest (x2-newpkg 0.0.1)"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "root build config that may or may not include this package"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "new-package",
+    "untested"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:19:35.573Z",
+  "updatedAt": "2026-10-23T19:21:08.311Z"
+}

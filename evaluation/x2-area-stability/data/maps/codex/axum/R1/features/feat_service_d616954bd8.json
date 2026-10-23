@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d616954bd8",
+  "title": "JWT authentication example",
+  "summary": "Token issuance and authenticated request extraction.\n\nAgent mapper reason: Token creation and verification share a distinct authentication boundary.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "reason": "JWT authentication workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/jwt/Cargo.toml",
+      "reason": "Token and authentication dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "jwt",
+    "authentication"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:48:23.719Z"
+}

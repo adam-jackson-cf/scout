@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_a1569416b7",
+  "title": "Extraction and validation examples",
+  "summary": "Custom extractors, rejection customization, content negotiation, forms, and validation.\n\nAgent mapper reason: These applications demonstrate the boundary between HTTP input decoding and application validation errors.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "Custom extraction application."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/custom_extractor.rs",
+      "reason": "Manual extractor implementation."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Derived extractor implementation."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Rejection adapter example."
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Path rejection customization."
+    },
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Form extraction example."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Query edge-case example."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Content-type-directed extraction."
+    },
+    {
+      "path": "examples/validator/src/main.rs",
+      "reason": "Input validation example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-extractor-error/README.md",
+      "reason": "Comparison of customization approaches."
+    },
+    {
+      "path": "examples/validator/Cargo.toml",
+      "reason": "Validation dependency."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "extractors",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:55:36.923Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

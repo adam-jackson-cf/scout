@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_707e43344e",
+  "title": "Release publishing and change announcements",
+  "summary": "Artifact publication and release change documentation.\n\nAgent mapper reason: Publication permissions and release communication should be reviewed together.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Package publishing automation."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Change announcement automation."
+    },
+    {
+      "path": "docs/en/docs/release-notes.md",
+      "reason": "User-facing release history."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Published package configuration."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Security release reporting policy."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "release",
+    "publication"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "external-api",
+    "permissions",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:54:37.966Z",
+  "updatedAt": "2026-10-23T18:54:37.966Z"
+}

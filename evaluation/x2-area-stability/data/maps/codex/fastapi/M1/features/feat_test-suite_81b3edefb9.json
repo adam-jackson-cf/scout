@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_81b3edefb9",
+  "title": "Request bodies and multipart contracts",
+  "summary": "Test request body extraction, media types, forms, and multipart prerequisites.\n\nAgent mapper reason: These files cover parsing and validation of request payloads.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Body extraction."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Body validation errors."
+    },
+    {
+      "path": "tests/test_put_no_body.py",
+      "reason": "Body absence semantics."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Body media types."
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Form sequence support."
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "Multipart dependency checks."
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "reason": "Tuple model handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/request-forms-and-files.md",
+      "reason": "Multipart usage intent."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "request-body",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:04:09.582Z",
+  "updatedAt": "2026-10-23T19:06:59.020Z"
+}

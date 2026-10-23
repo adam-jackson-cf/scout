@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a014c07b68",
+  "title": "Core extraction contracts and body limits",
+  "summary": "Foundational request extraction traits, tuple composition, rejection handling, and request extensions.\n\nAgent mapper reason: These files jointly define extraction ordering, ownership, and rejection semantics.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extraction contracts"
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Body size enforcement"
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "State projection contract"
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Extraction failures"
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Request metadata extractors"
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Extractor composition"
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Extension exports"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Request extraction helpers"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "Parts extraction helpers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Dependencies and features"
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Public extraction semantics"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "body-limit"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:55:37.038Z"
+}

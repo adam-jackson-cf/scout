@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_bbba8072db",
+  "title": "Path extraction and deserialization",
+  "summary": "Deserialize captured route parameters into application types.\n\nAgent mapper reason: Capture decoding and typed deserialization share the same input and rejection contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extractor API and rejection mapping."
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Path deserializer."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Source of captured parameters."
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Custom rejection usage."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "path",
+    "serde"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:40:32.517Z"
+}

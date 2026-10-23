@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_369f806838",
+  "title": "Dependency injection regression contracts",
+  "summary": "Test dependency caching, overrides, lifecycle cleanup, and execution context.\n\nAgent mapper reason: Dependency execution and cleanup require joint review across caching, overrides, and context handling.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "Caching semantics."
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "Class dependencies."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "Dependency cleanup."
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "Context propagation."
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "Repeated dependencies."
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "Exception propagation."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "Override resolution."
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "Security override interaction."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Connection injection."
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "Path/dependency parameter interaction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/dependencies/dependencies-with-yield.md",
+      "reason": "Lifecycle intent."
+    },
+    {
+      "path": "docs/en/docs/advanced/testing-dependencies.md",
+      "reason": "Override intent."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "regression"
+  ],
+  "trustBoundaries": [
+    "concurrency",
+    "auth",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:06:58.891Z",
+  "updatedAt": "2026-10-23T19:06:58.891Z"
+}

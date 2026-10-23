@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_1815cad46b",
+  "title": "Examples: proxies, multiplexing and networking",
+  "summary": "HTTP/reverse proxy, REST+gRPC multiplex, unix socket, multiple listeners, hyper 1.0, graceful shutdown.\n\nAgent mapper reason: Low-level networking examples.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "CONNECT proxy"
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "reverse proxy"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "multiplex server"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "multiplex service"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "proto codegen"
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "UDS server"
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "multiple listeners"
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "hyper 1.0 interop"
+    },
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "shutdown"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "proto schema"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "proxy",
+    "networking"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:27:43.928Z",
+  "updatedAt": "2026-10-23T19:27:43.928Z"
+}

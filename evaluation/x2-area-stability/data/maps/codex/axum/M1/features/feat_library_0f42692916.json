@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0f42692916",
+  "title": "WebSocket upgrades",
+  "summary": "HTTP upgrade validation and WebSocket message handling.\n\nAgent mapper reason: Upgrade negotiation and long-lived socket behavior constitute an independent protocol boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Upgrade and socket implementation"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "Executable upgrade test example"
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "Socket usage"
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "command": null
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "websocket",
+    "upgrade"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

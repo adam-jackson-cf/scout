@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_70ef274151",
+  "title": "Body and form processing examples",
+  "summary": "Body consumption, content-type dispatch, forms, multipart, and file streaming.\n\nAgent mapper reason: These examples demonstrate request payload lifecycle, parsing, and resource use.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Body ownership demonstration"
+    },
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Form handling"
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart handling"
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Codec selection"
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Query decoding edge case"
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Streaming file output"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/stream-to-file/Cargo.toml",
+      "reason": "Streaming dependencies"
+    },
+    {
+      "path": "examples/multipart-form/Cargo.toml",
+      "reason": "Multipart feature configuration"
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Body size semantics"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "forms",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "filesystem",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:50:54.234Z"
+}

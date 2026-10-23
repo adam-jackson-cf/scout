@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e55cc4e611",
+  "title": "Route services and connection service factories",
+  "summary": "Adapts routes and routers into Tower services and connection-aware service factories.\n\nAgent mapper reason: These adapters govern service readiness, future execution, and propagation of connection context.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Route service wrapper."
+    },
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Route service futures."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Per-connection service creation."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service conversion extensions."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Connection metadata propagation."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Service type erasure."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared internal service utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Connection-aware serving contract."
+    },
+    {
+      "path": "axum/src/docs/routing/route_service.md",
+      "reason": "Service routing contract."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Primary integration point."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tower",
+    "services",
+    "connections"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:55:37.058Z"
+}

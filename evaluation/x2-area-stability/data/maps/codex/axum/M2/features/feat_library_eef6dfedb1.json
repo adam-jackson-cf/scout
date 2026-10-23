@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_eef6dfedb1",
+  "title": "Request metadata and extractor integration",
+  "summary": "Host and header extraction, request parts, and shared rejection exports.\n\nAgent mapper reason: These files define metadata extraction and the shared failure surface of the extractor API.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extractor exports and integration."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Request host interpretation."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "HTTP request metadata extraction."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Main extractor rejection types."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Typed HTTP header extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extractor usage and rejection contract."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/host.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "headers",
+    "host",
+    "extraction"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:37.061Z"
+}

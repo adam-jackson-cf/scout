@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_dc2d21f0d8",
+  "title": "HTTP authentication contracts",
+  "summary": "HTTP base, Basic, Bearer, and Digest authentication behavior.\n\nAgent mapper reason: These schemes share Authorization header parsing and authentication failure contracts.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_security_http_bearer.py tests/test_security_http_basic_realm.py tests/test_security_http_digest.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_security_http_base.py",
+      "reason": "Base HTTP authentication."
+    },
+    {
+      "path": "tests/test_security_http_base_description.py",
+      "reason": "Base scheme descriptions."
+    },
+    {
+      "path": "tests/test_security_http_base_optional.py",
+      "reason": "Optional base credentials."
+    },
+    {
+      "path": "tests/test_security_http_basic_optional.py",
+      "reason": "Optional Basic credentials."
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "Basic realm challenges."
+    },
+    {
+      "path": "tests/test_security_http_basic_realm_description.py",
+      "reason": "Basic realm schema descriptions."
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "Bearer [SCOUT_REDACTED_SECRET]."
+    },
+    {
+      "path": "tests/test_security_http_bearer_description.py",
+      "reason": "Bearer [SCOUT_REDACTED_SECRET] descriptions."
+    },
+    {
+      "path": "tests/test_security_http_bearer_optional.py",
+      "reason": "Optional Bearer [SCOUT_REDACTED_SECRET]."
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "reason": "Digest extraction."
+    },
+    {
+      "path": "tests/test_security_http_digest_description.py",
+      "reason": "Digest scheme descriptions."
+    },
+    {
+      "path": "tests/test_security_http_digest_optional.py",
+      "reason": "Optional Digest credentials."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/security/http-basic-auth.md",
+      "reason": "HTTP Basic public contract."
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "http-auth"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T19:12:00.186Z"
+}

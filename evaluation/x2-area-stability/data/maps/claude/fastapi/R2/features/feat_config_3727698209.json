@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_3727698209",
+  "title": "Dev/release scripts and project config",
+  "summary": "Docs build tooling (scripts/docs.py), shell scripts for test/lint/publish, release bot, pyproject and pre-commit config.\n\nAgent mapper reason: Developer and release tooling outside the library runtime.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "scripts/docs.py",
+      "symbol": null,
+      "route": null,
+      "command": "python scripts/docs.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "scripts/docs.py",
+      "reason": "mkdocs multi-language builder"
+    },
+    {
+      "path": "scripts/gitter_releases_bot.py",
+      "reason": "release notification bot"
+    },
+    {
+      "path": "scripts/build-docs.sh",
+      "reason": "script"
+    },
+    {
+      "path": "scripts/clean.sh",
+      "reason": "script"
+    },
+    {
+      "path": "scripts/docs-live.sh",
+      "reason": "script"
+    },
+    {
+      "path": "scripts/format.sh",
+      "reason": "script"
+    },
+    {
+      "path": "scripts/lint.sh",
+      "reason": "script"
+    },
+    {
+      "path": "scripts/netlify-docs.sh",
+      "reason": "script"
+    },
+    {
+      "path": "scripts/notify.sh",
+      "reason": "script"
+    },
+    {
+      "path": "scripts/publish.sh",
+      "reason": "script"
+    },
+    {
+      "path": "scripts/test-cov-html.sh",
+      "reason": "script"
+    },
+    {
+      "path": "scripts/test.sh",
+      "reason": "script"
+    },
+    {
+      "path": "scripts/zip-docs.sh",
+      "reason": "script"
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "package metadata and tool config"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "pre-commit hooks"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "consumed by docs.py"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "dev workflow"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "scripts",
+    "release",
+    "docs-build"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "filesystem",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:18:30.939Z",
+  "updatedAt": "2026-10-23T19:18:30.939Z"
+}

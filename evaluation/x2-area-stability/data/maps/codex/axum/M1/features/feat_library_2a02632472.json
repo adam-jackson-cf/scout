@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_2a02632472",
+  "title": "Handlers and service adaptation",
+  "summary": "Adapts async handlers and routers into Tower services and connection service factories.\n\nAgent mapper reason: Handler bounds, state propagation, and service adaptation form one execution contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait and implementations"
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler futures"
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Handler service adapter"
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "State injection adapter"
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Service factory"
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service extension API"
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Type-erased service support"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler contract"
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Handler constraints"
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "tower"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:53:04.365Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

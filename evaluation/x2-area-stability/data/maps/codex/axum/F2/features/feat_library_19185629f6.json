@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_19185629f6",
+  "title": "Handler diagnostic macro",
+  "summary": "Compile-time validation of handler signatures and futures.\n\nAgent mapper reason: Handler validation has its own pass/fail fixture family and diagnostic contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "Handler diagnostic expansion."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.stderr",
+      "reason": "Expected concurrency diagnostic."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/wrong_order.stderr",
+      "reason": "Expected extractor order diagnostic."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Runtime trait constraints."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/wrong_order.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/state_and_body.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/wrong_order.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/state_and_body.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "diagnostics"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

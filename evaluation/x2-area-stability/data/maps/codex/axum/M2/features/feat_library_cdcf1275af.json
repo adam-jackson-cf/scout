@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_cdcf1275af",
+  "title": "JSON, forms, multipart, and body streaming",
+  "summary": "Body serialization, deserialization, multipart uploads, and streaming body adapters.\n\nAgent mapper reason: These files own consuming and producing HTTP bodies, including content-type and size-sensitive behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": "Json",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON request and response conversion."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form request and response conversion."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form body extraction."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart field streaming."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body API integration."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Stream-backed HTTP bodies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Body size policy."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Body parsing failures."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Optional serialization and multipart features."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/json.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/form.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "json",
+    "form",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:55:37.052Z"
+}

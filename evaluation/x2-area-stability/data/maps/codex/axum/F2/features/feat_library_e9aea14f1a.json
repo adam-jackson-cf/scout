@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e9aea14f1a",
+  "title": "Path and request metadata extraction",
+  "summary": "Path deserialization, host and header extraction, raw queries, and shared rejections.\n\nAgent mapper reason: These extractors interpret URI and header metadata without owning body consumption.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extractor exports."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extractor."
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Path deserialization."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Host extraction."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Matched route metadata."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query access."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Request metadata extractors."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Public rejection definitions."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Typed header extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extractor usage contract."
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "paths",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

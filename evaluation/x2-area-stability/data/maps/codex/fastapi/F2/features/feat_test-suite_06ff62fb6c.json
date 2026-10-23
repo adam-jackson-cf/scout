@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_06ff62fb6c",
+  "title": "Interactive API documentation configuration",
+  "summary": "Review Swagger UI redirects, OAuth initialization, and local documentation assets.\n\nAgent mapper reason: These tests describe API documentation rendering and its authentication redirect integration.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_local_docs.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "Local documentation behavior."
+    },
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "reason": "Custom OAuth redirect."
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "reason": "Disabled redirect behavior."
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "OAuth UI initialization."
+    },
+    {
+      "path": "tests/test_deprecated_openapi_prefix.py",
+      "reason": "Legacy documentation URL compatibility."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/behind-a-proxy.md",
+      "reason": "URL prefix deployment intent."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_local_docs.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "swagger-ui",
+    "documentation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "auth",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:49:43.740Z",
+  "updatedAt": "2026-10-23T18:49:43.740Z"
+}

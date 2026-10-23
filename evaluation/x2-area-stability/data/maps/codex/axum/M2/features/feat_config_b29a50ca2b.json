@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_b29a50ca2b",
+  "title": "Extra crate feature integration",
+  "summary": "Optional API exports and package feature configuration.\n\nAgent mapper reason: Feature wiring deserves review independently from optional implementation modules.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Feature-gated public exports."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional dependencies and feature relationships."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Supported package capabilities."
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "features",
+    "crate-integration"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:55:36.923Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

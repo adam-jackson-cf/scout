@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_7228c82775",
+  "title": "WebSocket application examples",
+  "summary": "Chat, browser socket clients, standalone clients, and socket integration testing.\n\nAgent mapper reason: Server, client, and testing demonstrations share socket lifecycle and concurrent messaging concerns.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Chat server"
+    },
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "Chat browser interface"
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "Socket server"
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "Socket client"
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Browser socket behavior"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "Socket testing demonstration"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/chat/Cargo.toml",
+      "reason": "Chat dependencies"
+    },
+    {
+      "path": "examples/websockets/Cargo.toml",
+      "reason": "Client and server dependencies"
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Underlying protocol implementation"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "websocket",
+    "chat"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:50:54.234Z"
+}

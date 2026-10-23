@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4984c7e697",
+  "title": "Request extraction derive macros",
+  "summary": "Derives request and request-parts extraction with delegation, state inference, and rejection overrides.\n\nAgent mapper reason: Derive parsing and expansion must agree on extraction order, delegation, and inferred state.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "Derive expansion"
+    },
+    {
+      "path": "axum-macros/src/from_request/attr.rs",
+      "reason": "Derive attribute interpretation"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Generated trait contracts"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.stderr",
+      "reason": "Expected ownership diagnostic"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named_parts.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer_multiple.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/override_rejection_with_via_on_enum.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/state_infer_multiple_different_types.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named_parts.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer_multiple.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/override_rejection_with_via_on_enum.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/state_infer_multiple_different_types.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

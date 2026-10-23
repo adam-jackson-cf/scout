@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6e5b3e3395",
+  "title": "Core response conversion",
+  "summary": "Response and response-parts conversion, including header composition.\n\nAgent mapper reason: Review conversion precedence, tuple composition, and header mutation together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response API exports."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Whole-response conversions."
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "Response-parts composition."
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "Header append behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "User-facing conversion contract."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Crate configuration."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

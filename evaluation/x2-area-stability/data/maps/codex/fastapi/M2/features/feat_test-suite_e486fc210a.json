@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_e486fc210a",
+  "title": "HTTP authentication regression suite",
+  "summary": "Exercise HTTP Basic, Bearer, Digest, and base authentication behavior.\n\nAgent mapper reason: These authentication schemes share HTTP authorization parsing and challenge semantics.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_security_http_base.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_security_http_base.py",
+      "reason": "Base HTTP authentication."
+    },
+    {
+      "path": "tests/test_security_http_base_description.py",
+      "reason": "Base scheme description."
+    },
+    {
+      "path": "tests/test_security_http_base_optional.py",
+      "reason": "Optional base authentication."
+    },
+    {
+      "path": "tests/test_security_http_basic_optional.py",
+      "reason": "Optional Basic authentication."
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "Basic realm challenges."
+    },
+    {
+      "path": "tests/test_security_http_basic_realm_description.py",
+      "reason": "Basic realm description."
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "Bearer [SCOUT_REDACTED_SECRET]."
+    },
+    {
+      "path": "tests/test_security_http_bearer_description.py",
+      "reason": "Bearer [SCOUT_REDACTED_SECRET]."
+    },
+    {
+      "path": "tests/test_security_http_bearer_optional.py",
+      "reason": "Optional Bearer [SCOUT_REDACTED_SECRET]."
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "reason": "Digest parsing."
+    },
+    {
+      "path": "tests/test_security_http_digest_description.py",
+      "reason": "Digest description."
+    },
+    {
+      "path": "tests/test_security_http_digest_optional.py",
+      "reason": "Optional Digest authentication."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/security/http-basic-auth.md",
+      "reason": "Documented HTTP authentication semantics."
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "http-auth"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:04:09.582Z",
+  "updatedAt": "2026-10-23T19:12:00.054Z"
+}

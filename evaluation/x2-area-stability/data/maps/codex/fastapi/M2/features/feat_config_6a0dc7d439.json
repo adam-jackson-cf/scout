@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_6a0dc7d439",
+  "title": "Quality gates and test execution",
+  "summary": "Configure static checks and continuous test execution.\n\nAgent mapper reason: Review execution environments and enforcement together.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Test matrix and execution."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Related test reporting automation."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local quality gates."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update automation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package, tool, and environment configuration."
+    },
+    {
+      "path": "tests/main.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/main.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "pytest",
+    "quality"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "permissions"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:04:09.582Z",
+  "updatedAt": "2026-10-23T19:12:00.135Z"
+}

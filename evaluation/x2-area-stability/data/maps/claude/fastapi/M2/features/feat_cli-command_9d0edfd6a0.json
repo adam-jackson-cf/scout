@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_cli-command_9d0edfd6a0",
+  "title": "Dev/release scripts and docs build tooling",
+  "summary": "Shell and Python scripts for lint, format, test, publishing and the multi-language mkdocs build.\n\nAgent mapper reason: These are local tooling for building and releasing the project and its docs.",
+  "kind": "cli-command",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "scripts/docs.py",
+      "symbol": null,
+      "route": null,
+      "command": "python scripts/docs.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "scripts/docs.py",
+      "reason": "docs build/translation CLI"
+    },
+    {
+      "path": "scripts/build-docs.sh",
+      "reason": "docs build"
+    },
+    {
+      "path": "scripts/docs-live.sh",
+      "reason": "live docs"
+    },
+    {
+      "path": "scripts/netlify-docs.sh",
+      "reason": "netlify"
+    },
+    {
+      "path": "scripts/zip-docs.sh",
+      "reason": "zip docs"
+    },
+    {
+      "path": "scripts/clean.sh",
+      "reason": "clean"
+    },
+    {
+      "path": "scripts/format.sh",
+      "reason": "format"
+    },
+    {
+      "path": "scripts/lint.sh",
+      "reason": "lint"
+    },
+    {
+      "path": "scripts/test.sh",
+      "reason": "tests"
+    },
+    {
+      "path": "scripts/test-cov-html.sh",
+      "reason": "coverage"
+    },
+    {
+      "path": "scripts/publish.sh",
+      "reason": "publish"
+    },
+    {
+      "path": "scripts/notify.sh",
+      "reason": "notify"
+    },
+    {
+      "path": "scripts/gitter_releases_bot.py",
+      "reason": "release bot"
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "build/tool configuration"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "pre-commit hooks"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "main mkdocs config"
+    },
+    {
+      "path": "docs/es/mkdocs.yml",
+      "reason": "language config example"
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "theme override"
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "docs JS"
+    },
+    {
+      "path": "docs/en/docs/js/termynal.js",
+      "reason": "docs JS"
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "docs JS"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "contributor workflow"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "tooling",
+    "docs-build",
+    "release"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "filesystem",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:21:08.311Z",
+  "updatedAt": "2026-10-23T19:21:08.311Z"
+}

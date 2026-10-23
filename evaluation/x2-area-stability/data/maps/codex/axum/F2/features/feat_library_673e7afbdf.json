@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_673e7afbdf",
+  "title": "Extra extraction adapters",
+  "summary": "Cached extraction, alternate rejection handling, and extended form/query/multipart support.\n\nAgent mapper reason: These optional extractors extend or adapt the same extraction lifecycle.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Extractor exports."
+    },
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Extraction caching."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Rejection adaptation."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Extended form parsing."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Extended query parsing."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Extended multipart API."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Shared extractor contracts."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "parsing"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

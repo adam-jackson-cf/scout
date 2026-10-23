@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_a4912ecd1a",
+  "title": "Package release",
+  "summary": "Configure package metadata and publishing.\n\nAgent mapper reason: Build metadata and publishing jointly control distribution.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Publishing workflow."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Package and build configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "LICENSE",
+      "reason": "Distribution license."
+    },
+    {
+      "path": "README.md",
+      "reason": "Public package description."
+    },
+    {
+      "path": "docs/en/docs/release-notes.md",
+      "reason": "Release history."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "hatch",
+    "release"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "permissions",
+    "external-api",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:04:09.582Z",
+  "updatedAt": "2026-10-23T19:04:09.582Z"
+}

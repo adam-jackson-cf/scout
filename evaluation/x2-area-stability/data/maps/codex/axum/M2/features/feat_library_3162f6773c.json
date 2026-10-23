@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3162f6773c",
+  "title": "Extra streaming and serialization responses",
+  "summary": "Async-reader bodies, JSON Lines, protobuf, and erased JSON responses.\n\nAgent mapper reason: These adapters share body production and wire-format conversion responsibilities.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Body extension exports."
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Async reader to HTTP body conversion."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "JSON Lines streaming format."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protobuf extraction and responses."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Response extension exports."
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Type-erased JSON serialization."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Serialization feature dependencies."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Response conversion contract."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "streaming",
+    "serialization",
+    "protobuf",
+    "json"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:37.025Z"
+}

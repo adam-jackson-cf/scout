@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_1ce19c3f95",
+  "title": "Continuous integration and package publication",
+  "summary": "Review quality checks, dependency maintenance, and package release configuration.\n\nAgent mapper reason: These files define how changes are checked and artifacts are published.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Automated verification."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Package publication."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Related verification reporting."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update policy."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local quality checks."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Package metadata and tool configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor verification expectations."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Security maintenance expectations."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "packaging",
+    "release"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "secrets",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:49:43.740Z",
+  "updatedAt": "2026-10-23T18:49:43.740Z"
+}

@@ -1,0 +1,178 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_dd2173f91e",
+  "title": "Security schemes",
+  "summary": "API key, HTTP Basic/Bearer/Digest, OAuth2, and OpenID Connect security dependencies.\n\nAgent mapper reason: Authentication primitives are a trust-sensitive boundary of their own.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/security/__init__.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/security/__init__.py",
+      "reason": "Exports"
+    },
+    {
+      "path": "fastapi/security/api_key.py",
+      "reason": "API key schemes"
+    },
+    {
+      "path": "fastapi/security/base.py",
+      "reason": "Base class"
+    },
+    {
+      "path": "fastapi/security/http.py",
+      "reason": "HTTP auth schemes"
+    },
+    {
+      "path": "fastapi/security/oauth2.py",
+      "reason": "OAuth2 flows"
+    },
+    {
+      "path": "fastapi/security/open_id_connect_url.py",
+      "reason": "OIDC"
+    },
+    {
+      "path": "fastapi/security/utils.py",
+      "reason": "Authorization header parsing"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/security/index.md",
+      "reason": "Security docs"
+    },
+    {
+      "path": "docs/en/docs/advanced/security/oauth2-scopes.md",
+      "reason": "Scopes docs"
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Security policy"
+    },
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_base.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_oauth2_authorization_code_bearer.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_oauth2_password_bearer_optional.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_base.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_oauth2_authorization_code_bearer.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_oauth2_password_bearer_optional.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "auth",
+    "oauth2"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:13:38.963Z",
+  "updatedAt": "2026-10-23T19:19:35.573Z"
+}

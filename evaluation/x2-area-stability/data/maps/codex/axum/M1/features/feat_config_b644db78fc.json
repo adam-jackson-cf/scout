@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_b644db78fc",
+  "title": "Workspace CI and dependency policy",
+  "summary": "Workspace membership, automated checks, dependency policy, and repository contribution configuration.\n\nAgent mapper reason: Workspace checks and repository policy collectively determine what changes are built and validated.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace configuration"
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "CI execution"
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Workflow support configuration"
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Dependency policy"
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Repository exclusions"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue intake configuration"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "reason": "Bug report requirements"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "reason": "Feature request requirements"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "Review requirements"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow"
+    },
+    {
+      "path": "ECOSYSTEM.md",
+      "reason": "Related package context"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "reason": "Workspace release history"
+    },
+    {
+      "path": "examples/async-graphql/README.md",
+      "reason": "Documentation-only integration pointer"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "dependency-policy"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:53:04.365Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_b9ad003f81",
+  "title": "OAuth authentication example",
+  "summary": "External authorization flow and callback handling.\n\nAgent mapper reason: Authorization redirects, callback validation, and provider exchange belong to one authentication flow.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/oauth/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/oauth/src/main.rs",
+      "reason": "OAuth flow implementation."
+    },
+    {
+      "path": "examples/oauth/Cargo.toml",
+      "reason": "OAuth client dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Callback parameter extraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "oauth",
+    "authentication"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "external-api",
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:53:04.521Z"
+}

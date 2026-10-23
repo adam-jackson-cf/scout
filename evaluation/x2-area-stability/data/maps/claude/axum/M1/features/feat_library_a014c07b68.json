@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a014c07b68",
+  "title": "axum-core extractor traits",
+  "summary": "Core FromRequest/FromRequestParts traits, tuple impls, FromRef, DefaultBodyLimit, core rejections and the RequestExt/RequestPartsExt extension traits.\n\nAgent mapper reason: These files together define how request data is extracted, including the request body size limit that guards against oversized requests.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": "FromRequest",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines the core extractor traits"
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Tuple extractor impls"
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "FromRef state substate trait"
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Body size limit config"
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Core rejection types"
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Built-in extractors for request parts and bodies"
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Extension traits module"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "RequestExt helpers"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "RequestPartsExt helpers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Macros used to generate rejections and tuple impls"
+    },
+    {
+      "path": "axum-core/CHANGELOG.md",
+      "reason": "Change history"
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "extractors",
+    "body-limit"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:35:37.944Z"
+}

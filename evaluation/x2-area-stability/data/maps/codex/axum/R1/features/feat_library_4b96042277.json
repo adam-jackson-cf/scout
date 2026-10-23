@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4b96042277",
+  "title": "Body streaming and multipart uploads",
+  "summary": "Streaming body adapters and multipart request processing.\n\nAgent mapper reason: Streaming and multipart processing share body lifetime, resource limits, and incremental failure concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Main body API exports."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Streaming body conversion."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart field streaming."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Underlying body abstraction."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Upload usage."
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Streaming consumption example."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "streaming",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:48:23.710Z"
+}

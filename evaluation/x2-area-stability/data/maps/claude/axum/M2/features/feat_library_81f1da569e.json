@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_81f1da569e",
+  "title": "axum responses and bodies",
+  "summary": "Redirect, SSE, response module, StreamBody and body re-exports.\n\nAgent mapper reason: Outbound response construction including header injection risks in redirect/SSE.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "module root"
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent events"
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "body module"
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "StreamBody"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "docs"
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "core traits"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "response",
+    "sse",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:37:18.735Z"
+}

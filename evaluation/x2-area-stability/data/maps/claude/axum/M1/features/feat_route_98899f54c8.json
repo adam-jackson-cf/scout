@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_route_98899f54c8",
+  "title": "Examples: extractors, input handling and validation",
+  "summary": "Custom extractor errors, path rejection, body consumption, content-type parsing, forms, multipart, file streaming, validation, query handling and versioning.\n\nAgent mapper reason: All of these show how to process untrusted request input. stream-to-file writes to the filesystem.",
+  "kind": "route",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "Entry"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/custom_extractor.rs",
+      "reason": "Manual extractor"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Derive approach"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "WithRejection approach"
+    },
+    {
+      "path": "examples/customize-extractor-error/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Path rejection"
+    },
+    {
+      "path": "examples/customize-path-rejection/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Body consumption"
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Content negotiation"
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Query parsing"
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/validator/src/main.rs",
+      "reason": "Validation"
+    },
+    {
+      "path": "examples/validator/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Form"
+    },
+    {
+      "path": "examples/form/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart"
+    },
+    {
+      "path": "examples/multipart-form/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Upload to disk (path traversal sensitive)"
+    },
+    {
+      "path": "examples/stream-to-file/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/versioning/src/main.rs",
+      "reason": "Version path extractor"
+    },
+    {
+      "path": "examples/versioning/Cargo.toml",
+      "reason": "Manifest"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-extractor-error/README.md",
+      "reason": "Explains the approaches"
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Rejections being customized"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "extractors",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "filesystem",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:35:37.955Z"
+}

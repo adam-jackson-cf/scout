@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0f42692916",
+  "title": "WebSocket protocol integration",
+  "summary": "WebSocket upgrade, messages, and connection lifecycle.\n\nAgent mapper reason: Protocol upgrades and long-lived bidirectional connections deserve an independent review.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "WebSocket implementation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "Executable integration usage."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "websocket"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

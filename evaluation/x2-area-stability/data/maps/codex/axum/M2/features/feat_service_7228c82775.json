@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_7228c82775",
+  "title": "WebSocket demonstration applications",
+  "summary": "Browser WebSocket clients, chat broadcasting, and WebSocket integration testing.\n\nAgent mapper reason: Client/server messaging and broadcast lifecycle should be reviewed end to end.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Chat server and broadcast state."
+    },
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "Chat browser client."
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "WebSocket server example."
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "Programmatic WebSocket client."
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Browser messaging behavior."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "Executable WebSocket test example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/chat/Cargo.toml",
+      "reason": "Broadcast and socket dependencies."
+    },
+    {
+      "path": "examples/testing-websockets/Cargo.toml",
+      "reason": "WebSocket testing dependencies."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Underlying protocol API."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "websockets",
+    "chat"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_b0349e12d0",
+  "title": "TLS server examples",
+  "summary": "OpenSSL and Rustls server integration at different abstraction levels.\n\nAgent mapper reason: These examples share certificate loading and encrypted connection lifecycle concerns.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "OpenSSL transport integration."
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Low-level Rustls integration."
+    },
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "Rustls server assembly."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/low-level-openssl/Cargo.toml",
+      "reason": "OpenSSL dependencies."
+    },
+    {
+      "path": "examples/low-level-rustls/Cargo.toml",
+      "reason": "Rustls dependencies."
+    },
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "reason": "TLS server dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "tls"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "secrets",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_2e6de9406f",
+  "title": "Custom extraction and error examples",
+  "summary": "Custom rejection conversion, validation, application errors, and dependency injection.\n\nAgent mapper reason: These demonstrations share the input-validation-to-error-response pipeline.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "Example integration"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/custom_extractor.rs",
+      "reason": "Manual extraction"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Derived extraction"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Rejection wrapper"
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Path rejection conversion"
+    },
+    {
+      "path": "examples/anyhow-error-response/src/main.rs",
+      "reason": "Application error conversion"
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/src/main.rs",
+      "reason": "Errors with dependencies"
+    },
+    {
+      "path": "examples/validator/src/main.rs",
+      "reason": "Validated inputs"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-extractor-error/README.md",
+      "reason": "Alternative approaches"
+    },
+    {
+      "path": "examples/customize-extractor-error/Cargo.toml",
+      "reason": "Macro and extra dependencies"
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error model"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "extractors",
+    "errors",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:55:37.076Z"
+}

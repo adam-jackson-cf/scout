@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_2ce26725be",
+  "title": "Exception handling regression suite",
+  "summary": "Check application handlers, middleware failures, and Starlette exception integration.\n\nAgent mapper reason: Exception propagation and translation into HTTP responses require joint review.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_exception_handlers.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "Custom handlers."
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "Middleware exception propagation."
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "Starlette integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/handling-errors.md",
+      "reason": "Error handling contract."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "errors",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T19:04:09.670Z"
+}

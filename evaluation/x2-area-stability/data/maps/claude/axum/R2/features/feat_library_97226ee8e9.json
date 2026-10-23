@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_97226ee8e9",
+  "title": "axum body-consuming extractors: Json, Form, Multipart",
+  "summary": "Json and Form extractors/responses and multipart/form-data streaming extractor.\n\nAgent mapper reason: These parse request bodies with content-type checks and size limits.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": "Json",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Json extractor/response"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extractor/response"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart extractor"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "body limits applied"
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "rejection types"
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/json.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "json",
+    "form",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:34:24.830Z"
+}

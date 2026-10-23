@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_741fd5da15",
+  "title": "Packaging and project configuration",
+  "summary": "pyproject build metadata, dependency pins, and lint, mypy and pytest configuration.\n\nAgent mapper reason: Single manifest that controls the release artifact and tooling.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": "hatch build"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "build/dependency/tool config"
+    },
+    {
+      "path": ".gitignore",
+      "reason": "ignore rules"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "README.md",
+      "reason": "package description"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "dev workflow"
+    },
+    {
+      "path": "docs/en/docs/release-notes.md",
+      "reason": "release history"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "config"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:17:08.936Z",
+  "updatedAt": "2026-10-23T19:21:08.388Z"
+}

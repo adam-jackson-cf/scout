@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9261a02a05",
+  "title": "Axum crate integration and test support",
+  "summary": "Public crate wiring, feature configuration, shared utilities, benchmarks, and test clients.\n\nAgent mapper reason: Crate-wide wiring and shared testing machinery require a separate integration review.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Public crate integration"
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extractor exports"
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Shared macros"
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared utilities"
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Test support"
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "HTTP test client"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Performance harness"
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Build configuration"
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Feature and dependency contract"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/README.md",
+      "reason": "Package intent"
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "Compatibility context"
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/lib.rs",
+      "command": null
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "integration",
+    "features",
+    "test-support"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:53:04.365Z",
+  "updatedAt": "2026-10-23T19:55:37.035Z"
+}

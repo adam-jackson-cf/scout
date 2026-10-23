@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_c75967ee24",
+  "title": "Static file serving example",
+  "summary": "Serve bundled browser assets through HTTP.\n\nAgent mapper reason: File-service configuration and its served assets form one bounded example.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Static service configuration."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Served page."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Served browser script."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/static-file-server/Cargo.toml",
+      "reason": "Filesystem serving dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "static-files"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:48:23.719Z"
+}

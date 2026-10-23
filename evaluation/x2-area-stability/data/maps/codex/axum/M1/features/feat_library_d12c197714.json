@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d12c197714",
+  "title": "Extra handler composition and crate wiring",
+  "summary": "Alternative handler selection, either values, middleware extensions, and package integration.\n\nAgent mapper reason: Handler alternatives and package exports form a bounded adapter and integration slice.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Handler extensions"
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Alternative handler selection"
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either composition"
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Middleware extensions"
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Package exports"
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Feature wiring"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Package intent"
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Base handler contract"
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "composition"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:53:04.365Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

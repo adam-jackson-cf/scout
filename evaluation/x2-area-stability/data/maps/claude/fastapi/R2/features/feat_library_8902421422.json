@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8902421422",
+  "title": "Starlette re-export shims (responses, middleware, static, templating, testclient)",
+  "summary": "Thin wrappers re-exporting Starlette responses (plus ORJSON/UJSON), middleware, StaticFiles, Jinja templates and TestClient.\n\nAgent mapper reason: Small integration surface over Starlette; low logic, grouped for efficiency.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/responses.py",
+      "symbol": "ORJSONResponse",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/responses.py",
+      "reason": "response classes"
+    },
+    {
+      "path": "fastapi/middleware/__init__.py",
+      "reason": "middleware exports"
+    },
+    {
+      "path": "fastapi/middleware/cors.py",
+      "reason": "CORS re-export"
+    },
+    {
+      "path": "fastapi/middleware/gzip.py",
+      "reason": "gzip re-export"
+    },
+    {
+      "path": "fastapi/middleware/httpsredirect.py",
+      "reason": "https redirect re-export"
+    },
+    {
+      "path": "fastapi/middleware/trustedhost.py",
+      "reason": "trusted host re-export"
+    },
+    {
+      "path": "fastapi/middleware/wsgi.py",
+      "reason": "WSGI re-export"
+    },
+    {
+      "path": "fastapi/staticfiles.py",
+      "reason": "StaticFiles re-export"
+    },
+    {
+      "path": "fastapi/templating.py",
+      "reason": "templates re-export"
+    },
+    {
+      "path": "fastapi/testclient.py",
+      "reason": "TestClient re-export"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/custom-response.md",
+      "reason": "docs"
+    },
+    {
+      "path": "docs/en/docs/advanced/middleware.md",
+      "reason": "docs"
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_repeated_cookie_headers.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_starlette_urlconvertors.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_repeated_cookie_headers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_starlette_urlconvertors.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "starlette",
+    "middleware",
+    "responses"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:18:30.939Z",
+  "updatedAt": "2026-10-23T19:18:30.939Z"
+}

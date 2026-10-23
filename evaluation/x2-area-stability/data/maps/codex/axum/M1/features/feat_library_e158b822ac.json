@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e158b822ac",
+  "title": "Extra typed and resource routing",
+  "summary": "Typed paths, resource routing, and route extension APIs.\n\nAgent mapper reason: These APIs extend route construction and depend on common typed path contracts.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Routing extensions"
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Resource routing"
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Typed route integration"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Typed path code generation"
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Routing fixture"
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Routing fixture"
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Routing asset fixture"
+    },
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "typed-path"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

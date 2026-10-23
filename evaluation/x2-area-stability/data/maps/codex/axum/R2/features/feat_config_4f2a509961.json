@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_4f2a509961",
+  "title": "Workspace quality and contribution configuration",
+  "summary": "Workspace composition, CI, dependency policy, and contribution guidance.\n\nAgent mapper reason: These files govern how all packages are built, checked, and maintained.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace configuration"
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Verification workflow"
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Workflow support configuration"
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Dependency policy"
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Repository exclusions"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue intake configuration"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "reason": "Compatibility history"
+    },
+    {
+      "path": "ECOSYSTEM.md",
+      "reason": "Package ecosystem"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "workspace",
+    "dependency-policy"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:50:54.234Z"
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_406a758324",
+  "title": "axum middleware",
+  "summary": "from_fn, from_extractor, map_request and map_response middleware constructors.\n\nAgent mapper reason: A cohesive set of middleware adapters that is often used for auth.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": "from_fn",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Module root"
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "from_fn"
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "from_extractor"
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "map_request"
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "map_response"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware docs"
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Middleware usage"
+    },
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Middleware usage"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "middleware",
+    "tower"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:26:03.200Z",
+  "updatedAt": "2026-10-23T19:26:03.200Z"
+}

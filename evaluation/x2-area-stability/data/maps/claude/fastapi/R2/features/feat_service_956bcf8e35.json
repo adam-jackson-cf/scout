@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_956bcf8e35",
+  "title": "FastAPI application object",
+  "summary": "FastAPI app class: config, router delegation, middleware stack, exception handler registration, docs/openapi route setup, lifecycle events.\n\nAgent mapper reason: Top-level app wiring reviewed as a unit.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/applications.py",
+      "symbol": "FastAPI",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "application class"
+    },
+    {
+      "path": "fastapi/__init__.py",
+      "reason": "public API exports and version"
+    },
+    {
+      "path": "fastapi/logger.py",
+      "reason": "logger"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "delegated router"
+    },
+    {
+      "path": "fastapi/openapi/docs.py",
+      "reason": "docs routes registered by app"
+    },
+    {
+      "path": "tests/main.py",
+      "reason": "shared test app"
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_deprecated_openapi_prefix.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_deprecated_openapi_prefix.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "app",
+    "core"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:18:30.939Z",
+  "updatedAt": "2026-10-23T19:18:30.939Z"
+}

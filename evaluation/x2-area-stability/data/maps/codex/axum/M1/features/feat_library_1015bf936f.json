@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1015bf936f",
+  "title": "Path, query, and request metadata extraction",
+  "summary": "Parses route captures and query strings and exposes headers and request parts.\n\nAgent mapper reason: These extractors interpret request metadata without owning the request body.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extractor API integration."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extraction and rejection behavior."
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Path deserialization."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query deserialization."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query access."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Host extraction."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Request metadata extraction."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Shared extractor rejection definitions."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Typed header extraction and response conversion."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Public extractor contract."
+    },
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Supplies captured parameters."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "path",
+    "query",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:53:04.471Z"
+}

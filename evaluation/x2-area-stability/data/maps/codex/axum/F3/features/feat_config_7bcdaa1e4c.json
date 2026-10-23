@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_7bcdaa1e4c",
+  "title": "Workspace build and contribution configuration",
+  "summary": "Workspace membership, CI checks, dependency policy, and contribution interfaces.\n\nAgent mapper reason: These files determine how the repository is built, checked, and contributed to.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": "cargo check --workspace --all-targets"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace configuration."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Continuous integration execution."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Workflow patch configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Dependency policy."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Repository artifact exclusions."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue intake configuration."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "reason": "Bug report requirements."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "reason": "Feature request requirements."
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "Contribution review requirements."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow."
+    },
+    {
+      "path": "ECOSYSTEM.md",
+      "reason": "Related ecosystem context."
+    },
+    {
+      "path": "CHANGELOG.md",
+      "reason": "Release intent."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "dependency-policy"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_30899e045c",
+  "title": "Dependency resolution and cleanup contracts",
+  "summary": "Caching, duplicate dependencies, overrides, context propagation, and exception cleanup.\n\nAgent mapper reason: Dependency graph execution and resource lifetime must be checked together.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_dependency_cache.py tests/test_dependency_contextmanager.py tests/test_dependency_overrides.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "Dependency reuse semantics."
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "Class dependency behavior."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "Resource acquisition and cleanup."
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "Context propagation."
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "Duplicate dependency resolution."
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "Exception propagation."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "Override substitution."
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "Security dependency substitution."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Connection injection."
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "Path and dependency interaction."
+    },
+    {
+      "path": "tests/test_repeated_dependency_schema.py",
+      "reason": "Repeated dependency schema behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/dependencies/dependencies-with-yield.md",
+      "reason": "Documented resource lifetime."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "cleanup"
+  ],
+  "trustBoundaries": [
+    "concurrency",
+    "auth",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:54:37.966Z",
+  "updatedAt": "2026-10-23T18:54:37.966Z"
+}

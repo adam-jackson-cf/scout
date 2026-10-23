@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_29a5ed66f6",
+  "title": "Exception and lifecycle regression suite",
+  "summary": "Verify exception translation, custom middleware errors, and router lifecycle events.\n\nAgent mapper reason: This bounded integration suite covers framework boundary behavior; data structure tests should be reassessed after source inspection.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "Middleware exception handling."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "Custom exception handlers."
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "Underlying framework exception integration."
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "Router lifecycle events."
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "Shared data structure regression coverage."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/handling-errors.md",
+      "reason": "Error response intent."
+    },
+    {
+      "path": "docs/en/docs/advanced/events.md",
+      "reason": "Lifecycle intent."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "exceptions",
+    "lifecycle",
+    "integration"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "concurrency",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:12:00.054Z",
+  "updatedAt": "2026-10-23T19:12:00.054Z"
+}

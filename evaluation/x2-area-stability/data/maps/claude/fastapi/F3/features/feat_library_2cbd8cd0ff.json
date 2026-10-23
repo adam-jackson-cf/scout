@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_2cbd8cd0ff",
+  "title": "Middleware re-exports",
+  "summary": "Starlette middleware re-exports (CORS, GZip, HTTPS redirect, trusted host, WSGI).\n\nAgent mapper reason: Thin middleware package.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/middleware/__init__.py",
+      "symbol": "Middleware",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/middleware/__init__.py",
+      "reason": "exports"
+    },
+    {
+      "path": "fastapi/middleware/cors.py",
+      "reason": "CORS"
+    },
+    {
+      "path": "fastapi/middleware/gzip.py",
+      "reason": "gzip"
+    },
+    {
+      "path": "fastapi/middleware/httpsredirect.py",
+      "reason": "https redirect"
+    },
+    {
+      "path": "fastapi/middleware/trustedhost.py",
+      "reason": "trusted host"
+    },
+    {
+      "path": "fastapi/middleware/wsgi.py",
+      "reason": "wsgi"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/middleware.md",
+      "reason": "docs"
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial001.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial001.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:15:55.980Z",
+  "updatedAt": "2026-10-23T19:15:55.980Z"
+}

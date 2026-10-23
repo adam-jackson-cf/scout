@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_68dfd3f886",
+  "title": "HTTP method routing and route services",
+  "summary": "Method selection, HEAD behavior, and route-level service execution.\n\nAgent mapper reason: Method matching and response finalization jointly determine HTTP dispatch behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "HTTP method dispatch."
+    },
+    {
+      "path": "axum/src/routing/method_filter.rs",
+      "reason": "Method matching."
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Route service wrapper."
+    },
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Route execution futures."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/method_routing/fallback.md",
+      "reason": "Method fallback semantics."
+    },
+    {
+      "path": "axum/src/docs/method_routing/merge.md",
+      "reason": "Method merge semantics."
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Layer application contract."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "http-methods",
+    "services"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:40:32.517Z"
+}

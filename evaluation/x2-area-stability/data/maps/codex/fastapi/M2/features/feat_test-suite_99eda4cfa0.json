@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_99eda4cfa0",
+  "title": "Request bodies and multipart contracts",
+  "summary": "Test request body extraction, form handling, and multipart prerequisites.\n\nAgent mapper reason: Body extraction and multipart decoding share the request payload boundary.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Body extraction."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Body error aggregation."
+    },
+    {
+      "path": "tests/test_put_no_body.py",
+      "reason": "Absent body behavior."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Body media types."
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Form sequence parsing."
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "Multipart dependency checks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/request-files.md",
+      "reason": "Upload intent."
+    },
+    {
+      "path": "docs/en/docs/tutorial/request-forms-and-files.md",
+      "reason": "Combined multipart intent."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "requests",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:06:58.891Z",
+  "updatedAt": "2026-10-23T19:12:00.180Z"
+}

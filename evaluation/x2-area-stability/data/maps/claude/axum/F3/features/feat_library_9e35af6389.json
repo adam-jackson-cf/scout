@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9e35af6389",
+  "title": "axum request metadata and state extractors",
+  "summary": "ConnectInfo, Host, MatchedPath, State, Extension, request_parts extractors, TypedHeader.\n\nAgent mapper reason: Metadata extractors relying on headers/connection info (e.g. Host from X-Forwarded-Host) share trust concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "symbol": "State",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "peer address extraction"
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Host header/forwarded parsing"
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "matched route path"
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "State extractor"
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "OriginalUri, BodyStream etc."
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Extension extractor/layer"
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "TypedHeader extractor"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "extractor docs"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extract",
+    "headers",
+    "state"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:27:43.928Z",
+  "updatedAt": "2026-10-23T19:27:43.928Z"
+}

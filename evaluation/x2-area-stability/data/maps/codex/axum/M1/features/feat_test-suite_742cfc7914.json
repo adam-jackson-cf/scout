@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_742cfc7914",
+  "title": "HTTP application testing example",
+  "summary": "Executable guidance for testing handlers and HTTP application behavior.\n\nAgent mapper reason: Testing guidance has its own executable intent and should be reviewed as a complete example.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": "cargo test --manifest-path examples/testing/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "Application and testing demonstration"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/testing/Cargo.toml",
+      "reason": "Test runtime and client dependencies"
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Related framework testing support"
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

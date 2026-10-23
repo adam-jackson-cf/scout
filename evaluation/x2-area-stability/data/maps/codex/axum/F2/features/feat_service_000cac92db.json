@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_000cac92db",
+  "title": "Listener and runtime integration examples",
+  "summary": "Shutdown, multiple listeners, Unix sockets, Hyper integration, and WASM routing.\n\nAgent mapper reason: Each small example demonstrates how routing attaches to a runtime or transport lifecycle.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Shutdown orchestration."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Multiple listener lifecycle."
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Unix socket transport."
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "Alternate Hyper integration."
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "WASM runtime integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Example execution guidance."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "runtime",
+    "transport"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

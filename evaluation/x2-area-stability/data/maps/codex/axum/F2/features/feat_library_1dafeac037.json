@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1dafeac037",
+  "title": "Extra cookie extractors",
+  "summary": "Plain, signed, and encrypted cookie handling.\n\nAgent mapper reason: Cookie serialization, key use, and response updates share one security-sensitive lifecycle.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "Cookie jar API."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "Private cookie protection."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "Cookie integrity protection."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Cookie feature configuration."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "cookies",
+    "cryptography"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "secrets",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

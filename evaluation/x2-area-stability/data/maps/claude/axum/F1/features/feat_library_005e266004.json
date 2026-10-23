@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_005e266004",
+  "title": "axum-macros FromRequest/FromRequestParts derive",
+  "summary": "Derive macro for extractor structs/enums with via, rejection and state attrs.\n\nAgent mapper reason: Largest macro with its extensive UI test directory.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "symbol": "derive_from_request",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "derive impl"
+    },
+    {
+      "path": "axum-macros/src/from_request/attr.rs",
+      "reason": "attribute parsing"
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "macro test harness helpers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "shared parsing"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "usage example"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "extractors"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:22:59.659Z"
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d9bde3f9da",
+  "title": "Service factories and connection metadata",
+  "summary": "Create per-connection services and expose connection information to extractors.\n\nAgent mapper reason: These adapters bridge router services and transport-level connection context.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service conversion helpers."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Service factory adaptation."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Connection metadata injection and extraction."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Internal service type erasure."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared service implementation utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Connection-aware service creation contract."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tower",
+    "connections"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:53:04.491Z"
+}

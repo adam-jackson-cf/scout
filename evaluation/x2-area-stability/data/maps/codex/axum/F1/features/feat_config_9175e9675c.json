@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_9175e9675c",
+  "title": "Extra crate integration and asset fixtures",
+  "summary": "Optional-feature public API and static assets supporting extra-crate tests.\n\nAgent mapper reason: Feature integration needs its own review without treating test assets as runtime implementation.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Feature-gated public API integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Feature configuration."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Published crate intent."
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Static content fixture."
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Alternative content fixture."
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Script fixture."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "public-api",
+    "features",
+    "fixtures"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:40:32.517Z"
+}

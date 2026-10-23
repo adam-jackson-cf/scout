@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4984c7e697",
+  "title": "Extractor derive procedural macros",
+  "summary": "Generate request and request-parts extraction with state and rejection customization.\n\nAgent mapper reason: Attribute parsing and code generation jointly enforce extractor ordering, state, and rejection rules.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "Extractor expansion"
+    },
+    {
+      "path": "axum-macros/src/from_request/attr.rs",
+      "reason": "Extractor attribute parsing"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Generated trait contract"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.stderr",
+      "reason": "Expected invalid extraction diagnostic"
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Macro registration and test harness"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named_parts.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/override_rejection.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named_parts.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/override_rejection.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:50:54.234Z"
+}

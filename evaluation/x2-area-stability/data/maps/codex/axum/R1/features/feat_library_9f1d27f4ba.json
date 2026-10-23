@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9f1d27f4ba",
+  "title": "Response helpers and server-sent events",
+  "summary": "Public response exports, redirects, and event stream encoding.\n\nAgent mapper reason: These helpers construct HTTP responses above the core response conversion layer.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Public response integration."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect response construction."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent event streams and keepalive."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response API intent."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Event stream usage."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "sse",
+    "redirect"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:48:23.661Z"
+}

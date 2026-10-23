@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b73d0e91f9",
+  "title": "Streaming bodies and response helpers",
+  "summary": "Streaming response bodies, server-sent events, redirects, and response exports.\n\nAgent mapper reason: These files implement outward response construction and streaming lifecycle behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body exports"
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Stream-backed body"
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response exports"
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect construction"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent event encoding"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Response conversion contract"
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Streaming usage"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "streaming",
+    "sse",
+    "responses"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:53:04.365Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

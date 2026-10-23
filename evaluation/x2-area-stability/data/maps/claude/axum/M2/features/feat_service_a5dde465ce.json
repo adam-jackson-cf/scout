@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_a5dde465ce",
+  "title": "Examples: streaming, websockets, proxies and gRPC",
+  "summary": "Chat, websockets, SSE, static files, stream-to-file, http/reverse proxy and REST/gRPC multiplex.\n\nAgent mapper reason: Examples handling streams, files and proxying untrusted traffic.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run -p example-websockets"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "ws server"
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "ws client"
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "browser client"
+    },
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "chat"
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "SSE"
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "SSE client"
+    },
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "static files"
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "asset"
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "upload to disk"
+    },
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "CONNECT proxy"
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "reverse proxy"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "multiplex"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "multiplex service"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "proto codegen"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "ws testing"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "chat UI"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "proto schema"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "streaming",
+    "proxy"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:37:18.784Z"
+}

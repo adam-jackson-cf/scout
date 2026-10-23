@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_dc4fe6cd2f",
+  "title": "axum-macros FromRequest and FromRef derives",
+  "summary": "Derive macros for FromRequest/FromRequestParts (via, rejection, state attrs) and FromRef, plus shared attribute parsing.\n\nAgent mapper reason: The derives share attribute parsing and state inference logic and come with an extensive trybuild suite.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "symbol": "derive_from_request",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "FromRequest derive"
+    },
+    {
+      "path": "axum-macros/src/from_request/attr.rs",
+      "reason": "FromRequest attribute parsing"
+    },
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "reason": "FromRef derive"
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parsing"
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Macro entrypoints and docs"
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Test shim macro"
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Pinned toolchain for trybuild output"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Trait being derived"
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Docs"
+    },
+    {
+      "path": "axum-macros/CHANGELOG.md",
+      "reason": "Change history"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/state_infer_multiple_different_types.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/state_infer_multiple_different_types.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "proc-macro",
+    "derive"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:34:24.788Z"
+}

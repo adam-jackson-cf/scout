@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_17e787fb1e",
+  "title": "Encoders, exceptions and error handlers",
+  "summary": "jsonable_encoder, HTTPException/RequestValidationError types, and default exception handlers that render error responses.\n\nAgent mapper reason: Serialization and error-response rendering are tightly linked.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/encoders.py",
+      "symbol": "jsonable_encoder",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/encoders.py",
+      "reason": "JSON encoding"
+    },
+    {
+      "path": "fastapi/exceptions.py",
+      "reason": "exception types"
+    },
+    {
+      "path": "fastapi/exception_handlers.py",
+      "reason": "default handlers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/handling-errors.md",
+      "reason": "docs"
+    },
+    {
+      "path": "docs/en/docs/tutorial/encoder.md",
+      "reason": "docs"
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "serialization",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:18:30.939Z",
+  "updatedAt": "2026-10-23T19:18:30.939Z"
+}

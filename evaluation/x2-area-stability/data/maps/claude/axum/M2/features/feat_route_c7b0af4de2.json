@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_route_c7b0af4de2",
+  "title": "Examples: data stores and CRUD apps",
+  "summary": "Postgres (sqlx/tokio-postgres), key-value store and todos CRUD examples.\n\nAgent mapper reason: Examples that persist or share state, including database access.",
+  "kind": "route",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/todos/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "sqlx example"
+    },
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "reason": "tokio-postgres example"
+    },
+    {
+      "path": "examples/tokio-postgres/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "reason": "KV store"
+    },
+    {
+      "path": "examples/key-value-store/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "Todos CRUD"
+    },
+    {
+      "path": "examples/todos/Cargo.toml",
+      "reason": "Manifest"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "State extractor used for pools"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "database",
+    "crud"
+  ],
+  "trustBoundaries": [
+    "database",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:37:18.782Z"
+}

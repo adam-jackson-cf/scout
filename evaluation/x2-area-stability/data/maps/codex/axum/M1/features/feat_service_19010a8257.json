@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_19010a8257",
+  "title": "HTTP proxy examples",
+  "summary": "Forward and reverse HTTP proxying.\n\nAgent mapper reason: Both examples bridge incoming requests to upstream services and share URI, header, and body forwarding concerns.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "HTTP proxy request forwarding."
+    },
+    {
+      "path": "examples/http-proxy/Cargo.toml",
+      "reason": "Proxy client dependencies."
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Reverse proxy upstream routing."
+    },
+    {
+      "path": "examples/reverse-proxy/Cargo.toml",
+      "reason": "Reverse proxy dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Forwarded body abstractions."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "proxy",
+    "http-client"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:53:04.496Z"
+}

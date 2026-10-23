@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_546420c22d",
+  "title": "axum request metadata extractors",
+  "summary": "ConnectInfo, Host, MatchedPath, State, Extension, TypedHeader, request-part extractors and the rejection catalog.\n\nAgent mapper reason: These extractors read headers and connection metadata. Host parsing from X-Forwarded headers can be spoofed.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extract module root"
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Peer address extraction"
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Host from headers (forwarded headers)"
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Matched route template"
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "State extractor"
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "OriginalUri, BodyStream and similar"
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Rejection types"
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Extension extractor/layer"
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "TypedHeader extractor"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extractor docs"
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/host.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:35:37.933Z"
+}

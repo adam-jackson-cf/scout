@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_def21c9de3",
+  "title": "Examples: TLS and low-level serving",
+  "summary": "Examples serving with rustls/openssl, unix sockets, multiple addrs, hyper 1.0, graceful shutdown.\n\nAgent mapper reason: Transport-level examples with shared security considerations (self-signed certs).",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run -p example-tls-rustls"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "TLS example"
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "rustls example"
+    },
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "openssl example"
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "UDS example"
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "multi-listener"
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "hyper 1.0 compat"
+    },
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "shutdown"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "reason": "manifest"
+    },
+    {
+      "path": "examples/low-level-rustls/Cargo.toml",
+      "reason": "manifest"
+    },
+    {
+      "path": "examples/low-level-openssl/Cargo.toml",
+      "reason": "manifest"
+    },
+    {
+      "path": "examples/README.md",
+      "reason": "examples index"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "tls"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:35:37.960Z"
+}

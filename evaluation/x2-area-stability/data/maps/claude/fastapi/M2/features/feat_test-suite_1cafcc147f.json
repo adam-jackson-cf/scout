@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_1cafcc147f",
+  "title": "Custom request and route tutorial (renamed directory)",
+  "summary": "Docs examples for custom Request/APIRoute classes. The directory was renamed to custom_request_and_route_x2moved, but the tests still import the old module path.\n\nAgent mapper reason: The X2 M2 rename stands on its own. The tests import docs_src.custom_request_and_route.*, which no longer exists.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/custom_request_and_route_x2moved/tutorial001.py",
+      "symbol": "app",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/custom_request_and_route_x2moved/tutorial001.py",
+      "reason": "gzip request example"
+    },
+    {
+      "path": "docs_src/custom_request_and_route_x2moved/tutorial002.py",
+      "reason": "validation error body example"
+    },
+    {
+      "path": "docs_src/custom_request_and_route_x2moved/tutorial003.py",
+      "reason": "timed route example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/custom-request-and-route.md",
+      "reason": "doc page that includes these files by path"
+    },
+    {
+      "path": "fastapi/routing.py",
+      "reason": "APIRoute being subclassed"
+    },
+    {
+      "path": "tests/test_tutorial/test_custom_request_and_route/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_custom_request_and_route/test_tutorial002.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_custom_request_and_route/test_tutorial003.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_custom_request_and_route/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_custom_request_and_route/test_tutorial002.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_custom_request_and_route/test_tutorial003.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "docs_src",
+    "rename",
+    "broken-imports"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:21:08.311Z",
+  "updatedAt": "2026-10-23T19:21:08.311Z"
+}

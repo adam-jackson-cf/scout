@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0f42692916",
+  "title": "WebSocket protocol upgrade",
+  "summary": "WebSocket handshake, message conversion, and upgraded connection handling.\n\nAgent mapper reason: The upgrade handshake and message transport constitute a distinct protocol boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "WebSocket extraction and protocol integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "Server-side usage."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "Protocol testing example."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "websocket",
+    "upgrade"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:40:32.517Z"
+}

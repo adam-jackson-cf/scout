@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8ed5ca265c",
+  "title": "axum-core request extension traits (renamed ext_traits_x2moved)",
+  "summary": "RequestExt and RequestPartsExt traits for running extractors on Request/Parts directly; directory recently renamed from ext_traits to ext_traits_x2moved.\n\nAgent mapper reason: Isolated module recently touched by commit 1913b17b; lib.rs still references `ext_traits` and inner tests reference `ext_traits::tests`, so the rename likely breaks compilation.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/ext_traits_x2moved/mod.rs",
+      "symbol": "RequestExt",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/ext_traits_x2moved/mod.rs",
+      "reason": "module root and shared test types"
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request.rs",
+      "reason": "RequestExt implementation"
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request_parts.rs",
+      "reason": "RequestPartsExt implementation"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "declares `mod ext_traits;` and re-exports these traits; must match renamed directory"
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "FromRequest/FromRequestParts traits used by the ext traits"
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "extractors",
+    "rename"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:37:18.735Z",
+  "updatedAt": "2026-10-23T19:37:18.735Z"
+}

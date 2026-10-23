@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3b6f03fbaf",
+  "title": "Extra crate integration",
+  "summary": "Optional extension crate exports and feature wiring.\n\nAgent mapper reason: Feature gates and exports need a dedicated compatibility review across otherwise independent extensions.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Public API integration."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional feature and dependency wiring."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Crate intent."
+    },
+    {
+      "path": "axum-extra/CHANGELOG.md",
+      "reason": "Compatibility history."
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "crate-integration",
+    "features"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:53:04.474Z"
+}

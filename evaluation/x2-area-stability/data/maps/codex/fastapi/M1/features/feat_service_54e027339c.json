@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_54e027339c",
+  "title": "Async SQL database example",
+  "summary": "Review the asynchronous database tutorial and its integration test.\n\nAgent mapper reason: Database access and async lifecycle deserve a dedicated integration slice.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/async_sql_databases/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/async_sql_databases/tutorial001.py",
+      "reason": "Async database application."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/async-sql-databases.md",
+      "reason": "Database lifecycle and query intent."
+    },
+    {
+      "path": "tests/test_tutorial/test_async_sql_databases/test_tutorial001.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_async_sql_databases/test_tutorial001.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tutorial",
+    "database",
+    "async"
+  ],
+  "trustBoundaries": [
+    "database",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:04:09.582Z",
+  "updatedAt": "2026-10-23T19:06:59.002Z"
+}

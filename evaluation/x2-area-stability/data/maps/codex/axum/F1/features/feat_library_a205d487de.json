@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a205d487de",
+  "title": "Typed path derive macro",
+  "summary": "Validate route captures and generate typed path extraction and URI formatting.\n\nAgent mapper reason: Capture validation and URI generation must agree on path shape and encoding.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Typed path validation and generation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Runtime typed routing integration."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.stderr",
+      "reason": "Expected capture mismatch diagnostic."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/into_uri.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/into_uri.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "routing",
+    "uri"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:40:32.517Z"
+}

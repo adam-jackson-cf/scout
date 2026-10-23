@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d1e54abd1d",
+  "title": "axum handlers and error handling",
+  "summary": "Handler trait, HandlerService, boxed handlers, HandleError layer.\n\nAgent mapper reason: Handler-to-service adaptation and error conversion.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait"
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "futures"
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "HandlerService"
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "state in extension service"
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "type-erased handlers"
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "HandleError"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "docs"
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "docs"
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "docs"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "handler",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:37:18.735Z",
+  "updatedAt": "2026-10-23T19:37:18.735Z"
+}

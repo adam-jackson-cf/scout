@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_91c8d6bdcf",
+  "title": "Workspace, CI and release configuration",
+  "summary": "Workspace manifest, GitHub Actions CI, cargo-deny policy, issue/PR templates and top-level docs.\n\nAgent mapper reason: Repository-level build and supply-chain configuration.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace manifest"
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "CI pipeline"
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "CI dependency patching"
+    },
+    {
+      "path": "deny.toml",
+      "reason": "cargo-deny license/advisory policy"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue template config"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "reason": "Issue template"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "reason": "Issue template"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "PR template"
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Ignore rules"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contribution process"
+    },
+    {
+      "path": "ECOSYSTEM.md",
+      "reason": "Ecosystem listing"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "reason": "Root changelog"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "config",
+    "supply-chain"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:34:24.788Z"
+}

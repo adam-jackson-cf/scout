@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6e5b3e3395",
+  "title": "Core response conversion",
+  "summary": "Conversion of values, tuples, headers, and response parts into HTTP responses.\n\nAgent mapper reason: Response conversion implementations share ordering and header mutation contracts.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response API"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Response conversions"
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "Response part composition"
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "Header composition"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response behavior documentation"
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Crate configuration"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

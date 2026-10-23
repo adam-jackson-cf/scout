@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4127742740",
+  "title": "Exceptions and exception handlers",
+  "summary": "HTTPException, RequestValidationError, WebSocket exceptions and default handlers converting errors to responses.\n\nAgent mapper reason: Small cohesive error-handling surface; leak of validation details is a review concern.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/exception_handlers.py",
+      "symbol": "request_validation_exception_handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/exceptions.py",
+      "reason": "exception types"
+    },
+    {
+      "path": "fastapi/exception_handlers.py",
+      "reason": "default handlers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "installs handlers"
+    },
+    {
+      "path": "docs/en/docs/tutorial/handling-errors.md",
+      "reason": "docs"
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:15:05.591Z",
+  "updatedAt": "2026-10-23T19:15:05.591Z"
+}

@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_ce8535bd84",
+  "title": "axum route test suite",
+  "summary": "Integration-style tests for routing behavior: fallback, HEAD handling, error handling, merge and nest.\n\nAgent mapper reason: A big test suite worth reviewing on its own, separate from the router logic, to check coverage gaps.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": "cargo test -p axum routing::tests"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "Main routing tests"
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "Fallback tests"
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "GET-to-HEAD tests"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "HandleError tests"
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "Merge tests"
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "Nest tests"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Code under test"
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Test client used by the tests"
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "tests",
+    "routing"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:37:18.785Z"
+}

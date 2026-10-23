@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_87f2601a50",
+  "title": "OpenAPI schema generation contracts",
+  "summary": "Schema extensions, model naming, callbacks, operation identifiers, and additional responses.\n\nAgent mapper reason: These tests cover the generated API description contract and the fixtures required to reproduce model naming behavior.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_generate_unique_id_function.py tests/test_openapi_route_extensions.py tests/test_modules_same_name_body"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_additional_properties.py",
+      "reason": "Additional schema properties."
+    },
+    {
+      "path": "tests/test_additional_response_extra.py",
+      "reason": "Additional response schema metadata."
+    },
+    {
+      "path": "tests/test_additional_responses_bad.py",
+      "reason": "Invalid response declarations."
+    },
+    {
+      "path": "tests/test_additional_responses_custom_model_in_callback.py",
+      "reason": "Callback response model schemas."
+    },
+    {
+      "path": "tests/test_additional_responses_custom_validationerror.py",
+      "reason": "Custom validation error schemas."
+    },
+    {
+      "path": "tests/test_additional_responses_default_validationerror.py",
+      "reason": "Default validation error schemas."
+    },
+    {
+      "path": "tests/test_additional_responses_response_class.py",
+      "reason": "Response class schema integration."
+    },
+    {
+      "path": "tests/test_additional_responses_router.py",
+      "reason": "Router response schema merging."
+    },
+    {
+      "path": "tests/test_custom_schema_fields.py",
+      "reason": "Custom schema fields."
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "reason": "Duplicate model naming."
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "reason": "Operation identifier generation."
+    },
+    {
+      "path": "tests/test_openapi_query_parameter_extension.py",
+      "reason": "Query schema extensions."
+    },
+    {
+      "path": "tests/test_openapi_route_extensions.py",
+      "reason": "Route schema extensions."
+    },
+    {
+      "path": "tests/test_param_include_in_schema.py",
+      "reason": "Parameter schema visibility."
+    },
+    {
+      "path": "tests/test_repeated_dependency_schema.py",
+      "reason": "Dependency schema deduplication."
+    },
+    {
+      "path": "tests/test_schema_extra_examples.py",
+      "reason": "Schema examples."
+    },
+    {
+      "path": "tests/test_sub_callbacks.py",
+      "reason": "Nested callback schema behavior."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/a.py",
+      "reason": "Model naming collision fixture."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/b.py",
+      "reason": "Second model naming collision fixture."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/main.py",
+      "reason": "Fixture application composition."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "Cross-module naming regression."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/extending-openapi.md",
+      "reason": "Schema customization intent."
+    },
+    {
+      "path": "docs/en/docs/advanced/openapi-callbacks.md",
+      "reason": "Callback intent."
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "openapi",
+    "schemas",
+    "callbacks"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:59:28.547Z",
+  "updatedAt": "2026-10-23T19:12:00.176Z"
+}

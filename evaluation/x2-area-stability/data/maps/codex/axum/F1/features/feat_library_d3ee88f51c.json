@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d3ee88f51c",
+  "title": "Structured request bodies and query extraction",
+  "summary": "JSON, forms, query strings, raw forms, and raw query access.\n\nAgent mapper reason: These extractors validate content types and decode structured request input.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON extraction and responses."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extraction and responses."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Typed query decoding."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query access."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form access."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Body consumption limit contract."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Shared rejection definitions."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/json.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/form.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "json",
+    "form",
+    "query"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:40:32.517Z"
+}

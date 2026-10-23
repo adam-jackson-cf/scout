@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_1bdf261c87",
+  "title": "WebSocket chat application",
+  "summary": "Browser chat frontend and concurrent WebSocket broadcast server.\n\nAgent mapper reason: The client and broadcast server implement one complete interactive flow.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Chat server and broadcast state."
+    },
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "Browser chat client."
+    },
+    {
+      "path": "examples/chat/Cargo.toml",
+      "reason": "Chat dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "WebSocket framework implementation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "chat",
+    "websocket"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:53:04.497Z"
+}

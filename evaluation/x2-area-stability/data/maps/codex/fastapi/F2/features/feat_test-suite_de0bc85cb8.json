@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_de0bc85cb8",
+  "title": "JSON encoding and data structure compatibility",
+  "summary": "Review conversion of Python values into serializable response data.\n\nAgent mapper reason: Value conversion is a separate concern from response model selection and validation.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "JSON-compatible value conversion."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom datetime encoding."
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "Framework data structures."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "General response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass conversion."
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "reason": "Tuple compatibility."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/encoder.md",
+      "reason": "Encoding API intent."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "encoding",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:49:43.740Z",
+  "updatedAt": "2026-10-23T18:49:43.740Z"
+}

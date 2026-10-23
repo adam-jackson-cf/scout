@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_ef6c872769",
+  "title": "Response model filtering and serialization contracts",
+  "summary": "Response validation, model filtering, aliases, ORM objects, and JSON encoding.\n\nAgent mapper reason: Output validation and filtering belong together because mistakes can change the public payload or expose excluded fields.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_serialize_response.py tests/test_jsonable_encoder.py tests/test_response_model_invalid.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "reason": "Submodel filtering."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Datetime encoding overrides."
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "reason": "Custom inherited value handling."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "JSON-compatible encoding."
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "ORM-backed serialization."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Response aliases."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Return annotation model inference."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Field selection."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid response rejection."
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Response subtype behavior."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Model serialization."
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Default field omission."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Public output filtering contract."
+    },
+    {
+      "path": "docs/en/docs/tutorial/encoder.md",
+      "reason": "Encoder intent."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "models",
+    "encoding"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:59:28.547Z",
+  "updatedAt": "2026-10-23T19:06:59.033Z"
+}

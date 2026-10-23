@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_68dfd3f886",
+  "title": "Method dispatch and route execution",
+  "summary": "HTTP method selection and the service futures that execute matched routes.\n\nAgent mapper reason: Method matching, HEAD handling, and response execution have tightly coupled HTTP semantics.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/method_filter.rs",
+      "reason": "Method selection"
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Method router"
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Route service execution"
+    },
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Response futures"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/method_routing/fallback.md",
+      "reason": "Method fallback semantics"
+    },
+    {
+      "path": "axum/src/docs/method_routing/merge.md",
+      "reason": "Method merge semantics"
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "http-methods"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

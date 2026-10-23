@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_3c9d0801d0",
+  "title": "REST and gRPC multiplexing example",
+  "summary": "Serve HTTP routes and protobuf RPC through a shared service.\n\nAgent mapper reason: Protocol dispatch, schema, and build integration must agree on the exposed service.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "REST and RPC integration."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "Protocol dispatch service."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "Handwritten protobuf generation setup."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "Authoritative RPC schema."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/Cargo.toml",
+      "reason": "RPC and build dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "grpc",
+    "protobuf"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:48:23.713Z"
+}

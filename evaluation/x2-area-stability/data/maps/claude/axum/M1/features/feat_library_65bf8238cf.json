@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_65bf8238cf",
+  "title": "axum middleware and error handling",
+  "summary": "from_fn, from_extractor, map_request, map_response middleware, HandleError layer and ServiceExt.\n\nAgent mapper reason: Tower layering utilities, which apps commonly use to build auth and other request guards.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware module"
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Function middleware"
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Extractor-based middleware"
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Request mapping middleware"
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Response mapping middleware"
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "HandleError layer"
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "ServiceExt helpers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware docs"
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error handling docs"
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "middleware",
+    "tower"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:35:37.935Z"
+}

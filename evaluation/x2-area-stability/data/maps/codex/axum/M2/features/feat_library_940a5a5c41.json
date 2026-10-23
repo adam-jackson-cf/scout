@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_940a5a5c41",
+  "title": "Core crate foundation",
+  "summary": "Core exports, body abstraction, errors, macros, and build configuration.\n\nAgent mapper reason: This bounded slice owns the common infrastructure beneath extraction and response conversion.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Crate exports and module wiring."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Shared body abstraction."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Shared error representation."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Internal implementation helpers."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Build-time configuration."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core package contract."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/README.md",
+      "reason": "Package intent."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "crate-foundation"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:53:04.365Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

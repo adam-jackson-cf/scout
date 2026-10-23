@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_7228c82775",
+  "title": "WebSocket example applications",
+  "summary": "Chat, WebSocket server/client usage, and WebSocket integration testing.\n\nAgent mapper reason: These applications demonstrate the same upgrade and bidirectional messaging lifecycle.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Chat service."
+    },
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "Chat browser client."
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "WebSocket server."
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "WebSocket client."
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Browser protocol interaction."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "WebSocket testing example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Underlying upgrade API."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "websocket",
+    "chat"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

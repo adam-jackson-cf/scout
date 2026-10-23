@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_c2e086ddc7",
+  "title": "Asynchronous testing tutorial",
+  "summary": "Demonstrate asynchronous application testing.\n\nAgent mapper reason: Asynchronous test setup has its own execution and event-loop concerns.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/async_tests/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/async_tests/__init__.py",
+      "reason": "Tutorial package."
+    },
+    {
+      "path": "docs_src/async_tests/main.py",
+      "reason": "Asynchronous test application."
+    },
+    {
+      "path": "docs_src/async_tests/test_main.py",
+      "reason": "Embedded asynchronous tests."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/async-tests.md",
+      "reason": "Asynchronous testing intent."
+    },
+    {
+      "path": "docs_src/async_tests/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_async_tests/test_main.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "docs_src/async_tests/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_async_tests/test_main.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tutorial",
+    "async",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "concurrency",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:12:00.054Z",
+  "updatedAt": "2026-10-23T19:12:00.054Z"
+}

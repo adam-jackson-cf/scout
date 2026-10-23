@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1d9dede087",
+  "title": "axum handlers",
+  "summary": "Handler trait, handler service adapters, futures, and boxed handler/route erasure.\n\nAgent mapper reason: Handler abstraction and its erasure are tightly coupled.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait and impls"
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "HandlerService"
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "handler futures"
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "state-in-extension adapter"
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "type-erased handler/route boxing"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "handler docs"
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "handler type errors docs"
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "main consumer"
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "handler"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:27:43.928Z",
+  "updatedAt": "2026-10-23T19:27:43.928Z"
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1dafeac037",
+  "title": "axum-extra cookie jars",
+  "summary": "CookieJar, SignedCookieJar, PrivateCookieJar.\n\nAgent mapper reason: Security-sensitive crypto cookie handling.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "symbol": "CookieJar",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "CookieJar"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "signed"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "encrypted"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "features"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_cookie.rs",
+      "reason": "usage"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "cookies",
+    "crypto"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "auth",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:30:20.528Z"
+}

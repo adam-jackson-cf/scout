@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_5c612249e2",
+  "title": "axum-core response, body and error primitives",
+  "summary": "IntoResponse/IntoResponseParts traits, AppendHeaders, body type aliases, error type, crate root and build script.\n\nAgent mapper reason: Response conversion and body/error types make up the output-side core API.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "crate root"
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "response module"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "IntoResponse impls"
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "IntoResponseParts impls"
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "AppendHeaders response helper"
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "body helpers"
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "core Error type"
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "build script"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "crate manifest"
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "crate docs"
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "response docs"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "response"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:22:59.659Z"
+}

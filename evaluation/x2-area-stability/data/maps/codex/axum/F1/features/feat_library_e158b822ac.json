@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e158b822ac",
+  "title": "Extra typed and resource routing",
+  "summary": "Typed paths, route helpers, and resource-style route construction.\n\nAgent mapper reason: These helpers add route construction contracts on top of the main router.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Routing extension API."
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Resource route construction."
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Typed route integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Typed path code generation."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Underlying router contract."
+    },
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "typed-path"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:40:32.517Z"
+}

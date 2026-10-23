@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_1f2875b34f",
+  "title": "Package validation and release configuration",
+  "summary": "Define packaging, quality checks, dependency maintenance, and publication.\n\nAgent mapper reason: Packaging and its validation/publication gates share a release contract.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Primary package and tooling configuration."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Continuous validation."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Release publication."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Validation reporting."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local quality gates."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update policy."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Repository artifact exclusions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Development workflow."
+    },
+    {
+      "path": "LICENSE",
+      "reason": "Distribution terms."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "ci",
+    "release"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "secrets",
+    "permissions",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:06:58.891Z",
+  "updatedAt": "2026-10-23T19:06:58.891Z"
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_fbc8ff93a7",
+  "title": "Authentication examples",
+  "summary": "JWT validation, OAuth exchange, and session-backed application behavior.\n\nAgent mapper reason: These applications center on credentials, identity, and authenticated state.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "reason": "Token authentication"
+    },
+    {
+      "path": "examples/oauth/src/main.rs",
+      "reason": "OAuth application flow"
+    },
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Session lifecycle"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/jwt/Cargo.toml",
+      "reason": "JWT dependencies"
+    },
+    {
+      "path": "examples/oauth/Cargo.toml",
+      "reason": "OAuth client dependencies"
+    },
+    {
+      "path": "examples/sessions/Cargo.toml",
+      "reason": "Session dependencies"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "authentication"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "secrets",
+    "auth",
+    "external-api",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:50:54.234Z"
+}

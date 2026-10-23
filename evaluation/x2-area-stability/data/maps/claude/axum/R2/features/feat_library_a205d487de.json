@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a205d487de",
+  "title": "axum-macros TypedPath derive",
+  "summary": "#[derive(TypedPath)], which generates path templates, Display/URI encoding and extractor impls.\n\nAgent mapper reason: Generated URL encoding must be correct to avoid path injection. It has its own test directory.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "symbol": "derive_typed_path",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "TypedPath derive implementation"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Runtime TypedPath trait"
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parsing"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/customize_rejection.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/route_not_starting_with_slash.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/customize_rejection.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/route_not_starting_with_slash.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "proc-macro",
+    "typed-path"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:34:24.788Z"
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b91d2c1147",
+  "title": "Extra handler alternatives and middleware",
+  "summary": "Alternative handler selection, either-type adaptation, and extra middleware helpers.\n\nAgent mapper reason: These adapters control branching and composition within request handling.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Handler extension exports."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Alternative handler selection."
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Alternative extractor and response representation."
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Extra middleware adapters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Underlying handler contracts."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:40:32.517Z"
+}

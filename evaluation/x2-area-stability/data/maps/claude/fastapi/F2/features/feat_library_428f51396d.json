@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_428f51396d",
+  "title": "Application and routing core",
+  "summary": "FastAPI application class, APIRouter/APIRoute request handling, endpoint execution, response serialization pipeline and route registration.\n\nAgent mapper reason: applications.py and routing.py form the request lifecycle; utils/types are only consumed by them.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/applications.py",
+      "symbol": "FastAPI",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "FastAPI app class, docs routes, middleware stack setup"
+    },
+    {
+      "path": "fastapi/routing.py",
+      "reason": "APIRoute, APIRouter, request handler and response serialization"
+    },
+    {
+      "path": "fastapi/__init__.py",
+      "reason": "public API exports and version"
+    },
+    {
+      "path": "fastapi/types.py",
+      "reason": "shared type aliases used by routing"
+    },
+    {
+      "path": "fastapi/utils.py",
+      "reason": "route helpers: unique id generation, response field cloning, status code checks"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "dependency pins for starlette/pydantic"
+    },
+    {
+      "path": "docs/en/docs/tutorial/bigger-applications.md",
+      "reason": "documents include_router semantics"
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_extra_routes.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_callable_endpoint.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_extra_routes.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_callable_endpoint.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "core",
+    "asgi"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:15:05.591Z",
+  "updatedAt": "2026-10-23T19:15:05.591Z"
+}

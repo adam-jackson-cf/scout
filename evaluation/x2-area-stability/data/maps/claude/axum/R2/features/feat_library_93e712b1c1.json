@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_93e712b1c1",
+  "title": "axum-core responses, body and errors",
+  "summary": "IntoResponse/IntoResponseParts traits, AppendHeaders, the core body type, the error type and crate root.\n\nAgent mapper reason: Defines how handler outputs are turned into HTTP responses, including header-building logic.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Crate root"
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response module"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "IntoResponse impls"
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "IntoResponseParts impls"
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "Header appending response part"
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Body type and helpers"
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Boxed error type"
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Shared internal macros"
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Build script cfg detection"
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Crate manifest"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/README.md",
+      "reason": "Crate docs"
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response design docs"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "response",
+    "body"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:34:24.788Z"
+}

@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_0e87e01f52",
+  "title": "Documentation example apps and tutorial tests",
+  "summary": "Runnable example apps under docs_src covering each tutorial topic, verified by tests/test_tutorial.\n\nAgent mapper reason: Hundreds of near-duplicate example files across Python version variants; reviewed as a sample-based suite rather than one slice per file.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs_src/first_steps/tutorial001.py",
+      "symbol": "app",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "reason": "multi-module example app"
+    },
+    {
+      "path": "docs_src/bigger_applications/app/dependencies.py",
+      "reason": "example header token dependency"
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/items.py",
+      "reason": "example router"
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/users.py",
+      "reason": "example router"
+    },
+    {
+      "path": "docs_src/bigger_applications/app/internal/admin.py",
+      "reason": "example admin router"
+    },
+    {
+      "path": "docs_src/request_files/tutorial001.py",
+      "reason": "file upload example"
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial001.py",
+      "reason": "root_path example"
+    },
+    {
+      "path": "docs_src/app_testing/main.py",
+      "reason": "testing example"
+    },
+    {
+      "path": "docs_src/dependencies/tutorial008.py",
+      "reason": "yield dependency example"
+    },
+    {
+      "path": "docs_src/async_sql_databases/tutorial001.py",
+      "reason": "database example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "maps examples to pages"
+    },
+    {
+      "path": "docs/en/docs/tutorial/index.md",
+      "reason": "tutorial index"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_body/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_async_sql_databases/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "docs_src/app_testing/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "docs_src/async_tests/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "docs_src/sql_databases/sql_app/tests/test_sql_app.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_body/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_async_sql_databases/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "docs_src/app_testing/test_main.py",
+      "command": null
+    },
+    {
+      "path": "docs_src/async_tests/test_main.py",
+      "command": null
+    },
+    {
+      "path": "docs_src/sql_databases/sql_app/tests/test_sql_app.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "examples"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "database"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:17:08.936Z",
+  "updatedAt": "2026-10-23T19:21:08.400Z"
+}

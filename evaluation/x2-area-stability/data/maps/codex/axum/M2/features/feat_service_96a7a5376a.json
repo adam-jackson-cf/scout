@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_96a7a5376a",
+  "title": "REST and gRPC multiplexing",
+  "summary": "Dispatches HTTP and gRPC traffic through a shared service.\n\nAgent mapper reason: The schema, build setup, dispatcher, and server jointly implement the protocol multiplexing contract.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "Server assembly."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "Protocol dispatch service."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "Authored protobuf generation setup."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "Authored RPC contract."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/Cargo.toml",
+      "reason": "HTTP and gRPC dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service adaptation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "grpc",
+    "multiplexing",
+    "protobuf"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "user-input",
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:55:37.102Z"
+}

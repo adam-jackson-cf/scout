@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_6d812eae4e",
+  "title": "Listener lifecycle examples",
+  "summary": "Graceful shutdown, multiple listeners, and Unix domain sockets.\n\nAgent mapper reason: These examples concern server ownership, transport setup, and termination.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Shutdown lifecycle"
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Multiple listener orchestration"
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Unix socket transport"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/graceful-shutdown/Cargo.toml",
+      "reason": "Signal and runtime dependencies"
+    },
+    {
+      "path": "examples/listen-multiple-addrs/Cargo.toml",
+      "reason": "Listener dependencies"
+    },
+    {
+      "path": "examples/unix-domain-socket/Cargo.toml",
+      "reason": "Unix transport dependencies"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "listeners",
+    "shutdown"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:55:37.086Z"
+}

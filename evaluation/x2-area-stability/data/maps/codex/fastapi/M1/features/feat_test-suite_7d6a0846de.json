@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_7d6a0846de",
+  "title": "Dependency resolution and caching contracts",
+  "summary": "Test dependency identity, injection, overrides, and cache behavior.\n\nAgent mapper reason: These contracts concern dependency graph evaluation and reuse.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "Cache semantics."
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "Class dependencies."
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "Repeated dependency handling."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "Override behavior."
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "Security override integration."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Connection object injection."
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "Path and dependency interaction."
+    },
+    {
+      "path": "tests/test_enforce_once_required_parameter.py",
+      "reason": "Repeated required parameter semantics."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/dependencies/sub-dependencies.md",
+      "reason": "Dependency graph intent."
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "caching",
+    "overrides"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "concurrency",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:04:09.582Z",
+  "updatedAt": "2026-10-23T19:06:59.019Z"
+}

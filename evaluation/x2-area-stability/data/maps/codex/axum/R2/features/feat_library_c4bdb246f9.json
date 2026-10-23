@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_c4bdb246f9",
+  "title": "Extra routing and handler composition",
+  "summary": "Typed routes, resource routing, alternative handlers, and extra middleware.\n\nAgent mapper reason: These extensions compose endpoint selection and integrate the extra crate's public API.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Routing extensions"
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Resource route composition"
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Typed path integration"
+    },
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Handler extension exports"
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Alternative handler dispatch"
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Alternative value composition"
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Middleware extensions"
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Extra crate integration"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Extension package intent"
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Test fixture"
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Test fixture"
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Test fixture"
+    },
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "typed-paths",
+    "handlers"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:50:54.234Z"
+}

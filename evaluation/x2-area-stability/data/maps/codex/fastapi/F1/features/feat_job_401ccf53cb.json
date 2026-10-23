@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_401ccf53cb",
+  "title": "Community people automation",
+  "summary": "Maintain contributor and community information.\n\nAgent mapper reason: Community collection and its published data have a shared maintenance purpose.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/people.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Automation orchestration."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action contract."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Community data processing."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Action runtime."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Community data; generation status is unverified."
+    },
+    {
+      "path": "docs/en/data/github_sponsors.yml",
+      "reason": "Sponsor data; generation status is unverified."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "Published presentation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "community",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "filesystem",
+    "secrets",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T18:46:10.811Z"
+}

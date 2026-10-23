@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_71e37dd6ad",
+  "title": "Axum crate integration and test infrastructure",
+  "summary": "Public exports, internal utilities, test clients, and benchmarks.\n\nAgent mapper reason: These files integrate the crate and supply shared verification machinery.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Crate public surface"
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Internal implementation macros"
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared utilities"
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Build configuration"
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Shared testing support"
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "HTTP test client"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Performance harness"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Features and benchmark configuration"
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Public package intent"
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "crate-api",
+    "testing",
+    "benchmarks"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:50:54.234Z"
+}

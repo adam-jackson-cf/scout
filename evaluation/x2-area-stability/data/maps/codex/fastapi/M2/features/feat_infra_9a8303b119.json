@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_9a8303b119",
+  "title": "Continuous verification and dependency maintenance",
+  "summary": "Configure tests, quality checks, coverage presentation, and dependency updates.\n\nAgent mapper reason: These controls determine what changes are checked and how verification executes.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Continuous test execution."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Verification report publication."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local quality gates."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update policy."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Workspace artifact exclusions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Tool configuration and dependencies."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "quality",
+    "dependencies"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "external-api",
+    "permissions",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:12:00.054Z",
+  "updatedAt": "2026-10-23T19:12:00.054Z"
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_62f59413c0",
+  "title": "Community people and sponsor updates",
+  "summary": "Community metadata update automation and funding configuration.\n\nAgent mapper reason: Review data acquisition and repository writes together; data outputs remain context until provenance is established.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "People update implementation."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action interface."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Runtime definition."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Update workflow."
+    },
+    {
+      "path": ".github/FUNDING.yml",
+      "reason": "Repository funding links."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Potentially maintained community data; generation status needs inspection."
+    },
+    {
+      "path": "docs/en/data/github_sponsors.yml",
+      "reason": "Sponsor data; generation status needs inspection."
+    },
+    {
+      "path": "docs/en/data/sponsors.yml",
+      "reason": "Sponsor presentation data."
+    },
+    {
+      "path": "docs/en/data/sponsors_badge.yml",
+      "reason": "Sponsor badge data."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "Community presentation page."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "community",
+    "sponsors"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "filesystem",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:54:37.966Z",
+  "updatedAt": "2026-10-23T18:54:37.966Z"
+}

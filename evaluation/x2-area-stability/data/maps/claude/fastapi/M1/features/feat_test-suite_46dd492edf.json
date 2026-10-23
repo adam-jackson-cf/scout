@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_46dd492edf",
+  "title": "Docs tutorial examples and tutorial tests",
+  "summary": "Example apps in docs_src, which are exercised by tests/test_tutorial.\n\nAgent mapper reason: Example code checked by the tutorial tests. It is lower risk, so only representative files are owned.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs_src/first_steps/tutorial001.py",
+      "symbol": "app",
+      "route": "/",
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "reason": "Multi-router example"
+    },
+    {
+      "path": "docs_src/bigger_applications/app/dependencies.py",
+      "reason": "Header token example"
+    },
+    {
+      "path": "docs_src/app_testing/main.py",
+      "reason": "Testing example"
+    },
+    {
+      "path": "docs_src/background_tasks/tutorial002.py",
+      "reason": "Background tasks example"
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial001.py",
+      "reason": "Proxy example"
+    },
+    {
+      "path": "docs_src/custom_request_and_route/tutorial001.py",
+      "reason": "Custom route example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Docs config"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial002.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "docs_src/sql_databases/sql_app/tests/test_sql_app.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial002.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "docs_src/sql_databases/sql_app/tests/test_sql_app.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "examples"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:19:35.573Z",
+  "updatedAt": "2026-10-23T19:19:35.573Z"
+}

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_7b7b3112ca",
+  "title": "Observability and cross-origin middleware examples",
+  "summary": "Request tracing, body inspection, metrics, and CORS configuration.\n\nAgent mapper reason: These examples configure middleware around application handlers and expose middleware ordering effects.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "reason": "HTTP metrics integration."
+    },
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "reason": "Tracing integration."
+    },
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Request and response inspection."
+    },
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "Cross-origin middleware policy."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/prometheus-metrics/Cargo.toml",
+      "reason": "Metrics dependencies."
+    },
+    {
+      "path": "examples/tracing-aka-logging/Cargo.toml",
+      "reason": "Tracing dependencies."
+    },
+    {
+      "path": "examples/print-request-response/Cargo.toml",
+      "reason": "Body inspection dependencies."
+    },
+    {
+      "path": "examples/cors/Cargo.toml",
+      "reason": "CORS middleware dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "middleware",
+    "observability",
+    "cors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:40:32.517Z"
+}

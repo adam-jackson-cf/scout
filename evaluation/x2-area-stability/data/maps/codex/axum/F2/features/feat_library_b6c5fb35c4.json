@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b6c5fb35c4",
+  "title": "Core crate foundation",
+  "summary": "Core public surface, body abstraction, errors, and compilation support.\n\nAgent mapper reason: Small foundational files establish the dependency-light core package.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Public crate surface."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Shared body abstraction."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Shared error representation."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Internal implementation macros."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Compilation configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Crate configuration."
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Package purpose."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "body",
+    "errors"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

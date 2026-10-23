@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_7c72c9bc64",
+  "title": "HTTP and WebSocket testing examples",
+  "summary": "Runnable examples of testing ordinary HTTP handlers and upgraded WebSocket connections.\n\nAgent mapper reason: These packages explicitly teach executable verification of the framework's two connection models.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": "cargo test --manifest-path examples/testing/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "HTTP application and tests."
+    },
+    {
+      "path": "examples/testing/Cargo.toml",
+      "reason": "HTTP test dependencies."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "WebSocket application and tests."
+    },
+    {
+      "path": "examples/testing-websockets/Cargo.toml",
+      "reason": "WebSocket test dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Example execution guidance."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "command": null
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "testing",
+    "websocket",
+    "http"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:55:37.131Z"
+}

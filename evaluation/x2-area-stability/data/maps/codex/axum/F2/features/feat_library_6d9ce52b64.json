@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6d9ce52b64",
+  "title": "HTTP method routing",
+  "summary": "Method filters, method handlers, HEAD behavior, and method fallback.\n\nAgent mapper reason: Method dispatch has distinct protocol semantics and dedicated HEAD regression coverage.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/method_filter.rs",
+      "reason": "Method selection."
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Method routing implementation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/method_routing/fallback.md",
+      "reason": "Method fallback contract."
+    },
+    {
+      "path": "axum/src/docs/method_routing/merge.md",
+      "reason": "Method merge contract."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "http",
+    "methods"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9e35af6389",
+  "title": "axum request-metadata extractors and state",
+  "summary": "State, Extension, ConnectInfo, Host, MatchedPath, OriginalUri/BodyStream request parts, and TypedHeader.\n\nAgent mapper reason: These extractors read connection, header and app-state metadata rather than parsing request bodies.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "symbol": "State",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "State extractor"
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Extension extractor and layer"
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "ConnectInfo"
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Host extractor, which trusts forwarding headers"
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "MatchedPath"
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "OriginalUri, BodyStream and RawBody"
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "TypedHeader extractor"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Module root"
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "State docs"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "state",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:26:03.200Z",
+  "updatedAt": "2026-10-23T19:26:03.200Z"
+}

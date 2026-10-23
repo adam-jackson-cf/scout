@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e42dd0dc93",
+  "title": "Observability examples",
+  "summary": "Request/response inspection, tracing, and Prometheus metrics.\n\nAgent mapper reason: These examples instrument the request lifecycle and expose operational information.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "HTTP inspection middleware."
+    },
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "reason": "Metrics instrumentation."
+    },
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "reason": "Tracing setup."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/prometheus-metrics/Cargo.toml",
+      "reason": "Metrics integration dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "observability"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

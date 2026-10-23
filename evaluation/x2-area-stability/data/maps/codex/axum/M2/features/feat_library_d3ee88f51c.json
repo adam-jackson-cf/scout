@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d3ee88f51c",
+  "title": "JSON, forms, and query extraction",
+  "summary": "Standard structured payload and URL-encoded input handling.\n\nAgent mapper reason: These codecs share content-type, decoding, and malformed-input concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON extraction and responses"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extraction and responses"
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query deserialization"
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form input"
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query input"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Payload rejection definitions"
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Input size policy"
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/json.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/form.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "json",
+    "forms",
+    "query"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:37.055Z"
+}

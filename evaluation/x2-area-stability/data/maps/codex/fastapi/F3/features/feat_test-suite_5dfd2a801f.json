@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_5dfd2a801f",
+  "title": "Request parameter inference and validation contracts",
+  "summary": "Parameter classification, aliases, optionality, repeated values, and validation failures.\n\nAgent mapper reason: These tests exercise the shared boundary from request values to typed endpoint arguments.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_annotated.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_annotated.py tests/test_path.py tests/test_query.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "Parameter ambiguity."
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "Annotated parameter declarations."
+    },
+    {
+      "path": "tests/test_enforce_once_required_parameter.py",
+      "reason": "Required parameter deduplication."
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "reason": "Optionality inference."
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "reason": "Invalid path declarations."
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "reason": "Sequence validation."
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "Multiple query errors."
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "reason": "Parameter metadata classes."
+    },
+    {
+      "path": "tests/test_params_repr.py",
+      "reason": "Parameter representation."
+    },
+    {
+      "path": "tests/test_path.py",
+      "reason": "Path parsing."
+    },
+    {
+      "path": "tests/test_query.py",
+      "reason": "Query parsing."
+    },
+    {
+      "path": "tests/test_repeated_cookie_headers.py",
+      "reason": "Repeated cookie and header handling."
+    },
+    {
+      "path": "tests/test_repeated_parameter_alias.py",
+      "reason": "Alias collisions."
+    },
+    {
+      "path": "tests/test_required_noneable.py",
+      "reason": "Required nullable inputs."
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "reason": "Tuple parameter validation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/query-params-str-validations.md",
+      "reason": "Public validation semantics."
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_path.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_query.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_annotated.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_path.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_query.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "validation",
+    "parameters"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:54:37.966Z",
+  "updatedAt": "2026-10-23T18:54:37.966Z"
+}

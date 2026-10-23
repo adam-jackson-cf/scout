@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_cd4c109ed0",
+  "title": "Session application example",
+  "summary": "Session-backed application state across HTTP requests.\n\nAgent mapper reason: Session persistence and client identifiers should be reviewed as one application contract.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sessions/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Session lifecycle and request handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sessions/Cargo.toml",
+      "reason": "Session integration dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "sessions"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:37.110Z"
+}

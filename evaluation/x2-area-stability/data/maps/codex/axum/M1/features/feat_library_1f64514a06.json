@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1f64514a06",
+  "title": "Structured request bodies and headers",
+  "summary": "JSON, form, multipart, and typed header extraction with shared rejection definitions.\n\nAgent mapper reason: These request parsers share content-type validation, bounded body consumption, and rejection behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON serialization and extraction"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extraction"
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form access"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart decoding"
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Typed headers"
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Public extraction rejection types"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Input size constraint"
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extraction contract"
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/json.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/form.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "json",
+    "forms",
+    "multipart",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:53:04.365Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

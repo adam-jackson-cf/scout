@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0bed156c8e",
+  "title": "FastAPI application and routing core",
+  "summary": "FastAPI app class, APIRouter and route classes, request handling and response serialization, plus the WebSocket routing glue.\n\nAgent mapper reason: Application and router are tightly coupled; together they make up the request lifecycle.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/applications.py",
+      "symbol": "FastAPI",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "ASGI application, route registration, docs routes"
+    },
+    {
+      "path": "fastapi/routing.py",
+      "reason": "APIRoute/APIRouter, request handler, response serialization"
+    },
+    {
+      "path": "fastapi/__init__.py",
+      "reason": "public API exports"
+    },
+    {
+      "path": "fastapi/types.py",
+      "reason": "shared typing aliases used by routing"
+    },
+    {
+      "path": "fastapi/utils.py",
+      "reason": "route helpers (unique id, response field creation)"
+    },
+    {
+      "path": "fastapi/requests.py",
+      "reason": "Request re-exports"
+    },
+    {
+      "path": "fastapi/websockets.py",
+      "reason": "WebSocket re-exports"
+    },
+    {
+      "path": "fastapi/background.py",
+      "reason": "BackgroundTasks wrapper"
+    },
+    {
+      "path": "fastapi/concurrency.py",
+      "reason": "threadpool/contextmanager helpers used by the request path"
+    },
+    {
+      "path": "fastapi/logger.py",
+      "reason": "package logger"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "dependencies and tool config"
+    },
+    {
+      "path": "tests/main.py",
+      "reason": "shared test app"
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_extra_routes.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_callable_endpoint.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_ws_router.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_operations_signatures.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_extra_routes.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_callable_endpoint.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_ws_router.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_operations_signatures.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "routing",
+    "asgi"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:21:08.311Z",
+  "updatedAt": "2026-10-23T19:21:08.311Z"
+}

@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_9ee16bbbb0",
+  "title": "GitHub Actions automation",
+  "summary": "CI workflows and Docker-based custom actions for docs previews, translations, and the people page.\n\nAgent mapper reason: These jobs handle tokens and PR-triggered events, so they need a supply-chain-focused review.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "PR comment action"
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Action def"
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Translation notifier"
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Action def"
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "People GraphQL action"
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action def"
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Preview watcher"
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Action def"
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Test CI"
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "PyPI publish"
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Docs build"
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Docs preview"
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "People job"
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Translations job"
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Coverage upload"
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Issue manager"
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Labeling"
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Release notes"
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependabot"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Action image"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "external-api",
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:19:35.573Z",
+  "updatedAt": "2026-10-23T19:21:08.390Z"
+}

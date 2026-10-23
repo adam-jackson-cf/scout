@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_4e14eaf02d",
+  "title": "Documentation build workflow",
+  "summary": "Build the documentation site.\n\nAgent mapper reason: Build execution has distinct runtime and permissions concerns from site presentation.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build orchestration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Primary site configuration."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Build dependencies and tooling."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "ci"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "filesystem",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T19:06:58.968Z"
+}

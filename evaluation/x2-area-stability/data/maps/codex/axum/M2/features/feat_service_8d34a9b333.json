@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_8d34a9b333",
+  "title": "Server lifecycle and transport integration examples",
+  "summary": "Graceful shutdown, multiple listeners, Unix sockets, and alternate Hyper integration.\n\nAgent mapper reason: These examples own connection acceptance and server lifecycle rather than application payload semantics.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Shutdown coordination."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Multiple listener lifecycle."
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Unix socket transport."
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "Alternate Hyper server integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/graceful-shutdown/Cargo.toml",
+      "reason": "Signal and runtime dependencies."
+    },
+    {
+      "path": "examples/unix-domain-socket/Cargo.toml",
+      "reason": "Socket dependencies."
+    },
+    {
+      "path": "examples/hyper-1-0/Cargo.toml",
+      "reason": "HTTP stack version configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "listeners",
+    "shutdown",
+    "transport"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "permissions",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_19185629f6",
+  "title": "Debug handler diagnostics macro",
+  "summary": "Compile-time diagnostics for handler signatures, extractors, futures, and return values.\n\nAgent mapper reason: This macro has an independent diagnostic contract exercised through pass and compile-fail fixtures.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "Diagnostic expansion"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.stderr",
+      "reason": "Expected diagnostic"
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "User-facing intent"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/multiple_request_consumers.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/wrong_order.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/state_and_body.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/impl_into_response.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/multiple_request_consumers.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/wrong_order.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/state_and_body.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/impl_into_response.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "diagnostics"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

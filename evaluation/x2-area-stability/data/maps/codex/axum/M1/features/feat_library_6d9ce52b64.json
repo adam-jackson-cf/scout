@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6d9ce52b64",
+  "title": "HTTP method routing",
+  "summary": "Method filters, method-specific dispatch, and GET-to-HEAD behavior.\n\nAgent mapper reason: Method selection has its own fallback, composition, and response-body rules.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Method dispatch"
+    },
+    {
+      "path": "axum/src/routing/method_filter.rs",
+      "reason": "Method selection"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/method_routing/fallback.md",
+      "reason": "Method fallback semantics"
+    },
+    {
+      "path": "axum/src/docs/method_routing/merge.md",
+      "reason": "Method merge semantics"
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Layer ordering"
+    },
+    {
+      "path": "axum/src/docs/method_routing/route_layer.md",
+      "reason": "Route layer semantics"
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "http-methods",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:53:04.476Z"
+}

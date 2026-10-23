@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_c01331f598",
+  "title": "Structured request bodies and multipart",
+  "summary": "JSON, forms, queries, raw forms, and multipart extraction.\n\nAgent mapper reason: Body format selection, deserialization, limits, and rejection behavior form one bounded parsing surface.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON request and response conversion."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form conversion."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query deserialization."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form extraction."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart field streaming."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Body size enforcement."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Parsing failures."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/json.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "json",
+    "forms",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3c6f175745",
+  "title": "OpenAPI schema generation and docs UI",
+  "summary": "OpenAPI models, schema generation from routes, and Swagger UI / ReDoc HTML rendering including OAuth2 redirect.\n\nAgent mapper reason: Self-contained openapi package; HTML rendering embeds config into pages so XSS/escaping review belongs here.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/openapi/utils.py",
+      "symbol": "get_openapi",
+      "route": "/openapi.json",
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/openapi/utils.py",
+      "reason": "schema generation"
+    },
+    {
+      "path": "fastapi/openapi/models.py",
+      "reason": "OpenAPI pydantic models"
+    },
+    {
+      "path": "fastapi/openapi/docs.py",
+      "reason": "Swagger/ReDoc HTML templates with injected config"
+    },
+    {
+      "path": "fastapi/openapi/constants.py",
+      "reason": "constants"
+    },
+    {
+      "path": "fastapi/openapi/__init__.py",
+      "reason": "package init"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "registers docs routes"
+    },
+    {
+      "path": "docs/en/docs/advanced/extending-openapi.md",
+      "reason": "feature docs"
+    },
+    {
+      "path": "tests/test_additional_properties.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_additional_response_extra.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_additional_responses_bad.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_additional_responses_custom_model_in_callback.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_additional_responses_custom_validationerror.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_additional_responses_default_validationerror.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_additional_responses_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_additional_responses_router.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_schema_fields.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_deprecated_openapi_prefix.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_openapi_query_parameter_extension.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_openapi_route_extensions.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_openapi_servers.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_param_include_in_schema.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_schema_extra_examples.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_sub_callbacks.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_additional_properties.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_additional_response_extra.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_additional_responses_bad.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_additional_responses_custom_model_in_callback.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_additional_responses_custom_validationerror.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_additional_responses_default_validationerror.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_additional_responses_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_additional_responses_router.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_schema_fields.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_deprecated_openapi_prefix.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_openapi_query_parameter_extension.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_openapi_route_extensions.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_openapi_servers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_param_include_in_schema.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_schema_extra_examples.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_sub_callbacks.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "openapi",
+    "swagger",
+    "docs-ui"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:15:05.591Z",
+  "updatedAt": "2026-10-23T19:15:05.591Z"
+}

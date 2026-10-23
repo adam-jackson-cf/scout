@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_b23cb45263",
+  "title": "OpenAPI schema regression suite",
+  "summary": "Check schema metadata, extensions, model naming, callbacks, and operation identifiers.\n\nAgent mapper reason: These regressions jointly specify generated API schema semantics.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_operations_signatures.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_operations_signatures.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_additional_properties.py",
+      "reason": "Schema properties."
+    },
+    {
+      "path": "tests/test_custom_schema_fields.py",
+      "reason": "Custom schema metadata."
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "reason": "Model name collisions."
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "reason": "Operation identifiers."
+    },
+    {
+      "path": "tests/test_openapi_query_parameter_extension.py",
+      "reason": "Parameter extensions."
+    },
+    {
+      "path": "tests/test_openapi_route_extensions.py",
+      "reason": "Route extensions."
+    },
+    {
+      "path": "tests/test_openapi_servers.py",
+      "reason": "Server metadata."
+    },
+    {
+      "path": "tests/test_operations_signatures.py",
+      "reason": "Operation signatures."
+    },
+    {
+      "path": "tests/test_param_include_in_schema.py",
+      "reason": "Schema visibility."
+    },
+    {
+      "path": "tests/test_schema_extra_examples.py",
+      "reason": "Schema examples."
+    },
+    {
+      "path": "tests/test_sub_callbacks.py",
+      "reason": "Nested callbacks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/extending-openapi.md",
+      "reason": "Schema extension intent."
+    },
+    {
+      "path": "tests/test_operations_signatures.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_operations_signatures.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "openapi",
+    "schema"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T19:12:00.182Z"
+}

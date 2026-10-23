@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_aafb00ea69",
+  "title": "Axum public surface and test infrastructure",
+  "summary": "Crate wiring, internal utilities, benchmarks, and HTTP test clients.\n\nAgent mapper reason: These files support the crate as a whole and need review for feature wiring and cross-module impact.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Public API and feature wiring."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Shared implementation macros."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Internal type erasure."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared utilities."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Build configuration."
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Test support."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "HTTP test client."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Performance harness."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Features and dependencies."
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Package intent."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "public-api",
+    "test-support",
+    "benchmarks"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

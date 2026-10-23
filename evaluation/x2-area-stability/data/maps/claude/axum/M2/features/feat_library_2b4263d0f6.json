@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_2b4263d0f6",
+  "title": "axum-macros FromRequest and FromRef derives",
+  "summary": "FromRequest/FromRequestParts derive with via/rejection/state, and FromRef derive.\n\nAgent mapper reason: Derives sharing attribute parsing and state inference.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "symbol": "expand",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "impl"
+    },
+    {
+      "path": "axum-macros/src/from_request/attr.rs",
+      "reason": "attrs"
+    },
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "reason": "FromRef"
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "shared parsing"
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "entry points"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "manifest"
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "toolchain"
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "test support"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "derive"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:30:20.528Z",
+  "updatedAt": "2026-10-23T19:37:18.771Z"
+}

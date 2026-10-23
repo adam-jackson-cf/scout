@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1dafeac037",
+  "title": "axum-extra cookie jars",
+  "summary": "CookieJar, SignedCookieJar, PrivateCookieJar extractors/responses.\n\nAgent mapper reason: Security-sensitive cookie signing/encryption code.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "symbol": "CookieJar",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "plain cookie jar"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "signed cookies"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "encrypted cookies"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "feature flags"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "cookies",
+    "crypto"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:27:43.928Z",
+  "updatedAt": "2026-10-23T19:27:43.928Z"
+}

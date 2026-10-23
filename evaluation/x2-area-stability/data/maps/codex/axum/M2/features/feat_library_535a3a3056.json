@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_535a3a3056",
+  "title": "Extra routing and handler composition",
+  "summary": "Typed routes, resource routing, alternative handlers, and middleware extensions.\n\nAgent mapper reason: These utilities compose route and handler behavior above the base router.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Router extensions."
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Resource route construction."
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Typed path integration."
+    },
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Handler extension exports."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Alternative handler selection."
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Alternative extraction and response representation."
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Middleware extensions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Typed path code generation."
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Routing fixture."
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Alternate routing fixture."
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Static asset fixture."
+    },
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "typed-paths",
+    "handlers"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:55:36.923Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

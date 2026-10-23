@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_740b66ac77",
+  "title": "axum Router and method routing",
+  "summary": "Router, MethodRouter, route matching and URL params, nesting, merging, fallbacks, StripPrefix, and IntoMakeService.\n\nAgent mapper reason: The routing module and its in-tree tests together cover request dispatch, which is the central logic of axum.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "symbol": "Router",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Router implementation"
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "MethodRouter"
+    },
+    {
+      "path": "axum/src/routing/method_filter.rs",
+      "reason": "MethodFilter bitflags"
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Route service wrapper"
+    },
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Routing futures"
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "IntoMakeService"
+    },
+    {
+      "path": "axum/src/routing/not_found.rs",
+      "reason": "Default 404 service"
+    },
+    {
+      "path": "axum/src/routing/strip_prefix.rs",
+      "reason": "Rewrites the URI for nested routers"
+    },
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Stores captured path params"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/route.md",
+      "reason": "Router API docs"
+    },
+    {
+      "path": "axum/src/docs/routing/nest.md",
+      "reason": "Nesting semantics"
+    },
+    {
+      "path": "axum/src/docs/routing/merge.md",
+      "reason": "Merge semantics"
+    },
+    {
+      "path": "axum/src/docs/routing/fallback.md",
+      "reason": "Fallback semantics"
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Layer docs"
+    },
+    {
+      "path": "axum/src/docs/routing/route_layer.md",
+      "reason": "route_layer docs"
+    },
+    {
+      "path": "axum/src/docs/routing/route_service.md",
+      "reason": "route_service docs"
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "State docs"
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "ConnectInfo docs"
+    },
+    {
+      "path": "axum/src/docs/method_routing/fallback.md",
+      "reason": "Method routing docs"
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Method routing docs"
+    },
+    {
+      "path": "axum/src/docs/method_routing/merge.md",
+      "reason": "Method routing docs"
+    },
+    {
+      "path": "axum/src/docs/method_routing/route_layer.md",
+      "reason": "Method routing docs"
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "routing",
+    "router"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:26:03.200Z",
+  "updatedAt": "2026-10-23T19:26:03.200Z"
+}

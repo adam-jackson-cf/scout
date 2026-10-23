@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_bb09b95c0c",
+  "title": "Docs source examples and tutorial tests",
+  "summary": "Runnable tutorial code under docs_src and their pytest coverage under tests/test_tutorial, verifying documented behavior.\n\nAgent mapper reason: Example code is mirrored in many Python-version variants; reviewing a representative set with its tests is sufficient.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "symbol": "app",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "reason": "representative multi-module example"
+    },
+    {
+      "path": "docs_src/bigger_applications/app/dependencies.py",
+      "reason": "header-token dependency example"
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/items.py",
+      "reason": "router example"
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/users.py",
+      "reason": "router example"
+    },
+    {
+      "path": "docs_src/bigger_applications/app/internal/admin.py",
+      "reason": "admin router example"
+    },
+    {
+      "path": "docs_src/app_testing/main.py",
+      "reason": "testing example app"
+    },
+    {
+      "path": "docs_src/app_testing/app_b/main.py",
+      "reason": "testing example with token header"
+    },
+    {
+      "path": "docs_src/async_tests/main.py",
+      "reason": "async test example"
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial001.py",
+      "reason": "root_path example"
+    },
+    {
+      "path": "docs_src/custom_request_and_route/tutorial001.py",
+      "reason": "gzip request body example"
+    },
+    {
+      "path": "docs_src/async_sql_databases/tutorial001.py",
+      "reason": "database example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/testing.md",
+      "reason": "docs"
+    },
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "docs nav"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_async_tests/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_async_sql_databases/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_body/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "docs_src/app_testing/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "docs_src/sql_databases/sql_app/tests/test_sql_app.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_async_tests/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_async_sql_databases/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_body/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "docs_src/app_testing/test_main.py",
+      "command": null
+    },
+    {
+      "path": "docs_src/sql_databases/sql_app/tests/test_sql_app.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "examples",
+    "tutorial"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "database"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:18:30.939Z",
+  "updatedAt": "2026-10-23T19:21:08.400Z"
+}

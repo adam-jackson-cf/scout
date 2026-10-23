@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_5641509b15",
+  "title": "Stateful REST application examples",
+  "summary": "Key-value and todo applications with shared mutable state.\n\nAgent mapper reason: These applications demonstrate CRUD routing and concurrent application state.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "reason": "Key-value API behavior."
+    },
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "Todo API behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/key-value-store/Cargo.toml",
+      "reason": "Key-value dependencies."
+    },
+    {
+      "path": "examples/todos/Cargo.toml",
+      "reason": "Todo application dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "rest",
+    "state"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

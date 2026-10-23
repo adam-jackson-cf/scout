@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_4fcbbecf26",
+  "title": "Exception handling and middleware regression contracts",
+  "summary": "Review error handler dispatch and middleware exception integration.\n\nAgent mapper reason: These tests exercise customization points along the request error propagation path.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "Handler dispatch."
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "Starlette exception compatibility."
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "Middleware error propagation."
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "reason": "Custom route integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/handling-errors.md",
+      "reason": "Error handling intent."
+    },
+    {
+      "path": "docs/en/docs/advanced/custom-request-and-route.md",
+      "reason": "Route customization intent."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "exceptions",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:49:43.740Z",
+  "updatedAt": "2026-10-23T18:49:43.740Z"
+}

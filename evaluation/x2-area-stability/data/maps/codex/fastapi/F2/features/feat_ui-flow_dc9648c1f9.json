@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_dc9648c1f9",
+  "title": "Documentation website presentation and build",
+  "summary": "Configure and render the canonical documentation website.\n\nAgent mapper reason: Theme, browser behavior, configuration, and build workflow jointly determine the published site.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Website configuration and navigation."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Theme customization."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Interactive website behavior."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Custom page behavior."
+    },
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Site styling."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build orchestration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/js/termynal.js",
+      "reason": "Terminal presentation dependency; ownership provenance is unverified."
+    },
+    {
+      "path": "docs/en/docs/css/termynal.css",
+      "reason": "Companion terminal presentation styling."
+    },
+    {
+      "path": "docs/en/docs/index.md",
+      "reason": "Primary website content."
+    },
+    {
+      "path": "docs/en/data/sponsors.yml",
+      "reason": "Publication data consumed by the site."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "mkdocs",
+    "website"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:49:43.740Z",
+  "updatedAt": "2026-10-23T18:49:43.740Z"
+}

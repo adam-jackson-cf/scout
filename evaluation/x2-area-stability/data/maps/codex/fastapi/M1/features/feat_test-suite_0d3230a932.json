@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_0d3230a932",
+  "title": "Response model filtering regression suite",
+  "summary": "Check response validation, aliases, return annotations, and model field filtering.\n\nAgent mapper reason: These checks enforce the public data contract and prevent unintended response fields.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_response_model_invalid.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "reason": "Submodel filtering."
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "ORM model reading."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Output aliases."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Return annotation inference."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Field filtering."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid output rejection."
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Subtype handling."
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Default field omission."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Response model contract."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response-model",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T19:06:59.008Z"
+}

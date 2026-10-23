@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_437f82d502",
+  "title": "axum middleware and error handling",
+  "summary": "from_fn, from_extractor, map_request, map_response middleware plus HandleError layer.\n\nAgent mapper reason: Tower-layer adapters share structure and error-handling semantics.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "middleware module"
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "from_fn middleware"
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "extractor-based middleware"
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "map_request middleware"
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "map_response middleware"
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "HandleError layer"
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "ServiceExt helpers"
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Extension extractor/layer"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "middleware docs"
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "error handling docs"
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "middleware",
+    "tower"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:37:18.771Z"
+}

@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_dd2173f91e",
+  "title": "Security schemes (OAuth2, HTTP auth, API keys, OpenID Connect)",
+  "summary": "Security dependency classes that extract and validate credentials from headers, cookies, query and forms.\n\nAgent mapper reason: Security package is a distinct auth surface with a dedicated test family.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/security/__init__.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/security/oauth2.py",
+      "reason": "OAuth2 password/authcode Bearer [SCOUT_REDACTED_SECRET] request forms, scopes"
+    },
+    {
+      "path": "fastapi/security/http.py",
+      "reason": "HTTP Basic/Bearer/Digest parsing"
+    },
+    {
+      "path": "fastapi/security/api_key.py",
+      "reason": "API key in header/query/cookie"
+    },
+    {
+      "path": "fastapi/security/open_id_connect_url.py",
+      "reason": "OpenID Connect scheme"
+    },
+    {
+      "path": "fastapi/security/base.py",
+      "reason": "base SecurityBase"
+    },
+    {
+      "path": "fastapi/security/utils.py",
+      "reason": "authorization scheme parsing"
+    },
+    {
+      "path": "fastapi/security/__init__.py",
+      "reason": "exports"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "resolves Security dependencies and scopes"
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "security policy"
+    },
+    {
+      "path": "docs/en/docs/tutorial/security/oauth2-jwt.md",
+      "reason": "intended usage"
+    },
+    {
+      "path": "docs/en/docs/advanced/security/http-basic-auth.md",
+      "reason": "intended usage"
+    },
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_base.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_basic_optional.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_oauth2_authorization_code_bearer.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_oauth2_optional.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_oauth2_password_bearer_optional.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_openid_connect_optional.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_base.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_basic_optional.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_oauth2.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_oauth2_authorization_code_bearer.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_oauth2_optional.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_oauth2_password_bearer_optional.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_openid_connect_optional.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "auth",
+    "oauth2"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "user-input",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:15:05.591Z",
+  "updatedAt": "2026-10-23T19:15:05.591Z"
+}

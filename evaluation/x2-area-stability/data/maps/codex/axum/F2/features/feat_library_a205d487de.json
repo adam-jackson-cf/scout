@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a205d487de",
+  "title": "Typed path derive",
+  "summary": "Generate typed route captures and URI formatting.\n\nAgent mapper reason: Capture validation and URI encoding must agree with typed routing.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Typed path expansion."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Runtime integration."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.stderr",
+      "reason": "Expected capture diagnostic."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "routing",
+    "uri"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

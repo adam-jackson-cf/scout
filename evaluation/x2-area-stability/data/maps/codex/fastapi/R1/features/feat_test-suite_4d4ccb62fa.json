@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_4d4ccb62fa",
+  "title": "Dependency resolution and lifetime contracts",
+  "summary": "Dependency caching, classes, overrides, context propagation, and cleanup.\n\nAgent mapper reason: These tests exercise one dependency graph execution contract, including resource lifetime and override precedence.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_dependency_contextmanager.py tests/test_dependency_cache.py tests/test_dependency_overrides.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "Dependency cache semantics."
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "Class dependency construction."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "Yield dependency lifecycle."
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "Context propagation."
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "Repeated dependency handling."
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "Exception propagation."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "Override resolution."
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "Security dependency overrides."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Connection injection."
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "Dependency and path parameter interaction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/dependencies/dependencies-with-yield.md",
+      "reason": "Lifetime contract."
+    },
+    {
+      "path": "docs/en/docs/advanced/testing-dependencies.md",
+      "reason": "Override intent."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "lifecycle",
+    "overrides"
+  ],
+  "trustBoundaries": [
+    "concurrency",
+    "auth",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:59:28.547Z",
+  "updatedAt": "2026-10-23T18:59:28.547Z"
+}

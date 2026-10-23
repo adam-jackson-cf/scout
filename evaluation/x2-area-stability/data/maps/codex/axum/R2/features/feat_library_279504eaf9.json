@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_279504eaf9",
+  "title": "Route services and connection factories",
+  "summary": "Tower service adapters, routing futures, and connection metadata.\n\nAgent mapper reason: These adapters bridge router dispatch to server-created per-connection services.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Endpoint service wrapper"
+    },
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Dispatch futures"
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Connection service factory"
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service conversion API"
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Connection metadata propagation"
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Service type erasure"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Connection metadata contract"
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tower",
+    "services",
+    "connections"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:50:54.234Z"
+}

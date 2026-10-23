@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e65f3c9552",
+  "title": "Encoding, responses and data structures",
+  "summary": "jsonable_encoder, custom response classes (ORJSON/UJSON), UploadFile and default placeholder data structures.\n\nAgent mapper reason: Output-side serialization utilities share concerns and tests.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/encoders.py",
+      "symbol": "jsonable_encoder",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/encoders.py",
+      "reason": "recursive JSON encoding with include/exclude"
+    },
+    {
+      "path": "fastapi/responses.py",
+      "reason": "response classes"
+    },
+    {
+      "path": "fastapi/datastructures.py",
+      "reason": "UploadFile, Default"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "uses encoder in serialize_response"
+    },
+    {
+      "path": "docs/en/docs/advanced/custom-response.md",
+      "reason": "docs"
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_repeated_cookie_headers.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_repeated_cookie_headers.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "serialization",
+    "responses"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:15:05.591Z",
+  "updatedAt": "2026-10-23T19:15:05.591Z"
+}

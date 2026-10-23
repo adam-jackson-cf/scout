@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f9cf6d00d3",
+  "title": "axum-extra utilities",
+  "summary": "Extra extractors (cookies incl. signed/private, cached, form, query, multipart, with_rejection), JSON lines, protobuf, Either, handler Or, Resource and typed routing, erased JSON, middleware.\n\nAgent mapper reason: Separate crate; cookie crypto is a key review hotspot.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "crate root"
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "body"
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "AsyncReadBody"
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either"
+    },
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "extract"
+    },
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Cached"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "CookieJar"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "encrypted cookies"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "signed cookies"
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Form"
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Multipart"
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Query"
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "WithRejection"
+    },
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "handler ext"
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Or"
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "JsonLines"
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "middleware"
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protobuf"
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "responses"
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "ErasedJson"
+    },
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "RouterExt"
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Resource"
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "TypedPath"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "manifest"
+    },
+    {
+      "path": "axum-extra/CHANGELOG.md",
+      "reason": "changes"
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "docs"
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "fixture"
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "fixture"
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "fixture"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extra",
+    "cookies",
+    "crypto"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "secrets",
+    "serialization",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:35:37.845Z",
+  "updatedAt": "2026-10-23T19:37:18.779Z"
+}

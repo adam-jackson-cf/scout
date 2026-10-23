@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_41e8822c88",
+  "title": "Translation notifications",
+  "summary": "Notify contributors about documentation translation activity.\n\nAgent mapper reason: Notification code and its triggering workflow share one external communication responsibility.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Notification implementation."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Action interface."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Runtime definition."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Notification scheduling and permissions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Canonical documentation structure."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "translations",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "user-input",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:54:37.966Z",
+  "updatedAt": "2026-10-23T18:54:37.966Z"
+}

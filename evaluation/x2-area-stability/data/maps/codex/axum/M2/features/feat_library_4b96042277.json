@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4b96042277",
+  "title": "Body streaming and multipart extraction",
+  "summary": "Streaming HTTP bodies and multipart fields.\n\nAgent mapper reason: Streaming adapters and multipart consumers share body lifecycle and resource-limit behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body exports"
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Streaming body adapter"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart parsing"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Underlying body abstraction"
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Body limits"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "streaming",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:37.026Z"
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_401ccf53cb",
+  "title": "Community people automation",
+  "summary": "Maintain community participation information.\n\nAgent mapper reason: Keep data collection and its workflow together without owning potentially generated output.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/people.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Scheduled or event-driven orchestration."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Community data processing."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action contract."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Action environment."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Potentially generated community data; context only."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "Consumer-facing explanation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "community",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T19:06:58.891Z"
+}

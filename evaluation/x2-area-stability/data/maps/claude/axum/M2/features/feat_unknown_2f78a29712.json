@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_unknown_2f78a29712",
+  "title": "Examples: proxies, networking and streaming",
+  "summary": "Proxies, gRPC multiplex, websockets, chat, SSE, UDS, listeners, shutdown, static files, stream-to-file, hyper 1.0.\n\nAgent mapper reason: Transport and filesystem boundary examples.",
+  "kind": "unknown",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "proxy"
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "reverse proxy"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "grpc"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "multiplex"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "proto build"
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "ws"
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "ws client"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "ws testing"
+    },
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "chat"
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "SSE"
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "UDS"
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "listeners"
+    },
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "shutdown"
+    },
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "static"
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "upload"
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "hyper 1.0"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "schema"
+    },
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "UI"
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "client"
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "client"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "networking"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "concurrency",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:30:20.528Z",
+  "updatedAt": "2026-10-23T19:37:18.785Z"
+}

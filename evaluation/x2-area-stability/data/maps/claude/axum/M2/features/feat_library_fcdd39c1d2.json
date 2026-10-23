@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fcdd39c1d2",
+  "title": "axum crate root, utilities and test helpers",
+  "summary": "Crate root, internal macros, utilities, build script, the in-crate test client and benchmarks.\n\nAgent mapper reason: Crate-wide wiring and shared helpers that the other axum slices depend on.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Crate root and re-exports"
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Internal macros"
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Internal utilities"
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Build script"
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Test helper module"
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Test HTTP client"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Benchmarks"
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Crate manifest and features"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/README.md",
+      "reason": "Crate docs"
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "Change history"
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "crate-root",
+    "bench"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:37:18.779Z"
+}

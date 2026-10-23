@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_66f33035d8",
+  "title": "State, connection metadata, and service construction",
+  "summary": "Application state, extensions, connection information, and make-service adapters.\n\nAgent mapper reason: State and connection metadata are injected while services are constructed and extracted during dispatch.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Request extensions."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "State extraction."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Connection metadata."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Service factory."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service conversion helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "State lifecycle."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Connection integration."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "State projection contract."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "state",
+    "connections"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

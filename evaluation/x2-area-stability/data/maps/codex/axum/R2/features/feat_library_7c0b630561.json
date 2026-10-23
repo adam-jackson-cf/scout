@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_7c0b630561",
+  "title": "Macro infrastructure and state derive",
+  "summary": "Macro registration, shared parsing, test support, and state projection derive.\n\nAgent mapper reason: Shared macro plumbing and the small state derive form a bounded supporting slice.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Macro entrypoints"
+    },
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "reason": "State projection derive"
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared syntax parsing"
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Position-aware helpers"
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Macro test support"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Macro and test dependencies"
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Diagnostic toolchain"
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Derived trait"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/skip.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/skip.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "state",
+    "test-harness"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:50:54.234Z"
+}

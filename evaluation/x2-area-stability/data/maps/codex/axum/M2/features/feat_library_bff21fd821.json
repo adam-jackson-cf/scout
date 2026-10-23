@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_bff21fd821",
+  "title": "Handler adaptation and application state",
+  "summary": "Turns handlers into services and provides typed state and extension extraction.\n\nAgent mapper reason: Handler invocation and state delivery must agree on extraction order and ownership.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait and tuple adaptation."
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler service futures."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Handler-to-service conversion."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "State through extensions."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Typed state extraction."
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Request and response extensions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler requirements."
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "State ownership semantics."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "State projection dependency."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "state",
+    "services"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:37.047Z"
+}

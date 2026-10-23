@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_3c9d0801d0",
+  "title": "REST and gRPC multiplexing",
+  "summary": "One service boundary dispatching REST and generated gRPC services.\n\nAgent mapper reason: The schema, build integration, and dispatch service jointly define this example's protocol boundary.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "Application integration."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "Protocol-aware service dispatch."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "Authored protobuf build integration."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "Authored service schema."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/Cargo.toml",
+      "reason": "gRPC and code-generation dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "grpc",
+    "multiplexing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

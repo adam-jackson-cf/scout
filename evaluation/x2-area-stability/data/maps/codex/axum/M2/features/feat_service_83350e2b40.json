@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_83350e2b40",
+  "title": "File transfer and rendered content examples",
+  "summary": "Multipart uploads, streaming uploads, static assets, and template rendering.\n\nAgent mapper reason: These small examples exercise the HTTP-to-filesystem and rendered-content boundaries.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart upload example."
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Streaming filesystem writes."
+    },
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Filesystem-backed responses."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Served page."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Served browser script."
+    },
+    {
+      "path": "examples/templates/src/main.rs",
+      "reason": "Template rendering application."
+    },
+    {
+      "path": "examples/templates/templates/hello.html",
+      "reason": "Rendered template."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/stream-to-file/Cargo.toml",
+      "reason": "Streaming and filesystem dependencies."
+    },
+    {
+      "path": "examples/templates/Cargo.toml",
+      "reason": "Template engine configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "files",
+    "templates",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:55:36.923Z",
+  "updatedAt": "2026-10-23T19:55:36.923Z"
+}

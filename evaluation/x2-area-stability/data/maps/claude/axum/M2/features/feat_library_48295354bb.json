@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_48295354bb",
+  "title": "axum handlers and handler services",
+  "summary": "Handler trait, handler-to-service adapters, futures and state-in-extension service.\n\nAgent mapper reason: Handler abstraction and its service adapters evolve together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait and impls"
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "HandlerService"
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "handler futures"
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "state-in-extension adapter"
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "macros generating handler/tuple impls"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "handler docs"
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "handler debugging docs"
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "handler"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:37:18.771Z"
+}

@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b8734733ee",
+  "title": "axum-core extractor traits and rejections",
+  "summary": "Core FromRequest/FromRequestParts traits, tuple impls, FromRef, DefaultBodyLimit, core rejections, body and error types.\n\nAgent mapper reason: Foundational extraction traits and body-limit enforcement shared across all crates.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "crate root"
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "extractor traits"
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "body size limit layer"
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "FromRef trait"
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "core rejections"
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "extractors for request parts and bodies"
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "tuple extractor impls"
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "body helpers"
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "error type"
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "rejection/impl macros"
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "build script"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "manifest"
+    },
+    {
+      "path": "axum-core/CHANGELOG.md",
+      "reason": "change history"
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "docs"
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "extractors",
+    "body-limit"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:37:18.735Z",
+  "updatedAt": "2026-10-23T19:37:18.735Z"
+}

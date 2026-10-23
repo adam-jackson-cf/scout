@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d30e186c46",
+  "title": "Database and stateful CRUD examples",
+  "summary": "Postgres integration and stateful resource applications.\n\nAgent mapper reason: These applications demonstrate request-driven access to persistent or shared mutable state.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "SQLx database access."
+    },
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "reason": "Tokio Postgres access."
+    },
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "Todo resource application."
+    },
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "reason": "Shared key-value state."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "Database integration dependencies."
+    },
+    {
+      "path": "examples/tokio-postgres/Cargo.toml",
+      "reason": "Database driver configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "database",
+    "crud"
+  ],
+  "trustBoundaries": [
+    "database",
+    "user-input",
+    "concurrency",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}

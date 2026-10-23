@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_178652618d",
+  "title": "axum request extractors (path, query, host, state, etc.)",
+  "summary": "Path deserializer, Query, RawQuery, RawForm, Host, MatchedPath, ConnectInfo, State, request-parts extractors and rejections.\n\nAgent mapper reason: Extractors parsing untrusted request data share rejection types and review concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "extract module root"
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extractor"
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "custom path param deserializer"
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query extractor"
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "RawQuery extractor"
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "RawForm extractor"
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Host extractor parsing forwarded headers"
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "MatchedPath extractor"
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "ConnectInfo extractor"
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "State extractor"
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "OriginalUri, BodyStream and other parts extractors"
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "axum rejection types"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "extractor docs"
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "core traits implemented"
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "used in unit tests"
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "deserialization"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:22:59.659Z"
+}

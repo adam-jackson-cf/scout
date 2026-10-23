@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0e49684393",
+  "title": "Macro infrastructure and test harness",
+  "summary": "Macro exports, common parsing, positional helpers, and internal test support.\n\nAgent mapper reason: Shared parsing and harness wiring affect every macro and deserve a separate integration review.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Macro exports and integration"
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parser"
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Positional helper"
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Internal test macro"
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Macro dependencies"
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Diagnostic toolchain"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Public macro intent"
+    },
+    {
+      "path": "axum-macros/CHANGELOG.md",
+      "reason": "Compatibility history"
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "test-harness"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_000cac92db",
+  "title": "Listener lifecycle and platform integration",
+  "summary": "Graceful shutdown, multiple listeners, Unix sockets, Hyper integration, and WASM routing.\n\nAgent mapper reason: These compact examples focus on hosting and runtime boundaries rather than application routes.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Shutdown lifecycle"
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Multiple listeners"
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Unix socket transport"
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "Hyper server integration"
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "WASM integration"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/graceful-shutdown/Cargo.toml",
+      "reason": "Runtime dependencies"
+    },
+    {
+      "path": "examples/hyper-1-0/Cargo.toml",
+      "reason": "Hyper version contract"
+    },
+    {
+      "path": "examples/simple-router-wasm/Cargo.toml",
+      "reason": "Target configuration"
+    },
+    {
+      "path": "examples/unix-domain-socket/Cargo.toml",
+      "reason": "Platform dependencies"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "transport",
+    "lifecycle"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:53:04.365Z",
+  "updatedAt": "2026-10-23T19:55:37.062Z"
+}

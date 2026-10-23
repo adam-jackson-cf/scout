@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a4aff14f45",
+  "title": "axum body-parsing extractors (Path, Query, Form, Json)",
+  "summary": "Path parameter deserializer, Query/RawQuery, Form/RawForm and Json extractors and responses.\n\nAgent mapper reason: All of these deserialize untrusted request data with serde, and they share content-type and rejection handling.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": "Path",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extractor"
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Custom serde deserializer for path params"
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query extractor"
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query extractor"
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form extractor"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extractor/response"
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Json extractor/response"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Rejections these extractors return"
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extractor docs"
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/json.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "serde"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:34:24.788Z"
+}

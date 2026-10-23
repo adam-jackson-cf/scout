@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_7d42cf49a2",
+  "title": "axum test helpers and benchmarks",
+  "summary": "Internal TestClient used by unit tests and criterion-style benchmarks.\n\nAgent mapper reason: Shared test infrastructure for axum.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "symbol": "TestClient",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "test helper module"
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "TestClient"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "benchmarks"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "bench config"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/benches/benches.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "testing",
+    "bench"
+  ],
+  "trustBoundaries": [
+    "network",
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:34:24.833Z"
+}

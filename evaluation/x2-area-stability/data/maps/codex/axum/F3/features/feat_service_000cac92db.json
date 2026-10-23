@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_000cac92db",
+  "title": "Server lifecycle and transport examples",
+  "summary": "Graceful shutdown, multiple listeners, Unix sockets, Hyper integration, and WASM routing.\n\nAgent mapper reason: These small examples adapt router services to execution environments and connection lifecycles.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Shutdown lifecycle example."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Multiple listener setup."
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Unix socket transport."
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "Hyper integration."
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "WASM router execution."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/graceful-shutdown/Cargo.toml",
+      "reason": "Shutdown dependencies."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/Cargo.toml",
+      "reason": "Listener dependencies."
+    },
+    {
+      "path": "examples/unix-domain-socket/Cargo.toml",
+      "reason": "Unix transport dependencies."
+    },
+    {
+      "path": "examples/hyper-1-0/Cargo.toml",
+      "reason": "Hyper version configuration."
+    },
+    {
+      "path": "examples/simple-router-wasm/Cargo.toml",
+      "reason": "WASM target configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "transports",
+    "lifecycle"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

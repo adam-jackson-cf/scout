@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_29090e17f6",
+  "title": "Dependency injection and parameter resolution",
+  "summary": "Analyzes endpoint signatures, resolves dependencies (including yield and caching), and validates path/query/header/cookie/body/form/file parameters.\n\nAgent mapper reason: All request input parsing and DI happens here; it's the main point where untrusted input gets validated.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "symbol": "solve_dependencies",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "dependant analysis and request param solving"
+    },
+    {
+      "path": "fastapi/dependencies/models.py",
+      "reason": "Dependant model"
+    },
+    {
+      "path": "fastapi/dependencies/__init__.py",
+      "reason": "package init"
+    },
+    {
+      "path": "fastapi/params.py",
+      "reason": "Param/Body/Form/File classes"
+    },
+    {
+      "path": "fastapi/param_functions.py",
+      "reason": "Query(), Depends(), Security() helpers"
+    },
+    {
+      "path": "fastapi/datastructures.py",
+      "reason": "UploadFile, Default wrappers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "caller of solve_dependencies"
+    },
+    {
+      "path": "docs/en/docs/tutorial/dependencies/index.md",
+      "reason": "documented behaviour"
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_params_repr.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_path.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_params_repr.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_path.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependency-injection",
+    "validation",
+    "params"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:19:35.573Z",
+  "updatedAt": "2026-10-23T19:21:08.311Z"
+}

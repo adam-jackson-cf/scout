@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_cab9a7efe3",
+  "title": "Workspace CI, lint and release config",
+  "summary": "Workspace manifest, GitHub Actions CI, the cargo-deny policy, issue/PR templates and top-level docs.\n\nAgent mapper reason: Workspace-level build, CI and dependency policy.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace manifest"
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "CI pipeline"
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "CI patch config"
+    },
+    {
+      "path": "deny.toml",
+      "reason": "cargo-deny policy"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue config"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contrib guide"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "reason": "Changelog"
+    },
+    {
+      "path": "ECOSYSTEM.md",
+      "reason": "Ecosystem docs"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "PR template"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "config",
+    "supply-chain"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:26:03.200Z",
+  "updatedAt": "2026-10-23T19:26:03.200Z"
+}

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b91d2c1147",
+  "title": "Extra handler alternatives and middleware",
+  "summary": "Alternative handler dispatch, either values, and middleware helpers.\n\nAgent mapper reason: Alternative dispatch and either-value composition jointly determine handler selection and response behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Handler extension exports."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Alternative handler selection."
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Represents alternative extraction or response values."
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Additional middleware composition."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Underlying handler contract."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "middleware",
+    "composition"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:48:23.661Z"
+}

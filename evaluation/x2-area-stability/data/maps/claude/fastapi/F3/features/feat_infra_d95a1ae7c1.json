@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_d95a1ae7c1",
+  "title": "GitHub Actions automation and CI",
+  "summary": "Workflows and custom Docker actions for docs previews, translations, people data, tests and publishing.\n\nAgent mapper reason: CI automation handling tokens and PR input.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "PR comment action"
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "translation notify action"
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "GraphQL people action"
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "preview watcher"
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "workflow_run with secrets"
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "PyPI publish"
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "CI"
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "docs build"
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "people workflow"
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "translations workflow"
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "coverage upload"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "action definition"
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "deps"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "external-api",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:15:55.980Z",
+  "updatedAt": "2026-10-23T19:15:55.980Z"
+}

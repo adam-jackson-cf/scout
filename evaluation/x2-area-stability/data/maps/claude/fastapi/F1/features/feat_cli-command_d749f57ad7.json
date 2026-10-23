@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_cli-command_d749f57ad7",
+  "title": "Dev and release scripts",
+  "summary": "Shell/Python scripts for testing, linting, docs building/translation management, publishing and release notifications.\n\nAgent mapper reason: Developer tooling scripts in one directory.",
+  "kind": "cli-command",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "scripts/docs.py",
+      "symbol": null,
+      "route": null,
+      "command": "python scripts/docs.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "scripts/docs.py",
+      "reason": "Typer CLI for docs build/translations"
+    },
+    {
+      "path": "scripts/gitter_releases_bot.py",
+      "reason": "Release notifier"
+    },
+    {
+      "path": "scripts/build-docs.sh",
+      "reason": "Docs build"
+    },
+    {
+      "path": "scripts/clean.sh",
+      "reason": "Clean"
+    },
+    {
+      "path": "scripts/docs-live.sh",
+      "reason": "Live docs"
+    },
+    {
+      "path": "scripts/format.sh",
+      "reason": "Format"
+    },
+    {
+      "path": "scripts/lint.sh",
+      "reason": "Lint"
+    },
+    {
+      "path": "scripts/netlify-docs.sh",
+      "reason": "Netlify"
+    },
+    {
+      "path": "scripts/notify.sh",
+      "reason": "Notify"
+    },
+    {
+      "path": "scripts/publish.sh",
+      "reason": "Publish"
+    },
+    {
+      "path": "scripts/test-cov-html.sh",
+      "reason": "Coverage"
+    },
+    {
+      "path": "scripts/test.sh",
+      "reason": "Tests"
+    },
+    {
+      "path": "scripts/zip-docs.sh",
+      "reason": "Docs archive"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Tool config"
+    },
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Docs config consumed by docs.py"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "scripts",
+    "release",
+    "docs-tooling"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "process-exec",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:13:38.963Z",
+  "updatedAt": "2026-10-23T19:13:38.963Z"
+}

@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6033474eca",
+  "title": "axum responses, SSE, typed headers and body",
+  "summary": "Response module, Redirect, Server-Sent Events, TypedHeader, StreamBody, crate root and utilities.\n\nAgent mapper reason: Output-side types and crate glue for the main axum crate.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "crate root and re-exports"
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "response module"
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-Sent Events"
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "TypedHeader extractor/response"
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "body re-exports"
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "StreamBody"
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "internal utilities"
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "build script"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "features and deps"
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "crate docs"
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "change history"
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "response docs"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "response",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:22:59.659Z",
+  "updatedAt": "2026-10-23T19:30:20.562Z"
+}

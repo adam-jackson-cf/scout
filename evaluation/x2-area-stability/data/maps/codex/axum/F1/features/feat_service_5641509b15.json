@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_5641509b15",
+  "title": "In-memory application examples",
+  "summary": "Key-value and todo applications with shared mutable state.\n\nAgent mapper reason: These compact applications demonstrate CRUD semantics over shared application state.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "reason": "Key-value application handlers and state."
+    },
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "Todo application handlers and state."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/key-value-store/Cargo.toml",
+      "reason": "Application dependencies."
+    },
+    {
+      "path": "examples/todos/Cargo.toml",
+      "reason": "Application dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "crud",
+    "state"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:40:32.517Z"
+}

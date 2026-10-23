@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_2af73be096",
+  "title": "API key authentication contracts",
+  "summary": "Review API keys supplied through cookies, headers, and query parameters.\n\nAgent mapper reason: All three credential transports share requiredness and OpenAPI security semantics.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "reason": "Cookie key extraction."
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_description.py",
+      "reason": "Cookie security metadata."
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_optional.py",
+      "reason": "Optional cookie authentication."
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "Header key extraction."
+    },
+    {
+      "path": "tests/test_security_api_key_header_description.py",
+      "reason": "Header security metadata."
+    },
+    {
+      "path": "tests/test_security_api_key_header_optional.py",
+      "reason": "Optional header authentication."
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "reason": "Query key extraction."
+    },
+    {
+      "path": "tests/test_security_api_key_query_description.py",
+      "reason": "Query security metadata."
+    },
+    {
+      "path": "tests/test_security_api_key_query_optional.py",
+      "reason": "Optional query authentication."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/security/index.md",
+      "reason": "Security integration guidance."
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "api-key"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "auth",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:49:43.740Z",
+  "updatedAt": "2026-10-23T18:49:43.740Z"
+}

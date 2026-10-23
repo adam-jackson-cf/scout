@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_96016aff18",
+  "title": "Middleware adapters and service error handling",
+  "summary": "Function and extractor middleware, request/response mapping, and error-to-response adapters.\n\nAgent mapper reason: These adapters control request execution order, early responses, and error propagation.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware API exports."
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Extractor middleware."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Function middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Request transformation."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Response transformation."
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Service error conversion."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Layering and execution semantics."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error handling contract."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

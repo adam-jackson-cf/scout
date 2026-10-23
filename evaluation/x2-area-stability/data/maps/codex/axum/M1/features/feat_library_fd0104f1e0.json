@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fd0104f1e0",
+  "title": "Extra body and serialization formats",
+  "summary": "Async reader bodies, JSON lines, protobuf, and erased JSON responses.\n\nAgent mapper reason: These optional adapters translate typed or streaming data across HTTP body boundaries.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Body exports"
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Reader-backed body"
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "JSON lines streaming"
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protobuf codec"
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Response exports"
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Type-erased JSON"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional codec dependencies"
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Underlying body behavior"
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "command": null
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "serialization",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:50:54.234Z",
+  "updatedAt": "2026-10-23T19:53:04.365Z"
+}

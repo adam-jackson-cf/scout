@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_e0ca95505e",
+  "title": "Documentation site presentation",
+  "summary": "Configure the English documentation site and its browser behavior.\n\nAgent mapper reason: Theme configuration and browser customization jointly determine the documentation user experience.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Site configuration."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Theme override."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Chat browser behavior."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Site customization."
+    },
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Site styling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/js/termynal.js",
+      "reason": "Potential third-party terminal animation asset; provenance unverified."
+    },
+    {
+      "path": "docs/en/docs/css/termynal.css",
+      "reason": "Related terminal styling."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Build execution."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "mkdocs",
+    "browser",
+    "documentation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:46:10.811Z",
+  "updatedAt": "2026-10-23T18:46:10.811Z"
+}

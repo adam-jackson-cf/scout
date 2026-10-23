@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_673e7afbdf",
+  "title": "Extra extraction utilities",
+  "summary": "Cached and customized extraction plus alternative form, query, and multipart handling.\n\nAgent mapper reason: These utilities extend the extraction pipeline without changing the core trait contracts.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Extra extractor exports."
+    },
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Caches extracted values."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Substitutes extractor rejection types."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Alternative form extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Alternative query extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Additional multipart extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional extractor features."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extraction contracts."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Rejection wrapper usage."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "cache",
+    "rejections"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:40:32.517Z",
+  "updatedAt": "2026-10-23T19:48:23.661Z"
+}

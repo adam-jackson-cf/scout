@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_91dca96c42",
+  "title": "Request bodies and multipart integration contracts",
+  "summary": "Body extraction, media types, form sequences, upload structures, and multipart dependency checks.\n\nAgent mapper reason: The tests cover the request payload boundary and its optional multipart integration.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_get_request_body.py tests/test_multipart_installation.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Body extraction contract."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Declared body media types."
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Form sequence parsing."
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "Multipart dependency availability checks."
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "Framework data structure contracts."
+    },
+    {
+      "path": "tests/test_put_no_body.py",
+      "reason": "Bodyless request behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/request-files.md",
+      "reason": "File upload intent."
+    },
+    {
+      "path": "docs/en/docs/tutorial/request-forms.md",
+      "reason": "Form parsing intent."
+    },
+    {
+      "path": "docs/en/docs/tutorial/request-forms-and-files.md",
+      "reason": "Combined multipart intent."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "multipart",
+    "forms",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:59:28.547Z",
+  "updatedAt": "2026-10-23T19:04:09.672Z"
+}

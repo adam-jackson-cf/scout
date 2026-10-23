@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_16bd878702",
+  "title": "axum-core responses, body and extension traits",
+  "summary": "IntoResponse/IntoResponseParts, AppendHeaders, the boxed body type, the error type, and the RequestExt/RequestPartsExt helpers.\n\nAgent mapper reason: These are the response-side primitives and request extension helpers of axum-core.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "symbol": "IntoResponse",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response module root"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "IntoResponse impls"
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "IntoResponseParts impls"
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "AppendHeaders response part"
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Boxed body helpers"
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Core error type"
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Extension trait module"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "RequestExt"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "RequestPartsExt"
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Crate root"
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Build script"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Crate docs"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "responses",
+    "body"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:26:03.200Z",
+  "updatedAt": "2026-10-23T19:26:03.200Z"
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_01c20cc14f",
+  "title": "Static file server",
+  "summary": "Serves browser assets from a filesystem-backed HTTP service.\n\nAgent mapper reason: Asset paths and service routing together determine filesystem exposure and browser behavior.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Static service and fallback configuration."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Served browser page."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Served browser script."
+    },
+    {
+      "path": "examples/static-file-server/Cargo.toml",
+      "reason": "Static service dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/route_service.md",
+      "reason": "Routing an external file service."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "static-files",
+    "assets"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "user-input",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:50:54.290Z"
+}

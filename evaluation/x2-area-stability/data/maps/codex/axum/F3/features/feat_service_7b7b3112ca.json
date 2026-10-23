@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_7b7b3112ca",
+  "title": "Observability and CORS examples",
+  "summary": "Tracing, request/response inspection, metrics, and cross-origin middleware.\n\nAgent mapper reason: These demonstrate middleware applied around application handlers and its externally observable effects.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "reason": "Metrics middleware and export."
+    },
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "reason": "Request tracing."
+    },
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Request and response inspection."
+    },
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "Cross-origin policy setup."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/prometheus-metrics/Cargo.toml",
+      "reason": "Metrics dependencies."
+    },
+    {
+      "path": "examples/tracing-aka-logging/Cargo.toml",
+      "reason": "Tracing dependencies."
+    },
+    {
+      "path": "examples/print-request-response/Cargo.toml",
+      "reason": "Inspection dependencies."
+    },
+    {
+      "path": "examples/cors/Cargo.toml",
+      "reason": "CORS dependencies."
+    },
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware composition contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "middleware",
+    "observability",
+    "cors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:45:20.520Z",
+  "updatedAt": "2026-10-23T19:45:20.520Z"
+}

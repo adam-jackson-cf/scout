@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d37546f92e",
+  "title": "Server lifecycle and listener examples",
+  "summary": "Graceful shutdown, multiple listeners, and Unix domain socket serving.\n\nAgent mapper reason: These small examples exercise transport ownership and server lifecycle rather than route behavior.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Signal and shutdown lifecycle."
+    },
+    {
+      "path": "examples/graceful-shutdown/Cargo.toml",
+      "reason": "Shutdown dependencies."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Multiple listener coordination."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/Cargo.toml",
+      "reason": "Listener dependencies."
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Unix socket transport."
+    },
+    {
+      "path": "examples/unix-domain-socket/Cargo.toml",
+      "reason": "Unix transport dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Listener service factory."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "listeners",
+    "shutdown"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:48:23.661Z",
+  "updatedAt": "2026-10-23T19:53:04.524Z"
+}

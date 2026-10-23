@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_route_c7d5548904",
+  "title": "Examples: real-time (WebSockets, chat, SSE)",
+  "summary": "WebSocket echo/client, chat room, WebSocket testing and SSE streaming examples.\n\nAgent mapper reason: Examples of streaming and bidirectional protocols built on the ws and sse modules.",
+  "kind": "route",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Chat server"
+    },
+    {
+      "path": "examples/chat/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "WS server"
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "WS client"
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Browser client"
+    },
+    {
+      "path": "examples/websockets/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "WS testing"
+    },
+    {
+      "path": "examples/testing-websockets/Cargo.toml",
+      "reason": "Manifest"
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "SSE server"
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "SSE client"
+    },
+    {
+      "path": "examples/sse/Cargo.toml",
+      "reason": "Manifest"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "Chat UI"
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "SSE UI"
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "WS implementation"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "SSE implementation"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "websocket",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:34:24.788Z",
+  "updatedAt": "2026-10-23T19:35:37.957Z"
+}

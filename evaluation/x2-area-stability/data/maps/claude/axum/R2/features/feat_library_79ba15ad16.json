@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_79ba15ad16",
+  "title": "axum WebSocket and Multipart",
+  "summary": "The WebSocket upgrade extractor and message handling, plus the multipart/form-data streaming extractor.\n\nAgent mapper reason: Both are long-lived or streaming protocol handlers that take hostile input and are gated behind features.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "symbol": "WebSocketUpgrade",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "WebSocket upgrade handling"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart extractor"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Related rejections"
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Body limit that applies to multipart"
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "websocket",
+    "multipart",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:30:20.528Z",
+  "updatedAt": "2026-10-23T19:34:24.788Z"
+}

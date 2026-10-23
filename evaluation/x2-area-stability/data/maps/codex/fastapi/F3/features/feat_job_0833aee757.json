@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_0833aee757",
+  "title": "Pull request preview comments",
+  "summary": "Publish documentation preview links on pull requests.\n\nAgent mapper reason: The action is a bounded external write operation with its own input and credential contract.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Comment publication implementation."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Action inputs and invocation."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Execution environment."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Preview workflow supplying context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github",
+    "docs",
+    "comments"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "external-api",
+    "secrets",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T18:54:37.966Z",
+  "updatedAt": "2026-10-23T18:54:37.966Z"
+}

@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_09c3ea8a55",
+  "title": "axum handlers and middleware",
+  "summary": "Handler trait/services, from_fn, from_extractor, map_request/map_response, HandleError, ServiceExt.\n\nAgent mapper reason: Tower Service plumbing tightly coupled together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler"
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "HandlerService"
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "futures"
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "state service"
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "root"
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "from_fn"
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "from_extractor"
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "map_request"
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "map_response"
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "HandleError"
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "ServiceExt"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "docs"
+    },
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "docs"
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "docs"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "handler",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:30:20.528Z",
+  "updatedAt": "2026-10-23T19:34:24.826Z"
+}

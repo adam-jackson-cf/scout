@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a014c07b68",
+  "title": "Core extraction contracts and request extensions",
+  "summary": "Foundational extractor traits, tuple composition, request access, and body limits.\n\nAgent mapper reason: These files define the shared request extraction contract consumed by higher-level extractors.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extractor contracts."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Body limit policy."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "State conversion contract."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Extraction errors."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Request extraction."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Extractor composition."
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Extension exports."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Request helpers."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "Request parts helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Dependencies and features."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "core"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T19:43:04.785Z",
+  "updatedAt": "2026-10-23T19:43:04.785Z"
+}
