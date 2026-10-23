@@ -32,7 +32,11 @@ C7b, the experiment estimators and samplers, is carried forward as binding input
   - Model-CLI adapter (`internal/modelcli`, `internal/contextual`): tool-less `claude -p` or `codex exec` with a credential-scrubbed environment. The `SCOUT_PROVIDER_*` HTTP client is removed.
   - Clawpatch runs only with `--provider codex|claude` and `CLAWPATCH_CLAUDE_AUTH_CONTEXT=host`. The `contextual` and `clawpatch-review` lanes run only when opted in through `model_cli.lanes`; otherwise they report `skipped (not opted in)` or `skipped (no model CLI)`, and the exit code is unchanged.
   - `scout init` records consent: profile `report`, `decisions`, `model_cli`. It is idempotent and keeps activations and comments.
-  - `.github/workflows/scout-guardian.yml` is the reusable workflow. It installs a pinned, sha256-verified release, never builds from the PR, and only the trusted job sees the Jev secret and publishes. `.github/actions/scout/` is the composite action. `scout-nightly.yml` is now a dogfood caller; AWS, S3 and the model API keys are removed. `release.yml` writes basename checksums, so its `shasum -c` step works.
+  - The reusable workflows are split by trust level, because GitHub validates every job of a called workflow against the caller job's permission ceiling (the first push to GitHub failed at startup on this):
+    - `.github/workflows/scout-guardian.yml`: the PR job, `contents: read`, no secrets.
+    - `.github/workflows/scout-guardian-trusted.yml`: `contents: write` and `pull-requests: read`, the Jev secret, map refresh, PR-metadata fetch and publish.
+    - Both install a pinned, sha256-verified release from `adam-jackson-cf/scout`; nothing is built from the PR. `.github/actions/scout/` is the composite action. `scout-nightly.yml` is the dogfood caller; AWS, S3 and the model API keys are removed. `release.yml` writes basename checksums, so its `shasum -c` step works.
+    - `TestCalledWorkflowPermissionsFitCallerCeiling` encodes GitHub's ceiling rule.
   - **§11 Phase 2 scenario passed on 2026-10-23** (`/tmp/scout-p2/phase2-scenario.sh` plus `report.sh`, throwaway):
     - PR A exits 0 with 2 `would_block` (PAT and `SUPPRESS`).
     - After activation, the identical PR exits 1 with only `SUPPRESS` active, and the PAT is still `would_block`.
@@ -44,7 +48,7 @@ C7b, the experiment estimators and samplers, is carried forward as binding input
     - Export → import → export is byte-identical.
     - Moving the activation's version back returns the check to shadow (exit 0).
   - **Deviation from the §11 text:** the digest-mismatch PR is attributed `introduced`, not `unknown`. The paired recompute rescans the merge base under head's digests, which meets §7.3's definition of `introduced`. `unknown` is produced only when no comparable base exists (`gate.go:178`). Any change to the §11 wording needs a council round (§6).
-  - Workflow assumptions: `release-repo` defaults to `inflight/scout` because there is no git remote; the dogfood caller pins `v0.1.0`, which is not tagged yet; `refresh-map` forces `--full` until Phase 4; SARIF is uploaded only if present.
+  - Workflow assumptions: `release-repo` defaults to `adam-jackson-cf/scout`; the dogfood caller pins `v0.1.0`, which is not tagged yet; `refresh-map` forces `--full` until Phase 4; SARIF is uploaded only if present.
 - **Phase 3 is done except one CI item** (`4bab5c0` plus the Phase 3 completion commit):
   - Signal store (schema v7) and `scout signals`; `scout.cc`, `complex_burden`, `burden_density`, `dup_pct` (lizard and jscpd); `cycle_mass` (Go/Python/TS import graph); §8.3 history measures in calendar quarters.
   - `ActiveHours` reproduces E1b `active_hours` for all 598 nest/webpack panel PRs (max error 8.9e-16 h).
@@ -145,7 +149,16 @@ Owners: **Council** = innovation-council review loop; **Impl** = a coding sessio
    - **Human review of every case.** The user confirms or changes each proposed label; there is no bulk accept, because pre-labels only order the work (`labeling-cases.md:17`). Before review, labels are recorded as `agent_reviewed`; after it, as `human` (`by: user`, plus the agent proposal). The latest human label wins.
    - **Timing.** Building eval data (labels only, with no Jev-versus-label comparison) can proceed now. Any comparison or threshold, and the test set of an experiment, is used only under a council-signed preregistration (`AGENTS.md` experiment rules 1 and 3). Product dispositions and maintainer triage of `would_block` stay human (design §6, §7.3).
 
-Still open (design §15): 1 study-export consent, 4 `pull-requests: read`, 5 inertia framing. §15.2 (X8) leaves Scout with the re-scope.
+### 6.9 Decisions of 2026-10-23 (user; R-039)
+
+1. **PR metadata (design §15 item 2): grant `pull-requests: read` on trusted default-branch runs.** The trusted job gets `GITHUB_TOKEN` and `--fetch-pr-metadata`; PR and fork jobs are unchanged. This closes the last Phase 3 item once wired and smoke-checked.
+2. **Inertia framing (§15 item 3): keep code quality as the primary family, framed as "structure to watch"**, as rev 2.2 already provisionally does.
+3. **Study export (§15 item 1): contents confirmed** as designed (scope-level aggregates plus the sanitised change table, pseudonymised authors, no messages or identities). **Scout's own dogfood ledger becomes the first pooled dataset.** This unblocks Phase 6 export.
+4. **Jev pin: 1.14 via the OpenRouter `alpha/decisions` route.** The TypeSafe endpoint is not adopted (design R14 stays the mitigation).
+5. **Jev launch: on, `provisional`, with per-finding disclosure until X1 reports.** Per-decision minimums default to the skill's 0.8/0.8, raised to 0.9 on the costlier side, status `provisional`, until the user sets costs and minimums. **Jev must follow the `jev-actions` skill's best practices** (audit: `docs/jev-adapter-audit.md`).
+6. **Labelling is delegated: "if you need to perform labelling do it yourself".** Future labels come from the agent protocol (blind, guided, two independent sessions plus an adjudicator) **without the user reviewing each case**. They stay provenance `agent_reviewed`, never `human`. This **changes** §6.8's "Human review of every case", `AGENTS.md`'s labelling rule and design Appendix 15 / §6 "Labels". The design text changes in the next council design round, and `AGENTS.md` is updated alongside it with the user's approval. No labelling is pending until the Phase 5 preregistrations.
+
+All three design §15 items are now decided. Recording them in the design (§15 → Appendix) goes into the next council design round, together with the §11 wording deviations in §1 (Phase 2 digest-mismatch attribution, Phase 3 ruff "strictness").
 
 ## 7. How to resume
 
