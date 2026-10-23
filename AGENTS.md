@@ -2,7 +2,10 @@
 
 ## Experiment rules
 
-These apply to every study under `evaluation/` that produces evidence for Scout's design.
+These apply to every Scout **product** experiment under `evaluation/` (design §13: X1–X6, X9, X10) and to
+any other study run in this repository that produces evidence for Scout's design. Hypothesis studies about
+codebase inertia (H*, HA*, HQ*) are not run here: they belong to inertia-bench
+(`~/Projects/tools/inertia-bench`), under that repository's rules, with Scout as a subject.
 
 1. **Innovation council sign-off before any experiment is conducted.** The innovation council must
    review both the experiment design (preregistration) and its implementation (scripts, data
@@ -35,7 +38,8 @@ These apply to every study under `evaluation/` that produces evidence for Scout'
 2. Design review rounds are recorded in `docs/design-reviews/<YYYY-MM-DD>-<topic>/round-<N>.md`
    with the same sign-off requirements as experiments.
 3. Design changes driven by experiment results may only cite experiments that were signed off and
-   run under the experiment rules.
+   run under the experiment rules above or under inertia-bench's rules. Studies run before
+   2026-10-22 that were signed off here (E1b-v2) stay citable (grandfathered).
 
 ## Ledgers
 
@@ -43,18 +47,31 @@ These apply to every study under `evaluation/` that produces evidence for Scout'
    formed a hypothesis is recorded with a link: papers, reports, repositories, tool documentation,
    internal experiments and user direction. Record it when the source is first used to justify a
    decision or a hypothesis. Skill: `.agents/skills/research-ledger/`.
-2. **Hypothesis ledger** (`docs/hypothesis-ledger.md`): every hypothesis is recorded with its
-   state, the experiments that test it and their outcome. Update it whenever a hypothesis is
-   proposed, preregistered, tested, revised or retired. Skill: `.agents/skills/hypothesis-ledger/`.
+2. **Hypothesis ledger** (`docs/hypothesis-ledger.md`): inertia hypotheses (H*, HA*, HQ*) are
+   frozen as of 2026-10-22 as a historical record; new and continuing inertia hypotheses are tracked
+   in inertia-bench. Product hypotheses (HD*, and any tied to X1–X6, X9, X10) stay live here: record
+   state, tests and outcome whenever one is proposed, preregistered, tested, revised or retired.
+   Skill: `.agents/skills/hypothesis-ledger/`.
 3. Experiment preregistrations and design changes cite ledger IDs (`R-NNN`, `H-…`) for their sources
    and hypotheses.
 
 ## General
 
 - Never modify or delete any `.codegraph` directory.
+- **Toolchain.** Work inside the pinned toolchain: `git submodule update --init`, `scripts/bootstrap-tools.sh`,
+  `source .tools/activate`. Tool versions change only in `toolchain/versions.env` (Clawpatch: the
+  `third_party/clawpatch` submodule); a scanner or Clawpatch version change needs a compatibility review.
+- **Jev labelling.** Labels for any Jev question get a blind agent first pass (two independent sessions,
+  one `claude -p` and one `codex exec`, a frozen guide, adjudication), then the user reviews every case and
+  confirms or changes it (provenance per the `jev-actions` skill, `labeling-cases.md`). Labels are appended,
+  never edited; no Jev-versus-label comparison runs outside a signed-off preregistration.
 - Never print, log or commit secrets; use presence checks only.
-- **Secrets for study and Jev runs** (`OPENROUTER_API_KEY`) come only from Infisical, injected into the one
-  command that needs them: `infisical run --projectId 052b4c81-b9cc-4694-9019-d131ec3817cc --env dev --silent -- <command>`
+- **Model use.** OpenRouter is used only for TypeSafe Jev. Every other model call (Scout lanes, scripts,
+  experiments, agents) goes through `claude -p` or `codex exec` with Anthropic or OpenAI models only; no
+  other vendors and no Anthropic/OpenAI API keys. These CLIs use their own subscription login.
+- **Secrets.** Scout's only secret is the Jev key (`OPENROUTER_API_KEY`). In CI it is a GitHub Actions secret
+  on trusted runs only, never on fork PRs. Locally it comes only from Infisical, injected into the one
+  command that needs it: `infisical run --projectId 052b4c81-b9cc-4694-9019-d131ec3817cc --env dev --silent -- <command>`
   (project `dev`; `mac-os-cf`, `ae2a56a4-28d9-429f-bb7c-7d45e26b9ffa`, holds the same key as a fallback). Never export the
   key into the shell, write it to a file, or pass it as an argument; never use another project's secrets (e.g.
   finance-planner). Check availability by presence or length only. Never print Infisical config or vault files
