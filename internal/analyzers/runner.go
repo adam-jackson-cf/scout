@@ -46,9 +46,108 @@ type sourceInput struct {
 	manifest ManifestInput
 }
 
-// Run returns all validated, sanitized observations even when the adapter is
-// partial or failed. It never returns raw scanner output in its error value.
+// Run scans selected inputs. A scanner that stages its batch and attests per
+// file (Gitleaks) is retried one input per process for every input the batch
+// failed to prove, so a batch never lowers coverage below the single-file runs.
 func (r *Runner) Run(ctx context.Context, root string, selected []domain.File) (domain.AdapterResult, []domain.Observation, error) {
+	result, found, err := r.runBatch(ctx, root, selected)
+	if err == nil || len(selected) < 2 || !r.stagesInputs() {
+		return result, found, err
+	}
+	return r.retryUnproven(ctx, root, selected, result, found, err)
+}
+
+func (r *Runner) stagesInputs() bool {
+	for _, arg := range r.spec.Binary.Args {
+		if arg == "{staged_input_dir}" {
+			return true
+		}
+	}
+	return false
+}
+
+// retryUnproven rescans, one input per process, each input the batch left
+// incomplete for a proof reason, and replaces that input's coverage row and
+// observations with the single-file outcome. Timeouts, missing tools and
+// setup failures are not retried. The batch is completed only when every row
+// ends inspected or not applicable.
+func (r *Runner) retryUnproven(ctx context.Context, root string, selected []domain.File, result domain.AdapterResult, found []domain.Observation, batchErr error) (domain.AdapterResult, []domain.Observation, error) {
+	retryable := map[string]struct{}{
+		"declared input was not completely inspected":       {},
+		"scanner output failed structured validation":       {},
+		"scanner output exceeded the declared bound":        {},
+		"scanner evidence failed current-source validation": {},
+	}
+	rows := make(map[string]int, len(result.Coverage))
+	for index, row := range result.Coverage {
+		if _, ok := retryable[row.Reason]; ok && row.Status == domain.CoverageIncomplete {
+			rows[row.Key.FilePath] = index
+		}
+	}
+	if len(rows) == 0 {
+		return result, found, batchErr
+	}
+	retried := make(map[string]struct{}, len(rows))
+	replaced := make(map[string][]domain.Observation, len(rows))
+	for _, file := range selected {
+		index, ok := rows[file.Path]
+		if !ok {
+			continue
+		}
+		if _, done := retried[file.Path]; done {
+			continue
+		}
+		retried[file.Path] = struct{}{}
+		single, observations, _ := r.runBatch(ctx, root, []domain.File{file})
+		for _, row := range single.Coverage {
+			if row.Key.FilePath == file.Path {
+				row.AdapterResultIDs = []string{result.ResultID}
+				result.Coverage[index] = row
+			}
+		}
+		replaced[file.Path] = observations
+	}
+	kept := make([]domain.Observation, 0, len(found))
+	for _, observation := range found {
+		if len(observation.Evidence) > 0 {
+			if _, ok := retried[observation.Evidence[0].Location.Path]; ok {
+				continue
+			}
+		}
+		kept = append(kept, observation)
+	}
+	for _, file := range selected {
+		kept = append(kept, replaced[file.Path]...)
+		delete(replaced, file.Path)
+	}
+	complete := true
+	for _, row := range result.Coverage {
+		if row.Status != domain.CoverageInspected && row.Status != domain.CoverageNotApplicable {
+			complete = false
+		}
+	}
+	for index := range result.Coverage {
+		var ids []string
+		for _, observation := range kept {
+			if observation.Evidence[0].Location.Path == result.Coverage[index].Key.FilePath {
+				ids = append(ids, observation.ObservationID)
+			}
+		}
+		result.Coverage[index].ObservationIDs = ids
+	}
+	result.Observations = observationIDs(kept)
+	finished := time.Now().UTC()
+	result.FinishedAt = &finished
+	if complete {
+		result.Status, result.Failures = domain.AdapterCompleted, nil
+		return result, kept, nil
+	}
+	return result, kept, batchErr
+}
+
+// runBatch returns all validated, sanitized observations even when the adapter is
+// partial or failed. It never returns raw scanner output in its error value.
+func (r *Runner) runBatch(ctx context.Context, root string, selected []domain.File) (domain.AdapterResult, []domain.Observation, error) {
 	started := time.Now().UTC()
 	resultID := digestID(r.runID, r.spec.ID, started.Format(time.RFC3339Nano))
 	result := r.newResult(resultID, started)
@@ -113,7 +212,16 @@ func (r *Runner) Run(ctx context.Context, root string, selected []domain.File) (
 		return r.finish(&result, domain.AdapterFailed, coverage, "version", "required scanner version is unavailable"), nil, errors.New("required scanner version is unavailable")
 	}
 
-	args, err := expandArgs(r.spec.Binary.Args, root, manifestPath, manifests(accepted), bundledRules.paths)
+	attested, scanRoot, stageDir := acceptedByPath, root, ""
+	if r.stagesInputs() {
+		var stageErr error
+		if stageDir, attested, stageErr = stageGitleaksInputs(root, state, acceptedByPath); stageErr != nil {
+			coverage = markAcceptedIncomplete(coverage, acceptedByPath, "private input staging failed")
+			return r.finish(&result, domain.AdapterFailed, coverage, "staging", "private input staging failed"), nil, errors.New("adapter input staging failed")
+		}
+		scanRoot = stageDir
+	}
+	args, err := expandArgs(r.spec.Binary.Args, root, manifestPath, manifests(accepted), bundledRules.paths, stageDir)
 	if err != nil {
 		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "declared scanner invocation is invalid")
 		return r.finish(&result, domain.AdapterFailed, coverage, "invocation", "declared scanner invocation is invalid"), nil, errors.New("adapter invocation is invalid")
@@ -130,13 +238,13 @@ func (r *Runner) Run(ctx context.Context, root string, selected []domain.File) (
 		return r.finish(&result, domain.AdapterFailed, coverage, "output_limit", "scanner output exceeded the declared bound"), nil, errors.New("scanner output exceeded the declared bound")
 	}
 
-	parsed, parseErr := parseOutput(r.spec, stdout.Bytes(), root)
+	parsed, parseErr := parseOutput(r.spec, stdout.Bytes(), scanRoot)
 	if parseErr != nil {
 		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "scanner output failed structured validation")
 		return r.finish(&result, domain.AdapterFailed, coverage, "output_schema", "scanner output failed structured validation"), nil, errors.New("scanner output failed structured validation")
 	}
 	if r.spec.ID == "security.gitleaks.default-credentials" {
-		attestGitleaksInput(&parsed, acceptedByPath, stderr.stderr.Bytes())
+		attestGitleaksInput(&parsed, attested, stderr.stderr.Bytes(), stageDir)
 	}
 	if r.spec.Binary.Path == "ruff" {
 		r.attestRuffInputs(ctx, root, state, bundledRules.root, binary, args, acceptedByPath, &parsed)
@@ -404,7 +512,7 @@ func (r *Runner) writeManifest(state string, manifest InputManifest) (string, er
 	return path, nil
 }
 
-func expandArgs(args []string, root, manifest string, inputs []ManifestInput, bundledRules []string) ([]string, error) {
+func expandArgs(args []string, root, manifest string, inputs []ManifestInput, bundledRules []string, stageDir string) ([]string, error) {
 	result := make([]string, 0, len(args)+len(inputs)+len(bundledRules))
 	for _, arg := range args {
 		switch arg {
@@ -418,6 +526,8 @@ func expandArgs(args []string, root, manifest string, inputs []ManifestInput, bu
 			for _, input := range inputs {
 				result = append(result, filepath.Join(root, input.Path))
 			}
+		case "{staged_input_dir}":
+			result = append(result, stageDir)
 		case "{bundled_rule_files}":
 			result = append(result, bundledRules...)
 		default:

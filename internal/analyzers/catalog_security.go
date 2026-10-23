@@ -14,8 +14,10 @@ import (
 // template and excludes the documented SCRIPT element guard. Bundled rules are
 // materialized in private scanner state; target rule config and scripts are
 // never invoked.
-// Semgrep attests scanned paths and Gitleaks attests exact single-file byte
-// counts. Other security mechanisms remain explicit contextual or
+// Semgrep attests scanned paths. Gitleaks scans a private staged copy of each
+// batch and attests per-file trace events plus the scanned byte total, with
+// single-file fallback for unproven files. Other security mechanisms remain
+// explicit contextual or
 // deterministic coverage gaps.
 func securitySpecs() []Spec {
 	return []Spec{
@@ -262,6 +264,8 @@ func securitySpecs() []Spec {
 				Args: []string{
 					"dir",
 					"--no-banner",
+					"--no-color",
+					"--log-level", "trace",
 					"--config", "{bundled_rule_files}",
 					"--ignore-gitleaks-allow",
 					"--gitleaks-ignore-path", "/dev/null",
@@ -270,7 +274,7 @@ func securitySpecs() []Spec {
 					"--report-format", "sarif",
 					"--report-path", "-",
 					"--exit-code", "1",
-					"{absolute_input_paths}",
+					"{staged_input_dir}",
 				},
 			},
 			Rules: Rules{
@@ -287,10 +291,10 @@ func securitySpecs() []Spec {
 				},
 			},
 			Inputs: InputLimits{
-				MaxFiles:         1,
+				MaxFiles:         200,
 				MaxFileBytes:     8 * 1024 * 1024,
-				MaxTotalBytes:    8 * 1024 * 1024,
-				MaxManifestBytes: 64 * 1024,
+				MaxTotalBytes:    32 * 1024 * 1024,
+				MaxManifestBytes: 256 * 1024,
 			},
 			Output: Output{
 				Format:            OutputSARIF,
@@ -301,8 +305,8 @@ func securitySpecs() []Spec {
 				0: ExitSuccess,
 				1: ExitFindings,
 			},
-			Timeout:   30 * time.Second,
-			MaxOutput: 8 * 1024 * 1024,
+			Timeout:   2 * time.Minute,
+			MaxOutput: 32 * 1024 * 1024,
 			Permissions: Permissions{
 				ReadOnlySource: true,
 				Network:        false,

@@ -147,7 +147,7 @@ func (s Spec) Validate() error {
 	if strings.TrimSpace(s.Binary.Runtime) != "" && (strings.ContainsRune(s.Binary.Runtime, '\x00') || strings.ContainsAny(s.Binary.Runtime, "\r\n")) {
 		return errors.New("adapter runtime declaration is unsafe")
 	}
-	manifest, paths, absolutePaths, bundledRules := false, false, false, false
+	manifest, paths, absolutePaths, stagedDir, bundledRules := false, false, false, false, false
 	for _, arg := range append(append([]string{}, s.Binary.VersionArgs...), s.Binary.Args...) {
 		if strings.ContainsRune(arg, '\x00') {
 			return errors.New("adapter arguments cannot contain NUL")
@@ -155,9 +155,10 @@ func (s Spec) Validate() error {
 		manifest = manifest || arg == "{input_manifest}"
 		paths = paths || arg == "{input_paths}"
 		absolutePaths = absolutePaths || arg == "{absolute_input_paths}"
+		stagedDir = stagedDir || arg == "{staged_input_dir}"
 		bundledRules = bundledRules || arg == "{bundled_rule_files}"
 	}
-	if !manifest && !paths && !absolutePaths {
+	if !manifest && !paths && !absolutePaths && !stagedDir {
 		return errors.New("adapter arguments must declare input_manifest or input_paths")
 	}
 	if s.Binary.PrivateWorkDir && paths {

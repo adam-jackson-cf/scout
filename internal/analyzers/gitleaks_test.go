@@ -1,32 +1,193 @@
 package analyzers
 
 import (
+	"context"
+	"fmt"
+	"os"
 	"path/filepath"
+	"sort"
+	"strings"
 	"testing"
+
+	"scout/internal/domain"
 )
 
-func TestGitleaksCompletionRequiresExactSingleFileBytes(t *testing.T) {
-	inputs := map[string]sourceInput{"src/file.py": {manifest: ManifestInput{Path: "src/file.py", Bytes: 112}}}
+func TestGitleaksBatchProofRequiresEveryFileAndExactBytes(t *testing.T) {
+	stage := "/state/stage-1"
+	inputs := map[string]sourceInput{
+		"a.py":     {manifest: ManifestInput{Path: "a.py", Bytes: 100}},
+		"sub/b.py": {manifest: ManifestInput{Path: "sub/b.py", Bytes: 12}},
+		"empty.py": {manifest: ManifestInput{Path: "empty.py", Bytes: 0}},
+	}
+	scan := func(path string) string { return "10:36AM TRC scanning path path=" + stage + "/" + path + "\n" }
+	emptySkip := "10:36AM DBG skipping empty file path=" + stage + "/empty.py\n"
 	for _, scenario := range []struct {
-		name     string
-		stderr   string
-		complete bool
+		name   string
+		stderr string
+		proven []string
 	}{
-		{"matched", "INF scanned ~112 bytes (112 bytes) in 1ms", true},
-		{"skipped bytes", "INF scanned ~0 bytes (0 bytes) in 1ms", false},
-		{"missing progress", "WRN leaks found: 1", false},
-		{"ambiguous progress", "INF scanned ~112 bytes (112 bytes)\nINF scanned ~112 bytes (112 bytes)", false},
+		{"every file matched", scan("a.py") + scan("sub/b.py") + emptySkip + "10:36AM INF scanned ~112 bytes (112 bytes) in 1ms\n", []string{"a.py", "empty.py", "sub/b.py"}},
+		{"quoted path", strings.Replace(scan("a.py"), stage+"/a.py", `"`+stage+`/a.py"`, 1) + scan("sub/b.py") + emptySkip + "INF scanned ~112 bytes (112 bytes)\n", []string{"a.py", "empty.py", "sub/b.py"}},
+		{"skipped file leaves total short", scan("a.py") + emptySkip + "INF scanned ~100 bytes (100 bytes)\n", []string{"a.py", "empty.py"}},
+		{"total disagrees with traced files", scan("a.py") + scan("sub/b.py") + emptySkip + "INF scanned ~100 bytes (100 bytes)\n", nil},
+		{"repeated file event", scan("a.py") + scan("a.py") + scan("sub/b.py") + emptySkip + "INF scanned ~212 bytes (212 bytes)\n", nil},
+		{"undeclared path", scan("a.py") + scan("other.py") + scan("sub/b.py") + emptySkip + "INF scanned ~112 bytes (112 bytes)\n", nil},
+		{"path outside stage", scan("a.py") + "10:36AM TRC scanning path path=/etc/passwd\n" + "INF scanned ~100 bytes (100 bytes)\n", nil},
+		{"missing total", scan("a.py") + scan("sub/b.py") + emptySkip + "WRN leaks found: 1\n", nil},
+		{"ambiguous total", scan("a.py") + scan("sub/b.py") + emptySkip + "INF scanned ~112 bytes (112 bytes)\nINF scanned ~112 bytes (112 bytes)\n", nil},
+		{"events without total", scan("a.py") + scan("sub/b.py"), nil},
+		{"forged line inside other output", "DBG segment found: x TRC scanning path path=" + stage + "/a.py\n" + scan("sub/b.py") + emptySkip + "INF scanned ~12 bytes (12 bytes)\n", []string{"empty.py", "sub/b.py"}},
 	} {
 		t.Run(scenario.name, func(t *testing.T) {
 			parsed := parsedOutput{success: true, processed: make(map[string]struct{})}
-			attestGitleaksInput(&parsed, inputs, []byte(scenario.stderr))
-			if parsed.success != scenario.complete {
-				t.Fatalf("complete=%v, want %v", parsed.success, scenario.complete)
+			attestGitleaksInput(&parsed, inputs, []byte(scenario.stderr), stage)
+			var got []string
+			for path := range parsed.processed {
+				got = append(got, path)
 			}
-			if scenario.complete && len(parsed.processed) != 1 {
-				t.Fatal("accepted input was not accounted")
+			sort.Strings(got)
+			if fmt.Sprint(got) != fmt.Sprint(scenario.proven) {
+				t.Fatalf("proven = %v, want %v", got, scenario.proven)
 			}
 		})
+	}
+}
+
+type gitleaksOutcome struct {
+	status      domain.CoverageStatus
+	observation []string
+}
+
+func gitleaksOutcomes(t *testing.T, result domain.AdapterResult, observations []domain.Observation) map[string]gitleaksOutcome {
+	t.Helper()
+	outcomes := make(map[string]gitleaksOutcome)
+	for _, row := range result.Coverage {
+		outcomes[row.Key.FilePath] = gitleaksOutcome{status: row.Status}
+	}
+	for _, observation := range observations {
+		path := observation.Evidence[0].Location.Path
+		outcome := outcomes[path]
+		outcome.observation = append(outcome.observation, fmt.Sprintf("%s|%s|%d|%s", observation.RuleID, observation.Evidence[0].Location.Path, observation.Evidence[0].Location.StartLine, observation.SourceFindingID))
+		sort.Strings(outcome.observation)
+		outcomes[path] = outcome
+	}
+	return outcomes
+}
+
+func gitleaksFixture(t *testing.T) (string, []domain.File) {
+	t.Helper()
+	secret := "AKIA" + "IOSFODNN7EXAMPLQ"
+	root := t.TempDir()
+	for path, content := range map[string]string{
+		"a.py":                 "x = 1\nAWS_KEY = \"" + secret + "\"\n",
+		"clean.py":             "print('hello')\n",
+		"sub/dir/c.py":         "# moved\n\n\nTOKEN_ID = \"" + secret + "\"\n",
+		"sub/other/clean.json": "{\"a\": 1}\n",
+		"empty.py":             "",
+	} {
+		full := filepath.Join(root, filepath.FromSlash(path))
+		if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(full, []byte(content), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	return root, []domain.File{
+		{Path: "a.py", Language: "python", Eligible: true},
+		{Path: "clean.py", Language: "python", Eligible: true},
+		{Path: "empty.py", Language: "python", Eligible: true},
+		{Path: "sub/dir/c.py", Language: "python", Eligible: true},
+		{Path: "sub/other/clean.json", Language: "json", Eligible: true},
+	}
+}
+
+func gitleaksRunner(t *testing.T) *Runner {
+	t.Helper()
+	for _, spec := range securitySpecs() {
+		if spec.ID == "security.gitleaks.default-credentials" {
+			runner, err := NewRunner(spec, "run-batch")
+			if err != nil {
+				t.Fatal(err)
+			}
+			return runner
+		}
+	}
+	t.Fatal("gitleaks spec is missing")
+	return nil
+}
+
+func TestGitleaksBatchProvesEveryFileAndMatchesSingleFileRuns(t *testing.T) {
+	runner := gitleaksRunner(t)
+	root, files := gitleaksFixture(t)
+	ctx := context.Background()
+	// runBatch is the raw batch: no fallback may be needed to prove these files.
+	result, observations, err := runner.runBatch(ctx, root, files)
+	if result.Status == domain.AdapterMissingTool {
+		t.Skip("gitleaks or sandbox is not installed")
+	}
+	if err != nil || result.Status != domain.AdapterCompleted {
+		t.Fatalf("batch status %s error %v failures %v", result.Status, err, result.Failures)
+	}
+	batch := gitleaksOutcomes(t, result, observations)
+	if len(observations) != 2 {
+		t.Fatalf("batch observations = %d, want 2", len(observations))
+	}
+	for _, file := range files {
+		single, singleObservations, singleErr := runner.runBatch(ctx, root, []domain.File{file})
+		if singleErr != nil || single.Status != domain.AdapterCompleted {
+			t.Fatalf("%s single status %s error %v", file.Path, single.Status, singleErr)
+		}
+		want := gitleaksOutcomes(t, single, singleObservations)[file.Path]
+		got := batch[file.Path]
+		if got.status != domain.CoverageInspected || got.status != want.status || fmt.Sprint(got.observation) != fmt.Sprint(want.observation) {
+			t.Fatalf("%s: batch %+v differs from single %+v", file.Path, got, want)
+		}
+	}
+	if a, c := batch["a.py"].observation, batch["sub/dir/c.py"].observation; len(a) != 1 || len(c) != 1 || strings.Split(a[0], "|")[3] != strings.Split(c[0], "|")[3] || strings.Split(a[0], "|")[3] == "" {
+		t.Fatalf("same secret in two files must keep one digest: %v %v", a, c)
+	}
+}
+
+func TestGitleaksBatchFallsBackAndStaysHonestForUnprovableFile(t *testing.T) {
+	runner := gitleaksRunner(t)
+	root, files := gitleaksFixture(t)
+	// Gitleaks' default global allowlist silently skips this path, so no batch
+	// or single-file run can ever prove its bytes were scanned.
+	if err := os.WriteFile(filepath.Join(root, "gitleaks.toml"), []byte("a = \"b\"\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	files = append(files, domain.File{Path: "gitleaks.toml", Language: "toml", Eligible: true})
+	ctx := context.Background()
+	raw, _, _ := runner.runBatch(ctx, root, files)
+	if raw.Status == domain.AdapterMissingTool {
+		t.Skip("gitleaks or sandbox is not installed")
+	}
+	if raw.Status == domain.AdapterCompleted {
+		t.Fatal("batch containing an unscanned file must not complete")
+	}
+	result, observations, err := runner.Run(ctx, root, files)
+	if err == nil || result.Status == domain.AdapterCompleted {
+		t.Fatalf("status %s error %v: unprovable file must keep the adapter incomplete", result.Status, err)
+	}
+	outcomes := gitleaksOutcomes(t, result, observations)
+	if outcomes["gitleaks.toml"].status != domain.CoverageIncomplete {
+		t.Fatalf("unprovable file status = %s", outcomes["gitleaks.toml"].status)
+	}
+	for _, file := range files[:len(files)-1] {
+		if outcomes[file.Path].status != domain.CoverageInspected {
+			t.Fatalf("%s should be proven by the single-file fallback, got %s", file.Path, outcomes[file.Path].status)
+		}
+	}
+	if len(observations) != 2 || len(outcomes["a.py"].observation) != 1 || len(outcomes["sub/dir/c.py"].observation) != 1 {
+		t.Fatalf("fallback lost findings: %d observations", len(observations))
+	}
+	for _, row := range result.Coverage {
+		for _, id := range row.AdapterResultIDs {
+			if id != result.ResultID {
+				t.Fatalf("coverage row %s references %s, want batch result %s", row.Key.FilePath, id, result.ResultID)
+			}
+		}
 	}
 }
 
