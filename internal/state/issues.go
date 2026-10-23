@@ -475,6 +475,7 @@ func saveIssueTx(ctx context.Context, tx *sql.Tx, issue domain.Issue, create boo
 	if err != nil {
 		return err
 	}
+	imported := map[string]bool{}
 	if create {
 		if _, err := tx.ExecContext(ctx, `INSERT INTO issues(issue_id, state, updated_at, payload) VALUES (?, ?, ?, ?)`, issue.IssueID, issue.State, unixMillis(issue.UpdatedAt), payload); err != nil {
 			if isUniqueViolation(err) {
@@ -483,6 +484,20 @@ func saveIssueTx(ctx context.Context, tx *sql.Tx, issue domain.Issue, create boo
 			return fmt.Errorf("create issue: %w", err)
 		}
 	} else {
+		var previous []byte
+		if err := tx.QueryRowContext(ctx, `SELECT payload FROM issues WHERE issue_id = ?`, issue.IssueID).Scan(&previous); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return fmt.Errorf("issue %q: %w", issue.IssueID, ErrNotFound)
+			}
+			return fmt.Errorf("load stored issue: %w", err)
+		}
+		var stored domain.Issue
+		if err := decode(previous, &stored); err != nil {
+			return fmt.Errorf("decode stored issue: %w", err)
+		}
+		for _, id := range stored.ObservationIDs {
+			imported[id] = true
+		}
 		result, err := tx.ExecContext(ctx, `UPDATE issues SET state = ?, updated_at = ?, payload = ? WHERE issue_id = ?`, issue.State, unixMillis(issue.UpdatedAt), payload, issue.IssueID)
 		if err != nil {
 			return fmt.Errorf("update issue: %w", err)
@@ -504,6 +519,13 @@ func saveIssueTx(ctx context.Context, tx *sql.Tx, issue domain.Issue, create boo
 	for _, observationID := range uniqueSorted(issue.ObservationIDs) {
 		if _, err := tx.ExecContext(ctx, `INSERT INTO issue_observations(issue_id, observation_id) VALUES (?, ?)`, issue.IssueID, observationID); err != nil {
 			if isForeignKeyViolation(err) {
+				// A reference carried by the stored issue whose observation is
+				// not in this ledger came from an imported baseline (exports
+				// omit observations). It stays in the issue payload as an
+				// opaque reference; it just has no evidence row to link.
+				if imported[observationID] {
+					continue
+				}
 				return fmt.Errorf("issue %q references unknown observation %q", issue.IssueID, observationID)
 			}
 			return fmt.Errorf("link issue observation: %w", err)

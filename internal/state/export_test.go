@@ -173,6 +173,43 @@ func TestExportImportExportIsByteIdentical(t *testing.T) {
 	}
 }
 
+// Regression: a restored baseline carries issues whose observations are not in
+// the fresh ledger; updating such an issue (as correlation does on every
+// assessment) must keep the opaque references instead of failing, while a
+// genuinely unknown new observation is still refused.
+func TestImportedIssueUpdatesKeepOpaqueObservationReferences(t *testing.T) {
+	ctx := context.Background()
+	source := seedLedger(t, ctx, t.TempDir())
+	defer source.Close()
+	files, err := source.Export(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	target, err := Open(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer target.Close()
+	if err := target.Import(ctx, files); err != nil {
+		t.Fatal(err)
+	}
+	id := "issue:security:a"
+	if _, err := target.TriageIssue(ctx, id, domain.IssueWontFix, "team-a", "accepted", "maintainer", "triage after restore"); err != nil {
+		t.Fatalf("update of imported issue: %v", err)
+	}
+	got, err := target.LoadIssue(ctx, id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(got.ObservationIDs, []string{"obs-1"}) || got.State != domain.IssueWontFix {
+		t.Fatalf("imported reference lost: %+v", got)
+	}
+	got.ObservationIDs = append(got.ObservationIDs, "never-seen")
+	if err := target.saveIssue(ctx, got, false); err == nil {
+		t.Fatal("a new unknown observation must still be refused")
+	}
+}
+
 func TestExportManifestCarriesBaseIdentity(t *testing.T) {
 	ctx := context.Background()
 	store := seedLedger(t, ctx, t.TempDir())
