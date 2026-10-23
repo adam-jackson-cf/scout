@@ -69,6 +69,27 @@ C7b, the experiment estimators and samplers, is carried forward as binding input
     - `readiness --matrix` prints.
   - **Open, blocked on the user (design §15 item 2):** "`pr_effort` present in CI" needs `pull-requests: read`, `GITHUB_TOKEN` and `--fetch-pr-metadata --pr-repo ${{ github.repository }}` in the trusted job of `scout-guardian.yml`. The code is ready; the workflow is unchanged.
   - **Scenario wording vs allow-list:** §11 says the PR "lowers `ruff` strictness". AL table 1 lists ruff only under `ignores-added` (a `select` shrink is not a mechanism), so the scenario lowers ruff by adding an ignore. Detecting a `select` shrink would mean changing the allow-list, which needs a council round.
+- **Phase 4 is done** (`d00aac1`): `internal/areas` (schema v12, `areas.jsonl`), the refresh trigger with debounce (`scout map`), `scout mapping --areas|--unowned`, and the trusted-workflow map step. Two bugs were found by the real-map scenario and fixed:
+  - Agent features carry Clawpatch source `agent-mapper`, and heuristic ones carry per-mapper sources. Every heuristic feature had been becoming an area.
+  - Clawpatch marks records the latest map did not emit `status: "skipped"` and refreshes their `updatedAt` (`third_party/clawpatch/src/app.ts:139-147`). Stale records are now excluded at the `clawpatch` boundary for every ownership read. Committed `.scout/**` files no longer count as trigger changes.
+  - **§11 Phase 4 scenario** (`/tmp/scout-p4/scenario.sh`; real agent maps through Clawpatch/codex; debounce 45 s), fastapi `d666ccb` / axum `562fa20`:
+
+    | Check | fastapi | axum |
+    |---|---|---|
+    | Onboarding refresh | 1 (424 s) | 1 (227 s) |
+    | Burst of 3 merges (unowned pkg, manifest, content-only) | pending, no refresh | pending, no refresh |
+    | PR run during pending | no refresh | no refresh |
+    | Refreshes after debounce | exactly 1 | exactly 1 |
+    | Content-only merge afterwards | no trigger | no trigger |
+    | Prior issue IDs kept | 74/74 | 52/52 |
+    | Area IDs surviving the refresh | 53/56 (0.95) | 40/47 (0.85) |
+    | Surviving areas' file-set Jaccard, median / min / count < 0.8 | 1.0 / 0.6 / 10 | 1.0 / 0.5 / 6 |
+    | Stale records on disk, excluded from ownership | 85 | 69 |
+    | Agent failure | heuristic 154 kept, incomplete | heuristic 78 kept, incomplete |
+
+  - **Not met as a blanket per-area criterion:** "area file-set Jaccard across refreshes ≥ 0.8 **[ASSUMPTION, X2]**". 16 of the 93 surviving areas fall below it. This is X2's question (preregistration needed), so it stays an assumption, not a pass.
+  - **Not demonstrated empirically:** "inertia series keys unchanged by the refresh". The run recorded one signal snapshot. Scope keys are derived from heuristic features plus directory scopes only, which `internal/state/areas_test.go` asserts.
+- **Published:** https://github.com/adam-jackson-cf/scout (public), branch `main`. CI starts after the workflow split. It fails at install until a release tag exists, because the dogfood caller pins `v0.1.0` and `release.yml` publishes on tag push.
 - **Acceptance figures:** fastapi `d666ccb`, every lane, no egress. 455 s after Phase 1, 537 s after Phase 3's first lanes, 143 s after Gitleaks batching, 125 s after Phase 2, **127 s** after Phase 3 (2026-10-23); 74 issues, exit 0 each time. With no policy, the contextual and clawpatch-review lanes read `skipped (not opted in)` and decisions reads `skipped (decisions not enabled)`; `guardrails` and `delta` run on `diff` only, so they read `skipped` on `assess`. Phase 1 scenario: `/tmp/scout-p1/scenario.sh`. Phase 2: `/tmp/scout-p2/phase2-scenario.sh`. Phase 3: `/tmp/scout-p3/scenario.sh`.
 - **Known gaps:**
   - If agent mapping succeeds with zero features, heuristic output is not re-merged (Phase 4).
@@ -82,7 +103,7 @@ C7b, the experiment estimators and samplers, is carried forward as binding input
 ## 2. Decisions in force
 
 - Design revision 2.2 is authoritative (`docs/scout-design.md`, `f81b2601…`). Appendix decisions 1–7 (2026-10-19) and 8–15 (2026-10-22/23) are not reopened. Open user decisions: design §15 items 1–3 (study-export consent, `pull-requests: read`, inertia framing), and the remaining `jev-actions-review.md` §D questions (minimums, costs, Jev version pin), which feed the experiment preregistrations.
-- Scout is a **discovery-only CI guardian**; no remediation, no inertia score, no claim that agents degrade a repo (`docs/scout-design.md:9-19`). All inertia measures are `descriptive` (`:185`).
+- Design revision 2.2 is authoritative (`docs/scout-design.md`, `f81b2601…`). Appendix decisions 1–7 (2026-10-19) and 8–15 (2026-10-22/23) are not reopened. The §15 items were decided by the user on 2026-10-23 (§6.9) and await recording in the next council design round. Per-decision Jev costs and minimums stay at the provisional defaults until the user sets them.
 - Design changes need innovation-council sign-off with zero issues, rounds recorded under `docs/design-reviews/<date>-<topic>/` (`AGENTS.md:30-38`). Experiments likewise, preregistered, frozen after sign-off (`AGENTS.md:3-28`). Design changes may cite only signed-off experiments (`AGENTS.md:37`).
 - Ledgers must be updated when a source/hypothesis is used (`AGENTS.md` ledger rules): `docs/research-ledger.md` (R-001…R-038), `docs/hypothesis-ledger.md` (HD\* live; H\*/HA\*/HQ\* frozen).
 - Secrets only via Infisical per command; never print/export/commit (`AGENTS.md:52-61`).
@@ -124,13 +145,14 @@ Owners: **Council** = innovation-council review loop; **Impl** = a coding sessio
 | 0 | ~~Decide the §6 conflicts; council re-scope round~~ **done**: rev 2.2 adopted 2026-10-23 (round 6, zero issues) | — | — | — |
 | 1 | ~~**Phase 1**~~ **done** (`945ac4d`, `36d1023`) | — | — | fastapi 143 s; §1 |
 | 2 | ~~**Phase 2**~~ **done** 2026-10-23: §11 scenario passed (§1); one wording deviation (digest mismatch → `introduced` after a valid recompute) | — | — | §11 Phase 2 |
-| 3 | ~~**Phase 3**~~ **done** 2026-10-23 (§1), except "`pr_effort` present in CI" | user decides design §15 item 2 (`pull-requests: read`) | User → Impl (workflow change only) | §11 Phase 3 |
+| 3 | ~~**Phase 3**~~ **done** 2026-10-23 (§1); `pr_effort` in CI is wired (trusted job, `pull-requests: read`) but unproven until a release exists | — | — | §11 Phase 3 |
 | 3b | **Subject interface** principles adopted (rev 2.2 §8.7); exact schema needs its own council round after inertia-bench signs off | bench design signed off; #3 measures | Council → Impl | §11 Phase 3b |
-| 4 | **Phase 4** — mapping refresh triggers + areas (X2) | #1, #3 scopes | Impl | §11 Phase 4 |
-| 5 | **Phase 5** — trends, exploratory measures, rubric lane, self-evaluation (X1, X3–X5, X9, X10), blind-label collection | #2–#4; ≥100 blind labels for X1 | Impl | §11 Phase 5; X1 decision rule recorded (§13) |
-| 6 | **Phase 6** — study export, spec cutover (archive `SCOUT_REBUILD_REQUIREMENTS.md`, write `docs/scout-product-contract.md`, `scout-adapter-contracts.md`, `docs/evidence/`), web inertia panels, release, dogfood in `guardian` | #5, §15.1 consent decision | Impl | §11 Phase 6 |
+| 4 | ~~**Phase 4**~~ **done** 2026-10-23 (§1); X2 thresholds remain assumptions | — | — | §11 Phase 4 |
+| 4b | **Next council design round:** record the §15 decisions (§6.9), the labelling change (§6.9 item 6) and the §11 wording deviations (Phase 2 attribution, Phase 3 ruff) | — | Council | zero issues |
+| 5 | **Phase 5**: trends, exploratory measures, rubric lane, self-evaluation (X1, X3–X5, X9, X10), agent-labelled eval data (§6.9 item 6) | X1/X3/X4/X5/X10 preregistrations signed off by the council | Council → Impl | §11 Phase 5; X1 decision rule recorded (§13) |
+| 6 | **Phase 6**: study export (dogfood ledger is dataset #1, §6.9), spec cutover (archive `SCOUT_REBUILD_REQUIREMENTS.md`, write `docs/scout-product-contract.md`, `scout-adapter-contracts.md`, `docs/evidence/`), web inertia panels, release, dogfood in `guardian` | #5 | Impl | §11 Phase 6 |
 | 7 | ~~Update `AGENTS.md`~~ **done 2026-10-23** (§6.6) | — | — | — |
-| 8 | **Candidate reference (not a ledger entry yet):** MOSS, arXiv:2610.26902 (Nesen et al., published 2026-10-16; verified abstract: production LLM-judge monitoring loop with targeted sampling, strategy-aware prompting, structured alerting; a single judge/score scale/threshold transferred from a 498-pair recommendation benchmark to a 466-pair search benchmark with only a surface-specific prompt change). Relevance: Scout persistent/nightly mode (§7.1, §8.4 trend flags, 5 % audit sample §6) and Jev triage thresholds (X1, §13: are thresholds transferable across rules/repos?) | read the full paper before use | Impl/User | If it informs a decision or hypothesis, add the next free `R-NNN` (R-039) per `AGENTS.md:46-49` at that time |
+| 8 | **Candidate reference (not a ledger entry yet):** MOSS, arXiv:2610.26902 (Nesen et al., published 2026-10-16; verified abstract: production LLM-judge monitoring loop with targeted sampling, strategy-aware prompting, structured alerting; a single judge/score scale/threshold transferred from a 498-pair recommendation benchmark to a 466-pair search benchmark with only a surface-specific prompt change). Relevance: Scout persistent/nightly mode (§7.1, §8.4 trend flags, 5 % audit sample §6) and Jev triage thresholds (X1, §13: are thresholds transferable across rules/repos?) | read the full paper before use | Impl/User | If it informs a decision or hypothesis, add the next free `R-NNN` (R-040) at that time |
 | 9 | ~~Repository hygiene~~ **done**: initial commit `41ea1eb`; `__pycache__/`, `*.pyc` ignored; study data (≈ 57 MB under `evaluation/`) committed because Phase 3 acceptance reads `change-cost-v2/raw` and `panel-final.csv.gz`. Pre-commit Gitleaks: 7 hits are public example tokens in corpus evidence (`evaluation/jev-triage-v1/unlabelled.jsonl`), 1 is a rule regex (`internal/analyzers/rules/security/gitleaks-default.toml:232`), and 2 are synthetic `generic-api-key` test fixtures from `aac3ca7` (`internal/decisions/decisions_test.go:26` fake key; `internal/state/annotations_test.go:55`, which checks that credential-bearing bodies are refused) | — | — | — |
 
 ## 6. Decisions on the former open questions (user, 2026-10-22; R-036)
