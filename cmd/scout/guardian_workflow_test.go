@@ -44,59 +44,93 @@ func jobBlock(t *testing.T, raw, job string) string {
 }
 
 func TestGuardianWorkflowTrustBoundary(t *testing.T) {
-	raw, w := readWorkflow(t, "scout-guardian.yml")
-	code := regexp.MustCompile(`(?m)^\s*#.*$`).ReplaceAllString(raw, "")
-
-	if strings.Contains(code, "go build") || strings.Contains(code, "./cmd/scout") || strings.Contains(code, "bootstrap-tools") {
-		t.Fatal("the guardian workflow builds Scout from the checkout")
-	}
-	for _, want := range []string{"releases/download/${SCOUT_VERSION}", "sha256sum", "clawpatch-manifest.json", "scout-linux-amd64"} {
-		if !strings.Contains(code, want) {
-			t.Errorf("release download with checksum verification is missing %q", want)
+	prRaw, pr := readWorkflow(t, "scout-guardian.yml")
+	trRaw, tr := readWorkflow(t, "scout-guardian-trusted.yml")
+	for name, raw := range map[string]string{"scout-guardian.yml": prRaw, "scout-guardian-trusted.yml": trRaw} {
+		code := regexp.MustCompile(`(?m)^\s*#.*$`).ReplaceAllString(raw, "")
+		if strings.Contains(code, "go build") || strings.Contains(code, "./cmd/scout") || strings.Contains(code, "bootstrap-tools") {
+			t.Errorf("%s builds Scout from the checkout", name)
+		}
+		for _, want := range []string{"releases/download/${SCOUT_VERSION}", "sha256sum", "clawpatch-manifest.json", "scout-linux-amd64"} {
+			if !strings.Contains(code, want) {
+				t.Errorf("%s: release download with checksum verification is missing %q", name, want)
+			}
+		}
+		for _, banned := range []string{"OPENAI_API_KEY", "ANTHROPIC_API_KEY", "CLAWPATCH_OPENAI", "CLAWPATCH_ANTHROPIC", "aws-actions", "AWS_", "SCOUT_AWS", "s3://", "id-token"} {
+			if strings.Contains(code, banned) {
+				t.Errorf("%s: forbidden reference %q", name, banned)
+			}
+		}
+		if !strings.Contains(code, "default: adam-jackson-cf/scout") {
+			t.Errorf("%s: release-repo must default to adam-jackson-cf/scout", name)
 		}
 	}
-	for _, banned := range []string{"OPENAI_API_KEY", "ANTHROPIC_API_KEY", "CLAWPATCH_OPENAI", "CLAWPATCH_ANTHROPIC", "aws-actions", "AWS_", "SCOUT_AWS", "s3://", "id-token"} {
-		if strings.Contains(code, banned) {
-			t.Errorf("forbidden reference %q", banned)
+	prCode := regexp.MustCompile(`(?m)^\s*#.*$`).ReplaceAllString(prRaw, "")
+	trCode := regexp.MustCompile(`(?m)^\s*#.*$`).ReplaceAllString(trRaw, "")
+
+	// Pull-request workflow: one read-only job, no secrets, no token.
+	if len(pr.Jobs) != 1 || len(pr.Permissions) != 1 || pr.Permissions["contents"] != "read" {
+		t.Errorf("pull-request workflow must hold exactly one job and contents: read: jobs=%d perms=%v", len(pr.Jobs), pr.Permissions)
+	}
+	job, ok := pr.Jobs["pull-request"]
+	if !ok || job.If != "github.event_name == 'pull_request'" || len(job.Permissions) != 1 || job.Permissions["contents"] != "read" {
+		t.Errorf("pull-request job must be read-only: %+v", job)
+	}
+	for _, banned := range []string{"secrets", "GITHUB_TOKEN", "github.token", "pull-requests", "state publish", "map --", "args=(map"} {
+		if strings.Contains(prCode, banned) {
+			t.Errorf("pull-request workflow must not reference %q", banned)
 		}
 	}
+	if !strings.Contains(prCode, "BASE_SHA") {
+		t.Error("pull-request policy must be read from the base commit")
+	}
 
-	if w.Permissions["contents"] != "read" {
-		t.Errorf("workflow default permissions: %v", w.Permissions)
+	// Trusted workflow: one job with write + pull-requests read, the single secret.
+	if len(tr.Jobs) != 1 || tr.Permissions["contents"] != "write" || tr.Permissions["pull-requests"] != "read" || len(tr.Permissions) != 2 {
+		t.Errorf("trusted workflow permissions: jobs=%d perms=%v", len(tr.Jobs), tr.Permissions)
 	}
-	pr, trusted := w.Jobs["pull-request"], w.Jobs["trusted"]
-	if pr.If != "github.event_name == 'pull_request'" || len(pr.Permissions) != 1 || pr.Permissions["contents"] != "read" {
-		t.Errorf("pull-request job must be read-only: if=%q perms=%v", pr.If, pr.Permissions)
-	}
-	if trusted.Permissions["contents"] != "write" || len(trusted.Permissions) != 1 {
-		t.Errorf("trusted job permissions: %v", trusted.Permissions)
+	trusted, ok := tr.Jobs["trusted"]
+	if !ok || trusted.Permissions["contents"] != "write" || trusted.Permissions["pull-requests"] != "read" || len(trusted.Permissions) != 2 {
+		t.Errorf("trusted job permissions: %+v", trusted)
 	}
 	if !strings.Contains(trusted.If, "github.event_name != 'pull_request'") || !strings.Contains(trusted.If, "default_branch") {
 		t.Errorf("trusted job is not limited to default-branch non-PR runs: %q", trusted.If)
 	}
-
-	if strings.Contains(jobBlock(t, raw, "pull-request"), "secrets.") {
-		t.Error("the pull-request job references a secret")
+	if strings.Count(trCode, "GITHUB_TOKEN") != 1 || strings.Count(trCode, "github.token") != 1 || !strings.Contains(trCode, "GITHUB_TOKEN: ${{ github.token }}") || !strings.Contains(trCode, "--fetch-pr-metadata --pr-repo") {
+		t.Error("GITHUB_TOKEN must be referenced once, with PR metadata fetching")
 	}
-	if got := strings.Count(code, "secrets."); got != 1 || !strings.Contains(jobBlock(t, raw, "trusted"), "secrets.OPENROUTER_API_KEY") {
-		t.Errorf("only the trusted job may read the single OPENROUTER_API_KEY secret (secret references: %d)", got)
+	mapAt, assessAt := strings.Index(trCode, "args=(map"), strings.Index(trCode, "args=(assess")
+	if mapAt < 0 || assessAt < 0 || mapAt > assessAt || strings.Index(trCode, "state restore") > mapAt || strings.Index(trCode, "state publish") < assessAt {
+		t.Error("trusted job order must be state restore, map, assess, state publish")
 	}
-	if strings.Contains(jobBlock(t, raw, "pull-request"), "state publish") || !strings.Contains(jobBlock(t, raw, "trusted"), "state publish") {
-		t.Error("only the trusted job publishes scout/state")
+	for _, want := range []string{"--event push --default-branch --base", "--event nightly --default-branch", "--refresh"} {
+		if !strings.Contains(trCode, want) {
+			t.Errorf("trusted map step lacks %q", want)
+		}
 	}
-	if !strings.Contains(jobBlock(t, raw, "pull-request"), "BASE_SHA") {
-		t.Error("pull-request policy must be read from the base commit")
+	if got := strings.Count(trCode, "secrets."); got != 1 || !strings.Contains(trCode, "secrets.OPENROUTER_API_KEY") {
+		t.Errorf("only one OPENROUTER_API_KEY secret reference is allowed (references: %d)", got)
+	}
+	if !strings.Contains(trRaw, "secrets:\n      OPENROUTER_API_KEY:") {
+		t.Error("trusted workflow must declare the OPENROUTER_API_KEY secret")
+	}
+	if strings.Contains(prRaw, "secrets:") {
+		t.Error("pull-request workflow must declare no secrets")
 	}
 }
 
-func TestNightlyIsACallerOfTheReusableWorkflow(t *testing.T) {
+func TestNightlyIsACallerOfTheReusableWorkflows(t *testing.T) {
 	raw, w := readWorkflow(t, "scout-nightly.yml")
-	if len(w.Jobs) == 0 {
-		t.Fatal("no jobs")
+	want := map[string]string{
+		"pull-request": "./.github/workflows/scout-guardian.yml",
+		"trusted":      "./.github/workflows/scout-guardian-trusted.yml",
 	}
-	for name, job := range w.Jobs {
-		if job.Uses != "./.github/workflows/scout-guardian.yml" {
-			t.Errorf("job %s does not call the reusable workflow: %q", name, job.Uses)
+	if len(w.Jobs) != len(want) {
+		t.Fatalf("unexpected jobs: %v", w.Jobs)
+	}
+	for name, uses := range want {
+		if w.Jobs[name].Uses != uses {
+			t.Errorf("job %s calls %q, want %q", name, w.Jobs[name].Uses, uses)
 		}
 	}
 	for _, banned := range []string{"aws-actions", "AWS", "s3", "id-token", "go build", "bootstrap-tools", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "SCOUT_PROVIDER"} {
@@ -104,15 +138,45 @@ func TestNightlyIsACallerOfTheReusableWorkflow(t *testing.T) {
 			t.Errorf("caller still references %q", banned)
 		}
 	}
-	if w.Jobs["pull-request"].Permissions["contents"] != "read" || w.Jobs["trusted"].Permissions["contents"] != "write" {
-		t.Errorf("caller permissions: %v / %v", w.Jobs["pull-request"].Permissions, w.Jobs["trusted"].Permissions)
+	pr, tr := w.Jobs["pull-request"].Permissions, w.Jobs["trusted"].Permissions
+	if pr["contents"] != "read" || len(pr) != 1 || tr["contents"] != "write" || tr["pull-requests"] != "read" || len(tr) != 2 {
+		t.Errorf("caller permissions: %v / %v", pr, tr)
 	}
 	if strings.Contains(jobBlock(t, raw, "pull-request"), "secrets") {
 		t.Error("the pull-request caller job passes secrets")
 	}
+	if !strings.Contains(jobBlock(t, raw, "trusted"), "OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}") {
+		t.Error("the trusted caller job must pass the OPENROUTER_API_KEY secret")
+	}
 	for _, trigger := range []string{"pull_request:", "push:", "schedule:", "workflow_dispatch:", "refresh-map", "authorize-egress"} {
 		if !strings.Contains(raw, trigger) {
 			t.Errorf("trigger %q missing", trigger)
+		}
+	}
+}
+
+// GitHub validates every job of a called workflow against the calling job's
+// permissions, regardless of `if:`; a called job asking for more fails the
+// whole run at startup.
+func TestCalledWorkflowPermissionsFitCallerCeiling(t *testing.T) {
+	level := map[string]int{"": 0, "none": 0, "read": 1, "write": 2}
+	_, caller := readWorkflow(t, "scout-nightly.yml")
+	for name, cj := range caller.Jobs {
+		_, called := readWorkflow(t, filepath.Base(cj.Uses))
+		ceiling := cj.Permissions
+		if ceiling == nil {
+			ceiling = caller.Permissions
+		}
+		for jn, j := range called.Jobs {
+			perms := j.Permissions
+			if perms == nil {
+				perms = called.Permissions
+			}
+			for scope, v := range perms {
+				if level[v] > level[ceiling[scope]] {
+					t.Errorf("caller job %s grants %s: %q but %s job %s requests %q", name, scope, ceiling[scope], cj.Uses, jn, v)
+				}
+			}
 		}
 	}
 }

@@ -1,0 +1,248 @@
+name: Scout guardian (trusted)
+
+# Reusable workflow (design §7.1, §7.4): the trusted default-branch lane (push,
+# schedule, workflow_dispatch full | refresh-map | authorize-egress; full runs
+# publish the scout/state baseline). The pull-request lane lives in
+# scout-guardian.yml; see it for the shared trust model.
+#
+# Only this workflow holds `contents: write` (used only to push scout/state;
+# protect that branch with a ruleset allowing only this workflow) and the Jev
+# key. The caller job must grant `contents: write` and `pull-requests: read`.
+
+on:
+  workflow_call:
+    inputs:
+      scout-version:
+        description: Release tag of Scout to run (for example v0.1.0)
+        required: true
+        type: string
+      release-repo:
+        description: owner/name of the repository publishing Scout releases
+        required: false
+        default: adam-jackson-cf/scout
+        type: string
+      full:
+        description: Force a full assessment (workflow_dispatch full)
+        required: false
+        default: false
+        type: boolean
+      refresh-map:
+        description: Force a full run that rebuilds the feature map (workflow_dispatch refresh-map)
+        required: false
+        default: false
+        type: boolean
+      authorize-egress:
+        description: Authorize configured provider source egress for this run (workflow_dispatch authorize-egress)
+        required: false
+        default: false
+        type: boolean
+      fail-on-incomplete:
+        description: Fail the job on exit 2 or 3 instead of reporting a neutral warning
+        required: false
+        default: false
+        type: boolean
+    secrets:
+      OPENROUTER_API_KEY:
+        description: Jev (OpenRouter) key; read only by this trusted workflow
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: scout-guardian-${{ github.repository }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  trusted:
+    name: Scout (default branch)
+    # Trusted = push, schedule or dispatch on the default branch. The Jev key
+    # and the state-branch write permission exist only here.
+    if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: write
+      pull-requests: read
+    env:
+      SCOUT_VERSION: ${{ inputs.scout-version }}
+      RELEASE_REPO: ${{ inputs.release-repo }}
+      FORCE_FULL: ${{ inputs.full }}
+      REFRESH_MAP: ${{ inputs.refresh-map }}
+      AUTHORIZE_EGRESS: ${{ inputs.authorize-egress }}
+      FAIL_ON_INCOMPLETE: ${{ inputs.fail-on-incomplete }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Install pinned Scout release
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SCOUT_VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.]+)?$ ]] || { echo '::error::scout-version must be a release tag such as v0.1.0.'; exit 3; }
+          [[ "$RELEASE_REPO" =~ ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$ ]] || { echo '::error::release-repo must be owner/name.'; exit 3; }
+          base="https://github.com/${RELEASE_REPO}/releases/download/${SCOUT_VERSION}"
+          dest="$RUNNER_TEMP/scout-release"
+          mkdir -p "$dest/clawpatch"
+          cd "$dest"
+          fetch() { curl --fail --silent --show-error --location --retry 3 --output "$1" "$base/$1"; }
+          verify() {
+            local want got
+            want="$(cut -d ' ' -f1 "$2")"
+            got="$(sha256sum "$1" | cut -d ' ' -f1)"
+            [[ -n "$want" && "$want" == "$got" ]] || { echo "::error::sha256 mismatch for $1."; exit 3; }
+          }
+          fetch scout-linux-amd64
+          fetch scout-linux-amd64.sha256
+          verify scout-linux-amd64 scout-linux-amd64.sha256
+          chmod +x scout-linux-amd64
+          fetch clawpatch-manifest.json
+          fetch clawpatch-manifest.json.sha256
+          verify clawpatch-manifest.json clawpatch-manifest.json.sha256
+          asset="$(jq -er .asset clawpatch-manifest.json)"
+          entrypoint="$(jq -er .entrypoint clawpatch-manifest.json)"
+          manifest_sha="$(jq -er .sha256 clawpatch-manifest.json)"
+          [[ "$asset" =~ ^clawpatch-[A-Za-z0-9._-]+\.tar\.gz$ ]] || { echo '::error::Unexpected Clawpatch asset name.'; exit 3; }
+          [[ "$entrypoint" != /* && "$entrypoint" != *..* ]] || { echo '::error::Unexpected Clawpatch entrypoint.'; exit 3; }
+          fetch "$asset"
+          fetch "$asset.sha256"
+          verify "$asset" "$asset.sha256"
+          [[ "$(sha256sum "$asset" | cut -d ' ' -f1)" == "$manifest_sha" ]] || { echo '::error::Clawpatch bundle does not match its manifest.'; exit 3; }
+          tar -xzf "$asset" -C clawpatch
+          sudo apt-get update -qq
+          sudo apt-get install -y bubblewrap
+          printf 'SCOUT_BIN=%s\n' "$dest/scout-linux-amd64" >> "$GITHUB_ENV"
+          printf 'CLAWPATCH_BIN=%s\n' "$dest/clawpatch/$entrypoint" >> "$GITHUB_ENV"
+
+      - name: Restore the scout/state baseline
+        id: baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --heads origin scout/state > /dev/null 2>&1; then
+            "$SCOUT_BIN" state restore --root "$GITHUB_WORKSPACE" --remote origin
+            printf 'available=true\n' >> "$GITHUB_OUTPUT"
+          else
+            echo 'No scout/state branch yet: this run establishes the first baseline.'
+            printf 'available=false\n' >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Refresh the feature map
+        id: map
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          args=(map --root "$GITHUB_WORKSPACE" --clawpatch "$CLAWPATCH_BIN" --json)
+          if [[ "$AUTHORIZE_EGRESS" == 'true' ]]; then
+            args+=(--allow-egress)
+          fi
+          run=true
+          if [[ "$REFRESH_MAP" == 'true' ]]; then
+            args+=(--refresh)
+          elif [[ "$EVENT_NAME" == 'push' ]]; then
+            if [[ -z "$BEFORE_SHA" || "$BEFORE_SHA" =~ ^0+$ ]]; then
+              echo 'No previous commit on this push; skipping the incremental map refresh.'
+              run=false
+            fi
+            args+=(--event push --default-branch --base "$BEFORE_SHA" --head "$HEAD_SHA")
+          elif [[ "$EVENT_NAME" == 'schedule' ]]; then
+            args+=(--event nightly --default-branch)
+          else
+            run=false
+          fi
+          if [[ "$run" == 'true' ]]; then
+            out="$RUNNER_TEMP/scout-out"
+            mkdir -p "$out"
+            # Exit 2 (blocked/incomplete) and 3 (unavailable) never fail the job
+            # before publish; a skipped no-model-CLI refresh is normal on hosted
+            # runners. The pending refresh record persists with the published baseline.
+            set +e
+            "$SCOUT_BIN" "${args[@]}" > "$out/scout-map.json" 2> "$out/scout-map.stderr"
+            code=$?
+            set -e
+            echo "Map refresh exit code: $code"
+            [[ "$code" == '0' ]] || echo "::notice::Feature-map refresh did not complete (exit $code); see scout-map.stderr."
+          fi
+
+      - name: Assess the repository
+        id: assessment
+        shell: bash
+        env:
+          # The Jev key is read only in this trusted job. Scout decides from
+          # policy consent whether to use it; otherwise ranking is deterministic.
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          BASELINE_AVAILABLE: ${{ steps.baseline.outputs.available }}
+          # Read-only token (pull-requests: read) for merged-PR metadata; this
+          # step only.
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/scout-out"
+          mkdir -p "$out"
+          args=(assess --root "$GITHUB_WORKSPACE" --clawpatch "$CLAWPATCH_BIN" --json)
+          if [[ "$AUTHORIZE_EGRESS" == 'true' ]]; then
+            args+=(--allow-egress)
+          fi
+          if [[ "$BASELINE_AVAILABLE" != 'true' || "$FORCE_FULL" == 'true' ]]; then
+            args+=(--full)
+          fi
+          args+=(--fetch-pr-metadata --pr-repo "$GITHUB_REPOSITORY")
+          set +e
+          "$SCOUT_BIN" "${args[@]}" > "$out/scout-assessment.json" 2> "$out/scout-assessment.stderr"
+          code=$?
+          set -e
+          {
+            echo '## Scout assessment'
+            jq -r '"status: \(.status) (exit \(.exitCode))"' "$out/scout-assessment.json" 2> /dev/null || echo "exit $code"
+          } >> "$GITHUB_STEP_SUMMARY"
+          printf 'exit_code=%s\n' "$code" >> "$GITHUB_OUTPUT"
+
+      - name: Publish the state baseline
+        if: steps.assessment.outputs.exit_code == '0' || steps.assessment.outputs.exit_code == '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$SCOUT_BIN" state publish --root "$GITHUB_WORKSPACE" --remote origin --trusted
+
+      - name: Retain assessment evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scout-assessment-${{ github.run_id }}-${{ github.event_name }}
+          if-no-files-found: warn
+          retention-days: 90
+          path: |
+            ${{ runner.temp }}/scout-out/scout-assessment.json
+            ${{ runner.temp }}/scout-out/scout-assessment.stderr
+            ${{ runner.temp }}/scout-out/scout.sarif
+            ${{ runner.temp }}/scout-out/scout-map.json
+            ${{ runner.temp }}/scout-out/scout-map.stderr
+
+      - name: Enforce assessment result
+        shell: bash
+        env:
+          EXIT_CODE: ${{ steps.assessment.outputs.exit_code }}
+        run: |
+          set -euo pipefail
+          case "$EXIT_CODE" in
+            0) exit 0 ;;
+            1) echo '::error::Scout gate failed.'; exit 1 ;;
+            2|3)
+              if [[ "$FAIL_ON_INCOMPLETE" == 'true' ]]; then
+                echo "::error::Scout assessment was incomplete or unavailable (exit $EXIT_CODE)."
+                exit "$EXIT_CODE"
+              fi
+              echo "::warning::Scout assessment was incomplete or unavailable (exit $EXIT_CODE); reported as neutral."
+              ;;
+            *) echo '::error::Scout did not return a recognized assessment status.'; exit 1 ;;
+          esac

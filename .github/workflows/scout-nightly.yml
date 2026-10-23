@@ -1,7 +1,7 @@
 name: Scout assessment
 
 # Dogfood caller of the reusable guardian workflow. Scout runs from a pinned
-# release, never from this checkout; see scout-guardian.yml for the trust model.
+# release, never from this checkout; see scout-guardian.yml and scout-guardian-trusted.yml for the trust model.
 
 on:
   pull_request:
@@ -44,7 +44,8 @@ jobs:
     if: github.event_name != 'pull_request'
     permissions:
       contents: write
-    uses: ./.github/workflows/scout-guardian.yml
+      pull-requests: read
+    uses: ./.github/workflows/scout-guardian-trusted.yml
     with:
       scout-version: v0.1.0
       release-repo: ${{ github.repository }}
