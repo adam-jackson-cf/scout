@@ -149,45 +149,70 @@ func TestGitleaksBatchProvesEveryFileAndMatchesSingleFileRuns(t *testing.T) {
 	}
 }
 
-func TestGitleaksBatchFallsBackAndStaysHonestForUnprovableFile(t *testing.T) {
+func TestGitleaksGlobalAllowlistPathsAreNotApplicableAndRuleAllowlistsStillScan(t *testing.T) {
 	runner := gitleaksRunner(t)
-	root, files := gitleaksFixture(t)
-	// Gitleaks' default global allowlist silently skips this path, so no batch
-	// or single-file run can ever prove its bytes were scanned.
-	if err := os.WriteFile(filepath.Join(root, "gitleaks.toml"), []byte("a = \"b\"\n"), 0o644); err != nil {
+	root, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
 		t.Fatal(err)
 	}
-	files = append(files, domain.File{Path: "gitleaks.toml", Language: "toml", Eligible: true})
-	ctx := context.Background()
-	raw, _, _ := runner.runBatch(ctx, root, files)
-	if raw.Status == domain.AdapterMissingTool {
+	paths := []string{"toolchain/node/package-lock.json", "web/yarn.lock", "assets/logo.PNG", "gitleaks.toml", "src/app.py", "node_modules/pkg/data.json"}
+	var files []domain.File
+	for _, path := range paths {
+		full := filepath.Join(root, filepath.FromSlash(path))
+		if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(full, []byte("x = 1\n"), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		files = append(files, domain.File{Path: path, Language: "json", Eligible: true})
+	}
+	accepted, coverage, _, eligible, inputErr := runner.selectInputs(root, files, "result")
+	if inputErr {
+		t.Fatal("unexpected input error")
+	}
+	want := map[string]bool{"toolchain/node/package-lock.json": true, "web/yarn.lock": true, "assets/logo.PNG": true, "gitleaks.toml": true, "node_modules/pkg/data.json": true}
+	for _, row := range coverage {
+		excluded := row.Status == domain.CoverageNotApplicable && row.Reason == gitleaksAllowlistReason
+		if excluded != want[row.Key.FilePath] {
+			t.Fatalf("%s: status %s reason %q, want excluded=%v", row.Key.FilePath, row.Status, row.Reason, want[row.Key.FilePath])
+		}
+	}
+	if eligible != 1 || len(accepted) != 1 || accepted[0].manifest.Path != "src/app.py" {
+		t.Fatalf("eligible %d accepted %d, want only src/app.py", eligible, len(accepted))
+	}
+	// Rule-level [[rules.allowlists]] paths only suppress one rule's findings:
+	// they are not part of the global allowlist.
+	pack, err := bundledRule(gitleaksDefaultRule)
+	if err != nil {
+		t.Fatal(err)
+	}
+	patterns, err := gitleaksGlobalPathAllowlist(pack)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if pathAllowlisted(patterns, "docs/@octokit/auth-token/README.md") || pathAllowlisted(patterns, "recipes/app.bb") {
+		t.Fatal("rule-level allowlist path must not be in the global allowlist")
+	}
+}
+
+func TestGitleaksLockfileExclusionKeepsAdapterCompleteAndProvesSource(t *testing.T) {
+	runner := gitleaksRunner(t)
+	root, files := gitleaksFixture(t)
+	if err := os.WriteFile(filepath.Join(root, "package-lock.json"), []byte("{}\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	files = append(files, domain.File{Path: "package-lock.json", Language: "json", Eligible: true})
+	result, observations, err := runner.Run(context.Background(), root, files)
+	if result.Status == domain.AdapterMissingTool {
 		t.Skip("gitleaks or sandbox is not installed")
 	}
-	if raw.Status == domain.AdapterCompleted {
-		t.Fatal("batch containing an unscanned file must not complete")
-	}
-	result, observations, err := runner.Run(ctx, root, files)
-	if err == nil || result.Status == domain.AdapterCompleted {
-		t.Fatalf("status %s error %v: unprovable file must keep the adapter incomplete", result.Status, err)
+	if err != nil || result.Status != domain.AdapterCompleted {
+		t.Fatalf("status %s error %v failures %v", result.Status, err, result.Failures)
 	}
 	outcomes := gitleaksOutcomes(t, result, observations)
-	if outcomes["gitleaks.toml"].status != domain.CoverageIncomplete {
-		t.Fatalf("unprovable file status = %s", outcomes["gitleaks.toml"].status)
-	}
-	for _, file := range files[:len(files)-1] {
-		if outcomes[file.Path].status != domain.CoverageInspected {
-			t.Fatalf("%s should be proven by the single-file fallback, got %s", file.Path, outcomes[file.Path].status)
-		}
-	}
-	if len(observations) != 2 || len(outcomes["a.py"].observation) != 1 || len(outcomes["sub/dir/c.py"].observation) != 1 {
-		t.Fatalf("fallback lost findings: %d observations", len(observations))
-	}
-	for _, row := range result.Coverage {
-		for _, id := range row.AdapterResultIDs {
-			if id != result.ResultID {
-				t.Fatalf("coverage row %s references %s, want batch result %s", row.Key.FilePath, id, result.ResultID)
-			}
-		}
+	if outcomes["package-lock.json"].status != domain.CoverageNotApplicable || outcomes["a.py"].status != domain.CoverageInspected || len(observations) != 2 {
+		t.Fatalf("unexpected outcomes %+v (%d observations)", outcomes, len(observations))
 	}
 }
 

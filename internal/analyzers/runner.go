@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -314,6 +315,16 @@ func (r *Runner) selectInputs(root string, selected []domain.File, resultID stri
 	byPath := make(map[string]sourceInput)
 	var total int64
 	eligibleCount, inputErr := 0, false
+	var allowlist []*regexp.Regexp
+	if r.spec.ID == "security.gitleaks.default-credentials" {
+		pack, err := bundledRule(gitleaksDefaultRule)
+		if err == nil {
+			allowlist, err = gitleaksGlobalPathAllowlist(pack)
+		}
+		if err != nil {
+			inputErr = true
+		}
+	}
 	for _, file := range selected {
 		if err := file.Validate(); err != nil {
 			inputErr = true
@@ -321,6 +332,11 @@ func (r *Runner) selectInputs(root string, selected []domain.File, resultID stri
 		}
 		key := domain.CoverageKey{FilePath: file.Path, Family: r.spec.Family, Category: r.spec.Category}
 		row := domain.Coverage{Key: key, AdapterResultIDs: []string{resultID}}
+		if file.Eligible && !file.Excluded && pathAllowlisted(allowlist, file.Path) {
+			row.Status, row.Reason = domain.CoverageNotApplicable, gitleaksAllowlistReason
+			coverage = append(coverage, row)
+			continue
+		}
 		if !r.spec.eligible(file) {
 			row.Status, row.Reason = domain.CoverageNotApplicable, "adapter language or extension is ineligible"
 			coverage = append(coverage, row)
