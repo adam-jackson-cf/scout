@@ -35,7 +35,7 @@ Use this lexicon to see which environment variables Scout and its toolchain read
   Source: `cmd/scout/main.go` `providerConfig`
 
 - `CLAWPATCH_PROVIDER`
-  Purpose: Clawpatch provider for agent mapping and `clawpatch-review` when none is configured. Only `codex` or `claude` are accepted; any other value is rejected. When it is unset, Scout tries `codex` first, then `claude`, and reports `skipped (no model CLI)` if neither is on `PATH`.
+  Purpose: Clawpatch provider for the `clawpatch-review` lane only, when none is configured. Only `codex` or `claude` are accepted; any other value is rejected. When it is unset, review tries `codex` first, then `claude`. It does not affect agent mapping, which always uses `codex` with model `gpt-6-luna` at reasoning effort `xhigh`; with `codex` off `PATH` mapping reports `skipped (no model CLI)` (no `claude` fallback).
   Source: `internal/clawpatch/provider.go`
 
 - `CLAWPATCH_CODEX_TIMEOUT_MS`

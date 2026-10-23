@@ -190,64 +190,84 @@ func TestAgentMapWithoutModelCLIIsSkippedAndNeverInvokesClawpatch(t *testing.T) 
 	}
 }
 
-func TestAgentMapUsesCodexOrClaudeInHostAuthContextWithoutAPIKeys(t *testing.T) {
-	for name, tc := range map[string]struct {
-		installed []string
-		configure string
-		want      string
-	}{
-		"codex is the default": {installed: []string{"codex", "claude"}, want: "codex"},
-		"falls back to claude": {installed: []string{"claude"}, want: "claude"},
-		"explicit claude":      {installed: []string{"codex", "claude"}, configure: "claude", want: "claude"},
-	} {
-		t.Run(name, func(t *testing.T) {
-			useFakeCLIs(t, tc.installed...)
-			setProviderCredentials(t)
-			client, log := fakeMapper(t, true, false)
-			client.provider = tc.configure
-			result, err := client.Map(context.Background(), true, MapSourceAgent)
-			if err != nil || result.Status != MapMapped || result.Source != MapSourceAgent {
-				t.Fatalf("agent map = %+v, %v", result, err)
-			}
-			argv, err := os.ReadFile(log)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if !strings.Contains(string(argv), "--json map --source agent --provider "+tc.want+"\n") {
-				t.Fatalf("agent map argv = %q", argv)
-			}
-			assertCredentialFreeHostEnv(t, log+".env")
-			env, err := os.ReadFile(log + ".env")
-			if err != nil {
-				t.Fatal(err)
-			}
-			// Clawpatch's claude default is 180 s, too short for an agent map.
-			for _, want := range []string{"CLAWPATCH_CODEX_TIMEOUT_MS=900000", "CLAWPATCH_CLAUDE_TIMEOUT_MS=900000"} {
-				if !strings.Contains(string(env), want) {
-					t.Fatalf("agent map env lacks %s", want)
-				}
-			}
-		})
+func TestAgentMapUsesCodexLunaXHighInHostAuthContextWithoutAPIKeys(t *testing.T) {
+	useFakeCLIs(t, "codex", "claude")
+	setProviderCredentials(t)
+	client, log := fakeMapper(t, true, false)
+	client.provider = "codex"
+	result, err := client.Map(context.Background(), true, MapSourceAgent)
+	if err != nil || result.Status != MapMapped || result.Source != MapSourceAgent {
+		t.Fatalf("agent map = %+v, %v", result, err)
+	}
+	argv, err := os.ReadFile(log)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(argv), "--json map --source agent --provider codex --model gpt-6-luna --reasoning-effort xhigh\n") {
+		t.Fatalf("agent map argv = %q", argv)
+	}
+	assertCredentialFreeHostEnv(t, log+".env")
+	env, err := os.ReadFile(log + ".env")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{"CLAWPATCH_CODEX_TIMEOUT_MS=900000", "CLAWPATCH_CLAUDE_TIMEOUT_MS=900000"} {
+		if !strings.Contains(string(env), want) {
+			t.Fatalf("agent map env lacks %s", want)
+		}
 	}
 }
 
-func TestAnyOtherClawpatchProviderIsRejected(t *testing.T) {
+func TestAgentMapIgnoresProviderConfigAndEnv(t *testing.T) {
+	useFakeCLIs(t, "codex", "claude")
+	for _, viaEnv := range []bool{false, true} {
+		client, log := fakeMapper(t, true, false)
+		t.Setenv("CLAWPATCH_PROVIDER", "")
+		if viaEnv {
+			t.Setenv("CLAWPATCH_PROVIDER", "claude")
+		} else {
+			client.provider = "claude"
+		}
+		result, err := client.Map(context.Background(), true, MapSourceAgent)
+		if err != nil || result.Status != MapMapped || result.Source != MapSourceAgent {
+			t.Fatalf("map (env=%t) = %+v, %v", viaEnv, result, err)
+		}
+		argv, err := os.ReadFile(log)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !strings.Contains(string(argv), "--json map --source agent --provider codex --model gpt-6-luna --reasoning-effort xhigh\n") {
+			t.Fatalf("map (env=%t) argv = %q", viaEnv, argv)
+		}
+	}
+}
+
+func TestAgentMapWithOnlyClaudeInstalledIsSkipped(t *testing.T) {
+	useFakeCLIs(t, "claude")
+	t.Setenv("CLAWPATCH_PROVIDER", "")
+	client, log := fakeMapper(t, true, false)
+	result, err := client.Map(context.Background(), true, MapSourceAgent)
+	if err != nil || result.Status != MapSkipped || result.Reason != "skipped (no model CLI)" {
+		t.Fatalf("claude-only map must be skipped: %+v, %v", result, err)
+	}
+	if _, statErr := os.Stat(log); statErr == nil {
+		t.Fatal("skipped map invoked Clawpatch")
+	}
+}
+
+func TestAnyOtherClawpatchProviderIsRejectedForReview(t *testing.T) {
 	useFakeCLIs(t, "codex", "claude")
 	for _, provider := range []string{"acpx", "mock", "opencode", "grok"} {
 		for _, viaEnv := range []bool{false, true} {
-			client, log := fakeMapper(t, true, false)
+			client, _ := fakeMapper(t, true, false)
 			t.Setenv("CLAWPATCH_PROVIDER", "")
 			if viaEnv {
 				t.Setenv("CLAWPATCH_PROVIDER", provider)
 			} else {
 				client.provider = provider
 			}
-			result, err := client.Map(context.Background(), true, MapSourceAgent)
-			if err == nil || result.Status != MapBlocked {
-				t.Fatalf("provider %q (env=%t) must be rejected: %+v, %v", provider, viaEnv, result, err)
-			}
-			if _, statErr := os.Stat(log); statErr == nil {
-				t.Fatalf("rejected provider %q invoked Clawpatch", provider)
+			if got, err := client.resolveProvider(); err == nil {
+				t.Fatalf("provider %q (env=%t) must be rejected, got %q", provider, viaEnv, got)
 			}
 		}
 	}
@@ -303,7 +323,7 @@ func TestAgentMapFailureKeepsHeuristicFeaturesAndReportsIncomplete(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(argv), "map --source agent --provider codex\n") || !strings.HasSuffix(string(argv), "map --source heuristic\n") {
+	if !strings.Contains(string(argv), "map --source agent --provider codex --model gpt-6-luna --reasoning-effort xhigh\n") || !strings.HasSuffix(string(argv), "map --source heuristic\n") {
 		t.Fatalf("unexpected argv sequence: %q", argv)
 	}
 }

@@ -54,6 +54,17 @@ func (c *Client) resolveProvider() (string, error) {
 	}
 }
 
+// resolveMapProvider picks the provider for the agent map: always codex.
+// The configured provider and CLAWPATCH_PROVIDER govern only the
+// clawpatch-review lane and are ignored here. Without codex on PATH the error
+// is modelcli.ErrNoCLI.
+func (c *Client) resolveMapProvider() (string, error) {
+	if _, _, err := modelcli.Detect(ProviderCodex); err != nil {
+		return "", err
+	}
+	return ProviderCodex, nil
+}
+
 // modelInvocation returns the provider arguments and environment for a
 // model-using Clawpatch call: host auth context, no API-key variables.
 func modelInvocation(provider string, extraEnv ...string) ([]string, []string) {

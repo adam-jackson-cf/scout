@@ -21,6 +21,10 @@ const (
 	Version  = "0.7.3"
 
 	defaultMapTimeoutMS = "900000"
+
+	// The agent map always runs on codex with this model and effort.
+	mapModel           = "gpt-6-luna"
+	mapReasoningEffort = "xhigh"
 )
 
 var (
@@ -196,7 +200,7 @@ func (c *Client) Map(ctx context.Context, inputsChanged bool, source MapSource) 
 	var agentArgs []string
 	var agentEnv []string
 	if source == MapSourceAgent {
-		provider, err := c.resolveProvider()
+		provider, err := c.resolveMapProvider()
 		if errors.Is(err, modelcli.ErrNoCLI) {
 			return MapResult{Status: MapSkipped, Source: source, Reason: SkippedNoModelCLI}, nil
 		}
@@ -213,6 +217,7 @@ func (c *Client) Map(ctx context.Context, inputsChanged bool, source MapSource) 
 		var providerArgs []string
 		providerArgs, agentEnv = modelInvocation(provider, mapEnvironment()...)
 		agentArgs = append([]string{"map", "--source", "agent"}, providerArgs...)
+		agentArgs = append(agentArgs, "--model", mapModel, "--reasoning-effort", mapReasoningEffort)
 	}
 	if err := c.Init(ctx); err != nil {
 		return MapResult{Status: MapBlocked, Source: source, Reason: err.Error()}, err
