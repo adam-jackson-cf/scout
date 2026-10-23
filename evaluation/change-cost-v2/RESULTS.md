@@ -2,6 +2,8 @@
 
 Run 2026-10-21. Preregistration `PREREGISTRATION.md` (7d87913c…, signed off in `reviews/round-10.md`); Amendment 1 revision 2 (`AMENDMENT-1.md` 527bd820…, signed off in `reviews/round-14.md`). Every number below comes from `results.json`, `validation-gates.json`, `gates.json`, `power-results.json` and `sensitivity.json` in this directory. Everything not decided by the preregistered rule is labelled exploratory.
 
+**Status note (2026-10-22, user decision; does not alter the frozen preregistration, amendment or scripts).** This study is **grandfathered**: it stays valid and citable as run. Its annotators A/B/C (`anthropic/claude-sonnet-4.5`, `openai/gpt-4.1`, `google/gemini-2.5-pro` via OpenRouter; `annotate.py:7-9,27-28`) pre-date the model-use rule now in force (OpenRouter only for TypeSafe Jev; other models only through `claude -p`/`codex exec` with Anthropic/OpenAI models), so the annotation steps cannot be re-run unchanged under that rule. Hypothesis testing has since moved to inertia-bench (`docs/research-ledger.md` R-036, R-037).
+
 ## 1. Answer
 
 On merged PRs in 12 open-source repositories (7,717 PRs, 480 directory areas), **changes to code whose complexity burden rose over the prior year did not take a meaningfully larger, or less predictable, amount of author active time than comparable changes to code whose burden did not rise.** Both decision tests return `equivalent`: the 90 % CI lies inside the preregistered smallest effect of interest (SESOI), ±0.10 log-hours per within-repo SD (≈ ±10.5 % active time), and the design was adequately powered for that (empirical MDE80 0.063 for T2 and 0.053 for T4).

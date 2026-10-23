@@ -51,15 +51,15 @@ Requirement IDs `REQ-n` are local to this file (not ledger IDs).
 - **REQ-28** Deterministic Go owns eligibility, cache keys, identity, gate, measurements, trend flags, redaction; Jev ranks/routes **on from launch** and only annotates (output is an `annotation` row; `issues` does not import `decisions`); reasoning LLMs are opt-in discovery; humans own dispositions, policy, activation (design §6, Appendix 4).
 - **REQ-29** Jev guardrails: typed `noul|choice|score` questions with `question_id@version`; resolved-model pinning (mismatch → discarded, unit `incomplete`); cap `policy.decisions.max_per_run` (default 2,000); unranked view always available; 5 % random low-ranked audit sample nightly; deterministic ranking baseline used and disclosed on fork PRs or without key/egress, and stored for every finding so X1 can measure Jev's gain (design §6, §13 X1).
 - **REQ-30** Jev never closes or dismisses issues, never defines identity, and `P(real_defect)` is not presented as calibrated confidence (design §6 "Rejected"; E2 `evaluation/jev-triage-v1/RESULTS.md`).
-- **REQ-31** **Model-use policy (user rule, 2026-10-22):** OpenRouter is used only for TypeSafe Jev. Every other model use goes through local subscription CLIs (`claude -p`, `codex exec`) with Anthropic/OpenAI models only. How this applies to CI-hosted contextual/Clawpatch lanes is an open user decision (`docs/STATUS.md` §6.1).
-- **REQ-32** Jev/OpenRouter secrets come only from Infisical, injected per command; never printed, exported or committed (`AGENTS.md:52-61`).
+- **REQ-31** **Model-use policy (user rule, 2026-10-22):** OpenRouter is used only for TypeSafe Jev. Every other model use goes through local subscription CLIs (`claude -p`, `codex exec`) with Anthropic/OpenAI models only. Decided (`docs/STATUS.md` §6.1, R-036): a CLI-subprocess adapter replaces the HTTP contextual provider product-wide; reasoning-LLM lanes run only where a model CLI is logged in and otherwise report `skipped`; CI carries no Anthropic/OpenAI API keys. Adoption into the design awaits the council re-scope round.
+- **REQ-32** The Jev/OpenRouter key comes from Infisical, injected per command, for local runs, and from a GitHub Actions secret on trusted CI runs (never on fork PRs; design §6, §7.4); never printed, exported or committed (`AGENTS.md:52-61`). `claude -p`/`codex exec` use the CLI's subscription login and need no Scout-managed secret.
 
 ## 7. Inertia monitoring (descriptive only)
 
 - **REQ-33** Per scope, store versioned `metric@version` signals with numerator, denominator, population digest, tool/config digests and missingness (`unmeasured` ≠ 0, `insufficient` ≠ good): principal measures (design §8.2), exposure/interest measures (§8.3). Every panel carries `claim: descriptive` (§8.4).
 - **REQ-34** Trend flag only after ≥ 3 consecutive comparable windows adverse past a practical delta on a stable population; `n < 20` changes → `insufficient`; no composite score; the watch list is descriptive; interventions can be annotated and excluded from flags (design §8.4).
 - **REQ-35** A metric's `claim` moves to `predictive` only by a preregistered, council-signed pooled test meeting the design §8.5 rule; Scout never upgrades a claim itself. E1b found no material PR-effort or predictability effect from complexity burden (`evaluation/change-cost-v2/RESULTS.md:5-21`), so principal series are framed as "structure to watch", not cost (design §8.1, §8.5; framing provisional pending design §15.5).
-- **REQ-36** Pooled-study export is a separate opt-in: pseudonymous, scope-level aggregates plus a sanitised change table; no source, messages, emails or reviewer identities (design §8.6). Who runs the pooled studies is now an open question (inertia-bench; `docs/STATUS.md` §4, §6.4).
+- **REQ-36** Pooled-study export is a separate opt-in: pseudonymous, scope-level aggregates plus a sanitised change table; no source, messages, emails or reviewer identities (design §8.6). Scout owns the export and its consent (§15.1, still open); inertia-bench runs any pooled studies (`docs/STATUS.md` §6.4; pending the council re-scope round).
 
 ## 8. Subject interface for inertia-bench (new; not yet in design 2.1)
 
@@ -67,14 +67,14 @@ Requirement IDs `REQ-n` are local to this file (not ledger IDs).
 
 ## 9. Non-functional
 
-- **REQ-38** Persistence performance: per-job commit cost flat in job count; no plan decode or run-payload rewrite per commit; interruption-resume yields the same finalised run; `scout assess` on the pinned fastapi revision completes in < 10 min (heuristic map, egress off) — target pending user confirmation (design §10.1, §15.3).
+- **REQ-38** Persistence performance: per-job commit cost flat in job count; no plan decode or run-payload rewrite per commit; interruption-resume yields the same finalised run; `scout assess` on the pinned fastapi revision completes in < 10 min (heuristic map, egress off, development Mac) — target confirmed by the user 2026-10-22 (design §10.1, §15.3; `docs/STATUS.md` §6.7).
 - **REQ-39** Interfaces: CLI authoritative and scriptable (`--json`, stable exit codes); optional read-only web over the same state, local bind by default (design §3.1 `web`, §10.2). New CLI surface per design §10.2: `init`, `diff`, `map --refresh`, `export`/`import [--study]`, `signals`, `trends`, `annotate`, `selfeval`, `readiness --matrix`; `approve` removed.
 - **REQ-40** Build: Go module with subprocess adapters and SQLite; Node ≥ 22 only for the pinned Clawpatch bundle; checksummed macOS/Linux binaries; no auto-install into an analysed repository; Clawpatch upgrades need a compatibility review (CP07) (design §3.1, §7.4, R9).
 - **REQ-41** Scout's own scorecard: per-line `count/attempts` with Wilson 95 % intervals and `unmeasured` counts, no single solve rate (design §9).
 
 ## 10. Open decisions (not requirements until closed)
 
-Design §15 items 1–5 (study-export consent, X8, performance target, `pull-requests: read`, inertia framing) and the STATUS §6 conflicts. Product experiments X1–X6, X9, X10 with their decision rules are in design §13.
+Design §15 items 1 (study-export consent), 4 (`pull-requests: read`) and 5 (inertia framing); item 3 is decided (REQ-38) and item 2 (X8) moves to inertia-bench with the re-scope. Product experiments X1–X6, X9, X10 with their decision rules are in design §13.
 
 ## Appendix — Removed / superseded from the previous requirements
 
