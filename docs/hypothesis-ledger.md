@@ -19,7 +19,7 @@ States: `proposed` → `preregistered` → `under-test` → `supported` | `not-s
 | H6 | Specific code patterns cost runtime performance or energy | R-026 | proposed | — | — | 2026-10-20 |
 | H7 | Larger change batches reduce delivery stability | R-025 | proposed | — | — | 2026-10-20 |
 | HA1 | Agents degrade code faster than humans | R-006, R-024, R-025, R-034 | proposed | — (X8 tests HA2 only; HA1 needs a human comparison) | Benchmark evidence only (R-006) | 2026-10-21 |
-| HA2 | Degraded code makes agents less reliable | R-027, R-034 | proposed | X8 | One refactoring study, partial (R-027) | 2026-10-20 |
+| HA2 | Degraded code makes agents less reliable | R-027, R-034 | proposed | inertia-bench | One refactoring study, partial (R-027) | 2026-10-22 |
 | HA3 | Agent velocity multiplies the interest paid on debt | R-028, R-034 | proposed | — | — | 2026-10-20 |
 | HA4 | Agents misapply patterns and are misled by contradictory context | R-034 | proposed | — | No study found | 2026-10-20 |
 | HQ1 | Quality levels predict where bug fixes land next, beyond size and history | R-005 | not-supported | E1 inertia-v1 (pre-dates experiment rules) | +1.18% [−0.62, +3.24]; CC>10 count alone +1.91% [0.39, 3.68] | 2026-10-17 |
@@ -29,6 +29,8 @@ States: `proposed` → `preregistered` → `under-test` → `supported` | `not-s
 
 ## History
 
+- 2026-10-22 — HA2: Tests changed from X8 to inertia-bench. The X8 controlled-continuations study leaves Scout's design (design revision 2.2 proposal, `docs/design-reviews/2026-10-22-rescope/`; R-037) and is a hypothesis study for inertia-bench.
+- 2026-10-22 — H\*, HA\*, HQ\* frozen as a historical record per `AGENTS.md`: new and continuing inertia hypotheses are tracked in inertia-bench; product hypotheses (HD\*, and any tied to X1–X6, X9, X10) stay live here. No state change.
 - 2026-10-21 — HA1: Tests corrected from X8 to none. X8 (healthy vs degraded agent continuations) tests HA2 only; HA1 needs a human comparison (design review `docs/design-reviews/2026-10-21-e1b-v2/round-4.md`).
 - 2026-10-21 — H1, H2 → `not-supported`: E1b v2 (R-035) returned `equivalent` for T2 and T4 with adequate power; effects ≥ 0.10 log-h per SD excluded. A small positive T2 association (≈ 2 %/SD) remains compatible. H4 → `inconclusive`: T5 not decided because its measurement gates failed. Run used Amendment 1 (annotator C truncation fix, rounds 11–14).
 - 2026-10-21 — H1, H2, H4: E1b v2 preregistration and scripts signed off by the innovation council with zero issues (`evaluation/change-cost-v2/reviews/round-10.md`); state → `preregistered`. Run blocked at annotation (step 11) until `OPENROUTER_API_KEY` is provided.

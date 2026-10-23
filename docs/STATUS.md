@@ -1,49 +1,55 @@
-# Scout — status and handoff (2026-10-22)
+# Scout — status and handoff (2026-10-23)
 
-Written for a fresh session. Every claim cites a file in this repo unless marked `[INFERENCE]` or `[UNVERIFIED]`. Initial commit `41ea1eb` (2026-10-22) holds the whole tree; `.codegraph/`, `.scout/`, `__pycache__/` and `*.pyc` are git-ignored. Never touch `.codegraph` (`AGENTS.md:54`).
+Written for a fresh session. Every claim cites a file in this repo unless marked `[INFERENCE]` or `[UNVERIFIED]`. History: `git log` (initial import `41ea1eb`, Phase 1 `945ac4d`, toolchain `1235132`, Phase 2 part `fccc137`, Phase 3 part `4bab5c0`, Gitleaks batching `36d1023`). `.codegraph/`, `.scout/`, `.tools/`, `__pycache__/` and `*.pyc` are git-ignored. Never touch `.codegraph` (`AGENTS.md`).
 
-## 1. Current state (verified 2026-10-22)
+## 1. Current state (verified 2026-10-23)
 
-**Design: done and signed off.** `docs/scout-design.md` is revision 2.1; `shasum -a 256` = `7ff21a7fba70a5e3af7a735b0aa40f1ad654d17714df8c3549da6ebcf89b89c5` (matches the sign-off digest in `docs/design-reviews/2026-10-21-e1b-v2/round-5.md:40`). Council rounds 1–5 are in that directory (`round-1..5.md`, responses, `proposed.diff`, `scout-design.base.md`). v1 is `docs/archive/scout-design-v1.md`.
+**Design: revision 2.2 adopted 2026-10-23.** `docs/scout-design.md` SHA-256 is `f81b26014e6d2e38a741249819d23fcb993541e2194f7b168c4970c3b415ded4`. That equals the digest signed off with zero issues in `docs/design-reviews/2026-10-22-rescope/round-6.md` after six rounds (25 → 9 → 12 → 7 → 2 → 0 issues). Revision 2.2 does the product-only re-scope:
+- C1: reasoning-LLM lanes run only through `claude -p`/`codex exec` (Clawpatch bound to `codex`/`claude` in host auth, no API keys);
+- C2: research moves to inertia-bench;
+- C3: §8.7 subject-interface principles;
+- C4: the performance bar is decided;
+- C5: E1b-v2 is grandfathered;
+- C6: §15 renumbered;
+- C7a: the Jev adapter design (version key, failure handling, primitives, audit principles, labelling protocol).
 
-**Code: v1 Go implementation with design-v2 Phase 1 implemented, not yet committed (2026-10-22, §5 row 1).** `go build ./...`, `go vet ./...` and `go test ./...` pass. `internal/{analyzers,clawpatch,contextual,domain,inventory,issues,state,web}` and `cmd/scout` have tests; `engine` and `eval` have none.
+C7b, the experiment estimators and samplers, is carried forward as binding input to the X1/X3/X4/X5/X10 preregistrations (`round-3-response.md`, "C7b carry-forward"). Companion edits adopted with it: `docs/hypothesis-ledger.md` (HA2 → inertia-bench; H\*/HA\*/HQ\* frozen), research ledger R-038, the requirements rows synced in rounds 1–5, and §5 row 8. Rev 2.1 rounds are in `docs/design-reviews/2026-10-21-e1b-v2/`; v1 is `docs/archive/scout-design-v1.md`.
 
-| Exists (v1, kept/rewritten per design §10.2) | Evidence |
-|---|---|
-| CLI `readiness assess issues issue mapping coverage triage serve` (`approve` and `verify` removed in Phase 1; resolution is automatic after a relevant re-check) | `cmd/scout/main.go:90-108` |
-| Inventory/plan/diff; analyzers (Semgrep, Gitleaks, Ruff adapters; catalogs; architecture catalog returns nil) | `internal/inventory/`, `internal/analyzers/` |
-| Clawpatch client pinned **0.7.3** / `734f81bc…`, 900 s map timeout, sanitising review patch | `internal/clawpatch/client.go:19-22`, `scripts/build-clawpatch.sh`, `scripts/clawpatch-safe.patch` |
-| SQLite state, issues, progress; read-only web | `internal/state/`, `internal/web/web.go` |
-| Contextual LLM client (generic JSON/HTTP endpoint from `SCOUT_PROVIDER_*` env) | `internal/contextual/client.go`, `cmd/scout/main.go:128-130` |
-| Self-eval corpus replay (v1 corpus: 9 true / 13 FP) | `internal/eval/`, `evaluation/{reference-v1,outcomes-v1,outcomes-v2,scout-requests-v1,scout-requests-v2}.json`, `evaluation/replay.go` |
-| Workflows: `scout-nightly.yml` (237 lines, builds `./cmd/scout` from the checkout; passes `OPENAI_API_KEY`/`ANTHROPIC_API_KEY` secrets at `:172-173`), `release.yml` | `.github/workflows/` |
+**Code.** `go build ./...`, `go vet ./...` and `go test ./...` pass with the toolchain activated.
+- **Phase 1 is done (`945ac4d`).**
+  - `plan_jobs` (schema v4) makes per-job commits flat in job count. `TestCommitRunJobCostIsFlatInJobCount`: 5,000 jobs against a 5 MB plan.
+  - Design §3.3 issue identity: ULID IDs, anchor ladder, `evidence_drift`, `regressed`, rename and delete lifecycle from the latest recorded inventory, secret digests, and a schema v5 migration.
+  - The heuristic map runs offline.
+  - Scanners are batched per adapter (`36d1023` adds Gitleaks batching with per-file trace proof).
+  - Approval machinery and `internal/codex` are removed.
+- **Phase 2, part done (`fccc137`):**
+  - `scout export/import` (state/v1, byte-identical round trip) and `scout state publish|restore` on `scout/state`, with expected-parent compare-and-swap; publishing requires `--trusted`.
+  - Lane registry and health; exit codes 0/1/2/3; `scout diff --base` attribution against the published baseline (`comparison: baseline`, or `recomputed` with a reason).
+  - Report/guardian profiles; `.scout/policy.yaml` read from the base ref; shadow window; maintainer-only overrides.
+  - `would_block` (schema v6); `guardrails.SUPPRESS.added.unscoped`.
+  - **Not started (now unblocked by 2.2):** the `decisions` adapter and Jev ranking, `scout init`/consent, the model-CLI contextual adapter that replaces `internal/contextual`'s HTTP client, and `scout-guardian.yml` plus release-sourced binaries.
+- **Phase 3, part done (`4bab5c0`):**
+  - Signal store (schema v7) and `scout signals`; `scout.cc`, `complex_burden`, `burden_density`, `dup_pct` (lizard and jscpd); `cycle_mass` (Go/Python/TS import graph); §8.3 history measures in calendar quarters.
+  - `ActiveHours` reproduces E1b `active_hours` for all 598 nest/webpack panel PRs (max error 8.9e-16 h).
+  - **Not started:** artifacts (LCOV/Cobertura/JUnit, CRAP), the remaining guardrail mechanisms, PR-metadata ingestion, `delta` rules, `readiness --matrix`, the 9/13 corpus regression check.
+- **Acceptance figures:** fastapi `d666ccb`, every lane, no egress. 455 s after Phase 1, 537 s after Phase 3's lanes, **143 s** after Gitleaks batching; 74 issues, exit 0. Phase 1 scenario: `/tmp/scout-p1/scenario.sh`. Phase 2 baseline smoke: `/tmp/scout-p2/baseline-smoke.sh`.
+- **Known gaps:**
+  - If agent mapping succeeds with zero features, heuristic output is not re-merged (Phase 4).
+  - An issue left unmatched during a rename keeps its old anchor path.
+  - Policy `version` strings for Gitleaks checks are the long rule-pack version.
 
-| Design-v2 components that do **not** exist | Design ref |
-|---|---|
-| `internal/{measures,history,artifacts,guardrails,decisions,baseline,selfeval}`; mapping areas/refresh trigger; `scout init/diff/export/import/signals/trends/annotate/selfeval`; `.scout/policy.yaml`; `scout-guardian.yml`; `docs/scout-product-contract.md`, `docs/scout-adapter-contracts.md`, `docs/evidence/` | §3.1, §10.2–10.3, §11 |
+**Toolchain.** Pinned, project-local, in `.tools/` (§7). Clawpatch is a submodule at `third_party/clawpatch` (`734f81bc…`, v0.7.3). Pins are in `toolchain/`, and `internal/toolchain` enforces parity with the Go code. A fresh clone bootstraps and passes every test in about 44 s.
 
-**Phase 1 (design §10.1, §11) — done in the working tree:**
-- **Persistence.** `plan_jobs` table (schema v4). `CommitRunJob` reads one job row and no longer rewrites `runs.payload`. Run progress is rebuilt from `coverage` and `run_job_commits` (`internal/state/progress.go`). Proven by `TestCommitRunJobCostIsFlatInJobCount`: 5,000 jobs against a 5 MB plan, first and last 500-job buckets 232.8 µs vs 223.5 µs median, with a corrupted `plans.payload` and an abort-trigger on `runs.payload` updates. `TestInterruptedRunResumesToSameFinalRun` proves resume equivalence.
-- **Identity.** Design §3.3 ladder (`internal/issues/correlate.go`, `internal/domain/issue_anchor.go`, `internal/state/issue_match.go`). IDs are `issue:<family>:<ulid>`. The evidence fingerprint includes the normalised message. Secrets match by an in-memory SHA-256 digest (`internal/analyzers/gitleaks.go`). Renames and deletions use the latest *recorded* inventory, partial runs included, while coverage reuse keeps the complete-run baseline. Migration to schema v5 re-anchors v1 issues, keeps `legacy_id` and lists ambiguous rows (`internal/state/issue_migration.go`). Approval machinery is removed.
-- **Offline map.** `Map(..., MapSourceHeuristic)` runs `clawpatch map --source heuristic` with no egress. Agent mode needs egress and falls back to heuristic output with `ExplorationIncomplete` (`internal/clawpatch/client.go`). `internal/codex` is cut (§10.2).
-- **Scanner batching (found during toolchain verification).** File-analysis jobs used to run one scanner subprocess per (file, category) job, re-checking the version every time. That made fastapi exceed 20 min once Semgrep actually ran. Jobs are now grouped per adapter spec and chunked by the spec's input limits (`internal/analyzers/batch.go`), the version is verified once per run, and each job still commits its own per-file slice through `CommitRunJob` (`internal/engine/assess.go`).
-- **Acceptance evidence.**
-  - fastapi `d666ccb`, toolchain activated (pinned Semgrep, Ruff, Gitleaks and Clawpatch), no provider env, no `--allow-egress`: **455 s** (< 600 s), `mappingStatus: mapped`, 74 issues. Every scanner category is `inspected`; the only non-inspected rows are the opt-in contextual and Clawpatch-review lanes (`blocked`). Earlier timings of 389–448 s are void, because Semgrep lanes had exited on the version mismatch.
-  - Throwaway scenario (`/tmp/scout-p1/scenario.sh`; ruff C90/PERF fixture, 3 runs): one ID across a 20-line insertion with C901 drift (`created, triaged, evidence_drift, matched`, stays `accepted`); one ID across `git mv`; two IDs for two PERF401 occurrences in one file; `resolved` then `regressed` on the same ID. Rerun after batching with the same result.
-- **Known gaps.** Real runs still end `partial`/exit 2, because the opt-in contextual and review lanes report `blocked`; lane health and optional lanes are Phase 2 (§3.4, §7.3). Gitleaks stays at one file per call (`MaxFiles: 1`) and is the largest remaining cost in the 455 s. If agent mapping succeeds with zero features, it does not re-merge heuristic output (Phase 4). An issue left unmatched during a rename keeps its old anchor path.
-
-**Toolchain (2026-10-22).** Pinned project-local toolchain in `.tools/` (§7). Clawpatch is a git submodule at `third_party/clawpatch` (gitlink `734f81bc…`). Pins live in `toolchain/`, and `internal/toolchain` tests enforce parity with the Go code. Both workflows provision through `scripts/bootstrap-tools.sh`. Go moves from 1.25.0 (old CI pin) to 1.25.6 (`go.mod` `toolchain`).
-
-**Jev labels (2026-10-22/23).** All 52 E2 triage cases are labelled (§6.8). Agents did the first pass: A/B agreement 48/52 (κ 0.856), 4 adjudicated. The user reviewed every case on 2026-10-23 and confirmed all 52 proposals, recorded as `human` rows (`by: user`) appended to `evaluation/jev-triage-labels-v1/labels.jsonl`. Final labels: real_defect 28, false_positive 23, cannot_tell 1. No Jev-versus-label comparison has been run; that needs a council-signed preregistration. `E2-COMPARISON.md` (proposed labels vs the original E2 adjudication: 1 of 22 differs) can now be read.
+**Jev labels.** All 52 E2 triage cases carry human labels: the user reviewed agent proposals on 2026-10-23 (`evaluation/jev-triage-labels-v1/`; real_defect 28, false_positive 23, cannot_tell 1). No Jev-versus-label comparison has been run; that needs a council-signed preregistration.
 
 ## 2. Decisions in force
 
-- Design revision 2.1 is authoritative; the Appendix decisions (map refresh, `scout/state` branch, allow-list, Jev on from launch, tier-1 = Go/Python/TypeScript, spec cutover, Clawpatch 0.7.3) are not reopened (`docs/scout-design.md:409-417`). Of the five §15 decisions (`:397-403`), §15.3 is now decided and §15.2 leaves with the re-scope; §15.1, §15.4, §15.5 stay open (§6).
+- Design revision 2.2 is authoritative (`docs/scout-design.md`, `f81b2601…`). Appendix decisions 1–7 (2026-10-19) and 8–15 (2026-10-22/23) are not reopened. Open user decisions: design §15 items 1–3 (study-export consent, `pull-requests: read`, inertia framing), and the remaining `jev-actions-review.md` §D questions (minimums, costs, Jev version pin), which feed the experiment preregistrations.
 - Scout is a **discovery-only CI guardian**; no remediation, no inertia score, no claim that agents degrade a repo (`docs/scout-design.md:9-19`). All inertia measures are `descriptive` (`:185`).
 - Design changes need innovation-council sign-off with zero issues, rounds recorded under `docs/design-reviews/<date>-<topic>/` (`AGENTS.md:30-38`). Experiments likewise, preregistered, frozen after sign-off (`AGENTS.md:3-28`). Design changes may cite only signed-off experiments (`AGENTS.md:37`).
-- Ledgers must be updated when a source/hypothesis is used (`AGENTS.md:40-50`): `docs/research-ledger.md` (R-001…R-037), `docs/hypothesis-ledger.md`.
+- Ledgers must be updated when a source/hypothesis is used (`AGENTS.md` ledger rules): `docs/research-ledger.md` (R-001…R-038), `docs/hypothesis-ledger.md` (HD\* live; H\*/HA\*/HQ\* frozen).
 - Secrets only via Infisical per command; never print/export/commit (`AGENTS.md:52-61`).
-- **User decisions of 2026-10-22** are recorded in §6 (R-036). Design-affecting ones take effect only after the council re-scope round `docs/design-reviews/2026-10-22-rescope/` signs off.
+- **User decisions of 2026-10-22/23** are recorded in §6 (R-036). The design-affecting ones are adopted in revision 2.2 (Appendix 8–15).
 
 ## 3. Evidence to date (one line per study)
 
@@ -78,16 +84,16 @@ Owners: **Council** = innovation-council review loop; **Impl** = a coding sessio
 
 | # | Work | Entry condition | Owner | Acceptance |
 |---|---|---|---|---|
-| 0 | ~~Decide the §6 conflicts~~ **done 2026-10-22** (§6); council re-scope round | proposal written | Council | Round signed off with zero issues; design digest updated |
-| 1 | **Phase 1** — fix `CommitRunJob` persistence, rewrite issue identity/anchoring, offline heuristic map, drop approval machinery, migration | met (§15.3 decided, §6.7) | Impl | **Done in working tree 2026-10-22, uncommitted** (§1). Design §10.1 + §11 Phase 1 (flat-per-commit benchmark, durable ID across line shift/rename, `evidence_drift`, `regressed`, heuristic map offline, fastapi assess < 10 min) |
-| 2 | **Phase 2** — differential guardian, `scout/state` branch, `init`/consent, `decisions` adapter with deterministic fallback, `scout-guardian.yml` (replace nightly workflow built from checkout) | #1 | Impl | §11 Phase 2 (PR A–D scenarios, CAS publish, byte-identical import) |
-| 3 | **Phase 3** — measures, history, artifacts, guardrails for Go/Python/TS | #2 (can start `measures` earlier; independent of identity) | Impl | §11 Phase 3, incl. reproducing `active_hours` in `evaluation/change-cost-v2/panel-final.csv.gz` within 1e-9 h |
-| 3b | **Subject interface** (`capabilities`/`measure`) for inertia-bench, offline/deterministic, snapshot-only measures | inertia-bench design signed off; #3 `measures` exist; design change signed off by council (the interface is not in design 2.1) | Council → Impl | Passes bench conformance (§4 above); byte-identical double run |
+| 0 | ~~Decide the §6 conflicts; council re-scope round~~ **done**: rev 2.2 adopted 2026-10-23 (round 6, zero issues) | — | — | — |
+| 1 | ~~**Phase 1**~~ **done** (`945ac4d`, `36d1023`) | — | — | fastapi 143 s; §1 |
+| 2 | **Phase 2 remainder**: `decisions` adapter (rev 2.2 §6: version key, pinned model, failure → lane health, cap, deterministic fallback, audit capture), model-CLI contextual adapter (C1), `scout init`/consent, `scout-guardian.yml` + composite action from a pinned release; then the full §11 Phase 2 scenario (PR A–D incl. fork PR C) | rev 2.2 adopted | Impl | §11 Phase 2 |
+| 3 | **Phase 3 remainder**: artifacts, CRAP, remaining guardrails (all three languages), PR metadata, `delta` rules, `readiness --matrix`, corpus regression, TS `paths` acceptance | #2 for PR metadata in CI | Impl | §11 Phase 3 |
+| 3b | **Subject interface** principles adopted (rev 2.2 §8.7); exact schema needs its own council round after inertia-bench signs off | bench design signed off; #3 measures | Council → Impl | §11 Phase 3b |
 | 4 | **Phase 4** — mapping refresh triggers + areas (X2) | #1, #3 scopes | Impl | §11 Phase 4 |
 | 5 | **Phase 5** — trends, exploratory measures, rubric lane, self-evaluation (X1, X3–X5, X9, X10), blind-label collection | #2–#4; ≥100 blind labels for X1 | Impl | §11 Phase 5; X1 decision rule recorded (§13) |
 | 6 | **Phase 6** — study export, spec cutover (archive `SCOUT_REBUILD_REQUIREMENTS.md`, write `docs/scout-product-contract.md`, `scout-adapter-contracts.md`, `docs/evidence/`), web inertia panels, release, dogfood in `guardian` | #5, §15.1 consent decision | Impl | §11 Phase 6 |
 | 7 | ~~Update `AGENTS.md`~~ **done 2026-10-23** (§6.6) | — | — | — |
-| 8 | **Candidate reference (not a ledger entry yet):** MOSS, arXiv:2610.26902 (Nesen et al., published 2026-10-16; verified abstract: production LLM-judge monitoring loop with targeted sampling, strategy-aware prompting, structured alerting; a single judge/score scale/threshold transferred from a 498-pair recommendation benchmark to a 466-pair search benchmark with only a surface-specific prompt change). Relevance: Scout persistent/nightly mode (§7.1, §8.4 trend flags, 5 % audit sample §6) and Jev triage thresholds (X1, §13: are thresholds transferable across rules/repos?) | read the full paper before use | Impl/User | If it informs a decision or hypothesis, add the next free `R-NNN` (R-038) per `AGENTS.md:42-45` at that time |
+| 8 | **Candidate reference (not a ledger entry yet):** MOSS, arXiv:2610.26902 (Nesen et al., published 2026-10-16; verified abstract: production LLM-judge monitoring loop with targeted sampling, strategy-aware prompting, structured alerting; a single judge/score scale/threshold transferred from a 498-pair recommendation benchmark to a 466-pair search benchmark with only a surface-specific prompt change). Relevance: Scout persistent/nightly mode (§7.1, §8.4 trend flags, 5 % audit sample §6) and Jev triage thresholds (X1, §13: are thresholds transferable across rules/repos?) | read the full paper before use | Impl/User | If it informs a decision or hypothesis, add the next free `R-NNN` (R-039) per `AGENTS.md:46-49` at that time |
 | 9 | ~~Repository hygiene~~ **done**: initial commit `41ea1eb`; `__pycache__/`, `*.pyc` ignored; study data (≈ 57 MB under `evaluation/`) committed because Phase 3 acceptance reads `change-cost-v2/raw` and `panel-final.csv.gz`. Pre-commit Gitleaks: 7 hits are public example tokens in corpus evidence (`evaluation/jev-triage-v1/unlabelled.jsonl`), 1 is a rule regex (`internal/analyzers/rules/security/gitleaks-default.toml:232`) | — | — | — |
 
 ## 6. Decisions on the former open questions (user, 2026-10-22; R-036)
@@ -115,7 +121,7 @@ Read first: `AGENTS.md`, this file, `docs/scout-design.md` (§§1, 3, 7, 8.5, 10
 Commands (run from repo root):
 - First time on a machine: `git submodule update --init`, then `scripts/bootstrap-tools.sh` (≈ 40 s fresh, ≈ 1 s when nothing changed), then `source .tools/activate` (undo with `scout_deactivate`). This installs the pinned toolchain into git-ignored `.tools/`: uv, Python 3.11.11 venv with Semgrep, Ruff and lizard; Node 22.18.0 with pnpm and jscpd; Gitleaks; and the patched Clawpatch bundle from the `third_party/clawpatch` submodule. Activation also sets `SCOUT_CLAWPATCH_BINARY` and `GOTOOLCHAIN=go1.25.6`. Pins: `toolchain/versions.env` (single source), `toolchain/checksums.sha256`, `toolchain/python-requirements.lock`, `toolchain/node/package-lock.json`. `--relock` regenerates the locks. `go test ./internal/toolchain` fails on drift between these pins and the Go catalogs or `clawpatch.Revision`.
 - `go build ./... && go test ./...` — run with the toolchain activated; baseline is green.
-- `shasum -a 256 docs/scout-design.md` — must print `7ff21a7f…` until a new council round adopts a change.
+- `shasum -a 256 docs/scout-design.md` — must print `f81b2601…` (rev 2.2) until a new council round adopts a change.
 - Clawpatch upgrade: move the submodule to the new commit and update `clawpatch.Revision`/`Version` and `CLAWPATCH_VERSION` together. This needs a compatibility review (CP07 pattern, design R9). The parity test blocks a partial bump.
 - Jev or study runs: `infisical run --projectId 052b4c81-b9cc-4694-9019-d131ec3817cc --env dev --silent -- <command>` (`AGENTS.md:56-58`); presence checks only.
 - Rules to keep: council sign-off before any design change or experiment; ledgers updated when a source/hypothesis is used; never print secrets; never touch `.codegraph`; no git commits unless the user asks.
