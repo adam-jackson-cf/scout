@@ -53,8 +53,11 @@ func (p *PRSource) detail() map[string]any {
 }
 
 func prUnmeasuredReason(o Options, linked int) string {
-	if len(o.PRs) == 0 {
+	if o.PRSource == nil {
 		return "no PR metadata supplied (local history lacks PR commits)"
+	}
+	if len(o.PRs) == 0 {
+		return fmt.Sprintf("PR metadata supplied (%s) holds no merged PRs", o.PRSource.Kind)
 	}
 	return fmt.Sprintf("%d linked PRs < %d", linked, MinPRs)
 }

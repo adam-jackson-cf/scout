@@ -136,6 +136,21 @@ func TestWithoutMetadataPRSignalsAreUnmeasuredWithReason(t *testing.T) {
 	}
 }
 
+// A fetch that succeeds on a repository with no merged PRs is metadata
+// supplied, not missing: the reason must say so (dogfood CI, 2026-10-23).
+func TestSuppliedButEmptyMetadataSaysSo(t *testing.T) {
+	src := &history.PRSource{Kind: "github_api", Origin: "o/r", Digest: "d"}
+	for _, id := range []string{"scout.pr_effort@1", "scout.batch_size@1"} {
+		s := pick(t, compute(nil, src), id)
+		if s.Missing != domain.SignalUnmeasured || s.Value != nil || s.MissingReason != "PR metadata supplied (github_api) holds no merged PRs" {
+			t.Errorf("%s = %+v", id, s)
+		}
+	}
+	if r := pick(t, compute(nil, nil), "scout.pr_effort@1").MissingReason; r != "no PR metadata supplied (local history lacks PR commits)" {
+		t.Errorf("no source reason = %q", r)
+	}
+}
+
 func TestMetadataChangesConfigDigest(t *testing.T) {
 	path, _ := writeDoc(t, fixtureDoc(6))
 	res, _ := LoadFile(path)
