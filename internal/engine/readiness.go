@@ -14,6 +14,7 @@ import (
 	"scout/internal/contextual"
 	"scout/internal/domain"
 	"scout/internal/inventory"
+	"scout/internal/modelcli"
 	"scout/internal/state"
 )
 
@@ -113,7 +114,7 @@ func AssessReadiness(ctx context.Context, config Config, options Options) (Readi
 		return result, nil
 	}
 	mapperDigest := digest(clawpatch.SafetyFingerprint())
-	modelDigest := digest(config.Provider.Endpoint + "\x00" + config.Provider.Model + "\x00" + config.Provider.PromptVersion)
+	modelDigest := digest(config.Provider.Fingerprint())
 	var resumePlan *domain.Plan
 	if !options.ForceFull {
 		resumePlan, err = matchingResumablePlan(ctx, store, initial.Snapshot, options.Scope, digest(string(toolBytes)), modelDigest, mapperDigest)
@@ -208,7 +209,7 @@ func AssessReadiness(ctx context.Context, config Config, options Options) (Readi
 		files[file.Path] = file
 	}
 	scannerIDs := make(map[string]bool)
-	featurePending, reviewPending, mappingPending := false, false, false
+	reviewPending, mappingPending := false, false
 	for _, job := range plan.Plan.Jobs {
 		if job.State == domain.JobReused || committed[job.JobID] {
 			continue
@@ -224,24 +225,26 @@ func AssessReadiness(ctx context.Context, config Config, options Options) (Readi
 			if spec, ok := byCategory[categoryKey(job.CoverageKey.Family, job.CoverageKey.Category)]; ok && spec.Applicable(files[job.CoverageKey.FilePath]) {
 				scannerIDs[spec.ID] = true
 			}
-		case domain.StageFeatureAnalysis:
-			featurePending = true
 		case domain.StageClawpatchReview:
 			reviewPending = true
 		}
 	}
 	clawpatchNeeded := mappingPending || reviewPending
-	client, clientErr := clawpatch.New(root, clawpatch.Config{BinaryPath: config.ClawpatchBinary, EgressAuthorized: config.ClawpatchEgressAuthorized})
+	client, clientErr := clawpatch.New(root, clawpatch.Config{BinaryPath: config.ClawpatchBinary, EgressAuthorized: config.ClawpatchEgressAuthorized, Provider: config.ClawpatchProvider})
 	if clientErr == nil && clawpatchNeeded {
 		clientErr = client.CheckPrerequisites(ctx)
 	}
 	add("pinned_clawpatch", clawpatchNeeded, clientErr)
+	// Reasoning-LLM lanes are optional (design §3.4, §7.3): a missing model CLI
+	// or withheld egress is reported, never makes the assessment not ready.
+	_, _, cliErr := modelcli.Detect(config.Provider.CLI)
+	add("model_cli", false, cliErr)
 	var clawpatchEgressErr error
 	if !config.ClawpatchEgressAuthorized {
 		clawpatchEgressErr = errors.New("Clawpatch provider source egress is not authorized")
 	}
-	add("clawpatch_provider_egress", reviewPending, clawpatchEgressErr)
-	add("contextual_provider", featurePending, contextual.CheckPrerequisites(config.Provider))
+	add("clawpatch_provider_egress", false, clawpatchEgressErr)
+	add("contextual_provider", false, contextual.CheckPrerequisites(config.Provider))
 	ids := make([]string, 0, len(scannerIDs))
 	for id := range scannerIDs {
 		ids = append(ids, id)

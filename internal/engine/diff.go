@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"scout/internal/decisions"
 	"scout/internal/domain"
 	"scout/internal/guardrails"
 	"scout/internal/issues"
@@ -40,6 +41,16 @@ type DiffConfig struct {
 	// Baseline returns an imported baseline, or nil when none is present.
 	Baseline func(ctx context.Context) (*BaseState, error)
 	Log      io.Writer
+	// JevKey is the Jev key, taken from the environment by the caller; only
+	// its presence is ever reported.
+	JevKey string
+	// Fork marks a fork pull request: Jev never runs and the ranking falls
+	// back to the deterministic baseline.
+	Fork bool
+	// NoEgress disables the Jev call for this run even when consented.
+	NoEgress bool
+	// JevClient is a test seam; nil builds the OpenRouter client from JevKey.
+	JevClient *decisions.Client
 }
 
 // DiffReport is the JSON payload of `scout diff`; gate, health, would_block
@@ -66,7 +77,7 @@ func UnavailableReport(err error) DiffReport {
 	if err != nil {
 		gate.Reasons = []string{"unavailable: " + err.Error()}
 	}
-	return DiffReport{Comparison: domain.ComparisonNone, Gate: gate, Health: []domain.LaneHealth{}, WouldBlock: []domain.WouldBlock{}, Ranking: Ranking{Method: RankingLabel, Items: []RankingItem{}}, Issues: []domain.AttributedIssue{}, Changed: []string{}}
+	return DiffReport{Comparison: domain.ComparisonNone, Gate: gate, Health: []domain.LaneHealth{}, WouldBlock: []domain.WouldBlock{}, Ranking: DeterministicRanking(nil, "run unavailable"), Issues: []domain.AttributedIssue{}, Changed: []string{}}
 }
 
 func git(ctx context.Context, root string, args ...string) ([]byte, error) {
@@ -130,6 +141,7 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 	if err != nil {
 		return fail(fmt.Errorf("load policy from base ref: %w", err))
 	}
+	cfg.Config = ApplyModelCLIPolicy(cfg.Config, pol)
 	changed, err := changedFiles(ctx, root, mergeBase)
 	if err != nil {
 		return fail(err)
@@ -218,9 +230,16 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 	if changed == nil {
 		changed = []string{}
 	}
+	ranking, decisionsHealth, err := RankingOf(ctx, RankingInput{
+		Issues: output.Issues, Root: root, RunID: headResult.Run.RunID, Trigger: domain.TriggerPR, Policy: pol.Decisions(),
+		Key: cfg.JevKey, Fork: cfg.Fork, NoEgress: cfg.NoEgress, Store: store, Client: cfg.JevClient,
+	})
+	if err != nil {
+		return fail(fmt.Errorf("ranking: %w", err))
+	}
 	return DiffReport{
-		Base: baseSHA, Head: headSHA, MergeBase: mergeBase, Comparison: comparison, ComparisonReason: comparisonReason(comparison, banners), Gate: output.Gate, Health: headResult.Lanes,
-		WouldBlock: output.WouldBlock, Ranking: RankingOf(output.Issues), Issues: output.Issues, PreExisting: output.Pre, Changed: changed,
+		Base: baseSHA, Head: headSHA, MergeBase: mergeBase, Comparison: comparison, ComparisonReason: comparisonReason(comparison, banners), Gate: output.Gate, Health: ApplyDecisionsHealth(headResult.Lanes, decisionsHealth),
+		WouldBlock: output.WouldBlock, Ranking: ranking, Issues: output.Issues, PreExisting: output.Pre, Changed: changed,
 	}, nil
 }
 

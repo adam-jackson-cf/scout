@@ -84,10 +84,12 @@ func emit(flags *commonFlags, status string, code int, result any, err error) in
 func main() { os.Exit(run(context.Background(), os.Args[1:])) }
 func run(ctx context.Context, args []string) int {
 	if len(args) == 0 {
-		fmt.Fprintln(os.Stderr, "usage: scout <readiness|assess|diff|issues|issue|mapping|coverage|triage|export|import|state|signals|serve> [flags]")
+		fmt.Fprintln(os.Stderr, "usage: scout <init|readiness|assess|diff|issues|issue|mapping|coverage|triage|export|import|state|signals|serve> [flags]")
 		return exitUnavailable
 	}
 	switch args[0] {
+	case "init":
+		return initCmd(ctx, args[1:])
 	case "readiness":
 		return readiness(ctx, args[1:])
 	case "assess":
@@ -131,8 +133,26 @@ func parse(set *flag.FlagSet, args []string, flags *commonFlags) bool {
 	}
 	return true
 }
+
+// providerConfig is the model-CLI adapter's environment layer. SCOUT_MODEL_CLI
+// (claude|codex) is a local override honoured only when the committed policy
+// leaves model_cli.provider unset (see engine.ApplyModelCLIPolicy); with
+// neither, the first CLI on PATH runs. SCOUT_MODEL is optional and the CLI uses
+// its own default model without it. No credential is read or forwarded.
 func providerConfig(authorized bool) contextual.Config {
-	return contextual.Config{Endpoint: os.Getenv("SCOUT_PROVIDER_ENDPOINT"), Model: os.Getenv("SCOUT_PROVIDER_MODEL"), PromptVersion: os.Getenv("SCOUT_PROVIDER_PROMPT_VERSION"), CredentialEnv: os.Getenv("SCOUT_PROVIDER_CREDENTIAL_ENV"), EgressAuthorized: authorized}
+	return contextual.Config{CLI: os.Getenv("SCOUT_MODEL_CLI"), Model: os.Getenv("SCOUT_MODEL"), EgressAuthorized: authorized}
+}
+
+// engineConfig builds the engine config with model-CLI consent from the policy
+// committed at HEAD: a lane runs only when opted in, and the policy's provider
+// outranks SCOUT_MODEL_CLI. A repository without a policy has every lane off.
+func engineConfig(flags *commonFlags, authorized bool) (engine.Config, error) {
+	pol, err := headPolicy(flags.root)
+	if err != nil {
+		return engine.Config{}, err
+	}
+	cfg := engine.Config{Root: flags.root, ClawpatchBinary: flags.binary, ClawpatchEgressAuthorized: authorized, Provider: providerConfig(authorized)}
+	return engine.ApplyModelCLIPolicy(cfg, pol), nil
 }
 func selectedFamilies(values []string) ([]domain.Family, error) {
 	if len(values) == 0 {
@@ -184,12 +204,20 @@ func assess(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	result, err := engine.Assess(ctx, engine.Config{Root: flags.root, ClawpatchBinary: flags.binary, ClawpatchEgressAuthorized: authorized, Provider: providerConfig(authorized)}, engine.Options{Scope: scope, ForceFull: full, Exclusions: excludes, Trigger: domain.TriggerPush, Measures: &engine.MeasuresOptions{History: scope.Kind == domain.ScopeRepository}})
+	cfg, err := engineConfig(flags, authorized)
+	if err != nil {
+		return emit(flags, "unavailable", exitUnavailable, nil, err)
+	}
+	result, err := engine.Assess(ctx, cfg, engine.Options{Scope: scope, ForceFull: full, Exclusions: excludes, Trigger: domain.TriggerPush, Measures: &engine.MeasuresOptions{History: scope.Kind == domain.ScopeRepository}})
 	if err != nil {
 		unavailable := engine.UnavailableReport(err)
 		return emit(flags, unavailable.Gate.Status, unavailable.Gate.ExitCode, unavailable, err)
 	}
 	verdict := assessGate(result)
+	ranking, health, err := rankAssessment(ctx, flags, result, verdict)
+	if err != nil {
+		return emit(flags, "unavailable", exitUnavailable, nil, err)
+	}
 	report := struct {
 		Run           domain.Run             `json:"run"`
 		Plan          domain.Plan            `json:"plan"`
@@ -202,7 +230,7 @@ func assess(ctx context.Context, args []string) int {
 		Health        []domain.LaneHealth    `json:"health"`
 		WouldBlock    []domain.WouldBlock    `json:"would_block"`
 		Ranking       engine.Ranking         `json:"ranking"`
-	}{result.Run, result.Plan, result.Diff, result.Map.Status, result.MappingGaps, result.Issues, result.Adapters, verdict.Gate, result.Lanes, []domain.WouldBlock{}, engine.RankingOf(verdict.Issues)}
+	}{result.Run, result.Plan, result.Diff, result.Map.Status, result.MappingGaps, result.Issues, result.Adapters, verdict.Gate, health, []domain.WouldBlock{}, ranking}
 	return emit(flags, verdict.Gate.Status, verdict.Gate.ExitCode, report, nil)
 }
 
@@ -234,7 +262,11 @@ func readiness(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	assessmentReadiness, err := engine.AssessReadiness(ctx, engine.Config{Root: flags.root, ClawpatchBinary: flags.binary, ClawpatchEgressAuthorized: authorized, Provider: providerConfig(authorized)}, engine.Options{Scope: scope, ForceFull: full, Exclusions: excludes})
+	cfg, err := engineConfig(flags, authorized)
+	if err != nil {
+		return emit(flags, "unavailable", exitUnavailable, nil, err)
+	}
+	assessmentReadiness, err := engine.AssessReadiness(ctx, cfg, engine.Options{Scope: scope, ForceFull: full, Exclusions: excludes})
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}

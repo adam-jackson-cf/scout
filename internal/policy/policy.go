@@ -17,9 +17,17 @@
 //	  checks: [ ...same entries... ]
 //	maintainers: [alice, "@bob"]
 //	history: {bots: [dependabot[bot]]}
+//	decisions:                   # consent for Jev (OpenRouter) ranking, design §6
+//	  enabled: true
+//	  provider: jev
+//	  model: <pinned Jev model id; aliases such as jev-latest are rejected>
+//	  max_per_run: 2000
+//	  egress_acknowledged: true  # required when enabled
+//	model_cli:                   # opt-in for the model-CLI lanes (§6, lane 9)
+//	  provider: claude           # claude | codex
+//	  lanes: [contextual, clawpatch-review]
 //
-// Keys owned by later phases (decisions, architecture) are accepted and
-// ignored here.
+// The architecture key is owned by a later phase and is accepted and ignored.
 package policy
 
 import (
@@ -91,6 +99,8 @@ type Policy struct {
 	activations map[string]Activation
 	order       []string
 	maintainers map[string]bool
+	decisions   Decisions
+	modelCLI    ModelCLI
 	// HistoryBots is the history.bots passthrough.
 	HistoryBots []string
 }
@@ -102,6 +112,7 @@ func Default() Policy {
 		shadow:      ShadowConfig{MinDays: DefaultMinDays, MinPRRuns: DefaultMinPRRuns},
 		activations: map[string]Activation{},
 		maintainers: map[string]bool{},
+		decisions:   Decisions{Provider: ProviderJev, MaxPerRun: DefaultMaxPerRun},
 	}
 }
 
@@ -202,8 +213,9 @@ type rawPolicy struct {
 	History     *struct {
 		Bots []string `yaml:"bots"`
 	} `yaml:"history"`
-	Decisions    yaml.Node `yaml:"decisions"`
-	Architecture yaml.Node `yaml:"architecture"`
+	Decisions    *rawDecisions `yaml:"decisions"`
+	ModelCLI     *rawModelCLI  `yaml:"model_cli"`
+	Architecture yaml.Node     `yaml:"architecture"`
 }
 
 // Parse validates policy bytes strictly.
@@ -255,6 +267,13 @@ func Parse(data []byte) (Policy, error) {
 	}
 	if raw.History != nil {
 		p.HistoryBots = append([]string(nil), raw.History.Bots...)
+	}
+	var err error
+	if p.decisions, err = parseDecisions(raw.Decisions); err != nil {
+		return Policy{}, fmt.Errorf("invalid policy: %w", err)
+	}
+	if p.modelCLI, err = parseModelCLI(raw.ModelCLI); err != nil {
+		return Policy{}, fmt.Errorf("invalid policy: %w", err)
 	}
 	return p, nil
 }

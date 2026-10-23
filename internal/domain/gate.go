@@ -29,7 +29,7 @@ type LaneRequires string
 const (
 	RequiresNone           LaneRequires = "none"
 	RequiresTool           LaneRequires = "tool"
-	RequiresProviderEgress LaneRequires = "provider-egress"
+	RequiresModelCLI       LaneRequires = "model-cli"
 	RequiresDecisionEgress LaneRequires = "decision-egress"
 )
 

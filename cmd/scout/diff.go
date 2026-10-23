@@ -18,6 +18,7 @@ func diff(ctx context.Context, args []string) int {
 	set := flag.NewFlagSet("diff", flag.ContinueOnError)
 	flags := common(set)
 	var base, head, summary, actor, text, remote, branch string
+	var fork, noEgress bool
 	set.StringVar(&base, "base", "", "base ref (required)")
 	set.StringVar(&head, "head", "HEAD", "head ref; must be the checked-out HEAD")
 	set.StringVar(&summary, "summary", "", "write the Markdown summary (<= 60 lines) to this file")
@@ -25,12 +26,14 @@ func diff(ctx context.Context, args []string) int {
 	set.StringVar(&text, "override-text", "", "PR body or label text carrying `scout:allow <id> reason=... ref=...` or `scout-override`")
 	set.StringVar(&remote, "baseline-remote", "", "git remote (name, path or URL) holding the scout/state baseline")
 	set.StringVar(&branch, "baseline-branch", "", "baseline branch (default scout/state)")
+	set.BoolVar(&fork, "fork", false, "fork pull request: Jev never runs, ranking is the deterministic baseline")
+	set.BoolVar(&noEgress, "no-egress", false, "forbid the Jev call even when consented")
 	if !parse(set, args, flags) {
 		return exitUnavailable
 	}
 	cfg := engine.DiffConfig{
 		Config:  engine.Config{Root: flags.root, ClawpatchBinary: flags.binary, Provider: providerConfig(false)},
-		BaseRef: base, HeadRef: head, OverrideActor: actor, OverrideText: text, Log: os.Stderr,
+		BaseRef: base, HeadRef: head, OverrideActor: actor, OverrideText: text, Log: os.Stderr, JevKey: jevKey(), Fork: fork, NoEgress: noEgress,
 	}
 	if remote != "" {
 		cfg.Baseline = func(ctx context.Context) (*engine.BaseState, error) {
@@ -45,7 +48,7 @@ func diff(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, report.Gate.Status, report.Gate.ExitCode, report, err)
 	}
-	text = engine.Summary(report.Gate, report.Issues, report.WouldBlock, report.PreExisting, report.Health)
+	text = engine.Summary(report.Gate, report.Ranking, report.Issues, report.WouldBlock, report.PreExisting, report.Health)
 	if summary != "" {
 		if writeErr := os.WriteFile(summary, []byte(text), 0o644); writeErr != nil {
 			report.Gate.Reasons = append(report.Gate.Reasons, "summary not written: "+writeErr.Error())

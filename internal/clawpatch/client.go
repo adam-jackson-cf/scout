@@ -13,6 +13,7 @@ import (
 	"sync"
 
 	"scout/internal/domain"
+	"scout/internal/modelcli"
 )
 
 const (
@@ -37,6 +38,10 @@ type Config struct {
 	AllowExternalState bool
 	// EgressAuthorized explicitly permits Clawpatch map/review provider requests.
 	EgressAuthorized bool
+	// Provider is the Clawpatch provider for model-using calls: "codex" or
+	// "claude". Empty falls back to CLAWPATCH_PROVIDER, then to whichever CLI
+	// is installed. Any other value is rejected when a model call is made.
+	Provider string
 }
 
 // Client serializes all state-mutating Clawpatch calls for one assessment root.
@@ -47,6 +52,7 @@ type Client struct {
 	nodePath         string
 	externalState    bool
 	egressAuthorized bool
+	provider         string
 
 	mu          sync.Mutex
 	initialized bool
@@ -114,6 +120,7 @@ func New(root string, config Config) (*Client, error) {
 		nodePath:         nodePath,
 		externalState:    externalState,
 		egressAuthorized: config.EgressAuthorized,
+		provider:         config.Provider,
 	}, nil
 }
 
@@ -180,7 +187,16 @@ func (c *Client) Map(ctx context.Context, inputsChanged bool, source MapSource) 
 		}
 		return MapResult{Status: MapReused, Source: source, Features: features}, nil
 	}
+	var agentArgs []string
+	var agentEnv []string
 	if source == MapSourceAgent {
+		provider, err := c.resolveProvider()
+		if errors.Is(err, modelcli.ErrNoCLI) {
+			return MapResult{Status: MapSkipped, Source: source, Reason: SkippedNoModelCLI}, nil
+		}
+		if err != nil {
+			return MapResult{Status: MapBlocked, Source: source, Reason: err.Error()}, err
+		}
 		if !c.egressAuthorized {
 			err := errors.New("Clawpatch mapping provider egress is not authorized")
 			return MapResult{Status: MapBlocked, Source: source, Reason: err.Error()}, err
@@ -188,6 +204,9 @@ func (c *Client) Map(ctx context.Context, inputsChanged bool, source MapSource) 
 		if err := c.verifyReviewSafetyPatch(); err != nil {
 			return MapResult{Status: MapBlocked, Source: source, Reason: err.Error()}, err
 		}
+		var providerArgs []string
+		providerArgs, agentEnv = modelInvocation(provider, mapEnvironment()...)
+		agentArgs = append([]string{"map", "--source", "agent"}, providerArgs...)
 	}
 	if err := c.Init(ctx); err != nil {
 		return MapResult{Status: MapBlocked, Source: source, Reason: err.Error()}, err
@@ -197,7 +216,7 @@ func (c *Client) Map(ctx context.Context, inputsChanged bool, source MapSource) 
 	if source == MapSourceHeuristic {
 		return c.mapHeuristicLocked(ctx)
 	}
-	if _, err := c.invokeEnvLocked(ctx, mapEnvironment(), "map", "--source", "agent"); err != nil {
+	if _, err := c.invokeEnvLocked(ctx, agentEnv, agentArgs...); err != nil {
 		fallback, fallbackErr := c.mapHeuristicLocked(ctx)
 		if fallbackErr != nil {
 			return fallback, errors.Join(err, fallbackErr)
@@ -281,9 +300,8 @@ func (c *Client) invokeEnvLocked(ctx context.Context, extraEnv []string, args ..
 	commandArgs = append(commandArgs, c.binaryPath, "--root", c.root, "--state-dir", c.stateDir, "--json")
 	commandArgs = append(commandArgs, args...)
 	command := exec.CommandContext(ctx, c.nodePath, commandArgs...)
-	if len(extraEnv) > 0 {
-		command.Env = append(os.Environ(), extraEnv...)
-	}
+	// No Clawpatch call ever sees an API key or provider re-route (REQ-31).
+	command.Env = modelcli.ScrubEnv(os.Environ(), extraEnv...)
 	output, err := command.Output()
 	if err != nil {
 		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
@@ -311,6 +329,9 @@ const (
 	MapMapped  MapStatus = "mapped"
 	MapReused  MapStatus = "reused"
 	MapBlocked MapStatus = "blocked"
+	// MapSkipped means no model CLI exists for an agent map; heuristic records
+	// are untouched and the lane reports `skipped (no model CLI)`.
+	MapSkipped MapStatus = "skipped"
 )
 
 // MapResult never substitutes a partial map for a successful map.

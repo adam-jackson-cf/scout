@@ -130,23 +130,6 @@ func makePrompt(request ReviewRequest, sources []promptSource, manifest Manifest
 	return content, nil
 }
 
-func marshalProviderRequest(model, promptVersion string, body []byte) ([]byte, error) {
-	request := struct {
-		Model          string `json:"model"`
-		PromptVersion  string `json:"promptVersion"`
-		ResponseFormat string `json:"responseFormat"`
-		Messages       []struct {
-			Role    string `json:"role"`
-			Content string `json:"content"`
-		} `json:"messages"`
-	}{Model: model, PromptVersion: promptVersion, ResponseFormat: "json_object"}
-	request.Messages = []struct {
-		Role    string `json:"role"`
-		Content string `json:"content"`
-	}{{"system", reviewInstructions}, {"user", string(body)}}
-	return json.Marshal(request)
-}
-
 var secretPatterns = []*regexp.Regexp{
 	regexp.MustCompile(`(?is)-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----.*?-----END [A-Z0-9 ]*PRIVATE KEY-----`),
 	regexp.MustCompile(`(?i)\b(gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,}|AKIA[0-9A-Z]{16}|AIza[0-9A-Za-z_-]{20,})\b`),

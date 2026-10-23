@@ -13,9 +13,15 @@ type Config struct {
 	Root                      string
 	ClawpatchBinary           string
 	ClawpatchEgressAuthorized bool
-	Provider                  contextual.Config
-	Registry                  *analyzers.Registry
-	Dependencies              []inventory.DependencyEdge
+	// ClawpatchProvider is "codex" or "claude"; empty falls back to
+	// CLAWPATCH_PROVIDER, then to the installed CLI. Others are rejected.
+	ClawpatchProvider string
+	Provider          contextual.Config
+	// ModelLanes are the model-CLI lanes opted in by policy; any other
+	// model-CLI lane is skipped without invoking a CLI. See ApplyModelCLIPolicy.
+	ModelLanes   []string
+	Registry     *analyzers.Registry
+	Dependencies []inventory.DependencyEdge
 }
 
 type Options struct {

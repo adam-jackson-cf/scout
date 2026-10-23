@@ -1,61 +1,81 @@
 package contextual
 
 import (
-	"bytes"
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"io"
-	"net/http"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"scout/internal/domain"
+	"scout/internal/modelcli"
 )
 
 const (
-	defaultTimeout      = 45 * time.Second
-	maximumTimeout      = 2 * time.Minute
-	defaultContextBytes = 96 * 1024
-	defaultFileBytes    = 24 * 1024
-	defaultPromptSlack  = 64 * 1024
-	maximumContextBytes = 512 * 1024
-	maximumPromptBytes  = 1024 * 1024
+	defaultTimeout       = 5 * time.Minute
+	maximumTimeout       = 15 * time.Minute
+	defaultContextBytes  = 96 * 1024
+	defaultFileBytes     = 24 * 1024
+	defaultPromptSlack   = 64 * 1024
+	maximumContextBytes  = 512 * 1024
+	maximumPromptBytes   = 1024 * 1024
+	defaultPromptVersion = "contextual-cli-v1"
 )
 
-// Config describes a configured JSON/HTTP contextual provider. Authorization is
-// intentionally separate from credentials: a credential alone never authorizes source egress.
+// Config describes the model-CLI contextual adapter. Authorization is
+// intentionally separate from CLI availability: an installed CLI alone never
+// authorizes source egress.
 type Config struct {
-	Endpoint          string
-	Model             string
-	PromptVersion     string
-	CredentialEnv     string
-	AuthorizationHead string
-	AuthorizationPref string
-	EgressAuthorized  bool
-	Timeout           time.Duration
-	MaxContextBytes   int
-	MaxFileBytes      int
-	MaxPromptBytes    int
-	HTTPClient        *http.Client
+	// CLI selects "claude" or "codex"; empty uses the first one on PATH.
+	CLI string
+	// Model is passed to the CLI when set; empty uses the CLI's own default.
+	Model            string
+	PromptVersion    string
+	EgressAuthorized bool
+	Timeout          time.Duration
+	MaxContextBytes  int
+	MaxFileBytes     int
+	MaxPromptBytes   int
 }
 
-// Client sends only redacted, bounded, explicitly authorized source excerpts.
+// Fingerprint identifies the model configuration for plan invalidation: the
+// CLI that would run, the requested model and the prompt version.
+func (c Config) Fingerprint() string {
+	cli := c.CLI
+	if name, _, err := modelcli.Detect(c.CLI); err == nil {
+		cli = string(name)
+	} else if cli == "" {
+		cli = "none"
+	}
+	version := c.PromptVersion
+	if version == "" {
+		version = defaultPromptVersion
+	}
+	return cli + "\x00" + c.Model + "\x00" + version
+}
+
+// Client sends only redacted, bounded, explicitly authorized source excerpts
+// to a tool-less model CLI subprocess.
 type Client struct{ config Config }
 
-// NewClient normalizes safe limits. It permits an unavailable provider so a
-// caller can obtain a truthful blocked coverage row from Review.
+// NewClient normalizes safe limits. It permits an unavailable CLI so a caller
+// can obtain a truthful skipped or blocked coverage row from Review.
 func NewClient(config Config) (*Client, error) {
+	if _, err := modelcli.Parse(config.CLI); err != nil {
+		return nil, err
+	}
 	if config.Timeout == 0 {
 		config.Timeout = defaultTimeout
 	}
 	if config.Timeout < time.Second || config.Timeout > maximumTimeout {
 		return nil, fmt.Errorf("contextual timeout must be between %s and %s", time.Second, maximumTimeout)
+	}
+	if config.PromptVersion == "" {
+		config.PromptVersion = defaultPromptVersion
 	}
 	if config.MaxContextBytes == 0 {
 		config.MaxContextBytes = defaultContextBytes
@@ -75,12 +95,6 @@ func NewClient(config Config) (*Client, error) {
 	if config.MaxPromptBytes < 1 || config.MaxPromptBytes > maximumPromptBytes {
 		return nil, fmt.Errorf("contextual max prompt must be between 1 and %d bytes", maximumPromptBytes)
 	}
-	if config.AuthorizationHead == "" {
-		config.AuthorizationHead = "Authorization"
-	}
-	if config.AuthorizationPref == "" {
-		config.AuthorizationPref = "Bearer "
-	}
 	return &Client{config: config}, nil
 }
 
@@ -98,7 +112,7 @@ type ReviewRequest struct {
 	PriorObservations []domain.Observation
 }
 
-// ManifestEntry identifies a bounded source snapshot sent to the provider.
+// ManifestEntry identifies a bounded source snapshot sent to the model.
 // SourceDigest covers the full, unredacted file read before egress; content is
 // deliberately excluded so the manifest can be persisted safely.
 type ManifestEntry struct {
@@ -128,25 +142,34 @@ type ReviewMetadata struct {
 	ReproductionByObservationID map[string]string `json:"reproductionByObservationId,omitempty"`
 }
 
-// ReviewResult retains usable, validated observations when later source or provider
+// ModelRecord names the CLI that answered and the model it resolved to.
+// ResolvedModel is "<cli>:unreported" when the CLI did not state one.
+type ModelRecord struct {
+	CLI           string `json:"cli"`
+	ResolvedModel string `json:"resolvedModel"`
+}
+
+// ReviewResult retains usable, validated observations when later source or model
 // failures make the category incomplete.
 type ReviewResult struct {
 	Coverage     domain.Coverage      `json:"coverage"`
 	Observations []domain.Observation `json:"observations,omitempty"`
 	Manifest     Manifest             `json:"manifest"`
 	Metadata     *ReviewMetadata      `json:"metadata,omitempty"`
+	Model        *ModelRecord         `json:"model,omitempty"`
 }
 
-// Review performs one feature × category provider assessment. It never calls a
-// provider for a category the integration elected to reuse.
+// Review performs one feature × category model-CLI assessment. It never calls
+// the CLI for a category the integration elected to reuse. With no model CLI
+// installed it returns ErrNoCLI and a skipped coverage row.
 func (c *Client) Review(ctx context.Context, request ReviewRequest) (ReviewResult, error) {
 	if err := validateRequest(request); err != nil {
 		return ReviewResult{}, err
 	}
 	coverage := domain.Coverage{Key: domain.CoverageKey{FeatureID: request.Feature.FeatureID, Family: request.Family, Category: request.Category}}
-	credential, err := c.prerequisiteCredential()
+	cli, binary, err := c.prerequisites()
 	if err != nil {
-		coverage.Status, coverage.Reason = domain.CoverageBlocked, err.Error()
+		coverage.Status, coverage.Reason = prerequisiteStatus(err), err.Error()
 		return ReviewResult{Coverage: coverage}, err
 	}
 
@@ -160,7 +183,7 @@ func (c *Client) Review(ctx context.Context, request ReviewRequest) (ReviewResul
 		return ReviewResult{Coverage: coverage, Manifest: safeManifest}, errors.New(coverage.Reason)
 	}
 	if request.PromptVersion != "" && request.PromptVersion != c.config.PromptVersion {
-		return ReviewResult{}, errors.New("contextual request prompt version differs from configured provider policy")
+		return ReviewResult{}, errors.New("contextual request prompt version differs from configured model policy")
 	}
 	request.PromptVersion = c.config.PromptVersion
 	for index := range sources {
@@ -169,34 +192,30 @@ func (c *Client) Review(ctx context.Context, request ReviewRequest) (ReviewResul
 	}
 	prompt, err := makePrompt(request, sources, safeManifest, redactor)
 	if err != nil {
-		coverage.Status, coverage.Reason = domain.CoverageIncomplete, "could not construct contextual provider request"
+		coverage.Status, coverage.Reason = domain.CoverageIncomplete, "could not construct contextual model request"
 		coverage.OmittedPaths = omissionPaths(manifest.Omissions)
 		return ReviewResult{Coverage: coverage, Manifest: safeManifest}, fmt.Errorf("%s: %w", coverage.Reason, err)
 	}
-	payload, err := marshalProviderRequest(c.config.Model, effectivePromptVersion(c.config.PromptVersion, request.PromptVersion), prompt)
-	if err != nil {
-		coverage.Status, coverage.Reason = domain.CoverageIncomplete, "could not encode contextual provider request"
-		return ReviewResult{Coverage: coverage, Manifest: safeManifest}, fmt.Errorf("%s: %w", coverage.Reason, err)
-	}
-	if len(payload) > c.config.MaxPromptBytes {
+	if len(reviewInstructions)+len(prompt) > c.config.MaxPromptBytes {
 		manifest.Truncated = true
 		manifest.Omissions = append(manifest.Omissions, ManifestOmission{Reason: "contextual request exceeded the configured byte limit"})
 		safeManifest = redactManifest(manifest, redactor)
-		coverage.Status, coverage.Reason = domain.CoverageIncomplete, "contextual provider request exceeds prompt size limit"
+		coverage.Status, coverage.Reason = domain.CoverageIncomplete, "contextual model request exceeds prompt size limit"
 		coverage.OmittedPaths = omissionPaths(manifest.Omissions)
 		return ReviewResult{Coverage: coverage, Manifest: safeManifest}, errors.New(coverage.Reason)
 	}
 
-	response, err := c.call(ctx, credential, payload)
+	answer, record, err := c.run(ctx, cli, binary, prompt)
 	if err != nil {
-		coverage.Status, coverage.Reason = domain.CoverageIncomplete, "contextual provider request failed"
+		coverage.Status, coverage.Reason = domain.CoverageIncomplete, "contextual model request failed"
 		coverage.OmittedPaths = omissionPaths(manifest.Omissions)
 		return ReviewResult{Coverage: coverage, Manifest: safeManifest}, fmt.Errorf("%s: %w", coverage.Reason, err)
 	}
-	result, validationErr := validateProviderResponse(request, response, manifest, snapshotSources, c.config.Model, effectivePromptVersion(c.config.PromptVersion, request.PromptVersion))
+	result, validationErr := validateProviderResponse(request, answer, manifest, snapshotSources, record.ResolvedModel, request.PromptVersion)
 	result.Manifest = safeManifest
+	result.Model = &record
 	if validationErr != nil {
-		result.Coverage.Status, result.Coverage.Reason = domain.CoverageIncomplete, "contextual provider response failed evidence validation"
+		result.Coverage.Status, result.Coverage.Reason = domain.CoverageIncomplete, "contextual model answer failed evidence validation"
 		result.Coverage.OmittedPaths = omissionPaths(manifest.Omissions)
 		return result, fmt.Errorf("%s: %w", result.Coverage.Reason, validationErr)
 	}
@@ -216,71 +235,36 @@ func (c *Client) Review(ctx context.Context, request ReviewRequest) (ReviewResul
 	return result, nil
 }
 
-// CheckPrerequisites reports whether the configured provider may receive source.
-// It only validates configuration, explicit egress authorization, and credential
-// presence; it never reads source or contacts the provider.
+// CheckPrerequisites reports whether the configured CLI may receive source.
+// It only resolves the CLI and checks explicit egress authorization; it never
+// reads source or runs the CLI. A missing CLI returns modelcli.ErrNoCLI.
 func CheckPrerequisites(config Config) error {
 	client, err := NewClient(config)
 	if err != nil {
 		return err
 	}
-	_, err = client.prerequisiteCredential()
+	_, _, err = client.prerequisites()
 	return err
 }
 
-func (c *Client) prerequisiteCredential() (string, error) {
-	if reason := c.unavailableReason(); reason != "" {
-		return "", errors.New(reason)
+// prerequisites resolves the CLI first, so a runner without one reports
+// "skipped (no model CLI)" whether or not egress was authorized.
+func (c *Client) prerequisites() (modelcli.Name, string, error) {
+	cli, binary, err := modelcli.Detect(c.config.CLI)
+	if err != nil {
+		return "", "", err
 	}
-	credential, present := os.LookupEnv(c.config.CredentialEnv)
-	if !present || credential == "" {
-		return "", errors.New("contextual provider credential environment variable is unavailable")
-	}
-	return credential, nil
-}
-func (c *Client) unavailableReason() string {
 	if !c.config.EgressAuthorized {
-		return "contextual provider source egress is not authorized"
+		return "", "", errors.New("contextual source egress is not authorized")
 	}
-	if c.config.Endpoint == "" || c.config.Model == "" || c.config.PromptVersion == "" || c.config.CredentialEnv == "" {
-		return "contextual provider is not fully configured"
-	}
-	endpoint, err := url.Parse(c.config.Endpoint)
-	if err != nil || endpoint.Scheme == "" || endpoint.Host == "" || endpoint.User != nil || (endpoint.Scheme != "https" && endpoint.Scheme != "http") {
-		return "contextual provider endpoint is invalid"
-	}
-	return ""
+	return cli, binary, nil
 }
 
-func (c *Client) call(parent context.Context, credential string, payload []byte) ([]byte, error) {
-	ctx, cancel := context.WithTimeout(parent, c.config.Timeout)
-	defer cancel()
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.config.Endpoint, bytes.NewReader(payload))
-	if err != nil {
-		return nil, err
+func prerequisiteStatus(err error) domain.CoverageStatus {
+	if errors.Is(err, modelcli.ErrNoCLI) {
+		return domain.CoverageSkipped
 	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set(c.config.AuthorizationHead, c.config.AuthorizationPref+credential)
-	httpClient := c.config.HTTPClient
-	if httpClient == nil {
-		httpClient = http.DefaultClient
-	}
-	response, err := httpClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer response.Body.Close()
-	body, err := io.ReadAll(io.LimitReader(response.Body, 2*1024*1024+1))
-	if err != nil {
-		return nil, err
-	}
-	if len(body) > 2*1024*1024 {
-		return nil, errors.New("contextual provider response exceeds safe size limit")
-	}
-	if response.StatusCode < 200 || response.StatusCode > 299 {
-		return nil, fmt.Errorf("contextual provider returned HTTP %d", response.StatusCode)
-	}
-	return body, nil
+	return domain.CoverageBlocked
 }
 
 func validateRequest(request ReviewRequest) error {

@@ -77,7 +77,7 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 			return result, err
 		}
 	}
-	client, err := clawpatch.New(root, clawpatch.Config{BinaryPath: config.ClawpatchBinary, EgressAuthorized: config.ClawpatchEgressAuthorized})
+	client, err := clawpatch.New(root, clawpatch.Config{BinaryPath: config.ClawpatchBinary, EgressAuthorized: config.ClawpatchEgressAuthorized, Provider: config.ClawpatchProvider})
 	if err != nil {
 		return result, err
 	}
@@ -90,7 +90,7 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 	if err != nil {
 		return result, err
 	}
-	modelDigest := digest(config.Provider.Endpoint + "\x00" + config.Provider.Model + "\x00" + config.Provider.PromptVersion)
+	modelDigest := digest(config.Provider.Fingerprint())
 	mapperDigest := digest(clawpatch.SafetyFingerprint())
 	var resumePlan *domain.Plan
 	if !options.ForceFull {
@@ -221,12 +221,9 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 	if err != nil {
 		return result, err
 	}
-	var provider *contextual.Client
-	if config.Provider.Endpoint != "" {
-		provider, err = contextual.NewClient(config.Provider)
-		if err != nil {
-			return result, err
-		}
+	provider, err := contextual.NewClient(config.Provider)
+	if err != nil {
+		return result, err
 	}
 	observations := []domain.Observation{}
 	committed := make(map[string]bool)
@@ -367,8 +364,8 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 				return result, err
 			}
 		case domain.StageFeatureAnalysis:
-			if provider == nil {
-				run.Coverage = append(run.Coverage, blocked(key, "contextual provider is not configured"))
+			if !config.laneOptedIn(LaneContextual) {
+				run.Coverage = append(run.Coverage, notOptedIn(key))
 				break
 			}
 			reviewed, reviewErr := provider.Review(ctx, contextual.ReviewRequest{
@@ -377,7 +374,7 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 				ToolResults:       relevantAdapters(result.Adapters, featureByID[key.FeatureID], key.Family),
 				PriorObservations: priorByFeature[key.FeatureID],
 			})
-			if reviewErr != nil {
+			if reviewErr != nil && reviewed.Coverage.Status != domain.CoverageSkipped && reviewed.Coverage.Status != domain.CoverageBlocked {
 				run.Failures = append(run.Failures, domain.Failure{Stage: domain.StageFeatureAnalysis, Code: "provider_incomplete", Message: "contextual inspection did not complete"})
 			}
 			if reviewed.Coverage.Status == "" {
@@ -389,6 +386,10 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 			run.Coverage = append(run.Coverage, reviewed.Coverage)
 			observations = append(observations, reviewed.Observations...)
 		case domain.StageClawpatchReview:
+			if !config.laneOptedIn(LaneClawpatchReview) {
+				run.Coverage = append(run.Coverage, notOptedIn(key))
+				break
+			}
 			reviewed, reviewErr := client.Review(ctx, []string{key.FeatureID})
 			if reviewErr != nil {
 				run.Failures = append(run.Failures, domain.Failure{Stage: domain.StageClawpatchReview, Code: "review_incomplete", Message: "Clawpatch review did not complete"})
@@ -608,6 +609,9 @@ func categoryKey(family domain.Family, category string) string {
 }
 func blocked(key domain.CoverageKey, reason string) domain.Coverage {
 	return domain.Coverage{Key: key, Status: domain.CoverageBlocked, Reason: reason}
+}
+func notOptedIn(key domain.CoverageKey) domain.Coverage {
+	return domain.Coverage{Key: key, Status: domain.CoverageSkipped, Reason: ReasonNotOptedIn}
 }
 func storeAdapter(ctx context.Context, store *state.Store, adapter domain.AdapterResult, run *domain.Run) error {
 	encoded, err := json.Marshal(adapter)

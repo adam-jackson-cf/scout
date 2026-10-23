@@ -173,7 +173,7 @@ func TestSummaryIsBounded(t *testing.T) {
 		issues = append(issues, domain.AttributedIssue{IssueID: "i", CheckID: "c", Attribution: domain.AttributionIntroduced, Title: "t"})
 		rows = append(rows, domain.WouldBlock{CheckID: "c", Path: "p", Triage: "undecided"})
 	}
-	out := Summary(domain.Gate{Status: "gated", ExitCode: 1, Reasons: strings.Split(strings.Repeat("r\n", 100), "\n")}, issues, rows, 5, LaneHealthOf(domain.TriggerPR, domain.Run{}, nil))
+	out := Summary(domain.Gate{Status: "gated", ExitCode: 1, Reasons: strings.Split(strings.Repeat("r\n", 100), "\n")}, DeterministicRanking(issues, "decisions not enabled"), issues, rows, 5, LaneHealthOf(domain.TriggerPR, domain.Run{}, nil))
 	if n := strings.Count(out, "\n"); n > 60 {
 		t.Fatalf("summary has %d lines", n)
 	}

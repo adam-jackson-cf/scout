@@ -22,7 +22,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-const schemaVersion = 7
+const schemaVersion = 8
 
 var (
 	// ErrStoreLocked means another process already owns the target state directory.
@@ -287,6 +287,14 @@ func (s *Store) migrate(ctx context.Context) error {
 				}
 			}
 			current = 7
+		}
+		if current == 7 {
+			for _, statement := range schemaV8 {
+				if _, err := tx.ExecContext(ctx, statement); err != nil {
+					return fmt.Errorf("apply state schema v8: %w", err)
+				}
+			}
+			current = 8
 		}
 		if current != schemaVersion {
 			return fmt.Errorf("no migration from state schema version %d", current)

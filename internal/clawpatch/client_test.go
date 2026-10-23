@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"scout/internal/domain"
 )
 
 func TestMapReusesCanonicalRecordsWithoutExecutingClawpatch(t *testing.T) {
@@ -79,7 +81,8 @@ func fakeMapper(t *testing.T, egress bool, failAgent bool) (*Client, string) {
 		"case \"$*\" in\n" +
 		"*'--source agent'*) if [ " + failure + " = 1 ]; then exit 3; fi ;;\n" +
 		"esac\n" +
-		"case \"$*\" in *' map '*) printf '%s' '{\"schemaVersion\":1,\"featureId\":\"heur\",\"kind\":\"service\",\"source\":\"heuristic\",\"confidence\":\"high\"}' > '" + filepath.Join(stateDir, "features", "heur.json") + "';; esac\n"
+		"case \"$*\" in *' map '*) printf '%s' '{\"schemaVersion\":1,\"featureId\":\"heur\",\"kind\":\"service\",\"source\":\"heuristic\",\"confidence\":\"high\"}' > '" + filepath.Join(stateDir, "features", "heur.json") + "';; esac\n" +
+		"case \"$*\" in *'--provider'*) env > '" + log + ".env';; esac\n"
 	node := filepath.Join(t.TempDir(), "node")
 	if err := os.WriteFile(node, []byte(script), 0o700); err != nil {
 		t.Fatal(err)
@@ -110,7 +113,47 @@ func TestHeuristicMapRunsWithoutEgress(t *testing.T) {
 	}
 }
 
+// useFakeCLIs puts empty executables named names on a narrowed PATH.
+func useFakeCLIs(t *testing.T, names ...string) {
+	t.Helper()
+	dir := t.TempDir()
+	for _, name := range names {
+		if err := os.WriteFile(filepath.Join(dir, name), []byte("#!/bin/sh\n"), 0o700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	t.Setenv("PATH", dir+":/usr/bin:/bin")
+}
+
+func setProviderCredentials(t *testing.T) {
+	t.Helper()
+	for _, name := range []string{"ANTHROPIC_API_KEY", "OPENAI_API_KEY", "CLAWPATCH_OPENAI_API_KEY", "CLAWPATCH_ANTHROPIC_API_KEY", "CLAWPATCH_CODEX_API_KEY", "OPENROUTER_API_KEY"} {
+		t.Setenv(name, "must-not-reach-clawpatch")
+	}
+	t.Setenv("CLAWPATCH_PROVIDER", "")
+}
+
+func assertCredentialFreeHostEnv(t *testing.T, envLog string) {
+	t.Helper()
+	raw, err := os.ReadFile(envLog)
+	if err != nil {
+		t.Fatalf("Clawpatch environment was not recorded: %v", err)
+	}
+	if !strings.Contains(string(raw), "CLAWPATCH_CLAUDE_AUTH_CONTEXT=host\n") {
+		t.Fatalf("host auth context missing from environment")
+	}
+	if strings.Contains(string(raw), "must-not-reach-clawpatch") {
+		t.Fatal("an API key reached Clawpatch")
+	}
+	for _, line := range strings.Split(string(raw), "\n") {
+		if name, _, _ := strings.Cut(line, "="); strings.Contains(strings.ToUpper(name), "API_KEY") {
+			t.Fatalf("%s reached Clawpatch", name)
+		}
+	}
+}
+
 func TestAgentMapWithoutEgressIsBlocked(t *testing.T) {
+	useFakeCLIs(t, "codex")
 	client, log := fakeMapper(t, false, false)
 	result, err := client.Map(context.Background(), true, MapSourceAgent)
 	if err == nil || result.Status != MapBlocked {
@@ -121,7 +164,110 @@ func TestAgentMapWithoutEgressIsBlocked(t *testing.T) {
 	}
 }
 
+func TestAgentMapWithoutModelCLIIsSkippedAndNeverInvokesClawpatch(t *testing.T) {
+	t.Setenv("PATH", t.TempDir())
+	t.Setenv("CLAWPATCH_PROVIDER", "")
+	client, log := fakeMapper(t, true, false)
+	result, err := client.Map(context.Background(), true, MapSourceAgent)
+	if err != nil || result.Status != MapSkipped || result.Reason != "skipped (no model CLI)" || result.ExplorationIncomplete {
+		t.Fatalf("agent map without a model CLI must be skipped without error: %+v, %v", result, err)
+	}
+	if _, statErr := os.Stat(log); statErr == nil {
+		t.Fatal("skipped agent map invoked Clawpatch")
+	}
+}
+
+func TestAgentMapUsesCodexOrClaudeInHostAuthContextWithoutAPIKeys(t *testing.T) {
+	for name, tc := range map[string]struct {
+		installed []string
+		configure string
+		want      string
+	}{
+		"codex is the default": {installed: []string{"codex", "claude"}, want: "codex"},
+		"falls back to claude": {installed: []string{"claude"}, want: "claude"},
+		"explicit claude":      {installed: []string{"codex", "claude"}, configure: "claude", want: "claude"},
+	} {
+		t.Run(name, func(t *testing.T) {
+			useFakeCLIs(t, tc.installed...)
+			setProviderCredentials(t)
+			client, log := fakeMapper(t, true, false)
+			client.provider = tc.configure
+			result, err := client.Map(context.Background(), true, MapSourceAgent)
+			if err != nil || result.Status != MapMapped || result.Source != MapSourceAgent {
+				t.Fatalf("agent map = %+v, %v", result, err)
+			}
+			argv, err := os.ReadFile(log)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !strings.Contains(string(argv), "--json map --source agent --provider "+tc.want+"\n") {
+				t.Fatalf("agent map argv = %q", argv)
+			}
+			assertCredentialFreeHostEnv(t, log+".env")
+		})
+	}
+}
+
+func TestAnyOtherClawpatchProviderIsRejected(t *testing.T) {
+	useFakeCLIs(t, "codex", "claude")
+	for _, provider := range []string{"acpx", "mock", "opencode", "grok"} {
+		for _, viaEnv := range []bool{false, true} {
+			client, log := fakeMapper(t, true, false)
+			t.Setenv("CLAWPATCH_PROVIDER", "")
+			if viaEnv {
+				t.Setenv("CLAWPATCH_PROVIDER", provider)
+			} else {
+				client.provider = provider
+			}
+			result, err := client.Map(context.Background(), true, MapSourceAgent)
+			if err == nil || result.Status != MapBlocked {
+				t.Fatalf("provider %q (env=%t) must be rejected: %+v, %v", provider, viaEnv, result, err)
+			}
+			if _, statErr := os.Stat(log); statErr == nil {
+				t.Fatalf("rejected provider %q invoked Clawpatch", provider)
+			}
+		}
+	}
+}
+
+func TestReviewInvokesProviderInHostAuthContextWithoutAPIKeys(t *testing.T) {
+	useFakeCLIs(t, "claude")
+	setProviderCredentials(t)
+	client, log := fakeMapper(t, true, false)
+	if err := os.WriteFile(filepath.Join(client.StateDir(), "features", "feat.json"), []byte(`{"schemaVersion":1,"featureId":"feat","kind":"service","source":"heuristic","confidence":"high"}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(client.StateDir(), "config.json"), []byte(`{"schemaVersion":1,"review":{"maxFindingsPerFeature":3}}`), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := client.Review(context.Background(), []string{"feat"}); err != nil {
+		t.Fatal(err)
+	}
+	argv, err := os.ReadFile(log)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(argv), "--json review --feature feat --provider claude\n") {
+		t.Fatalf("review argv = %q", argv)
+	}
+	assertCredentialFreeHostEnv(t, log+".env")
+}
+
+func TestReviewWithoutModelCLIIsSkippedNotBlockedOrClean(t *testing.T) {
+	t.Setenv("PATH", t.TempDir())
+	t.Setenv("CLAWPATCH_PROVIDER", "")
+	client, log := fakeMapper(t, false, false)
+	result, err := client.Review(context.Background(), []string{"feat"})
+	if err != nil || len(result.Coverage) != 1 || result.Coverage[0].Status != domain.CoverageSkipped || result.Coverage[0].Reason != "skipped (no model CLI)" {
+		t.Fatalf("review coverage = %+v, %v", result.Coverage, err)
+	}
+	if _, statErr := os.Stat(log); statErr == nil {
+		t.Fatal("skipped review invoked Clawpatch")
+	}
+}
+
 func TestAgentMapFailureKeepsHeuristicFeaturesAndReportsIncomplete(t *testing.T) {
+	useFakeCLIs(t, "codex")
 	client, log := fakeMapper(t, true, true)
 	result, err := client.Map(context.Background(), true, MapSourceAgent)
 	if err != nil {
@@ -134,7 +280,7 @@ func TestAgentMapFailureKeepsHeuristicFeaturesAndReportsIncomplete(t *testing.T)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !strings.Contains(string(argv), "map --source agent\n") || !strings.HasSuffix(string(argv), "map --source heuristic\n") {
+	if !strings.Contains(string(argv), "map --source agent --provider codex\n") || !strings.HasSuffix(string(argv), "map --source heuristic\n") {
 		t.Fatalf("unexpected argv sequence: %q", argv)
 	}
 }

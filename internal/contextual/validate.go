@@ -118,36 +118,17 @@ func emptyResult(request ReviewRequest) ReviewResult {
 	return ReviewResult{Coverage: domain.Coverage{Key: domain.CoverageKey{FeatureID: request.Feature.FeatureID, Family: request.Family, Category: request.Category}}}
 }
 
+// decodeProviderResponse parses the model's answer strictly: one JSON object
+// with the declared fields only. No fence stripping, envelope or repair.
 func decodeProviderResponse(raw []byte) (providerResponse, error) {
-	var direct providerResponse
-	if err := json.Unmarshal(raw, &direct); err == nil && direct.Status != "" {
-		return direct, nil
+	var response providerResponse
+	if err := decodeStrictJSON(raw, &response); err != nil {
+		return providerResponse{}, fmt.Errorf("decode model answer JSON: %w", err)
 	}
-	var envelope struct {
-		Choices []struct {
-			Message struct {
-				Content json.RawMessage `json:"content"`
-			} `json:"message"`
-		} `json:"choices"`
+	if response.Status == "" {
+		return providerResponse{}, errors.New("model answer has no status")
 	}
-	if err := json.Unmarshal(raw, &envelope); err != nil {
-		return providerResponse{}, fmt.Errorf("decode provider JSON: %w", err)
-	}
-	if len(envelope.Choices) != 1 || len(envelope.Choices[0].Message.Content) == 0 {
-		return providerResponse{}, errors.New("provider response is neither structured output nor a single JSON choice")
-	}
-	content := envelope.Choices[0].Message.Content
-	var encoded string
-	if err := json.Unmarshal(content, &encoded); err == nil {
-		content = json.RawMessage(encoded)
-	}
-	if err := json.Unmarshal(content, &direct); err != nil {
-		return providerResponse{}, fmt.Errorf("decode provider structured content: %w", err)
-	}
-	if direct.Status == "" {
-		return providerResponse{}, errors.New("provider structured content has no status")
-	}
-	return direct, nil
+	return response, nil
 }
 
 func responseCoverageStatus(value string) (domain.CoverageStatus, error) {
@@ -346,7 +327,7 @@ func decodeStrictJSON(raw json.RawMessage, destination any) error {
 		return err
 	}
 	if err := decoder.Decode(&struct{}{}); !errors.Is(err, io.EOF) {
-		return errors.New("severity has trailing JSON")
+		return errors.New("trailing JSON")
 	}
 	return nil
 }

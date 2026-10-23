@@ -449,6 +449,9 @@ func (s *Store) transitionIssue(ctx context.Context, issueID string, state domai
 		if err := saveIssueTx(ctx, tx, issue, false); err != nil {
 			return err
 		}
+		if err := recordDispositionContextTx(ctx, tx, issue.IssueID, issue.UpdatedAt); err != nil {
+			return err
+		}
 		updated = issue
 		return nil
 	})

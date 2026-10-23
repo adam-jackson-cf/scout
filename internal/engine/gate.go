@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -232,18 +233,33 @@ func dispositioned(state domain.IssueState) bool {
 	return state == domain.IssueAccepted || state == domain.IssueFalsePositive || state == domain.IssueWontFix || state == domain.IssueResolved
 }
 
-func pathRole(path string) float64 {
-	lower := strings.ToLower(path)
-	for _, marker := range []string{"/testdata/", "/test/", "/tests/", "_test.", "test_", "/vendor/", "/node_modules/", "generated", ".md", "/docs/", "/fixtures/"} {
-		if strings.Contains("/"+lower, marker) {
-			return 0.5
+// PathRoleVersion versions the path-role classifier of the deterministic
+// baseline (design §6: stored with every ranking disclosure).
+const PathRoleVersion = "path-role/v1"
+
+var pathMarkers = []struct{ marker, role string }{
+	{"/testdata/", "fixture"}, {"/test/", "test"}, {"/tests/", "test"}, {"_test.", "test"}, {"test_", "test"},
+	{"/vendor/", "vendor"}, {"/node_modules/", "vendor"}, {"generated", "generated"}, {".md", "docs"}, {"/docs/", "docs"}, {"/fixtures/", "fixture"},
+}
+
+// pathRoleName classifies a path in code: source, test, fixture, generated,
+// vendor or docs. Non-source roles halve the baseline weight.
+func pathRoleName(path string) string {
+	lower := "/" + strings.ToLower(path)
+	for _, entry := range pathMarkers {
+		if strings.Contains(lower, entry.marker) {
+			return entry.role
 		}
+	}
+	return "source"
+}
+
+func pathRole(path string) float64 {
+	if pathRoleName(path) != "source" {
+		return 0.5
 	}
 	return 1
 }
-
-// RankingLabel marks the ranking as the deterministic baseline of design §6.
-const RankingLabel = "deterministic (jev not yet wired)"
 
 // Evaluate applies attribution, policy, overrides and lane health.
 func Evaluate(in GateInput) GateOutput {
@@ -346,39 +362,52 @@ func wouldBlockID(base, head, check, issue string) string {
 	return "wb-" + hex.EncodeToString(sum[:8])
 }
 
-// Ranking is the deterministic baseline ordering (design §6).
+// Ranking is the ranking of introduced and regressed findings and its
+// disclosure (design §6): which method produced it, why a fallback happened,
+// and the versions every stored ranking carries.
 type Ranking struct {
-	Method string        `json:"method"`
-	Items  []RankingItem `json:"items"`
+	// Method is the disclosure line: `deterministic (<reason>)`,
+	// `jev (unvalidated, X1 pending)`, or a partial form naming n/N.
+	Method             string        `json:"method"`
+	Mode               string        `json:"mode"`
+	Reason             string        `json:"reason,omitempty"`
+	RankFormulaVersion string        `json:"rank_formula_version"`
+	BaselineVersion    string        `json:"baseline_version"`
+	JevQuality         string        `json:"jev_quality,omitempty"`
+	Items              []RankingItem `json:"items"`
 }
 
-// RankingItem is one ranked issue.
+// RankingItem is one ranked issue. Ranking is the per-finding disclosure.
 type RankingItem struct {
-	IssueID string  `json:"issueId"`
-	Score   float64 `json:"score"`
-	Reason  string  `json:"reason"`
+	IssueID         string   `json:"issueId"`
+	Position        int      `json:"position"`
+	Score           float64  `json:"score"`
+	Reason          string   `json:"reason"`
+	Mode            string   `json:"mode"`
+	Ranking         string   `json:"ranking"`
+	BaselineScore   float64  `json:"baselineScore"`
+	Probability     *float64 `json:"probability,omitempty"`
+	QuestionVersion string   `json:"questionVersion,omitempty"`
 }
 
-// RankingOf ranks introduced/regressed issues first, by score.
-func RankingOf(issues []domain.AttributedIssue) Ranking {
-	ranking := Ranking{Method: RankingLabel, Items: []RankingItem{}}
-	for _, item := range issues {
-		if item.Attribution == domain.AttributionIntroduced || item.Attribution == domain.AttributionRegressed {
-			ranking.Items = append(ranking.Items, RankingItem{IssueID: item.IssueID, Score: item.RankingScore, Reason: item.RankingReason})
-		}
-	}
-	return ranking
+// RankingOf ranks introduced and regressed issues. Jev ranks them when
+// decisions are enabled, a key is present, egress is allowed and the run is
+// trusted; otherwise the deterministic baseline ranks them and the reason is
+// disclosed. Annotations only ever change this ranking, never an issue state
+// or the gate, and the lane health it returns is optional.
+func RankingOf(ctx context.Context, in RankingInput) (Ranking, domain.LaneHealth, error) {
+	return rankWithDecisions(ctx, in)
 }
 
 const summaryLimit = 60
 
 // Summary renders the Markdown PR summary, never longer than 60 lines.
-func Summary(gate domain.Gate, issues []domain.AttributedIssue, wouldBlock []domain.WouldBlock, pre int, health []domain.LaneHealth) string {
+func Summary(gate domain.Gate, ranking Ranking, issues []domain.AttributedIssue, wouldBlock []domain.WouldBlock, pre int, health []domain.LaneHealth) string {
 	var lines []string
 	add := func(format string, args ...any) { lines = append(lines, fmt.Sprintf(format, args...)) }
 	add("## Scout — %s (exit %d)", gate.Status, gate.ExitCode)
 	add("")
-	add("Profile `%s`; comparison `%s`; ranking: %s.", gate.Profile, gate.Comparison, RankingLabel)
+	add("Profile `%s`; comparison `%s`; ranking: %s.", gate.Profile, gate.Comparison, ranking.Method)
 	for _, reason := range gate.Reasons {
 		add("> %s", oneLine(reason))
 	}

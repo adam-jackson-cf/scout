@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"scout/internal/domain"
+	"scout/internal/modelcli"
 )
 
 // Lane is one registered analysis lane (design §5.1). The registry replaces
@@ -33,16 +34,16 @@ const (
 )
 
 // lanes is the registry in priority order. Contextual and clawpatch-review are
-// optional: they require egress and are report-only, so their health never
-// makes a required lane red.
+// optional: they require a logged-in model CLI and are report-only, so their
+// health (including skipped (no model CLI)) never makes a required lane red.
 var lanes = []Lane{
 	{ID: LaneGuardrails, Triggers: []domain.LaneTrigger{domain.TriggerPR}, Mode: domain.ModeBlockingEligible, Requires: domain.RequiresNone},
 	{ID: LaneSecurity, Family: domain.FamilySecurity, Triggers: []domain.LaneTrigger{domain.TriggerPR, domain.TriggerPush}, Mode: domain.ModeBlockingEligible, Requires: domain.RequiresTool},
 	{ID: LaneQuality, Family: domain.FamilyQuality, Triggers: allTriggers, Mode: domain.ModeReport, Requires: domain.RequiresTool},
 	{ID: LaneArchitecture, Family: domain.FamilyArchitecture, Triggers: allTriggers, Mode: domain.ModeReport, Requires: domain.RequiresTool},
 	{ID: LanePerformance, Family: domain.FamilyPerformance, Triggers: []domain.LaneTrigger{domain.TriggerPush, domain.TriggerNightly}, Mode: domain.ModeReport, Requires: domain.RequiresTool},
-	{ID: LaneContextual, Triggers: []domain.LaneTrigger{domain.TriggerNightly}, Mode: domain.ModeReport, Requires: domain.RequiresProviderEgress},
-	{ID: LaneClawpatchReview, Triggers: []domain.LaneTrigger{domain.TriggerNightly}, Mode: domain.ModeReport, Requires: domain.RequiresProviderEgress},
+	{ID: LaneContextual, Triggers: []domain.LaneTrigger{domain.TriggerNightly}, Mode: domain.ModeReport, Requires: domain.RequiresModelCLI},
+	{ID: LaneClawpatchReview, Triggers: []domain.LaneTrigger{domain.TriggerNightly}, Mode: domain.ModeReport, Requires: domain.RequiresModelCLI},
 	{ID: LaneMeasures, Triggers: allTriggers, Mode: domain.ModeSignal, Requires: domain.RequiresTool},
 	{ID: LaneHistory, Triggers: []domain.LaneTrigger{domain.TriggerPush, domain.TriggerNightly}, Mode: domain.ModeSignal, Requires: domain.RequiresNone},
 }
@@ -131,8 +132,8 @@ func LaneHealthOf(trigger domain.LaneTrigger, run domain.Run, inline []domain.La
 		trigger = domain.TriggerPush
 	}
 	type tally struct {
-		units, ran, reused, blocked, incomplete, notApplicable int
-		reason                                                 string
+		units, ran, reused, blocked, incomplete, notApplicable, noCLI int
+		reason                                                        string
 	}
 	tallies := map[string]*tally{}
 	for _, row := range run.Coverage {
@@ -153,7 +154,13 @@ func LaneHealthOf(trigger domain.LaneTrigger, run domain.Run, inline []domain.La
 			t.notApplicable++
 		case domain.CoverageBlocked:
 			t.blocked++
-		case domain.CoverageSkipped, domain.CoverageIncomplete, domain.CoverageRequiresManualVerification:
+		case domain.CoverageSkipped:
+			if row.Reason == modelcli.NoCLIReason || row.Reason == ReasonNotOptedIn {
+				t.noCLI++
+			} else {
+				t.incomplete++
+			}
+		case domain.CoverageIncomplete, domain.CoverageRequiresManualVerification:
 			t.incomplete++
 		default:
 			t.ran++

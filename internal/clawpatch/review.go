@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"scout/internal/domain"
+	"scout/internal/modelcli"
 )
 
 const (
@@ -165,9 +166,17 @@ func (c *Client) Review(ctx context.Context, featureIDs []string) (ReviewResult,
 	if len(ids) == 0 {
 		return ReviewResult{Status: domain.AdapterNoApplicableInput}, nil
 	}
+	provider, err := c.resolveProvider()
+	if errors.Is(err, modelcli.ErrNoCLI) {
+		return skippedReviewResult(ids), nil
+	}
+	if err != nil {
+		return blockedReviewResult(ids, err.Error()), nil
+	}
 	if !c.egressAuthorized {
 		return blockedReviewResult(ids, "Clawpatch review provider egress is not authorized"), nil
 	}
+	providerArgs, reviewEnv := modelInvocation(provider)
 	if err := c.Init(ctx); err != nil {
 		return blockedReviewResult(ids, err.Error()), err
 	}
@@ -198,7 +207,7 @@ func (c *Client) Review(ctx context.Context, featureIDs []string) (ReviewResult,
 			result.Status = domain.AdapterPartial
 			continue
 		}
-		output, err := c.invokeLocked(ctx, "review", "--feature", id)
+		output, err := c.invokeEnvLocked(ctx, reviewEnv, append([]string{"review", "--feature", id}, providerArgs...)...)
 		if err != nil {
 			result.Coverage = append(result.Coverage, incompleteCoverage(id, "pinned Clawpatch review did not complete"))
 			result.Status = domain.AdapterPartial

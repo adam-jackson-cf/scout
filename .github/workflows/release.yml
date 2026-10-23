@@ -45,7 +45,7 @@ jobs:
           asset="$RUNNER_TEMP/release/scout-${{ matrix.goos }}-${{ matrix.goarch }}"
           CGO_ENABLED=0 GOOS="${{ matrix.goos }}" GOARCH="${{ matrix.goarch }}" \
             go build -trimpath -buildvcs=false -o "$asset" ./cmd/scout
-          shasum -a 256 "$asset" > "$asset.sha256"
+          (cd "$RUNNER_TEMP/release" && shasum -a 256 "$(basename "$asset")" > "$(basename "$asset").sha256")
       - uses: actions/upload-artifact@v4
         with:
           name: scout-${{ matrix.goos }}-${{ matrix.goarch }}
@@ -90,7 +90,7 @@ jobs:
             "sha256": "${asset_sha256}"
           }
           EOF
-          shasum -a 256 "$release_dir/clawpatch-manifest.json" > "$release_dir/clawpatch-manifest.json.sha256"
+          (cd "$release_dir" && shasum -a 256 clawpatch-manifest.json > clawpatch-manifest.json.sha256)
       - uses: actions/upload-artifact@v4
         with:
           name: clawpatch-bundle
