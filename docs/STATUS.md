@@ -67,7 +67,7 @@ C7b, the experiment estimators and samplers, is carried forward as binding input
     - the PR yields `delta.cc-threshold@1` (9 → 14) and `delta.dup-added@1` (`descriptive`);
     - guardrails fire: `SUPPRESS` for `//nolint` and `@ts-nocheck`, `TESTQ` for `.only`, `strictness-lowered.{tsconfig,golangci}` and `ignores-added.ruff`;
     - `readiness --matrix` prints.
-  - **Open, blocked on the user (design §15 item 2):** "`pr_effort` present in CI" needs `pull-requests: read`, `GITHUB_TOKEN` and `--fetch-pr-metadata --pr-repo ${{ github.repository }}` in the trusted job of `scout-guardian.yml`. The code is ready; the workflow is unchanged.
+  - **PR metadata in CI (design §15 item 2, decided 2026-10-23):** the trusted workflow has `pull-requests: read`, `GITHUB_TOKEN` and `--fetch-pr-metadata --pr-repo`. "`pr_effort` present in CI" is unproven until a release exists for CI to install.
   - **Scenario wording vs allow-list:** §11 says the PR "lowers `ruff` strictness". AL table 1 lists ruff only under `ignores-added` (a `select` shrink is not a mechanism), so the scenario lowers ruff by adding an ignore. Detecting a `select` shrink would mean changing the allow-list, which needs a council round.
 - **Phase 4 is done** (`d00aac1`): `internal/areas` (schema v12, `areas.jsonl`), the refresh trigger with debounce (`scout map`), `scout mapping --areas|--unowned`, and the trusted-workflow map step. Two bugs were found by the real-map scenario and fixed:
   - Agent features carry Clawpatch source `agent-mapper`, and heuristic ones carry per-mapper sources. Every heuristic feature had been becoming an area.
@@ -102,7 +102,6 @@ C7b, the experiment estimators and samplers, is carried forward as binding input
 
 ## 2. Decisions in force
 
-- Design revision 2.2 is authoritative (`docs/scout-design.md`, `f81b2601…`). Appendix decisions 1–7 (2026-10-19) and 8–15 (2026-10-22/23) are not reopened. Open user decisions: design §15 items 1–3 (study-export consent, `pull-requests: read`, inertia framing), and the remaining `jev-actions-review.md` §D questions (minimums, costs, Jev version pin), which feed the experiment preregistrations.
 - Design revision 2.2 is authoritative (`docs/scout-design.md`, `f81b2601…`). Appendix decisions 1–7 (2026-10-19) and 8–15 (2026-10-22/23) are not reopened. The §15 items were decided by the user on 2026-10-23 (§6.9) and await recording in the next council design round. Per-decision Jev costs and minimums stay at the provisional defaults until the user sets them.
 - Design changes need innovation-council sign-off with zero issues, rounds recorded under `docs/design-reviews/<date>-<topic>/` (`AGENTS.md:30-38`). Experiments likewise, preregistered, frozen after sign-off (`AGENTS.md:3-28`). Design changes may cite only signed-off experiments (`AGENTS.md:37`).
 - Ledgers must be updated when a source/hypothesis is used (`AGENTS.md` ledger rules): `docs/research-ledger.md` (R-001…R-038), `docs/hypothesis-ledger.md` (HD\* live; H\*/HA\*/HQ\* frozen).
