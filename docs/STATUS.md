@@ -4,7 +4,9 @@ Written for a fresh session. Every claim cites a file in this repo unless marked
 
 ## 1. Current state (verified 2026-10-23)
 
-**Design: revision 2.2 adopted 2026-10-23.** `docs/scout-design.md` SHA-256 is `f81b26014e6d2e38a741249819d23fcb993541e2194f7b168c4970c3b415ded4`. That equals the digest signed off with zero issues in `docs/design-reviews/2026-10-22-rescope/round-6.md` after six rounds (25 → 9 → 12 → 7 → 2 → 0 issues). Revision 2.2 does the product-only re-scope:
+**Design: revision 2.3 adopted 2026-10-23.** `docs/scout-design.md` SHA-256 is `75ef1e66521b1f129e872f651bd0f8bb9989e38867fb5335ec5ad43158fb3061`. That equals the digest signed off with zero issues in `docs/design-reviews/2026-10-23-decisions/round-7.md` after seven rounds (16 → 9 → 6 → 5 → 3 → 1 → 0 issues). The companion `requirements.proposed.diff` (`4e7adacc…`) is applied to `SCOUT_REBUILD_REQUIREMENTS.md`. Revision 2.3 records the 2026-10-23 decisions (§6.9: §15 items 1–3 moved to Appendix 16–18; Jev pin, `provisional` launch and default minimums; agent-only labelling), the §11 wording decisions (Phase 2 attribution after a paired recompute, per-finding `unknown` when the base did not inspect the family; Phase 3 ruff "adds an ignore"; the Phase 4 criterion reworded to report area-ID retention and the retained areas' Jaccard, thresholds left to X2), the trust-split reusable workflows and the shipped Phase 1–4 facts. Adoption check: `/usr/bin/patch` applied to `scout-design.base.md` with `proposed.diff` reproduces `75ef1e66…`. The harness shell's `diff` builtin (`pi-uu-diff 0.8.0`) regenerates `proposed.diff` byte for byte, but Apple `/usr/bin/diff` hunks it differently.
+
+**Revision 2.2 (history), adopted 2026-10-23.** Its SHA-256 was `f81b26014e6d2e38a741249819d23fcb993541e2194f7b168c4970c3b415ded4`, signed off with zero issues in `docs/design-reviews/2026-10-22-rescope/round-6.md` after six rounds (25 → 9 → 12 → 7 → 2 → 0 issues). Revision 2.2 does the product-only re-scope:
 - C1: reasoning-LLM lanes run only through `claude -p`/`codex exec` (Clawpatch bound to `codex`/`claude` in host auth, no API keys);
 - C2: research moves to inertia-bench;
 - C3: §8.7 subject-interface principles;
@@ -47,8 +49,8 @@ C7b, the experiment estimators and samplers, is carried forward as binding input
     - Two concurrent publishes give 2 commits (one retried via CAS).
     - Export → import → export is byte-identical.
     - Moving the activation's version back returns the check to shadow (exit 0).
-  - **Deviation from the §11 text:** the digest-mismatch PR is attributed `introduced`, not `unknown`. The paired recompute rescans the merge base under head's digests, which meets §7.3's definition of `introduced`. `unknown` is produced only when no comparable base exists (`gate.go:178`). Any change to the §11 wording needs a council round (§6).
-  - Workflow assumptions: `release-repo` defaults to `adam-jackson-cf/scout`; the dogfood caller pins `v0.1.0`, which is not tagged yet; `refresh-map` forces `--full` until Phase 4; SARIF is uploaded only if present.
+  - **Deviation from the §11 text:** the digest-mismatch PR is attributed `introduced`, not `unknown`. The paired recompute rescans the merge base under head's digests, which meets §7.3's definition of `introduced`. `unknown` is produced for the whole run when no comparable base exists (`gate.go:178`) and, since `480949a`, per finding when the base did not inspect its family (see Known gaps). Any change to the §11 wording needs a council round (§6).
+  - Workflow assumptions: `release-repo` defaults to `adam-jackson-cf/scout`; the dogfood caller pins `v0.1.2` (`v0.1.1` was the first release, published 2026-10-23 with darwin/linux amd64/arm64 binaries and the Clawpatch 0.7.3 bundle; `v0.1.2` adds `480949a`, `404f69b` and `71dbf25`; `v0.1.0` is tagged but has no release, its publish step failed and was fixed in `fdb4496`); since `404f69b` both reusable workflows and the composite action provision the pinned scanners from the release tag, not the PR checkout: they shallow-clone `release-repo` at `scout-version` outside the workspace, run its `scripts/bootstrap-tools.sh` into `$RUNNER_TEMP`, add it to `PATH` via `$GITHUB_PATH`, cache it keyed on the tag and install bubblewrap, so nothing from the PR checkout runs (reason: dogfood run 39962565095 was incomplete, scanners missing; verified on a real runner in run 39966674494, where every provisioning step succeeded; that run's security lane failed only because of the Gitleaks allowlist issue fixed in `71dbf25`); `refresh-map` forces `--full` until Phase 4; SARIF is uploaded only if present.
 - **Phase 3 is done except one CI item** (`4bab5c0` plus the Phase 3 completion commit):
   - Signal store (schema v7) and `scout signals`; `scout.cc`, `complex_burden`, `burden_density`, `dup_pct` (lizard and jscpd); `cycle_mass` (Go/Python/TS import graph); §8.3 history measures in calendar quarters.
   - `ActiveHours` reproduces E1b `active_hours` for all 598 nest/webpack panel PRs (max error 8.9e-16 h).
@@ -67,7 +69,7 @@ C7b, the experiment estimators and samplers, is carried forward as binding input
     - the PR yields `delta.cc-threshold@1` (9 → 14) and `delta.dup-added@1` (`descriptive`);
     - guardrails fire: `SUPPRESS` for `//nolint` and `@ts-nocheck`, `TESTQ` for `.only`, `strictness-lowered.{tsconfig,golangci}` and `ignores-added.ruff`;
     - `readiness --matrix` prints.
-  - **PR metadata in CI (design §15 item 2, decided 2026-10-23):** the trusted workflow has `pull-requests: read`, `GITHUB_TOKEN` and `--fetch-pr-metadata --pr-repo`. "`pr_effort` present in CI" is unproven until a release exists for CI to install.
+  - **PR metadata in CI (design §15 item 2, decided 2026-10-23):** the trusted workflow has `pull-requests: read`, `GITHUB_TOKEN` and `--fetch-pr-metadata --pr-repo`. "`pr_effort` present in CI" has not yet been observed (release `v0.1.2` exists for CI to install).
   - **Scenario wording vs allow-list:** §11 says the PR "lowers `ruff` strictness". AL table 1 lists ruff only under `ignores-added` (a `select` shrink is not a mechanism), so the scenario lowers ruff by adding an ignore. Detecting a `select` shrink would mean changing the allow-list, which needs a council round.
 - **Phase 4 is done** (`d00aac1`): `internal/areas` (schema v12, `areas.jsonl`), the refresh trigger with debounce (`scout map`), `scout mapping --areas|--unowned`, and the trusted-workflow map step. Two bugs were found by the real-map scenario and fixed:
   - Agent features carry Clawpatch source `agent-mapper`, and heuristic ones carry per-mapper sources. Every heuristic feature had been becoming an area.
@@ -82,16 +84,18 @@ C7b, the experiment estimators and samplers, is carried forward as binding input
     | Refreshes after debounce | exactly 1 | exactly 1 |
     | Content-only merge afterwards | no trigger | no trigger |
     | Prior issue IDs kept | 74/74 | 52/52 |
-    | Area IDs surviving the refresh | 53/56 (0.95) | 40/47 (0.85) |
-    | Surviving areas' file-set Jaccard, median / min / count < 0.8 | 1.0 / 0.6 / 10 | 1.0 / 0.5 / 6 |
+    | Area-ID retention (active areas before the refresh whose ID is still active after it) | 53/56 (0.95) | 40/47 (0.85) |
+    | Retained areas' file-set Jaccard, median / min / count < 0.8 | 1.0 / 0.6 / 10 | 1.0 / 0.5 / 6 |
     | Stale records on disk, excluded from ownership | 85 | 69 |
     | Agent failure | heuristic 154 kept, incomplete | heuristic 78 kept, incomplete |
 
-  - **Not met as a blanket per-area criterion:** "area file-set Jaccard across refreshes ≥ 0.8 **[ASSUMPTION, X2]**". 16 of the 93 surviving areas fall below it. This is X2's question (preregistration needed), so it stays an assumption, not a pass.
-  - **Not demonstrated empirically:** "inertia series keys unchanged by the refresh". The run recorded one signal snapshot. Scope keys are derived from heuristic features plus directory scopes only, which `internal/state/areas_test.go` asserts.
-- **Published:** https://github.com/adam-jackson-cf/scout (public), branch `main`. CI starts after the workflow split. It fails at install until a release tag exists, because the dogfood caller pins `v0.1.0` and `release.yml` publishes on tag push.
+  - **Not met as a blanket per-area criterion:** "area file-set Jaccard across refreshes ≥ 0.8 **[ASSUMPTION, X2]**". 16 of the 93 retained areas fall below it. This is X2's question (preregistration needed), so it stays an assumption, not a pass.
+  - **Inertia series keys unchanged by the refresh** were not demonstrated by the original run (one signal snapshot; `internal/state/areas_test.go` asserts that scope keys derive from heuristic features plus directory scopes only). **Demonstrated 2026-10-23** on axum `562fa20` (`/tmp/scout-p4/series-keys.sh`, throwaway): full assess at C1, real agent refresh (44 agent features, 44 areas), content-only commit C2, full assess at C2 gave 7,134 (metric, scope, window) keys at both, 0 added, 0 removed.
+- **Published:** https://github.com/adam-jackson-cf/scout (public), branch `main`. CI starts after the workflow split. Release `v0.1.2` is published and the dogfood caller pins it. CI scanner provisioning ran successfully on a real runner (run 39966674494); `pr_effort` in CI has not yet been observed. `cdbf56c` fixes the `pr_effort` unmeasured reason when PR metadata is supplied but holds no merged PRs. Dogfood run 39969572544 (`v0.1.2`) completed with exit 0, every scanner lane ran and `scout/state` was published; `pr_effort` was `unmeasured` there because the repository has no merged PRs.
+- **Gitleaks coverage (`71dbf25`):** files matching the pinned Gitleaks rule pack's global `[allowlist] paths` (lockfiles, images, fonts, `node_modules`, …) are coverage `not_applicable` with reason "excluded by the pinned Gitleaks rule pack path allowlist"; rule-level allowlists never exclude files (`internal/analyzers/gitleaks_allowlist.go`, `runner.go`). Before this, run 39966674494's security lane failed on those files.
 - **Acceptance figures:** fastapi `d666ccb`, every lane, no egress. 455 s after Phase 1, 537 s after Phase 3's first lanes, 143 s after Gitleaks batching, 125 s after Phase 2, **127 s** after Phase 3 (2026-10-23); 74 issues, exit 0 each time. With no policy, the contextual and clawpatch-review lanes read `skipped (not opted in)` and decisions reads `skipped (decisions not enabled)`; `guardrails` and `delta` run on `diff` only, so they read `skipped` on `assess`. Phase 1 scenario: `/tmp/scout-p1/scenario.sh`. Phase 2: `/tmp/scout-p2/phase2-scenario.sh`. Phase 3: `/tmp/scout-p3/scenario.sh`.
 - **Known gaps:**
+  - **Attribution with base-side lane failures (fixed, `480949a`, 2026-10-23):** the paired recompute and imported `partial` baselines did not carry base lane coverage, so a head finding in a lane the base never inspected could read `introduced` and block in `guardian` (council rev 2.3 round 1, issue 5). Now the paired recompute carries base lane health (lanes `blocked`/`failed` count as uninspected, at family granularity); imported baselines carry an optional manifest `uninspected` list of `{family, reason}`, and a legacy baseline without it is recomputed with a banner; affected head findings are `unknown`, excluded from `would_block` and the gate, with one gate reason per family; `guardrails.*` findings are exempt. Files: `internal/engine/{diff,gate}.go`, `internal/engine/base_gaps_test.go`, `internal/baseline/load.go`, `internal/state/export.go`.
   - If agent mapping succeeds with zero features, heuristic output is not re-merged (Phase 4).
   - An issue left unmatched during a rename keeps its old anchor path.
   - Policy `version` strings for Gitleaks checks are the long rule-pack version.
@@ -102,11 +106,11 @@ C7b, the experiment estimators and samplers, is carried forward as binding input
 
 ## 2. Decisions in force
 
-- Design revision 2.2 is authoritative (`docs/scout-design.md`, `f81b2601…`). Appendix decisions 1–7 (2026-10-19) and 8–15 (2026-10-22/23) are not reopened. The §15 items were decided by the user on 2026-10-23 (§6.9) and await recording in the next council design round. Per-decision Jev costs and minimums stay at the provisional defaults until the user sets them.
+- Design revision 2.3 is authoritative (`docs/scout-design.md`, `75ef1e66…`). Appendix decisions 1–7 (2026-10-19), 8–15 (2026-10-22/23) and 16–18 (2026-10-23) are not reopened. Per-decision Jev costs and minimums stay at the provisional defaults until the user sets them.
 - Design changes need innovation-council sign-off with zero issues, rounds recorded under `docs/design-reviews/<date>-<topic>/` (`AGENTS.md:30-38`). Experiments likewise, preregistered, frozen after sign-off (`AGENTS.md:3-28`). Design changes may cite only signed-off experiments (`AGENTS.md:37`).
 - Ledgers must be updated when a source/hypothesis is used (`AGENTS.md` ledger rules): `docs/research-ledger.md` (R-001…R-038), `docs/hypothesis-ledger.md` (HD\* live; H\*/HA\*/HQ\* frozen).
 - Secrets only via Infisical per command; never print/export/commit (`AGENTS.md:52-61`).
-- **User decisions of 2026-10-22/23** are recorded in §6 (R-036). The design-affecting ones are adopted in revision 2.2 (Appendix 8–15).
+- **User decisions of 2026-10-22/23** are recorded in §6 (R-036, R-039). The design-affecting ones are adopted in revisions 2.2 (Appendix 8–15) and 2.3 (Appendix 16–18, §6 Labels, Jev).
 
 ## 3. Evidence to date (one line per study)
 
@@ -144,10 +148,10 @@ Owners: **Council** = innovation-council review loop; **Impl** = a coding sessio
 | 0 | ~~Decide the §6 conflicts; council re-scope round~~ **done**: rev 2.2 adopted 2026-10-23 (round 6, zero issues) | — | — | — |
 | 1 | ~~**Phase 1**~~ **done** (`945ac4d`, `36d1023`) | — | — | fastapi 143 s; §1 |
 | 2 | ~~**Phase 2**~~ **done** 2026-10-23: §11 scenario passed (§1); one wording deviation (digest mismatch → `introduced` after a valid recompute) | — | — | §11 Phase 2 |
-| 3 | ~~**Phase 3**~~ **done** 2026-10-23 (§1); `pr_effort` in CI is wired (trusted job, `pull-requests: read`) but unproven until a release exists | — | — | §11 Phase 3 |
+| 3 | ~~**Phase 3**~~ **done** 2026-10-23 (§1); `pr_effort` in CI is wired (trusted job, `pull-requests: read`) but not yet observed in CI | — | — | §11 Phase 3 |
 | 3b | **Subject interface** principles adopted (rev 2.2 §8.7); exact schema needs its own council round after inertia-bench signs off | bench design signed off; #3 measures | Council → Impl | §11 Phase 3b |
 | 4 | ~~**Phase 4**~~ **done** 2026-10-23 (§1); X2 thresholds remain assumptions | — | — | §11 Phase 4 |
-| 4b | **Next council design round:** record the §15 decisions (§6.9), the labelling change (§6.9 item 6) and the §11 wording deviations (Phase 2 attribution, Phase 3 ruff) | — | Council | zero issues |
+| 4b | ~~**Council design round**~~ **done**: rev 2.3 adopted 2026-10-23 (round 7, zero issues) recording §6.9, the labelling change and the §11 wording decisions | — | — | — |
 | 5 | **Phase 5**: trends, exploratory measures, rubric lane, self-evaluation (X1, X3–X5, X9, X10), agent-labelled eval data (§6.9 item 6) | X1/X3/X4/X5/X10 preregistrations signed off by the council | Council → Impl | §11 Phase 5; X1 decision rule recorded (§13) |
 | 6 | **Phase 6**: study export (dogfood ledger is dataset #1, §6.9), spec cutover (archive `SCOUT_REBUILD_REQUIREMENTS.md`, write `docs/scout-product-contract.md`, `scout-adapter-contracts.md`, `docs/evidence/`), web inertia panels, release, dogfood in `guardian` | #5 | Impl | §11 Phase 6 |
 | 7 | ~~Update `AGENTS.md`~~ **done 2026-10-23** (§6.6) | — | — | — |
@@ -179,7 +183,7 @@ Owners: **Council** = innovation-council review loop; **Impl** = a coding sessio
 5. **Jev launch: on, `provisional`, with per-finding disclosure until X1 reports.** Per-decision minimums default to the skill's 0.8/0.8, raised to 0.9 on the costlier side, status `provisional`, until the user sets costs and minimums. **Jev must follow the `jev-actions` skill's best practices** (audit: `docs/jev-adapter-audit.md`).
 6. **Labelling is delegated: "if you need to perform labelling do it yourself".** Future labels come from the agent protocol (blind, guided, two independent sessions plus an adjudicator) **without the user reviewing each case**. They stay provenance `agent_reviewed`, never `human`. This supersedes §6.8's "Human review of every case". **`AGENTS.md` was updated on 2026-10-23 with the user's approval.** Design Appendix 15 / §6 "Labels" change in the next council design round. No labelling is pending until the Phase 5 preregistrations.
 
-All three design §15 items are now decided. Recording them in the design (§15 → Appendix) goes into the next council design round, together with the §11 wording deviations in §1 (Phase 2 digest-mismatch attribution, Phase 3 ruff "strictness").
+All three design §15 items are decided and recorded in design revision 2.3 (Appendix 16–18), together with the §11 wording decisions in §1 (Phase 2 attribution, Phase 3 ruff "strictness", Phase 4 criterion).
 
 ## 7. How to resume
 
@@ -188,7 +192,7 @@ Read first: `AGENTS.md`, this file, `docs/scout-design.md` (§§1, 3, 7, 8.5, 10
 Commands (run from repo root):
 - First time on a machine: `git submodule update --init`, then `scripts/bootstrap-tools.sh` (≈ 40 s fresh, ≈ 1 s when nothing changed), then `source .tools/activate` (undo with `scout_deactivate`). This installs the pinned toolchain into git-ignored `.tools/`: uv, Python 3.11.11 venv with Semgrep, Ruff and lizard; Node 22.18.0 with pnpm and jscpd; Gitleaks; and the patched Clawpatch bundle from the `third_party/clawpatch` submodule. Activation also sets `SCOUT_CLAWPATCH_BINARY` and `GOTOOLCHAIN=go1.25.6`. Pins: `toolchain/versions.env` (single source), `toolchain/checksums.sha256`, `toolchain/python-requirements.lock`, `toolchain/node/package-lock.json`. `--relock` regenerates the locks. `go test ./internal/toolchain` fails on drift between these pins and the Go catalogs or `clawpatch.Revision`.
 - `go build ./... && go test ./...` — run with the toolchain activated; baseline is green.
-- `shasum -a 256 docs/scout-design.md` — must print `f81b2601…` (rev 2.2) until a new council round adopts a change.
+- `shasum -a 256 docs/scout-design.md` — must print `75ef1e66…` (rev 2.3) until a new council round adopts a change.
 - Clawpatch upgrade: move the submodule to the new commit and update `clawpatch.Revision`/`Version` and `CLAWPATCH_VERSION` together. This needs a compatibility review (CP07 pattern, design R9). The parity test blocks a partial bump.
 - Jev or study runs: `infisical run --projectId 052b4c81-b9cc-4694-9019-d131ec3817cc --env dev --silent -- <command>` (`AGENTS.md:56-58`); presence checks only.
 - Rules to keep: council sign-off before any design change or experiment; ledgers updated when a source/hypothesis is used; never print secrets; never touch `.codegraph`; commits in logical pieces with a staged Gitleaks scan first (`gitleaks git --pre-commit --staged --no-banner --redact .`).
