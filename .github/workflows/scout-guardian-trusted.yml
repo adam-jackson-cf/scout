@@ -115,10 +115,32 @@ jobs:
           verify "$asset" "$asset.sha256"
           [[ "$(sha256sum "$asset" | cut -d ' ' -f1)" == "$manifest_sha" ]] || { echo '::error::Clawpatch bundle does not match its manifest.'; exit 3; }
           tar -xzf "$asset" -C clawpatch
-          sudo apt-get update -qq
-          sudo apt-get install -y bubblewrap
           printf 'SCOUT_BIN=%s\n' "$dest/scout-linux-amd64" >> "$GITHUB_ENV"
           printf 'CLAWPATCH_BIN=%s\n' "$dest/clawpatch/$entrypoint" >> "$GITHUB_ENV"
+
+      - name: Restore the scanner toolchain cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.temp }}/scout-toolchain/tools
+          key: scout-toolchain-${{ runner.os }}-${{ runner.arch }}-${{ inputs.scout-version }}
+
+      - name: Provision the pinned scanner toolchain
+        shell: bash
+        env:
+          TOOLCHAIN_DIR: ${{ runner.temp }}/scout-toolchain
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y bubblewrap
+          # Ubuntu 24.04 blocks unprivileged user namespaces, which bubblewrap needs.
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 > /dev/null 2>&1 || true
+          src="$TOOLCHAIN_DIR/source"
+          rm -rf "$src"
+          git clone --quiet --depth 1 --branch "$SCOUT_VERSION" --recurse-submodules --shallow-submodules \
+            "https://github.com/${RELEASE_REPO}.git" "$src"
+          SCOUT_TOOLS_DIR="$TOOLCHAIN_DIR/tools" bash "$src/scripts/bootstrap-tools.sh"
+          printf 'SCOUT_TOOLS_DIR=%s\n' "$TOOLCHAIN_DIR/tools" >> "$GITHUB_ENV"
+          printf '%s\n' "$TOOLCHAIN_DIR/tools/bin" >> "$GITHUB_PATH"
 
       - name: Restore the scout/state baseline
         id: baseline

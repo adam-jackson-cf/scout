@@ -48,8 +48,23 @@ func TestGuardianWorkflowTrustBoundary(t *testing.T) {
 	trRaw, tr := readWorkflow(t, "scout-guardian-trusted.yml")
 	for name, raw := range map[string]string{"scout-guardian.yml": prRaw, "scout-guardian-trusted.yml": trRaw} {
 		code := regexp.MustCompile(`(?m)^\s*#.*$`).ReplaceAllString(raw, "")
-		if strings.Contains(code, "go build") || strings.Contains(code, "./cmd/scout") || strings.Contains(code, "bootstrap-tools") {
+		if strings.Contains(code, "go build") || strings.Contains(code, "./cmd/scout") {
 			t.Errorf("%s builds Scout from the checkout", name)
+		}
+		// Scanner tools come from a clone of the release tag outside the
+		// workspace, never from scripts of the assessed checkout.
+		for _, want := range []string{`git clone --quiet --depth 1 --branch "$SCOUT_VERSION"`, `"https://github.com/${RELEASE_REPO}.git" "$src"`, `bash "$src/scripts/bootstrap-tools.sh"`, "TOOLCHAIN_DIR: ${{ runner.temp }}/scout-toolchain", "bubblewrap"} {
+			if !strings.Contains(code, want) {
+				t.Errorf("%s: release-tag toolchain provisioning is missing %q", name, want)
+			}
+		}
+		for _, banned := range []string{"$GITHUB_WORKSPACE/scripts", "bash scripts/", "./scripts/", "source .tools/activate", "GITHUB_WORKSPACE/.tools"} {
+			if strings.Contains(code, banned) {
+				t.Errorf("%s: tools must not come from the assessed workspace (%q)", name, banned)
+			}
+		}
+		if strings.Count(code, "bootstrap-tools.sh") != 1 || strings.Index(code, "bootstrap-tools.sh") > strings.Index(code, `"$SCOUT_BIN"`) {
+			t.Errorf("%s: the release bootstrap must run exactly once, before Scout", name)
 		}
 		for _, want := range []string{"releases/download/${SCOUT_VERSION}", "sha256sum", "clawpatch-manifest.json", "scout-linux-amd64"} {
 			if !strings.Contains(code, want) {
@@ -206,6 +221,23 @@ func TestCompositeActionInstallsFromVerifiedRelease(t *testing.T) {
 	for _, banned := range []string{"go build", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "aws"} {
 		if strings.Contains(text, banned) {
 			t.Errorf("forbidden %q", banned)
+		}
+	}
+	if !strings.Contains(text, "toolchain.sh") {
+		t.Error("composite action must provision the scanner toolchain")
+	}
+	tool, err := os.ReadFile(filepath.Join(dir, "toolchain.sh"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{`--branch "$SCOUT_VERSION"`, `bash "$src/scripts/bootstrap-tools.sh"`, "bubblewrap", `TOOLCHAIN_DIR/source`} {
+		if !strings.Contains(string(tool), strings.ReplaceAll(want, "TOOLCHAIN_DIR/source", `$TOOLCHAIN_DIR/source`)) {
+			t.Errorf("toolchain.sh missing %q", want)
+		}
+	}
+	for _, banned := range []string{"GITHUB_WORKSPACE", "go build"} {
+		if strings.Contains(string(tool), banned) {
+			t.Errorf("toolchain.sh must not reference %q", banned)
 		}
 	}
 }

@@ -51,6 +51,20 @@ runs:
         DEST: ${{ runner.temp }}/scout-release
       run: bash "$GITHUB_ACTION_PATH/install.sh"
 
+    - name: Restore the scanner toolchain cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ runner.temp }}/scout-toolchain/tools
+        key: scout-toolchain-${{ runner.os }}-${{ runner.arch }}-${{ inputs.scout-version }}
+
+    - name: Provision the pinned scanner toolchain
+      shell: bash
+      env:
+        SCOUT_VERSION: ${{ inputs.scout-version }}
+        RELEASE_REPO: ${{ inputs.release-repo }}
+        TOOLCHAIN_DIR: ${{ runner.temp }}/scout-toolchain
+      run: bash "$GITHUB_ACTION_PATH/toolchain.sh"
+
     - name: Run Scout
       id: run
       shell: bash
