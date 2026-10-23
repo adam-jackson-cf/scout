@@ -63,7 +63,7 @@ func TestSchemaV5StateMigratesToV6WithWouldBlock(t *testing.T) {
 		t.Fatalf("would_block after migration: %v rows, %v", len(rows), err)
 	}
 	var version int
-	if err := migrated.db.QueryRowContext(ctx, `PRAGMA user_version`).Scan(&version); err != nil || version != 6 {
+	if err := migrated.db.QueryRowContext(ctx, `PRAGMA user_version`).Scan(&version); err != nil || version != schemaVersion {
 		t.Fatalf("schema version = %d, %v", version, err)
 	}
 }

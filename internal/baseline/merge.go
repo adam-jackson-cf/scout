@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 
+	"scout/internal/domain"
 	"scout/internal/state"
 )
 
@@ -108,6 +110,17 @@ func MergeState(current, local Tree) (Tree, error) {
 	}
 	merged[state.ExportWouldBlock] = blockOut.Bytes()
 
+	for path := range merged {
+		if !strings.HasPrefix(path, state.ExportSignalsDir) {
+			continue
+		}
+		unioned, err := unionSignals(current[path], local[path])
+		if err != nil {
+			return nil, fmt.Errorf("%s: %w", path, err)
+		}
+		merged[path] = unioned
+	}
+
 	meta, err := state.ReadManifestMeta(local[state.ExportManifest])
 	if err != nil {
 		return nil, err
@@ -147,4 +160,30 @@ func indexRows(data []byte) (map[string]*row, error) {
 		rows[fields.IssueID] = &row{line: append(append([]byte{}, line...), '\n'), updated: fields.UpdatedAt}
 	}
 	return rows, nil
+}
+
+// unionSignals merges two signal files. Signals are append-only, so the union
+// keyed by signal identity (metric, scope, snapshot, window, tool and config
+// digests) loses nothing; the local record wins an identity collision.
+func unionSignals(current, local []byte) ([]byte, error) {
+	rows := map[string][]byte{}
+	for _, source := range [][]byte{current, local} {
+		for number, line := range state.SplitLines(source) {
+			var signal domain.Signal
+			if err := json.Unmarshal(line, &signal); err != nil {
+				return nil, fmt.Errorf("signal row %d: %w", number+1, err)
+			}
+			rows[signal.Key()] = append(append([]byte{}, line...), '\n')
+		}
+	}
+	keys := make([]string, 0, len(rows))
+	for key := range rows {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	var out bytes.Buffer
+	for _, key := range keys {
+		out.Write(rows[key])
+	}
+	return out.Bytes(), nil
 }

@@ -28,6 +28,8 @@ const (
 	LanePerformance     = "performance"
 	LaneContextual      = "contextual"
 	LaneClawpatchReview = "clawpatch-review"
+	LaneMeasures        = "measures"
+	LaneHistory         = "history"
 )
 
 // lanes is the registry in priority order. Contextual and clawpatch-review are
@@ -41,6 +43,8 @@ var lanes = []Lane{
 	{ID: LanePerformance, Family: domain.FamilyPerformance, Triggers: []domain.LaneTrigger{domain.TriggerPush, domain.TriggerNightly}, Mode: domain.ModeReport, Requires: domain.RequiresTool},
 	{ID: LaneContextual, Triggers: []domain.LaneTrigger{domain.TriggerNightly}, Mode: domain.ModeReport, Requires: domain.RequiresProviderEgress},
 	{ID: LaneClawpatchReview, Triggers: []domain.LaneTrigger{domain.TriggerNightly}, Mode: domain.ModeReport, Requires: domain.RequiresProviderEgress},
+	{ID: LaneMeasures, Triggers: allTriggers, Mode: domain.ModeSignal, Requires: domain.RequiresTool},
+	{ID: LaneHistory, Triggers: []domain.LaneTrigger{domain.TriggerPush, domain.TriggerNightly}, Mode: domain.ModeSignal, Requires: domain.RequiresNone},
 }
 
 // Lanes returns a copy of the registry.

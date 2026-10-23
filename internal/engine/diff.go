@@ -143,7 +143,7 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 	}
 
 	guard := guardrailsLane(ctx, root, mergeBase, changed)
-	headResult, err := Assess(ctx, cfg.Config, Options{Trigger: domain.TriggerPR, Inline: []InlineLane{guard}})
+	headResult, err := Assess(ctx, cfg.Config, Options{Trigger: domain.TriggerPR, Inline: []InlineLane{guard}, Measures: &MeasuresOptions{Only: append([]string{}, changed...)}})
 	if err != nil {
 		return fail(fmt.Errorf("head assessment: %w", err))
 	}

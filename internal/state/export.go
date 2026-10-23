@@ -29,6 +29,8 @@ const (
 	ExportWouldBlock      = ExportDir + "/would_block.jsonl"
 	ExportCoverageSummary = ExportDir + "/coverage-summary.json"
 	ExportManifest        = ExportDir + "/manifest.json"
+	// ExportSignalsDir holds one signals/<metric@version>.jsonl per metric.
+	ExportSignalsDir = ExportDir + "/signals/"
 )
 
 const (
@@ -115,7 +117,45 @@ func (s *Store) Export(ctx context.Context) (map[string][]byte, error) {
 		ExportWouldBlock:      joinLines(wouldBlock),
 		ExportCoverageSummary: summary,
 	}
+	signalFiles, err := s.exportSignals(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for path, data := range signalFiles {
+		files[path] = data
+	}
 	files[ExportManifest] = RenderManifest(meta, files)
+	return files, nil
+}
+
+// exportSignals renders the signals ledger as signals/<metric@version>.jsonl,
+// one canonical record per line in identity order.
+func (s *Store) exportSignals(ctx context.Context) (map[string][]byte, error) {
+	signals, err := s.ListSignals(ctx, SignalFilter{})
+	if err != nil {
+		return nil, err
+	}
+	lines := map[string][][]byte{}
+	for _, signal := range signals {
+		raw, err := json.Marshal(signal)
+		if err != nil {
+			return nil, fmt.Errorf("encode signal: %w", err)
+		}
+		fields := map[string]any{}
+		if err := unmarshalNumbers(raw, &fields); err != nil {
+			return nil, err
+		}
+		line, err := canonicalLine(fields)
+		if err != nil {
+			return nil, err
+		}
+		path := ExportSignalsDir + signal.ID() + ".jsonl"
+		lines[path] = append(lines[path], line)
+	}
+	files := make(map[string][]byte, len(lines))
+	for path, metricLines := range lines {
+		files[path] = joinLines(metricLines)
+	}
 	return files, nil
 }
 
@@ -188,7 +228,7 @@ func RenderManifest(meta ManifestMeta, files map[string][]byte) []byte {
 		"toolDigest":   meta.ToolDigest,
 		"policyDigest": meta.PolicyDigest,
 		"files":        entries,
-		"absent":       []string{ExportDir + "/areas.jsonl", ExportDir + "/signals/"},
+		"absent":       absentFiles(paths),
 		"wouldBlock":   meta.WouldBlock,
 	}
 	line, err := canonicalLine(manifest)
@@ -196,6 +236,17 @@ func RenderManifest(meta ManifestMeta, files map[string][]byte) []byte {
 		panic(err)
 	}
 	return line
+}
+
+// absentFiles lists the planned export files the manifest does not carry.
+func absentFiles(paths []string) []string {
+	absent := []string{ExportDir + "/areas.jsonl"}
+	for _, path := range paths {
+		if strings.HasPrefix(path, ExportSignalsDir) {
+			return absent
+		}
+	}
+	return append(absent, ExportSignalsDir)
 }
 
 // ReadManifestMeta reads the non-derived manifest fields back.
@@ -342,7 +393,38 @@ func (s *Store) Import(ctx context.Context, files map[string][]byte) error {
 		}
 		blocks = append(blocks, row)
 	}
-	return s.importRows(ctx, meta, issues, blocks, files[ExportCoverageSummary])
+	signals, err := decodeSignals(files)
+	if err != nil {
+		return err
+	}
+	return s.importRows(ctx, meta, issues, blocks, signals, files[ExportCoverageSummary])
+}
+
+// decodeSignals reads every signals/*.jsonl file of an export, validated, in
+// identity order.
+func decodeSignals(files map[string][]byte) ([]domain.Signal, error) {
+	var paths []string
+	for path := range files {
+		if strings.HasPrefix(path, ExportSignalsDir) {
+			paths = append(paths, path)
+		}
+	}
+	sort.Strings(paths)
+	var signals []domain.Signal
+	for _, path := range paths {
+		for number, line := range splitLines(files[path]) {
+			var signal domain.Signal
+			if err := decode(line, &signal); err != nil {
+				return nil, fmt.Errorf("%s line %d: %w", path, number+1, err)
+			}
+			if err := signal.Validate(); err != nil {
+				return nil, fmt.Errorf("%s line %d: %w", path, number+1, err)
+			}
+			signals = append(signals, signal)
+		}
+	}
+	SortSignals(signals)
+	return signals, nil
 }
 
 // DecodeIssues verifies an export and reassembles its issues (issue rows joined
@@ -398,7 +480,7 @@ func DecodeIssues(files map[string][]byte) ([]domain.Issue, error) {
 	return issues, nil
 }
 
-func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []domain.Issue, blocks []domain.WouldBlock, summary []byte) error {
+func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []domain.Issue, blocks []domain.WouldBlock, signals []domain.Signal, summary []byte) error {
 	return s.withTransaction(ctx, func(tx *sql.Tx) error {
 		var count int
 		if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM issues`).Scan(&count); err != nil {
@@ -440,6 +522,9 @@ func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []doma
 				row.ID, row.HeadRevision, row.BaseRevision, row.IssueID, row.CheckID, row.RuleVersion, row.Path, string(row.Attribution), row.Profile, row.Triage, row.TriageActor, row.TriageReason, unixMillis(row.RecordedAt), triaged); err != nil {
 				return fmt.Errorf("import would_block %q: %w", row.ID, err)
 			}
+		}
+		if err := insertSignals(ctx, tx, signals); err != nil {
+			return err
 		}
 		if meta.Revision != "" || meta.ToolDigest != "" || meta.PolicyDigest != "" {
 			baseJSON, err := json.Marshal(meta)

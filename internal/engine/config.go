@@ -27,6 +27,9 @@ type Options struct {
 	// Inline lanes run in-process after the scanner jobs and persist their
 	// observations with the run (e.g. guardrails over a base/head diff).
 	Inline []InlineLane
+	// Measures, when set, runs the measures signal lane (design §8.2) after the
+	// scanner jobs and records its signals; it never creates observations.
+	Measures *MeasuresOptions
 }
 
 type Result struct {

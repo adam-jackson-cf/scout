@@ -84,7 +84,7 @@ func emit(flags *commonFlags, status string, code int, result any, err error) in
 func main() { os.Exit(run(context.Background(), os.Args[1:])) }
 func run(ctx context.Context, args []string) int {
 	if len(args) == 0 {
-		fmt.Fprintln(os.Stderr, "usage: scout <readiness|assess|diff|issues|issue|mapping|coverage|triage|serve> [flags]")
+		fmt.Fprintln(os.Stderr, "usage: scout <readiness|assess|diff|issues|issue|mapping|coverage|triage|export|import|state|signals|serve> [flags]")
 		return exitUnavailable
 	}
 	switch args[0] {
@@ -104,6 +104,8 @@ func run(ctx context.Context, args []string) int {
 		return coverage(ctx, args[1:])
 	case "triage":
 		return triage(ctx, args[1:])
+	case "signals":
+		return signalsCmd(ctx, args[1:])
 	case "export":
 		return exportCmd(ctx, args[1:])
 	case "import":
@@ -182,7 +184,7 @@ func assess(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	result, err := engine.Assess(ctx, engine.Config{Root: flags.root, ClawpatchBinary: flags.binary, ClawpatchEgressAuthorized: authorized, Provider: providerConfig(authorized)}, engine.Options{Scope: scope, ForceFull: full, Exclusions: excludes, Trigger: domain.TriggerPush})
+	result, err := engine.Assess(ctx, engine.Config{Root: flags.root, ClawpatchBinary: flags.binary, ClawpatchEgressAuthorized: authorized, Provider: providerConfig(authorized)}, engine.Options{Scope: scope, ForceFull: full, Exclusions: excludes, Trigger: domain.TriggerPush, Measures: &engine.MeasuresOptions{History: scope.Kind == domain.ScopeRepository}})
 	if err != nil {
 		unavailable := engine.UnavailableReport(err)
 		return emit(flags, unavailable.Gate.Status, unavailable.Gate.ExitCode, unavailable, err)

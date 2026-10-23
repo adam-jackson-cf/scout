@@ -74,7 +74,23 @@ func seedLedger(t *testing.T, ctx context.Context, root string) *Store {
 	if err := store.TriageWouldBlock(ctx, "wb-1", domain.TriageWarranted, "maintainer", "real"); err != nil {
 		t.Fatal(err)
 	}
+	if err := store.RecordSignals(ctx, testSignals()); err != nil {
+		t.Fatal(err)
+	}
 	return store
+}
+
+func testSignals() []domain.Signal {
+	base := domain.Signal{Version: 1, ScopeKind: domain.SignalScopeDirectory, ScopeAnchor: "pkg/sub", Snapshot: "abc123", PopulationDigest: "pop", ToolDigest: "lizard-digest", ConfigDigest: "config", Claim: domain.ClaimDescriptive}
+	cc := base
+	cc.MetricID, cc.Numerator, cc.Denominator, cc.Value = "scout.cc", domain.Float(1), domain.Float(2), domain.Float(1)
+	cc.Detail = map[string]any{"cc_p90": 12, "cc_max": 12, "note": "a < b & c", "nested": map[string]any{"z": 1.5, "a": []any{1, "x"}}}
+	crap := base
+	crap.MetricID, crap.Missing, crap.MissingReason = "scout.crap", domain.SignalUnmeasured, "no coverage artifact"
+	history := base
+	history.MetricID, history.ScopeKind, history.ScopeAnchor, history.Window = "scout.changes", domain.SignalScopeFeature, "feature:f1", "2026-07-01/2026-09-29"
+	history.Numerator, history.Denominator, history.Value = domain.Float(4), domain.Float(1), domain.Float(4)
+	return []domain.Signal{crap, cc, history}
 }
 
 func TestExportImportExportIsByteIdentical(t *testing.T) {

@@ -448,6 +448,13 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 				inlineObservations = append(inlineObservations, found...)
 			}
 		}
+		if options.Measures != nil {
+			if len(inventoryFailures) > 0 {
+				inlineHealth = append(inlineHealth, domain.LaneHealth{Lane: LaneMeasures, Status: domain.LaneSkipped, Reason: "source changed during assessment"})
+			} else {
+				inlineHealth = append(inlineHealth, runMeasuresLanes(ctx, store, root, current, features, options)...)
+			}
+		}
 		observationStart := len(observations)
 		observations = append(observations, inlineObservations...)
 		if err := store.CommitRunJob(ctx, runID, state.RunJobCommit{JobID: finalJob.JobID, Observations: observations[observationStart:], Failures: inventoryFailures, CommittedAt: time.Now().UTC()}); err != nil {
