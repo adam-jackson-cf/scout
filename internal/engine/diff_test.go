@@ -10,9 +10,9 @@ import (
 
 func TestResolveBaseUsesImportedBaselineOnlyWhenDigestsAndRevisionMatch(t *testing.T) {
 	plan := domain.Plan{ToolDigest: "tool", PolicyDigest: "policy"}
-	imported := &BaseState{Issues: []domain.Issue{issue("b", "ruff:E1", "a.py", "f", domain.IssueOpen)}, Revision: "mb", ToolDigest: "tool", PolicyDigest: "policy"}
+	imported := &BaseState{Issues: []domain.Issue{issue("b", "ruff:E1", "a.py", "f", domain.IssueOpen)}, Revision: "mb", ToolDigest: "tool", PolicyDigest: "policy", Gaps: BaseGaps{}}
 	cfg := DiffConfig{Baseline: func(context.Context) (*BaseState, error) { return imported, nil }}
-	got, comparison, banners, err := resolveBase(context.Background(), cfg, t.TempDir(), "mb", plan, Result{})
+	got, _, comparison, banners, err := resolveBase(context.Background(), cfg, t.TempDir(), "mb", plan, Result{})
 	if err != nil || comparison != domain.ComparisonBaseline || len(got) != 1 || len(banners) != 0 {
 		t.Fatalf("matching baseline: %v %v %v %v", got, comparison, banners, err)
 	}
@@ -26,7 +26,7 @@ func TestResolveBaseUsesImportedBaselineOnlyWhenDigestsAndRevisionMatch(t *testi
 		changed := *imported
 		mutate(&changed)
 		cfg.Baseline = func(context.Context) (*BaseState, error) { return &changed, nil }
-		_, comparison, banners, err := resolveBase(context.Background(), cfg, t.TempDir(), "mb", plan, Result{})
+		_, _, comparison, banners, err := resolveBase(context.Background(), cfg, t.TempDir(), "mb", plan, Result{})
 		if err != nil || comparison != domain.ComparisonNone || !strings.Contains(strings.Join(banners, " "), "recomputed") {
 			t.Fatalf("%s mismatch: %v %v %v", name, comparison, banners, err)
 		}

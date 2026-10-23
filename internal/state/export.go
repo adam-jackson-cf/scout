@@ -204,12 +204,15 @@ func (s *Store) exportWouldBlock(ctx context.Context) ([][]byte, string, error) 
 // ManifestMeta carries the manifest fields that are not derived from the files.
 // Revision, ToolDigest and PolicyDigest come from the latest finalized complete
 // run and its plan; they let a reader decide whether a baseline is comparable.
+// Uninspected lists the scanner families that run did not fully inspect; nil
+// (absent from the manifest) means the exporter recorded no lane health.
 type ManifestMeta struct {
-	RepositoryID string `json:"repositoryId"`
-	WouldBlock   string `json:"wouldBlock"`
-	Revision     string `json:"revision"`
-	ToolDigest   string `json:"toolDigest"`
-	PolicyDigest string `json:"policyDigest"`
+	RepositoryID string              `json:"repositoryId"`
+	WouldBlock   string              `json:"wouldBlock"`
+	Revision     string              `json:"revision"`
+	ToolDigest   string              `json:"toolDigest"`
+	PolicyDigest string              `json:"policyDigest"`
+	Uninspected  []UninspectedFamily `json:"uninspected"`
 }
 
 // RenderManifest renders manifest.json for the given export files (the
@@ -246,6 +249,9 @@ func RenderManifest(meta ManifestMeta, files map[string][]byte) []byte {
 		"absent":       absentFiles(paths),
 		"wouldBlock":   meta.WouldBlock,
 	}
+	if meta.Uninspected != nil {
+		manifest["uninspected"] = meta.Uninspected
+	}
 	line, err := canonicalLine(manifest)
 	if err != nil { // map of plain values: cannot fail
 		panic(err)
@@ -271,6 +277,52 @@ func absentFiles(paths []string) []string {
 	return append(absent, ExportSignalsDir)
 }
 
+// UninspectedFamily is a scanner family the baseline run did not fully
+// inspect: a coverage row of that family was blocked, incomplete, skipped or
+// awaiting manual verification.
+type UninspectedFamily struct {
+	Family domain.Family `json:"family"`
+	Reason string        `json:"reason,omitempty"`
+}
+
+// uninspectedFamilies lists, in family order, the scanner families (file
+// coverage; model-review lanes are feature keyed) with an unaccounted row on run.
+// The result is never nil: an empty list means every scanner family was inspected.
+func uninspectedFamilies(ctx context.Context, db *sql.DB, runID string) ([]UninspectedFamily, error) {
+	rows, err := db.QueryContext(ctx, `SELECT payload FROM coverage WHERE run_id = ? AND status NOT IN (?, ?, ?, ?, ?) ORDER BY coverage_key`, runID,
+		domain.CoverageInspected, domain.CoverageReused, domain.CoverageNotApplicable, domain.CoverageCovered, domain.CoverageFlagged)
+	if err != nil {
+		return nil, fmt.Errorf("query base coverage gaps: %w", err)
+	}
+	defer rows.Close()
+	seen := map[domain.Family]bool{}
+	out := []UninspectedFamily{}
+	for rows.Next() {
+		var payload []byte
+		if err := rows.Scan(&payload); err != nil {
+			return nil, fmt.Errorf("scan base coverage gap: %w", err)
+		}
+		var row domain.Coverage
+		if err := decode(payload, &row); err != nil {
+			return nil, err
+		}
+		if row.Key.FeatureID != "" || row.Key.Family == domain.FamilyClawpatch || seen[row.Key.Family] {
+			continue
+		}
+		seen[row.Key.Family] = true
+		reason := string(row.Status)
+		if row.Reason != "" {
+			reason += ": " + row.Reason
+		}
+		out = append(out, UninspectedFamily{Family: row.Key.Family, Reason: reason})
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].Family < out[j].Family })
+	return out, nil
+}
+
 // ReadManifestMeta reads the non-derived manifest fields back.
 func ReadManifestMeta(manifest []byte) (ManifestMeta, error) {
 	var meta ManifestMeta
@@ -288,8 +340,9 @@ func (s *Store) baseInfo(ctx context.Context) (ManifestMeta, error) {
 	found := false
 	err := s.withRead(ctx, func(db *sql.DB) error {
 		var runPayload, planPayload []byte
-		err := db.QueryRowContext(ctx, `SELECT r.payload, p.payload FROM runs r JOIN plans p ON p.plan_id = r.plan_id
-			WHERE r.state IN (?, ?) AND r.finalized = 1 ORDER BY r.finished_at DESC, r.started_at DESC, r.run_id LIMIT 1`, domain.RunComplete, domain.RunPartial).Scan(&runPayload, &planPayload)
+		var runID string
+		err := db.QueryRowContext(ctx, `SELECT r.run_id, r.payload, p.payload FROM runs r JOIN plans p ON p.plan_id = r.plan_id
+			WHERE r.state IN (?, ?) AND r.finalized = 1 ORDER BY r.finished_at DESC, r.started_at DESC, r.run_id LIMIT 1`, domain.RunComplete, domain.RunPartial).Scan(&runID, &runPayload, &planPayload)
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil
 		}
@@ -305,6 +358,10 @@ func (s *Store) baseInfo(ctx context.Context) (ManifestMeta, error) {
 			return err
 		}
 		meta.Revision, meta.ToolDigest, meta.PolicyDigest = run.Snapshot.Revision, plan.ToolDigest, plan.PolicyDigest
+		meta.Uninspected, err = uninspectedFamilies(ctx, db, runID)
+		if err != nil {
+			return err
+		}
 		found = true
 		return nil
 	})

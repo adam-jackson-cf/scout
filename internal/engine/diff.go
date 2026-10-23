@@ -24,12 +24,15 @@ import (
 	"scout/internal/state"
 )
 
-// BaseState is a previously computed base: an imported baseline.
+// BaseState is a previously computed base: an imported baseline. Gaps names
+// the scanner families the baseline run did not fully inspect; nil means the
+// baseline carries no lane health (a legacy export), which forces a recompute.
 type BaseState struct {
 	Issues       []domain.Issue
 	Revision     string
 	ToolDigest   string
 	PolicyDigest string
+	Gaps         BaseGaps
 }
 
 // DiffConfig drives one differential run on the checked-out head.
@@ -201,7 +204,7 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 	}
 
 	var banners []string
-	baseIssues, comparison, banners, err := resolveBase(ctx, cfg, root, mergeBase, plan, headResult)
+	baseIssues, baseGaps, comparison, banners, err := resolveBase(ctx, cfg, root, mergeBase, plan, headResult)
 	if err != nil {
 		return fail(err)
 	}
@@ -214,7 +217,7 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 	output := Evaluate(GateInput{
 		Policy: pol, Head: headIssues, Facts: facts, Base: withoutClaimed(baseIssues), Comparison: comparison, Changed: changedSet,
 		Lanes: headResult.Lanes, Overrides: overrides, OverrideActor: cfg.OverrideActor, Codeowners: codeowners,
-		BaseRevision: mergeBase, HeadRevision: headSHA, Banners: banners,
+		BaseRevision: mergeBase, HeadRevision: headSHA, Banners: banners, BaseGaps: baseGaps,
 	})
 	for index := range output.WouldBlock {
 		output.WouldBlock[index].RecordedAt = time.Now().UTC()
@@ -292,14 +295,43 @@ func deltaAttributed(pol policy.Policy, list []domain.Issue) []domain.Attributed
 	return out
 }
 
-// resolveBase returns the base issues: an imported baseline when its digests
-// and revision match head, else a paired scan of the merge-base worktree.
-func resolveBase(ctx context.Context, cfg DiffConfig, root, mergeBase string, headPlan domain.Plan, head Result) ([]domain.Issue, domain.Comparison, []string, error) {
+// BaseGaps maps a scanner family to why the base side did not inspect it
+// (lane blocked or failed, or imported baseline lane not fully inspected).
+// A head finding in such a family is absent from base for the wrong reason, so
+// it is never `introduced` (design §7.3).
+type BaseGaps map[domain.Family]string
+
+// gapsOfLanes derives the base gaps of a paired recompute from its lane
+// health: a scanner lane that is blocked or failed did not inspect the base.
+func gapsOfLanes(health []domain.LaneHealth) BaseGaps {
+	gaps := BaseGaps{}
+	for _, h := range health {
+		if h.Status != domain.LaneBlocked && h.Status != domain.LaneFailed {
+			continue
+		}
+		for _, lane := range lanes {
+			if lane.ID == h.Lane && lane.Family != "" {
+				reason := "base lane " + h.Lane + " " + string(h.Status)
+				if h.Reason != "" {
+					reason += ": " + h.Reason
+				}
+				gaps[lane.Family] = reason
+			}
+		}
+	}
+	return gaps
+}
+
+// resolveBase returns the base issues and their coverage gaps: an imported
+// baseline when its digests and revision match head and it carries lane
+// health, else a paired scan of the merge-base worktree. A baseline without
+// lane health cannot show which lanes inspected the base, so it is recomputed.
+func resolveBase(ctx context.Context, cfg DiffConfig, root, mergeBase string, headPlan domain.Plan, head Result) ([]domain.Issue, BaseGaps, domain.Comparison, []string, error) {
 	var banners []string
 	if cfg.Baseline != nil {
 		imported, err := cfg.Baseline(ctx)
 		if err != nil {
-			return nil, "", nil, fmt.Errorf("load baseline: %w", err)
+			return nil, nil, "", nil, fmt.Errorf("load baseline: %w", err)
 		}
 		switch {
 		case imported == nil:
@@ -309,8 +341,10 @@ func resolveBase(ctx context.Context, cfg DiffConfig, root, mergeBase string, he
 			banners = append(banners, "baseline policy digest "+short(imported.PolicyDigest)+" differs from head "+short(headPlan.PolicyDigest)+"; comparison recomputed")
 		case imported.Revision != mergeBase:
 			banners = append(banners, "baseline revision "+short(imported.Revision)+" is not the merge base "+short(mergeBase)+"; comparison recomputed")
+		case imported.Gaps == nil:
+			banners = append(banners, "baseline carries no lane health; comparison recomputed")
 		default:
-			return imported.Issues, domain.ComparisonBaseline, banners, nil
+			return imported.Issues, imported.Gaps, domain.ComparisonBaseline, banners, nil
 		}
 		if imported == nil {
 			banners = append(banners, "no baseline published; comparison recomputed")
@@ -318,25 +352,25 @@ func resolveBase(ctx context.Context, cfg DiffConfig, root, mergeBase string, he
 	} else {
 		banners = append(banners, "no baseline remote configured; comparison recomputed")
 	}
-	baseIssues, err := pairedBaseScan(ctx, cfg, root, mergeBase)
+	baseResult, err := pairedBaseScan(ctx, cfg, root, mergeBase)
 	if err != nil {
 		banners = append(banners, "no baseline available ("+err.Error()+"); nothing is classified introduced")
-		return nil, domain.ComparisonNone, banners, nil
+		return nil, nil, domain.ComparisonNone, banners, nil
 	}
-	return baseIssues, domain.ComparisonRecomputed, banners, nil
+	return baseResult.Issues, gapsOfLanes(baseResult.Lanes), domain.ComparisonRecomputed, banners, nil
 }
 
 // pairedBaseScan scans the base commit in a temporary worktree so the user's
 // checkout is never modified.
-func pairedBaseScan(ctx context.Context, cfg DiffConfig, root, revision string) ([]domain.Issue, error) {
+func pairedBaseScan(ctx context.Context, cfg DiffConfig, root, revision string) (Result, error) {
 	dir, err := os.MkdirTemp("", "scout-base-")
 	if err != nil {
-		return nil, err
+		return Result{}, err
 	}
 	worktree := filepath.Join(dir, "tree")
 	if _, err := git(ctx, root, "worktree", "add", "--detach", "--quiet", worktree, revision); err != nil {
 		_ = os.RemoveAll(dir)
-		return nil, err
+		return Result{}, err
 	}
 	defer func() {
 		_, _ = git(context.WithoutCancel(ctx), root, "worktree", "remove", "--force", worktree)
@@ -347,9 +381,9 @@ func pairedBaseScan(ctx context.Context, cfg DiffConfig, root, revision string) 
 	baseConfig.Root = worktree
 	result, err := Assess(ctx, baseConfig, Options{Trigger: domain.TriggerPR})
 	if err != nil {
-		return nil, fmt.Errorf("base assessment: %w", err)
+		return Result{}, fmt.Errorf("base assessment: %w", err)
 	}
-	return result.Issues, nil
+	return result, nil
 }
 
 // changedFiles lists files changed between the merge base and the working tree.

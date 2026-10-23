@@ -19,6 +19,9 @@ type Base struct {
 	Revision     string
 	ToolDigest   string
 	PolicyDigest string
+	// Uninspected lists the scanner families the baseline run did not fully
+	// inspect; nil means the manifest carries no lane health (legacy export).
+	Uninspected []state.UninspectedFamily
 }
 
 // LoadBase fetches the scout/state tip read-only. ok is false (with a nil
@@ -39,5 +42,5 @@ func LoadBase(ctx context.Context, opts Options) (Base, bool, error) {
 	if err != nil {
 		return Base{}, false, err
 	}
-	return Base{Issues: issues, Tip: tip, Revision: meta.Revision, ToolDigest: meta.ToolDigest, PolicyDigest: meta.PolicyDigest}, true, nil
+	return Base{Issues: issues, Tip: tip, Revision: meta.Revision, ToolDigest: meta.ToolDigest, PolicyDigest: meta.PolicyDigest, Uninspected: meta.Uninspected}, true, nil
 }

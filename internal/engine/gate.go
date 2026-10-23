@@ -128,6 +128,9 @@ type GateInput struct {
 	HeadRevision  string
 	Unavailable   error
 	Banners       []string
+	// BaseGaps names the scanner families the base side did not inspect; an
+	// `introduced` finding there is `unknown` and never gates.
+	BaseGaps BaseGaps
 }
 
 // Acceptance is an override the gate accepted; the caller stores it as a disposition.
@@ -270,10 +273,18 @@ func Evaluate(in GateInput) GateOutput {
 	gate := domain.Gate{Profile: profile, Comparison: in.Comparison, Blocking: []string{}}
 	attribution := Attribute(in.Head, in.Base, in.Comparison)
 	var candidates []int
+	gapHits := map[domain.Family]int{}
+	gapReason := map[domain.Family]string{}
 	for _, issue := range in.Head {
 		path := issuePath(issue)
 		fact := in.Facts[issue.IssueID]
 		att := attribution[issue.IssueID]
+		if reason, gap := in.BaseGaps[issue.Family]; gap && att == domain.AttributionIntroduced && !strings.HasPrefix(fact.CheckID, "guardrails.") {
+			// Guardrails findings come from the base tree diff, not a base lane scan.
+			att = domain.AttributionUnknown
+			gapHits[issue.Family]++
+			gapReason[issue.Family] = reason
+		}
 		item := domain.AttributedIssue{
 			IssueID: issue.IssueID, CheckID: fact.CheckID, RuleVersion: fact.RuleVersion, Path: path, Title: issue.Title,
 			Severity: issue.EffectiveSeverity, State: issue.State, Attribution: att, ChangedInPR: in.Changed[path],
@@ -350,6 +361,14 @@ func Evaluate(in GateInput) GateOutput {
 	}
 	incomplete, reasons := Incomplete(in.Lanes)
 	gate.Reasons = append(append(gate.Reasons, reasons...), in.Banners...)
+	families := make([]string, 0, len(gapHits))
+	for family := range gapHits {
+		families = append(families, string(family))
+	}
+	sort.Strings(families)
+	for _, family := range families {
+		gate.Reasons = append(gate.Reasons, fmt.Sprintf("%s; %d %s finding(s) not in base are attributed unknown, not introduced", gapReason[domain.Family(family)], gapHits[domain.Family(family)], family))
+	}
 	if in.Unavailable != nil {
 		gate.Reasons = append(gate.Reasons, "unavailable: "+in.Unavailable.Error())
 	}
