@@ -71,6 +71,7 @@ type Options struct {
 	Files      map[string]FileMetric  // per-file CC/NLOC; nil => hotspot unmeasured
 	PRs        []PR                   // PR metadata; empty => PR-level measures unmeasured
 	BotLogins  []string               // PR author logins treated as bots (E1b common.BOT_LOGINS)
+	PRSource   *PRSource              // provenance of PRs; folded into the config digest and every PR-dependent signal's detail
 	ToolInfo   string                 // appended to tool digest (e.g. git version)
 }
 
@@ -227,6 +228,9 @@ func (o Options) configDigest() string {
 	sort.Strings(b)
 	sort.Strings(l)
 	j, _ := json.Marshal(cfg{o.window(), MaxChangeFiles, MinChanges, FollowUpDays, b, l})
+	if o.PRSource != nil {
+		return sha(string(j) + "|pr:" + o.PRSource.Digest)
+	}
 	return sha(string(j))
 }
 
@@ -501,10 +505,13 @@ func (s *scopeWindow) dispersion() domain.Signal {
 	hours := s.prHours()
 	if len(hours) < MinPRs {
 		d["pr_part"] = "unmeasured"
+		d["pr_part_reason"] = prUnmeasuredReason(s.o, len(hours))
 	} else if h50 := percentile(hours, 50); h50 > 0 {
 		d["pr_p90_over_p50"] = percentile(hours, 90) / h50
+		d["pr_provenance"] = s.o.PRSource.detail()
 	} else {
 		d["pr_part"] = "unmeasured"
+		d["pr_part_reason"] = "PR active-hours p50 is 0"
 	}
 	return withDetail(sig, d)
 }

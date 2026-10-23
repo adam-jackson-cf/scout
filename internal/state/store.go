@@ -22,7 +22,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-const schemaVersion = 8
+const schemaVersion = 11
 
 var (
 	// ErrStoreLocked means another process already owns the target state directory.
@@ -295,6 +295,28 @@ func (s *Store) migrate(ctx context.Context) error {
 				}
 			}
 			current = 8
+		}
+		if current == 8 {
+			for _, statement := range schemaV9 {
+				if _, err := tx.ExecContext(ctx, statement); err != nil {
+					return fmt.Errorf("apply state schema v9: %w", err)
+				}
+			}
+			current = 9
+		}
+		if current == 9 {
+			for _, statement := range schemaV10 {
+				if _, err := tx.ExecContext(ctx, statement); err != nil {
+					return fmt.Errorf("apply state schema v10: %w", err)
+				}
+			}
+			current = 10
+		}
+		if current == 10 {
+			// v11: issue and observation payloads gain the optional `claim` and
+			// `rule` fields (design §3.2). Payloads are JSON, so no DDL is needed;
+			// rows written before v11 decode with both fields empty.
+			current = 11
 		}
 		if current != schemaVersion {
 			return fmt.Errorf("no migration from state schema version %d", current)

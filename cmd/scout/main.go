@@ -15,12 +15,14 @@ import (
 	"syscall"
 	"time"
 
+	"scout/internal/artifacts"
 	"scout/internal/clawpatch"
 	"scout/internal/contextual"
 	"scout/internal/domain"
 	"scout/internal/engine"
 	"scout/internal/inventory"
 	"scout/internal/issues"
+	"scout/internal/prmeta"
 	"scout/internal/state"
 	"scout/internal/web"
 )
@@ -197,6 +199,16 @@ func assess(ctx context.Context, args []string) int {
 	set.Var(&paths, "path", "selected relative path (repeatable)")
 	set.Var(&excludes, "exclude", "excluded relative path (repeatable)")
 	set.Var(&families, "family", "selected family (repeatable)")
+	var prMetadata, prRepo string
+	var fetchPRs bool
+	set.StringVar(&prMetadata, "pr-metadata", "", "merged-PR metadata JSON (scout.pr-metadata@1) for pr_effort, batch_size, dispersion")
+	set.BoolVar(&fetchPRs, "fetch-pr-metadata", false, "fetch merged-PR metadata from GitHub (needs GITHUB_TOKEN with pull-requests: read and --pr-repo)")
+	set.StringVar(&prRepo, "pr-repo", "", "owner/name for --fetch-pr-metadata")
+	var artifactPaths stringsFlag
+	var artifactRevision, artifactProducer string
+	set.Var(&artifactPaths, "artifact", "coverage (LCOV, Cobertura XML) or JUnit XML file or glob, relative to the repository (repeatable); CRAP needs a revision-matched coverage artifact")
+	set.StringVar(&artifactRevision, "artifact-revision", "", "commit the --artifact files were produced at, for artifacts without a "+artifacts.SidecarSuffix+" provenance file")
+	set.StringVar(&artifactProducer, "artifact-producer", "", "producer name recorded for --artifact files without a sidecar")
 	if !parse(set, args, flags) {
 		return exitUnavailable
 	}
@@ -208,7 +220,14 @@ func assess(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	result, err := engine.Assess(ctx, cfg, engine.Options{Scope: scope, ForceFull: full, Exclusions: excludes, Trigger: domain.TriggerPush, Measures: &engine.MeasuresOptions{History: scope.Kind == domain.ScopeRepository}})
+	measureOpts := &engine.MeasuresOptions{History: scope.Kind == domain.ScopeRepository}
+	if prMetadata != "" || fetchPRs {
+		measureOpts.PRMetadata = &engine.PRMetadataOptions{File: prMetadata, Fetch: prmeta.FetchOptions{Enabled: fetchPRs, Repo: prRepo, Token: os.Getenv("GITHUB_TOKEN")}}
+	}
+	for _, path := range artifactPaths {
+		measureOpts.Artifacts = append(measureOpts.Artifacts, artifacts.Spec{Path: path, Revision: artifactRevision, Producer: artifactProducer})
+	}
+	result, err := engine.Assess(ctx, cfg, engine.Options{Scope: scope, ForceFull: full, Exclusions: excludes, Trigger: domain.TriggerPush, Measures: measureOpts})
 	if err != nil {
 		unavailable := engine.UnavailableReport(err)
 		return emit(flags, unavailable.Gate.Status, unavailable.Gate.ExitCode, unavailable, err)
@@ -246,7 +265,7 @@ func readiness(ctx context.Context, args []string) int {
 	flags := common(set)
 	var kind, from, to string
 	var paths, families, excludes stringsFlag
-	var full, authorized bool
+	var full, authorized, matrix bool
 	set.StringVar(&kind, "scope", "repository", "scope kind")
 	set.StringVar(&from, "from", "", "revision start")
 	set.StringVar(&to, "to", "", "revision end")
@@ -254,6 +273,7 @@ func readiness(ctx context.Context, args []string) int {
 	set.Var(&families, "family", "family")
 	set.Var(&excludes, "exclude", "excluded path")
 	set.BoolVar(&full, "full", false, "evaluate a forced full rescan")
+	set.BoolVar(&matrix, "matrix", false, "print the capability matrix (design §5.3) for this repository and exit")
 	set.BoolVar(&authorized, "allow-egress", false, "authorize selected provider calls")
 	if !parse(set, args, flags) {
 		return exitUnavailable
@@ -265,6 +285,9 @@ func readiness(ctx context.Context, args []string) int {
 	cfg, err := engineConfig(flags, authorized)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
+	}
+	if matrix {
+		return readinessMatrix(ctx, flags, cfg)
 	}
 	assessmentReadiness, err := engine.AssessReadiness(ctx, cfg, engine.Options{Scope: scope, ForceFull: full, Exclusions: excludes})
 	if err != nil {

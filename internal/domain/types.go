@@ -428,14 +428,17 @@ func (e Evidence) Validate() error {
 
 // Observation is immutable, sanitized evidence from one analyzer or review run.
 type Observation struct {
-	ObservationID     string            `json:"observationId"`
-	RunID             string            `json:"runId"`
-	Source            string            `json:"source"`
-	SourceFindingID   string            `json:"sourceFindingId,omitempty"`
-	Family            Family            `json:"family"`
-	OriginalCategory  string            `json:"originalCategory"`
-	RuleID            string            `json:"ruleId,omitempty"`
-	RuleVersion       string            `json:"ruleVersion,omitempty"`
+	ObservationID    string `json:"observationId"`
+	RunID            string `json:"runId"`
+	Source           string `json:"source"`
+	SourceFindingID  string `json:"sourceFindingId,omitempty"`
+	Family           Family `json:"family"`
+	OriginalCategory string `json:"originalCategory"`
+	RuleID           string `json:"ruleId,omitempty"`
+	RuleVersion      string `json:"ruleVersion,omitempty"`
+	// Claim is set only on observations produced by a named promotion rule
+	// (design §3.2); an ordinary scanner finding leaves it empty.
+	Claim             SignalClaim       `json:"claim,omitempty"`
 	ModelVersion      string            `json:"modelVersion,omitempty"`
 	SourceSeverity    Severity          `json:"sourceSeverity"`
 	EffectiveSeverity Severity          `json:"effectiveSeverity"`
@@ -452,7 +455,7 @@ func (o Observation) Validate() error {
 	if o.ObservationID == "" || o.RunID == "" || o.Source == "" || o.OriginalCategory == "" || o.Mechanism == "" {
 		return errors.New("observation requires identity, source, category, and mechanism")
 	}
-	if !o.Family.Valid() || !o.SourceSeverity.Valid() || !o.EffectiveSeverity.Valid() || !o.Confidence.Valid() {
+	if !o.Family.Valid() || !o.SourceSeverity.Valid() || !o.EffectiveSeverity.Valid() || !o.Confidence.Valid() || !o.Claim.ValidIssueClaim() {
 		return errors.New("observation has invalid family, severity, or confidence")
 	}
 	if o.EffectiveSeverity.Rank() > o.SourceSeverity.Rank() {
@@ -931,14 +934,21 @@ type Issue struct {
 	FeatureIDs        []string            `json:"featureIds,omitempty"`
 	Files             []string            `json:"files,omitempty"`
 	History           []IssueHistoryEntry `json:"history"`
-	Verification      *Verification       `json:"verification,omitempty"`
-	CreatedAt         time.Time           `json:"createdAt"`
-	UpdatedAt         time.Time           `json:"updatedAt"`
+	// Claim and Rule are set only on an issue promoted by a named, versioned
+	// rule (design §3.2): Rule is "<rule id>@<version>". Empty for ordinary findings.
+	Claim        SignalClaim   `json:"claim,omitempty"`
+	Rule         string        `json:"rule,omitempty"`
+	Verification *Verification `json:"verification,omitempty"`
+	CreatedAt    time.Time     `json:"createdAt"`
+	UpdatedAt    time.Time     `json:"updatedAt"`
 }
 
 func (i Issue) Validate() error {
 	if i.IssueID == "" || i.Title == "" || i.Mechanism == "" || !i.State.Valid() {
 		return errors.New("issue requires identity, title, mechanism, and state")
+	}
+	if !i.Claim.ValidIssueClaim() || (i.Claim == "") != (i.Rule == "") {
+		return errors.New("issue claim and promoting rule must be set together")
 	}
 	if !i.OriginalSeverity.Valid() || !i.EffectiveSeverity.Valid() {
 		return errors.New("issue has invalid severity")

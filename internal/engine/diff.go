@@ -19,6 +19,7 @@ import (
 	"scout/internal/domain"
 	"scout/internal/guardrails"
 	"scout/internal/issues"
+	"scout/internal/measures"
 	"scout/internal/policy"
 	"scout/internal/state"
 )
@@ -51,6 +52,9 @@ type DiffConfig struct {
 	NoEgress bool
 	// JevClient is a test seam; nil builds the OpenRouter client from JevKey.
 	JevClient *decisions.Client
+	// DeltaTools locates lizard and jscpd for the delta rules; the zero value
+	// finds them on PATH.
+	DeltaTools measures.Tools
 }
 
 // DiffReport is the JSON payload of `scout diff`; gate, health, would_block
@@ -69,6 +73,10 @@ type DiffReport struct {
 	Issues           []domain.AttributedIssue `json:"issues"`
 	PreExisting      int                      `json:"preExisting"`
 	Changed          []string                 `json:"changedFiles"`
+	// Delta issues (design §3.2) appear in Issues with `claim: descriptive`,
+	// attribution `introduced` and an ineligible check; they never reach the
+	// gate, would_block or the exit code, and delta rules that could not run
+	// are stated in the `delta` lane health.
 }
 
 // UnavailableReport is the report for a run that could not start or finish.
@@ -155,7 +163,8 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 	}
 
 	guard := guardrailsLane(ctx, root, mergeBase, changed)
-	headResult, err := Assess(ctx, cfg.Config, Options{Trigger: domain.TriggerPR, Inline: []InlineLane{guard}, Measures: &MeasuresOptions{Only: append([]string{}, changed...)}})
+	delta := deltaLane(root, mergeBase, changed, cfg.DeltaTools)
+	headResult, err := Assess(ctx, cfg.Config, Options{Trigger: domain.TriggerPR, Inline: []InlineLane{guard, delta}, Measures: &MeasuresOptions{Only: append([]string{}, changed...)}})
 	if err != nil {
 		return fail(fmt.Errorf("head assessment: %w", err))
 	}
@@ -168,8 +177,18 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 	if err != nil {
 		return fail(err)
 	}
-	facts := make(map[string]CheckFact, len(headResult.Issues))
+	// Promoted delta issues are descriptive: they are partitioned out here so
+	// they can never be an input to attribution, the gate or would_block.
+	var headIssues, deltaIssues []domain.Issue
 	for _, issue := range headResult.Issues {
+		if issue.Claim != "" {
+			deltaIssues = append(deltaIssues, issue)
+		} else {
+			headIssues = append(headIssues, issue)
+		}
+	}
+	facts := make(map[string]CheckFact, len(headIssues))
+	for _, issue := range headIssues {
 		observations, listErr := store.ListIssueObservations(ctx, issue.IssueID)
 		if listErr != nil {
 			return fail(listErr)
@@ -193,7 +212,7 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 	}
 	overrides := ParseOverrides(cfg.OverrideText)
 	output := Evaluate(GateInput{
-		Policy: pol, Head: headResult.Issues, Facts: facts, Base: baseIssues, Comparison: comparison, Changed: changedSet,
+		Policy: pol, Head: headIssues, Facts: facts, Base: withoutClaimed(baseIssues), Comparison: comparison, Changed: changedSet,
 		Lanes: headResult.Lanes, Overrides: overrides, OverrideActor: cfg.OverrideActor, Codeowners: codeowners,
 		BaseRevision: mergeBase, HeadRevision: headSHA, Banners: banners,
 	})
@@ -230,6 +249,7 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 	if changed == nil {
 		changed = []string{}
 	}
+	reportIssues := append(output.Issues, deltaAttributed(pol, deltaIssues)...)
 	ranking, decisionsHealth, err := RankingOf(ctx, RankingInput{
 		Issues: output.Issues, Root: root, RunID: headResult.Run.RunID, Trigger: domain.TriggerPR, Policy: pol.Decisions(),
 		Key: cfg.JevKey, Fork: cfg.Fork, NoEgress: cfg.NoEgress, Store: store, Client: cfg.JevClient,
@@ -239,8 +259,37 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 	}
 	return DiffReport{
 		Base: baseSHA, Head: headSHA, MergeBase: mergeBase, Comparison: comparison, ComparisonReason: comparisonReason(comparison, banners), Gate: output.Gate, Health: ApplyDecisionsHealth(headResult.Lanes, decisionsHealth),
-		WouldBlock: output.WouldBlock, Ranking: ranking, Issues: output.Issues, PreExisting: output.Pre, Changed: changed,
+		WouldBlock: output.WouldBlock, Ranking: ranking, Issues: reportIssues, PreExisting: output.Pre, Changed: changed,
 	}, nil
+}
+
+// withoutClaimed drops rule-promoted issues: a baseline never attributes them.
+func withoutClaimed(list []domain.Issue) []domain.Issue {
+	out := make([]domain.Issue, 0, len(list))
+	for _, issue := range list {
+		if issue.Claim == "" {
+			out = append(out, issue)
+		}
+	}
+	return out
+}
+
+// deltaAttributed renders promoted delta issues for the report. By
+// construction they are `introduced` relative to the merge base; their check id
+// is never blocking-eligible, so they are neither blocking nor would-block.
+func deltaAttributed(pol policy.Policy, list []domain.Issue) []domain.AttributedIssue {
+	out := make([]domain.AttributedIssue, 0, len(list))
+	for _, issue := range list {
+		_, version, _ := strings.Cut(issue.Rule, "@")
+		out = append(out, domain.AttributedIssue{
+			IssueID: issue.IssueID, CheckID: issue.Rule, Claim: issue.Claim, RuleVersion: version, Path: issue.Anchor.Path, Title: issue.Title,
+			Severity: issue.EffectiveSeverity, State: issue.State, Attribution: domain.AttributionIntroduced, ChangedInPR: true,
+			CheckStatus:   string(pol.CheckStatus(issue.Rule, version)),
+			RankingReason: "descriptive delta; report-only, not ranked",
+		})
+	}
+	sort.SliceStable(out, func(i, j int) bool { return out[i].IssueID < out[j].IssueID })
+	return out
 }
 
 // resolveBase returns the base issues: an imported baseline when its digests
@@ -321,36 +370,42 @@ func changedFiles(ctx context.Context, root, mergeBase string) ([]string, error)
 	return files, nil
 }
 
-// guardrailsLane wires guardrails.SUPPRESS as a pr-trigger blocking-eligible
-// lane over the changed files: base from the merge base, head from the tree.
+// guardrailsLane wires the guardrails mechanisms (SUPPRESS, TESTQ, CONFIG) as
+// a pr-trigger blocking-eligible lane: base from the merge base, head from
+// the working tree.
 func guardrailsLane(ctx context.Context, root, mergeBase string, changed []string) InlineLane {
 	return InlineLane{Lane: LaneGuardrails, Units: len(changed), Run: func(ctx context.Context, runID string) ([]domain.Observation, error) {
 		if len(changed) == 0 {
 			return nil, nil
 		}
-		base := map[string][]byte{}
-		head := map[string][]byte{}
-		for _, path := range changed {
-			content, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(path)))
-			if err != nil || len(content) > maxGuardrailBytes {
-				continue
-			}
-			head[path] = content
-			if old, showErr := git(ctx, root, "show", mergeBase+":"+path); showErr == nil && len(old) <= maxGuardrailBytes {
-				base[path] = old
-			}
+		baseTree, err := newGitTree(ctx, root, mergeBase)
+		if err != nil {
+			return nil, err
+		}
+		headTree, err := newWorkTree(ctx, root)
+		if err != nil {
+			return nil, err
 		}
 		now := time.Now().UTC()
 		var observations []domain.Observation
-		for _, finding := range guardrails.SuppressAdded(base, head, changed) {
+		for _, finding := range guardrails.ChangesAll(baseTree, headTree, changed) {
 			quote, err := issues.SanitizeText(strings.TrimSpace(finding.Evidence.Head))
 			if err != nil || quote == "" {
-				quote = "[suppression line elided]"
+				quote = "[guardrail evidence elided]"
 			}
-			sum := sha256.Sum256([]byte(strings.Join([]string{runID, finding.CheckID, finding.Path, fmt.Sprint(finding.Line)}, "\x00")))
+			category := "suppression"
+			if strings.HasPrefix(finding.CheckID, "guardrails.CONFIG.") {
+				category = "guardrail-config"
+				if base, err := issues.SanitizeText(strings.TrimSpace(finding.Evidence.Base)); err == nil && base != "" {
+					quote += " (base: " + base + ")"
+				}
+			} else if strings.HasPrefix(finding.CheckID, "guardrails.TESTQ.") {
+				category = "focused-test"
+			}
+			sum := sha256.Sum256([]byte(strings.Join([]string{runID, finding.CheckID, finding.Path, fmt.Sprint(finding.Line), finding.Mechanism}, "\x00")))
 			observations = append(observations, domain.Observation{
 				ObservationID: "guardrails:" + hex.EncodeToString(sum[:12]), RunID: runID, Source: "guardrails",
-				Family: domain.FamilyQuality, OriginalCategory: "suppression", RuleID: finding.CheckID, RuleVersion: finding.Version,
+				Family: domain.FamilyQuality, OriginalCategory: category, RuleID: finding.CheckID, RuleVersion: finding.Version,
 				SourceSeverity: domain.SeverityLow, EffectiveSeverity: domain.SeverityLow, Confidence: domain.ConfidenceHigh,
 				Mechanism: finding.Mechanism, Validated: true, ObservedAt: now,
 				Evidence: []domain.Evidence{{Location: domain.SourceRange{Path: finding.Path, StartLine: finding.Line, EndLine: finding.Line}, RedactedQuote: quote}},

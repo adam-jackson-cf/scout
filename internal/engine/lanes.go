@@ -31,6 +31,7 @@ const (
 	LaneClawpatchReview = "clawpatch-review"
 	LaneMeasures        = "measures"
 	LaneHistory         = "history"
+	LaneDelta           = "delta"
 )
 
 // lanes is the registry in priority order. Contextual and clawpatch-review are
@@ -38,6 +39,7 @@ const (
 // health (including skipped (no model CLI)) never makes a required lane red.
 var lanes = []Lane{
 	{ID: LaneGuardrails, Triggers: []domain.LaneTrigger{domain.TriggerPR}, Mode: domain.ModeBlockingEligible, Requires: domain.RequiresNone},
+	{ID: LaneDelta, Triggers: []domain.LaneTrigger{domain.TriggerPR}, Mode: domain.ModeReport, Requires: domain.RequiresTool},
 	{ID: LaneSecurity, Family: domain.FamilySecurity, Triggers: []domain.LaneTrigger{domain.TriggerPR, domain.TriggerPush}, Mode: domain.ModeBlockingEligible, Requires: domain.RequiresTool},
 	{ID: LaneQuality, Family: domain.FamilyQuality, Triggers: allTriggers, Mode: domain.ModeReport, Requires: domain.RequiresTool},
 	{ID: LaneArchitecture, Family: domain.FamilyArchitecture, Triggers: allTriggers, Mode: domain.ModeReport, Requires: domain.RequiresTool},
@@ -87,10 +89,12 @@ func (l Lane) Required(trigger domain.LaneTrigger) bool {
 }
 
 // InlineLane is an in-process lane whose observations are persisted with the run.
+// Reason, when set, is read after Run and reports rules that could not run.
 type InlineLane struct {
-	Lane  string
-	Units int
-	Run   func(ctx context.Context, runID string) ([]domain.Observation, error)
+	Lane   string
+	Units  int
+	Run    func(ctx context.Context, runID string) ([]domain.Observation, error)
+	Reason func() string
 }
 
 func inlineLaneHealth(lane InlineLane, found int, err error) domain.LaneHealth {
@@ -99,8 +103,14 @@ func inlineLaneHealth(lane InlineLane, found int, err error) domain.LaneHealth {
 		health.Status, health.Reason = domain.LaneFailed, "lane failed: "+err.Error()
 	} else if lane.Units == 0 {
 		health.Status, health.Reason = domain.LaneSkipped, "no changed files"
+	} else if lane.Reason != nil {
+		if reason := lane.Reason(); reason != "" {
+			health.Reason = reason
+			if found == 0 {
+				health.Status = domain.LaneSkipped
+			}
+		}
 	}
-	_ = found
 	return health
 }
 

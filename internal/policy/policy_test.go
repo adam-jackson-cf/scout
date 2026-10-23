@@ -86,10 +86,13 @@ func TestEligibleIDs(t *testing.T) {
 			t.Errorf("%s: %v", id, err)
 		}
 	}
-	for _, id := range []string{"", "guardrails.CONFIG.ignores-added.", "guardrails.CONFIG.ignores-added", "guardrails.GATE.coverage-pragma-added", "security.secrets.slack-*"} {
+	for _, id := range []string{"", "guardrails.CONFIG.ignores-added.", "guardrails.CONFIG.ignores-added", "guardrails.GATE.coverage-pragma-added", "security.secrets.slack-*", "delta.cc-threshold", "delta.cc-threshold@1", "delta.dup-added@1"} {
 		if ValidateEligibleID(id) == nil {
 			t.Errorf("%q should be ineligible", id)
 		}
+	}
+	if _, err := Parse([]byte("blocking:\n  - id: delta.cc-threshold@1\n")); err == nil || !strings.Contains(err.Error(), "delta") {
+		t.Fatalf("a delta rule must be rejected as a blocking activation: %v", err)
 	}
 }
 

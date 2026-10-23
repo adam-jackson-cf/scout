@@ -78,8 +78,10 @@ const (
 
 // AttributedIssue is one head issue with its gate-relevant facts.
 type AttributedIssue struct {
-	IssueID       string      `json:"issueId"`
-	CheckID       string      `json:"checkId,omitempty"`
+	IssueID string `json:"issueId"`
+	CheckID string `json:"checkId,omitempty"`
+	// Claim is set for rule-promoted issues (delta); they never gate.
+	Claim         SignalClaim `json:"claim,omitempty"`
 	RuleVersion   string      `json:"ruleVersion,omitempty"`
 	Path          string      `json:"path,omitempty"`
 	Title         string      `json:"title"`

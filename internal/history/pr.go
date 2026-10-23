@@ -31,6 +31,34 @@ type PR struct {
 	Comments     int
 }
 
+// PRSource is the provenance of the PR metadata behind pr_effort, batch_size
+// and the PR part of dispersion: where it came from and a digest of its bytes.
+type PRSource struct {
+	Kind      string // "file" | "github_api"
+	Origin    string // file base name, or "owner/repo" for the API
+	Digest    string // sha256 of the ingested document
+	FetchedAt string // RFC 3339 UTC; empty for files without a stamp
+	Count     int    // PRs in the document
+}
+
+func (p *PRSource) detail() map[string]any {
+	if p == nil {
+		return nil
+	}
+	d := map[string]any{"kind": p.Kind, "origin": p.Origin, "digest": p.Digest, "prs": p.Count}
+	if p.FetchedAt != "" {
+		d["fetched_at"] = p.FetchedAt
+	}
+	return d
+}
+
+func prUnmeasuredReason(o Options, linked int) string {
+	if len(o.PRs) == 0 {
+		return "no PR metadata supplied (local history lacks PR commits)"
+	}
+	return fmt.Sprintf("%d linked PRs < %d", linked, MinPRs)
+}
+
 // PRBotReason returns api_bot_type, login_list or "".
 func PRBotReason(p PR, logins []string) string {
 	if p.AuthorType == "Bot" {
@@ -117,7 +145,7 @@ func (s *scopeWindow) prSignals() []domain.Signal {
 	}
 	effort, batch := mk("scout.pr_effort@1"), mk("scout.batch_size@1")
 	if len(s.o.PRs) == 0 {
-		why := "no PR metadata supplied (local history lacks PR commits)"
+		why := prUnmeasuredReason(s.o, 0)
 		return []domain.Signal{markMissing(effort, "unmeasured", why), markMissing(batch, "unmeasured", why)}
 	}
 	if len(linked) < MinPRs {
@@ -152,7 +180,7 @@ func (s *scopeWindow) prSignals() []domain.Signal {
 		"p50_commits": percentile(commits, 50), "single_commit_prs": single,
 		"p50_review_events": percentile(rv, 50),
 		"queue_hours_p50":   percentile(queue, 50), "queue_hours_p90": percentile(queue, 90),
-		"queue_is_not_effort": true, "excluded": excludedDetail,
+		"queue_is_not_effort": true, "excluded": excludedDetail, "provenance": s.o.PRSource.detail(),
 	})
 	var totalL float64
 	for _, x := range lines {
@@ -162,6 +190,7 @@ func (s *scopeWindow) prSignals() []domain.Signal {
 	batch = withDetail(batch, map[string]any{
 		"p50_lines": percentile(lines, 50), "p90_lines": percentile(lines, 90),
 		"p50_files": percentile(files, 50), "p90_files": percentile(files, 90), "excluded": excludedDetail,
+		"provenance": s.o.PRSource.detail(),
 	})
 	return []domain.Signal{effort, batch}
 }

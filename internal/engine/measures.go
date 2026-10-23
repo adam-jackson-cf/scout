@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"scout/internal/artifacts"
 	"scout/internal/domain"
 	"scout/internal/history"
 	"scout/internal/inventory"
 	"scout/internal/measures"
+	"scout/internal/prmeta"
 	"scout/internal/state"
 )
 
@@ -21,6 +23,21 @@ type MeasuresOptions struct {
 	// History also computes the §8.3 exposure and interest measures over the
 	// repository's commit history (push and nightly runs).
 	History bool
+	// PRMetadata, when set, supplies merged-PR metadata for pr_effort,
+	// batch_size and the PR part of dispersion (§8.3). Nil: those signals are
+	// `unmeasured`.
+	PRMetadata *PRMetadataOptions
+	// Artifacts are the coverage and test-result files to ingest for this
+	// run (design §8.2); only revision-matched coverage yields scout.crap.
+	Artifacts []artifacts.Spec
+}
+
+// PRMetadataOptions selects the PR-metadata source: a file, or the opt-in
+// GitHub fetch (Fetch.Enabled must be set explicitly; Fetch.Token comes from
+// GITHUB_TOKEN in the caller). File wins when both are given.
+type PRMetadataOptions struct {
+	File  string
+	Fetch prmeta.FetchOptions
 }
 
 // runMeasuresLanes computes the §8.2 principal signals over the run's
@@ -41,9 +58,10 @@ func runMeasuresLanes(ctx context.Context, store *state.Store, root string, curr
 			}
 		}
 	}
+	coverage, artifactNote := ingestArtifacts(ctx, store, root, current.Snapshot, options.Measures.Artifacts)
 	result := measures.Run(ctx, measures.Config{
 		Root: root, Snapshot: current.Snapshot, RunScope: string(options.Scope.Kind),
-		Files: files, Features: features, Tools: options.Measures.Tools,
+		Files: files, Features: features, Tools: options.Measures.Tools, Coverage: coverage,
 	})
 	health := domain.LaneHealth{Lane: LaneMeasures, Units: len(result.Eligible), Status: domain.LaneRan}
 	switch {
@@ -60,6 +78,9 @@ func runMeasuresLanes(ctx context.Context, store *state.Store, root string, curr
 	out := []domain.LaneHealth{health}
 	if options.Measures.History {
 		out = append(out, runHistoryLane(ctx, store, root, current, files, result, options))
+	}
+	if artifactNote != "" && out[0].Reason == "" {
+		out[0].Reason = artifactNote
 	}
 	return out
 }
@@ -95,7 +116,12 @@ func runHistoryLane(ctx context.Context, store *state.Store, root string, curren
 		Snapshot: measures.SnapshotKey(current.Snapshot), Salt: current.Snapshot.RepositoryID,
 		Files: metrics, ToolInfo: history.GitVersion(ctx),
 	}
+	var prNote string
+	opts.PRs, opts.PRSource, prNote = loadPRMetadata(ctx, store, options.Measures.PRMetadata, opts.Snapshot)
 	signals := history.Compute(commits, opts)
+	if prNote != "" {
+		health.Status, health.Reason = domain.LaneFailed, prNote
+	}
 	rework, err := history.Rework(ctx, root, commits, opts)
 	if err != nil {
 		health.Status, health.Reason = domain.LaneFailed, "rework: "+err.Error()

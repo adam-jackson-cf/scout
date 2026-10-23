@@ -21,6 +21,8 @@ type Config struct {
 	Files    []domain.File
 	Features []domain.Feature
 	Tools    Tools
+	// Coverage is the revision-matched coverage artifact, or nil when none was provided.
+	Coverage *Coverage
 }
 
 // Result is the outcome of one measurement run.
@@ -97,7 +99,7 @@ func Run(ctx context.Context, cfg Config) Result {
 	result.LizardErr, result.JscpdErr = facts.LizardErr, facts.JscpdErr
 	input := Input{
 		Snapshot: SnapshotKey(cfg.Snapshot), RunScope: cfg.RunScope,
-		Candidates: candidates, Features: cfg.Features, Facts: facts,
+		Candidates: candidates, Features: cfg.Features, Facts: facts, Coverage: cfg.Coverage,
 	}
 	result.Signals = Compute(input)
 	graphFailure := ""

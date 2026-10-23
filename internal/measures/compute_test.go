@@ -195,7 +195,7 @@ func TestMissingnessIsNeverZero(t *testing.T) {
 		}
 	}
 
-	// CRAP is unmeasured everywhere: no coverage artifact is ingested yet.
+	// CRAP is unmeasured everywhere when the input carries no coverage artifact.
 	for _, signal := range signals {
 		if signal.MetricID == MetricCrap && (signal.Missing != domain.SignalUnmeasured || signal.Value != nil) {
 			t.Fatalf("crap = %+v", signal)

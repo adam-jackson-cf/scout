@@ -149,7 +149,7 @@ func loadTSConfig(root, file string, seen map[string]bool) *tsConfig {
 		return nil
 	}
 	var raw struct {
-		Extends         string `json:"extends"`
+		Extends         json.RawMessage `json:"extends"` // string, or an array (TS 5)
 		CompilerOptions struct {
 			BaseURL *string             `json:"baseUrl"`
 			Paths   map[string][]string `json:"paths"`
@@ -160,14 +160,30 @@ func loadTSConfig(root, file string, seen map[string]bool) *tsConfig {
 		return nil
 	}
 	cfg := &tsConfig{dir: dir}
-	if raw.Extends != "" && strings.HasPrefix(raw.Extends, ".") {
-		ext := path.Join(dir, raw.Extends)
+	var extends []string
+	if len(raw.Extends) > 0 {
+		var one string
+		if json.Unmarshal(raw.Extends, &one) == nil {
+			extends = []string{one}
+		} else {
+			_ = json.Unmarshal(raw.Extends, &extends)
+		}
+	}
+	for _, e := range extends { // later entries override earlier ones
+		if !strings.HasPrefix(e, ".") {
+			continue
+		}
+		ext := path.Join(dir, e)
 		if !strings.HasSuffix(ext, ".json") {
 			ext += ".json"
 		}
 		if parent := loadTSConfig(root, ext, seen); parent != nil {
-			cfg.baseURL, cfg.hasBase = parent.baseURL, parent.hasBase
-			cfg.paths, cfg.pathsAt = parent.paths, parent.pathsAt
+			if parent.hasBase {
+				cfg.baseURL, cfg.hasBase = parent.baseURL, true
+			}
+			if parent.paths != nil {
+				cfg.paths, cfg.pathsAt = parent.paths, parent.pathsAt
+			}
 		}
 	}
 	if raw.CompilerOptions.BaseURL != nil {
@@ -176,9 +192,11 @@ func loadTSConfig(root, file string, seen map[string]bool) *tsConfig {
 	if raw.CompilerOptions.Paths != nil {
 		cfg.paths = raw.CompilerOptions.Paths
 		cfg.pathsAt = dir
-		if cfg.hasBase {
-			cfg.pathsAt = cfg.baseURL
-		}
+	}
+	// `paths` targets resolve against baseUrl when one is in effect (even an
+	// inherited `paths` after a child overrides baseUrl), else the defining dir.
+	if cfg.paths != nil && cfg.hasBase {
+		cfg.pathsAt = cfg.baseURL
 	}
 	return cfg
 }
@@ -329,6 +347,9 @@ func resolveAlias(cfg *tsConfig, spec string, resolve func(string) (string, bool
 			if t, found := resolve(path.Join(cfg.pathsAt, p)); found {
 				return t, true, true
 			}
+		}
+		if k == "*" { // catch-all also covers third-party names: fall back to node resolution
+			return "", false, false
 		}
 		return "", true, false
 	}

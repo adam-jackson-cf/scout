@@ -44,6 +44,9 @@ type Input struct {
 	Candidates []domain.File
 	Features   []domain.Feature
 	Facts      Facts
+	// Coverage is the revision-matched coverage artifact; nil when none was
+	// provided (scout.crap is then `unmeasured`).
+	Coverage *Coverage
 }
 
 // Eligible returns the candidates that lizard measured at NLOC ≥ MinFileNLOC.
@@ -71,8 +74,8 @@ func Candidates(files []domain.File) []domain.File {
 }
 
 // Compute derives the §8.2 signals for every scope: scout.cc, complex_burden,
-// burden_density, dup_pct and an `unmeasured` scout.crap (no coverage artifact
-// is ingested yet). Output order is deterministic: scope anchor, then metric.
+// burden_density, dup_pct and scout.crap (`unmeasured` unless the input
+// carries a revision-matched coverage artifact).
 func Compute(in Input) []domain.Signal {
 	candidateByPath := make(map[string]domain.File, len(in.Candidates))
 	for _, file := range in.Candidates {
@@ -215,7 +218,19 @@ func Compute(in Input) []domain.Signal {
 		}
 		crap := base
 		crap.MetricID, crap.ToolDigest = MetricCrap, lizardDigest
-		crap = missing(crap, domain.SignalUnmeasured, "no revision-matched coverage artifact has been ingested")
+		switch {
+		case in.Coverage == nil:
+			crap = missing(crap, domain.SignalUnmeasured, "no coverage artifact was provided")
+		case in.Coverage.Unusable != "":
+			crap = missing(crap, domain.SignalUnmeasured, in.Coverage.Unusable)
+		case !lizardOK:
+			crap = missing(crap, domain.SignalUnmeasured, "lizard did not run: "+in.Facts.LizardErr)
+		case len(population) == 0:
+			crap = missing(crap, domain.SignalInsufficient, fmt.Sprintf("scope has no eligible files (production source with NLOC >= %d)", MinFileNLOC))
+		default:
+			crap.ToolDigest = domain.Digest(lizardDigest, "coverage", in.Coverage.Digest)
+			crap = crapSignal(crap, population, in.Facts.Lizard, in.Coverage, detail)
+		}
 		signals = append(signals, dup, crap)
 	}
 	return signals

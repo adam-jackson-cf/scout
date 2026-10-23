@@ -39,7 +39,17 @@ func IsDigest(s string) bool {
 // descriptive: it reports what was observed, never a cause or a verdict.
 type SignalClaim string
 
-const ClaimDescriptive SignalClaim = "descriptive"
+const (
+	ClaimDescriptive SignalClaim = "descriptive"
+	// ClaimPolicy marks a promotion rule that asserts a stated policy line.
+	ClaimPolicy SignalClaim = "policy"
+)
+
+// ValidIssueClaim reports whether c may label a rule-promoted issue; the empty
+// claim (an ordinary finding) is valid.
+func (c SignalClaim) ValidIssueClaim() bool {
+	return c == "" || c == ClaimDescriptive || c == ClaimPolicy
+}
 
 // SignalMissing records why a signal has no value. The zero value means the
 // signal was measured. `unmeasured` (the measure could not run: tool absent,

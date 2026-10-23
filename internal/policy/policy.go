@@ -329,6 +329,9 @@ func ValidateEligibleID(id string) error {
 	if strings.ContainsAny(id, "*?[]") {
 		return fmt.Errorf("wildcard check id %q is not allowed", id)
 	}
+	if strings.HasPrefix(id, "delta.") {
+		return fmt.Errorf("check id %q is a descriptive delta rule and can never block", id)
+	}
 	if fixedEligible[id] {
 		return nil
 	}

@@ -385,6 +385,14 @@ func observationIDs(occ *occurrence) []string {
 func createIssue(ctx context.Context, store *state.Store, occ *occurrence) (domain.Issue, error) {
 	now := time.Now().UTC()
 	ids := observationIDs(occ)
+	var claim domain.SignalClaim
+	rule := ""
+	for _, observation := range occ.observations {
+		if observation.Claim != "" {
+			claim, rule = observation.Claim, observation.RuleID
+			break
+		}
+	}
 	originalSeverity, effectiveSeverity := domain.SeverityInformational, domain.SeverityInformational
 	uncertainty := ""
 	for _, observation := range occ.observations {
@@ -404,6 +412,7 @@ func createIssue(ctx context.Context, store *state.Store, occ *occurrence) (doma
 		Title: title, Mechanism: occ.mechanism, Anchor: occ.anchor,
 		OriginalSeverity: originalSeverity, EffectiveSeverity: effectiveSeverity, Uncertainty: uncertainty,
 		ObservationIDs: ids, FeatureIDs: append([]string(nil), occ.featureIDs...), Files: []string{occ.anchor.Path},
+		Claim: claim, Rule: rule,
 		AmbiguousWith: append([]string(nil), occ.ambiguous...),
 		History:       []domain.IssueHistoryEntry{{At: now, To: domain.IssueOpen, Event: domain.EventCreated, Actor: correlationActor, Reason: "created from validated observations", ObservationIDs: ids}},
 		CreatedAt:     now, UpdatedAt: now,

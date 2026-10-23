@@ -53,6 +53,8 @@ func StatusOf(code int) string {
 // eligibility; ids outside the allow-list come back as not_eligible there.
 func CheckIDOf(source, ruleID string) string {
 	switch {
+	case strings.HasPrefix(ruleID, "delta."):
+		return ruleID // promoted delta rule id: name@version, never blocking-eligible
 	case strings.HasPrefix(ruleID, "guardrails."):
 		return ruleID
 	case strings.HasPrefix(source, "security.gitleaks"):
@@ -288,7 +290,7 @@ func Evaluate(in GateInput) GateOutput {
 		if att == domain.AttributionPreExisting {
 			out.Pre++
 		}
-		if (att == domain.AttributionIntroduced || att == domain.AttributionRegressed) && !dispositioned(issue.State) {
+		if (att == domain.AttributionIntroduced || att == domain.AttributionRegressed) && !dispositioned(issue.State) && issue.Claim == "" {
 			switch status {
 			case policy.Active, policy.ActiveProvisional:
 				item.Blocking = true
@@ -439,6 +441,8 @@ func Summary(gate domain.Gate, ranking Ranking, issues []domain.AttributedIssue,
 			flag = " overridden"
 		case item.WouldBlock:
 			flag = " would block"
+		case item.Claim != "":
+			flag = " (" + string(item.Claim) + ", report-only)"
 		}
 		add("- `%s` %s `%s` %s [%s]%s", item.CheckID, item.Attribution, item.Path, oneLine(item.Title), item.Severity, flag)
 	}

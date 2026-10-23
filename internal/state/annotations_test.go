@@ -24,7 +24,7 @@ func TestSchemaV8StoresAnnotationsRankingsAndAuditDraws(t *testing.T) {
 	store := seedLedger(t, ctx, t.TempDir())
 	defer store.Close()
 	var version int
-	if err := store.db.QueryRowContext(ctx, `PRAGMA user_version`).Scan(&version); err != nil || version != 8 {
+	if err := store.db.QueryRowContext(ctx, `PRAGMA user_version`).Scan(&version); err != nil || version < 8 {
 		t.Fatalf("schema version %d err %v", version, err)
 	}
 	issue := "issue:security:a"

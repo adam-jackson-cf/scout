@@ -56,6 +56,7 @@ func seedLedger(t *testing.T, ctx context.Context, root string) *Store {
 	ambiguous := issue("d", "obs-4", domain.IssueOpen, domain.IssueHistoryEntry{At: now.Add(time.Hour), To: domain.IssueOpen, Event: domain.EventAmbiguous, Reason: "two candidates"})
 	ambiguous.AmbiguousWith, ambiguous.Uncertainty = []string{open.IssueID}, "could be a"
 	drift := issue("e", "obs-5", domain.IssueOpen, domain.IssueHistoryEntry{At: now.Add(time.Hour), To: domain.IssueOpen, Event: domain.EventEvidenceDrift, Reason: "quote changed"})
+	drift.Claim, drift.Rule = domain.ClaimDescriptive, "delta.cc-threshold@1"
 	resolved := issue("f", "obs-6", domain.IssueResolved)
 	resolved.Verification = &domain.Verification{RunID: "run-1", Relevant: true, InspectionStatus: domain.CoverageInspected, FailureModeAbsent: true, VerifiedAt: finished}
 	for _, i := range []domain.Issue{open, falsePositive, regressed, ambiguous, drift, resolved} {
