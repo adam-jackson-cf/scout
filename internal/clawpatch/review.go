@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	reviewSafetyPatchVersion     = "scout-review-sanitize-v2"
-	reviewSafetyPatchSHA256      = "f39d73dad42b5d6701b1fee51f7784d3eb2b1548808d1ee47d8ef146ca97a865"
+	reviewSafetyPatchVersion     = "scout-review-sanitize-v3"
+	reviewSafetyPatchSHA256      = "dc867503f80cdb336681d72c221ec1dea24006f121b4cae56bf0fb284dae6ce3"
 	defaultMaxFindingsPerFeature = 10
 )
 
@@ -485,7 +485,7 @@ func observationFromFinding(root, runID string, finding rawFinding) (domain.Obse
 	observation := domain.Observation{
 		ObservationID:     "clawpatch:" + runID + ":" + finding.FindingID,
 		RunID:             runID,
-		Source:            "clawpatch@0.7.3+scout-review-sanitize-v2",
+		Source:            "clawpatch@0.7.3+scout-review-sanitize-v3",
 		SourceFindingID:   finding.FindingID,
 		Family:            domain.FamilyClawpatch,
 		OriginalCategory:  finding.Category,

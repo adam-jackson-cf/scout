@@ -15,8 +15,8 @@ CLAWPATCH_REVISION="$(git -C "$repo_root" ls-files -s third_party/clawpatch | aw
 CLAWPATCH_VERSION="$(manifest_value CLAWPATCH_VERSION)"
 PNPM_VERSION="$(manifest_value PNPM_VERSION)"
 readonly CLAWPATCH_REVISION CLAWPATCH_VERSION PNPM_VERSION
-readonly SCOUT_REVIEW_SAFETY_PATCH_VERSION="scout-review-sanitize-v2"
-readonly SCOUT_REVIEW_SAFETY_PATCH_SHA256="f39d73dad42b5d6701b1fee51f7784d3eb2b1548808d1ee47d8ef146ca97a865"
+readonly SCOUT_REVIEW_SAFETY_PATCH_VERSION="scout-review-sanitize-v3"
+readonly SCOUT_REVIEW_SAFETY_PATCH_SHA256="dc867503f80cdb336681d72c221ec1dea24006f121b4cae56bf0fb284dae6ce3"
 
 [[ "$CLAWPATCH_REVISION" =~ ^[0-9a-f]{40}$ ]] || { printf 'build-clawpatch: third_party/clawpatch is not a registered submodule\n' >&2; exit 1; }
 [[ -n "$CLAWPATCH_VERSION" && -n "$PNPM_VERSION" ]] || { printf 'build-clawpatch: toolchain/versions.env lacks CLAWPATCH_VERSION or PNPM_VERSION\n' >&2; exit 1; }
@@ -102,8 +102,13 @@ trap cleanup EXIT HUP INT TERM
 build_dir="$stage_dir/clawpatch"
 git -C "$source_dir" archive --format=tar --prefix=clawpatch/ "$CLAWPATCH_REVISION" | tar -xf - -C "$stage_dir"
 [[ -f "$build_dir/package.json" && -f "$build_dir/pnpm-lock.yaml" ]] || die "pinned source archive is missing package metadata"
+# The staging directory sits inside Scout's worktree; without its own repository
+# git apply resolves paths against the enclosing repository and silently applies nothing.
+git init -q "$build_dir" || die "cannot initialise build repository"
 git -C "$build_dir" apply --check "$safety_patch" || die "review safety patch does not apply to pinned source"
 git -C "$build_dir" apply "$safety_patch" || die "cannot apply review safety patch"
+git -C "$build_dir" apply --check --reverse "$safety_patch" || die "review safety patch was not applied to the build source"
+rm -rf "$build_dir/.git"
 
 node - "$build_dir/package.json" "$CLAWPATCH_VERSION" "$PNPM_VERSION" <<'NODE'
 const fs = require("node:fs");

@@ -302,3 +302,38 @@ index b2459d9..b564a7c 100644
      if (locked !== null) {
        try {
          await writeFeature(loaded.paths, {
+diff --git a/src/provider.test.ts b/src/provider.test.ts
+index c4cafd6..e453b0a 100644
+--- a/src/provider.test.ts
++++ b/src/provider.test.ts
+@@ -826,6 +826,8 @@ describe("Claude provider helpers", () => {
+       USERPROFILE: "C:\\Users\\operator",
+       CLAUDE_CONFIG_DIR: "/host-claude-config",
+       CLAUDE_CODE_OAUTH_TOKEN: "oauth-token",
++      USER: "operator",
++      LOGNAME: "operator",
+       ANTHROPIC_API_KEY: "api-key",
+       OPENAI_API_KEY: "must-not-leak",
+       DATABASE_URL: "must-not-leak",
+@@ -836,6 +838,8 @@ describe("Claude provider helpers", () => {
+       HOME: "/host-home",
+       USERPROFILE: "C:\\Users\\operator",
+       CLAUDE_CONFIG_DIR: "/host-claude-config",
++      USER: "operator",
++      LOGNAME: "operator",
+       XDG_CONFIG_HOME: "/tmp/claude/xdg-config",
+       XDG_CACHE_HOME: "/tmp/claude/xdg-cache",
+       XDG_DATA_HOME: "/tmp/claude/xdg-data",
+diff --git a/src/providers/claude.ts b/src/providers/claude.ts
+index 69f50b9..730a9cd 100644
+--- a/src/providers/claude.ts
++++ b/src/providers/claude.ts
+@@ -245,6 +245,8 @@ function claudeEnv(
+     env["HOME"] = process.env["HOME"]?.trim() || homedir();
+     copyEnv(env, "USERPROFILE");
+     copyEnv(env, "CLAUDE_CONFIG_DIR");
++    copyEnv(env, "USER");
++    copyEnv(env, "LOGNAME");
+   } else {
+     env["HOME"] = join(baseDir, "home");
+   }

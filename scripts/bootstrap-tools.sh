@@ -139,7 +139,7 @@ clawpatch_revision() {
 }
 
 install_clawpatch() {
-  local revision head cli
+  local revision head cli expected_marker
   revision="$(clawpatch_revision)"
   if [[ ! -e "$repo/third_party/clawpatch/.git" ]]; then
     git -C "$repo" submodule update --init third_party/clawpatch
@@ -147,7 +147,8 @@ install_clawpatch() {
   head="$(git -C "$repo/third_party/clawpatch" rev-parse HEAD)"
   [[ "$head" == "$revision" ]] || die "third_party/clawpatch is checked out at $head but the recorded pin is $revision (run: git submodule update third_party/clawpatch; an upgrade needs a compatibility review)"
   cli="$tools/clawpatch/$revision/dist/cli.js"
-  if [[ -x "$cli" && -f "$tools/clawpatch/$revision/.scout-review-safety" && "$(PATH="$tools/bin:$PATH" "$cli" --version)" == "$CLAWPATCH_VERSION" ]]; then return; fi
+  expected_marker="$(awk -F '"' '/^readonly SCOUT_REVIEW_SAFETY_PATCH_(VERSION|SHA256)=/ { v = v (v ? " " : "") $2 } END { print v }' "$repo/scripts/build-clawpatch.sh")"
+  if [[ -x "$cli" && -f "$tools/clawpatch/$revision/.scout-review-safety" && "$(<"$tools/clawpatch/$revision/.scout-review-safety")" == "$expected_marker" && "$(PATH="$tools/bin:$PATH" "$cli" --version)" == "$CLAWPATCH_VERSION" ]]; then return; fi
   PATH="$tools/bin:$PATH" CLAWPATCH_SOURCE="$repo/third_party/clawpatch" CLAWPATCH_OUTPUT_DIR="$tools/clawpatch" \
     bash "$repo/scripts/build-clawpatch.sh" > /dev/null
   log "built clawpatch $CLAWPATCH_VERSION ($revision)"
