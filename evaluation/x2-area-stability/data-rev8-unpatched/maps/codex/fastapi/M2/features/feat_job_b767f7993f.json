@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_b767f7993f",
+  "title": "Translation notification automation",
+  "summary": "Translation workflow and its containerized notification action.\n\nAgent mapper reason: The workflow and action implement a single translation notification responsibility.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Notification trigger."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Action interface."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Runtime definition."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Notification implementation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "translations",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "permissions",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:54:06.010Z"
+}

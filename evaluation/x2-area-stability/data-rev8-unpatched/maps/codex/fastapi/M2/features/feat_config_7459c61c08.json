@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_7459c61c08",
+  "title": "Repository issue and change management",
+  "summary": "Manage issue intake, approval labels, and change announcements.\n\nAgent mapper reason: These files define repository contribution intake and its automated processing.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Issue handling automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Approval label automation."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Change management automation."
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/questions.yml",
+      "reason": "Question intake form."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue intake policy."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Privileged issue intake."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contribution policies."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Security reporting boundary."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "triage",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "external-api",
+    "permissions",
+    "secrets"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:51:04.081Z",
+  "updatedAt": "2026-10-23T17:54:06.097Z"
+}

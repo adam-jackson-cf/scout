@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_e0ca95505e",
+  "title": "Documentation site presentation",
+  "summary": "Configure the English documentation site and browser interactions.\n\nAgent mapper reason: Template, configuration, and custom browser assets should be reviewed together for site behavior.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Site navigation and build configuration."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Site template override."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Browser chat behavior."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Site-specific browser behavior."
+    },
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Site-specific styling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/js/termynal.js",
+      "reason": "Terminal rendering dependency; provenance is unverified."
+    },
+    {
+      "path": "docs/en/docs/css/termynal.css",
+      "reason": "Terminal rendering styles; provenance is unverified."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Build environment."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "browser",
+    "mkdocs"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:51:04.081Z",
+  "updatedAt": "2026-10-23T17:54:06.196Z"
+}

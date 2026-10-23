@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_638b1cff0d",
+  "title": "Response classes and HTTP status regression suite",
+  "summary": "Verify response implementation selection and body/status consistency.\n\nAgent mapper reason: Response class selection and status handling jointly determine HTTP output.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_default_response_class.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "Application response default."
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "reason": "Router response default."
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "Alternative JSON renderer."
+    },
+    {
+      "path": "tests/test_reponse_set_reponse_code_empty.py",
+      "reason": "Empty response status."
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "Dynamic status changes."
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "Absent media type."
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "Bodyless status codes."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/response-change-status-code.md",
+      "reason": "Dynamic response contract."
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "http"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:46:11.449Z"
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_dc9648c1f9",
+  "title": "Documentation site presentation",
+  "summary": "Configure the English site and its custom interactive presentation.\n\nAgent mapper reason: Site configuration, templates, and custom browser behavior form one presentation boundary.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Site navigation and configuration."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Site template customization."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Chat interaction."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Site interactions."
+    },
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Site styling."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Site build pipeline."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/js/termynal.js",
+      "reason": "Terminal presentation dependency; ownership provenance is unverified."
+    },
+    {
+      "path": "docs/en/docs/css/termynal.css",
+      "reason": "Terminal presentation styling dependency."
+    },
+    {
+      "path": "docs/en/data/sponsors.yml",
+      "reason": "Presentation data."
+    },
+    {
+      "path": "docs/en/data/external_links.yml",
+      "reason": "External link data."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "mkdocs",
+    "frontend",
+    "documentation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:51:04.224Z"
+}

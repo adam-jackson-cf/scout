@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_79c559ef63",
+  "title": "Interactive API documentation contracts",
+  "summary": "Specify local documentation assets, Swagger redirects, and OAuth initialization.\n\nAgent mapper reason: The browser-facing API documentation has distinct asset and authentication redirect contracts.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_local_docs.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_local_docs.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "Local documentation assets."
+    },
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "reason": "Custom redirect behavior."
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "reason": "Disabled redirect behavior."
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "OAuth browser initialization."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/extending-openapi.md",
+      "reason": "Documentation customization intent."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_local_docs.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "swagger-ui",
+    "documentation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "auth",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:46:11.354Z",
+  "updatedAt": "2026-10-23T17:54:06.181Z"
+}

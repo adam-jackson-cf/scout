@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_401ccf53cb",
+  "title": "Community people automation",
+  "summary": "Community data processing and people workflow.\n\nAgent mapper reason: People data processing has a separate external-data and publication boundary.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/people.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Scheduled or event-driven orchestration."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action interface."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Action runtime."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "People processing."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Potential generated community data; context only."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "Community presentation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "community",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "filesystem",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:54:06.010Z"
+}

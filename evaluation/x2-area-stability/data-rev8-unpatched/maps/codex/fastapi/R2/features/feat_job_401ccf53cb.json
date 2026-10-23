@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_401ccf53cb",
+  "title": "Community people automation",
+  "summary": "Maintain contributor and community information.\n\nAgent mapper reason: The workflow, runtime, and data consumer define a bounded community maintenance job.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/people.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Community update workflow."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action contract."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Community data processing."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Action runtime."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Community data; generation status is unverified."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "Published community page."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "community",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "filesystem",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:46:11.354Z"
+}

@@ -438,20 +438,23 @@ def unit_checks(tmp):
           and lo["T3"]["per_repo"]["Y"]["held_out_survival"] == 1.0 and lo["T3"]["per_repo"]["Y"]["labelled"] == 40 and lo["T3"]["per_repo"]["X"]["held_out_survival"] == 1.0, lo)
     # the model probe's claude environment is a port of claudeEnv(host) (round-3 issue 1)
     base_ = {"PATH": "/p", "Path": "/q", "HOME": "/h", "USERPROFILE": "/u", "CLAUDE_CONFIG_DIR": "/c", "ANTHROPIC_MODEL": "m", "X2_PLAIN": "1", "GOOGLE_CLOUD_PROJECT": "g",
-             "AWS_CONFIG_FILE": "/a", "AWS_PROFILE": "pf", "CLAUDE_CODE_OAUTH_TOKEN": "t", "CLAUDE_CODE_USE_VERTEX": "", "CLAWPATCH_CLAUDE_BIN": "/b", "ANTHROPIC_API_KEY": "k"}
+             "AWS_CONFIG_FILE": "/a", "AWS_PROFILE": "pf", "CLAUDE_CODE_OAUTH_TOKEN": "t", "CLAUDE_CODE_USE_VERTEX": "", "CLAWPATCH_CLAUDE_BIN": "/b", "ANTHROPIC_API_KEY": "k",
+             "USER": "op", "LOGNAME": "op2", "SHELL": "/bin/sh"}
     penv = C.claude_provider_env(base_, "/tmp/x")
     want_names = {"PATH", "HOME", "USERPROFILE", "CLAUDE_CONFIG_DIR", "XDG_CONFIG_HOME", "XDG_CACHE_HOME", "XDG_DATA_HOME", "TMPDIR", "TEMP", "TMP",
-                  "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB", "GOOGLE_CLOUD_PROJECT", "AWS_CONFIG_FILE", "AWS_PROFILE", "CLAUDE_CODE_OAUTH_TOKEN", "ANTHROPIC_API_KEY"}
-    check("U claude provider environment port: exactly PATH-like, HOME, USERPROFILE, CLAUDE_CONFIG_DIR, fresh XDG/TMP dirs, SUBPROCESS_ENV_SCRUB=1, the auth keys present and non-empty, AWS_PROFILE only with an AWS file, the OAuth token; nothing else (no ANTHROPIC_MODEL, no X2_*, no CLAWPATCH_CLAUDE_BIN)",
+                  "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB", "GOOGLE_CLOUD_PROJECT", "AWS_CONFIG_FILE", "AWS_PROFILE", "CLAUDE_CODE_OAUTH_TOKEN", "ANTHROPIC_API_KEY", "USER", "LOGNAME"}
+    check("U claude provider environment port (as patched, scout-review-sanitize-v3): exactly PATH-like, HOME, USERPROFILE, CLAUDE_CONFIG_DIR, USER, LOGNAME, fresh XDG/TMP dirs, SUBPROCESS_ENV_SCRUB=1, the auth keys present and non-empty, AWS_PROFILE only with an AWS file, the OAuth token; nothing else (no ANTHROPIC_MODEL, no SHELL, no X2_*, no CLAWPATCH_CLAUDE_BIN)",
           set(penv) == want_names and penv["CLAUDE_CODE_SUBPROCESS_ENV_SCRUB"] == "1" and penv["TMP"] == penv["TMPDIR"] == penv["TEMP"] == "/tmp/x" and penv["XDG_CONFIG_HOME"] == "/tmp/x/xdg-config"
-          and "AWS_PROFILE" not in C.claude_provider_env({"HOME": "/h", "AWS_PROFILE": "p"}, "/t") and C.claude_executable({"CLAWPATCH_CLAUDE_BIN": " /b "}) == "/b" and C.claude_executable({}) == "claude", sorted(set(penv) ^ want_names))
+          and "AWS_PROFILE" not in C.claude_provider_env({"HOME": "/h", "AWS_PROFILE": "p"}, "/t") and C.claude_executable({"CLAWPATCH_CLAUDE_BIN": " /b "}) == "/b" and C.claude_executable({}) == "claude"
+          and penv["USER"] == "op" and penv["LOGNAME"] == "op2" and "USER" not in C.claude_provider_env({"HOME": "/h", "USER": ""}, "/t"), sorted(set(penv) ^ want_names))
     pe = lambda d_: sorted(k for k in C.claude_provider_env(d_, "/t") if k.lower() == "path")
     check("U claude provider environment port, PATH: only the FIRST case-insensitive `path` key is considered (claude.ts copyPathEnv returns after it), in both insertion orders, and an empty first match copies nothing and stops the search",
           pe({"PATH": "/p", "Path": "/q"}) == ["PATH"] and pe({"Path": "/q", "PATH": "/p"}) == ["Path"] and pe({"PATH": "", "Path": "/q"}) == [] and pe({"Path": "", "PATH": "/p"}) == []
           and pe({"HOME": "/h", "path": "/z", "PATH": "/p"}) == ["path"] and pe({"HOME": "/h"}) == [] and C.claude_provider_env({"Path": "/q", "PATH": "/p"}, "/t")["Path"] == "/q",
           [pe({"PATH": "/p", "Path": "/q"}), pe({"Path": "/q", "PATH": "/p"}), pe({"PATH": "", "Path": "/q"})])
-    ts_dir = os.path.join(ROOT, "third_party", "clawpatch", "src", "providers")
-    claude_ts, codex_ts = open(os.path.join(ts_dir, "claude.ts")).read(), open(os.path.join(ts_dir, "codex.ts")).read()
+    # amendment 1: the drift guards read the source AS BUILT (pinned revision + scripts/clawpatch-safe.patch), not the unpatched submodule checkout
+    pt = C.patched_sources(["src/providers/claude.ts", "src/providers/codex.ts", "src/config.ts", "src/prompt.ts"])
+    claude_ts, codex_ts = pt["src/providers/claude.ts"], pt["src/providers/codex.ts"]
     mk_ts = re.search(r"CLAUDE_AUTH_ENV_KEYS = \[(.*?)\] as const", claude_ts, re.S)
     check("U drift guard (providers/claude.ts, codex.ts): the ported auth-key list equals CLAUDE_AUTH_ENV_KEYS; the flags and environment names the probes mirror are present; neither provider passes --setting-sources, --ignore-user-config or --ignore-rules",
           bool(mk_ts) and re.findall(r'"([A-Z0-9_]+)"', mk_ts.group(1)) == C.CLAUDE_AUTH_ENV_KEYS
@@ -460,11 +463,42 @@ def unit_checks(tmp):
           and all('"%s"' % f in codex_ts for f in ("exec", "--cd", "--sandbox", "--skip-git-repo-check"))
           and not any(s in claude_ts + codex_ts for s in ("setting-sources", "ignore-user-config", "ignore-rules"))
           and "replaceEnv: true" in claude_ts and bool(re.search(r"function copyPathEnv\(.*?copyEnv\(target, key\);\s*return;", claude_ts, re.S)), bool(mk_ts))
-    cfg_ts = open(os.path.join(ROOT, "third_party", "clawpatch", "src", "config.ts")).read()
+    cfg_ts = pt["src/config.ts"]
     check("U drift guard (config.ts): Clawpatch reads CLAWPATCH_CONFIG, which the collector refuses (REFUSED_MODEL_ENV) because it can set model, reasoning effort and codexConfig for the maps only",
           "CLAWPATCH_CONFIG" in cfg_ts and "CLAWPATCH_CONFIG" in C.REFUSED_MODEL_ENV and set(C.REFUSED_MODEL_ENV) == {"CLAWPATCH_MODEL", "CLAWPATCH_REASONING_EFFORT", "CLAWPATCH_PROVIDER", "CLAWPATCH_CONFIG"})
     check("U drift guard (codex.ts): Clawpatch honours CLAWPATCH_CODEX_SANDBOX (bypass/none or --sandbox <value>), which the collector refuses (REFUSED_SANDBOX_ENV) so no map can write to the checkout",
           "CLAWPATCH_CODEX_SANDBOX" in codex_ts and "--dangerously-bypass-approvals-and-sandbox" in codex_ts and C.REFUSED_SANDBOX_ENV == ("CLAWPATCH_CODEX_SANDBOX",))
+    sub_claude = open(os.path.join(ROOT, "third_party", "clawpatch", "src", "providers", "claude.ts")).read()
+    check("U drift guard (patched claude.ts host branch): the patched source copies USER and LOGNAME right after CLAUDE_CONFIG_DIR (the port's additions), the source read is the patched one (differs from the unpatched submodule file), and the patched prompt.ts carries the sanitizer",
+          bool(re.search(r'copyEnv\(env, "CLAUDE_CONFIG_DIR"\);\s*copyEnv\(env, "USER"\);\s*copyEnv\(env, "LOGNAME"\);\s*\} else \{', claude_ts))
+          and claude_ts != sub_claude and 'copyEnv(env, "USER")' not in sub_claude and C.SANITIZER_TOKEN in pt["src/prompt.ts"] and C.SANITIZER_TOKEN not in open(os.path.join(ROOT, "third_party", "clawpatch", "src", "prompt.ts")).read())
+    # amendment 1: the Clawpatch build must be the review-safety build (pins read from build-clawpatch.sh, cross-checked with review.go)
+    pv, ps = C.review_safety_pins()
+    check("U build-safety pins: read from scripts/build-clawpatch.sh, equal to internal/clawpatch/review.go and to the digest of scripts/clawpatch-safe.patch",
+          re.fullmatch(r"scout-review-sanitize-v\d+", pv) and re.fullmatch(r"[0-9a-f]{64}", ps) and ps == C.sha256_file(os.path.join(ROOT, "scripts", "clawpatch-safe.patch")), (pv, ps))
+
+    def fake_build(name, marker, dist_text, files=None):
+        b = os.path.join(tmp, "build-" + name)
+        os.makedirs(os.path.join(b, "dist"))
+        if marker is not None:
+            with open(os.path.join(b, C.BUILD_MARKER_FILE), "w") as f:
+                f.write(marker)
+        for fn, text in (files or {"prompt.js": dist_text}).items():
+            with open(os.path.join(b, "dist", fn), "w") as f:
+                f.write(text)
+        return os.path.join(b, "dist", "cli.js")
+    exp_marker = "%s %s\n" % (pv, ps)
+    san = "const x = '[%s]';" % C.SANITIZER_TOKEN
+    cases = {"patched": fake_build("ok", exp_marker, san), "patched, sanitizer in a second dist file": fake_build("ok2", exp_marker, "", {"cli.js": "//", "sub.js": san}),
+             "patched, sanitizer in the entry file": fake_build("ok3", exp_marker, "", {"cli.js": san}),
+             "no marker": fake_build("nomark", None, san), "old patch version": fake_build("oldv", "scout-review-sanitize-v2 f39d73da\n", san),
+             "right version, wrong sha": fake_build("wrongsha", "%s %s\n" % (pv, "0" * 64), san), "marker but dist unpatched": fake_build("nosan", exp_marker, "const x = 1;")}
+    got = {k: C.build_safety_check(p) for k, p in cases.items()}
+    check("U build-safety check: passes a build whose marker equals the pins and whose dist/ holds the sanitizer (in the entry file cli.js, and in a non-entry file); refuses no marker, an old patch version, a wrong sha, and a marker over an unpatched dist/; the reason names the cause",
+          got["patched"]["ok"] and got["patched, sanitizer in a second dist file"]["ok"] and got["patched, sanitizer in the entry file"]["ok"] and got["patched"]["marker"] == exp_marker.strip()
+          and all(not got[k]["ok"] and got[k]["reason"] for k in ("no marker", "old patch version", "right version, wrong sha", "marker but dist unpatched"))
+          and C.BUILD_MARKER_FILE in got["no marker"]["reason"] and got["old patch version"]["marker_ok"] is False and got["marker but dist unpatched"]["marker_ok"] is True
+          and got["marker but dist unpatched"]["sanitizer_in_dist"] is False, got)
     ok_p = lambda m: {"model": m, "error": None}
 
     def tvf(before, after, v0=None, v1="same"):
@@ -1038,7 +1072,14 @@ def environment_and_collector_checks(tmp):
     git3("commit", "-q", "-m", "init")
     rev3 = git3("rev-parse", "HEAD").stdout.strip()
     spec = json.dumps({"tiny": {"rev": rev, "url": src, "ext": ".py"}, "tiny2": {"rev": rev, "url": src, "ext": ".py"}, "tiny3": {"rev": rev3, "url": src3, "ext": ".py"}})
-    stub = os.path.join(HERE, "stub_clawpatch.js")
+    # amendment 1: the collector accepts only the review-safety build, so the stub lives in a fixture build directory (marker = the real pins, sanitizer token in dist/)
+    pv_, ps_ = C.review_safety_pins()
+    sb = os.path.join(tmp, "stubbuild")
+    os.makedirs(os.path.join(sb, "dist"))
+    stub = os.path.join(sb, "dist", "cli.js")
+    shutil.copy(os.path.join(HERE, "stub_clawpatch.js"), stub)
+    open(os.path.join(sb, "dist", "prompt.js"), "w").write("// fixture: %s\n" % C.SANITIZER_TOKEN)
+    open(os.path.join(sb, C.BUILD_MARKER_FILE), "w").write("%s %s\n" % (pv_, ps_))
     bins = os.path.join(tmp, "fakebin")
     os.makedirs(bins)
 
@@ -1113,6 +1154,9 @@ def environment_and_collector_checks(tmp):
           and tv["model_probe_before"]["model"] == "fake-codex-model" and tv["model_probe_after"]["model"] == "fake-codex-model" and tv["term_grace_seconds"] == 2, tv)
     check("C tool-versions records the PRESENCE (never the value) of CLAWPATCH_CLAUDE_BIN, ANTHROPIC_MODEL and CODEX_HOME",
           tv["env_presence"] == {"CLAWPATCH_CLAUDE_BIN": False, "ANTHROPIC_MODEL": True, "CODEX_HOME": False} and "keep" not in json.dumps(tv["env_presence"]), tv["env_presence"])
+    cbs = tv.get("clawpatch_build_safety") or {}
+    check("C tool-versions records the build-safety check: marker text equal to the expected pinned \"<version> <sha256>\", marker_ok, sanitizer_in_dist, ok",
+          cbs.get("ok") is True and cbs.get("marker_ok") is True and cbs.get("sanitizer_in_dist") is True and cbs.get("marker") == cbs.get("expected") == "%s %s" % (pv_, ps_), cbs)
     check("C tool-versions records the CLI versions again after the after-probe (cli_versions_after equals the start versions when nothing changed) and, on the synthetic repo, no workspace-level configuration file",
           tv["cli_versions_after"] == {k_: tv[k_] for k_ in ("claude", "codex")} and set(tv["workspace_config_presence"]) == set(C.WORKSPACE_CONFIG_PATHS) and not any(tv["workspace_config_presence"].values()), tv["cli_versions_after"])
     check("C every attempt records a UTC start time (started_utc) in the attempt files and meta.json attempts",
@@ -1213,7 +1257,7 @@ def environment_and_collector_checks(tmp):
     # round-3 issue 1: the probes run in the model-resolution context of the map calls
     cl_calls = [json.loads(line) for line in open(os.path.join(bins, "claude.calls"))]
     allowed_names = set(C.CLAUDE_AUTH_ENV_KEYS) | {"PATH", "HOME", "USERPROFILE", "CLAUDE_CONFIG_DIR", "XDG_CONFIG_HOME", "XDG_CACHE_HOME", "XDG_DATA_HOME", "TMPDIR", "TEMP", "TMP",
-                                                   "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB", "CLAUDE_CODE_OAUTH_TOKEN", "AWS_PROFILE", "SystemRoot", "ComSpec", "PATHEXT"}
+                                                   "CLAUDE_CODE_SUBPROCESS_ENV_SCRUB", "CLAUDE_CODE_OAUTH_TOKEN", "AWS_PROFILE", "SystemRoot", "ComSpec", "PATHEXT", "USER", "LOGNAME"}
     interp_added = {"LC_CTYPE", "__CF_USER_TEXT_ENCODING", "__PYVENV_LAUNCHER__", "PYTHONCOERCECLOCALE"}  # names the fake's own Python interpreter / macOS add to an otherwise empty environment
     check("C claude model probes (%d calls): flags mirror providers/claude.ts (-p json, --tools \"\", --safe-mode, --strict-mcp-config + empty MCP config, --disable-slash-commands, --no-chrome, --no-session-persistence) and NO --setting-sources" % len(cl_calls),
           len(cl_calls) >= 4 and all(all(f in c["argv"] for f in ("-p", "--safe-mode", "--strict-mcp-config", "--disable-slash-commands", "--no-chrome", "--no-session-persistence"))
@@ -1272,6 +1316,38 @@ def environment_and_collector_checks(tmp):
     dw, rw = collect("wrongver", args=("--expect-clawpatch-version", "0.7.3"), work=w12)
     check("C a Clawpatch --version other than the pinned 0.7.3 is refused before cloning", rw.returncode != 0 and "0.7.3" in rw.stderr + rw.stdout and not os.path.exists(w12)
           and not os.path.exists(os.path.join(dw, "maps")), rw.stderr[-300:])
+    ub = os.path.join(tmp, "stubbuild-unpatched")  # an unpatched local build: no marker file, no sanitizer
+    os.makedirs(os.path.join(ub, "dist"))
+    shutil.copy(os.path.join(HERE, "stub_clawpatch.js"), os.path.join(ub, "dist", "cli.js"))
+    ob = os.path.join(tmp, "stubbuild-old")  # a marker from an older patch revision over a patched dist/
+    os.makedirs(os.path.join(ob, "dist"))
+    shutil.copy(os.path.join(HERE, "stub_clawpatch.js"), os.path.join(ob, "dist", "cli.js"))
+    open(os.path.join(ob, "dist", "prompt.js"), "w").write(C.SANITIZER_TOKEN)
+    open(os.path.join(ob, C.BUILD_MARKER_FILE), "w").write("scout-review-sanitize-v2 f39d73da\n")
+    nb = os.path.join(tmp, "stubbuild-nosan")  # the pinned marker over a dist/ without the sanitizer
+    os.makedirs(os.path.join(nb, "dist"))
+    shutil.copy(os.path.join(HERE, "stub_clawpatch.js"), os.path.join(nb, "dist", "cli.js"))
+    open(os.path.join(nb, C.BUILD_MARKER_FILE), "w").write("%s %s\n" % (pv_, ps_))
+    wsb = os.path.join(tmp, "stubbuild-wrongsha")  # the pinned version with a wrong sha over a patched dist/
+    os.makedirs(os.path.join(wsb, "dist"))
+    shutil.copy(os.path.join(HERE, "stub_clawpatch.js"), os.path.join(wsb, "dist", "cli.js"))
+    open(os.path.join(wsb, "dist", "prompt.js"), "w").write(C.SANITIZER_TOKEN)
+    open(os.path.join(wsb, C.BUILD_MARKER_FILE), "w").write("%s %s\n" % (pv_, "0" * 64))
+
+    def probe_calls():  # model calls the fake CLIs have logged so far (every model call, hence the probe, appends one line to <cli>.calls; --version does not)
+        n_ = 0
+        for cli_ in ("codex", "claude"):
+            f_ = os.path.join(bins, cli_ + ".calls")
+            n_ += len(open(f_).read().splitlines()) if os.path.exists(f_) else 0
+        return n_
+    for tag_, bdir_, why_ in (("nomarker", ub, "no .scout-review-safety"), ("oldmarker", ob, "not the pinned"), ("wrongsha", wsb, "not the pinned"), ("nosanitizer", nb, C.SANITIZER_TOKEN)):
+        wb_ = os.path.join(tmp, "col-%s-work" % tag_)
+        calls_before_ = probe_calls()
+        db_, rb_ = collect(tag_, args=("--cli", os.path.join(bdir_, "dist", "cli.js")), work=wb_)
+        check("C a Clawpatch build that is not the review-safety build (%s) is refused before any probe, clone or data file (no fake-CLI model call logged)" % tag_,
+              rb_.returncode != 0 and "review-safety build" in rb_.stderr + rb_.stdout and why_ in rb_.stderr + rb_.stdout and not os.path.exists(wb_)
+              and not os.path.exists(os.path.join(db_, "maps")) and not glob.glob(os.path.join(db_, "tool-versions-*")) and probe_calls() == calls_before_ and calls_before_ > 0,
+              ((rb_.stderr + rb_.stdout)[-300:], calls_before_, probe_calls()))
     import collect as COL
     try:
         COL.sh(["sleep", "5"], timeout=1)

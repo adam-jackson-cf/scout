@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_e486fc210a",
+  "title": "HTTP authentication contracts",
+  "summary": "Specify HTTP basic, bearer, digest, and base authentication behavior.\n\nAgent mapper reason: These schemes share Authorization header parsing and authentication failure handling.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_security_http_base.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_security_http_base.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_security_http_base.py",
+      "reason": "Base credential parsing."
+    },
+    {
+      "path": "tests/test_security_http_base_description.py",
+      "reason": "Base scheme metadata."
+    },
+    {
+      "path": "tests/test_security_http_base_optional.py",
+      "reason": "Optional base credentials."
+    },
+    {
+      "path": "tests/test_security_http_basic_optional.py",
+      "reason": "Optional basic credentials."
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "Basic authentication challenge."
+    },
+    {
+      "path": "tests/test_security_http_basic_realm_description.py",
+      "reason": "Basic scheme metadata."
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "Bearer extraction."
+    },
+    {
+      "path": "tests/test_security_http_bearer_description.py",
+      "reason": "Bearer scheme metadata."
+    },
+    {
+      "path": "tests/test_security_http_bearer_optional.py",
+      "reason": "Optional bearer credentials."
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "reason": "Digest extraction."
+    },
+    {
+      "path": "tests/test_security_http_digest_description.py",
+      "reason": "Digest scheme metadata."
+    },
+    {
+      "path": "tests/test_security_http_digest_optional.py",
+      "reason": "Optional digest credentials."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/security/http-basic-auth.md",
+      "reason": "HTTP authentication contract."
+    },
+    {
+      "path": "tests/test_security_http_base.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_http_base.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "http-auth"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "auth",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:46:11.354Z"
+}

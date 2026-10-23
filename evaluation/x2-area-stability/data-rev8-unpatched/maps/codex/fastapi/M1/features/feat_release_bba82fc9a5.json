@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_bba82fc9a5",
+  "title": "Package validation and publication",
+  "summary": "Define package tooling, continuous checks, and release publication.\n\nAgent mapper reason: Package metadata, validation gates, and publication must agree on supported environments and release artifacts.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package and tool configuration."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Continuous validation."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Release publication."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Related validation reporting."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local quality gates."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency maintenance."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow."
+    },
+    {
+      "path": "LICENSE",
+      "reason": "Distribution terms."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "ci",
+    "release"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "secrets",
+    "permissions"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:40:44.920Z",
+  "updatedAt": "2026-10-23T17:51:04.174Z"
+}

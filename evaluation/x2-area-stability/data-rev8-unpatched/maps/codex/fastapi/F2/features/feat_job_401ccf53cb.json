@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_401ccf53cb",
+  "title": "Community people automation",
+  "summary": "Maintain contributor and community information used by the documentation.\n\nAgent mapper reason: Community data collection and publication have a common operational boundary.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/people.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Community update orchestration."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action interface."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Community information processing."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Action runtime."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Potential automation output; retain as context pending provenance verification."
+    },
+    {
+      "path": "docs/en/data/github_sponsors.yml",
+      "reason": "Potential generated sponsor information."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "Published community presentation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "community",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "filesystem",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:32:43.376Z",
+  "updatedAt": "2026-10-23T17:32:43.376Z"
+}

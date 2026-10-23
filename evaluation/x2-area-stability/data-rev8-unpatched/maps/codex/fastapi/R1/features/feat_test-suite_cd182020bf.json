@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_cd182020bf",
+  "title": "Interactive API documentation regression suite",
+  "summary": "Verify Swagger UI configuration, OAuth initialization, and local documentation assets.\n\nAgent mapper reason: These tests cover the browser-facing API documentation integration.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "reason": "Custom redirect."
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "reason": "Disabled redirect."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "Local documentation assets."
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "OAuth initialization."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/extending-openapi.md",
+      "reason": "Documentation customization."
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "swagger",
+    "documentation"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:40:44.920Z",
+  "updatedAt": "2026-10-23T17:40:44.920Z"
+}

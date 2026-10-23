@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_f09efa40eb",
+  "title": "Quality checks and dependency maintenance",
+  "summary": "Define package tooling, CI tests, coverage reporting, and dependency update policy.\n\nAgent mapper reason: These files jointly define how repository changes are installed and validated.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package and development tooling configuration."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "CI test execution."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Coverage report automation."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local quality hooks."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency maintenance policy."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Repository artifact exclusions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Developer workflow guidance."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "packaging",
+    "quality"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:36:27.766Z",
+  "updatedAt": "2026-10-23T17:36:27.766Z"
+}

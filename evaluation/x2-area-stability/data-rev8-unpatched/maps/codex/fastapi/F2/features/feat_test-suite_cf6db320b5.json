@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_cf6db320b5",
+  "title": "Response model serialization contracts",
+  "summary": "Specify response filtering, aliases, model validation, dataclasses, and ORM conversion.\n\nAgent mapper reason: These tests share the outgoing typed-data validation and filtering boundary.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_serialize_response.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "reason": "Nested model filtering."
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "ORM response conversion."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Response aliases."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Return annotation inference."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Field inclusion and exclusion."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid response detection."
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Response subtypes."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass responses."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Model responses."
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Default value omission."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Public response filtering contract."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response-model",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:32:43.376Z",
+  "updatedAt": "2026-10-23T17:32:43.376Z"
+}

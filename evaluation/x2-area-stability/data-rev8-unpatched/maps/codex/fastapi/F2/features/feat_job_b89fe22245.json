@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_b89fe22245",
+  "title": "Documentation preview automation",
+  "summary": "Build documentation previews, observe deployments, and post preview links on pull requests.\n\nAgent mapper reason: Preview production and reporting form one deployment feedback workflow.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build orchestration."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Preview orchestration."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Preview observer inputs and execution contract."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Preview observation implementation."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Observer runtime."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Comment action inputs and execution contract."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Pull request comment implementation."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Comment action runtime."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Documentation build configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "docs",
+    "previews"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "permissions",
+    "user-input",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:32:43.376Z",
+  "updatedAt": "2026-10-23T17:32:43.376Z"
+}

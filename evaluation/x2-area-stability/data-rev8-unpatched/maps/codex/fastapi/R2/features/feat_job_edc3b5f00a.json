@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_edc3b5f00a",
+  "title": "Documentation preview automation",
+  "summary": "Build documentation previews, watch their status, and report preview links on pull requests.\n\nAgent mapper reason: The watcher and commenter form one preview reporting workflow.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Preview workflow."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Preview monitoring implementation."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Action inputs and execution contract."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Action runtime."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Pull request preview reporting."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Reporting action contract."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Reporting runtime."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Related documentation build."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "documentation",
+    "previews"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "permissions",
+    "user-input",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:46:11.354Z",
+  "updatedAt": "2026-10-23T17:46:11.354Z"
+}

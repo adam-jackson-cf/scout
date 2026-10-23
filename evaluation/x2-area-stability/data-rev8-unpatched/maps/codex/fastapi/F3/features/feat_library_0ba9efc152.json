@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0ba9efc152",
+  "title": "Exception handlers and error responses",
+  "summary": "Review documented error handling and exception propagation regressions.\n\nAgent mapper reason: Exception dispatch and error representation form one observable failure contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/handling_errors/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/handling_errors/tutorial001.py",
+      "reason": "HTTP error example."
+    },
+    {
+      "path": "docs_src/handling_errors/tutorial002.py",
+      "reason": "Error customization example."
+    },
+    {
+      "path": "docs_src/handling_errors/tutorial003.py",
+      "reason": "Handler example."
+    },
+    {
+      "path": "docs_src/handling_errors/tutorial004.py",
+      "reason": "Handler override example."
+    },
+    {
+      "path": "docs_src/handling_errors/tutorial005.py",
+      "reason": "Validation handler example."
+    },
+    {
+      "path": "docs_src/handling_errors/tutorial006.py",
+      "reason": "Handler reuse example."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "Exception dispatch contract."
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "Underlying framework exceptions."
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "Middleware exception interaction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/handling-errors.md",
+      "reason": "Public error handling semantics."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "exceptions",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:36:27.766Z",
+  "updatedAt": "2026-10-23T17:36:27.766Z"
+}

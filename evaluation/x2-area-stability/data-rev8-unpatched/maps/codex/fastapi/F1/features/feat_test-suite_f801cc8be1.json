@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_f801cc8be1",
+  "title": "JSON encoding and data structures",
+  "summary": "Generic JSON conversion and custom encoder behavior.\n\nAgent mapper reason: Encoding is independently reusable and should be reviewed separately from route response filtering.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "Generic encoding contract."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Datetime customization."
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "Framework data structures."
+    },
+    {
+      "path": "docs_src/encoder/tutorial001.py",
+      "reason": "Executable encoding example."
+    },
+    {
+      "path": "docs_src/encoder/tutorial001_py310.py",
+      "reason": "Python syntax variant."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/encoder.md",
+      "reason": "Encoding documentation."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "encoding"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:28:06.385Z"
+}

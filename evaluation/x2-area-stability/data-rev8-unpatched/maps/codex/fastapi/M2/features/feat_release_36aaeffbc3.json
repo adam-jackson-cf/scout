@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_36aaeffbc3",
+  "title": "Package publication",
+  "summary": "Release publication workflow.\n\nAgent mapper reason: Publishing has a distinct credential and distribution boundary from ordinary CI.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Release orchestration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Published package metadata."
+    },
+    {
+      "path": "docs/en/docs/release-notes.md",
+      "reason": "Release history."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "release",
+    "publication"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "permissions",
+    "external-api",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:54:06.010Z",
+  "updatedAt": "2026-10-23T17:54:06.010Z"
+}

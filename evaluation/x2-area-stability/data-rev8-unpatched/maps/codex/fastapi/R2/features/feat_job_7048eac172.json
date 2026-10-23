@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_7048eac172",
+  "title": "Documentation preview monitoring",
+  "summary": "Watch preview deployments and coordinate preview workflows.\n\nAgent mapper reason: Preview lifecycle monitoring belongs with its workflow orchestration.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Action interface."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Preview monitoring implementation."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Execution environment."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Preview orchestration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build dependency."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "previews"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "permissions",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:46:11.436Z"
+}

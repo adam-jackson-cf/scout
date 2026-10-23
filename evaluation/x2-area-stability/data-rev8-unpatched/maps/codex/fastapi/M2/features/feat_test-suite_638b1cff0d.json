@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_638b1cff0d",
+  "title": "Response classes and HTTP status behavior",
+  "summary": "Review response defaults, body suppression, and status overrides.\n\nAgent mapper reason: Response class selection and status semantics govern the final HTTP envelope.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_default_response_class.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_default_response_class.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "Application response defaults."
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "reason": "Router response defaults."
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "Alternative JSON response."
+    },
+    {
+      "path": "tests/test_reponse_set_reponse_code_empty.py",
+      "reason": "Empty response status handling."
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "Dynamic status overrides."
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "Missing media type behavior."
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "Statuses that prohibit bodies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/custom-response.md",
+      "reason": "Response customization intent."
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "http"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:54:06.178Z"
+}

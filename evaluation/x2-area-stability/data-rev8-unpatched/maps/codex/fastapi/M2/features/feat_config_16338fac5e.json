@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_16338fac5e",
+  "title": "Package quality and continuous integration",
+  "summary": "Root package configuration, test workflow, and local quality checks.\n\nAgent mapper reason: These files define how the main package is built and checked.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package and tool configuration."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Continuous integration checks."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Test reporting workflow."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local quality hooks."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Development instructions."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "packaging",
+    "quality"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:54:06.010Z",
+  "updatedAt": "2026-10-23T17:54:06.010Z"
+}

@@ -91,8 +91,9 @@ def clawpatch_map_env(base):
     return scrub_env(base, extra)
 
 
-# ---- Clawpatch claude provider's environment, ported from third_party/clawpatch/src/providers/claude.ts (CLAUDE_AUTH_ENV_KEYS, claudeEnv with
-# authContext "host", includeAuth true, `replaceEnv: true`). The model probe (collect.probe_model) runs in it so it resolves the model as the maps do.
+# ---- Clawpatch claude provider's environment, ported from third_party/clawpatch/src/providers/claude.ts AS PATCHED by scripts/clawpatch-safe.patch
+# (CLAUDE_AUTH_ENV_KEYS, claudeEnv with authContext "host", includeAuth true, `replaceEnv: true`; the patch adds USER and LOGNAME). The model probe
+# (collect.probe_model) runs in it so it resolves the model as the maps do.
 CLAUDE_AUTH_ENV_KEYS = [
     "ANTHROPIC_API_KEY", "ANTHROPIC_BASE_URL", "ANTHROPIC_AUTH_TOKEN", "CLAUDE_CODE_USE_VERTEX", "ANTHROPIC_VERTEX_PROJECT_ID", "ANTHROPIC_VERTEX_REGION",
     "ANTHROPIC_VERTEX_BASE_URL", "CLOUD_ML_REGION", "GOOGLE_APPLICATION_CREDENTIALS", "GOOGLE_CLOUD_PROJECT", "GCLOUD_PROJECT", "CLOUDSDK_CORE_PROJECT",
@@ -131,6 +132,8 @@ def claude_provider_env(base, base_dir):
     env["HOME"] = (base.get("HOME") or "").strip() or os.path.expanduser("~")
     copy("USERPROFILE")
     copy("CLAUDE_CONFIG_DIR")
+    copy("USER")  # scout-review-sanitize-v3 (scripts/clawpatch-safe.patch, providers/claude.ts host branch): Claude Code on macOS fails to authenticate without them
+    copy("LOGNAME")
     env["XDG_CONFIG_HOME"] = os.path.join(base_dir, "xdg-config")
     env["XDG_CACHE_HOME"] = os.path.join(base_dir, "xdg-cache")
     env["XDG_DATA_HOME"] = os.path.join(base_dir, "xdg-data")
@@ -147,6 +150,94 @@ def claude_provider_env(base, base_dir):
 def claude_executable(base):
     """claudeExecutable(): CLAWPATCH_CLAUDE_BIN (trimmed) when non-empty, else `claude`."""
     return (base.get("CLAWPATCH_CLAUDE_BIN") or "").strip() or "claude"
+
+
+# ---- Review-safety build (amendment 1, PREREGISTRATION section 2): the study runs the Clawpatch build Scout ships, i.e. the pinned source WITH
+# scripts/clawpatch-safe.patch. The pins are read from scripts/build-clawpatch.sh (the value scripts/bootstrap-tools.sh compares the build marker with) and
+# cross-checked against internal/clawpatch/review.go (the value Scout's own client verifies), so there is no second copy here.
+ROOT_DIR = os.path.abspath(os.path.join(HERE, "..", ".."))
+BUILD_MARKER_FILE = ".scout-review-safety"  # written next to dist/ by scripts/build-clawpatch.sh: "<version> <sha256>\n"
+SANITIZER_TOKEN = "SCOUT_REDACTED_SECRET"  # emitted by the patch's sanitizeSensitiveText (src/prompt.ts); present in a patched dist/, absent from an unpatched one
+
+
+def review_safety_pins(root=ROOT_DIR):
+    """(version, sha256) of the review-safety patch from scripts/build-clawpatch.sh; ValueError unless internal/clawpatch/review.go pins the same pair
+    and the patch file's own digest equals the pinned sha256."""
+    def grab(path, rx):
+        with open(path) as f:
+            return re.findall(rx, f.read(), re.M)
+    sh = os.path.join(root, "scripts", "build-clawpatch.sh")
+    v = grab(sh, r'^readonly SCOUT_REVIEW_SAFETY_PATCH_VERSION="([^"]+)"')
+    s = grab(sh, r'^readonly SCOUT_REVIEW_SAFETY_PATCH_SHA256="([0-9a-f]{64})"')
+    gv = grab(os.path.join(root, "internal", "clawpatch", "review.go"), r'reviewSafetyPatchVersion\s*=\s*"([^"]+)"')
+    gs = grab(os.path.join(root, "internal", "clawpatch", "review.go"), r'reviewSafetyPatchSHA256\s*=\s*"([0-9a-f]{64})"')
+    if len(v) != 1 or len(s) != 1 or v != gv or s != gs:
+        raise ValueError("review-safety pins missing or inconsistent: build-clawpatch.sh %r %r, review.go %r %r" % (v, s, gv, gs))
+    actual = sha256_file(os.path.join(root, "scripts", "clawpatch-safe.patch"))
+    if actual != s[0]:
+        raise ValueError("scripts/clawpatch-safe.patch sha256 %s is not the pinned %s" % (actual, s[0]))
+    return v[0], s[0]
+
+
+def build_safety_check(cli, root=ROOT_DIR):
+    """Is the Clawpatch CLI at `cli` the patched build? The build directory is dirname(dirname(cli)) (as Scout's verifyReviewSafetyPatch). Requires its marker
+    file to equal "<pinned version> <pinned sha256>" AND some built *.js under dist/ to contain the sanitizer token. -> dict with `ok`, `reason` (None when ok),
+    `expected`, `marker` (text or None), `marker_ok`, `sanitizer_in_dist`."""
+    out = {"ok": False, "reason": None, "expected": None, "marker": None, "marker_ok": False, "sanitizer_in_dist": False}
+    try:
+        out["expected"] = " ".join(review_safety_pins(root))
+    except (ValueError, OSError) as e:
+        out["reason"] = "pins unreadable: %s" % e
+        return out
+    build = os.path.dirname(os.path.dirname(os.path.abspath(cli)))
+    try:
+        with open(os.path.join(build, BUILD_MARKER_FILE)) as f:
+            out["marker"] = f.read().strip()
+    except OSError:
+        out["reason"] = "no %s next to dist/ in %s (an unpatched or foreign build)" % (BUILD_MARKER_FILE, build)
+        return out
+    out["marker_ok"] = out["marker"] == out["expected"]
+    for dirpath, _dirs, files in os.walk(os.path.join(build, "dist")):
+        for name in files:
+            if name.endswith(".js"):
+                with open(os.path.join(dirpath, name), errors="replace") as f:
+                    if SANITIZER_TOKEN in f.read():
+                        out["sanitizer_in_dist"] = True
+    if not out["marker_ok"]:
+        out["reason"] = "build marker %r is not the pinned %r" % (out["marker"], out["expected"])
+    elif not out["sanitizer_in_dist"]:
+        out["reason"] = "dist/ does not contain %s (the marker claims a patch the build lacks)" % SANITIZER_TOKEN
+    out["ok"] = out["marker_ok"] and out["sanitizer_in_dist"]
+    return out
+
+
+def patched_sources(rels, root=ROOT_DIR):
+    """{rel: text} of third_party/clawpatch files AS BUILT: the pinned gitlink revision archived, scripts/clawpatch-safe.patch applied exactly as
+    scripts/build-clawpatch.sh does (own throw-away repository, --check --reverse proves it applied). The submodule working tree is never read."""
+    import subprocess
+    import tarfile
+    import tempfile
+    rev = subprocess.run(["git", "-C", root, "ls-files", "-s", "third_party/clawpatch"], capture_output=True, text=True, check=True).stdout.split()[1]
+    patch = os.path.join(root, "scripts", "clawpatch-safe.patch")
+    with open(patch) as f:
+        touched = re.findall(r"^diff --git a/(\S+) b/", f.read(), re.M)
+    with tempfile.TemporaryDirectory(prefix="x2-patched-") as d:
+        arc = subprocess.run(["git", "-C", os.path.join(root, "third_party", "clawpatch"), "archive", "--format=tar", rev, *sorted(set(touched) | set(rels))],
+                             capture_output=True, check=True).stdout
+        tmptar = os.path.join(d, "src.tar")
+        with open(tmptar, "wb") as f:
+            f.write(arc)
+        tree = os.path.join(d, "tree")
+        os.makedirs(tree)
+        with tarfile.open(tmptar) as t:
+            t.extractall(tree, filter="data")
+        for args in (["init", "-q"], ["apply", "--check", patch], ["apply", patch], ["apply", "--check", "--reverse", patch]):
+            subprocess.run(["git", "-C", tree, *args], capture_output=True, check=True)
+        out = {}
+        for rel in rels:
+            with open(os.path.join(tree, rel)) as f:
+                out[rel] = f.read()
+        return out
 
 
 def parse_version(text):

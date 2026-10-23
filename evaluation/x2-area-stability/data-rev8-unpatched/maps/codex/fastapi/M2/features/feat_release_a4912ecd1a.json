@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_a4912ecd1a",
+  "title": "Packaging and publishing",
+  "summary": "Package metadata and release publication.\n\nAgent mapper reason: Packaging configuration and publishing permissions determine the released artifact.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package metadata and tool configuration."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Release publication."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "LICENSE",
+      "reason": "Distribution license."
+    },
+    {
+      "path": "README.md",
+      "reason": "Package-facing documentation."
+    },
+    {
+      "path": "docs/en/docs/release-notes.md",
+      "reason": "Published release history."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "release"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "filesystem",
+    "external-api",
+    "secrets",
+    "permissions"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:54:06.138Z"
+}

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_1c26a12f85",
+  "title": "Documentation preview deployment",
+  "summary": "Build documentation previews and report their availability on pull requests.\n\nAgent mapper reason: Preview production, discovery, and pull-request comments form one delivery workflow.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Preview workflow."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Comment action interface."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Preview comment implementation."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Action runtime."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Preview watcher interface."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Preview watcher implementation."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Watcher runtime."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Related documentation build."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "docs",
+    "previews"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "permissions",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:40:44.920Z",
+  "updatedAt": "2026-10-23T17:46:11.435Z"
+}

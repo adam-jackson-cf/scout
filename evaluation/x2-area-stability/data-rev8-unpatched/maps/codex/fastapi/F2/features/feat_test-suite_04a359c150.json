@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_04a359c150",
+  "title": "JSON encoding and data structures",
+  "summary": "Specify JSON-compatible conversion and supporting data structure behavior.\n\nAgent mapper reason: Conversion of Python values into transport-compatible data is a distinct shared utility concern.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_jsonable_encoder.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "JSON-compatible conversion."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom datetime encoding."
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "reason": "Inherited custom type behavior."
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "Supporting data structures."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs_src/encoder/tutorial001.py",
+      "reason": "Public encoder example."
+    },
+    {
+      "path": "docs/en/docs/tutorial/encoder.md",
+      "reason": "Encoder usage contract."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "encoding",
+    "data-types"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:32:43.376Z",
+  "updatedAt": "2026-10-23T17:32:43.376Z"
+}

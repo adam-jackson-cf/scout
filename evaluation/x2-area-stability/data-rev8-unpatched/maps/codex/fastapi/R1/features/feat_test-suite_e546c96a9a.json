@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_e546c96a9a",
+  "title": "Interactive API documentation",
+  "summary": "Swagger configuration, redirects, OAuth initialization, and local documentation assets.\n\nAgent mapper reason: Documentation delivery and authentication redirects share browser-facing integration boundaries.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "reason": "Custom redirect behavior."
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "reason": "Disabled redirects."
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "OAuth initialization."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "Local documentation assets."
+    },
+    {
+      "path": "tests/test_deprecated_openapi_prefix.py",
+      "reason": "Legacy documentation prefix."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/extending-openapi.md",
+      "reason": "Documentation customization."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_local_docs.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "swagger",
+    "documentation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "auth",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:40:45.005Z"
+}

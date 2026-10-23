@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_30899e045c",
+  "title": "Dependency resolution and cleanup contracts",
+  "summary": "Review caching, overrides, context propagation, and dependency exception handling.\n\nAgent mapper reason: Dependency identity, execution lifetime, and override semantics are tightly coupled.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_dependency_cache.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "Dependency cache behavior."
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "Class dependency behavior."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "Resource cleanup."
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "Context propagation."
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "Repeated dependency resolution."
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "Exception propagation."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "Override resolution."
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "Security dependency overrides."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Connection injection."
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "Parameter and dependency interaction."
+    },
+    {
+      "path": "tests/test_repeated_dependency_schema.py",
+      "reason": "Schema consistency for reused dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/dependencies/dependencies-with-yield.md",
+      "reason": "Cleanup semantics."
+    },
+    {
+      "path": "docs/en/docs/advanced/testing-dependencies.md",
+      "reason": "Override intent."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "cleanup",
+    "regression"
+  ],
+  "trustBoundaries": [
+    "concurrency",
+    "auth",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:40:44.920Z",
+  "updatedAt": "2026-10-23T17:54:06.175Z"
+}

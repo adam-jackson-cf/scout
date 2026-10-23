@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_1dabf67407",
+  "title": "Response model validation and filtering",
+  "summary": "Response schemas, model inheritance, aliases, and field filtering.\n\nAgent mapper reason: These contracts determine which application data reaches a response.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "reason": "Submodel filtering."
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "ORM model conversion."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Alias serialization."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Return annotation inference."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Field filtering."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid response rejection."
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Subtype behavior."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass response conversion."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Model response conversion."
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Default omission."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Public filtering contract."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "models"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:54:06.010Z",
+  "updatedAt": "2026-10-23T17:54:06.010Z"
+}

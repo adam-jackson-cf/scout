@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_1109b8cd55",
+  "title": "Secondary package manifest",
+  "summary": "Separately declared package whose implementation is absent from the supplied inventory.\n\nAgent mapper reason: A second manifest warrants its own review unit; no implementation relationship can be established from the inventory.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "low",
+  "entrypoints": [
+    {
+      "path": "x2_newpkg/pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "x2_newpkg/pyproject.toml",
+      "reason": "Independent package declaration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Root package comparison."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "inventory-gap"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:51:04.081Z",
+  "updatedAt": "2026-10-23T17:54:06.010Z"
+}

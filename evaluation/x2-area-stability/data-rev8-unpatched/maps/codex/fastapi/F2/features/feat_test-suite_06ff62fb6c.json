@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_06ff62fb6c",
+  "title": "Interactive API documentation contracts",
+  "summary": "Specify local documentation assets, OAuth initialization, redirects, and URL prefixes.\n\nAgent mapper reason: Interactive documentation delivery and authentication initialization form a browser-facing integration boundary.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_local_docs.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_local_docs.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "reason": "Custom OAuth redirect configuration."
+    },
+    {
+      "path": "tests/test_deprecated_openapi_prefix.py",
+      "reason": "Legacy API documentation prefix."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "Local documentation assets."
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "reason": "Disabled redirect behavior."
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "Swagger OAuth initialization."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/extending-openapi.md",
+      "reason": "Documentation customization guidance."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_local_docs.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "swagger",
+    "api-docs"
+  ],
+  "trustBoundaries": [
+    "network",
+    "auth",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:32:43.376Z",
+  "updatedAt": "2026-10-23T17:32:43.376Z"
+}

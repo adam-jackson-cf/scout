@@ -14,6 +14,8 @@ maps and writes <data>/stopped-<arm>-<repo>.json; maps not attempted are `unmeas
 (`nohup`), an exception) terminates the running Clawpatch process group (SIGTERM, grace, SIGKILL) and writes the same record with reason `aborted: <cause>`. A skipped M2 mutation runs no map:
 its meta.json has `skipped` and `rc: null`. A failure or abort during the setup between the before-probe and the first map (workspace creation, clone, checkout,
 version collection) writes no stop record and no data file; the rerun needs only the workspace removed (section 9).
+Preflight (amendment 1) also refuses unless the Clawpatch CLI is the review-safety build Scout ships: `<build>/.scout-review-safety` (next to dist/) must equal the
+pinned "<version> <sha256>" (common.review_safety_pins) and the built dist/ must contain the sanitizer (common.build_safety_check); the check is recorded in the versions file.
 """
 import argparse
 import glob
@@ -275,6 +277,9 @@ def preflight(a):
     out = sh([a.node, a.cli, "--version"], check=False, timeout=C.VERSION_TIMEOUT_SECONDS).stdout
     if not re.search(r"(?<![\w.])" + re.escape(expect) + r"(?![\w.])", out):
         sys.exit("refusing to start: Clawpatch --version %r is not the pinned %s" % (out.strip(), expect))
+    chk = C.build_safety_check(a.cli)
+    if not chk["ok"]:  # amendment 1: the unpatched local build the first codex/fastapi collection ran on is not what Scout invokes
+        sys.exit("refusing to start: Clawpatch CLI %s is not the review-safety build (%s); rebuild with scripts/bootstrap-tools.sh" % (a.cli, chk["reason"]))
     if a.arm == "claude":
         exe = C.claude_executable(os.environ)  # CLAWPATCH_CLAUDE_BIN is honoured by Clawpatch's claude provider (providers/claude.ts claudeExecutable)
         if not shutil.which(exe):
@@ -330,6 +335,7 @@ def tool_versions(a, probe_before, ws):
     v = cli_versions()
     v["clawpatch"] = version_of([a.node, a.cli, "--version"])
     v["clawpatch_cli_sha256"] = C.sha256_file(a.cli)
+    v["clawpatch_build_safety"] = C.build_safety_check(a.cli)
     v["node"] = version_of([a.node, "--version"])
     head = sh(["git", "rev-parse", "HEAD"], cwd=ROOT, check=False)
     env = C.clawpatch_map_env(os.environ)

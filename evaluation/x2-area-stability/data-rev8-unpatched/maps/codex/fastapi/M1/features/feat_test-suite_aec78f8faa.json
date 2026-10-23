@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_aec78f8faa",
+  "title": "Dependency override testing examples",
+  "summary": "Demonstrate replacing application dependencies during tests.\n\nAgent mapper reason: Overrides change dependency resolution and security behavior through the same replacement mechanism.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/dependency_testing/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/dependency_testing/tutorial001.py",
+      "reason": "Override example."
+    },
+    {
+      "path": "docs_src/dependency_testing/tutorial001_an.py",
+      "reason": "Annotated variant."
+    },
+    {
+      "path": "docs_src/dependency_testing/tutorial001_an_py310.py",
+      "reason": "Python typing variant."
+    },
+    {
+      "path": "docs_src/dependency_testing/tutorial001_an_py39.py",
+      "reason": "Python typing variant."
+    },
+    {
+      "path": "docs_src/dependency_testing/tutorial001_py310.py",
+      "reason": "Python typing variant."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "Override regression suite."
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "Security override regression suite."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/testing-dependencies.md",
+      "reason": "Override intent."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependency-overrides",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:46:11.354Z",
+  "updatedAt": "2026-10-23T17:51:04.214Z"
+}

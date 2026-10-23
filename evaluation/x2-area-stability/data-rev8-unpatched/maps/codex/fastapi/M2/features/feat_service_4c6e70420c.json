@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_4c6e70420c",
+  "title": "Reverse proxy integration",
+  "summary": "Proxy prefixes, advertised servers, and deployment path handling.\n\nAgent mapper reason: External URL reconstruction and OpenAPI server URLs must remain consistent.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/behind_a_proxy/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/behind_a_proxy/tutorial001.py",
+      "reason": "Proxy configuration."
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial002.py",
+      "reason": "Proxy configuration."
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial003.py",
+      "reason": "Proxy configuration."
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial004.py",
+      "reason": "Proxy configuration."
+    },
+    {
+      "path": "tests/test_deprecated_openapi_prefix.py",
+      "reason": "Legacy prefix contract."
+    },
+    {
+      "path": "tests/test_openapi_servers.py",
+      "reason": "Advertised server configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/behind-a-proxy.md",
+      "reason": "Deployment intent."
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proxy",
+    "deployment"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:54:06.010Z",
+  "updatedAt": "2026-10-23T17:54:06.010Z"
+}

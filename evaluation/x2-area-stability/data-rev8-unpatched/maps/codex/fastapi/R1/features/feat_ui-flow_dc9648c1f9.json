@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_dc9648c1f9",
+  "title": "Documentation site presentation and build",
+  "summary": "Configure the English documentation site and browser enhancements.\n\nAgent mapper reason: Build settings, theme overrides, and browser code jointly determine documentation behavior.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Site build workflow."
+    },
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Site configuration."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Theme customization."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Chat browser integration."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Site browser behavior."
+    },
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Site styling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/js/termynal.js",
+      "reason": "Third-party-looking terminal component; provenance unverified, context only."
+    },
+    {
+      "path": "docs/en/docs/css/termynal.css",
+      "reason": "Terminal component styling; provenance unverified, context only."
+    },
+    {
+      "path": "docs/en/docs/index.md",
+      "reason": "Primary landing page."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "mkdocs",
+    "browser",
+    "documentation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:40:44.920Z"
+}

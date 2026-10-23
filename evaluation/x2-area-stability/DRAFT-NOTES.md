@@ -1,23 +1,23 @@
 # X2 draft notes for the innovation council (not part of the frozen set)
 
-Status: draft revision 8, awaiting council round 8. Round 1 (`reviews/round-1.md`, 18 issues) is answered in `reviews/round-1-response.md`; round 2 (`reviews/round-2.md`, 14 issues) in `reviews/round-2-response.md`; round 3 (`reviews/round-3.md`, 9 issues) in `reviews/round-3-response.md`; round 4 (`reviews/round-4.md`, 6 issues: 1 must-fix, 5 minor) in `reviews/round-4-response.md`; round 5 (`reviews/round-5.md`, 9 issues: 1 must-fix, 8 minor) in `reviews/round-5-response.md`; round 6 (`reviews/round-6.md`, 3 minor issues) in `reviews/round-6-response.md`; round 7 (`reviews/round-7.md`, 2 minor issues) in `reviews/round-7-response.md`. No data collected; nothing here was computed on real data; no model call was made.
-Validation: `run.sh validate`, 225 checks, all passing (2026-10-23, ~2.5 min); `gofmt -l evaluation` empty.
+Status: prereg **revision 10 = signed-off rev 8 (`reviews/round-8.md`) + Amendment 1 (PREREGISTRATION §11), awaiting council round 10** (request: `reviews/round-8-amendment.md`; round 9 raised one issue, `reviews/round-9.md`, answered in `reviews/round-9-response.md`). Rounds 1–7 history: round 1 (`reviews/round-1.md`, 18 issues) answered in `reviews/round-1-response.md`; round 2 (14) in `round-2-response.md`; round 3 (9) in `round-3-response.md`; round 4 (6) in `round-4-response.md`; round 5 (9) in `round-5-response.md`; round 6 (3) in `round-6-response.md`; round 7 (2) in `round-7-response.md`; round 8: zero issues. The first collection (started 2026-10-23T17:24Z) ran on an unpatched Clawpatch build; its codex/fastapi maps are excluded and preserved in `data-rev8-unpatched/` (never read); the restart goes to a fresh `data/`. Nothing was computed on predictor–outcome data; no label exists.
+Validation: `run.sh validate`, **233 checks**, all passing (rev 10, 2026-10-23, ~2.5 min); `go vet ./evaluation/x2-area-stability/...` clean; `gofmt -l evaluation` empty.
 
 ## Digests at hand-over (SHA-256)
 ```
-a39513d6eabddce467cca26cf0ea5085e15ab3e615e34a571f9603e5c2a3c426  PREREGISTRATION.md
+ed0a5203648b4da26d87effc4ccf207b9e8923311503571ea4b7bb4e1340e355  PREREGISTRATION.md (rev 10)
 9a26286545c6c124ffc54d390af9b7d5a3e1f729ce01b1cb0d7266d6c251f799  GUIDE.md (unchanged since round 1)
-2cd742020c609c02fa09ad504812382493583a4b5f0c6fac831e86dac391741c  common.py
-7e22b60360c4082d62400a0582f6b369cc9c89f556372065d30b79cba698a133  collect.py
+e526804c331f3eab07f7003e797b86b4e793c3cf0a351e69cdf695286f83efa3  common.py
+89948f3c6d1b308b91a5ac5a8060088269270806546fe5c577dea307a4dfc83d  collect.py
 f3614d6f6d19cf68d203ac46caadf18a9595204ba2f2d296154472285a971f7e  replay/main.go (unchanged)
 face9e5b0cefe6c2fcf8fb9a3a568d28227ca0b57f85c0eeda9b562b251d222a  build_pairs.py (unchanged)
 87b278014f75c215ffd5fe497572427a641b362fd82fe1ea217dfb152956800f  label.py (unchanged)
-7d70e6304d9771bfc82669906aaf1e8fb9f79a7eb039d9c2ae37f0e7725fed63  analysis.py
+7d70e6304d9771bfc82669906aaf1e8fb9f79a7eb039d9c2ae37f0e7725fed63  analysis.py (unchanged)
 5157b15be6013c350b1dde006b0ee4833766d46981b131df756b1f838441c41b  run.sh (unchanged)
-beb32dc2527aa01abda63a0650c93390dc38e14e5dd24f56f9452dc465d286f6  validation/validate.py
+29e5208646d9a84804a7bd210cb07ad589d7acad48a1b85f31722076c2712784  validation/validate.py
 0f1e9d8f751921cb64e17d1000845841e35510b9aab2320844b41dfa6c4e6226  validation/stub_clawpatch.js (unchanged)
 e50633605ea763e2c4cb24ad3783cb58c356f71be4018961195d52807c4d5779  validation/credcheck/main.go (unchanged)
-94ea650f24854869f8351ccf4a4fdf80b9bbaf1956c722e8c6494dbaf53a4744  README.md
+13e04e61720fa0542d391a48f2d63db4e1973f29096114ba9120bddef84c4048  README.md
 8ed2e70815fdcc605d60402fb603cfb905d58457a5869b3795d59507a93cb484  internal/areas/areas.go (code under test)
 57344e025d5e2d0b7a10abf543b20b55f899602c1dd95d2b6a2b62d9b823dfbe  internal/clawpatch/records.go (code under test)
 bf10ddd58e0c2ecf08372d79505177b00c187955f3d64b3be9a3e8eb7c8617b8  internal/modelcli/modelcli.go (ported by common.py)
@@ -26,8 +26,11 @@ bf10ddd58e0c2ecf08372d79505177b00c187955f3d64b3be9a3e8eb7c8617b8  internal/model
 fadf1e447d9b0b9a32ba7db6ca9101d29a84acce5c575f37423995456d03d059  third_party/clawpatch/src/providers/claude.ts (ported by common.py; drift-guarded in validation)
 994e8066be12c3051c4cb63b32e2144bcf4bd495c5d17a8033f94814bd7a6e92  third_party/clawpatch/src/providers/codex.ts (probe mirrors its arguments; drift-guarded in validation)
 97413a275363a52e05c3b17d08449b211fdc26584bd60155c893a647720381ce  third_party/clawpatch/src/config.ts (CLAWPATCH_CONFIG; drift-guarded in validation, new in rev 5)
+2f4ca016d67d9bbfb646a73fe96f740e6982abb7f93112011d9d30efacd98f1e  internal/clawpatch/review.go (review-safety pins; cross-checked by `common.review_safety_pins`, new in rev 9)
+dc867503f80cdb336681d72c221ec1dea24006f121b4cae56bf0fb284dae6ce3  scripts/clawpatch-safe.patch (code under test; equals the pinned sha, new in rev 9)
+99e3f6b3c670cd8c297b4ed498eafc735b7b5045aea8b97c7b55dc6343c21653  scripts/build-clawpatch.sh (code under test; holds the pins, new in rev 9)
 ```
-Recompute with `cd evaluation/x2-area-stability && shasum -a 256 PREREGISTRATION.md GUIDE.md common.py collect.py replay/main.go build_pairs.py label.py analysis.py run.sh validation/validate.py validation/stub_clawpatch.js validation/credcheck/main.go README.md`, and from the repository root `shasum -a 256 internal/areas/areas.go internal/clawpatch/records.go internal/modelcli/modelcli.go internal/clawpatch/client.go internal/clawpatch/exclude.go third_party/clawpatch/src/providers/claude.ts third_party/clawpatch/src/providers/codex.ts third_party/clawpatch/src/config.ts`.
+Recompute with `cd evaluation/x2-area-stability && shasum -a 256 PREREGISTRATION.md GUIDE.md common.py collect.py replay/main.go build_pairs.py label.py analysis.py run.sh validation/validate.py validation/stub_clawpatch.js validation/credcheck/main.go README.md`, and from the repository root `shasum -a 256 internal/areas/areas.go internal/clawpatch/records.go internal/modelcli/modelcli.go internal/clawpatch/client.go internal/clawpatch/exclude.go internal/clawpatch/review.go third_party/clawpatch/src/providers/claude.ts third_party/clawpatch/src/providers/codex.ts third_party/clawpatch/src/config.ts scripts/clawpatch-safe.patch scripts/build-clawpatch.sh`. The `third_party/clawpatch` digests are of the UNPATCHED submodule files; the drift guards read them with `scripts/clawpatch-safe.patch` applied.
 
 ## Interpretation choices (rounds 1 and 2 applied; the council should confirm)
 1. **All six transitions decisive** (classes `remap` T1–T4, `mutation` T5–T6; `fresh`/`same_state` descriptive sub-strata). Class gate ≥ 2 measured `remap`, ≥ 1 measured `mutation` per repo.
@@ -71,6 +74,7 @@ Recompute with `cd evaluation/x2-area-stability && shasum -a 256 PREREGISTRATION
 39. **Ledger scope (round 6 issue 3):** `fallback` and probe-consistent → `not-supported` for the codex provider (arm A); arm B never moves the state and is reported beside it; HD5 row and a dated wording-only history line updated (rev 7). The sentence about what citability covers was wrong in rev 7 and is replaced in rev 8 (choice 41).
 40. **`analyze → replication` wiring (round 7 issue 1, required fix a, b and recommended c):** `validate.py` plants probe-consistent `tool-versions-{codex,claude}-{fastapi,axum}.json` (all `workspace_config_presence` false) into a copy of S1's data directory and asserts through `A.analyze` `replicated`, both `arm_*_citable` and both `decision.citable` true; the same with the claude axum after-probe rolled → `not citable (arm B probe-inconsistent)`, `arms.claude.decision.citable` false; a new scenario S1b (only the claude arm's real pairs `different_concern`, files planted) → arm A `adopt` 75, `not replicated`, `arm_B_verdict == arms.claude.decision.verdict != arms.codex.decision.verdict`. S1's existing unplanted assertions stay on `r1`. §8 gains a "Round-7 additions" bullet. Three checks added (225). No code change.
 41. **§4 citability sentence (round 7 issue 2):** replaced by the council's wording: citability is the §2 probe flag (served model identical across all probes of the arm, every probe taken without error, every `tool-versions` file present, no workspace-level configuration file present); a listed CLI-version change or a labeller-model change is reported beside the verdict and ledger outcome, not folded into the flag. The optional scoping of `:139` was not done. Prereg is revision 8.
+42. **Amendment 1 (rev 9, round 9 pending):** all four collections restart on the review-safety build; `data/` → `data-rev8-unpatched/` (excluded, untouched); `common.claude_provider_env` gains USER/LOGNAME (patch v3); drift guards read the patched source (`common.patched_sources`); `collect.py` refuses a build whose `.scout-review-safety` marker differs from the pins in `build-clawpatch.sh` (cross-checked with `review.go`) or whose `dist/` lacks `SCOUT_REDACTED_SECRET`, and records it as `clawpatch_build_safety`. Judgement calls are listed in `reviews/round-8-amendment.md`.
 
 ## Known limits of the validation
 Synthetic only: it proves the pipeline recovers planted structure and reports nulls, not that real labels will be good. Label sessions are stubbed except for one environment check that runs the real `label.py` runners against fake `claude`/`codex` scripts. The collector is exercised against a stub Clawpatch and fake CLIs, not the real ones. The detached-child checks rely on the stub emulating Clawpatch's SIGTERM handler (as `exec.ts` documents), not on the real Clawpatch. S12's thresholds 0.30–0.45 are nested, so its P(adopt at some threshold) (observed 0.97 / 0.33 / 0.03 at 3 / 5 / 7 %) is close to P(pass at t = 0.30) (0.97 / 0.30 / 0.03); the agreement with the exact table (n = 240: 0.94 / 0.33 / 0.019) is asserted at t = 0.30 only, within a 4-sigma (≥ 0.05) tolerance that is wide at 30 seeds.

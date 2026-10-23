@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_d21a91d804",
+  "title": "Response model validation and filtering",
+  "summary": "Test response model selection, validation, filtering, and ORM-compatible reads.\n\nAgent mapper reason: These tests define which application data may appear in typed responses.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_response_model_invalid.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "reason": "Nested response filtering."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Response alias behavior."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Return annotation inference."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Field inclusion and exclusion."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid response rejection."
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Subtype handling."
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "ORM model reads."
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Default field suppression."
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "reason": "Custom inherited model behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Public response filtering contract."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "models",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:36:27.766Z",
+  "updatedAt": "2026-10-23T17:36:27.766Z"
+}

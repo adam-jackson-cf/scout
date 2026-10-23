@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_2af73be096",
+  "title": "API key authentication contracts",
+  "summary": "Test API keys supplied by cookie, header, and query parameter.\n\nAgent mapper reason: All three transports share API key extraction, optionality, and schema semantics.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_security_api_key_header.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "reason": "Cookie credential extraction."
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_description.py",
+      "reason": "Cookie security metadata."
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_optional.py",
+      "reason": "Optional cookie credentials."
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "Header credential extraction."
+    },
+    {
+      "path": "tests/test_security_api_key_header_description.py",
+      "reason": "Header security metadata."
+    },
+    {
+      "path": "tests/test_security_api_key_header_optional.py",
+      "reason": "Optional header credentials."
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "reason": "Query credential extraction."
+    },
+    {
+      "path": "tests/test_security_api_key_query_description.py",
+      "reason": "Query security metadata."
+    },
+    {
+      "path": "tests/test_security_api_key_query_optional.py",
+      "reason": "Optional query credentials."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/security/index.md",
+      "reason": "Security API overview."
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_optional.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_optional.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "api-key"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:36:27.766Z",
+  "updatedAt": "2026-10-23T17:36:27.766Z"
+}

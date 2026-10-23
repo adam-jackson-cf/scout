@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_a4cb368a65",
+  "title": "OpenAPI schema regression contracts",
+  "summary": "Specify model schemas, extensions, examples, operation identifiers, and callbacks.\n\nAgent mapper reason: These files define the generated API description independently of runtime response transport.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_generate_unique_id_function.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_additional_properties.py",
+      "reason": "Additional property schemas."
+    },
+    {
+      "path": "tests/test_custom_schema_fields.py",
+      "reason": "Custom schema metadata."
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "reason": "Duplicate model schemas."
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "reason": "Operation identifier generation."
+    },
+    {
+      "path": "tests/test_openapi_query_parameter_extension.py",
+      "reason": "Query schema extensions."
+    },
+    {
+      "path": "tests/test_openapi_route_extensions.py",
+      "reason": "Route schema extensions."
+    },
+    {
+      "path": "tests/test_openapi_servers.py",
+      "reason": "Server declarations."
+    },
+    {
+      "path": "tests/test_repeated_dependency_schema.py",
+      "reason": "Repeated dependency schema generation."
+    },
+    {
+      "path": "tests/test_schema_extra_examples.py",
+      "reason": "Schema examples."
+    },
+    {
+      "path": "tests/test_sub_callbacks.py",
+      "reason": "Nested callback schemas."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/extending-openapi.md",
+      "reason": "Schema customization intent."
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "openapi",
+    "schema"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:32:43.376Z",
+  "updatedAt": "2026-10-23T17:32:43.376Z"
+}

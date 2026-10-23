@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_7c397086ca",
+  "title": "Documentation preview comments",
+  "summary": "GitHub action that posts documentation preview information to pull requests.\n\nAgent mapper reason: The action declaration, implementation, and container form one deployable automation unit.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Action interface."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Comment automation."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Action runtime."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Preview workflow context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "documentation"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "permissions",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:40:44.997Z"
+}

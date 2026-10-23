@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_5b09364a0d",
+  "title": "Dependency resolution and caching",
+  "summary": "Dependency identity, caching, overrides, and injection.\n\nAgent mapper reason: These tests cover dependency graph evaluation and replacement.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "Caching semantics."
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "Class dependencies."
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "Repeated dependencies."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "Override behavior."
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "Security dependency overrides."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Connection injection."
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "Dependency parameter binding."
+    },
+    {
+      "path": "tests/test_repeated_dependency_schema.py",
+      "reason": "Repeated dependency schema behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/dependencies/sub-dependencies.md",
+      "reason": "Dependency graph intent."
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "regression"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:40:45.003Z"
+}

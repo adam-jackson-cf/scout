@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_6fdfa69ff5",
+  "title": "Community people and sponsor maintenance",
+  "summary": "Maintain community attribution and sponsor presentation.\n\nAgent mapper reason: Attribution automation and its presentation inputs share a community maintenance purpose.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/people.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Community update orchestration."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action interface."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Community update implementation."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Action runtime."
+    },
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Community attribution data."
+    },
+    {
+      "path": "docs/en/data/sponsors.yml",
+      "reason": "Sponsor presentation data."
+    },
+    {
+      "path": "docs/en/data/sponsors_badge.yml",
+      "reason": "Sponsor badge data."
+    },
+    {
+      "path": ".github/FUNDING.yml",
+      "reason": "Funding links."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/github_sponsors.yml",
+      "reason": "Potentially generated sponsor data; context only."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "Community data presentation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "community",
+    "sponsors",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "filesystem",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:36:27.766Z",
+  "updatedAt": "2026-10-23T17:36:27.766Z"
+}

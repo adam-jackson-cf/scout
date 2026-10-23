@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_320eaae32d",
+  "title": "OpenAPI schema contracts",
+  "summary": "Review schema metadata, operation identifiers, extensions, callbacks, and extra responses.\n\nAgent mapper reason: These tests describe generated API descriptions rather than request execution.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_generate_unique_id_function.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_additional_properties.py",
+      "reason": "Schema additional properties."
+    },
+    {
+      "path": "tests/test_additional_response_extra.py",
+      "reason": "Extra response metadata."
+    },
+    {
+      "path": "tests/test_additional_responses_bad.py",
+      "reason": "Invalid response definitions."
+    },
+    {
+      "path": "tests/test_additional_responses_custom_model_in_callback.py",
+      "reason": "Callback response models."
+    },
+    {
+      "path": "tests/test_additional_responses_custom_validationerror.py",
+      "reason": "Custom validation schemas."
+    },
+    {
+      "path": "tests/test_additional_responses_default_validationerror.py",
+      "reason": "Default validation schemas."
+    },
+    {
+      "path": "tests/test_additional_responses_response_class.py",
+      "reason": "Response class schema integration."
+    },
+    {
+      "path": "tests/test_additional_responses_router.py",
+      "reason": "Router response schemas."
+    },
+    {
+      "path": "tests/test_custom_schema_fields.py",
+      "reason": "Custom schema fields."
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "reason": "Model naming collisions."
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "reason": "Operation identifier generation."
+    },
+    {
+      "path": "tests/test_openapi_query_parameter_extension.py",
+      "reason": "Query schema extensions."
+    },
+    {
+      "path": "tests/test_openapi_route_extensions.py",
+      "reason": "Route schema extensions."
+    },
+    {
+      "path": "tests/test_openapi_servers.py",
+      "reason": "Server metadata."
+    },
+    {
+      "path": "tests/test_operations_signatures.py",
+      "reason": "Operation signatures."
+    },
+    {
+      "path": "tests/test_schema_extra_examples.py",
+      "reason": "Schema examples."
+    },
+    {
+      "path": "tests/test_sub_callbacks.py",
+      "reason": "Nested callbacks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/extending-openapi.md",
+      "reason": "Schema extension contract."
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "openapi",
+    "schemas"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:51:04.081Z",
+  "updatedAt": "2026-10-23T17:54:06.175Z"
+}

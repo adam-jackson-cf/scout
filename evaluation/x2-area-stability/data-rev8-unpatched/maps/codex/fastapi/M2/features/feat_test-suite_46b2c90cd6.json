@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_46b2c90cd6",
+  "title": "Multipart and body parsing contracts",
+  "summary": "File inputs, form dependencies, media types, and malformed body handling.\n\nAgent mapper reason: These files cover request payload decoding and multipart integration.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/request_files/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/request_files/tutorial001.py",
+      "reason": "File upload example."
+    },
+    {
+      "path": "docs_src/request_files/tutorial001_02.py",
+      "reason": "File upload variant."
+    },
+    {
+      "path": "docs_src/request_files/tutorial001_03.py",
+      "reason": "File upload variant."
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Form sequence parsing."
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "Multipart dependency checks."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Body extraction."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Body error aggregation."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Media-type handling."
+    },
+    {
+      "path": "tests/test_put_no_body.py",
+      "reason": "Absent body handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/request-files.md",
+      "reason": "Upload contract."
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_multipart_installation.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "multipart",
+    "request"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "filesystem",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:54:06.010Z",
+  "updatedAt": "2026-10-23T17:54:06.010Z"
+}

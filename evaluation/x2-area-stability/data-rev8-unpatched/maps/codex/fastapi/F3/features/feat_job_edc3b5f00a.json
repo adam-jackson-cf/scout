@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_edc3b5f00a",
+  "title": "Documentation preview publishing and PR feedback",
+  "summary": "Build documentation previews, watch their availability, and report preview links on pull requests.\n\nAgent mapper reason: The watcher and comment action form one preview feedback workflow.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Preview workflow orchestration."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Preview monitoring implementation."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Action inputs and execution contract."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Action runtime."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Pull request preview feedback."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Comment action contract."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Comment action runtime."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Related documentation build pipeline."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "documentation",
+    "previews"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "network",
+    "secrets",
+    "permissions",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:36:27.766Z",
+  "updatedAt": "2026-10-23T17:36:27.766Z"
+}

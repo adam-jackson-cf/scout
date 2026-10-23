@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_f762a2f33a",
+  "title": "Repository issue and approval automation",
+  "summary": "Configure contributor intake, issue management, and approval labels.\n\nAgent mapper reason: These files control the repository contribution intake and approval boundary.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Issue management automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Approval label automation."
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/questions.yml",
+      "reason": "Question intake."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue intake configuration."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Privileged issue intake."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "SECURITY.md",
+      "reason": "Security reporting policy."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "triage",
+    "permissions",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "external-api",
+    "permissions",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:36:27.766Z",
+  "updatedAt": "2026-10-23T17:36:27.766Z"
+}

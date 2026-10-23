@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_735386a316",
+  "title": "Request parameter inference and validation contracts",
+  "summary": "Specify parameter locations, annotations, optionality, aliases, and validation failures.\n\nAgent mapper reason: These tests cover the common boundary from request values to typed endpoint arguments.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_annotated.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_annotated.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "Ambiguous parameter classification."
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "Annotated parameter metadata."
+    },
+    {
+      "path": "tests/test_enforce_once_required_parameter.py",
+      "reason": "Required parameter enforcement."
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "reason": "Optionality inference."
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "reason": "Invalid path inputs."
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "reason": "Invalid sequence inputs."
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "Multiple query validation failures."
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "reason": "Parameter class behavior."
+    },
+    {
+      "path": "tests/test_param_include_in_schema.py",
+      "reason": "Parameter schema visibility."
+    },
+    {
+      "path": "tests/test_params_repr.py",
+      "reason": "Parameter representation."
+    },
+    {
+      "path": "tests/test_path.py",
+      "reason": "Path parsing."
+    },
+    {
+      "path": "tests/test_query.py",
+      "reason": "Query parsing."
+    },
+    {
+      "path": "tests/test_repeated_cookie_headers.py",
+      "reason": "Repeated cookie headers."
+    },
+    {
+      "path": "tests/test_repeated_parameter_alias.py",
+      "reason": "Alias collisions."
+    },
+    {
+      "path": "tests/test_required_noneable.py",
+      "reason": "Required nullable values."
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "reason": "Tuple validation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/query-params-str-validations.md",
+      "reason": "Parameter validation guidance."
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_query.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_path.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_annotated.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_query.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_path.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "parameters",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:32:43.376Z",
+  "updatedAt": "2026-10-23T17:32:43.376Z"
+}

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_6e4a8a029e",
+  "title": "Release publishing and change announcements",
+  "summary": "Publish distributions and maintain change announcements.\n\nAgent mapper reason: Release execution and announcement permissions should be reviewed together.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Distribution publishing workflow."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Change announcement workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Distribution metadata and build settings."
+    },
+    {
+      "path": "docs/en/docs/release-notes.md",
+      "reason": "Release history; potentially automation maintained."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "release",
+    "publishing"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "external-api",
+    "permissions",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:36:27.766Z",
+  "updatedAt": "2026-10-23T17:36:27.766Z"
+}

@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_0250658018",
+  "title": "Parameter analysis regression contracts",
+  "summary": "Specify annotation interpretation, parameter placement, and validation errors.\n\nAgent mapper reason: These visible tests define the framework input-analysis contract whose implementation is missing from the supplied file lists.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_annotated.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_annotated.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "Ambiguous declaration handling."
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "Annotated interpretation."
+    },
+    {
+      "path": "tests/test_enforce_once_required_parameter.py",
+      "reason": "Required parameter deduplication."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Request body extraction."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Connection injection."
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "reason": "Optionality inference."
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "reason": "Invalid path declaration."
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "reason": "Invalid sequence declaration."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Body validation errors."
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "Query validation errors."
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "reason": "Parameter object contract."
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "Path and dependency interaction."
+    },
+    {
+      "path": "tests/test_param_include_in_schema.py",
+      "reason": "Parameter schema visibility."
+    },
+    {
+      "path": "tests/test_params_repr.py",
+      "reason": "Parameter representation."
+    },
+    {
+      "path": "tests/test_repeated_parameter_alias.py",
+      "reason": "Alias collisions."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Body media type."
+    },
+    {
+      "path": "tests/test_required_noneable.py",
+      "reason": "Required nullable values."
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "reason": "Tuple validation."
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "Framework data structure contracts."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/body-multiple-params.md",
+      "reason": "Parameter placement intent."
+    },
+    {
+      "path": "docs/en/docs/python-types.md",
+      "reason": "Typing model."
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_annotated.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "parameters",
+    "typing",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:46:11.354Z",
+  "updatedAt": "2026-10-23T17:54:06.165Z"
+}

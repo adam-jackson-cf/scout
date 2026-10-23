@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_a1f3d6de3a",
+  "title": "Issue and contribution administration",
+  "summary": "Configure issue intake, approval labeling, and change reporting.\n\nAgent mapper reason: These files define repository-facing contributor administration rather than application runtime behavior.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Issue lifecycle automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Approval labeling automation."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Contribution change reporting."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue intake configuration."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Privileged issue intake."
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/questions.yml",
+      "reason": "Question intake."
+    },
+    {
+      "path": ".github/FUNDING.yml",
+      "reason": "Repository funding configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contribution policy."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Security reporting policy."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "repository-administration"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "external-api",
+    "permissions",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:32:43.376Z",
+  "updatedAt": "2026-10-23T17:32:43.376Z"
+}

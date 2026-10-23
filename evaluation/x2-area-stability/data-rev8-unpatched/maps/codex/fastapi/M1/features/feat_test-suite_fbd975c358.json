@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_fbd975c358",
+  "title": "Schema composition regression contracts",
+  "summary": "Specify schema naming, extensions, examples, and repeated dependency behavior.\n\nAgent mapper reason: These regressions cover schema construction and identity rather than runtime route execution.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_duplicate_models_openapi.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_additional_properties.py",
+      "reason": "Additional property schema contract."
+    },
+    {
+      "path": "tests/test_custom_schema_fields.py",
+      "reason": "Custom schema fields."
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "reason": "Duplicate model naming."
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "reason": "Operation identifier uniqueness."
+    },
+    {
+      "path": "tests/test_openapi_query_parameter_extension.py",
+      "reason": "Parameter extensions."
+    },
+    {
+      "path": "tests/test_openapi_route_extensions.py",
+      "reason": "Operation extensions."
+    },
+    {
+      "path": "tests/test_repeated_dependency_schema.py",
+      "reason": "Repeated dependency schema."
+    },
+    {
+      "path": "tests/test_schema_extra_examples.py",
+      "reason": "Schema examples."
+    },
+    {
+      "path": "tests/test_sub_callbacks.py",
+      "reason": "Nested callbacks."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/a.py",
+      "reason": "Model naming fixture."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/b.py",
+      "reason": "Model naming fixture."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/main.py",
+      "reason": "Fixture application."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "Cross-module naming regression."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/extending-openapi.md",
+      "reason": "Schema extension model."
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_schema_extra_examples.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_schema_extra_examples.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "openapi",
+    "schema",
+    "regression"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:46:11.354Z",
+  "updatedAt": "2026-10-23T17:51:04.223Z"
+}

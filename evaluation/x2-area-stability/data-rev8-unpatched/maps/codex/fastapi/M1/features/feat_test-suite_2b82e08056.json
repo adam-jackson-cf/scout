@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_2b82e08056",
+  "title": "Request body and multipart contracts",
+  "summary": "Review body extraction, form parsing, media types, and model name collisions.\n\nAgent mapper reason: These tests cover request payload interpretation and its schema fixtures.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_get_request_body.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Body extraction."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Body validation errors."
+    },
+    {
+      "path": "tests/test_put_no_body.py",
+      "reason": "Absent body handling."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Body content types."
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Form sequence parsing."
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "Multipart dependency checks."
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "Request data structures."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/a.py",
+      "reason": "Model collision fixture."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/b.py",
+      "reason": "Model collision fixture."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/main.py",
+      "reason": "Fixture application."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "Cross-module body model contract."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/request-files.md",
+      "reason": "Upload intent."
+    },
+    {
+      "path": "docs/en/docs/tutorial/request-forms.md",
+      "reason": "Form intent."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "multipart",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:51:04.081Z",
+  "updatedAt": "2026-10-23T17:51:04.081Z"
+}

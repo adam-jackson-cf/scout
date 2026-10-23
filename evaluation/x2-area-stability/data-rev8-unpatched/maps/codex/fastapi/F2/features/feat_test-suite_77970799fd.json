@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_77970799fd",
+  "title": "Request body and multipart regression contracts",
+  "summary": "Specify body extraction, media types, form sequences, multipart prerequisites, and model naming.\n\nAgent mapper reason: The suite exercises request payload decoding and the models created for that boundary.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_get_request_body.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Request body extraction."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Multiple body validation errors."
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Form sequence handling."
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "Multipart dependency checks."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Body media type declarations."
+    },
+    {
+      "path": "tests/test_put_no_body.py",
+      "reason": "Bodyless PUT requests."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/__init__.py",
+      "reason": "Regression fixture package."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/__init__.py",
+      "reason": "Fixture application package."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/a.py",
+      "reason": "First colliding model fixture."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/b.py",
+      "reason": "Second colliding model fixture."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/main.py",
+      "reason": "Fixture application assembly."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "Same-name model regression."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/request-forms-and-files.md",
+      "reason": "Multipart API intent."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "request-body",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:32:43.376Z",
+  "updatedAt": "2026-10-23T17:32:43.376Z"
+}

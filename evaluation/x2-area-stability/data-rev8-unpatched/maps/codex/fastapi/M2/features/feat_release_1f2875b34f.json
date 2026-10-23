@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_1f2875b34f",
+  "title": "Quality gates and package release",
+  "summary": "Configure development checks, continuous integration, and publication.\n\nAgent mapper reason: The root manifest and delivery workflows jointly determine how changes are checked and distributed.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Root package and tooling configuration."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Continuous integration checks."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Package publication."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Associated test reporting workflow."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local quality gates."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency maintenance configuration."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Repository artifact exclusion policy."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Developer instructions."
+    },
+    {
+      "path": "LICENSE",
+      "reason": "Distribution licensing."
+    },
+    {
+      "path": "README.md",
+      "reason": "Public package positioning."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "packaging",
+    "release"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "external-api",
+    "secrets",
+    "permissions",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:46:11.354Z",
+  "updatedAt": "2026-10-23T17:54:06.137Z"
+}

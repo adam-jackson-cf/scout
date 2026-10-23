@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_d9952ef921",
+  "title": "Repository issue and change management",
+  "summary": "Manage issues, approval labels, and change announcements.\n\nAgent mapper reason: These files govern incoming community requests and their automated handling.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Issue lifecycle automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Approval labeling automation."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Change reporting automation."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue intake configuration."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Structured issue intake."
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/questions.yml",
+      "reason": "Discussion intake."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor process."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Security reporting policy."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "repository-management"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "external-api",
+    "permissions",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:40:44.920Z",
+  "updatedAt": "2026-10-23T17:46:11.354Z"
+}

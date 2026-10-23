@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_036109a98c",
+  "title": "Documentation site build and presentation",
+  "summary": "Build the English documentation site and customize its interface.\n\nAgent mapper reason: The build configuration, template, and custom assets form the documentation interface.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build orchestration."
+    },
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Site navigation and configuration."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Site template override."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Chat interface behavior."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Custom site behavior."
+    },
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Custom site styling."
+    },
+    {
+      "path": "docs/en/data/external_links.yml",
+      "reason": "External resource presentation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/js/termynal.js",
+      "reason": "Third-party-looking terminal widget; context only pending provenance verification."
+    },
+    {
+      "path": "docs/en/docs/css/termynal.css",
+      "reason": "Terminal widget styling; context only pending provenance verification."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Documentation tooling dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "documentation",
+    "frontend",
+    "mkdocs"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:36:27.766Z",
+  "updatedAt": "2026-10-23T17:36:27.766Z"
+}

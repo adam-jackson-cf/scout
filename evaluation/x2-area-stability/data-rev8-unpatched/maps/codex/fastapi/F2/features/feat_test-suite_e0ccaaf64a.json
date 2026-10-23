@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_e0ccaaf64a",
+  "title": "OAuth2 and OpenID Connect contracts",
+  "summary": "Specify OAuth2 flows, optional Bearer credentials, and OpenID Connect metadata.\n\nAgent mapper reason: These schemes share token extraction and generated authentication flow descriptions.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_security_oauth2.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "OAuth2 base behavior."
+    },
+    {
+      "path": "tests/test_security_oauth2_authorization_code_bearer.py",
+      "reason": "Authorization code flow."
+    },
+    {
+      "path": "tests/test_security_oauth2_authorization_code_bearer_description.py",
+      "reason": "Authorization code metadata."
+    },
+    {
+      "path": "tests/test_security_oauth2_optional.py",
+      "reason": "Optional OAuth2."
+    },
+    {
+      "path": "tests/test_security_oauth2_optional_description.py",
+      "reason": "Optional OAuth2 metadata."
+    },
+    {
+      "path": "tests/test_security_oauth2_password_bearer_optional.py",
+      "reason": "Optional password Bearer flow."
+    },
+    {
+      "path": "tests/test_security_oauth2_password_bearer_optional_description.py",
+      "reason": "Password flow metadata."
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "reason": "OpenID Connect behavior."
+    },
+    {
+      "path": "tests/test_security_openid_connect_description.py",
+      "reason": "OpenID Connect metadata."
+    },
+    {
+      "path": "tests/test_security_openid_connect_optional.py",
+      "reason": "Optional OpenID Connect."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/security/oauth2-scopes.md",
+      "reason": "OAuth2 authorization intent."
+    },
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "oauth2",
+    "openid-connect"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:32:43.376Z",
+  "updatedAt": "2026-10-23T17:32:43.376Z"
+}

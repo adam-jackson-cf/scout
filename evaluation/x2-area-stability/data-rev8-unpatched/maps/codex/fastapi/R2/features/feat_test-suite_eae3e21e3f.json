@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_eae3e21e3f",
+  "title": "Exceptions and application lifecycle regression suite",
+  "summary": "Verify error handlers, middleware failures, and router lifecycle events.\n\nAgent mapper reason: These integration tests cover control flow outside normal endpoint return processing.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "Middleware failure behavior."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "Custom handler dispatch."
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "Underlying exception integration."
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "Router lifecycle events."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/handling-errors.md",
+      "reason": "Error handling contract."
+    },
+    {
+      "path": "docs/en/docs/advanced/events.md",
+      "reason": "Lifecycle contract."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "exceptions",
+    "lifecycle"
+  ],
+  "trustBoundaries": [
+    "concurrency",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:40:44.920Z",
+  "updatedAt": "2026-10-23T17:46:11.453Z"
+}

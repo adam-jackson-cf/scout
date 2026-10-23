@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_79837ce97d",
+  "title": "Response model filtering and serialization contracts",
+  "summary": "Specify response validation, aliases, model filtering, and JSON encoding.\n\nAgent mapper reason: These tests specify what data can cross the application output boundary.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_serialize_response.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "General serialization contract."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Model serialization."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Output alias contract."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Return annotation inference."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Field filtering."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid response contract."
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Subtype handling."
+    },
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "reason": "Nested model filtering."
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "ORM-compatible serialization."
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Default omission."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "JSON-compatible conversion."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom datetime conversion."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Public output model contract."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response-model",
+    "serialization",
+    "regression"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:46:11.354Z",
+  "updatedAt": "2026-10-23T17:46:11.354Z"
+}

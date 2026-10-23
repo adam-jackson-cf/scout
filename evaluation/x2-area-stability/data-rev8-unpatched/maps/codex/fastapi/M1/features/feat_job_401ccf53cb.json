@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_401ccf53cb",
+  "title": "Community people automation",
+  "summary": "Maintain community contributor information.\n\nAgent mapper reason: Contributor collection and its publication inputs form one automation boundary.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/people.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Scheduled or event-driven orchestration."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action interface."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Community data processing."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Action runtime."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Community data; ownership withheld because generation status is unverified."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "User-facing presentation of community information."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "community",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "filesystem",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:51:04.081Z"
+}

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_ecf5e5f218",
+  "title": "Dependency resource lifetime",
+  "summary": "Context manager cleanup, context variables, and exception propagation.\n\nAgent mapper reason: Cleanup ordering and execution context deserve a separate review from dependency caching.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "Resource lifetime."
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "Execution context propagation."
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "Exception propagation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/dependencies/dependencies-with-yield.md",
+      "reason": "Cleanup contract."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "lifecycle"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:28:06.385Z"
+}

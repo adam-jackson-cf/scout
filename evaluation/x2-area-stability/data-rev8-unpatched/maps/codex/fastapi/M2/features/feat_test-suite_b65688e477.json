@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_b65688e477",
+  "title": "Dependency resolution contracts",
+  "summary": "Dependency caching, overrides, lifecycle, and execution-context regression coverage.\n\nAgent mapper reason: These tests jointly specify dependency graph execution without assuming unavailable implementation paths.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "Caching contract."
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "Callable dependency contract."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "Dependency resource lifecycle."
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "Execution-context isolation."
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "Repeated dependency behavior."
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "Exception propagation."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "Override resolution."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Connection injection."
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "Dependency and path interaction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/advanced-dependencies.md",
+      "reason": "Dependency semantics."
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "regression"
+  ],
+  "trustBoundaries": [
+    "concurrency",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:54:06.010Z",
+  "updatedAt": "2026-10-23T17:54:06.010Z"
+}

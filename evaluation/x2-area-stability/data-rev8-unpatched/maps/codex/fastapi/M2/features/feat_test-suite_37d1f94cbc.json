@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_37d1f94cbc",
+  "title": "Model name collision fixture",
+  "summary": "Multi-module body models with overlapping names.\n\nAgent mapper reason: The fixture modules are inseparable from the regression they reproduce.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_modules_same_name_body/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_modules_same_name_body/app/a.py",
+      "reason": "First model namespace."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/b.py",
+      "reason": "Second model namespace."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/app/main.py",
+      "reason": "Fixture assembly."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "Collision regression."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "reason": "Related schema identity contract."
+    },
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_modules_same_name_body/test_main.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "schema",
+    "regression"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:54:06.010Z",
+  "updatedAt": "2026-10-23T17:54:06.010Z"
+}

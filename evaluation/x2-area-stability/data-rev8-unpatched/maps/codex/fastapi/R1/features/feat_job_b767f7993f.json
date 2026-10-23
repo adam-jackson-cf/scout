@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_b767f7993f",
+  "title": "Translation notification automation",
+  "summary": "Notify contributors about documentation translations.\n\nAgent mapper reason: The workflow and action implement a single notification job.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Notification trigger."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Action contract."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Notification implementation."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Execution environment."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Documentation organization."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "translations",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:40:44.920Z"
+}

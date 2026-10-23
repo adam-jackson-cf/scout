@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_c82357672d",
+  "title": "JSON encoding and serialization",
+  "summary": "Review JSON conversion examples and serialization regressions.\n\nAgent mapper reason: Conversion of application objects into JSON-compatible output is a distinct shared contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/encoder/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/encoder/tutorial001.py",
+      "reason": "JSON-compatible conversion example."
+    },
+    {
+      "path": "docs_src/encoder/tutorial001_py310.py",
+      "reason": "Python 3.10 equivalent."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "Encoder behavior."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom datetime encoding."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Model serialization."
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "reason": "Tuple serialization contract."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/encoder.md",
+      "reason": "Encoding semantics."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "json",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:36:27.766Z",
+  "updatedAt": "2026-10-23T17:36:27.766Z"
+}

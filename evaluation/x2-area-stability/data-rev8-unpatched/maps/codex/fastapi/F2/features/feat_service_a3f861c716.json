@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_a3f861c716",
+  "title": "Database integration examples and contracts",
+  "summary": "Review visible asynchronous and NoSQL examples alongside SQL tutorial tests.\n\nAgent mapper reason: Database connection lifetimes and test isolation are shared concerns; the SQL application implementation is not included in the supplied paths.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs_src/async_sql_databases/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/async_sql_databases/tutorial001.py",
+      "reason": "Asynchronous SQL integration example."
+    },
+    {
+      "path": "docs_src/nosql_databases/tutorial001.py",
+      "reason": "NoSQL integration example."
+    },
+    {
+      "path": "docs_src/sql_databases/sql_app/tests/test_sql_app.py",
+      "reason": "SQL application test contract."
+    },
+    {
+      "path": "docs_src/sql_databases/sql_app_py310/tests/test_sql_app.py",
+      "reason": "Python 3.10 SQL test contract."
+    },
+    {
+      "path": "docs_src/sql_databases/sql_app_py39/tests/test_sql_app.py",
+      "reason": "Python 3.9 SQL test contract."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/async-sql-databases.md",
+      "reason": "Async database intent."
+    },
+    {
+      "path": "docs/en/docs/advanced/nosql-databases.md",
+      "reason": "NoSQL intent."
+    },
+    {
+      "path": "docs/en/docs/tutorial/sql-databases.md",
+      "reason": "SQL application intent."
+    },
+    {
+      "path": "docs/en/docs/advanced/testing-database.md",
+      "reason": "Database test isolation guidance."
+    },
+    {
+      "path": "tests/test_tutorial/test_async_sql_databases/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "docs_src/sql_databases/sql_app/tests/test_sql_app.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_async_sql_databases/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "docs_src/sql_databases/sql_app/tests/test_sql_app.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tutorial",
+    "database",
+    "integration"
+  ],
+  "trustBoundaries": [
+    "database",
+    "filesystem",
+    "network",
+    "concurrency",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:32:43.376Z",
+  "updatedAt": "2026-10-23T17:32:43.376Z"
+}

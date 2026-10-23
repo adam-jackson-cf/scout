@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_171c2b8185",
+  "title": "Continuous integration and quality checks",
+  "summary": "Test, lint, formatting, and coverage workflow configuration.\n\nAgent mapper reason: These files govern verification and maintenance rather than application behavior.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "CI test execution."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Coverage reporting workflow."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local quality checks."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency maintenance configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Project tooling configuration."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow expectations."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "quality"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "permissions",
+    "secrets"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:40:44.996Z"
+}

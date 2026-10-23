@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_b89fe22245",
+  "title": "Documentation preview automation",
+  "summary": "Build, watch, and comment on pull request documentation previews.\n\nAgent mapper reason: These workflows and container actions implement one documentation preview lifecycle.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Preview orchestration."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build orchestration."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Comment action interface."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Preview comment implementation."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Comment action runtime."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Watcher action interface."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Preview watcher implementation."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Watcher runtime."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Site configuration consumed by builds."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "docs",
+    "previews"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "permissions",
+    "process-exec",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:51:04.081Z",
+  "updatedAt": "2026-10-23T17:54:06.106Z"
+}

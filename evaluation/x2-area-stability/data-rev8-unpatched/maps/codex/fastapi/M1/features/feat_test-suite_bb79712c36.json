@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_bb79712c36",
+  "title": "Application and router composition regressions",
+  "summary": "Specify framework behavior for router inclusion, route classes, and endpoint signatures.\n\nAgent mapper reason: Core routing implementation paths are absent, so these visible regression contracts form a test-only slice.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_include_route.py",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest tests/test_include_route.py"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_application.py",
+      "reason": "Application behavior."
+    },
+    {
+      "path": "tests/test_callable_endpoint.py",
+      "reason": "Callable endpoint support."
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "reason": "Route subclass behavior."
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "reason": "Empty composition edge case."
+    },
+    {
+      "path": "tests/test_extra_routes.py",
+      "reason": "Extra route behavior."
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "Route inclusion."
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "reason": "Composition precedence."
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "reason": "Subclass integration."
+    },
+    {
+      "path": "tests/test_operations_signatures.py",
+      "reason": "Operation signature contracts."
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "reason": "Route scope contract."
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "reason": "Prefix composition."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/bigger-applications.md",
+      "reason": "Public composition model."
+    },
+    {
+      "path": "tests/main.py",
+      "reason": "Shared test application context."
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_include_route.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "regression"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:46:11.354Z",
+  "updatedAt": "2026-10-23T17:51:04.215Z"
+}

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_1521273e23",
+  "title": "Response model serialization regression suite",
+  "summary": "Verify response filtering, aliases, model validation, and JSON encoding.\n\nAgent mapper reason: These tests protect the conversion and filtering of returned objects into public payloads.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "JSON conversion."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom date encoding."
+    },
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "reason": "Submodel filtering."
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "ORM object conversion."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Alias serialization."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Return type inference."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Field inclusion and exclusion."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid response models."
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Subtype handling."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Model serialization."
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Default field omission."
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "reason": "Custom class inheritance."
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "Supporting data structures."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Public response filtering contract."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response-model",
+    "encoding"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:40:44.920Z",
+  "updatedAt": "2026-10-23T17:54:06.169Z"
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_b767f7993f",
+  "title": "Translation notification automation",
+  "summary": "Notify contributors about documentation translation work.\n\nAgent mapper reason: One bounded action and its invoking workflow.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Notification trigger and permissions."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Action configuration."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Notification implementation."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Action runtime."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/contributing.md",
+      "reason": "Contributor workflow intent."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "translations",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "secrets",
+    "permissions",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:36:27.766Z",
+  "updatedAt": "2026-10-23T17:36:27.766Z"
+}

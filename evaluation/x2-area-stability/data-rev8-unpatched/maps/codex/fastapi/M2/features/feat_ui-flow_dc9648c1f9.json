@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_dc9648c1f9",
+  "title": "Documentation site runtime and build",
+  "summary": "English documentation theme, browser behavior, and build workflow.\n\nAgent mapper reason: Site configuration and browser customization jointly determine documentation user experience.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Site configuration."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Theme override."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Browser chat behavior."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Custom browser behavior."
+    },
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Custom site styling."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/js/termynal.js",
+      "reason": "Potential third-party terminal widget; context only."
+    },
+    {
+      "path": "docs/en/docs/css/termynal.css",
+      "reason": "Terminal widget styling; context only."
+    },
+    {
+      "path": "docs/en/docs/index.md",
+      "reason": "Site landing content."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "frontend",
+    "mkdocs"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "external-api",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:54:06.010Z"
+}

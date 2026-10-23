@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_dc9648c1f9",
+  "title": "Documentation build and browser customization",
+  "summary": "English documentation configuration, layout, and custom browser behavior.\n\nAgent mapper reason: The build, template, and custom browser code collectively produce the documentation experience.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build pipeline."
+    },
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Site configuration."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Site template override."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Chat browser behavior."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Site-specific browser behavior."
+    },
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Site-specific styling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/js/termynal.js",
+      "reason": "Third-party provenance should be checked before ownership."
+    },
+    {
+      "path": "docs/en/docs/css/termynal.css",
+      "reason": "Terminal widget styling dependency."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Build dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "mkdocs",
+    "frontend"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-23T17:28:06.385Z",
+  "updatedAt": "2026-10-23T17:28:06.385Z"
+}
