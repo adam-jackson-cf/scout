@@ -240,8 +240,8 @@ func AssessReadiness(ctx context.Context, config Config, options Options) (Readi
 	if !config.ClawpatchEgressAuthorized {
 		clawpatchEgressErr = errors.New("Clawpatch provider source egress is not authorized")
 	}
-	add("clawpatch_provider_egress", clawpatchNeeded, clawpatchEgressErr)
-	add("contextual_provider", mappingPending || featurePending, contextual.CheckPrerequisites(config.Provider))
+	add("clawpatch_provider_egress", reviewPending, clawpatchEgressErr)
+	add("contextual_provider", featurePending, contextual.CheckPrerequisites(config.Provider))
 	ids := make([]string, 0, len(scannerIDs))
 	for id := range scannerIDs {
 		ids = append(ids, id)

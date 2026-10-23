@@ -12,8 +12,8 @@ func TestDiffSchedulesDependentClosureForRecordedSharedContract(t *testing.T) {
 	current.ContentDigest = "after"
 
 	result, err := Diff(DiffInput{
-		PreviousFiles:   []domain.File{previous},
-		CurrentFiles:    []domain.File{current},
+		PreviousFiles:    []domain.File{previous},
+		CurrentFiles:     []domain.File{current},
 		PreviousFeatures: []domain.Feature{testFeature("producer", "shared/contract.go"), testFeature("consumer", "consumer/handler.go")},
 		CurrentFeatures:  []domain.Feature{testFeature("producer", "shared/contract.go"), testFeature("consumer", "consumer/handler.go")},
 		Dependencies: []DependencyEdge{{

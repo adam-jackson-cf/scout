@@ -374,11 +374,11 @@ var performanceMatrix = map[string][]domain.Severity{
 }
 
 var architectureColumns = map[string]int{
-	"systemic_or_critical_boundary":  0,
+	"systemic_or_critical_boundary":    0,
 	"multi_area_or_important_boundary": 1,
-	"component":                      2,
-	"local":                          3,
-	"none":                           4,
+	"component":                        2,
+	"local":                            3,
+	"none":                             4,
 }
 
 var qualityColumns = map[string]int{

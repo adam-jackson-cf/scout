@@ -97,3 +97,27 @@ func (s *Store) LoadLatestInventory(ctx context.Context) ([]domain.File, error) 
 	}
 	return s.LoadInventory(ctx, run.RunID)
 }
+
+// LoadLatestRecordedInventory returns the newest finalized run's inventory
+// snapshot whatever the run's state. The inventory is a full scan even when
+// analysis lanes were partial, so it is valid for rename/delete diffs but
+// never for coverage reuse (use LoadLatestInventory for that).
+func (s *Store) LoadLatestRecordedInventory(ctx context.Context) (domain.Run, []domain.File, error) {
+	var run domain.Run
+	var files []domain.File
+	err := s.withRead(ctx, func(db *sql.DB) error {
+		var runPayload, filePayload []byte
+		err := db.QueryRowContext(ctx, `SELECT r.payload, i.payload FROM runs r JOIN inventory_snapshots i ON i.run_id = r.run_id WHERE r.finalized = 1 ORDER BY r.finished_at DESC, r.started_at DESC LIMIT 1`).Scan(&runPayload, &filePayload)
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrNotFound
+		}
+		if err != nil {
+			return fmt.Errorf("load recorded inventory: %w", err)
+		}
+		if err := decode(runPayload, &run); err != nil {
+			return err
+		}
+		return decode(filePayload, &files)
+	})
+	return run, files, err
+}

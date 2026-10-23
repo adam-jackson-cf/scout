@@ -25,6 +25,11 @@ import (
 type Runner struct {
 	spec  Spec
 	runID string
+
+	// verifiedBinary is the resolved scanner path whose version was already
+	// verified by this runner; one Runner is shared for a whole assessment run.
+	verifyMu       sync.Mutex
+	verifiedBinary string
 }
 
 func NewRunner(spec Spec, runID string) (*Runner, error) {
@@ -426,6 +431,19 @@ func expandArgs(args []string, root, manifest string, inputs []ManifestInput, bu
 }
 
 func (r *Runner) verifyVersion(ctx context.Context, root, state, rulesRoot, binary string) error {
+	r.verifyMu.Lock()
+	defer r.verifyMu.Unlock()
+	if r.verifiedBinary == binary {
+		return nil
+	}
+	if err := r.checkVersion(ctx, root, state, rulesRoot, binary); err != nil {
+		return err
+	}
+	r.verifiedBinary = binary
+	return nil
+}
+
+func (r *Runner) checkVersion(ctx context.Context, root, state, rulesRoot, binary string) error {
 	check, cancel := context.WithTimeout(ctx, minDuration(r.spec.Timeout, 10*time.Second))
 	defer cancel()
 	stdout, stderr, err := r.runCommand(check, root, state, rulesRoot, binary, r.spec.Binary.VersionArgs)
@@ -583,7 +601,7 @@ func (r *Runner) observations(root string, inputs map[string]sourceInput, findin
 		severity, confidence := finding.severity, finding.confidence
 		var err error
 		if r.spec.Output.SecretDiagnostics {
-			mechanism, severity, confidence = "secret diagnostic reported", domain.SeverityHigh, domain.ConfidenceMedium
+			mechanism, severity, confidence = domain.SecretMechanism, domain.SeverityHigh, domain.ConfidenceMedium
 			quote, err = sanitizeText(finding.quote, maxEvidenceText)
 		} else {
 			mechanism, err = sanitizeText(finding.mechanism, maxEvidenceText)
@@ -600,7 +618,11 @@ func (r *Runner) observations(root string, inputs map[string]sourceInput, findin
 		}
 		location := domain.SourceRange{Path: finding.path, StartLine: finding.startLine, EndLine: finding.endLine, StartByte: finding.startByte, EndByte: finding.endByte}
 		sourceFindingID := ""
-		if !r.spec.Output.SecretDiagnostics {
+		if r.spec.Output.SecretDiagnostics {
+			// Identity of a secret is a digest of its raw value, computed in memory
+			// here and never stored or logged raw, so a moved secret stays one issue.
+			sourceFindingID = secretDigest(root, finding)
+		} else {
 			sourceFindingID = finding.id
 		}
 		observation := domain.Observation{ObservationID: digestID(r.runID, r.spec.ID, finding.id, finding.ruleID, finding.path, fmt.Sprint(finding.startLine)), RunID: r.runID, Source: r.spec.ID, SourceFindingID: sourceFindingID, Family: r.spec.Family, OriginalCategory: r.spec.Category, RuleID: finding.ruleID, RuleVersion: r.spec.Rules.Version, SourceSeverity: severity, EffectiveSeverity: severity, Confidence: confidence, Mechanism: mechanism, Uncertainty: uncertainty, Evidence: []domain.Evidence{{Location: location, RedactedQuote: quote}}, Validated: true, ObservedAt: observed}

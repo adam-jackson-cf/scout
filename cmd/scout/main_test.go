@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"os"
@@ -41,6 +42,13 @@ func TestArtifactInRunRequiresARecordedArtifact(t *testing.T) {
 	}
 }
 
+func TestApprovalCommandsAreRemoved(t *testing.T) {
+	for _, command := range []string{"approve", "verify"} {
+		if code := run(context.Background(), []string{command}); code != exitUnavailable {
+			t.Fatalf("scout %s exit = %d, want unknown-command exit %d", command, code, exitUnavailable)
+		}
+	}
+}
 
 func TestJSONOutcomeExitAgreement(t *testing.T) {
 	originalStdout := os.Stdout

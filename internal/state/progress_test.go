@@ -81,65 +81,6 @@ func TestCommittedJobSurvivesFreshStore(t *testing.T) {
 	}
 }
 
-func TestEvidenceDriftRevokesApprovalAndCannotResolvePartialRun(t *testing.T) {
-	ctx := context.Background()
-	store, err := Open(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer store.Close()
-	plan, run, job, coverage, observation := progressFixture("drift")
-	secondKey := domain.CoverageKey{FilePath: "moved.go", Family: domain.FamilySecurity, Category: "security:test"}
-	plan.Jobs = append(plan.Jobs, domain.Job{JobID: "job-drift-2", Stage: domain.StageFileAnalysis, CoverageKey: &secondKey, InputFingerprint: "input-2", State: domain.JobPending})
-	if err := store.SavePlan(ctx, plan); err != nil {
-		t.Fatal(err)
-	}
-	if err := store.BeginRun(ctx, run); err != nil {
-		t.Fatal(err)
-	}
-	if err := store.CommitRunJob(ctx, run.RunID, RunJobCommit{JobID: job.JobID, Coverage: []domain.Coverage{coverage}, Observations: []domain.Observation{observation}, CommittedAt: time.Now().UTC()}); err != nil {
-		t.Fatal(err)
-	}
-	issue := domain.Issue{IssueID: "issue:security:drift", State: domain.IssueOpen, Title: "security:test: unsafe path", Mechanism: "unsafe path", OriginalSeverity: domain.SeverityHigh, EffectiveSeverity: domain.SeverityHigh, ObservationIDs: []string{observation.ObservationID}, Files: []string{"main.go"}, History: []domain.IssueHistoryEntry{{At: time.Now().UTC(), To: domain.IssueOpen, Actor: "test", Reason: "created"}}, CreatedAt: time.Now().UTC(), UpdatedAt: time.Now().UTC()}
-	if err := store.CreateIssue(ctx, issue); err != nil {
-		t.Fatal(err)
-	}
-	contradiction, err := store.StoreArtifact(ctx, []byte("scope proves this is not reachable"), "text/plain", func(raw []byte) ([]byte, error) { return raw, nil })
-	if err != nil {
-		t.Fatal(err)
-	}
-	if _, err := store.TriageIssue(ctx, issue.IssueID, domain.IssueFalsePositive, "owner", "not reachable", "human", "reviewed"); err == nil {
-		t.Fatal("false positive without contradictory evidence succeeded")
-	}
-	if _, err := store.TriageIssueWithEvidence(ctx, issue.IssueID, domain.IssueFalsePositive, "owner", "not reachable", "human", "reviewed", []domain.SafeArtifactRef{contradiction}); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := store.ApproveIssue(ctx, issue.IssueID, "replace unsafe path", "change:123", "human", "authorized remediation"); err != nil {
-		t.Fatal(err)
-	}
-	changedCoverage := domain.Coverage{Key: secondKey, Status: domain.CoverageFlagged, InspectedRanges: []domain.SourceRange{{Path: "moved.go", StartLine: 3, EndLine: 3}}, ObservationIDs: []string{"observation-drift-2"}}
-	changedObservation := observation
-	changedObservation.ObservationID = "observation-drift-2"
-	changedObservation.Evidence = []domain.Evidence{{Location: domain.SourceRange{Path: "moved.go", StartLine: 3, EndLine: 3}, RedactedQuote: "different support"}}
-	changedObservation.ObservedAt = time.Now().UTC()
-	if err := store.CommitRunJob(ctx, run.RunID, RunJobCommit{JobID: "job-drift-2", Coverage: []domain.Coverage{changedCoverage}, Observations: []domain.Observation{changedObservation}, CommittedAt: time.Now().UTC()}); err != nil {
-		t.Fatal(err)
-	}
-	updated, err := store.LinkIssueObservations(ctx, issue.IssueID, []string{changedObservation.ObservationID}, "correlator", "new finding")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if updated.State != domain.IssueUnverified || updated.ApprovalRef != "" || updated.ProposedAction != "" || updated.Verification != nil {
-		t.Fatalf("drift did not invalidate issue: %#v", updated)
-	}
-	if _, err := store.ApproveIssue(ctx, issue.IssueID, "replace unsafe path", "change:123", "human", "reauthorized remediation"); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := store.VerifyIssue(ctx, issue.IssueID, domain.IssueResolved, domain.Verification{RunID: run.RunID, AuthorizedChangeRef: "change:123", Relevant: true, InspectionStatus: domain.CoverageInspected, FailureModeAbsent: true, ArtifactRefs: []domain.SafeArtifactRef{contradiction}, VerifiedAt: time.Now().UTC()}, "human", "recheck"); err == nil {
-		t.Fatal("partial verification run resolved issue")
-	}
-}
-
 func TestOpenExistingReadOnlyDoesNotInitializeMissingState(t *testing.T) {
 	root := t.TempDir()
 	if _, err := OpenExistingReadOnly(root); !errors.Is(err, ErrNotFound) {

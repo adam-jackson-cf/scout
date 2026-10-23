@@ -124,7 +124,7 @@ type Manifest struct {
 // ReviewMetadata retains the safe contextual details not represented by domain
 // coverage or observations. Reproductions are keyed only by validated observation IDs.
 type ReviewMetadata struct {
-	DeterministicBlindSpot       string            `json:"deterministicBlindSpot"`
+	DeterministicBlindSpot      string            `json:"deterministicBlindSpot"`
 	ReproductionByObservationID map[string]string `json:"reproductionByObservationId,omitempty"`
 }
 
@@ -215,7 +215,6 @@ func (c *Client) Review(ctx context.Context, request ReviewRequest) (ReviewResul
 	}
 	return result, nil
 }
-
 
 // CheckPrerequisites reports whether the configured provider may receive source.
 // It only validates configuration, explicit egress authorization, and credential

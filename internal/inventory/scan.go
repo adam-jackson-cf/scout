@@ -439,7 +439,6 @@ func readDiagnostic(err error) (string, string) {
 	return "file_unreadable", err.Error()
 }
 
-
 func unbornHEAD(ctx context.Context, root string) bool {
 	ref, err := gitOutput(ctx, root, "symbolic-ref", "-q", "HEAD")
 	if err != nil {

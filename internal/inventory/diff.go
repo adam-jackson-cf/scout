@@ -323,7 +323,6 @@ func mappingGaps(files []domain.File, features []domain.Feature) []MappingGap {
 	return gaps
 }
 
-
 func invalidatedIDs(invalidations []FeatureInvalidation) []string {
 	ids := make([]string, 0, len(invalidations))
 	for _, invalidation := range invalidations {

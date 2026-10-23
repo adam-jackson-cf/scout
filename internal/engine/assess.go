@@ -53,6 +53,10 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 	if err != nil {
 		return result, err
 	}
+	_, recordedFiles, recordedErr := store.LoadLatestRecordedInventory(ctx)
+	if recordedErr != nil && !errors.Is(recordedErr, state.ErrNotFound) {
+		return result, recordedErr
+	}
 	latest, latestErr := store.LatestRun(ctx)
 	first := errors.Is(latestErr, state.ErrNotFound)
 	if latestErr != nil && !first {
@@ -96,7 +100,7 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 		}
 	}
 	mappingRequired := options.ForceFull || first || len(previousFeatures) == 0 || previousPlan.MapperDigest != mapperDigest || latest.Snapshot.WorktreeDigest != snapshot.Snapshot.WorktreeDigest || latest.Snapshot.IgnoreRulesDigest != snapshot.Snapshot.IgnoreRulesDigest || latest.Snapshot.ExclusionsDigest != snapshot.Snapshot.ExclusionsDigest
-	mapped, mapErr, persistErr := mapBeforeAnalysis(ctx, store, client, snapshot, mappingRequired && resumePlan == nil, config.ClawpatchEgressAuthorized, digest("scout-policy-v2"), digest(string(toolDigest)), modelDigest, mapperDigest)
+	mapped, mapErr, persistErr := mapBeforeAnalysis(ctx, store, client, snapshot, mappingRequired && resumePlan == nil, digest("scout-policy-v2"), digest(string(toolDigest)), modelDigest, mapperDigest)
 	if persistErr != nil {
 		return result, persistErr
 	}
@@ -114,6 +118,15 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 		return result, err
 	}
 	result.Diff = diff
+	// Identity follows renames/deletions against the inventory recorded before
+	// this assessment began (loaded before the mapping preplan writes one).
+	lifecycle := diff
+	if recordedErr == nil {
+		lifecycle, err = inventory.Diff(inventory.DiffInput{PreviousFiles: recordedFiles, CurrentFiles: current.Files})
+		if err != nil {
+			return result, err
+		}
+	}
 	result.MappingGaps = mergeMappingGaps(diff.MappingGaps, current.MappingGaps)
 	specByKey := make(map[string]analyzers.Spec, len(specs))
 	fileCategories := map[domain.Family][]string{}
@@ -271,6 +284,45 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 			return result, fmt.Errorf("persist mapping job %s: %w", job.JobID, err)
 		}
 	}
+	// Pending scanner jobs are grouped per adapter and scanned in bounded
+	// chunks; each job still commits only its own file's results.
+	type scanChunk struct {
+		files   []domain.File
+		ran     bool
+		adapter domain.AdapterResult
+		found   []domain.Observation
+	}
+	chunkOf := map[string]*scanChunk{}
+	runners := map[string]*analyzers.Runner{}
+	pendingBySpec := map[string][]domain.File{}
+	specOrder := []string{}
+	for _, job := range planResult.Plan.Jobs {
+		if job.CoverageKey == nil || job.State == domain.JobReused || committed[job.JobID] || job.Stage != domain.StageFileAnalysis {
+			continue
+		}
+		spec, exists := specByKey[categoryKey(job.CoverageKey.Family, job.CoverageKey.Category)]
+		if !exists {
+			continue
+		}
+		if _, seen := pendingBySpec[spec.ID]; !seen {
+			specOrder = append(specOrder, spec.ID)
+		}
+		pendingBySpec[spec.ID] = append(pendingBySpec[spec.ID], files[job.CoverageKey.FilePath])
+	}
+	for _, specID := range specOrder {
+		var spec analyzers.Spec
+		for _, candidate := range specs {
+			if candidate.ID == specID {
+				spec = candidate
+			}
+		}
+		for _, batch := range spec.Batches(root, pendingBySpec[specID]) {
+			chunk := &scanChunk{files: batch}
+			for _, file := range batch {
+				chunkOf[domain.CoverageKey{FilePath: file.Path, Family: spec.Family, Category: spec.Category}.String()] = chunk
+			}
+		}
+	}
 	for _, job := range planResult.Plan.Jobs {
 		if job.CoverageKey == nil || job.State == domain.JobReused {
 			continue
@@ -289,11 +341,24 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 				run.Coverage = append(run.Coverage, blocked(key, "no registered scanner for category"))
 				break
 			}
-			runner, runnerErr := registry.Runner(spec.ID, runID)
-			if runnerErr != nil {
-				return result, runnerErr
+			chunk := chunkOf[domain.CoverageKey{FilePath: key.FilePath, Family: key.Family, Category: key.Category}.String()]
+			if chunk == nil {
+				run.Coverage = append(run.Coverage, blocked(key, "no scanner batch was planned for this input"))
+				break
 			}
-			adapter, found, _ := runner.Run(ctx, root, []domain.File{files[key.FilePath]})
+			if !chunk.ran {
+				runner := runners[spec.ID]
+				if runner == nil {
+					var runnerErr error
+					if runner, runnerErr = registry.Runner(spec.ID, runID); runnerErr != nil {
+						return result, runnerErr
+					}
+					runners[spec.ID] = runner
+				}
+				chunk.adapter, chunk.found, _ = runner.Run(ctx, root, chunk.files)
+				chunk.ran = true
+			}
+			adapter, found := splitAdapter(chunk.adapter, chunk.found, key)
 			result.Adapters = append(result.Adapters, adapter)
 			run.Coverage = append(run.Coverage, adapter.Coverage...)
 			run.Failures = append(run.Failures, adapter.Failures...)
@@ -402,7 +467,15 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 		return result, err
 	}
 	result.Run = run
-	if _, err := issues.Correlate(ctx, store, run, observations); err != nil {
+	renames := make(map[string]string, len(lifecycle.Renamed))
+	for _, renamed := range lifecycle.Renamed {
+		renames[renamed.PreviousPath] = renamed.Path
+	}
+	removed := make([]string, 0, len(lifecycle.Removed))
+	for _, file := range lifecycle.Removed {
+		removed = append(removed, file.Path)
+	}
+	if _, err := issues.Correlate(ctx, store, run, observations, issues.WithRenames(renames), issues.WithDeleted(removed)); err != nil {
 		return result, fmt.Errorf("correlate persisted observations: %w", err)
 	}
 	allIssues, err := store.ListIssues(ctx)
@@ -451,9 +524,9 @@ func matchingResumablePlan(ctx context.Context, store *state.Store, snapshot dom
 
 // mapBeforeAnalysis records a mapping-only partial run before an authorized
 // mapper can inspect source. It never becomes a successful scan baseline.
-func mapBeforeAnalysis(ctx context.Context, store *state.Store, client *clawpatch.Client, snapshot inventory.ScanResult, requested, egressAuthorized bool, policyDigest, toolDigest, modelDigest, mapperDigest string) (clawpatch.MapResult, error, error) {
-	if !requested || !egressAuthorized {
-		mapped, err := client.Map(ctx, requested)
+func mapBeforeAnalysis(ctx context.Context, store *state.Store, client *clawpatch.Client, snapshot inventory.ScanResult, requested bool, policyDigest, toolDigest, modelDigest, mapperDigest string) (clawpatch.MapResult, error, error) {
+	if !requested {
+		mapped, err := client.Map(ctx, false, clawpatch.MapSourceHeuristic)
 		return mapped, err, nil
 	}
 	runID, err := newRunID()
@@ -479,7 +552,7 @@ func mapBeforeAnalysis(ctx context.Context, store *state.Store, client *clawpatc
 	if err := store.BeginRun(ctx, run); err != nil {
 		return clawpatch.MapResult{}, nil, err
 	}
-	mapped, mapErr := client.Map(ctx, true)
+	mapped, mapErr := client.Map(ctx, true, clawpatch.MapSourceHeuristic)
 	commit := state.RunJobCommit{JobID: job.JobID, CommittedAt: time.Now().UTC()}
 	if mapErr != nil {
 		failure := domain.Failure{Stage: domain.StageMapping, JobID: job.JobID, Code: "mapping_blocked", Message: "canonical Clawpatch mapping did not complete"}
@@ -534,6 +607,38 @@ func storeAdapter(ctx context.Context, store *state.Store, adapter domain.Adapte
 	}
 	run.ArtifactRefs = append(run.ArtifactRefs, ref)
 	return nil
+}
+
+// splitAdapter projects a batch scan onto one input: that file's coverage rows
+// and observations, plus the batch-level failures that apply to every file in
+// it. A file the batch never accounted for is incomplete, never inspected.
+func splitAdapter(batch domain.AdapterResult, found []domain.Observation, key domain.CoverageKey) (domain.AdapterResult, []domain.Observation) {
+	adapter := batch
+	adapter.Coverage = nil
+	for _, row := range batch.Coverage {
+		if row.Key.FilePath == key.FilePath {
+			adapter.Coverage = append(adapter.Coverage, row)
+		}
+	}
+	if len(adapter.Coverage) == 0 {
+		reason := "scanner batch did not account for this input"
+		if len(batch.Failures) > 0 {
+			reason = batch.Failures[0].Message
+		}
+		adapter.Coverage = []domain.Coverage{{
+			Key: domain.CoverageKey{FilePath: key.FilePath, Family: key.Family, Category: key.Category}, Status: domain.CoverageIncomplete,
+			Reason: reason, AdapterResultIDs: []string{batch.ResultID},
+		}}
+	}
+	var mine []domain.Observation
+	adapter.Observations = nil
+	for _, observation := range found {
+		if len(observation.Evidence) > 0 && observation.Evidence[0].Location.Path == key.FilePath {
+			mine = append(mine, observation)
+			adapter.Observations = append(adapter.Observations, observation.ObservationID)
+		}
+	}
+	return adapter, mine
 }
 
 // SortedCategories exposes the versioned contextual work queue for readiness.

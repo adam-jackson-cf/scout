@@ -33,6 +33,8 @@ type parsedFinding struct {
 	startByte   int
 	endByte     int
 	quote       string
+	startColumn int
+	endColumn   int
 }
 
 type adapterJSON struct {
@@ -178,10 +180,12 @@ type sarifArtifactLocation struct {
 	URIBaseID string `json:"uriBaseId"`
 }
 type sarifRegion struct {
-	StartLine  int `json:"startLine"`
-	EndLine    int `json:"endLine"`
-	CharOffset int `json:"charOffset"`
-	CharLength int `json:"charLength"`
+	StartLine   int `json:"startLine"`
+	EndLine     int `json:"endLine"`
+	CharOffset  int `json:"charOffset"`
+	StartColumn int `json:"startColumn"`
+	EndColumn   int `json:"endColumn"`
+	CharLength  int `json:"charLength"`
 }
 
 func parseSARIF(spec Spec, raw []byte, root string) (parsedOutput, error) {
@@ -281,7 +285,7 @@ func parseSARIFFinding(spec Spec, value sarifResult, root string) (parsedFinding
 	if !safeName(id) {
 		id = digestID(ruleID, path, fmt.Sprint(region.StartLine))
 	}
-	return parsedFinding{id: id, ruleID: ruleID, severity: severity, confidence: domain.ConfidenceMedium, mechanism: value.Message.Text, path: path, startLine: region.StartLine, endLine: endLine}, nil
+	return parsedFinding{id: id, ruleID: ruleID, severity: severity, confidence: domain.ConfidenceMedium, mechanism: value.Message.Text, path: path, startLine: region.StartLine, endLine: endLine, startColumn: region.StartColumn, endColumn: region.EndColumn}, nil
 }
 
 // SARIF producers use repository-relative paths, Semgrep's %SRCROOT% base ID,

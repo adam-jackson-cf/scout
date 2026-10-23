@@ -155,44 +155,85 @@ func (c *Client) Init(ctx context.Context) error {
 	return nil
 }
 
-// Map uses Clawpatch's canonical automatic mapper only when its inputs changed.
-// On an unchanged map it reads the prior authoritative records without a model
-// or mapper invocation.
-func (c *Client) Map(ctx context.Context, inputsChanged bool) (MapResult, error) {
+// MapSource selects Clawpatch's mapper. Heuristic mapping is canonical and
+// never contacts a provider; agent mapping needs provider egress.
+type MapSource string
+
+const (
+	MapSourceHeuristic MapSource = "heuristic"
+	MapSourceAgent     MapSource = "agent"
+)
+
+// Map maps only when its inputs changed. On an unchanged map it reads the prior
+// authoritative records without a model or mapper invocation. A heuristic map
+// runs with egress off. An agent map requires egress; if it fails, the
+// heuristic map is kept and the result reports exploration as incomplete.
+func (c *Client) Map(ctx context.Context, inputsChanged bool, source MapSource) (MapResult, error) {
+	if source != MapSourceHeuristic && source != MapSourceAgent {
+		err := fmt.Errorf("unknown Clawpatch map source %q", source)
+		return MapResult{Status: MapBlocked, Reason: err.Error()}, err
+	}
 	if !inputsChanged {
 		features, err := loadFeatures(c.stateDir)
 		if err != nil {
-			return MapResult{Status: MapBlocked, Reason: "canonical Clawpatch records are unavailable"}, err
+			return MapResult{Status: MapBlocked, Source: source, Reason: "canonical Clawpatch records are unavailable"}, err
 		}
-		return MapResult{Status: MapReused, Features: features}, nil
+		return MapResult{Status: MapReused, Source: source, Features: features}, nil
 	}
-	if !c.egressAuthorized {
-		return MapResult{Status: MapBlocked, Reason: "Clawpatch mapping provider egress is not authorized"}, errors.New("Clawpatch mapping provider egress is not authorized")
-	}
-	if err := c.verifyReviewSafetyPatch(); err != nil {
-		return MapResult{Status: MapBlocked, Reason: err.Error()}, err
+	if source == MapSourceAgent {
+		if !c.egressAuthorized {
+			err := errors.New("Clawpatch mapping provider egress is not authorized")
+			return MapResult{Status: MapBlocked, Source: source, Reason: err.Error()}, err
+		}
+		if err := c.verifyReviewSafetyPatch(); err != nil {
+			return MapResult{Status: MapBlocked, Source: source, Reason: err.Error()}, err
+		}
 	}
 	if err := c.Init(ctx); err != nil {
-		return MapResult{Status: MapBlocked, Reason: err.Error()}, err
+		return MapResult{Status: MapBlocked, Source: source, Reason: err.Error()}, err
 	}
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	if _, err := c.invokeEnvLocked(ctx, mapEnvironment(), "map", "--source", "auto"); err != nil {
+	if source == MapSourceHeuristic {
+		return c.mapHeuristicLocked(ctx)
+	}
+	if _, err := c.invokeEnvLocked(ctx, mapEnvironment(), "map", "--source", "agent"); err != nil {
+		fallback, fallbackErr := c.mapHeuristicLocked(ctx)
+		if fallbackErr != nil {
+			return fallback, errors.Join(err, fallbackErr)
+		}
+		fallback.ExplorationIncomplete = true
+		fallback.Reason = "agent mapping did not complete; heuristic map kept and exploration is incomplete"
+		return fallback, nil
+	}
+	features, err := loadFeatures(c.stateDir)
+	if err != nil {
+		return MapResult{Status: MapBlocked, Source: source, Reason: "canonical Clawpatch records are unavailable"}, err
+	}
+	if len(features) == 0 {
+		return MapResult{Status: MapMapped, Source: source, ExplorationIncomplete: true, Reason: "agent mapping produced zero features"}, nil
+	}
+	return MapResult{Status: MapMapped, Source: source, Features: features}, nil
+}
+
+func (c *Client) mapHeuristicLocked(ctx context.Context) (MapResult, error) {
+	if _, err := c.invokeLocked(ctx, "map", "--source", "heuristic"); err != nil {
 		features, loadErr := loadFeatures(c.stateDir)
 		if loadErr != nil {
-			return MapResult{Status: MapBlocked, Reason: "pinned Clawpatch map did not complete"}, errors.Join(err, loadErr)
+			return MapResult{Status: MapBlocked, Source: MapSourceHeuristic, Reason: "pinned Clawpatch map did not complete"}, errors.Join(err, loadErr)
 		}
 		return MapResult{
 			Status:   MapBlocked,
+			Source:   MapSourceHeuristic,
 			Features: features,
 			Reason:   "pinned Clawpatch map did not complete; prior canonical records were retained",
 		}, err
 	}
 	features, err := loadFeatures(c.stateDir)
 	if err != nil {
-		return MapResult{Status: MapBlocked, Reason: "canonical Clawpatch records are unavailable"}, err
+		return MapResult{Status: MapBlocked, Source: MapSourceHeuristic, Reason: "canonical Clawpatch records are unavailable"}, err
 	}
-	return MapResult{Status: MapMapped, Features: features}, nil
+	return MapResult{Status: MapMapped, Source: MapSourceHeuristic, Features: features}, nil
 }
 
 // CheckPrerequisites verifies the pinned executable without creating target
@@ -273,10 +314,14 @@ const (
 )
 
 // MapResult never substitutes a partial map for a successful map.
+// ExplorationIncomplete marks a requested agent map that failed or found
+// nothing; Features then hold the heuristic map.
 type MapResult struct {
-	Status   MapStatus
-	Features []Feature
-	Reason   string
+	Status                MapStatus
+	Source                MapSource
+	Features              []Feature
+	Reason                string
+	ExplorationIncomplete bool
 }
 
 // Feature is a canonical Clawpatch record in Scout's shared domain contract.

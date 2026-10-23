@@ -72,7 +72,7 @@ func (s *Store) BeginRun(ctx context.Context, run domain.Run) error {
 	if run.State != domain.RunPartial || run.FinishedAt != nil {
 		return errors.New("begin run requires an unfinished partial run")
 	}
-	payload, err := encode(run)
+	payload, err := shellPayload(run)
 	if err != nil {
 		return err
 	}
@@ -119,20 +119,32 @@ func (s *Store) CommitRunJob(ctx context.Context, runID string, commit RunJobCom
 		return errors.New("run ID is required")
 	}
 	return s.withTransaction(ctx, func(tx *sql.Tx) error {
-		run, finalized, err := loadRunProgressTx(ctx, tx, runID)
-		if err != nil {
-			return err
+		var planID string
+		var finalized bool
+		if err := tx.QueryRowContext(ctx, `SELECT plan_id, finalized FROM runs WHERE run_id = ?`, runID).Scan(&planID, &finalized); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return fmt.Errorf("run %q: %w", runID, ErrNotFound)
+			}
+			return fmt.Errorf("load run: %w", err)
 		}
 		if finalized {
 			return errors.New("cannot commit a job to a finalized run")
 		}
-		plan, err := loadPlanTx(ctx, tx, run.PlanID)
-		if err != nil {
-			return err
+		var planRunID string
+		var jobPayload []byte
+		err := tx.QueryRowContext(ctx, `SELECT run_id, payload FROM plan_jobs WHERE plan_id = ? AND job_id = ?`, planID, commit.JobID).Scan(&planRunID, &jobPayload)
+		if errors.Is(err, sql.ErrNoRows) {
+			return fmt.Errorf("run job %q is not in plan %q", commit.JobID, planID)
 		}
-		job, found := plannedJob(plan, commit.JobID)
-		if !found {
-			return fmt.Errorf("run job %q is not in plan %q", commit.JobID, plan.PlanID)
+		if err != nil {
+			return fmt.Errorf("load plan job: %w", err)
+		}
+		if planRunID != runID {
+			return fmt.Errorf("plan %q does not belong to run %q", planID, runID)
+		}
+		var job domain.Job
+		if err := decode(jobPayload, &job); err != nil {
+			return err
 		}
 		if err := commit.validate(runID, job); err != nil {
 			return err
@@ -192,16 +204,6 @@ func (s *Store) CommitRunJob(ctx context.Context, runID string, commit RunJobCom
 		if _, err := tx.ExecContext(ctx, `INSERT INTO run_job_commits(run_id, job_id, committed_at, payload) VALUES (?, ?, ?, ?)`, runID, commit.JobID, unixMillis(commit.CommittedAt), commitPayload); err != nil {
 			return fmt.Errorf("save job commit: %w", err)
 		}
-		run.Coverage = append(run.Coverage, commit.Coverage...)
-		run.Failures = append(run.Failures, commit.Failures...)
-		run.ArtifactRefs = append(run.ArtifactRefs, commit.ArtifactRefs...)
-		runPayload, err := encode(run)
-		if err != nil {
-			return err
-		}
-		if _, err := tx.ExecContext(ctx, `UPDATE runs SET payload = ? WHERE run_id = ? AND finalized = 0`, runPayload, runID); err != nil {
-			return fmt.Errorf("refresh run progress: %w", err)
-		}
 		return nil
 	})
 }
@@ -225,7 +227,7 @@ func (s *Store) FinishRun(ctx context.Context, run domain.Run, files []domain.Fi
 		return err
 	}
 	return s.withTransaction(ctx, func(tx *sql.Tx) error {
-		stored, finalized, err := loadRunProgressTx(ctx, tx, run.RunID)
+		stored, finalized, err := loadRunRecord(ctx, tx, run.RunID)
 		if err != nil {
 			return err
 		}
@@ -235,10 +237,7 @@ func (s *Store) FinishRun(ctx context.Context, run domain.Run, files []domain.Fi
 		if stored.PlanID != run.PlanID || stored.Snapshot.RepositoryID != run.Snapshot.RepositoryID {
 			return errors.New("final run does not match persisted run identity")
 		}
-		coverage, err := loadRunCoverageTx(ctx, tx, run.RunID)
-		if err != nil {
-			return err
-		}
+		coverage := stored.Coverage
 		if !sameCoverage(coverage, run.Coverage) {
 			return errors.New("final run coverage does not match atomically committed jobs")
 		}
@@ -275,19 +274,17 @@ func (s *Store) LoadInProgressRun(ctx context.Context, planID string) (domain.Ru
 	}
 	var run domain.Run
 	err := s.withRead(ctx, func(db *sql.DB) error {
-		var payload []byte
-		err := db.QueryRowContext(ctx, `SELECT payload FROM runs WHERE plan_id = ? AND finalized = 0 ORDER BY started_at DESC, run_id DESC LIMIT 1`, planID).Scan(&payload)
+		var runID string
+		err := db.QueryRowContext(ctx, `SELECT run_id FROM runs WHERE plan_id = ? AND finalized = 0 ORDER BY started_at DESC, run_id DESC LIMIT 1`, planID).Scan(&runID)
 		if errors.Is(err, sql.ErrNoRows) {
 			return ErrNotFound
 		}
 		if err != nil {
 			return fmt.Errorf("load in-progress run: %w", err)
 		}
-		if err := decode(payload, &run); err != nil {
+		run, _, err = loadRunRecord(ctx, db, runID)
+		if err != nil {
 			return err
-		}
-		if err := run.Validate(); err != nil {
-			return fmt.Errorf("stored in-progress run is invalid: %w", err)
 		}
 		if run.PlanID != planID {
 			return errors.New("stored in-progress run plan identity does not match")
@@ -346,10 +343,41 @@ func loadPlanTx(ctx context.Context, tx *sql.Tx, planID string) (domain.Plan, er
 	return plan, nil
 }
 
-func loadRunProgressTx(ctx context.Context, tx *sql.Tx, runID string) (domain.Run, bool, error) {
+type rowQuerier interface {
+	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
+	QueryContext(ctx context.Context, query string, args ...any) (*sql.Rows, error)
+}
+
+// commitDelta is the part of a job commit that contributes to run-level
+// progress; decoding only these fields skips the (large) observations.
+type commitDelta struct {
+	Failures     []domain.Failure         `json:"failures,omitempty"`
+	ArtifactRefs []domain.SafeArtifactRef `json:"artifactRefs,omitempty"`
+}
+
+// savePlanJobsTx writes the per-job rows that let CommitRunJob validate a job
+// without decoding the plan snapshot.
+func savePlanJobsTx(ctx context.Context, tx *sql.Tx, plan domain.Plan) error {
+	for _, job := range plan.Jobs {
+		payload, err := encode(job)
+		if err != nil {
+			return err
+		}
+		if _, err := tx.ExecContext(ctx, `INSERT INTO plan_jobs(plan_id, run_id, job_id, payload) VALUES (?, ?, ?, ?)`, plan.PlanID, plan.RunID, job.JobID, payload); err != nil {
+			return fmt.Errorf("save plan job %q: %w", job.JobID, err)
+		}
+	}
+	return nil
+}
+
+// loadRunRecord restores a run. A finalized run is its stored payload; an
+// unfinished run is its shell payload plus coverage, failures, and artifact
+// references reassembled from the coverage and run_job_commits tables, which
+// are the only per-commit writes.
+func loadRunRecord(ctx context.Context, q rowQuerier, runID string) (domain.Run, bool, error) {
 	var payload []byte
 	var finalized bool
-	if err := tx.QueryRowContext(ctx, `SELECT payload, finalized FROM runs WHERE run_id = ?`, runID).Scan(&payload, &finalized); err != nil {
+	if err := q.QueryRowContext(ctx, `SELECT payload, finalized FROM runs WHERE run_id = ?`, runID).Scan(&payload, &finalized); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return domain.Run{}, false, fmt.Errorf("run %q: %w", runID, ErrNotFound)
 		}
@@ -359,14 +387,50 @@ func loadRunProgressTx(ctx context.Context, tx *sql.Tx, runID string) (domain.Ru
 	if err := decode(payload, &run); err != nil {
 		return domain.Run{}, false, err
 	}
+	if !finalized {
+		coverage, err := loadRunCoverage(ctx, q, runID)
+		if err != nil {
+			return domain.Run{}, false, err
+		}
+		run.Coverage = coverage
+		deltas, err := loadCommitDeltas(ctx, q, runID)
+		if err != nil {
+			return domain.Run{}, false, err
+		}
+		for _, delta := range deltas {
+			run.Failures = append(run.Failures, delta.Failures...)
+			run.ArtifactRefs = append(run.ArtifactRefs, delta.ArtifactRefs...)
+		}
+	}
 	if err := run.Validate(); err != nil {
 		return domain.Run{}, false, fmt.Errorf("stored run is invalid: %w", err)
 	}
 	return run, finalized, nil
 }
 
-func loadRunCoverageTx(ctx context.Context, tx *sql.Tx, runID string) ([]domain.Coverage, error) {
-	rows, err := tx.QueryContext(ctx, `SELECT payload FROM coverage WHERE run_id = ? ORDER BY coverage_key`, runID)
+func loadCommitDeltas(ctx context.Context, q rowQuerier, runID string) ([]commitDelta, error) {
+	rows, err := q.QueryContext(ctx, `SELECT payload FROM run_job_commits WHERE run_id = ? ORDER BY rowid`, runID)
+	if err != nil {
+		return nil, fmt.Errorf("query run job commits: %w", err)
+	}
+	defer rows.Close()
+	var deltas []commitDelta
+	for rows.Next() {
+		var payload []byte
+		if err := rows.Scan(&payload); err != nil {
+			return nil, fmt.Errorf("scan run job commit: %w", err)
+		}
+		var delta commitDelta
+		if err := decode(payload, &delta); err != nil {
+			return nil, err
+		}
+		deltas = append(deltas, delta)
+	}
+	return deltas, rows.Err()
+}
+
+func loadRunCoverage(ctx context.Context, q rowQuerier, runID string) ([]domain.Coverage, error) {
+	rows, err := q.QueryContext(ctx, `SELECT payload FROM coverage WHERE run_id = ? ORDER BY rowid`, runID)
 	if err != nil {
 		return nil, fmt.Errorf("query run coverage: %w", err)
 	}
@@ -386,13 +450,101 @@ func loadRunCoverageTx(ctx context.Context, tx *sql.Tx, runID string) ([]domain.
 	return coverage, rows.Err()
 }
 
-func plannedJob(plan domain.Plan, jobID string) (domain.Job, bool) {
-	for _, job := range plan.Jobs {
-		if job.JobID == jobID {
-			return job, true
+// shellPayload is the unfinished run's stored base: progress lives in the
+// coverage and run_job_commits tables, not here.
+func shellPayload(run domain.Run) ([]byte, error) {
+	run.Coverage = nil
+	return encode(run)
+}
+
+// migrateV4 adds plan_jobs, backfills it for existing plans, and rewrites
+// unfinished run payloads into the shell form whose progress lives in the
+// coverage and run_job_commits tables.
+func migrateV4(ctx context.Context, tx *sql.Tx) error {
+	if _, err := tx.ExecContext(ctx, `CREATE TABLE plan_jobs (plan_id TEXT NOT NULL, run_id TEXT NOT NULL, job_id TEXT NOT NULL, payload BLOB NOT NULL, PRIMARY KEY(plan_id, job_id), FOREIGN KEY(plan_id) REFERENCES plans(plan_id))`); err != nil {
+		return err
+	}
+	rows, err := tx.QueryContext(ctx, `SELECT payload FROM plans`)
+	if err != nil {
+		return err
+	}
+	var plans []domain.Plan
+	for rows.Next() {
+		var payload []byte
+		if err := rows.Scan(&payload); err != nil {
+			rows.Close()
+			return err
+		}
+		var plan domain.Plan
+		if err := decode(payload, &plan); err != nil {
+			rows.Close()
+			return err
+		}
+		plans = append(plans, plan)
+	}
+	if err := rows.Err(); err != nil {
+		rows.Close()
+		return err
+	}
+	rows.Close()
+	for _, plan := range plans {
+		if err := savePlanJobsTx(ctx, tx, plan); err != nil {
+			return err
 		}
 	}
-	return domain.Job{}, false
+
+	type pending struct {
+		runID   string
+		payload []byte
+	}
+	var runs []pending
+	runRows, err := tx.QueryContext(ctx, `SELECT run_id, payload FROM runs WHERE finalized = 0`)
+	if err != nil {
+		return err
+	}
+	for runRows.Next() {
+		var item pending
+		if err := runRows.Scan(&item.runID, &item.payload); err != nil {
+			runRows.Close()
+			return err
+		}
+		runs = append(runs, item)
+	}
+	if err := runRows.Err(); err != nil {
+		runRows.Close()
+		return err
+	}
+	runRows.Close()
+	for _, item := range runs {
+		var run domain.Run
+		if err := decode(item.payload, &run); err != nil {
+			return err
+		}
+		deltas, err := loadCommitDeltas(ctx, tx, item.runID)
+		if err != nil {
+			return err
+		}
+		// v3 appended every commit's failures and artifact refs after the
+		// shell's own; peel them off to recover the shell.
+		failures, refs := 0, 0
+		for _, delta := range deltas {
+			failures += len(delta.Failures)
+			refs += len(delta.ArtifactRefs)
+		}
+		if failures > len(run.Failures) || refs > len(run.ArtifactRefs) {
+			return fmt.Errorf("run %q progress does not match its commits", item.runID)
+		}
+		run.Failures = run.Failures[:len(run.Failures)-failures]
+		run.ArtifactRefs = run.ArtifactRefs[:len(run.ArtifactRefs)-refs]
+		payload, err := shellPayload(run)
+		if err != nil {
+			return err
+		}
+		if _, err := tx.ExecContext(ctx, `UPDATE runs SET payload = ? WHERE run_id = ?`, payload, item.runID); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func sameCoverage(left, right []domain.Coverage) bool {

@@ -22,7 +22,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-const schemaVersion = 3
+const schemaVersion = 5
 
 var (
 	// ErrStoreLocked means another process already owns the target state directory.
@@ -260,6 +260,18 @@ func (s *Store) migrate(ctx context.Context) error {
 			}
 			current = 3
 		}
+		if current == 3 {
+			if err := migrateV4(ctx, tx); err != nil {
+				return fmt.Errorf("apply state schema v4: %w", err)
+			}
+			current = 4
+		}
+		if current == 4 {
+			if err := migrateV5(ctx, tx); err != nil {
+				return fmt.Errorf("apply state schema v5: %w", err)
+			}
+			current = 5
+		}
 		if current != schemaVersion {
 			return fmt.Errorf("no migration from state schema version %d", current)
 		}
@@ -328,11 +340,11 @@ func ensureArtifactTx(ctx context.Context, tx *sql.Tx, ref domain.SafeArtifactRe
 }
 
 var (
-	persistedPrivateKey = regexp.MustCompile(`(?s)-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----.+?-----END [A-Z0-9 ]*PRIVATE KEY-----`)
-	persistedAssignment = regexp.MustCompile(`(?i)(?:api[_-]?key|access[_-]?key|secret|token|password|passwd|credential|client[_-]?secret)["']?\s*[:=]\s*["']?[^\s"']+`)
+	persistedPrivateKey    = regexp.MustCompile(`(?s)-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----.+?-----END [A-Z0-9 ]*PRIVATE KEY-----`)
+	persistedAssignment    = regexp.MustCompile(`(?i)(?:api[_-]?key|access[_-]?key|secret|token|password|passwd|credential|client[_-]?secret)["']?\s*[:=]\s*["']?[^\s"']+`)
 	persistedURLCredential = regexp.MustCompile(`://[^\s/@:]+:[^\s/@]+@`)
-	persistedJWT = regexp.MustCompile(`\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b`)
-	persistedKnownToken = regexp.MustCompile(`\b(?:AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{20,})\b`)
+	persistedJWT           = regexp.MustCompile(`\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b`)
+	persistedKnownToken    = regexp.MustCompile(`\b(?:AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{20,})\b`)
 )
 
 func decode(payload []byte, target any) error {

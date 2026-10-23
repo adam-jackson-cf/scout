@@ -5,8 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"sort"
-	"strings"
 
 	"scout/internal/domain"
 )
@@ -70,33 +68,4 @@ func loadObservationsTx(ctx context.Context, tx *sql.Tx, observationIDs []string
 		observations = append(observations, observation)
 	}
 	return observations, nil
-}
-
-// supportingEvidenceChanged distinguishes source-history line movement from
-// changed source/rule/version/location/quote support. A stable source finding
-// ID may move, but different quoted evidence still requires re-triage.
-func supportingEvidenceChanged(previous, current []domain.Observation) bool {
-	if len(previous) == 0 || len(current) == 0 {
-		return true
-	}
-	known := make(map[string]struct{}, len(previous))
-	for _, observation := range previous {
-		known[observationSupportKey(observation)] = struct{}{}
-	}
-	for _, observation := range current {
-		if _, found := known[observationSupportKey(observation)]; !found {
-			return true
-		}
-	}
-	return false
-}
-
-func observationSupportKey(observation domain.Observation) string {
-	locations := make([]string, 0, len(observation.Evidence))
-	for _, evidence := range observation.Evidence {
-		location := evidence.Location
-		locations = append(locations, strings.Join([]string{location.Path, location.Symbol, fmt.Sprint(location.StartLine), fmt.Sprint(location.EndLine), fmt.Sprint(location.StartByte), fmt.Sprint(location.EndByte), evidence.RedactedQuote}, "\x00"))
-	}
-	sort.Strings(locations)
-	return strings.Join(append([]string{observation.Source, observation.RuleID, observation.RuleVersion, observation.ModelVersion, observation.SourceFindingID}, locations...), "\x00")
 }

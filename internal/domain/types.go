@@ -204,20 +204,18 @@ func (s JobState) Valid() bool {
 type IssueState string
 
 const (
-	IssueOpen                IssueState = "open"
-	IssueInvestigating       IssueState = "investigating"
-	IssueAccepted            IssueState = "accepted"
-	IssueFalsePositive       IssueState = "false_positive"
-	IssueWontFix             IssueState = "wont_fix"
-	IssuePendingVerification IssueState = "pending_verification"
-	IssueResolved            IssueState = "resolved"
-	IssueUnverified          IssueState = "unverified"
-	IssueRegressed           IssueState = "regressed"
+	IssueOpen          IssueState = "open"
+	IssueInvestigating IssueState = "investigating"
+	IssueAccepted      IssueState = "accepted"
+	IssueFalsePositive IssueState = "false_positive"
+	IssueWontFix       IssueState = "wont_fix"
+	IssueResolved      IssueState = "resolved"
+	IssueRegressed     IssueState = "regressed"
 )
 
 func (s IssueState) Valid() bool {
 	switch s {
-	case IssueOpen, IssueInvestigating, IssueAccepted, IssueFalsePositive, IssueWontFix, IssuePendingVerification, IssueResolved, IssueUnverified, IssueRegressed:
+	case IssueOpen, IssueInvestigating, IssueAccepted, IssueFalsePositive, IssueWontFix, IssueResolved, IssueRegressed:
 		return true
 	default:
 		return false
@@ -637,16 +635,16 @@ func (j Job) Validate() error {
 
 // Plan is persisted before jobs execute so a crash can resume unfinished work.
 type Plan struct {
-	PlanID    string    `json:"planId"`
-	RunID     string    `json:"runId"`
-	Snapshot  Snapshot  `json:"snapshot"`
-	Scope     Scope     `json:"scope"`
-	Jobs      []Job     `json:"jobs"`
-	PolicyDigest string `json:"policyDigest,omitempty"`
-	ToolDigest   string `json:"toolDigest,omitempty"`
-	ModelDigest  string `json:"modelDigest,omitempty"`
-	MapperDigest string `json:"mapperDigest,omitempty"`
-	CreatedAt time.Time `json:"createdAt"`
+	PlanID       string    `json:"planId"`
+	RunID        string    `json:"runId"`
+	Snapshot     Snapshot  `json:"snapshot"`
+	Scope        Scope     `json:"scope"`
+	Jobs         []Job     `json:"jobs"`
+	PolicyDigest string    `json:"policyDigest,omitempty"`
+	ToolDigest   string    `json:"toolDigest,omitempty"`
+	ModelDigest  string    `json:"modelDigest,omitempty"`
+	MapperDigest string    `json:"mapperDigest,omitempty"`
+	CreatedAt    time.Time `json:"createdAt"`
 }
 
 func (p Plan) Validate() error {
@@ -824,10 +822,23 @@ func (r AdapterResult) Validate() error {
 	return nil
 }
 
+// Issue history events recorded in IssueHistoryEntry.Event.
+const (
+	EventCreated       = "created"
+	EventMatched       = "matched"
+	EventEvidenceDrift = "evidence_drift"
+	EventAmbiguous     = "ambiguous_with"
+	EventRegressed     = "regressed"
+	EventResolved      = "resolved"
+	EventMigrated      = "migrated"
+	EventTriaged       = "triaged"
+)
+
 type IssueHistoryEntry struct {
 	At             time.Time         `json:"at"`
 	From           IssueState        `json:"from,omitempty"`
 	To             IssueState        `json:"to"`
+	Event          string            `json:"event,omitempty"`
 	Actor          string            `json:"actor,omitempty"`
 	Reason         string            `json:"reason"`
 	ObservationIDs []string          `json:"observationIds,omitempty"`
@@ -849,26 +860,30 @@ func (h IssueHistoryEntry) Validate() error {
 	return nil
 }
 
-// Verification records a relevant recheck after an authorized change.
+// ResolutionFileDeleted is the Verification.Reason for an issue whose file the
+// inventory diff of a complete run shows deleted (not renamed).
+const ResolutionFileDeleted = "file_deleted"
+
+// Verification records the relevant successful re-check that resolved an issue.
 type Verification struct {
-	RunID               string            `json:"runId"`
-	AuthorizedChangeRef string            `json:"authorizedChangeRef"`
-	Relevant            bool              `json:"relevant"`
-	InspectionStatus    CoverageStatus    `json:"inspectionStatus"`
-	FailureModeAbsent   bool              `json:"failureModeAbsent"`
-	ArtifactRefs        []SafeArtifactRef `json:"artifactRefs"`
-	VerifiedAt          time.Time         `json:"verifiedAt"`
+	RunID             string            `json:"runId"`
+	Reason            string            `json:"reason,omitempty"`
+	Relevant          bool              `json:"relevant"`
+	InspectionStatus  CoverageStatus    `json:"inspectionStatus,omitempty"`
+	FailureModeAbsent bool              `json:"failureModeAbsent"`
+	ArtifactRefs      []SafeArtifactRef `json:"artifactRefs,omitempty"`
+	VerifiedAt        time.Time         `json:"verifiedAt"`
 }
 
 func (v Verification) ValidateResolution() error {
-	if v.RunID == "" || v.AuthorizedChangeRef == "" || !v.Relevant || !v.FailureModeAbsent {
-		return errors.New("resolution requires an authorized, relevant recheck proving the failure mode absent")
+	if v.RunID == "" || !v.Relevant || !v.FailureModeAbsent {
+		return errors.New("resolution requires a relevant recheck proving the failure mode absent")
 	}
-	if v.InspectionStatus != CoverageInspected && v.InspectionStatus != CoverageCovered {
+	if v.Reason == ResolutionFileDeleted {
+		return nil
+	}
+	if v.InspectionStatus != CoverageInspected && v.InspectionStatus != CoverageCovered && v.InspectionStatus != CoverageFlagged {
 		return errors.New("resolution requires successful relevant inspection, not missing or reused coverage")
-	}
-	if len(v.ArtifactRefs) == 0 {
-		return errors.New("resolution requires verification artifacts")
 	}
 	for _, artifact := range v.ArtifactRefs {
 		if err := artifact.Validate(); err != nil {
@@ -878,19 +893,40 @@ func (v Verification) ValidateResolution() error {
 	return nil
 }
 
+// IssueAnchor is the identity-bearing evidence of an issue (design §3.3).
+// Line and byte ranges are locators on observations and never appear here.
+type IssueAnchor struct {
+	// Path is the rename-followed repository path. Empty for a digest-matched secret.
+	Path string `json:"path,omitempty"`
+	// Symbol is the qualified enclosing symbol when the analyzer supplied one.
+	Symbol string `json:"symbol,omitempty"`
+	// RuleKey is "<source>\x00<ruleId>".
+	RuleKey string `json:"ruleKey"`
+	// Mechanism is the normalized mechanism text.
+	Mechanism string `json:"mechanism"`
+	// Fingerprint is the normalized evidence fingerprint, or the secret digest.
+	Fingerprint string `json:"fingerprint,omitempty"`
+	// Secret marks Fingerprint as a secret digest that matches across paths.
+	Secret bool `json:"secretDigest,omitempty"`
+}
+
 // Issue is a durable, mutable correlation of immutable observations.
+// IssueID is opaque: issue:<family>:<ulid>, minted once.
 type Issue struct {
 	IssueID           string              `json:"issueId"`
+	LegacyID          string              `json:"legacyId,omitempty"`
 	State             IssueState          `json:"state"`
+	Family            Family              `json:"family,omitempty"`
+	Category          string              `json:"category,omitempty"`
 	Title             string              `json:"title"`
 	Mechanism         string              `json:"mechanism"`
+	Anchor            IssueAnchor         `json:"anchor"`
 	OriginalSeverity  Severity            `json:"originalSeverity"`
 	EffectiveSeverity Severity            `json:"effectiveSeverity"`
 	Owner             string              `json:"owner,omitempty"`
 	DispositionReason string              `json:"dispositionReason,omitempty"`
 	Uncertainty       string              `json:"uncertainty,omitempty"`
-	ProposedAction    string              `json:"proposedAction,omitempty"`
-	ApprovalRef       string              `json:"approvalRef,omitempty"`
+	AmbiguousWith     []string            `json:"ambiguousWith,omitempty"`
 	ObservationIDs    []string            `json:"observationIds"`
 	FeatureIDs        []string            `json:"featureIds,omitempty"`
 	Files             []string            `json:"files,omitempty"`

@@ -38,7 +38,7 @@ func (s *Store) SavePlan(ctx context.Context, plan domain.Plan) error {
 			}
 			return fmt.Errorf("save plan: %w", err)
 		}
-		return nil
+		return savePlanJobsTx(ctx, tx, plan)
 	})
 }
 
@@ -215,20 +215,9 @@ func (s *Store) LoadRun(ctx context.Context, runID string) (domain.Run, error) {
 	}
 	var run domain.Run
 	err := s.withRead(ctx, func(db *sql.DB) error {
-		var payload []byte
-		if err := db.QueryRowContext(ctx, `SELECT payload FROM runs WHERE run_id = ?`, runID).Scan(&payload); err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				return fmt.Errorf("run %q: %w", runID, ErrNotFound)
-			}
-			return fmt.Errorf("load run: %w", err)
-		}
-		if err := decode(payload, &run); err != nil {
-			return err
-		}
-		if err := run.Validate(); err != nil {
-			return fmt.Errorf("stored run is invalid: %w", err)
-		}
-		return nil
+		var err error
+		run, _, err = loadRunRecord(ctx, db, runID)
+		return err
 	})
 	return run, err
 }
@@ -387,7 +376,7 @@ func (s *Store) TriageIssue(ctx context.Context, issueID string, state domain.Is
 	if state == domain.IssueFalsePositive {
 		return domain.Issue{}, errors.New("false-positive disposition requires contradictory evidence")
 	}
-	return s.transitionIssue(ctx, issueID, state, actor, reason, nil, nil, func(issue *domain.Issue) error {
+	return s.transitionIssue(ctx, issueID, state, actor, reason, nil, func(issue *domain.Issue) error {
 		issue.Owner = owner
 		issue.DispositionReason = dispositionReason
 		return nil
@@ -404,126 +393,13 @@ func (s *Store) TriageIssueWithEvidence(ctx context.Context, issueID string, sta
 	if len(evidence) == 0 {
 		return domain.Issue{}, errors.New("disposition requires contradictory or scope evidence")
 	}
-	return s.transitionIssue(ctx, issueID, state, actor, reason, nil, evidence, func(issue *domain.Issue) error {
+	return s.transitionIssue(ctx, issueID, state, actor, reason, evidence, func(issue *domain.Issue) error {
 		issue.Owner = owner
 		issue.DispositionReason = dispositionReason
 		return nil
 	})
 }
 
-// LinkIssueObservations correlates new immutable evidence with a durable issue and
-// records the linkage in its audit history.
-func (s *Store) LinkIssueObservations(ctx context.Context, issueID string, observationIDs []string, actor, reason string) (domain.Issue, error) {
-	if issueID == "" || len(observationIDs) == 0 || reason == "" {
-		return domain.Issue{}, errors.New("issue ID, observations, and audit reason are required")
-	}
-	for _, observationID := range observationIDs {
-		if observationID == "" {
-			return domain.Issue{}, errors.New("observation ID must not be empty")
-		}
-	}
-	var updated domain.Issue
-	err := s.withTransaction(ctx, func(tx *sql.Tx) error {
-		issue, err := loadIssueTx(ctx, tx, issueID)
-		if err != nil {
-			return err
-		}
-		existing := make(map[string]struct{}, len(issue.ObservationIDs))
-		for _, observationID := range issue.ObservationIDs {
-			existing[observationID] = struct{}{}
-		}
-		newIDs := make([]string, 0, len(observationIDs))
-		for _, observationID := range uniqueSorted(observationIDs) {
-			if _, found := existing[observationID]; !found {
-				newIDs = append(newIDs, observationID)
-			}
-		}
-		if len(newIDs) == 0 {
-			return errors.New("all observations are already linked to the issue")
-		}
-		priorObservations, err := loadObservationsTx(ctx, tx, issue.ObservationIDs)
-		if err != nil {
-			return err
-		}
-		newObservations, err := loadObservationsTx(ctx, tx, newIDs)
-		if err != nil {
-			return err
-		}
-		issue.ObservationIDs = append(issue.ObservationIDs, newIDs...)
-		previousState := issue.State
-		auditReason := reason
-		if supportingEvidenceChanged(priorObservations, newObservations) {
-			issue.State = domain.IssueUnverified
-			issue.ApprovalRef = ""
-			issue.ProposedAction = ""
-			issue.DispositionReason = ""
-			issue.Verification = nil
-			auditReason = "supporting evidence or scope changed; disposition requires recheck"
-		} else if previousState == domain.IssueResolved {
-			issue.State = domain.IssueRegressed
-			issue.ApprovalRef = ""
-			issue.ProposedAction = ""
-			issue.DispositionReason = ""
-			issue.Verification = nil
-			auditReason = "failure mode reappeared after verified resolution"
-		}
-		issue.UpdatedAt = time.Now().UTC()
-		issue.History = append(issue.History, domain.IssueHistoryEntry{At: issue.UpdatedAt, From: previousState, To: issue.State, Actor: actor, Reason: auditReason, ObservationIDs: newIDs})
-		if err := issue.Validate(); err != nil {
-			return fmt.Errorf("updated issue: %w", err)
-		}
-		if err := saveIssueTx(ctx, tx, issue, false); err != nil {
-			return err
-		}
-		updated = issue
-		return nil
-	})
-	return updated, err
-}
-
-// VerifyIssue records a relevant verification transition. Resolution requires the domain contract's evidence.
-func (s *Store) VerifyIssue(ctx context.Context, issueID string, state domain.IssueState, verification domain.Verification, actor, reason string) (domain.Issue, error) {
-	if state != domain.IssueResolved && state != domain.IssueUnverified && state != domain.IssuePendingVerification {
-		return domain.Issue{}, errors.New("verification transition must be resolved, unverified, or pending verification")
-	}
-	if state == domain.IssueResolved {
-		if err := verification.ValidateResolution(); err != nil {
-			return domain.Issue{}, fmt.Errorf("resolution verification: %w", err)
-		}
-	} else if verification.RunID == "" || !verification.InspectionStatus.Valid() {
-		return domain.Issue{}, errors.New("unverified or pending verification requires a run and inspection status")
-	}
-	return s.transitionIssue(ctx, issueID, state, actor, reason, &verification, nil, nil)
-}
-
-
-// ApproveIssue atomically records an explicit, auditable authorization for a
-// proposed action. It records no target write and is invalidated on evidence drift.
-func (s *Store) ApproveIssue(ctx context.Context, issueID, proposedAction, approvalRef, actor, reason string) (domain.Issue, error) {
-	if proposedAction == "" || approvalRef == "" || actor == "" || reason == "" {
-		return domain.Issue{}, errors.New("approval requires action, approval reference, actor, and reason")
-	}
-	if err := rejectUnsafePersistence(proposedAction + "\n" + approvalRef + "\n" + actor + "\n" + reason); err != nil {
-		return domain.Issue{}, err
-	}
-	return s.transitionIssue(ctx, issueID, domain.IssuePendingVerification, actor, reason, nil, nil, func(issue *domain.Issue) error {
-		issue.ProposedAction = proposedAction
-		issue.ApprovalRef = approvalRef
-		return nil
-	})
-}
-
-// InvalidateIssue revokes an evidence-bound disposition when supporting
-// evidence, scope, or mechanism changed. It never resolves an issue.
-func (s *Store) InvalidateIssue(ctx context.Context, issueID, actor, reason string) (domain.Issue, error) {
-	return s.transitionIssue(ctx, issueID, domain.IssueUnverified, actor, reason, nil, nil, func(issue *domain.Issue) error {
-		issue.ApprovalRef = ""
-		issue.ProposedAction = ""
-		issue.Verification = nil
-		issue.DispositionReason = ""
-		return nil
-	})
-}
 // DeleteIssue removes an issue only when callers explicitly choose to discard its audit history.
 func (s *Store) DeleteIssue(ctx context.Context, issueID string) error {
 	if issueID == "" {
@@ -545,7 +421,7 @@ func (s *Store) DeleteIssue(ctx context.Context, issueID string) error {
 	})
 }
 
-func (s *Store) transitionIssue(ctx context.Context, issueID string, state domain.IssueState, actor, reason string, verification *domain.Verification, artifacts []domain.SafeArtifactRef, mutate func(*domain.Issue) error) (domain.Issue, error) {
+func (s *Store) transitionIssue(ctx context.Context, issueID string, state domain.IssueState, actor, reason string, artifacts []domain.SafeArtifactRef, mutate func(*domain.Issue) error) (domain.Issue, error) {
 	if issueID == "" || !state.Valid() || reason == "" {
 		return domain.Issue{}, errors.New("issue ID, valid destination state, and audit reason are required")
 	}
@@ -554,26 +430,6 @@ func (s *Store) transitionIssue(ctx context.Context, issueID string, state domai
 		issue, err := loadIssueTx(ctx, tx, issueID)
 		if err != nil {
 			return err
-		}
-		if verification != nil {
-			var runState domain.RunState
-			if err := tx.QueryRowContext(ctx, `SELECT state FROM runs WHERE run_id = ?`, verification.RunID).Scan(&runState); err != nil {
-				if errors.Is(err, sql.ErrNoRows) {
-					return fmt.Errorf("verification run %q: %w", verification.RunID, ErrNotFound)
-				}
-				return fmt.Errorf("load verification run: %w", err)
-			}
-			if state == domain.IssueResolved {
-				if runState != domain.RunComplete {
-					return errors.New("resolution requires a complete verification run")
-				}
-				if issue.ApprovalRef == "" || issue.ApprovalRef != verification.AuthorizedChangeRef {
-					return errors.New("resolution requires the issue's current authorized change approval")
-				}
-				if err := verificationCoverageRelevantTx(ctx, tx, issue, *verification); err != nil {
-					return err
-				}
-			}
 		}
 		if !allowedIssueTransition(issue.State, state) {
 			return fmt.Errorf("issue transition from %q to %q is not allowed", issue.State, state)
@@ -585,13 +441,8 @@ func (s *Store) transitionIssue(ctx context.Context, issueID string, state domai
 			}
 		}
 		issue.State = state
-		if verification != nil {
-			issue.Verification = verification
-		}
 		issue.UpdatedAt = time.Now().UTC()
-		historyArtifacts := append([]domain.SafeArtifactRef(nil), verificationArtifacts(verification)...)
-		historyArtifacts = append(historyArtifacts, artifacts...)
-		issue.History = append(issue.History, domain.IssueHistoryEntry{At: issue.UpdatedAt, From: previousState, To: state, Actor: actor, Reason: reason, ArtifactRefs: historyArtifacts})
+		issue.History = append(issue.History, domain.IssueHistoryEntry{At: issue.UpdatedAt, From: previousState, To: state, Event: domain.EventTriaged, Actor: actor, Reason: reason, ArtifactRefs: append([]domain.SafeArtifactRef(nil), artifacts...)})
 		if err := issue.Validate(); err != nil {
 			return fmt.Errorf("updated issue: %w", err)
 		}
@@ -696,9 +547,6 @@ func ensureIssueVerificationRunTx(ctx context.Context, tx *sql.Tx, issue domain.
 		}
 		return fmt.Errorf("load verification run: %w", err)
 	}
-	if issue.State == domain.IssueResolved && runState != domain.RunComplete {
-		return errors.New("resolution requires a complete verification run")
-	}
 	return nil
 }
 
@@ -725,20 +573,12 @@ func allowedIssueTransition(from, to domain.IssueState) bool {
 		return true
 	}
 	switch from {
-	case domain.IssueOpen, domain.IssueInvestigating, domain.IssueAccepted, domain.IssueFalsePositive, domain.IssueWontFix, domain.IssuePendingVerification, domain.IssueUnverified, domain.IssueRegressed:
-		return to != domain.IssueResolved || from == domain.IssuePendingVerification || from == domain.IssueAccepted
-	case domain.IssueResolved:
-		return to == domain.IssueRegressed || to == domain.IssueUnverified
+	case domain.IssueOpen, domain.IssueInvestigating, domain.IssueAccepted, domain.IssueFalsePositive, domain.IssueWontFix, domain.IssueRegressed:
+		return to != domain.IssueResolved && to != domain.IssueRegressed
 	default:
+		// A resolved issue only changes through correlation (regression).
 		return false
 	}
-}
-
-func verificationArtifacts(verification *domain.Verification) []domain.SafeArtifactRef {
-	if verification == nil {
-		return nil
-	}
-	return verification.ArtifactRefs
 }
 
 func uniqueSorted(values []string) []string {
@@ -768,6 +608,8 @@ func isForeignKeyViolation(err error) bool {
 	return strings.Contains(err.Error(), "FOREIGN KEY constraint failed")
 }
 
+// verificationCoverageRelevantTx proves the verification run contains a
+// successful re-check of the issue's own file, family and category.
 func verificationCoverageRelevantTx(ctx context.Context, tx *sql.Tx, issue domain.Issue, verification domain.Verification) error {
 	rows, err := tx.QueryContext(ctx, `SELECT payload FROM coverage WHERE run_id = ? AND status = ?`, verification.RunID, verification.InspectionStatus)
 	if err != nil {
@@ -783,14 +625,14 @@ func verificationCoverageRelevantTx(ctx context.Context, tx *sql.Tx, issue domai
 		if err := decode(payload, &coverage); err != nil {
 			return err
 		}
-		if (coverage.Key.FilePath != "" && contains(issue.Files, coverage.Key.FilePath)) || (coverage.Key.FeatureID != "" && contains(issue.FeatureIDs, coverage.Key.FeatureID)) {
+		if issue.CoverageRelevant(coverage) {
 			return nil
 		}
 	}
 	if err := rows.Err(); err != nil {
 		return err
 	}
-	return errors.New("resolution verification did not inspect the issue's affected file or feature")
+	return errors.New("resolution verification did not successfully inspect the issue's file")
 }
 
 func contains(values []string, expected string) bool {

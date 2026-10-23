@@ -84,7 +84,7 @@ func emit(flags *commonFlags, status string, code int, result any, err error) in
 func main() { os.Exit(run(context.Background(), os.Args[1:])) }
 func run(ctx context.Context, args []string) int {
 	if len(args) == 0 {
-		fmt.Fprintln(os.Stderr, "usage: scout <readiness|assess|issues|issue|mapping|coverage|triage|approve|verify|serve> [flags]")
+		fmt.Fprintln(os.Stderr, "usage: scout <readiness|assess|issues|issue|mapping|coverage|triage|serve> [flags]")
 		return exitUnavailable
 	}
 	switch args[0] {
@@ -102,10 +102,6 @@ func run(ctx context.Context, args []string) int {
 		return coverage(ctx, args[1:])
 	case "triage":
 		return triage(ctx, args[1:])
-	case "approve":
-		return approve(ctx, args[1:])
-	case "verify":
-		return verify(ctx, args[1:])
 	case "serve":
 		return serve(ctx, args[1:])
 	default:
@@ -458,7 +454,7 @@ func triage(ctx context.Context, args []string) int {
 	var id, status, actor, reason, owner, disposition, runID, artifactID string
 	var authorized bool
 	set.StringVar(&id, "id", "", "issue ID")
-	set.StringVar(&status, "state", "", "investigating|accepted|false_positive|wont_fix|pending_verification|unverified|regressed")
+	set.StringVar(&status, "state", "", "investigating|accepted|false_positive|wont_fix")
 	set.StringVar(&actor, "actor", "", "human actor")
 	set.StringVar(&reason, "reason", "", "audit reason")
 	set.StringVar(&owner, "owner", "", "owner")
@@ -517,121 +513,6 @@ func triage(ctx context.Context, args []string) int {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
 	return emit(flags, "complete", exitComplete, issue, nil)
-}
-func approve(ctx context.Context, args []string) int {
-	set := flag.NewFlagSet("approve", flag.ContinueOnError)
-	flags := common(set)
-	var id, action, reference, actor, reason string
-	var authorized bool
-	set.StringVar(&id, "id", "", "issue ID")
-	set.StringVar(&action, "action", "", "approved remediation action")
-	set.StringVar(&reference, "approval-ref", "", "human authorization reference")
-	set.StringVar(&actor, "actor", "", "human actor")
-	set.StringVar(&reason, "reason", "", "audit reason")
-	set.BoolVar(&authorized, "authorize", false, "explicitly authorize action approval")
-	if !parse(set, args, flags) {
-		return exitUnavailable
-	}
-	safeActor, safeReason, err := requireAuthorization(authorized, actor, reason)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	safeAction, err := issues.SanitizeText(action)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	safeReference, err := issues.SanitizeText(reference)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	if id == "" || safeAction == "" || safeReference == "" {
-		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("issue ID, action, and approval reference are required"))
-	}
-	store, err := openStore(flags)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	defer store.Close()
-	issue, err := store.ApproveIssue(ctx, id, safeAction, safeReference, safeActor, safeReason)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	return emit(flags, "complete", exitComplete, issue, nil)
-}
-func verify(ctx context.Context, args []string) int {
-	set := flag.NewFlagSet("verify", flag.ContinueOnError)
-	flags := common(set)
-	var id, status, runID, change, actor, reason, artifactID string
-	var authorized, relevant, absent bool
-	set.StringVar(&id, "id", "", "issue ID")
-	set.StringVar(&status, "state", "", "resolved|unverified|pending_verification")
-	set.StringVar(&runID, "run", "", "verification run ID")
-	set.StringVar(&change, "authorized-change", "", "approval reference recorded by approve")
-	set.StringVar(&actor, "actor", "", "human actor")
-	set.StringVar(&reason, "reason", "", "verification rationale")
-	set.StringVar(&artifactID, "artifact", "", "safe verification artifact ID in run")
-	set.BoolVar(&authorized, "authorize", false, "explicitly authorize verification mutation")
-	set.BoolVar(&relevant, "relevant", false, "attest relevant mechanism was rechecked")
-	set.BoolVar(&absent, "failure-absent", false, "attest original failure mode no longer reproduces")
-	if !parse(set, args, flags) {
-		return exitUnavailable
-	}
-	safeActor, safeReason, err := requireAuthorization(authorized, actor, reason)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	desired := domain.IssueState(status)
-	if id == "" || runID == "" || desired != domain.IssueResolved && desired != domain.IssueUnverified && desired != domain.IssuePendingVerification {
-		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("issue ID, run and valid verification state required"))
-	}
-	store, err := openStore(flags)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	defer store.Close()
-	issue, err := store.LoadIssue(ctx, id)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	run, err := store.LoadRun(ctx, runID)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	statusOfInspection := domain.CoverageIncomplete
-	for _, row := range run.Coverage {
-		if relevantToIssue(row.Key, issue) && row.Status != domain.CoverageReused && row.Status.Accounted() {
-			statusOfInspection = row.Status
-			break
-		}
-	}
-	verification := domain.Verification{RunID: runID, Relevant: relevant, FailureModeAbsent: absent, InspectionStatus: statusOfInspection, VerifiedAt: time.Now().UTC()}
-	verification.AuthorizedChangeRef, err = issues.SanitizeText(change)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	if artifactID != "" {
-		for _, ref := range run.ArtifactRefs {
-			if ref.ArtifactID == artifactID {
-				verification.ArtifactRefs = append(verification.ArtifactRefs, ref)
-			}
-		}
-		if len(verification.ArtifactRefs) == 0 {
-			return emit(flags, "unavailable", exitUnavailable, nil, errors.New("artifact is not in verification run"))
-		}
-	}
-	if desired == domain.IssueResolved {
-		if verification.AuthorizedChangeRef == "" || len(verification.ArtifactRefs) == 0 || !relevant || !absent || statusOfInspection != domain.CoverageInspected && statusOfInspection != domain.CoverageCovered {
-			return emit(flags, "unavailable", exitUnavailable, nil, errors.New("resolution requires an approved change reference, verification artifact, and successful relevant reinspection proving absence"))
-		}
-	}
-	updated, err := store.VerifyIssue(ctx, id, desired, verification, safeActor, safeReason)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	return emit(flags, "complete", exitComplete, updated, nil)
-}
-func relevantToIssue(key domain.CoverageKey, issue domain.Issue) bool {
-	return key.FilePath != "" && contains(issue.Files, key.FilePath) || key.FeatureID != "" && contains(issue.FeatureIDs, key.FeatureID)
 }
 func artifactInRun(run domain.Run, artifactID string) (domain.SafeArtifactRef, error) {
 	if artifactID == "" {

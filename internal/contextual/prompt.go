@@ -121,7 +121,7 @@ func makePrompt(request ReviewRequest, sources []promptSource, manifest Manifest
 	body := promptRequest{
 		Protocol: "scout-contextual-review/v1", PromptVersion: request.PromptVersion, Snapshot: request.Snapshot,
 		Feature: promptFeature{FeatureID: request.Feature.FeatureID, Title: redactor.redact(request.Feature.Title), Summary: redactor.redact(request.Feature.Summary), Kind: redactor.redact(request.Feature.Kind), Source: redactor.redact(request.Feature.Source), Confidence: request.Feature.Confidence, Entrypoints: redactEntrypoints(request.Feature.Entrypoints, redactor), OwnedFiles: redactFeatureFileRefs(request.Feature.OwnedFiles, redactor), ContextFiles: redactFeatureFileRefs(request.Feature.ContextFiles, redactor), Tests: redactFeatureTestRefs(request.Feature.Tests, redactor), Tags: redactStrings(request.Feature.Tags, redactor), TrustBoundaries: redactStrings(request.Feature.TrustBoundaries, redactor)},
-		Family: request.Family, Category: request.Category, Manifest: manifest, Sources: sources, ToolResults: toolResults, PriorFindings: prior,
+		Family:  request.Family, Category: request.Category, Manifest: manifest, Sources: sources, ToolResults: toolResults, PriorFindings: prior,
 	}
 	content, err := json.Marshal(body)
 	if err != nil {
