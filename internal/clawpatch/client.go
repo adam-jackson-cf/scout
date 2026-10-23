@@ -145,6 +145,9 @@ func (c *Client) Init(ctx context.Context) error {
 	_, err := os.Stat(projectPath)
 	switch {
 	case err == nil:
+		if err := c.ensureScoutExcluded(); err != nil {
+			return err
+		}
 		c.initialized = true
 		return nil
 	case !errors.Is(err, fs.ErrNotExist):
@@ -157,6 +160,9 @@ func (c *Client) Init(ctx context.Context) error {
 	}
 	if _, err := c.invokeLocked(ctx, "init"); err != nil {
 		return fmt.Errorf("initialize Clawpatch state: %w", err)
+	}
+	if err := c.ensureScoutExcluded(); err != nil {
+		return err
 	}
 	c.initialized = true
 	return nil

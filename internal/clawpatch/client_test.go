@@ -2,6 +2,7 @@ package clawpatch
 
 import (
 	"context"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -65,6 +66,9 @@ func fakeMapper(t *testing.T, egress bool, failAgent bool) (*Client, string) {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(filepath.Join(stateDir, "project.json"), []byte("{}"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(stateDir, "config.json"), []byte(`{"schemaVersion":1,"stateDir":".clawpatch","include":["**/*"],"exclude":["dist/**"],"extra":{"keep":true}}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	bundle := filepath.Join(t.TempDir(), Revision)
@@ -301,5 +305,39 @@ func TestAgentMapFailureKeepsHeuristicFeaturesAndReportsIncomplete(t *testing.T)
 	}
 	if !strings.Contains(string(argv), "map --source agent --provider codex\n") || !strings.HasSuffix(string(argv), "map --source heuristic\n") {
 		t.Fatalf("unexpected argv sequence: %q", argv)
+	}
+}
+
+func TestMapExcludesScoutStateFromClawpatchInventory(t *testing.T) {
+	client, _ := fakeMapper(t, false, false)
+	if _, err := client.Map(context.Background(), true, MapSourceHeuristic); err != nil {
+		t.Fatal(err)
+	}
+	if err := client.ensureScoutExcluded(); err != nil {
+		t.Fatal(err)
+	}
+	raw, err := os.ReadFile(filepath.Join(client.StateDir(), "config.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var config struct {
+		Exclude []string        `json:"exclude"`
+		Extra   map[string]bool `json:"extra"`
+	}
+	if err := json.Unmarshal(raw, &config); err != nil {
+		t.Fatal(err)
+	}
+	if len(config.Exclude) != 2 || config.Exclude[0] != "dist/**" || config.Exclude[1] != ScoutExcludePattern || !config.Extra["keep"] {
+		t.Fatalf("config must gain .scout/** once and keep other fields: %s", raw)
+	}
+}
+
+func TestMapFailsClosedWithoutStateConfig(t *testing.T) {
+	client, _ := fakeMapper(t, false, false)
+	if err := os.Remove(filepath.Join(client.StateDir(), "config.json")); err != nil {
+		t.Fatal(err)
+	}
+	if result, err := client.Map(context.Background(), true, MapSourceHeuristic); err == nil || result.Status != MapBlocked {
+		t.Fatalf("missing state config must block the map: %+v, %v", result, err)
 	}
 }
