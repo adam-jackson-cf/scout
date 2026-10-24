@@ -98,5 +98,5 @@ func canonicalRefresh(record MappingRefresh) ([]byte, error) {
 	if err := json.Unmarshal(raw, &generic); err != nil {
 		return nil, err
 	}
-	return canonicalLine(generic)
+	return CanonicalLine(generic)
 }

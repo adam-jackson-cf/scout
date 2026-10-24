@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -108,7 +109,7 @@ func Scan(ctx context.Context, root string, options ScanOptions) (ScanResult, er
 
 	ignoredDigest, ignoreDiagnostics := ignoreRulesDigest(ctx, resolvedRoot)
 	result.Diagnostics = append(result.Diagnostics, ignoreDiagnostics...)
-	exclusionDigest := digestStrings(append([]string{".scout/"}, normalizedExclusions(options.Exclusions)...))
+	exclusionDigest := digestStrings(append([]string{scoutStatePrefix}, normalizedExclusions(options.Exclusions)...))
 	result.ScopeDigest = scopeDigest(options.Scope, options.Exclusions)
 
 	worktreeStatus, statusErr := gitOutput(ctx, resolvedRoot, "status", "--porcelain=v1", "-z", "--untracked-files=all", "--", ".", ":(exclude).scout")
@@ -130,7 +131,7 @@ func Scan(ctx context.Context, root string, options ScanOptions) (ScanResult, er
 			inputErrors = append(inputErrors, err)
 			continue
 		}
-		if path == ".scout" || strings.HasPrefix(path, ".scout/") {
+		if IsScoutState(path) {
 			continue
 		}
 		file, omission, readErr := scanPath(path, reader, options.Exclusions)
@@ -149,7 +150,7 @@ func Scan(ctx context.Context, root string, options ScanOptions) (ScanResult, er
 			inputErrors = append(inputErrors, err)
 			continue
 		}
-		if path == ".scout" || strings.HasPrefix(path, ".scout/") {
+		if IsScoutState(path) {
 			continue
 		}
 		if excluded(path, options.Exclusions) {
@@ -193,42 +194,30 @@ func LinkFeatures(files []domain.File, features []domain.Feature) ([]domain.File
 		}
 		byPath[file.Path] = i
 	}
-	var gaps []MappingGap
 	var errs []error
+	valid := make([]domain.Feature, 0, len(features))
 	for _, feature := range features {
 		if err := feature.Validate(); err != nil {
 			errs = append(errs, fmt.Errorf("validate feature %q: %w", feature.FeatureID, err))
 			continue
 		}
+		valid = append(valid, feature)
 		for _, ref := range feature.OwnedFiles {
-			index, exists := byPath[ref.Path]
-			if !exists {
-				gaps = append(gaps, MappingGap{FeatureID: feature.FeatureID, Path: ref.Path, Reason: "canonical owned path is absent from inventory"})
-				continue
+			if index, exists := byPath[ref.Path]; exists {
+				files[index].OwnedFeatureIDs = append(files[index].OwnedFeatureIDs, feature.FeatureID)
 			}
-			files[index].OwnedFeatureIDs = append(files[index].OwnedFeatureIDs, feature.FeatureID)
 		}
 		for _, ref := range feature.ContextFiles {
-			index, exists := byPath[ref.Path]
-			if !exists {
-				gaps = append(gaps, MappingGap{FeatureID: feature.FeatureID, Path: ref.Path, Reason: "canonical context path is absent from inventory"})
-				continue
+			if index, exists := byPath[ref.Path]; exists {
+				files[index].ContextFeatureIDs = append(files[index].ContextFeatureIDs, feature.FeatureID)
 			}
-			files[index].ContextFeatureIDs = append(files[index].ContextFeatureIDs, feature.FeatureID)
 		}
 	}
 	for index := range files {
 		files[index].OwnedFeatureIDs = sortedUnique(files[index].OwnedFeatureIDs)
 		files[index].ContextFeatureIDs = sortedUnique(files[index].ContextFeatureIDs)
-		if files[index].Eligible && !files[index].Excluded && len(files[index].OwnedFeatureIDs) == 0 {
-			gaps = append(gaps, MappingGap{Path: files[index].Path, Reason: "eligible file has no canonical Clawpatch owner"})
-		}
-		if len(files[index].OwnedFeatureIDs) > 1 {
-			gaps = append(gaps, MappingGap{Path: files[index].Path, Reason: "canonical ownership is ambiguous", Related: files[index].OwnedFeatureIDs})
-		}
 	}
-	sortMappingGaps(gaps)
-	return files, gaps, errors.Join(errs...)
+	return files, mappingGaps(files, valid), errors.Join(errs...)
 }
 
 var (
@@ -550,8 +539,10 @@ func languageFor(path string) string {
 // IsScoutState reports whether a repository-relative path is Scout-managed
 // state (`.scout/`), which every lane and trigger excludes.
 func IsScoutState(path string) bool {
-	return path == ".scout" || strings.HasPrefix(path, ".scout/")
+	return path == strings.TrimSuffix(scoutStatePrefix, "/") || strings.HasPrefix(path, scoutStatePrefix)
 }
+
+const scoutStatePrefix = ".scout/"
 
 func excluded(path string, patterns []string) bool {
 	if IsScoutState(path) {
@@ -569,7 +560,7 @@ func excluded(path string, patterns []string) bool {
 }
 
 func exclusionReason(path string, patterns []string) string {
-	if path == ".scout" || strings.HasPrefix(path, ".scout/") {
+	if IsScoutState(path) {
 		return "Scout-managed state is always excluded"
 	}
 	return "configured inventory exclusion"
@@ -608,12 +599,11 @@ func ignoreRulesDigest(ctx context.Context, root string) (string, []Diagnostic) 
 		}
 		return nil
 	})
-	for _, path := range []string{filepath.Join(root, ".git", "info", "exclude")} {
-		if content, err := os.ReadFile(path); err == nil {
-			parts = append(parts, filepath.ToSlash(strings.TrimPrefix(path, root+string(filepath.Separator)))+"\x00"+digestBytes(content))
-		} else if !errors.Is(err, os.ErrNotExist) {
-			diagnostics = append(diagnostics, diagnostic("ignore_rule_unreadable", err.Error(), path))
-		}
+	infoExclude := filepath.Join(root, ".git", "info", "exclude")
+	if content, err := os.ReadFile(infoExclude); err == nil {
+		parts = append(parts, filepath.ToSlash(strings.TrimPrefix(infoExclude, root+string(filepath.Separator)))+"\x00"+digestBytes(content))
+	} else if !errors.Is(err, os.ErrNotExist) {
+		diagnostics = append(diagnostics, diagnostic("ignore_rule_unreadable", err.Error(), infoExclude))
 	}
 	global, err := gitOutput(ctx, root, "config", "--path", "--get", "core.excludesFile")
 	if err == nil && strings.TrimSpace(string(global)) != "" {
@@ -703,15 +693,12 @@ func digestStrings(values []string) string {
 func nulPaths(value []byte) []string {
 	return strings.FieldsFunc(string(value), func(r rune) bool { return r == '\x00' })
 }
+
+// sortedUnique returns the sorted distinct non-empty values in a new slice; the
+// input is not modified.
 func sortedUnique(values []string) []string {
-	sort.Strings(values)
-	result := values[:0]
-	for _, value := range values {
-		if value != "" && (len(result) == 0 || result[len(result)-1] != value) {
-			result = append(result, value)
-		}
-	}
-	return result
+	result := slices.DeleteFunc(slices.Sorted(slices.Values(values)), func(value string) bool { return value == "" })
+	return slices.Compact(result)
 }
 func diagnostic(code, message, path string) Diagnostic {
 	return Diagnostic{Stage: domain.StageInventory, Code: code, Message: message, Path: path}
@@ -726,10 +713,4 @@ func sortMappingGaps(gaps []MappingGap) {
 		}
 		return gaps[i].Reason < gaps[j].Reason
 	})
-}
-func min(left, right int) int {
-	if left < right {
-		return left
-	}
-	return right
 }

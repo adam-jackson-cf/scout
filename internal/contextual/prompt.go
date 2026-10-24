@@ -12,8 +12,6 @@ import (
 	"scout/internal/domain"
 )
 
-const promptVersionPrefix = "scout-contextual@"
-
 var categories = map[domain.Family][]string{
 	domain.FamilyArchitecture: {"domain_alignment", "team_ownership", "cross_cutting_concerns", "runtime_deployment_boundaries"},
 	domain.FamilySecurity:     {"business_logic_authorization", "implicit_trust_boundaries", "sensitive_data_flows", "configuration_supply_chain"},

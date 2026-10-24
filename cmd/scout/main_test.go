@@ -42,11 +42,9 @@ func TestArtifactInRunRequiresARecordedArtifact(t *testing.T) {
 	}
 }
 
-func TestApprovalCommandsAreRemoved(t *testing.T) {
-	for _, command := range []string{"approve", "verify"} {
-		if code := run(context.Background(), []string{command}); code != exitUnavailable {
-			t.Fatalf("scout %s exit = %d, want unknown-command exit %d", command, code, exitUnavailable)
-		}
+func TestUnknownCommandIsUnavailable(t *testing.T) {
+	if code := run(context.Background(), []string{"no-such-command"}); code != exitUnavailable {
+		t.Fatalf("unknown command exit = %d, want %d", code, exitUnavailable)
 	}
 }
 

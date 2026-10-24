@@ -218,16 +218,7 @@ func buildPython(opts Options, files []string, es *edgeSet) ([]string, error) {
 				if base == "." {
 					base = ""
 				}
-				target := ""
-				ok := false
-				if imp.module != "" {
-					target, ok = resolveMod(base, imp.module)
-				} else {
-					target, ok = resolveMod(base, "")
-				}
-				if imp.names == nil {
-					continue
-				}
+				target, ok := resolveMod(base, imp.module)
 				anyName := false
 				for _, n := range imp.names {
 					sub := n
@@ -249,6 +240,10 @@ func buildPython(opts Options, files []string, es *edgeSet) ([]string, error) {
 				continue
 			}
 			if imp.names == nil { // import a.b.c
+				if strings.HasPrefix(imp.module, ".") { // not valid Python; never silently external
+					es.unres[Unresolved{f, imp.module}] = true
+					continue
+				}
 				if t, ok := resolveAbs(imp.module); ok {
 					es.add(f, t, imp.typeOnly)
 				} else if topLevel[strings.Split(imp.module, ".")[0]] {

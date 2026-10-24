@@ -109,10 +109,10 @@ func TestExportImportExportIsByteIdentical(t *testing.T) {
 			t.Fatalf("%s is not LF-terminated JSON lines", path)
 		}
 	}
-	if got := len(splitLines(first[ExportIssues])); got != 6 {
+	if got := len(SplitLines(first[ExportIssues])); got != 6 {
 		t.Fatalf("issues.jsonl has %d rows, want 6", got)
 	}
-	if got := len(splitLines(first[ExportWouldBlock])); got != 2 {
+	if got := len(SplitLines(first[ExportWouldBlock])); got != 2 {
 		t.Fatalf("would_block.jsonl has %d rows, want 2", got)
 	}
 	if bytes.Contains(first[ExportIssues], []byte(`\u003c`)) {

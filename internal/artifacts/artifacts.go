@@ -173,7 +173,9 @@ func loadOne(root string, roots []string, path string, spec Spec, snapshot domai
 	}
 	sum := sha256.Sum256(raw)
 	artifact := Artifact{Provenance: Provenance{Source: displayPath(root, path), Digest: hex.EncodeToString(sum[:]), Revision: spec.Revision, Producer: spec.Producer}}
-	if side, err := os.ReadFile(path + SidecarSuffix); err == nil {
+	side, err := os.ReadFile(path + SidecarSuffix)
+	switch {
+	case err == nil:
 		var meta struct {
 			Revision string `json:"revision"`
 			Producer string `json:"producer"`
@@ -182,6 +184,8 @@ func loadOne(root string, roots []string, path string, spec Spec, snapshot domai
 			return Artifact{}, fmt.Errorf("provenance sidecar: %w", err)
 		}
 		artifact.Revision, artifact.Producer = meta.Revision, meta.Producer
+	case !errors.Is(err, os.ErrNotExist):
+		return Artifact{}, fmt.Errorf("provenance sidecar: %w", err)
 	}
 	switch detect(raw) {
 	case KindLCOV:
@@ -206,10 +210,16 @@ func loadOne(root string, roots []string, path string, spec Spec, snapshot domai
 }
 
 func displayPath(root, path string) string {
-	if rel, err := filepath.Rel(root, path); err == nil && !strings.HasPrefix(rel, "..") {
+	if rel, err := filepath.Rel(root, path); err == nil && insideRoot(rel) {
 		return filepath.ToSlash(rel)
 	}
 	return filepath.ToSlash(path)
+}
+
+// insideRoot reports whether a filepath.Rel result stays under its base;
+// a name that merely starts with ".." (such as "..cache") is inside.
+func insideRoot(rel string) bool {
+	return rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator))
 }
 
 // detect classifies content: XML by root element, else LCOV by record tags.
@@ -297,17 +307,21 @@ func (r Result) MatchedCoverage() Merged {
 		}
 	}
 	if len(digests) == 0 {
-		reason := "no coverage artifact was provided"
-		if len(r.Failures) > 0 && len(reasons) == 0 {
+		var causes []string
+		if len(reasons) > 0 {
+			causes = append(causes, "no coverage artifact matches the snapshot revision: "+strings.Join(reasons, "; "))
+		}
+		if len(r.Failures) > 0 {
 			parts := make([]string, len(r.Failures))
 			for i, failure := range r.Failures {
 				parts[i] = fmt.Sprintf("%s: %v", failure.Source, failure.Err)
 			}
-			reason = "coverage artifact could not be read: " + strings.Join(parts, "; ")
-		} else if len(reasons) > 0 {
-			reason = "no coverage artifact matches the snapshot revision: " + strings.Join(reasons, "; ")
+			causes = append(causes, "coverage artifact could not be read: "+strings.Join(parts, "; "))
 		}
-		return Merged{Reason: reason}
+		if len(causes) == 0 {
+			causes = []string{"no coverage artifact was provided"}
+		}
+		return Merged{Reason: strings.Join(causes, "; ")}
 	}
 	sort.Strings(digests)
 	return Merged{Lines: lines, Digest: domain.Digest(digests...), Sources: sources}
@@ -319,7 +333,7 @@ func normalizePath(roots []string, path string) string {
 	path = filepath.FromSlash(strings.TrimSpace(path))
 	if filepath.IsAbs(path) {
 		for _, root := range roots {
-			if rel, err := filepath.Rel(root, path); err == nil && !strings.HasPrefix(rel, "..") {
+			if rel, err := filepath.Rel(root, path); err == nil && insideRoot(rel) {
 				path = rel
 				break
 			}

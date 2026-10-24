@@ -47,7 +47,7 @@ func parseRemoved(diff string) map[string][]removedRange {
 }
 
 // blameOrigins returns, for a file at `parent`, the 39-char origin prefix of
-// each line in the given ranges (E1 deviation 7: `git blame -l -s -L …`).
+// each line in the given ranges (`git blame -l -s -L …`).
 func blameOrigins(ctx context.Context, repo, parent, path string, rs []removedRange) ([]string, error) {
 	args := []string{"blame", "-l", "-s"}
 	for _, r := range rs {

@@ -3,6 +3,7 @@ package decisions
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"sort"
@@ -45,7 +46,7 @@ func TestIndependentQuestionsFanOutInOneRequestWithOneBilledUsage(t *testing.T) 
 	sink := &memorySink{}
 	u := unit("a", 1)
 	u.Questions = []Question{noul("rubric.one"), noul("rubric.two"), noul("rubric.three")}
-	out := Run(context.Background(), RunInput{Config: Config{Model: testModel}, Client: c, RunID: "r", Units: []Unit{u}, Sink: sink})
+	out := Run(context.Background(), RunInput{Config: testConfig(), Client: c, RunID: "r", Units: []Unit{u}, Sink: sink})
 	if f.count() != 1 || out.Annotated != 1 || len(sink.rows) != 3 {
 		t.Fatalf("requests %d outcome %+v rows %d: want one request, three rows", f.count(), out, len(sink.rows))
 	}
@@ -104,7 +105,7 @@ func TestCostCapStopsRunAfterBilledCostReachesIt(t *testing.T) {
 	if capped.Status != UnitCapped || capped.Reason != "cost cap reached" {
 		t.Fatalf("capped %+v", capped)
 	}
-	if mode, text := out.Disclosure(capped); mode != ModePartial || text != "partial (2/4)" {
+	if mode, text := out.Disclosure(capped); mode != domain.RankingModePartial || text != "partial (2/4)" {
 		t.Fatalf("disclosure %q %q", mode, text)
 	}
 	if health := out.Health(); health.Status != domain.LaneRan || !strings.Contains(health.Reason, "partial (2/4)") || !strings.Contains(health.Reason, "cost cap reached") || health.Required {
@@ -115,7 +116,7 @@ func TestCostCapStopsRunAfterBilledCostReachesIt(t *testing.T) {
 func TestACallCapOnlyRunIsNotReportedAsCostCapped(t *testing.T) {
 	f := newFake(t, func(_ int, body map[string]any, w http.ResponseWriter) { answersFor(w, testModel, body, 0.5, 0.00005) })
 	c, _ := client(f)
-	out := Run(context.Background(), RunInput{Config: Config{Model: testModel, MaxPerRun: 1}, Client: c, RunID: "r", Units: []Unit{unit("a", 2), unit("b", 1)}})
+	out := Run(context.Background(), RunInput{Config: Config{Model: testModel, MaxPerRun: 1, MaxCostUSD: 100}, Client: c, RunID: "r", Units: []Unit{unit("a", 2), unit("b", 1)}})
 	if out.Capped != 1 || out.CostCapped || out.Results[1].Reason != "call cap reached" {
 		t.Fatalf("outcome %+v", out)
 	}
@@ -124,7 +125,7 @@ func TestACallCapOnlyRunIsNotReportedAsCostCapped(t *testing.T) {
 func TestAReplyWithoutBilledCostStopsTheRunBecauseTheCapCannotBeEnforced(t *testing.T) {
 	f := newFake(t, func(_ int, body map[string]any, w http.ResponseWriter) { answersFor(w, testModel, body, 0.5, -1) })
 	c, _ := client(f)
-	out := Run(context.Background(), RunInput{Config: Config{Model: testModel}, Client: c, RunID: "r", Units: []Unit{unit("a", 3), unit("b", 2), unit("c", 1)}})
+	out := Run(context.Background(), RunInput{Config: testConfig(), Client: c, RunID: "r", Units: []Unit{unit("a", 3), unit("b", 2), unit("c", 1)}})
 	if f.count() != 1 || out.Annotated != 1 || out.Capped != 2 || out.Results[1].Reason != "billed cost unknown" {
 		t.Fatalf("requests %d outcome %+v", f.count(), out)
 	}
@@ -135,7 +136,7 @@ func TestADiscardedMismatchedReplyIsStillBilled(t *testing.T) {
 		answersFor(w, "typesafe/jev-9.9-rerouted", body, 0.5, 0.4)
 	})
 	c, _ := client(f)
-	out := Run(context.Background(), RunInput{Config: Config{Model: testModel, MaxCostUSD: 0.5}, Client: c, RunID: "r", Units: []Unit{unit("a", 3), unit("b", 2), unit("c", 1)}})
+	out := Run(context.Background(), RunInput{Config: Config{Model: testModel, MaxPerRun: 100, MaxCostUSD: 0.5}, Client: c, RunID: "r", Units: []Unit{unit("a", 3), unit("b", 2), unit("c", 1)}})
 	if out.Incomplete != 2 || out.Capped != 1 || out.CostUSD < 0.79 || out.CostUSD > 0.81 || len(out.Results[0].Annotations) != 0 {
 		t.Fatalf("outcome %+v: discarded replies cost money and count toward the cap", out)
 	}
@@ -152,12 +153,16 @@ func TestVersionKeyCoversTheQuestionKind(t *testing.T) {
 
 func TestPinRejectsAliasesAndUndatedReleaseLinesButAcceptsTheInitDefault(t *testing.T) {
 	for _, model := range []string{"", "jev-latest", "typesafe/jev-preview", "typesafe/jev-1.14", "jev-1.13"} {
-		if (Config{Model: model}).Validate() == nil {
+		c := testConfig()
+		c.Model = model
+		if c.Validate() == nil {
 			t.Fatalf("model %q must be rejected", model)
 		}
 	}
 	for _, model := range []string{policy.DefaultModel, "typesafe/jev-1.13-20260917", "jev-1.14.0"} {
-		if err := (Config{Model: model}).Validate(); err != nil {
+		c := testConfig()
+		c.Model = model
+		if err := c.Validate(); err != nil {
 			t.Fatalf("model %q must be accepted: %v", model, err)
 		}
 	}
@@ -171,8 +176,38 @@ func TestLatencyIsMeasuredEndToEndAndStoredOnTheFirstRowOnly(t *testing.T) {
 	u := unit("a", 1)
 	u.Questions = []Question{noul("one"), noul("two")}
 	sink := &memorySink{}
-	Run(context.Background(), RunInput{Config: Config{Model: testModel}, Client: c, RunID: "r", Units: []Unit{u}, Sink: sink})
+	Run(context.Background(), RunInput{Config: testConfig(), Client: c, RunID: "r", Units: []Unit{u}, Sink: sink})
 	if len(sink.rows) != 2 || sink.rows[0].LatencyMS != 40 || sink.rows[1].LatencyMS != 0 {
 		t.Fatalf("rows %+v", sink.rows)
+	}
+}
+
+func TestAFailedPersistenceRecordsNothingAndFailsTheUnit(t *testing.T) {
+	f := newFake(t, func(_ int, body map[string]any, w http.ResponseWriter) { answersFor(w, testModel, body, 0.5, 0.00005) })
+	c, _ := client(f)
+	u := unit("a", 1)
+	u.Questions = []Question{noul("one"), noul("two")}
+	sink := &memorySink{fail: errors.New("disk full")}
+	out := Run(context.Background(), RunInput{Config: testConfig(), Client: c, RunID: "r", Units: []Unit{u}, Sink: sink})
+	if out.Failed != 1 || out.Annotated != 0 || len(out.Results[0].Annotations) != 0 || len(sink.rows) != 0 {
+		t.Fatalf("outcome %+v rows %d", out, len(sink.rows))
+	}
+}
+
+func TestFormulaScoreSumsInQuestionIDOrder(t *testing.T) {
+	wa, wb, wc := 0.2, 0.3, 0.1
+	pa, pb, pc := 0.7, 0.1, 0.9
+	f := Formula{Weights: map[string]float64{"c": wc, "a": wa, "b": wb}}
+	answers := map[string]float64{"a": pa, "b": pb, "c": pc}
+	want := wa * pa
+	want += wb * pb
+	want += wc * pc
+	for range 50 {
+		if got, ok := f.Score(answers); !ok || got != want {
+			t.Fatalf("score %v %v, want %v", got, ok, want)
+		}
+	}
+	if _, ok := f.Score(map[string]float64{"a": 1}); ok {
+		t.Fatal("a missing weighted answer must not score")
 	}
 }

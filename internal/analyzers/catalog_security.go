@@ -296,6 +296,7 @@ func securitySpecs() []Spec {
 				MaxTotalBytes:    32 * 1024 * 1024,
 				MaxManifestBytes: 256 * 1024,
 			},
+			Attestation: AttestGitleaksScanLog,
 			Output: Output{
 				Format:            OutputSARIF,
 				SchemaVersion:     "2.1.0",

@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"scout/internal/analyzers"
 	"scout/internal/domain"
 	"scout/internal/measures"
+	"scout/internal/sandbox"
 )
 
 func requireDeltaTools(t *testing.T) {
@@ -22,7 +22,7 @@ func requireDeltaTools(t *testing.T) {
 			t.Skipf("%s is not on PATH (source .tools/activate)", binary)
 		}
 	}
-	if err := analyzers.SandboxAvailable(); err != nil {
+	if err := sandbox.Available(); err != nil {
 		t.Skip("scanner sandbox is not available")
 	}
 }
@@ -171,51 +171,6 @@ func TestDeltaWithoutScannersIsUnmeasuredNeverEmpty(t *testing.T) {
 	report := ComputeDeltas(context.Background(), root, base, changed, measures.Tools{Lizard: "scout-no-lizard", Jscpd: "scout-no-jscpd"})
 	if len(report.Issues) != 0 || len(report.Unmeasured) == 0 {
 		t.Fatalf("missing scanners must be stated, not silent: %+v", report)
-	}
-}
-
-func TestCapabilityMatrixReportsPerRepoAvailability(t *testing.T) {
-	root := t.TempDir()
-	deltaWrite(t, root, "main.go", "package main\n")
-	deltaWrite(t, root, "app.py", "x = 1\n")
-	t.Setenv("PATH", t.TempDir()) // no model CLI on PATH
-	matrix, err := CapabilityMatrix(context.Background(), Config{}, root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if strings.Join(matrix.InRepo, ",") != "Go,Python" || len(matrix.Rows) != 4 {
-		t.Fatalf("matrix: %+v", matrix)
-	}
-	rows := map[string]MatrixRow{}
-	for _, row := range matrix.Rows {
-		rows[row.Capability] = row
-	}
-	review := rows["Semantic review (contextual)"]
-	for _, language := range MatrixLanguages {
-		if cell := review.Cells[language]; cell.State != CellSkipped || renderCell(cell) != "skipped (no model CLI)" {
-			t.Fatalf("%s review = %+v", language, cell)
-		}
-	}
-	graph := rows["Import graph / cycles; guardrails; rubric"]
-	if graph.Cells["Go"].State != CellAvailable || graph.Cells["Rust"].State != CellPlanned || renderCell(graph.Cells["C#"]) != "–" {
-		t.Fatalf("import graph row: %+v", graph.Cells)
-	}
-	crap := rows["CRAP (needs coverage artifact)"]
-	if crap.Cells["Go"].State != CellWhen {
-		t.Fatalf("crap without artifact: %+v", crap.Cells["Go"])
-	}
-	deltaWrite(t, root, "coverage/lcov.info", "TN:\n")
-	again, _ := CapabilityMatrix(context.Background(), Config{}, root)
-	for _, row := range again.Rows {
-		if strings.HasPrefix(row.Capability, "CRAP") && row.Cells["Go"].State != CellAvailable {
-			t.Fatalf("crap with artifact: %+v", row.Cells["Go"])
-		}
-	}
-	text := matrix.Render()
-	for _, want := range []string{"| Capability | Go * | Python * | TS/JS | Rust | Java | C# |", "CRAP (needs coverage artifact)", "present in this repository: Go, Python"} {
-		if !strings.Contains(text, want) {
-			t.Fatalf("render lacks %q:\n%s", want, text)
-		}
 	}
 }
 

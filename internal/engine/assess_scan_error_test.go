@@ -10,7 +10,7 @@ import (
 func TestScanBatchErrorWithoutFailureIsRecorded(t *testing.T) {
 	adapter := domain.AdapterResult{}
 	recordScanError(&adapter, errors.New("boom"))
-	if len(adapter.Failures) != 1 || adapter.Failures[0].Code != "scanner_failed" {
+	if len(adapter.Failures) != 1 || adapter.Failures[0].Code != failureScannerFailed {
 		t.Fatalf("a scanner error must become a recorded failure: %+v", adapter.Failures)
 	}
 	own := domain.AdapterResult{Failures: []domain.Failure{{Code: "timed_out"}}}

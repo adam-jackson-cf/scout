@@ -63,7 +63,7 @@ func runMeasuresLanes(ctx context.Context, store *state.Store, root string, curr
 		Root: root, Snapshot: current.Snapshot, RunScope: string(options.Scope.Kind),
 		Files: files, Features: features, Tools: options.Measures.Tools, Coverage: coverage,
 	})
-	health := domain.LaneHealth{Lane: LaneMeasures, Units: len(result.Eligible), Status: domain.LaneRan}
+	health := domain.LaneHealth{Lane: LaneMeasures, Units: len(result.Measured), Status: domain.LaneRan}
 	switch {
 	case result.Candidates == 0:
 		health.Status, health.Reason = domain.LaneSkipped, "no production source files in scope"

@@ -152,6 +152,42 @@ func TestLoadReportsUnreadableAndUnrecognizedArtifacts(t *testing.T) {
 	}
 }
 
+func TestUnreadableSidecarFailsInsteadOfFallingBackToTheFlagRevision(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "cov.lcov", strings.ReplaceAll(lcov, "{ROOT}", root))
+	if err := os.Mkdir(filepath.Join(root, "cov.lcov"+SidecarSuffix), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	result := Load(root, []Spec{{Path: "cov.lcov", Revision: head}}, domain.Snapshot{Revision: head})
+	if len(result.Artifacts) != 0 || len(result.Failures) != 1 {
+		t.Fatalf("unreadable sidecar produced %+v", result)
+	}
+	if merged := result.MatchedCoverage(); merged.Digest != "" {
+		t.Fatalf("coverage was used despite the unreadable sidecar: %+v", merged)
+	}
+}
+
+func TestMatchedCoverageReportsMismatchesAndFailuresTogether(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "stale.lcov", strings.ReplaceAll(lcov, "{ROOT}", root))
+	write(t, root, "notes.txt", "hello\n")
+	result := Load(root, []Spec{{Path: "stale.lcov", Revision: "ffffffffffff"}, {Path: "notes.txt"}}, domain.Snapshot{Revision: head})
+	reason := result.MatchedCoverage().Reason
+	if !strings.Contains(reason, "no coverage artifact matches") || !strings.Contains(reason, "could not be read") {
+		t.Fatalf("reason dropped a cause: %q", reason)
+	}
+}
+
+func TestPathsStartingWithDotsStayInsideTheRoot(t *testing.T) {
+	root := t.TempDir()
+	if got := displayPath(root, filepath.Join(root, "..cache", "cov.lcov")); got != "..cache/cov.lcov" {
+		t.Fatalf("displayPath = %q", got)
+	}
+	if got := displayPath(root, filepath.Join(filepath.Dir(root), "outside.lcov")); got != filepath.ToSlash(filepath.Join(filepath.Dir(root), "outside.lcov")) {
+		t.Fatalf("outside path was made relative: %q", got)
+	}
+}
+
 func TestEmptySpecsGiveNoCoverageReason(t *testing.T) {
 	merged := Result{}.MatchedCoverage()
 	if merged.Lines != nil || merged.Reason == "" {

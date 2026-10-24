@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"slices"
 	"strings"
 	"syscall"
 	"time"
@@ -91,52 +92,55 @@ func emit(flags *commonFlags, status string, code int, result any, err error) in
 	} else if err != nil {
 		fmt.Fprintln(os.Stderr, "scout:", reply.Error)
 	} else if result != nil {
-		encoded, _ := json.MarshalIndent(reply, "", "  ")
+		encoded, marshalErr := json.MarshalIndent(reply, "", "  ")
+		if marshalErr != nil {
+			fmt.Fprintln(os.Stderr, "scout:", marshalErr)
+			return exitUnavailable
+		}
 		fmt.Fprintln(os.Stdout, string(encoded))
 	}
 	return code
 }
+
+// commands is the dispatch table; the usage line is generated from it.
+var commands = []struct {
+	name string
+	run  func(context.Context, []string) int
+}{
+	{"init", initCmd},
+	{"readiness", readiness},
+	{"assess", assess},
+	{"diff", diff},
+	{"issues", listIssues},
+	{"issue", showIssue},
+	{"mapping", mapping},
+	{"map", mapCmd},
+	{"coverage", coverage},
+	{"triage", triage},
+	{"signals", signalsCmd},
+	{"export", exportCmd},
+	{"import", importCmd},
+	{"state", stateCmd},
+	{"serve", serve},
+}
+
 func main() { os.Exit(run(context.Background(), os.Args[1:])) }
 func run(ctx context.Context, args []string) int {
 	if len(args) == 0 {
-		fmt.Fprintln(os.Stderr, "usage: scout <init|readiness|assess|diff|issues|issue|mapping|coverage|triage|export|import|state|signals|serve> [flags]")
+		names := make([]string, len(commands))
+		for index, command := range commands {
+			names[index] = command.name
+		}
+		fmt.Fprintf(os.Stderr, "usage: scout <%s> [flags]\n", strings.Join(names, "|"))
 		return exitUnavailable
 	}
-	switch args[0] {
-	case "init":
-		return initCmd(ctx, args[1:])
-	case "readiness":
-		return readiness(ctx, args[1:])
-	case "assess":
-		return assess(ctx, args[1:])
-	case "diff":
-		return diff(ctx, args[1:])
-	case "issues":
-		return listIssues(ctx, args[1:])
-	case "issue":
-		return showIssue(ctx, args[1:])
-	case "mapping":
-		return mapping(ctx, args[1:])
-	case "map":
-		return mapCmd(ctx, args[1:])
-	case "coverage":
-		return coverage(ctx, args[1:])
-	case "triage":
-		return triage(ctx, args[1:])
-	case "signals":
-		return signalsCmd(ctx, args[1:])
-	case "export":
-		return exportCmd(ctx, args[1:])
-	case "import":
-		return importCmd(ctx, args[1:])
-	case "state":
-		return stateCmd(ctx, args[1:])
-	case "serve":
-		return serve(ctx, args[1:])
-	default:
-		fmt.Fprintln(os.Stderr, "unknown Scout command")
-		return exitUnavailable
+	for _, command := range commands {
+		if command.name == args[0] {
+			return command.run(ctx, args[1:])
+		}
 	}
+	fmt.Fprintf(os.Stderr, "unknown Scout command %q\n", args[0])
+	return exitUnavailable
 }
 func parse(set *flag.FlagSet, args []string, flags *commonFlags) bool {
 	set.SetOutput(os.Stderr)
@@ -367,7 +371,7 @@ func listIssues(ctx context.Context, args []string) int {
 		if status != "" && string(issue.State) != status || minSeverity != "" && issue.EffectiveSeverity.Rank() < domain.Severity(minSeverity).Rank() {
 			continue
 		}
-		if file != "" && !contains(issue.Files, file) || feature != "" && !contains(issue.FeatureIDs, feature) {
+		if file != "" && !slices.Contains(issue.Files, file) || feature != "" && !slices.Contains(issue.FeatureIDs, feature) {
 			continue
 		}
 		if runID != "" || family != "" {
@@ -392,14 +396,6 @@ func hasMatchingObservation(observations []domain.Observation, runID string, fam
 			continue
 		}
 		return true
-	}
-	return false
-}
-func contains(items []string, want string) bool {
-	for _, item := range items {
-		if item == want {
-			return true
-		}
 	}
 	return false
 }
@@ -437,7 +433,7 @@ func showIssue(ctx context.Context, args []string) int {
 	}
 	associated := []domain.Observation{}
 	for _, observation := range observations {
-		if contains(issue.ObservationIDs, observation.ObservationID) {
+		if slices.Contains(issue.ObservationIDs, observation.ObservationID) {
 			associated = append(associated, observation)
 		}
 	}
@@ -469,7 +465,7 @@ func mapping(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	features, err := clawpatch.LoadFeatures(filepath.Join(root, ".scout", "clawpatch"))
+	features, err := clawpatch.LoadFeatures(clawpatch.StateDir(root))
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
@@ -642,6 +638,10 @@ func serve(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
+	if tcp, ok := listener.Addr().(*net.TCPAddr); !ok || !tcp.IP.IsLoopback() {
+		_ = listener.Close()
+		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("web server accepts only loopback listeners"))
+	}
 	server := &http.Server{Handler: web.New(store), ReadHeaderTimeout: 5 * time.Second}
 	stopped, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -652,7 +652,9 @@ func serve(ctx context.Context, args []string) int {
 		_ = server.Shutdown(shutdown)
 	}()
 	if flags.json {
-		_ = json.NewEncoder(os.Stdout).Encode(outcome{Status: "serving", ExitCode: exitComplete, Result: map[string]string{"address": listener.Addr().String()}})
+		if encodeErr := json.NewEncoder(os.Stdout).Encode(outcome{Status: "serving", ExitCode: exitComplete, Result: map[string]string{"address": listener.Addr().String()}}); encodeErr != nil {
+			return emit(flags, "unavailable", exitUnavailable, nil, encodeErr)
+		}
 	} else {
 		fmt.Fprintln(os.Stdout, "Scout read-only web:", listener.Addr().String())
 	}

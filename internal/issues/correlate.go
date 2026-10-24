@@ -10,28 +10,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"time"
-	"unicode/utf8"
 
 	"scout/internal/domain"
+	"scout/internal/redact"
 	"scout/internal/state"
 )
 
 const (
 	correlationActor = "issue-correlation"
 	maxIssueText     = 4096
-)
-
-var (
-	privateKeyPattern    = regexp.MustCompile(`(?s)-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----.+?-----END [A-Z0-9 ]*PRIVATE KEY-----`)
-	assignmentPattern    = regexp.MustCompile(`(?i)(\b(?:api[_-]?key|access[_-]?key|secret|token|password|passwd|credential|client[_-]?secret)\b\s*[:=]\s*["']?)[^\s"']+`)
-	urlCredentialPattern = regexp.MustCompile(`://[^\s/@:]+:[^\s/@]+@`)
-	jwtPattern           = regexp.MustCompile(`\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b`)
-	knownTokenPattern    = regexp.MustCompile(`\b(?:AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{20,})\b`)
-	longTokenPattern     = regexp.MustCompile(`\b[A-Za-z0-9+/_=-]{32,}\b`)
 )
 
 // mintID creates the durable issue ID; replaceable only in tests.
@@ -315,11 +306,11 @@ func groupOccurrences(run domain.Run, observations []domain.Observation) ([]*occ
 		if observation.RunID != run.RunID {
 			return nil, fmt.Errorf("correlation observation %q belongs to run %q, not %q", observation.ObservationID, observation.RunID, run.RunID)
 		}
-		mechanism, err := sanitizeIssueText(observation.Mechanism)
+		mechanism, err := SanitizeText(observation.Mechanism)
 		if err != nil || mechanism == "" {
 			return nil, fmt.Errorf("correlation observation %q has unsafe mechanism", observation.ObservationID)
 		}
-		category, err := sanitizeIssueText(observation.OriginalCategory)
+		category, err := SanitizeText(observation.OriginalCategory)
 		if err != nil || category == "" {
 			return nil, fmt.Errorf("correlation observation %q has unsafe category", observation.ObservationID)
 		}
@@ -403,10 +394,16 @@ func createIssue(ctx context.Context, store *state.Store, occ *occurrence) (doma
 			effectiveSeverity = observation.EffectiveSeverity
 		}
 		if uncertainty == "" {
-			uncertainty, _ = sanitizeIssueText(observation.Uncertainty)
+			var err error
+			if uncertainty, err = SanitizeText(observation.Uncertainty); err != nil {
+				return domain.Issue{}, fmt.Errorf("observation %q uncertainty: %w", observation.ObservationID, err)
+			}
 		}
 	}
-	title, _ := sanitizeIssueText(occ.category + ": " + occ.mechanism)
+	title, err := SanitizeText(occ.category + ": " + occ.mechanism)
+	if err != nil {
+		return domain.Issue{}, fmt.Errorf("issue title: %w", err)
+	}
 	issue := domain.Issue{
 		IssueID: mintID(occ.family), State: domain.IssueOpen, Family: occ.family, Category: occ.category,
 		Title: title, Mechanism: occ.mechanism, Anchor: occ.anchor,
@@ -430,47 +427,15 @@ func sortedUnique(values []string) []string {
 	if len(values) == 0 {
 		return nil
 	}
-	result := append([]string(nil), values...)
-	sort.Strings(result)
-	write := 1
-	for read := 1; read < len(result); read++ {
-		if result[read] != result[write-1] {
-			result[write] = result[read]
-			write++
-		}
-	}
-	return result[:write]
+	return slices.Compact(slices.Sorted(slices.Values(values)))
 }
 
 // SanitizeText redacts credential-shaped values before human-supplied audit
 // text is committed or printed. It rejects invalid UTF-8 and NUL bytes.
 func SanitizeText(value string) (string, error) {
-	return sanitizeIssueText(value)
-}
-
-func sanitizeIssueText(value string) (string, error) {
-	if !utf8.ValidString(value) || strings.ContainsRune(value, '\x00') {
+	value, err := redact.Text(value)
+	if err != nil {
 		return "", errors.New("unsafe issue text")
 	}
-	value = privateKeyPattern.ReplaceAllString(value, "[REDACTED PRIVATE KEY]")
-	value = assignmentPattern.ReplaceAllString(value, "$1[REDACTED]")
-	value = urlCredentialPattern.ReplaceAllString(value, "://[REDACTED]@")
-	value = jwtPattern.ReplaceAllString(value, "[REDACTED JWT]")
-	value = knownTokenPattern.ReplaceAllString(value, "[REDACTED TOKEN]")
-	value = longTokenPattern.ReplaceAllString(value, "[REDACTED]")
-	value = strings.Map(func(r rune) rune {
-		if r < 0x20 && r != '\n' && r != '\t' {
-			return -1
-		}
-		return r
-	}, value)
-	value = strings.TrimSpace(value)
-	if len(value) > maxIssueText {
-		value = value[:maxIssueText]
-		for !utf8.ValidString(value) {
-			value = value[:len(value)-1]
-		}
-		value += "…"
-	}
-	return value, nil
+	return redact.Truncate(strings.TrimSpace(value), maxIssueText), nil
 }

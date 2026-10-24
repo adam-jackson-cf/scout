@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	// SessionGapHours is the git-hours session gap (E1b prereg §3.3).
+	// SessionGapHours is the git-hours session gap.
 	SessionGapHours = 4.0
 	// FirstCommitHours is the credit for the first commit of each session.
 	FirstCommitHours = 0.5
@@ -14,9 +14,8 @@ const (
 
 // ActiveHours is author active hours (git-hours sessions) over author
 // timestamps in Unix seconds: gaps <= 4 h add the gap, a longer gap starts a
-// session, 0.5 h credit per session. It mirrors E1b build_panel.active_hours
-// operation for operation (including summation order). Empty input yields the
-// 0.5 h floor, as in E1b.
+// session, 0.5 h credit per session. The summation order is fixed so results
+// are reproducible bit for bit. Empty input yields the 0.5 h floor.
 func ActiveHours(authorUnix []float64) float64 {
 	t := append([]float64(nil), authorUnix...)
 	sort.Float64s(t)

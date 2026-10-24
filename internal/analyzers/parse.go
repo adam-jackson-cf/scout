@@ -126,7 +126,7 @@ func ensureJSONEOF(decoder *json.Decoder) error {
 }
 
 func parseAdapterFinding(value adapterFinding) (parsedFinding, error) {
-	if !safeName(value.ID) || value.Severity.Rank() < domain.SeverityLow.Rank() || !value.Severity.Valid() || !value.Confidence.Valid() || value.Mechanism == "" || validRelativePath(value.Path) != nil || value.StartLine <= 0 || value.EndLine < value.StartLine || (value.StartByte == 0) != (value.EndByte == 0) || value.StartByte < 0 || value.EndByte < value.StartByte {
+	if !safeName(value.ID) || !value.Severity.Valid() || value.Severity == domain.SeverityInformational || !value.Confidence.Valid() || value.Mechanism == "" || validRelativePath(value.Path) != nil || value.StartLine <= 0 || value.EndLine < value.StartLine || (value.StartByte == 0) != (value.EndByte == 0) || value.StartByte < 0 || value.EndByte < value.StartByte {
 		return parsedFinding{}, errors.New("malformed adapter finding")
 	}
 	ruleID, err := sanitizeIdentifier(value.RuleID)
@@ -194,9 +194,9 @@ func parseSARIF(spec Spec, raw []byte, root string) (parsedOutput, error) {
 	if err := decoder.Decode(&log); err != nil || ensureJSONEOF(decoder) != nil || log.Version != spec.Output.SchemaVersion || len(log.Runs) == 0 {
 		return parsedOutput{}, errors.New("malformed or unknown SARIF schema")
 	}
-	// SARIF alone cannot attest inputs. Runner additionally requires Gitleaks'
-	// byte count or Ruff's exact configured-input listing before completion.
-	externallyAttested := spec.ID == "security.gitleaks.default-credentials" || spec.Binary.Path == "ruff"
+	// SARIF alone cannot attest inputs. Runner additionally requires the
+	// spec's attestation strategy to prove them before completion.
+	externallyAttested := spec.Attestation != AttestOutput
 	result := parsedOutput{success: spec.Output.ProcessedInputsProperty != "" || externallyAttested, processed: make(map[string]struct{}), processingErrors: make(map[string]struct{})}
 	hasInvocation := false
 	for _, run := range log.Runs {
@@ -244,8 +244,7 @@ func parseSARIFFinding(spec Spec, value sarifResult, root string) (parsedFinding
 	if len(value.Locations) != 1 || value.Message.Text == "" {
 		return parsedFinding{}, errors.New("malformed SARIF result")
 	}
-	rawRuleID := normalizeSemgrepRuleID(spec, value.RuleID)
-	ruleID, err := sanitizeIdentifier(rawRuleID)
+	ruleID, err := sanitizeIdentifier(value.RuleID)
 	if err != nil {
 		return parsedFinding{}, errors.New("malformed SARIF rule ID")
 	}
@@ -272,18 +271,17 @@ func parseSARIFFinding(spec Spec, value sarifResult, root string) (parsedFinding
 	case "note", "none":
 		severity = domain.SeverityLow
 	case "warning", "":
-		severity = domain.SeverityMedium
 	case "error":
 		severity = domain.SeverityHigh
 	default:
-		return parsedFinding{}, fmt.Errorf("unknown SARIF result level")
+		return parsedFinding{}, errors.New("unknown SARIF result level")
 	}
 	id := value.GUID
 	if id == "" {
 		id = digestID(ruleID, path, fmt.Sprint(region.StartLine), value.Message.Text)
 	}
 	if !safeName(id) {
-		id = digestID(ruleID, path, fmt.Sprint(region.StartLine))
+		return parsedFinding{}, errors.New("unsafe SARIF result ID")
 	}
 	return parsedFinding{id: id, ruleID: ruleID, severity: severity, confidence: domain.ConfidenceMedium, mechanism: value.Message.Text, path: path, startLine: region.StartLine, endLine: endLine, startColumn: region.StartColumn, endColumn: region.EndColumn}, nil
 }

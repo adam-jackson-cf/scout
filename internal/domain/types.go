@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 )
@@ -127,15 +128,13 @@ func (s CoverageStatus) Valid() bool {
 	}
 }
 
+var accountedStatuses = []CoverageStatus{CoverageInspected, CoverageReused, CoverageNotApplicable, CoverageCovered, CoverageFlagged}
+
+// AccountedStatuses lists the statuses that can satisfy a completed run's ledger.
+func AccountedStatuses() []CoverageStatus { return slices.Clone(accountedStatuses) }
+
 // Accounted reports whether this status can satisfy a completed run's ledger.
-func (s CoverageStatus) Accounted() bool {
-	switch s {
-	case CoverageInspected, CoverageReused, CoverageNotApplicable, CoverageCovered, CoverageFlagged:
-		return true
-	default:
-		return false
-	}
-}
+func (s CoverageStatus) Accounted() bool { return slices.Contains(accountedStatuses, s) }
 
 // AdapterStatus preserves the actual status returned by a selected adapter.
 type AdapterStatus string
@@ -894,23 +893,6 @@ func (v Verification) ValidateResolution() error {
 		}
 	}
 	return nil
-}
-
-// IssueAnchor is the identity-bearing evidence of an issue (design §3.3).
-// Line and byte ranges are locators on observations and never appear here.
-type IssueAnchor struct {
-	// Path is the rename-followed repository path. Empty for a digest-matched secret.
-	Path string `json:"path,omitempty"`
-	// Symbol is the qualified enclosing symbol when the analyzer supplied one.
-	Symbol string `json:"symbol,omitempty"`
-	// RuleKey is "<source>\x00<ruleId>".
-	RuleKey string `json:"ruleKey"`
-	// Mechanism is the normalized mechanism text.
-	Mechanism string `json:"mechanism"`
-	// Fingerprint is the normalized evidence fingerprint, or the secret digest.
-	Fingerprint string `json:"fingerprint,omitempty"`
-	// Secret marks Fingerprint as a secret digest that matches across paths.
-	Secret bool `json:"secretDigest,omitempty"`
 }
 
 // Issue is a durable, mutable correlation of immutable observations.

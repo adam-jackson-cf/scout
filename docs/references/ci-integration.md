@@ -85,7 +85,7 @@ Every lane downloads the Scout binary and the Clawpatch bundle from a release by
 
 - The job summary: the ≤ 60-line Markdown summary on PRs, or `status: … (exit N)` on trusted runs.
 - Exit handling: `0` passes, `1` fails the job, and `2`/`3` give a neutral warning unless `fail-on-incomplete` is set.
-- The evidence artifact: `scout-assessment-<run_id>-pr` (kept 30 days) holds the assessment JSON, its stderr, the summary and SARIF if one was produced. `scout-assessment-<run_id>-<event>` (kept 90 days) holds the trusted run's JSON, stderr, `scout-map.json` and SARIF.
+- The evidence artifact: `scout-assessment-<run_id>-pr` (kept 30 days) holds the assessment JSON, its stderr and the summary. `scout-assessment-<run_id>-<event>` (kept 90 days) holds the trusted run's JSON, stderr and `scout-map.json`.
 - The `scout/state` branch advances after each trusted run that exits 0 or 1.
 - On GitHub-hosted runners, the model-CLI lanes and the agent map report `skipped (no model CLI)`. That is expected and does not change the exit code.
 

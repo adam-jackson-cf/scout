@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"sort"
 	"strings"
 	"time"
@@ -32,20 +33,20 @@ type Config struct {
 	Endpoint           string
 }
 
-// DefaultMaxPerRun is the call cap of design §6 [ASSUMPTION].
-const DefaultMaxPerRun = 2000
-
-// DefaultMaxCostUSD mirrors policy.DefaultMaxCostUSD [ASSUMPTION]; an engine
-// test pins them equal.
-const DefaultMaxCostUSD = 0.50
-
-// Validate rejects a missing pin or an alias.
+// Validate rejects a missing pin, an alias or a non-positive cap. The caps
+// default in policy; a zero here is a wiring error, not a request for defaults.
 func (c Config) Validate() error {
 	if c.Model == "" {
 		return errors.New("decisions model is required")
 	}
 	if policy.IsModelAlias(c.Model) {
 		return fmt.Errorf("decisions model %q is an alias; pin an exact model id", c.Model)
+	}
+	if c.MaxPerRun <= 0 {
+		return fmt.Errorf("decisions max per run must be positive, got %d", c.MaxPerRun)
+	}
+	if !(c.MaxCostUSD > 0) || math.IsInf(c.MaxCostUSD, 0) {
+		return fmt.Errorf("decisions max cost must be a positive number, got %v", c.MaxCostUSD)
 	}
 	return nil
 }
@@ -166,9 +167,9 @@ type Outcome struct {
 	ThresholdsStale bool
 }
 
-// Sink persists annotations as they are produced.
+// Sink persists one unit's annotations atomically: all rows or none.
 type Sink interface {
-	RecordAnnotation(ctx context.Context, annotation domain.Annotation) error
+	RecordAnnotations(ctx context.Context, annotations []domain.Annotation) error
 }
 
 // RunInput drives one run of the adapter.
@@ -186,14 +187,7 @@ type RunInput struct {
 // run too, since the cost cap can no longer be enforced. Failed, mismatched
 // and capped units get no annotation; none becomes a score.
 func Run(ctx context.Context, in RunInput) Outcome {
-	cap := in.Config.MaxPerRun
-	if cap <= 0 {
-		cap = DefaultMaxPerRun
-	}
-	costCap := in.Config.MaxCostUSD
-	if costCap <= 0 {
-		costCap = DefaultMaxCostUSD
-	}
+	cap, costCap := in.Config.MaxPerRun, in.Config.MaxCostUSD
 	now := in.Now
 	if now == nil {
 		now = func() time.Time { return time.Now().UTC() }
@@ -208,12 +202,13 @@ func Run(ctx context.Context, in RunInput) Outcome {
 			reason = "call cap reached"
 		case blind:
 			reason = "billed cost unknown"
+			out.CostCapped = true
 		case out.CostUSD >= costCap:
 			reason = "cost cap reached"
+			out.CostCapped = true
 		}
 		if reason != "" {
 			out.Capped++
-			out.CostCapped = out.CostCapped || index < cap
 			out.Results = append(out.Results, UnitResult{Unit: unit, Status: UnitCapped, Reason: reason})
 			continue
 		}
@@ -274,10 +269,8 @@ func ask(ctx context.Context, in RunInput, unit Unit, at time.Time) (result Unit
 		annotations = append(annotations, annotation)
 	}
 	if in.Sink != nil {
-		for _, annotation := range annotations {
-			if err := in.Sink.RecordAnnotation(ctx, annotation); err != nil {
-				return UnitResult{Unit: unit, Status: UnitFailed, Reason: "annotation not persisted: " + err.Error()}, reply, replied
-			}
+		if err := in.Sink.RecordAnnotations(ctx, annotations); err != nil {
+			return UnitResult{Unit: unit, Status: UnitFailed, Reason: "annotations not persisted: " + err.Error()}, reply, replied
 		}
 	}
 	return UnitResult{Unit: unit, Status: UnitAnnotated, Annotations: annotations}, reply, replied
@@ -291,17 +284,17 @@ const (
 )
 
 // Disclosure is the per-finding ranking text of design §6.
-func (o Outcome) Disclosure(result UnitResult) (mode, text string) {
+func (o Outcome) Disclosure(result UnitResult) (mode domain.RankingMode, text string) {
 	switch result.Status {
 	case UnitAnnotated:
 		if o.ThresholdsStale {
-			return ModeJev, JevStaleDisclosure
+			return domain.RankingModeJev, JevStaleDisclosure
 		}
-		return ModeJev, JevDisclosure
+		return domain.RankingModeJev, JevDisclosure
 	case UnitCapped:
-		return ModePartial, fmt.Sprintf("partial (%d/%d)", o.Attempted, o.Total)
+		return domain.RankingModePartial, fmt.Sprintf("partial (%d/%d)", o.Attempted, o.Total)
 	}
-	return ModeDeterministic, "deterministic (" + result.Reason + ")"
+	return domain.RankingModeDeterministic, "deterministic (" + result.Reason + ")"
 }
 
 // Health is the decisions lane's health for a run that was eligible.

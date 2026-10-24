@@ -66,7 +66,10 @@ func Plan(input PlanInput) (PlanResult, error) {
 		return result, fmt.Errorf("plan scope: %w", err)
 	}
 	if input.ScopeDigest == "" {
-		input.ScopeDigest = scopeDigest(input.Scope, nil)
+		return result, errors.New("plan requires scope digest")
+	}
+	if err := validateDependencies(input.Dependencies); err != nil {
+		return result, fmt.Errorf("plan dependencies: %w", err)
 	}
 	if err := validateCategories(input.FileCategories, input.Scope.SelectedFamilies); err != nil {
 		return result, err
@@ -156,15 +159,6 @@ func Plan(input PlanInput) (PlanResult, error) {
 			}
 			continue
 		}
-		stage := stageForKey(key)
-		if cached.Coverage.Status.Accounted() && cached.SourceRunID != "" && cached.InputFingerprint == fingerprint {
-			coverage := cached.Coverage
-			coverage.Status = domain.CoverageReused
-			coverage.ReusedFromRunID = cached.SourceRunID
-			recordReused(reusedCoverage, coverage)
-			addJob(jobs, job(stage, &key, fingerprint, "exact per-unit cache match", domain.JobReused, cached.CacheKey))
-			continue
-		}
 		reason := "prior coverage was incomplete"
 		if cached.Coverage.Status.Accounted() {
 			reason = "cache inputs changed"
@@ -172,7 +166,11 @@ func Plan(input PlanInput) (PlanResult, error) {
 				reason = "cache baseline has no source run ID"
 			}
 		}
-		addJob(jobs, job(stage, &key, fingerprint, reason, domain.JobPending, ""))
+		planned, reused := reuseOrSchedule(key, stageForKey(key), fingerprint, reason, baseline)
+		addJob(jobs, planned)
+		if reused != nil {
+			recordReused(reusedCoverage, *reused)
+		}
 	}
 
 	result.Plan = domain.Plan{
@@ -374,9 +372,6 @@ func featureFingerprint(feature domain.Feature, files map[string]domain.File, ke
 func dependencyFootprint(featureID string, files map[string]domain.File, edges []DependencyEdge) []string {
 	parts := make([]string, 0)
 	for _, edge := range edges {
-		if edge.FromFeatureID == "" || edge.ToFeatureID == "" || strings.TrimSpace(edge.Reason) == "" || len(edge.InputPaths) == 0 {
-			continue
-		}
 		if edge.FromFeatureID != featureID && edge.ToFeatureID != featureID {
 			continue
 		}

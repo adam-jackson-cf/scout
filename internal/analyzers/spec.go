@@ -33,6 +33,23 @@ const (
 	ExitFailure  ExitSemantics = "failure"
 )
 
+// Attestation selects the strategy that proves a scanner inspected an input.
+// The runner dispatches on it; it never branches on a scanner's name.
+type Attestation string
+
+const (
+	// AttestOutput: the structured output itself carries the proof (adapter
+	// JSON processed inputs, Semgrep paths.scanned, a SARIF property).
+	AttestOutput Attestation = ""
+	// AttestGitleaksScanLog: the staged batch is proven per file from the
+	// trace log's scanned-bytes total.
+	AttestGitleaksScanLog Attestation = "gitleaks-scan-log"
+	// AttestRuffFileListing: an exact `--show-files` listing of the inputs.
+	AttestRuffFileListing Attestation = "ruff-file-listing"
+)
+
+func (s Spec) gitleaks() bool { return s.Attestation == AttestGitleaksScanLog }
+
 // Binary declares the exact executable and invocation used by an adapter.
 type Binary struct {
 	Path           string   `json:"path"`
@@ -103,6 +120,9 @@ type Spec struct {
 	Timeout     time.Duration         `json:"timeout"`
 	MaxOutput   int64                 `json:"maxOutput"`
 	Permissions Permissions           `json:"permissions"`
+	// Attestation says how the adapter proves it inspected every declared
+	// input when its structured output cannot.
+	Attestation Attestation `json:"attestation,omitempty"`
 }
 
 type InputManifest struct {
@@ -160,6 +180,18 @@ func (s Spec) Validate() error {
 	}
 	if !manifest && !paths && !absolutePaths && !stagedDir {
 		return errors.New("adapter arguments must declare input_manifest or input_paths")
+	}
+	switch s.Attestation {
+	case AttestOutput:
+	case AttestGitleaksScanLog, AttestRuffFileListing:
+		if s.Output.Format != OutputSARIF {
+			return errors.New("externally attested adapters must emit SARIF")
+		}
+	default:
+		return errors.New("unknown adapter attestation")
+	}
+	if stagedDir != (s.Attestation == AttestGitleaksScanLog) {
+		return errors.New("staged input directory and the Gitleaks attestation must agree")
 	}
 	if s.Binary.PrivateWorkDir && paths {
 		return errors.New("private scanner workdir requires absolute input paths")
@@ -252,7 +284,8 @@ func (s Spec) Validate() error {
 	return nil
 }
 
-func (s Spec) eligible(file domain.File) bool {
+// Applies reports whether file is in this adapter contract's population.
+func (s Spec) Applies(file domain.File) bool {
 	if !file.Eligible || file.Excluded {
 		return false
 	}
@@ -291,9 +324,6 @@ func (s Spec) eligible(file domain.File) bool {
 	return false
 }
 
-// Applicable reports whether file is eligible for this adapter contract.
-func (s Spec) Applicable(file domain.File) bool { return s.eligible(file) }
-
 func (s Spec) allowsRuleID(ruleID string) bool {
 	if len(s.Rules.RuleIDs) == 0 {
 		return true
@@ -321,7 +351,7 @@ func NewRegistry() *Registry {
 // invocations. Unsupported categories remain explicit gaps for contextual work.
 func BuiltinRegistry() (*Registry, error) {
 	registry := NewRegistry()
-	for _, family := range [][]Spec{architectureSpecs(), securitySpecs(), qualitySpecs(), performanceSpecs()} {
+	for _, family := range [][]Spec{securitySpecs(), qualitySpecs(), performanceSpecs()} {
 		for _, spec := range family {
 			if err := registry.Register(spec); err != nil {
 				return nil, err

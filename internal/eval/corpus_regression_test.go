@@ -131,7 +131,7 @@ func writeFixture(t *testing.T, dir, rel, content string) {
 func TestBundledRulesStillDetectCorpusMechanisms(t *testing.T) {
 	semgrep, err := exec.LookPath("semgrep")
 	if err != nil {
-		t.Skip("semgrep not on PATH (run `source .tools/activate`)")
+		t.Fatalf("semgrep is required to check the bundled rules (run `source .tools/activate`): %v", err)
 	}
 	rules := filepath.Join(repoRoot(t), "internal", "analyzers", "rules")
 	dir := t.TempDir()

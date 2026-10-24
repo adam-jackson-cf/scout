@@ -113,7 +113,7 @@ func (s *Store) exportAreas(ctx context.Context) ([]byte, error) {
 		if err := unmarshalNumbers(raw, &fields); err != nil {
 			return nil, err
 		}
-		line, err := canonicalLine(fields)
+		line, err := CanonicalLine(fields)
 		if err != nil {
 			return nil, err
 		}
@@ -125,7 +125,7 @@ func (s *Store) exportAreas(ctx context.Context) ([]byte, error) {
 // decodeAreas reads areas.jsonl of an export, validated, in area-ID order.
 func decodeAreas(files map[string][]byte) ([]areas.Area, error) {
 	var list []areas.Area
-	for number, line := range splitLines(files[ExportAreas]) {
+	for number, line := range SplitLines(files[ExportAreas]) {
 		var area areas.Area
 		if err := decode(line, &area); err != nil {
 			return nil, fmt.Errorf("areas.jsonl line %d: %w", number+1, err)

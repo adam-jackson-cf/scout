@@ -8,7 +8,7 @@ Every command accepts `--root` (repository root, default `.`), `--clawpatch` (ab
 
 | Code | Meaning | Source |
 | --- | --- | --- |
-| `0` | clean | `cmd/scout/main.go:30-35`, design §7.4 |
+| `0` | clean | `cmd/scout/main.go` exit-code constants, design §7.4 |
 | `1` | gated: an activated check found an `introduced` or `regressed` issue | same |
 | `2` | incomplete: a required lane did not finish | same |
 | `3` | unavailable: bad input, missing tool or refused operation | same |
@@ -19,7 +19,7 @@ When more than one applies, the highest code wins: 3 > 2 > 1 > 0. Under the `rep
 
 | Command | What it does | Key flags | Evidence source |
 | --- | --- | --- | --- |
-| `init` | Writes or updates `.scout/policy.yaml` and records consent (profile, Jev decisions, model-CLI lanes). Idempotent; keeps existing activations and comments. | `--yes`, `--profile report\|guardian`, `--decisions --decisions-model <id> --acknowledge-egress`, `--model-cli claude\|codex`, `--lane contextual\|clawpatch-review` | `cmd/scout/init.go` |
+| `init` | Writes or updates `.scout/policy.yaml` and records consent (profile, Jev decisions, model-CLI lanes). Idempotent; keeps existing activations and comments. | `--yes`, `--profile report\|guardian`, `--decisions --decisions-model <id> --acknowledge-egress`, `--max-per-run`, `--max-cost-usd`, `--model-cli claude\|codex`, `--lane contextual\|clawpatch-review` | `cmd/scout/init.go` |
 | `readiness` | Reports which lanes and tools can run here; `--matrix` prints the capability matrix by language (design §5.3). | `--matrix`, `--scope`, `--path`, `--family` | `cmd/scout/main.go` `readiness` |
 | `assess` | Runs a full or scoped assessment and records it in the local ledger. | `--scope repository\|subpath\|staged\|commit_range\|paths`, `--path`, `--exclude`, `--family`, `--from/--to`, `--full`, `--allow-egress`, `--artifact <lcov\|cobertura\|junit>`, `--artifact-revision`, `--artifact-producer`, `--pr-metadata <file>`, `--fetch-pr-metadata --pr-repo owner/name` | `cmd/scout/main.go` `assess` |
 | `diff` | Differential run of the checked-out `HEAD` against a base ref, with attribution against the `scout/state` baseline. | `--base <ref>` (required), `--head`, `--baseline-remote`, `--baseline-branch`, `--summary <file.md>`, `--fork`, `--no-egress`, `--override-text`, `--override-actor` | `cmd/scout/diff.go` |
@@ -38,7 +38,8 @@ When more than one applies, the highest code wins: 3 > 2 > 1 > 0. Under the `rep
 
 ## Notes
 
-- `scout` with no arguments prints a usage line that lists every command except `map` (`cmd/scout/main.go:89`).
+- `scout` with no arguments prints a usage line generated from the dispatch table in `cmd/scout/main.go`; an unknown command exits `3` and names the command.
 - `diff --head` must be the checked-out `HEAD`; check out the branch before you run it.
 - Without a reachable `scout/state` baseline, `diff` reports `comparison: recomputed` and rescans the base itself.
 - Local state lives in `.scout/`: `state.sqlite`, `artifacts/`, `clawpatch/` and `policy.yaml`. Commit only `.scout/policy.yaml`; `scout init` says so in its `next` hint. This repository's `.gitignore` excludes all of `.scout/`.
+- `assess --artifact` records each ingested artifact's provenance per snapshot, keyed by the artifact's bytes. Ingesting the same bytes again with the same kind, revision, source and revision match is a no-op. Ingesting the same bytes with a different kind, `--artifact-revision`, source or revision match is an error, and the assessment notes it instead of overwriting the stored provenance (`internal/state/ingested.go` `RecordIngestedArtifact`).

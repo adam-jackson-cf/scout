@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"sort"
+	"slices"
 	"strings"
 	"time"
 
@@ -302,6 +302,11 @@ func saveIssueTx(ctx context.Context, tx *sql.Tx, issue domain.Issue, create boo
 	if err := ensureIssueArtifactsTx(ctx, tx, issue); err != nil {
 		return err
 	}
+	if issue.State == domain.IssueResolved && issue.Verification != nil && issue.Verification.Reason == domain.ResolutionFileDeleted {
+		if err := fileDeletedTx(ctx, tx, issue.Anchor.Path, issue.Verification.RunID); err != nil {
+			return err
+		}
+	}
 	payload, err := encode(issue)
 	if err != nil {
 		return err
@@ -362,6 +367,10 @@ func saveIssueTx(ctx context.Context, tx *sql.Tx, issue domain.Issue, create boo
 			return fmt.Errorf("link issue observation: %w", err)
 		}
 	}
+	return insertIssueHistoryTx(ctx, tx, issue)
+}
+
+func insertIssueHistoryTx(ctx context.Context, tx *sql.Tx, issue domain.Issue) error {
 	for ordinal, entry := range issue.History {
 		entryPayload, err := encode(entry)
 		if err != nil {
@@ -438,22 +447,10 @@ func allowedIssueTransition(from, to domain.IssueState) bool {
 }
 
 func uniqueSorted(values []string) []string {
-	copyValues := append([]string(nil), values...)
-	sort.Strings(copyValues)
-	return slicesCompact(copyValues)
-}
-
-func slicesCompact(values []string) []string {
 	if len(values) == 0 {
 		return nil
 	}
-	result := values[:1]
-	for _, value := range values[1:] {
-		if value != result[len(result)-1] {
-			result = append(result, value)
-		}
-	}
-	return result
+	return slices.Compact(slices.Sorted(slices.Values(values)))
 }
 
 func isUniqueViolation(err error) bool {
@@ -489,13 +486,4 @@ func verificationCoverageRelevantTx(ctx context.Context, tx *sql.Tx, issue domai
 		return err
 	}
 	return errors.New("resolution verification did not successfully inspect the issue's file")
-}
-
-func contains(values []string, expected string) bool {
-	for _, value := range values {
-		if value == expected {
-			return true
-		}
-	}
-	return false
 }

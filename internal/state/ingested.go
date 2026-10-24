@@ -51,10 +51,21 @@ func (s *Store) RecordIngestedArtifact(ctx context.Context, a IngestedArtifact) 
 	if s.closed {
 		return errors.New("state store is closed")
 	}
-	_, err := s.db.ExecContext(ctx, `INSERT OR IGNORE INTO ingested_artifacts(snapshot, digest, kind, revision, producer, source, revision_match, reason, ingested_at, payload) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+	_, err := s.db.ExecContext(ctx, `INSERT INTO ingested_artifacts(snapshot, digest, kind, revision, producer, source, revision_match, reason, ingested_at, payload) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		a.Snapshot, a.Digest, a.Kind, a.Revision, a.Producer, a.Source, a.RevisionMatch, a.Reason, unixMillis(time.Now()), a.Payload)
-	if err != nil {
+	if err == nil {
+		return nil
+	}
+	if !isUniqueViolation(err) {
 		return fmt.Errorf("record ingested artifact: %w", err)
+	}
+	var stored IngestedArtifact
+	if err := s.db.QueryRowContext(ctx, `SELECT kind, revision, source, revision_match FROM ingested_artifacts WHERE snapshot = ? AND digest = ?`, a.Snapshot, a.Digest).
+		Scan(&stored.Kind, &stored.Revision, &stored.Source, &stored.RevisionMatch); err != nil {
+		return fmt.Errorf("record ingested artifact: %w", err)
+	}
+	if stored.Kind != a.Kind || stored.Revision != a.Revision || stored.Source != a.Source || stored.RevisionMatch != a.RevisionMatch {
+		return fmt.Errorf("ingested artifact %s for snapshot %s is already recorded with different provenance", a.Digest, a.Snapshot)
 	}
 	return nil
 }

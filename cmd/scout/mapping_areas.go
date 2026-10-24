@@ -34,7 +34,7 @@ func mappingUnowned(ctx context.Context, flags *commonFlags) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	features, err := clawpatch.LoadFeatures(filepath.Join(root, ".scout", "clawpatch"))
+	features, err := clawpatch.LoadFeatures(clawpatch.StateDir(root))
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}

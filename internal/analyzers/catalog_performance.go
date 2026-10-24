@@ -45,6 +45,7 @@ func performanceSpecs() []Spec {
 			},
 			// Ruff's isolated --show-files listing must match all declared
 			// inputs before its successful SARIF result can complete coverage.
+			Attestation: AttestRuffFileListing,
 			Output: Output{
 				Format:        OutputSARIF,
 				SchemaVersion: "2.1.0",

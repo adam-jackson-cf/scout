@@ -5,6 +5,8 @@ import (
 	"errors"
 	"os"
 	"os/exec"
+
+	"scout/internal/sandbox"
 )
 
 // CheckPrerequisites verifies the declared executable, isolation runtime and
@@ -14,7 +16,7 @@ func (r *Runner) CheckPrerequisites(ctx context.Context, root string) error {
 	if err != nil {
 		return errors.New("assessment root unavailable")
 	}
-	if _, err := sandboxBinary(); err != nil {
+	if err := sandbox.Available(); err != nil {
 		return errors.New("read-only scanner sandbox unavailable")
 	}
 	binary, err := exec.LookPath(r.spec.Binary.Path)
@@ -24,7 +26,7 @@ func (r *Runner) CheckPrerequisites(ctx context.Context, root string) error {
 	if err := externalScannerBinary(canonical, binary); err != nil {
 		return err
 	}
-	state, err := newScannerState()
+	state, err := sandbox.NewState("scout-analyzer-")
 	if err != nil {
 		return errors.New("scanner private state unavailable")
 	}

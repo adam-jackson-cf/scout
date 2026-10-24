@@ -9,9 +9,10 @@ import (
 	"scout/internal/importgraph"
 )
 
-const metricCycleMass = "scout.cycle_mass"
+// MetricCycleMass is the import-graph cycle metric id (formula version metricVersion).
+const MetricCycleMass = "scout.cycle_mass"
 
-// graphConfigFiles are the files import resolution reads in addition to the
+// graphConfigFile reports files import resolution reads in addition to the
 // eligible source population.
 func graphConfigFile(p string) bool {
 	base := path.Base(p)
@@ -70,18 +71,13 @@ func cycleMass(root string, in Input, eligible []domain.File, allFiles []domain.
 	if signals == nil {
 		for _, input := range inputs {
 			signals = append(signals, domain.Signal{
-				MetricID: metricCycleMass, Version: metricVersion, ScopeKind: input.Kind, ScopeAnchor: input.Anchor,
+				MetricID: MetricCycleMass, Version: metricVersion, ScopeKind: input.Kind, ScopeAnchor: input.Anchor,
 				Snapshot: in.Snapshot, PopulationDigest: input.PopulationDigest,
 				ToolDigest: importgraph.ToolDigest, ConfigDigest: importgraph.ConfigDigest,
 				Missing: domain.SignalUnmeasured, MissingReason: buildFailure, Claim: domain.ClaimDescriptive,
 			})
 		}
 	}
-	for i := range signals {
-		if signals[i].Detail == nil {
-			signals[i].Detail = map[string]any{}
-		}
-		signals[i].Detail["run_scope"] = in.RunScope
-	}
+	setRunScope(signals, in.RunScope)
 	return signals
 }

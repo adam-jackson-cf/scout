@@ -13,14 +13,30 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
-	"runtime"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
 
 	"scout/internal/domain"
+	"scout/internal/sandbox"
 )
+
+// Coverage reasons the runner writes and reads back. A batch that left an
+// input incomplete for one of the proof reasons is rescanned one input per
+// process; the retry decision keys on these constants, never on prose elsewhere.
+const (
+	reasonNotInspected    = "declared input was not completely inspected"
+	reasonOutputInvalid   = "scanner output failed structured validation"
+	reasonOutputBound     = "scanner output exceeded the declared bound"
+	reasonEvidenceInvalid = "scanner evidence failed current-source validation"
+)
+
+var proofReasons = map[string]struct{}{
+	reasonNotInspected:    {},
+	reasonOutputInvalid:   {},
+	reasonOutputBound:     {},
+	reasonEvidenceInvalid: {},
+}
 
 // Runner executes exactly one registered adapter contract.
 type Runner struct {
@@ -58,14 +74,7 @@ func (r *Runner) Run(ctx context.Context, root string, selected []domain.File) (
 	return r.retryUnproven(ctx, root, selected, result, found, err)
 }
 
-func (r *Runner) stagesInputs() bool {
-	for _, arg := range r.spec.Binary.Args {
-		if arg == "{staged_input_dir}" {
-			return true
-		}
-	}
-	return false
-}
+func (r *Runner) stagesInputs() bool { return r.spec.gitleaks() }
 
 // retryUnproven rescans, one input per process, each input the batch left
 // incomplete for a proof reason, and replaces that input's coverage row and
@@ -73,15 +82,9 @@ func (r *Runner) stagesInputs() bool {
 // setup failures are not retried. The batch is completed only when every row
 // ends inspected or not applicable.
 func (r *Runner) retryUnproven(ctx context.Context, root string, selected []domain.File, result domain.AdapterResult, found []domain.Observation, batchErr error) (domain.AdapterResult, []domain.Observation, error) {
-	retryable := map[string]struct{}{
-		"declared input was not completely inspected":       {},
-		"scanner output failed structured validation":       {},
-		"scanner output exceeded the declared bound":        {},
-		"scanner evidence failed current-source validation": {},
-	}
 	rows := make(map[string]int, len(result.Coverage))
 	for index, row := range result.Coverage {
-		if _, ok := retryable[row.Reason]; ok && row.Status == domain.CoverageIncomplete {
+		if _, ok := proofReasons[row.Reason]; ok && row.Status == domain.CoverageIncomplete {
 			rows[row.Key.FilePath] = index
 		}
 	}
@@ -171,7 +174,7 @@ func (r *Runner) runBatch(ctx context.Context, root string, selected []domain.Fi
 		return r.finish(&result, status, coverage, code, message), nil, errors.New("adapter input is incomplete")
 	}
 
-	state, err := newScannerState()
+	state, err := sandbox.NewState("scout-analyzer-")
 	if err != nil {
 		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "private scanner state could not be created")
 		return r.finish(&result, domain.AdapterFailed, coverage, "state", "private scanner state could not be created"), nil, errors.New("adapter state setup failed")
@@ -195,7 +198,7 @@ func (r *Runner) runBatch(ctx context.Context, root string, selected []domain.Fi
 		return r.finish(&result, domain.AdapterFailed, coverage, "manifest", "input manifest could not be safely created"), nil, errors.New("adapter input manifest failed")
 	}
 	defer os.Remove(manifestPath)
-	if _, err := sandboxBinary(); err != nil {
+	if err := sandbox.Available(); err != nil {
 		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "required scanner sandbox is not installed")
 		return r.finish(&result, domain.AdapterMissingTool, coverage, "missing_sandbox", "required scanner sandbox is not installed"), nil, errors.New("required scanner sandbox is not installed")
 	}
@@ -234,25 +237,25 @@ func (r *Runner) runBatch(ctx context.Context, root string, selected []domain.Fi
 		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "scanner timed out")
 		return r.finish(&result, domain.AdapterTimedOut, coverage, "timed_out", "scanner timed out"), nil, errors.New("scanner timed out")
 	}
-	if stdout.exceeded || stderr.exceeded {
-		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "scanner output exceeded the declared bound")
-		return r.finish(&result, domain.AdapterFailed, coverage, "output_limit", "scanner output exceeded the declared bound"), nil, errors.New("scanner output exceeded the declared bound")
+	if stdout.Exceeded() || stderr.Exceeded() {
+		coverage = markAcceptedIncomplete(coverage, acceptedByPath, reasonOutputBound)
+		return r.finish(&result, domain.AdapterFailed, coverage, "output_limit", reasonOutputBound), nil, errors.New(reasonOutputBound)
 	}
 
 	parsed, parseErr := parseOutput(r.spec, stdout.Bytes(), scanRoot)
 	if parseErr != nil {
-		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "scanner output failed structured validation")
-		return r.finish(&result, domain.AdapterFailed, coverage, "output_schema", "scanner output failed structured validation"), nil, errors.New("scanner output failed structured validation")
+		coverage = markAcceptedIncomplete(coverage, acceptedByPath, reasonOutputInvalid)
+		return r.finish(&result, domain.AdapterFailed, coverage, "output_schema", reasonOutputInvalid), nil, errors.New(reasonOutputInvalid)
 	}
-	if r.spec.ID == "security.gitleaks.default-credentials" {
-		attestGitleaksInput(&parsed, attested, stderr.stderr.Bytes(), stageDir)
-	}
-	if r.spec.Binary.Path == "ruff" {
+	switch r.spec.Attestation {
+	case AttestGitleaksScanLog:
+		attestGitleaksInput(&parsed, attested, stderr.Bytes(), stageDir)
+	case AttestRuffFileListing:
 		r.attestRuffInputs(ctx, root, state, bundledRules.root, binary, args, acceptedByPath, &parsed)
 	}
 	observations, rejected := r.observations(root, acceptedByPath, parsed.findings, started)
 	for path := range rejected {
-		coverage = markPathIncomplete(coverage, path, "scanner evidence failed current-source validation")
+		coverage = markPathIncomplete(coverage, path, reasonEvidenceInvalid)
 	}
 	status, code, message := r.resultStatus(runErr, parsed, acceptedByPath, rejected, inputErr)
 	coverage = completeCoverage(coverage, acceptedByPath, parsed, status)
@@ -316,7 +319,7 @@ func (r *Runner) selectInputs(root string, selected []domain.File, resultID stri
 	var total int64
 	eligibleCount, inputErr := 0, false
 	var allowlist []*regexp.Regexp
-	if r.spec.ID == "security.gitleaks.default-credentials" {
+	if r.spec.gitleaks() {
 		pack, err := bundledRule(gitleaksDefaultRule)
 		if err == nil {
 			allowlist, err = gitleaksGlobalPathAllowlist(pack)
@@ -337,7 +340,7 @@ func (r *Runner) selectInputs(root string, selected []domain.File, resultID stri
 			coverage = append(coverage, row)
 			continue
 		}
-		if !r.spec.eligible(file) {
+		if !r.spec.Applies(file) {
 			row.Status, row.Reason = domain.CoverageNotApplicable, "adapter language or extension is ineligible"
 			coverage = append(coverage, row)
 			continue
@@ -430,24 +433,6 @@ func manifests(inputs []sourceInput) []ManifestInput {
 		result = append(result, input.manifest)
 	}
 	return result
-}
-
-func newScannerState() (string, error) {
-	state, err := os.MkdirTemp("", "scout-analyzer-")
-	if err != nil {
-		return "", err
-	}
-	resolved, err := filepath.EvalSymlinks(state)
-	if err != nil {
-		os.RemoveAll(state)
-		return "", err
-	}
-	state = resolved
-	if err := os.Chmod(state, 0700); err != nil {
-		os.RemoveAll(state)
-		return "", err
-	}
-	return state, nil
 }
 
 type materializedRules struct {
@@ -562,156 +547,25 @@ func (r *Runner) verifyVersion(ctx context.Context, root, state, rulesRoot, bina
 	if r.verifiedBinary == binary {
 		return nil
 	}
-	if err := r.checkVersion(ctx, root, state, rulesRoot, binary); err != nil {
+	check, cancel := context.WithTimeout(ctx, min(r.spec.Timeout, 10*time.Second))
+	defer cancel()
+	if err := sandbox.VerifyVersion(check, r.request(root, state, rulesRoot, binary, r.spec.Binary.VersionArgs), r.spec.Binary.Version); err != nil {
 		return err
 	}
 	r.verifiedBinary = binary
 	return nil
 }
 
-func (r *Runner) checkVersion(ctx context.Context, root, state, rulesRoot, binary string) error {
-	check, cancel := context.WithTimeout(ctx, minDuration(r.spec.Timeout, 10*time.Second))
-	defer cancel()
-	stdout, stderr, err := r.runCommand(check, root, state, rulesRoot, binary, r.spec.Binary.VersionArgs)
-	if err != nil || check.Err() != nil || stdout.exceeded || stderr.exceeded {
-		return errors.New("version command failed")
-	}
-	if !containsVersion(stdout.Bytes(), r.spec.Binary.Version) {
-		return errors.New("version mismatch")
-	}
-	return nil
-}
-
-func containsVersion(output []byte, version string) bool {
-	for _, token := range strings.FieldsFunc(string(output), func(r rune) bool {
-		return !(r == '.' || r == '-' || r == '_' || r == '+' || ('0' <= r && r <= '9') || ('A' <= r && r <= 'Z') || ('a' <= r && r <= 'z'))
-	}) {
-		if token == version || strings.TrimPrefix(token, "v") == version {
-			return true
-		}
-	}
-	return false
-}
-
-func minDuration(left, right time.Duration) time.Duration {
-	if left < right {
-		return left
-	}
-	return right
-}
-
-type outputBuffers struct {
-	mu             sync.Mutex
-	limit, used    int64
-	exceeded       bool
-	stdout, stderr bytes.Buffer
-}
-type outputWriter struct {
-	owner       *outputBuffers
-	destination *bytes.Buffer
-}
-
-func (w outputWriter) Write(value []byte) (int, error) {
-	w.owner.mu.Lock()
-	defer w.owner.mu.Unlock()
-	available := w.owner.limit - w.owner.used
-	if available <= 0 {
-		w.owner.exceeded = true
-		return len(value), nil
-	}
-	count := int64(len(value))
-	if count > available {
-		count, w.owner.exceeded = available, true
-	}
-	w.destination.Write(value[:count])
-	w.owner.used += count
-	return len(value), nil
-}
-func (b *outputBuffers) Bytes() []byte {
-	b.mu.Lock()
-	defer b.mu.Unlock()
-	return append([]byte(nil), b.stdout.Bytes()...)
-}
-
-func (r *Runner) runCommand(ctx context.Context, root, state, rulesRoot, binary string, args []string) (*outputBuffers, *outputBuffers, error) {
+func (r *Runner) request(root, state, rulesRoot, binary string, args []string) sandbox.Request {
 	workDir := root
 	if r.spec.Binary.PrivateWorkDir {
 		workDir = state
 	}
-	command, err := sandboxedCommand(ctx, workDir, state, rulesRoot, binary, args)
-	if err != nil {
-		return &outputBuffers{}, &outputBuffers{}, err
-	}
-	stdout, stderr := &outputBuffers{limit: r.spec.MaxOutput}, &outputBuffers{limit: r.spec.MaxOutput}
-	command.Stdout, command.Stderr = outputWriter{stdout, &stdout.stdout}, outputWriter{stderr, &stderr.stderr}
-	command.Dir = workDir
-	command.Env = scannerEnvironment(state)
-	return stdout, stderr, command.Run()
+	return sandbox.Request{WorkDir: workDir, State: state, RulesRoot: rulesRoot, Binary: binary, Args: args, StdoutLimit: r.spec.MaxOutput, StderrLimit: r.spec.MaxOutput}
 }
 
-// scannerEnvironment deliberately does not inherit the caller environment:
-// analyzer subprocesses must not receive provider credentials or user config.
-func scannerEnvironment(state string) []string {
-	return []string{
-		"HOME=" + state,
-		"TMPDIR=" + state,
-		"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-		"SEMGREP_ENABLE_VERSION_CHECK=0",
-		"SEMGREP_SEND_METRICS=off",
-		"LC_ALL=C",
-	}
-}
-
-func sandboxBinary() (string, error) {
-	switch runtime.GOOS {
-	case "darwin":
-		return exec.LookPath("sandbox-exec")
-	case "linux":
-		return exec.LookPath("bwrap")
-	default:
-		return "", errors.New("read-only scanner isolation is unavailable")
-	}
-}
-
-func sandboxedCommand(ctx context.Context, root, state, rulesRoot, binary string, args []string) (*exec.Cmd, error) {
-	sandbox, err := sandboxBinary()
-	if err != nil {
-		return nil, errors.New("read-only scanner isolation is unavailable")
-	}
-	if runtime.GOOS == "darwin" {
-		commandArgs := append([]string{"-p", darwinSandboxProfile(state, rulesRoot), binary}, args...)
-		return exec.CommandContext(ctx, sandbox, commandArgs...), nil
-	}
-	commandArgs := []string{
-		"--die-with-parent",
-		"--unshare-net",
-		"--ro-bind", "/", "/",
-		"--bind", state, state,
-	}
-	if rulesRoot != "" {
-		commandArgs = append(commandArgs, "--ro-bind", rulesRoot, rulesRoot)
-	}
-	commandArgs = append(commandArgs,
-		"--unshare-pid",
-		"--proc", "/proc",
-		"--dev", "/dev",
-		"--chdir", root,
-		"--",
-		binary,
-	)
-	commandArgs = append(commandArgs, args...)
-	return exec.CommandContext(ctx, sandbox, commandArgs...), nil
-}
-
-func darwinSandboxProfile(state, rulesRoot string) string {
-	profile := "(version 1)\n" +
-		"(allow default)\n" +
-		"(deny network*)\n" +
-		"(deny file-write* (require-not (subpath " + strconv.Quote(state) + ")))\n"
-	if rulesRoot != "" {
-		profile += "(deny file-write* (subpath " + strconv.Quote(rulesRoot) + "))\n"
-	}
-	return profile
+func (r *Runner) runCommand(ctx context.Context, root, state, rulesRoot, binary string, args []string) (*sandbox.Capture, *sandbox.Capture, error) {
+	return sandbox.Run(ctx, r.request(root, state, rulesRoot, binary, args))
 }
 
 func (r *Runner) observations(root string, inputs map[string]sourceInput, findings []parsedFinding, observed time.Time) ([]domain.Observation, map[string]struct{}) {
@@ -743,13 +597,15 @@ func (r *Runner) observations(root string, inputs map[string]sourceInput, findin
 			continue
 		}
 		location := domain.SourceRange{Path: finding.path, StartLine: finding.startLine, EndLine: finding.endLine, StartByte: finding.startByte, EndByte: finding.endByte}
-		sourceFindingID := ""
+		sourceFindingID := finding.id
 		if r.spec.Output.SecretDiagnostics {
 			// Identity of a secret is a digest of its raw value, computed in memory
 			// here and never stored or logged raw, so a moved secret stays one issue.
-			sourceFindingID = secretDigest(root, finding)
-		} else {
-			sourceFindingID = finding.id
+			var digestErr error
+			if sourceFindingID, digestErr = secretDigest(root, finding); digestErr != nil {
+				rejected[finding.path] = struct{}{}
+				continue
+			}
 		}
 		observation := domain.Observation{ObservationID: digestID(r.runID, r.spec.ID, finding.id, finding.ruleID, finding.path, fmt.Sprint(finding.startLine)), RunID: r.runID, Source: r.spec.ID, SourceFindingID: sourceFindingID, Family: r.spec.Family, OriginalCategory: r.spec.Category, RuleID: finding.ruleID, RuleVersion: r.spec.Rules.Version, SourceSeverity: severity, EffectiveSeverity: severity, Confidence: confidence, Mechanism: mechanism, Uncertainty: uncertainty, Evidence: []domain.Evidence{{Location: location, RedactedQuote: quote}}, Validated: true, ObservedAt: observed}
 		if err := observation.Validate(); err != nil {
@@ -823,7 +679,7 @@ func completeCoverage(coverage []domain.Coverage, inputs map[string]sourceInput,
 			row.InspectedRanges = []domain.SourceRange{{Path: input.manifest.Path, StartLine: 1, EndLine: input.manifest.Lines}}
 			continue
 		}
-		row.Status, row.Reason = domain.CoverageIncomplete, "declared input was not completely inspected"
+		row.Status, row.Reason = domain.CoverageIncomplete, reasonNotInspected
 	}
 	return coverage
 }

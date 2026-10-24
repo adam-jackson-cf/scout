@@ -12,6 +12,7 @@ import (
 
 	"scout/internal/areas"
 	"scout/internal/clawpatch"
+	"scout/internal/domain"
 	"scout/internal/engine"
 	"scout/internal/state"
 )
@@ -56,7 +57,7 @@ func mapCmd(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	run := engine.RefreshRun{Event: engine.RefreshEvent(event), DefaultBranch: defaultBranch, Force: force}
+	run := engine.RefreshRun{Event: domain.LaneTrigger(event), DefaultBranch: defaultBranch, Force: force}
 	head, err := exec.CommandContext(ctx, "git", "-C", root, "rev-parse", "HEAD").Output()
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, fmt.Errorf("resolve HEAD for the area snapshot: %w", err))

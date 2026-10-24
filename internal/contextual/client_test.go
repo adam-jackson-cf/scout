@@ -17,14 +17,14 @@ const testSecret = "ghp_abcdefghijklmnopqrstuvwxyz1234567890"
 
 func flaggedAnswer(t *testing.T) string {
 	t.Helper()
-	return answerFor(t, providerResponse{
+	return answerFor(t, modelResponse{
 		Status:                 "flagged",
 		Reason:                 "token=" + testSecret,
 		DeterministicBlindSpot: "deterministic review did not inspect token=" + testSecret,
-		Inspected:              []providerCitation{{Path: "main.go", StartLine: 1, EndLine: 1, Quote: testSecret}},
-		Findings: []providerFinding{{
+		Inspected:              []modelCitation{{Path: "main.go", StartLine: 1, EndLine: 1, Quote: testSecret}},
+		Findings: []modelFinding{{
 			Mechanism:    "credential is embedded in source",
-			Evidence:     providerCitation{Path: "main.go", StartLine: 1, EndLine: 1, Quote: testSecret},
+			Evidence:     modelCitation{Path: "main.go", StartLine: 1, EndLine: 1, Quote: testSecret},
 			Confidence:   "high",
 			Uncertainty:  "the credential's current validity is unknown",
 			Reproduction: "inspect token=" + testSecret,
@@ -193,10 +193,8 @@ func TestNoModelCLIIsSkippedWithoutFailure(t *testing.T) {
 
 func TestReviewUsesFirstAvailableCLIAndHonoursPreference(t *testing.T) {
 	dir := t.TempDir()
-	for _, name := range []string{"codex"} {
-		if err := os.WriteFile(filepath.Join(dir, name), []byte("#!/bin/sh\n"), 0o700); err != nil {
-			t.Fatal(err)
-		}
+	if err := os.WriteFile(filepath.Join(dir, "codex"), []byte("#!/bin/sh\n"), 0o700); err != nil {
+		t.Fatal(err)
 	}
 	t.Setenv("PATH", dir)
 	if name, _, err := modelcli.Detect(""); err != nil || name != modelcli.Codex {
@@ -216,10 +214,10 @@ func TestReviewMarksSourceDriftIncomplete(t *testing.T) {
 	if err := os.WriteFile(path, []byte("const enabled = true\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	answer := answerFor(t, providerResponse{
+	answer := answerFor(t, modelResponse{
 		Status:                 "covered",
 		DeterministicBlindSpot: "none_observed",
-		Inspected:              []providerCitation{{Path: "main.go", StartLine: 1, EndLine: 1, Quote: "const enabled = true"}},
+		Inspected:              []modelCitation{{Path: "main.go", StartLine: 1, EndLine: 1, Quote: "const enabled = true"}},
 	})
 	response := writeResponse(t, claudeEnvelope(t, answer, "claude-x"))
 	installFakeCLI(t, "claude", "echo 'const enabled = false' > '"+path+"'\ncat '"+response+"'")
@@ -283,30 +281,30 @@ func assertNoCredentialEnv(t *testing.T, env string) {
 	}
 }
 
-func TestValidateProviderResponseRejectsUnverifiedQuoteAndMissingFindingEvidence(t *testing.T) {
+func TestValidateModelResponseRejectsUnverifiedQuoteAndMissingFindingEvidence(t *testing.T) {
 	request := testReviewRequest(t.TempDir())
 	manifest := Manifest{Inspected: []ManifestEntry{{Range: domain.SourceRange{Path: "main.go", StartLine: 1, EndLine: 1, StartByte: 1, EndByte: 12}, Reason: "owned: service", Bytes: 12, SourceDigest: sourceDigest([]byte("const ok = 1"))}}}
 	sources := []promptSource{{promptRange: promptRange{Path: "main.go", StartLine: 1, EndLine: 1, StartByte: 1, EndByte: 12}, Reason: "owned: service", Text: "const ok = 1"}}
 	raw := []byte(`{"status":"flagged","deterministicBlindSpot":"none_observed","inspected":[{"path":"main.go","startLine":1,"endLine":1,"quote":"const ok = 1"}],"findings":[{"mechanism":"unsafe","evidence":{"path":"main.go","startLine":1,"endLine":1,"quote":"invented"},"confidence":"high","uncertainty":"external state unknown","reproduction":"inspect source","severity":{"impact":2,"likelihood":2}}]}`)
-	result, err := validateProviderResponse(request, raw, manifest, sources, "model-1", "prompt-1")
+	result, err := validateModelResponse(request, raw, manifest, sources, "model-1", "prompt-1")
 	if err == nil {
-		t.Fatal("validateProviderResponse() error = nil, want invalid quote")
+		t.Fatal("validateModelResponse() error = nil, want invalid quote")
 	}
 	if len(result.Observations) != 0 {
 		t.Fatalf("invalid evidence produced observations: %#v", result.Observations)
 	}
 }
 
-func TestValidateProviderResponseRejectsMissingBlindSpotOrReproduction(t *testing.T) {
+func TestValidateModelResponseRejectsMissingBlindSpotOrReproduction(t *testing.T) {
 	request := testReviewRequest(t.TempDir())
 	manifest := Manifest{Inspected: []ManifestEntry{{Range: domain.SourceRange{Path: "main.go", StartLine: 1, EndLine: 1, StartByte: 1, EndByte: 12}, Reason: "owned: service", Bytes: 12, SourceDigest: sourceDigest([]byte("const ok = 1"))}}}
 	sources := []promptSource{{promptRange: promptRange{Path: "main.go", StartLine: 1, EndLine: 1, StartByte: 1, EndByte: 12}, Reason: "owned: service", Text: "const ok = 1"}}
 	missingBlindSpot := []byte(`{"status":"covered","inspected":[{"path":"main.go","startLine":1,"endLine":1,"quote":"const ok = 1"}]}`)
-	if _, err := validateProviderResponse(request, missingBlindSpot, manifest, sources, "model-1", "prompt-1"); err == nil {
+	if _, err := validateModelResponse(request, missingBlindSpot, manifest, sources, "model-1", "prompt-1"); err == nil {
 		t.Fatal("response without blind-spot judgment was accepted")
 	}
 	missingReproduction := []byte(`{"status":"flagged","deterministicBlindSpot":"none_observed","inspected":[{"path":"main.go","startLine":1,"endLine":1,"quote":"const ok = 1"}],"findings":[{"mechanism":"unsafe","evidence":{"path":"main.go","startLine":1,"endLine":1,"quote":"const ok = 1"},"confidence":"high","uncertainty":"external state unknown","severity":{"impact":2,"likelihood":2}}]}`)
-	if _, err := validateProviderResponse(request, missingReproduction, manifest, sources, "model-1", "prompt-1"); err == nil {
+	if _, err := validateModelResponse(request, missingReproduction, manifest, sources, "model-1", "prompt-1"); err == nil {
 		t.Fatal("finding without reproduction route was accepted")
 	}
 }
@@ -361,7 +359,7 @@ func setCredentialEnv(t *testing.T) {
 	}
 }
 
-func answerFor(t *testing.T, response providerResponse) string {
+func answerFor(t *testing.T, response modelResponse) string {
 	t.Helper()
 	raw, err := json.Marshal(response)
 	if err != nil {

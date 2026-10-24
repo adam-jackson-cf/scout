@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"slices"
 	"sort"
 	"time"
 
@@ -238,10 +239,14 @@ func (s *Store) FinishRun(ctx context.Context, run domain.Run, files []domain.Fi
 			return errors.New("final run does not match persisted run identity")
 		}
 		coverage := stored.Coverage
-		if !sameCoverage(coverage, run.Coverage) {
+		if same, err := sameRows(coverage, run.Coverage); err != nil {
+			return err
+		} else if !same {
 			return errors.New("final run coverage does not match atomically committed jobs")
 		}
-		if !sameFailures(stored.Failures, run.Failures) {
+		if same, err := sameRows(stored.Failures, run.Failures); err != nil {
+			return err
+		} else if !same {
 			return errors.New("final run failures do not match atomically committed jobs")
 		}
 		if err := s.ensureRepositoryIdentity(ctx, tx, run.Snapshot.RepositoryID); err != nil {
@@ -547,66 +552,31 @@ func migrateV4(ctx context.Context, tx *sql.Tx) error {
 	return nil
 }
 
-func sameCoverage(left, right []domain.Coverage) bool {
+// sameRows reports whether left and right hold the same encoded rows,
+// regardless of order. An unencodable row is an error, not a mismatch.
+func sameRows[T any](left, right []T) (bool, error) {
 	if len(left) != len(right) {
-		return false
+		return false, nil
 	}
-	encoded := func(rows []domain.Coverage) ([]string, bool) {
+	encoded := func(rows []T) ([]string, error) {
 		values := make([]string, 0, len(rows))
 		for _, row := range rows {
 			payload, err := encode(row)
 			if err != nil {
-				return nil, false
+				return nil, err
 			}
 			values = append(values, string(payload))
 		}
 		sort.Strings(values)
-		return values, true
+		return values, nil
 	}
-	first, ok := encoded(left)
-	if !ok {
-		return false
+	first, err := encoded(left)
+	if err != nil {
+		return false, err
 	}
-	second, ok := encoded(right)
-	if !ok {
-		return false
+	second, err := encoded(right)
+	if err != nil {
+		return false, err
 	}
-	for index := range first {
-		if first[index] != second[index] {
-			return false
-		}
-	}
-	return true
-}
-
-func sameFailures(left, right []domain.Failure) bool {
-	if len(left) != len(right) {
-		return false
-	}
-	encoded := func(rows []domain.Failure) ([]string, bool) {
-		values := make([]string, 0, len(rows))
-		for _, row := range rows {
-			payload, err := encode(row)
-			if err != nil {
-				return nil, false
-			}
-			values = append(values, string(payload))
-		}
-		sort.Strings(values)
-		return values, true
-	}
-	first, ok := encoded(left)
-	if !ok {
-		return false
-	}
-	second, ok := encoded(right)
-	if !ok {
-		return false
-	}
-	for index := range first {
-		if first[index] != second[index] {
-			return false
-		}
-	}
-	return true
+	return slices.Equal(first, second), nil
 }

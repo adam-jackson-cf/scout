@@ -70,14 +70,18 @@ func buildGo(root string, files []string, es *edgeSet) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
-		af, err := parser.ParseFile(fset, f, src, parser.ImportsOnly)
-		if err != nil && af == nil {
-			continue
-		}
 		from := pkgDir(f)
+		af, err := parser.ParseFile(fset, f, src, parser.ImportsOnly)
+		if err != nil {
+			es.skip(from, "go parse error in "+f+": "+err.Error())
+			if af == nil {
+				continue
+			}
+		}
 		for _, imp := range af.Imports {
 			ip, err := strconv.Unquote(imp.Path.Value)
 			if err != nil {
+				es.skip(from, "go import path in "+f+" is not a valid string literal: "+imp.Path.Value)
 				continue
 			}
 			if to, ok := byImport[ip]; ok {

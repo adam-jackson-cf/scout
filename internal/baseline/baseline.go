@@ -17,6 +17,8 @@ import (
 	"strings"
 	"sync/atomic"
 	"time"
+
+	"scout/internal/state"
 )
 
 // DefaultBranch is the branch that carries the exported ledger.
@@ -25,7 +27,7 @@ const DefaultBranch = "scout/state"
 // DefaultAttempts bounds the compare-and-swap retry loop.
 const DefaultAttempts = 8
 
-const stateDir = "state/v1/"
+const stateDir = state.ExportDir + "/"
 
 var (
 	// ErrUntrusted means the caller did not assert a trusted run. PR and fork runs
@@ -238,7 +240,7 @@ func fetchTip(ctx context.Context, g git, opts Options) (string, Tree, error) {
 }
 
 func readTree(ctx context.Context, g git, commit string) (Tree, error) {
-	listing, err := g.raw(ctx, nil, nil, "ls-tree", "-r", "-z", commit, "--", "state/v1")
+	listing, err := g.raw(ctx, nil, nil, "ls-tree", "-r", "-z", commit, "--", state.ExportDir)
 	if err != nil {
 		return nil, err
 	}

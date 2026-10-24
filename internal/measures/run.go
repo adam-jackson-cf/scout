@@ -28,8 +28,8 @@ type Config struct {
 // Result is the outcome of one measurement run.
 type Result struct {
 	Signals []domain.Signal
-	// Eligible is the measured population (production source, NLOC ≥ 10).
-	Eligible []domain.File
+	// Measured is the measured population (production source, NLOC ≥ 10).
+	Measured []domain.File
 	// Lizard holds every candidate lizard measured, for consumers (hotspot
 	// needs per-file CC and NLOC).
 	Lizard map[string]FileMeasure
@@ -55,14 +55,16 @@ func (m FileMeasure) FileCC() int {
 // `unmeasured` with the reason.
 func Run(ctx context.Context, cfg Config) Result {
 	var result Result
-	root := cfg.Root
-	if resolved, err := filepath.EvalSymlinks(root); err == nil {
-		root = resolved
-	}
 	candidates := Candidates(cfg.Files)
 	result.Candidates = len(candidates)
 	facts := Facts{}
-	if len(candidates) > 0 {
+	// The sandbox profile and path checks need the resolved root; an
+	// unresolvable root leaves every measure unmeasured with that reason.
+	root, rootErr := filepath.EvalSymlinks(cfg.Root)
+	switch {
+	case rootErr != nil:
+		facts.LizardErr = "repository root is unavailable: " + rootErr.Error()
+	case len(candidates) > 0:
 		paths := make([]string, len(candidates))
 		for i, file := range candidates {
 			paths[i] = file.Path
@@ -75,14 +77,14 @@ func Run(ctx context.Context, cfg Config) Result {
 			facts.Lizard = lizard
 			result.Lizard = lizard
 		}
-	} else {
+	default:
 		facts.Lizard = map[string]FileMeasure{}
 	}
 	if facts.LizardErr == "" {
-		result.Eligible = Eligible(candidates, facts.Lizard)
-		if len(result.Eligible) > 0 {
-			paths := make([]string, len(result.Eligible))
-			for i, file := range result.Eligible {
+		result.Measured = MeasuredPopulation(candidates, facts.Lizard)
+		if len(result.Measured) > 0 {
+			paths := make([]string, len(result.Measured))
+			for i, file := range result.Measured {
 				paths[i] = file.Path
 			}
 			sort.Strings(paths)
@@ -106,7 +108,7 @@ func Run(ctx context.Context, cfg Config) Result {
 	if facts.LizardErr != "" {
 		graphFailure = "the eligible population is undefined because lizard did not run: " + facts.LizardErr
 	}
-	result.Signals = append(result.Signals, cycleMass(root, input, result.Eligible, cfg.Files, graphFailure)...)
+	result.Signals = append(result.Signals, cycleMass(root, input, result.Measured, cfg.Files, graphFailure)...)
 	return result
 }
 

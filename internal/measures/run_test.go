@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"scout/internal/analyzers"
 	"scout/internal/domain"
+	"scout/internal/sandbox"
 )
 
 func requireScanners(t *testing.T) {
@@ -19,7 +19,7 @@ func requireScanners(t *testing.T) {
 			t.Skipf("%s is not on PATH (source .tools/activate)", binary)
 		}
 	}
-	if err := analyzers.SandboxAvailable(); err != nil {
+	if err := sandbox.Available(); err != nil {
 		t.Skip("scanner sandbox is not available")
 	}
 }
@@ -65,8 +65,8 @@ func TestRunMeasuresRealScannersOnTemporaryRepository(t *testing.T) {
 	if result.LizardErr != "" || result.JscpdErr != "" {
 		t.Fatalf("scanner errors: lizard=%q jscpd=%q", result.LizardErr, result.JscpdErr)
 	}
-	if len(result.Eligible) != 2 {
-		t.Fatalf("eligible = %v, want a.py and b.py", result.Eligible)
+	if len(result.Measured) != 2 {
+		t.Fatalf("measured = %v, want a.py and b.py", result.Measured)
 	}
 	signals := result.Signals
 	cc := find(t, signals, MetricCC, "pkg/one")
@@ -133,7 +133,7 @@ func TestRunRecordsCycleMassPerScope(t *testing.T) {
 		t.Fatal(err)
 	}
 	result := Run(t.Context(), Config{Root: root, Snapshot: domain.Snapshot{Revision: "rev", WorktreeDigest: "w"}, RunScope: "repository", Files: files})
-	cycle := find(t, result.Signals, metricCycleMass, "pkg/core")
+	cycle := find(t, result.Signals, MetricCycleMass, "pkg/core")
 	if err := cycle.Validate(); err != nil {
 		t.Fatal(err)
 	}

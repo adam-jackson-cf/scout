@@ -25,7 +25,11 @@ func writeTree(t *testing.T, files map[string]string) string {
 
 func build(t *testing.T, files map[string]string) *Graph {
 	t.Helper()
-	g, err := Build(Options{Root: writeTree(t, files)})
+	names := make([]string, 0, len(files))
+	for p := range files {
+		names = append(names, p)
+	}
+	g, err := Build(Options{Root: writeTree(t, files), Files: names})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -169,5 +173,47 @@ func TestDeterministicOutput(t *testing.T) {
 	}
 	if r := CycleMass(a, nil); r.CycleEdges != 6 || r.InternalEdges != 6 {
 		t.Fatalf("%+v", r)
+	}
+}
+
+func TestBuildRequiresFiles(t *testing.T) {
+	if _, err := Build(Options{Root: t.TempDir()}); err == nil {
+		t.Fatal("expected error when Files is nil")
+	}
+	if g, err := Build(Options{Root: t.TempDir(), Files: []string{}}); err != nil || len(g.Nodes) != 0 {
+		t.Fatalf("empty population is valid: %v %+v", err, g)
+	}
+}
+
+func TestSkippedInputsAreRecordedAndSurfaced(t *testing.T) {
+	g := build(t, map[string]string{
+		"go.mod":            "module m\n",
+		"a/a.go":            "package a\nimport _ \"m/b\"\n",
+		"b/b.go":            "package b\nimport (\n",
+		"web/tsconfig.json": "{not json",
+		"web/src/x.ts":      "import { y } from './y';\n",
+		"web/src/y.ts":      "export const y = 1;\n",
+		"ok/tsconfig.json":  `{"extends": 5}`,
+		"ok/z.ts":           "export const z = 1;\n",
+		"p.py":              "import .rel\n",
+	})
+	reasons := map[string]string{}
+	for _, k := range g.Skipped {
+		reasons[k.From] = k.Reason
+	}
+	for _, from := range []string{"b", "web/src/x.ts", "web/src/y.ts", "ok/z.ts"} {
+		if reasons[from] == "" {
+			t.Fatalf("missing skip for %s: %+v", from, g.Skipped)
+		}
+	}
+	if len(g.Unresolved) != 1 || g.Unresolved[0] != (Unresolved{"p.py", ".rel"}) {
+		t.Fatalf("unresolved: %+v", g.Unresolved)
+	}
+	sigs := Signals(g, []ScopeInput{{Kind: "repository"}}, "s")
+	if sigs[0].Detail["skipped_inputs"] != len(g.Skipped) || len(g.Skipped) < 4 {
+		t.Fatalf("detail %+v", sigs[0].Detail)
+	}
+	if CycleMass(g, nil).Skipped != len(g.Skipped) {
+		t.Fatal("CycleMass must carry the skipped count")
 	}
 }

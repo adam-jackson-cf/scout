@@ -69,8 +69,6 @@ const (
 	SignalScopeFeature    = "feature"
 	SignalScopeDirectory  = "directory"
 	SignalScopeRepository = "repository"
-	SignalScopeFile       = "file"
-	SignalScopeFunction   = "function"
 )
 
 // Signal is one descriptive measurement at a scope for a snapshot and, for

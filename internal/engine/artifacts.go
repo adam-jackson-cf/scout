@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"scout/internal/artifacts"
 	"scout/internal/domain"
@@ -22,24 +23,29 @@ func ingestArtifacts(ctx context.Context, store *state.Store, root string, snaps
 		return nil, ""
 	}
 	result := artifacts.Load(root, specs, snapshot)
-	note := ""
+	var notes []string
 	key := measures.SnapshotKey(snapshot)
 	for _, artifact := range result.Artifacts {
 		var payload []byte
 		if artifact.Tests != nil {
-			payload, _ = json.Marshal(artifact.Tests)
+			var err error
+			if payload, err = json.Marshal(artifact.Tests); err != nil {
+				notes = append(notes, fmt.Sprintf("artifacts: encode %s: %v", artifact.Source, err))
+				continue
+			}
 		}
 		if err := store.RecordIngestedArtifact(ctx, state.IngestedArtifact{
 			Snapshot: key, Digest: artifact.Digest, Kind: artifact.Kind, Revision: artifact.Revision,
 			Producer: artifact.Producer, Source: artifact.Source, RevisionMatch: artifact.RevisionMatch,
 			Reason: artifact.Reason, Payload: payload,
 		}); err != nil {
-			note = fmt.Sprintf("artifacts: record %s: %v", artifact.Source, err)
+			notes = append(notes, fmt.Sprintf("artifacts: record %s: %v", artifact.Source, err))
 		}
 	}
-	if note == "" && len(result.Failures) > 0 {
-		note = fmt.Sprintf("artifacts: %s: %v", result.Failures[0].Source, result.Failures[0].Err)
+	if len(notes) == 0 && len(result.Failures) > 0 {
+		notes = append(notes, fmt.Sprintf("artifacts: %s: %v", result.Failures[0].Source, result.Failures[0].Err))
 	}
+	note := strings.Join(notes, "; ")
 	merged := result.MatchedCoverage()
 	return &measures.Coverage{Lines: merged.Lines, Digest: merged.Digest, Unusable: merged.Reason}, note
 }

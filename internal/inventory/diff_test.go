@@ -126,3 +126,22 @@ func hasGap(gaps []MappingGap, path, featureID string) bool {
 	}
 	return false
 }
+
+func TestInvalidDependencyEdgeIsRejectedByDiffAndPlan(t *testing.T) {
+	bad := []DependencyEdge{{FromFeatureID: "a", ToFeatureID: "b", Reason: "shared", InputPaths: nil}}
+	if _, err := Diff(DiffInput{Dependencies: bad}); err == nil {
+		t.Fatal("Diff must reject a dependency edge without input paths")
+	}
+	snapshot := domain.Snapshot{RepositoryID: "repository", WorktreeDigest: "worktree", IgnoreRulesDigest: "ignore", ExclusionsDigest: "exclude"}
+	_, err := Plan(PlanInput{RunID: "run", ScopeDigest: "scope", Snapshot: snapshot, Scope: domain.Scope{Kind: domain.ScopeRepository}, Dependencies: bad})
+	if err == nil {
+		t.Fatal("Plan must reject a dependency edge without input paths")
+	}
+}
+
+func TestPlanRequiresScopeDigest(t *testing.T) {
+	snapshot := domain.Snapshot{RepositoryID: "repository", WorktreeDigest: "worktree", IgnoreRulesDigest: "ignore", ExclusionsDigest: "exclude"}
+	if _, err := Plan(PlanInput{RunID: "run", Snapshot: snapshot, Scope: domain.Scope{Kind: domain.ScopeRepository}}); err == nil {
+		t.Fatal("Plan must not default an empty scope digest")
+	}
+}

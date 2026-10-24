@@ -38,10 +38,9 @@ const (
 	// ExportSchema identifies the export format in manifest.json.
 	ExportSchema = "scout.state/v1"
 
-	// WouldBlockPresent and WouldBlockUnavailable are the manifest values describing
-	// whether would_block.jsonl carries the gate's shadow table.
-	WouldBlockPresent     = "present"
-	WouldBlockUnavailable = "unavailable"
+	// WouldBlockPresent is the manifest value declaring that would_block.jsonl
+	// carries the gate's shadow table.
+	WouldBlockPresent = "present"
 
 	metadataCoverageSummary = "coverage_summary"
 	metadataExportBase      = "export_base"
@@ -82,11 +81,11 @@ func (s *Store) Export(ctx context.Context) (map[string][]byte, error) {
 				delete(row, key)
 			}
 		}
-		issueLine, err := canonicalLine(row)
+		issueLine, err := CanonicalLine(row)
 		if err != nil {
 			return nil, err
 		}
-		dispositionLine, err := canonicalLine(disposition)
+		dispositionLine, err := CanonicalLine(disposition)
 		if err != nil {
 			return nil, err
 		}
@@ -160,7 +159,7 @@ func (s *Store) exportSignals(ctx context.Context) (map[string][]byte, error) {
 		if err := unmarshalNumbers(raw, &fields); err != nil {
 			return nil, err
 		}
-		line, err := canonicalLine(fields)
+		line, err := CanonicalLine(fields)
 		if err != nil {
 			return nil, err
 		}
@@ -192,7 +191,7 @@ func (s *Store) exportWouldBlock(ctx context.Context) ([][]byte, string, error) 
 		if err := unmarshalNumbers(raw, &fields); err != nil {
 			return nil, "", err
 		}
-		line, err := canonicalLine(fields)
+		line, err := CanonicalLine(fields)
 		if err != nil {
 			return nil, "", err
 		}
@@ -252,7 +251,7 @@ func RenderManifest(meta ManifestMeta, files map[string][]byte) []byte {
 	if meta.Uninspected != nil {
 		manifest["uninspected"] = meta.Uninspected
 	}
-	line, err := canonicalLine(manifest)
+	line, err := CanonicalLine(manifest)
 	if err != nil { // map of plain values: cannot fail
 		panic(err)
 	}
@@ -390,11 +389,15 @@ func (s *Store) coverageSummary(ctx context.Context) ([]byte, error) {
 	}
 	units := []unit{}
 	err := s.withRead(ctx, func(db *sql.DB) error {
+		statuses := domain.AccountedStatuses()
+		args := []any{domain.RunComplete}
+		for _, status := range statuses {
+			args = append(args, status)
+		}
 		rows, err := db.QueryContext(ctx, `SELECT c.coverage_key, c.status, c.run_id
 			FROM coverage c JOIN runs r ON r.run_id = c.run_id
-			WHERE r.state = ? AND r.finalized = 1 AND c.status IN (?, ?, ?, ?, ?)
-			ORDER BY c.coverage_key, r.finished_at DESC, r.started_at DESC, c.run_id`, domain.RunComplete,
-			domain.CoverageInspected, domain.CoverageReused, domain.CoverageNotApplicable, domain.CoverageCovered, domain.CoverageFlagged)
+			WHERE r.state = ? AND r.finalized = 1 AND c.status IN (`+strings.TrimSuffix(strings.Repeat("?,", len(statuses)), ",")+`)
+			ORDER BY c.coverage_key, r.finished_at DESC, r.started_at DESC, c.run_id`, args...)
 		if err != nil {
 			return fmt.Errorf("query coverage summary: %w", err)
 		}
@@ -424,7 +427,7 @@ func (s *Store) coverageSummary(ctx context.Context) ([]byte, error) {
 			return []byte(imported), nil
 		}
 	}
-	return canonicalLine(map[string]any{"schema": "scout.coverage-summary/v1", "units": units})
+	return CanonicalLine(map[string]any{"schema": "scout.coverage-summary/v1", "units": units})
 }
 
 func (s *Store) metadataValue(ctx context.Context, key string) (string, error) {
@@ -462,7 +465,7 @@ func (s *Store) Import(ctx context.Context, files map[string][]byte) error {
 		return err
 	}
 	var blocks []domain.WouldBlock
-	for number, line := range splitLines(files[ExportWouldBlock]) {
+	for number, line := range SplitLines(files[ExportWouldBlock]) {
 		var row domain.WouldBlock
 		if err := decode(line, &row); err != nil {
 			return fmt.Errorf("would_block.jsonl line %d: %w", number+1, err)
@@ -495,7 +498,7 @@ func decodeSignals(files map[string][]byte) ([]domain.Signal, error) {
 	sort.Strings(paths)
 	var signals []domain.Signal
 	for _, path := range paths {
-		for number, line := range splitLines(files[path]) {
+		for number, line := range SplitLines(files[path]) {
 			var signal domain.Signal
 			if err := decode(line, &signal); err != nil {
 				return nil, fmt.Errorf("%s line %d: %w", path, number+1, err)
@@ -517,7 +520,7 @@ func DecodeIssues(files map[string][]byte) ([]domain.Issue, error) {
 		return nil, err
 	}
 	dispositions := map[string]map[string]any{}
-	for number, line := range splitLines(files[ExportDispositions]) {
+	for number, line := range SplitLines(files[ExportDispositions]) {
 		row := map[string]any{}
 		if err := unmarshalNumbers(line, &row); err != nil {
 			return nil, fmt.Errorf("dispositions.jsonl line %d: %w", number+1, err)
@@ -530,7 +533,7 @@ func DecodeIssues(files map[string][]byte) ([]domain.Issue, error) {
 	}
 	var issues []domain.Issue
 	seen := map[string]bool{}
-	for number, line := range splitLines(files[ExportIssues]) {
+	for number, line := range SplitLines(files[ExportIssues]) {
 		row := map[string]any{}
 		if err := unmarshalNumbers(line, &row); err != nil {
 			return nil, fmt.Errorf("issues.jsonl line %d: %w", number+1, err)
@@ -585,14 +588,8 @@ func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []doma
 			if _, err := tx.ExecContext(ctx, `INSERT INTO issues(issue_id, state, updated_at, payload) VALUES (?, ?, ?, ?)`, issue.IssueID, issue.State, unixMillis(issue.UpdatedAt), payload); err != nil {
 				return fmt.Errorf("import issue %q: %w", issue.IssueID, err)
 			}
-			for ordinal, entry := range issue.History {
-				entryPayload, err := encode(entry)
-				if err != nil {
-					return err
-				}
-				if _, err := tx.ExecContext(ctx, `INSERT INTO issue_history(issue_id, ordinal, payload) VALUES (?, ?, ?)`, issue.IssueID, ordinal, entryPayload); err != nil {
-					return fmt.Errorf("import issue history: %w", err)
-				}
+			if err := insertIssueHistoryTx(ctx, tx, issue); err != nil {
+				return err
 			}
 		}
 		for _, row := range blocks {
@@ -735,9 +732,9 @@ func unmarshalNumbers(raw []byte, target any) error {
 	return nil
 }
 
-// canonicalLine renders value as compact JSON with sorted keys at every level
+// CanonicalLine renders value as compact JSON with sorted keys at every level
 // (map keys marshal sorted), no HTML escaping, and one trailing LF.
-func canonicalLine(value any) ([]byte, error) {
+func CanonicalLine(value any) ([]byte, error) {
 	var buffer bytes.Buffer
 	encoder := json.NewEncoder(&buffer)
 	encoder.SetEscapeHTML(false)
@@ -751,7 +748,8 @@ func joinLines(lines [][]byte) []byte {
 	return bytes.Join(lines, nil)
 }
 
-func splitLines(data []byte) [][]byte {
+// SplitLines splits export data into its non-blank lines.
+func SplitLines(data []byte) [][]byte {
 	var lines [][]byte
 	for _, line := range bytes.Split(data, []byte{'\n'}) {
 		if len(bytes.TrimSpace(line)) != 0 {
@@ -760,8 +758,3 @@ func splitLines(data []byte) [][]byte {
 	}
 	return lines
 }
-
-// SplitLines and CanonicalLine let the baseline merge operate on export records
-// with the same line discipline as Export.
-func SplitLines(data []byte) [][]byte         { return splitLines(data) }
-func CanonicalLine(value any) ([]byte, error) { return canonicalLine(value) }

@@ -156,25 +156,32 @@ func stageInput(root, stageDir string, input sourceInput) error {
 // from the validated source file, hashed in memory and dropped: it is never
 // stored, logged or returned. Gitleaks 8.30.1 reports 1-based columns shifted
 // by one (start = offset+2, end = last offset+2); the slice below matches that
-// and only needs to be deterministic. An unusable range hashes the whole line.
-// It returns "" when the line cannot be read, so the quote fingerprint applies.
-func secretDigest(root string, finding parsedFinding) string {
-	if validRelativePath(finding.path) != nil || finding.startLine <= 0 || finding.endLine != finding.startLine {
-		return ""
+// and only needs to be deterministic.
+//
+// A finding that spans several lines has no single-line value to digest and
+// returns "": its identity is the normalized evidence fingerprint
+// (domain.AnchorOf). Every other failure — unreadable file, line or column
+// range outside the source — is an error, and the caller rejects the finding.
+func secretDigest(root string, finding parsedFinding) (string, error) {
+	if validRelativePath(finding.path) != nil || finding.startLine <= 0 {
+		return "", errors.New("secret finding has an invalid location")
+	}
+	if finding.endLine != finding.startLine {
+		return "", nil
 	}
 	content, err := os.ReadFile(filepath.Join(root, filepath.FromSlash(finding.path)))
 	if err != nil {
-		return ""
+		return "", errors.New("secret finding source is unreadable")
 	}
 	lines := strings.Split(string(content), "\n")
 	if finding.startLine > len(lines) {
-		return ""
+		return "", errors.New("secret finding line is outside the source")
 	}
 	line := []rune(strings.TrimSuffix(lines[finding.startLine-1], "\r"))
-	value := line
-	if start, end := finding.startColumn-2, finding.endColumn-1; start >= 0 && end > start && end <= len(line) {
-		value = line[start:end]
+	start, end := finding.startColumn-2, finding.endColumn-1
+	if start < 0 || end <= start || end > len(line) {
+		return "", errors.New("secret finding column range is outside the line")
 	}
-	sum := sha256.Sum256([]byte("scout-secret-digest-v1\x00" + string(value)))
-	return hex.EncodeToString(sum[:])
+	sum := sha256.Sum256([]byte("scout-secret-digest-v1\x00" + string(line[start:end])))
+	return hex.EncodeToString(sum[:]), nil
 }

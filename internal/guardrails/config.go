@@ -82,8 +82,6 @@ type configKind struct {
 	extract extractor
 }
 
-var configKinds []configKind
-
 func nameIn(names ...string) func(string, string) bool {
 	return func(base, _ string) bool {
 		for _, n := range names {
@@ -95,23 +93,21 @@ func nameIn(names ...string) func(string, string) bool {
 	}
 }
 
-func init() {
-	configKinds = []configKind{
-		{nameIn(".golangci.yml", ".golangci.yaml"), extractGolangci},
-		{nameIn("staticcheck.conf"), extractStaticcheck},
-		{nameIn("pyproject.toml"), extractPyproject},
-		{nameIn("ruff.toml", ".ruff.toml"), extractRuffToml},
-		{nameIn(".flake8", "setup.cfg", "tox.ini"), extractINIFlake8},
-		{nameIn("mypy.ini", ".mypy.ini", "setup.cfg", "tox.ini"), extractINIMypy},
-		{nameIn(".coveragerc", "setup.cfg", "tox.ini"), extractINICoverage},
-		{nameIn("pyrightconfig.json"), extractPyrightJSON},
-		{func(b, _ string) bool { return strings.HasPrefix(b, ".eslintrc") || b == "package.json" }, extractESLintLegacy},
-		{func(b, _ string) bool { return strings.HasPrefix(b, "eslint.config.") }, extractESLintFlat},
-		{nameIn(".eslintignore"), extractESLintIgnore},
-		{nameIn("biome.json", "biome.jsonc"), extractBiome},
-		{func(b, _ string) bool { return strings.HasPrefix(b, "tsconfig") && strings.HasSuffix(b, ".json") }, extractTSConfig},
-		{func(b, _ string) bool { return strings.HasPrefix(b, "jest.config.") || b == "package.json" }, extractJest},
-	}
+var configKinds = []configKind{
+	{nameIn(".golangci.yml", ".golangci.yaml"), extractGolangci},
+	{nameIn("staticcheck.conf"), extractStaticcheck},
+	{nameIn("pyproject.toml"), extractPyproject},
+	{nameIn("ruff.toml", ".ruff.toml"), extractRuffToml},
+	{nameIn(".flake8", "setup.cfg", "tox.ini"), extractINIFlake8},
+	{nameIn("mypy.ini", ".mypy.ini", "setup.cfg", "tox.ini"), extractINIMypy},
+	{nameIn(".coveragerc", "setup.cfg", "tox.ini"), extractINICoverage},
+	{nameIn("pyrightconfig.json"), extractPyrightJSON},
+	{func(b, _ string) bool { return strings.HasPrefix(b, ".eslintrc") || b == "package.json" }, extractESLintLegacy},
+	{func(b, _ string) bool { return strings.HasPrefix(b, "eslint.config.") }, extractESLintFlat},
+	{nameIn(".eslintignore"), extractESLintIgnore},
+	{nameIn("biome.json", "biome.jsonc"), extractBiome},
+	{func(b, _ string) bool { return strings.HasPrefix(b, "tsconfig") && strings.HasSuffix(b, ".json") }, extractTSConfig},
+	{func(b, _ string) bool { return strings.HasPrefix(b, "jest.config.") || b == "package.json" }, extractJest},
 }
 
 func skipConfigPath(p string) bool {
@@ -321,15 +317,6 @@ func rankName(n int) string {
 		return "standard"
 	}
 	return "strict/all"
-}
-
-func sortedKeys[V any](m map[string]V) []string {
-	keys := make([]string, 0, len(m))
-	for k := range m {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-	return keys
 }
 
 // ChangesAll runs every guardrail mechanism between base and head: scoped and

@@ -3,6 +3,7 @@ package inventory
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 
@@ -36,6 +37,24 @@ type DependencyEdge struct {
 	ToFeatureID   string   `json:"toFeatureId"`
 	Reason        string   `json:"reason"`
 	InputPaths    []string `json:"inputPaths"`
+}
+
+// Validate rejects an edge that cannot justify an invalidation.
+func (e DependencyEdge) Validate() error {
+	if e.FromFeatureID == "" || e.ToFeatureID == "" || strings.TrimSpace(e.Reason) == "" || len(e.InputPaths) == 0 {
+		return fmt.Errorf("dependency edge %q -> %q requires both feature IDs, a reason and input paths", e.FromFeatureID, e.ToFeatureID)
+	}
+	return nil
+}
+
+// validateDependencies returns the first invalid recorded dependency edge.
+func validateDependencies(edges []DependencyEdge) error {
+	for _, edge := range edges {
+		if err := edge.Validate(); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // FeatureInvalidation explains why a canonical feature was scheduled despite
@@ -85,6 +104,10 @@ func Diff(input DiffInput) (DiffResult, error) {
 	currentFeatures, currentFeatureErr := indexedFeatures(input.CurrentFeatures)
 	if featureErr != nil || currentFeatureErr != nil {
 		return result, errors.Join(featureErr, currentFeatureErr)
+	}
+
+	if err := validateDependencies(input.Dependencies); err != nil {
+		return result, err
 	}
 
 	var added, removed []domain.File
@@ -142,7 +165,7 @@ func Diff(input DiffInput) (DiffResult, error) {
 	}
 	for id := range priorFeatures {
 		if _, exists := currentFeatures[id]; !exists {
-			result.MappingGaps = append(result.MappingGaps, MappingGap{FeatureID: id, Reason: "previous canonical feature is absent from current map"})
+			result.MappingGaps = append(result.MappingGaps, MappingGap{FeatureID: id, Reason: gapFeatureRemoved})
 		}
 	}
 
@@ -271,9 +294,6 @@ func applyDependencyClosure(result *DiffResult, edges []DependencyEdge, changedP
 	}
 	adjacent := make(map[string][]DependencyEdge)
 	for _, edge := range edges {
-		if edge.FromFeatureID == "" || edge.ToFeatureID == "" || strings.TrimSpace(edge.Reason) == "" || len(edge.InputPaths) == 0 {
-			continue
-		}
 		for _, path := range edge.InputPaths {
 			if _, changed := changedPaths[path]; changed {
 				adjacent[edge.FromFeatureID] = append(adjacent[edge.FromFeatureID], edge)
@@ -301,25 +321,37 @@ func applyDependencyClosure(result *DiffResult, edges []DependencyEdge, changedP
 	}
 }
 
+// Mapping-gap reasons, shared by Scan (LinkFeatures) and Diff.
+const (
+	gapNoOwner        = "eligible file has no canonical Clawpatch owner"
+	gapAmbiguous      = "canonical ownership is ambiguous"
+	gapPathAbsent     = "canonical feature path is absent from current inventory"
+	gapFeatureRemoved = "previous canonical feature is absent from current map"
+)
+
+// mappingGaps is the single builder of ownership gaps for a linked inventory:
+// eligible files without an owner, files with several owners, and feature
+// paths that are not in the inventory. The result is sorted.
 func mappingGaps(files []domain.File, features []domain.Feature) []MappingGap {
 	paths := make(map[string]struct{}, len(files))
 	var gaps []MappingGap
 	for _, file := range files {
 		paths[file.Path] = struct{}{}
 		if file.Eligible && !file.Excluded && len(file.OwnedFeatureIDs) == 0 {
-			gaps = append(gaps, MappingGap{Path: file.Path, Reason: "eligible file has no canonical Clawpatch owner"})
+			gaps = append(gaps, MappingGap{Path: file.Path, Reason: gapNoOwner})
 		}
 		if len(file.OwnedFeatureIDs) > 1 {
-			gaps = append(gaps, MappingGap{Path: file.Path, Reason: "canonical ownership is ambiguous", Related: file.OwnedFeatureIDs})
+			gaps = append(gaps, MappingGap{Path: file.Path, Reason: gapAmbiguous, Related: file.OwnedFeatureIDs})
 		}
 	}
 	for _, feature := range features {
-		for _, ref := range append(append([]domain.FeatureFileRef{}, feature.OwnedFiles...), feature.ContextFiles...) {
+		for _, ref := range slices.Concat(feature.OwnedFiles, feature.ContextFiles) {
 			if _, exists := paths[ref.Path]; !exists {
-				gaps = append(gaps, MappingGap{FeatureID: feature.FeatureID, Path: ref.Path, Reason: "canonical feature path is absent from current inventory"})
+				gaps = append(gaps, MappingGap{FeatureID: feature.FeatureID, Path: ref.Path, Reason: gapPathAbsent})
 			}
 		}
 	}
+	sortMappingGaps(gaps)
 	return gaps
 }
 
@@ -358,18 +390,13 @@ func changePath(change FileChange) string {
 	}
 	return ""
 }
-func filePointer(file domain.File) *domain.File { copy := file; return &copy }
+func filePointer(file domain.File) *domain.File { return &file }
 func stringValue(value *string) string {
 	if value == nil {
 		return ""
 	}
 	return *value
 }
-func filepathBase(path string) string {
-	pieces := strings.Split(path, "/")
-	return pieces[len(pieces)-1]
-}
-
 func fingerprintTuple(values ...string) string {
 	var builder strings.Builder
 	for _, value := range values {

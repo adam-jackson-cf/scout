@@ -72,7 +72,7 @@ func TestClawpatchPinMatchesManifestAndSubmodule(t *testing.T) {
 	}
 	output, err := exec.Command("git", "-C", repoRoot, "ls-files", "-s", "third_party/clawpatch").Output()
 	if err != nil || len(output) == 0 {
-		t.Skip("not a git checkout with the third_party/clawpatch submodule")
+		t.Fatalf("the third_party/clawpatch submodule gitlink cannot be read from a git checkout (the pin check cannot be skipped): %v", err)
 	}
 	fields := strings.Fields(string(output))
 	if len(fields) < 2 || fields[0] != "160000" {

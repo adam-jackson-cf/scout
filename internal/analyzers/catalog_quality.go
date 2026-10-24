@@ -21,6 +21,7 @@ func qualitySpecs() []Spec {
 		Eligibility: Eligibility{Languages: []string{"Python"}, Extensions: []string{".py", ".pyi"}},
 		Inputs:      InputLimits{MaxFiles: 10_000, MaxFileBytes: 2 << 20, MaxTotalBytes: 256 << 20, MaxManifestBytes: 4 << 20},
 		Output:      Output{Format: OutputSARIF, SchemaVersion: "2.1.0"},
+		Attestation: AttestRuffFileListing,
 		ExitCodes:   map[int]ExitSemantics{0: ExitSuccess, 1: ExitFindings, 2: ExitFailure},
 		Timeout:     2 * time.Minute, MaxOutput: 32 << 20,
 		Permissions: Permissions{ReadOnlySource: true},

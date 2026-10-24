@@ -22,10 +22,6 @@ const StaleStatus = "skipped"
 // ownership never reads them (design §4). RawOriginal retains the exact
 // canonical record bytes.
 func LoadFeatures(stateDir string) ([]domain.Feature, error) {
-	return loadActiveFeatures(stateDir)
-}
-
-func loadActiveFeatures(stateDir string) ([]domain.Feature, error) {
 	all, err := loadFeatures(stateDir)
 	if err != nil {
 		return nil, err
@@ -43,7 +39,7 @@ func loadFeatures(stateDir string) ([]domain.Feature, error) {
 	featuresDir := filepath.Join(stateDir, "features")
 	entries, err := os.ReadDir(featuresDir)
 	if err != nil {
-		if errorsIsNotExist(err) {
+		if errors.Is(err, fs.ErrNotExist) {
 			return []domain.Feature{}, nil
 		}
 		return nil, fmt.Errorf("read Clawpatch feature records: %w", err)
@@ -66,7 +62,7 @@ func loadFeatures(stateDir string) ([]domain.Feature, error) {
 		if err != nil {
 			return nil, fmt.Errorf("read Clawpatch feature record %q: %w", entry.Name(), err)
 		}
-		feature, err := decodeFeature(raw)
+		feature, err := DecodeFeature(raw)
 		if err != nil {
 			return nil, fmt.Errorf("decode Clawpatch feature record %q: %w", entry.Name(), err)
 		}
@@ -82,10 +78,6 @@ func loadFeatures(stateDir string) ([]domain.Feature, error) {
 // DecodeFeature validates one schema-v1 canonical record without reconstructing
 // its ID or replacing its source JSON.
 func DecodeFeature(raw []byte) (domain.Feature, error) {
-	return decodeFeature(raw)
-}
-
-func decodeFeature(raw []byte) (domain.Feature, error) {
 	if !json.Valid(raw) {
 		return domain.Feature{}, fmt.Errorf("record is not valid JSON")
 	}
@@ -98,8 +90,4 @@ func decodeFeature(raw []byte) (domain.Feature, error) {
 		return domain.Feature{}, err
 	}
 	return feature, nil
-}
-
-func errorsIsNotExist(err error) bool {
-	return errors.Is(err, fs.ErrNotExist)
 }

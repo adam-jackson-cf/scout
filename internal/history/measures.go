@@ -70,7 +70,7 @@ type Options struct {
 	Salt       string                 // pseudonymisation salt for ownership keys
 	Files      map[string]FileMetric  // per-file CC/NLOC; nil => hotspot unmeasured
 	PRs        []PR                   // PR metadata; empty => PR-level measures unmeasured
-	BotLogins  []string               // PR author logins treated as bots (E1b common.BOT_LOGINS)
+	BotLogins  []string               // PR author logins treated as bots
 	PRSource   *PRSource              // provenance of PRs; folded into the config digest and every PR-dependent signal's detail
 	ToolInfo   string                 // appended to tool digest (e.g. git version)
 }
@@ -227,7 +227,10 @@ func (o Options) configDigest() string {
 	l := append([]string(nil), o.BotLogins...)
 	sort.Strings(b)
 	sort.Strings(l)
-	j, _ := json.Marshal(cfg{o.window(), MaxChangeFiles, MinChanges, FollowUpDays, b, l})
+	j, err := json.Marshal(cfg{o.window(), MaxChangeFiles, MinChanges, FollowUpDays, b, l})
+	if err != nil { // plain ints and strings: cannot fail
+		panic(err)
+	}
 	if o.PRSource != nil {
 		return sha(string(j) + "|pr:" + o.PRSource.Digest)
 	}

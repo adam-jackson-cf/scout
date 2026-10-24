@@ -76,10 +76,6 @@ type DiffReport struct {
 	Issues           []domain.AttributedIssue `json:"issues"`
 	PreExisting      int                      `json:"preExisting"`
 	Changed          []string                 `json:"changedFiles"`
-	// Delta issues (design §3.2) appear in Issues with `claim: descriptive`,
-	// attribution `introduced` and an ineligible check; they never reach the
-	// gate, would_block or the exit code, and delta rules that could not run
-	// are stated in the `delta` lane health.
 }
 
 // UnavailableReport is the report for a run that could not start or finish.
@@ -166,7 +162,7 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 		}
 	}
 
-	guard := guardrailsLane(ctx, root, mergeBase, changed)
+	guard := guardrailsLane(root, mergeBase, changed)
 	delta := deltaLane(root, mergeBase, changed, cfg.DeltaTools)
 	headResult, err := Assess(ctx, cfg.Config, Options{Trigger: domain.TriggerPR, Inline: []InlineLane{guard, delta}, Measures: &MeasuresOptions{Only: append([]string{}, changed...)}})
 	if err != nil {
@@ -409,15 +405,15 @@ func changedFiles(ctx context.Context, root, mergeBase string) ([]string, error)
 // a pr-trigger blocking-eligible lane: base from the merge base, head from
 // the working tree. Config erosion compares whole trees, so it runs even when
 // no file was added or modified (a PR that only deletes a config).
-func guardrailsLane(ctx context.Context, root, mergeBase string, changed []string) InlineLane {
-	return InlineLane{Lane: LaneGuardrails, Units: len(changed), Run: func(ctx context.Context, runID string) ([]domain.Observation, error) {
+func guardrailsLane(root, mergeBase string, changed []string) InlineLane {
+	return InlineLane{Lane: LaneGuardrails, Units: len(changed), Run: func(ctx context.Context, runID string) (InlineResult, error) {
 		baseTree, err := newGitTree(ctx, root, mergeBase)
 		if err != nil {
-			return nil, err
+			return InlineResult{}, err
 		}
 		headTree, err := newWorkTree(ctx, root)
 		if err != nil {
-			return nil, err
+			return InlineResult{}, err
 		}
 		now := time.Now().UTC()
 		var observations []domain.Observation
@@ -444,6 +440,6 @@ func guardrailsLane(ctx context.Context, root, mergeBase string, changed []strin
 				Evidence: []domain.Evidence{{Location: domain.SourceRange{Path: finding.Path, StartLine: finding.Line, EndLine: finding.Line}, RedactedQuote: quote}},
 			})
 		}
-		return observations, nil
+		return InlineResult{Observations: observations}, nil
 	}}
 }

@@ -143,6 +143,12 @@ func Signals(g *Graph, scopes []ScopeInput, snapshot string) []domain.Signal {
 				unres++
 			}
 		}
+		skipped := 0
+		for _, k := range g.Skipped {
+			if in(k.From) {
+				skipped++
+			}
+		}
 		touched := map[int]bool{}
 		for n, c := range comp {
 			if crossComp[c] && in(n) {
@@ -154,6 +160,7 @@ func Signals(g *Graph, scopes []ScopeInput, snapshot string) []domain.Signal {
 			"nodes":                 nodes,
 			"cross_boundary_cycles": cross,
 			"unresolved_imports":    unres,
+			"skipped_inputs":        skipped,
 			"type_only_edges":       typeOnly,
 			"languages_supported":   supported,
 		}

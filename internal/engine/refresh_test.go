@@ -66,7 +66,7 @@ func (h *refreshHarness) run(t *testing.T, run RefreshRun) RefreshOutcome {
 }
 
 func pushRun() RefreshRun {
-	return RefreshRun{Event: RefreshPush, DefaultBranch: true}
+	return RefreshRun{Event: domain.TriggerPush, DefaultBranch: true}
 }
 
 func onboarded(h *refreshHarness) {
@@ -79,7 +79,7 @@ func TestOnboardingRefreshesOnce(t *testing.T) {
 	if out := h.run(t, pushRun()); out.Status != RefreshDone || h.mapper.calls != 1 || h.reconciled != 1 {
 		t.Fatalf("onboarding: %+v calls=%d", out, h.mapper.calls)
 	}
-	for _, run := range []RefreshRun{pushRun(), {Event: RefreshNightly}} {
+	for _, run := range []RefreshRun{pushRun(), {Event: domain.TriggerNightly}} {
 		if out := h.run(t, run); out.Status != RefreshNone || h.mapper.calls != 1 {
 			t.Fatalf("%s after onboarding must not map: %+v", run.Event, out)
 		}
@@ -103,7 +103,7 @@ func TestBurstOfMergesNeverRemaps(t *testing.T) {
 func TestPullRequestAndNonDefaultPushNeverRefresh(t *testing.T) {
 	h := newHarness() // not onboarded: even onboarding must wait for a non-PR run
 	pr := pushRun()
-	pr.Event = RefreshPR
+	pr.Event = domain.TriggerPR
 	other := pushRun()
 	other.DefaultBranch = false
 	for _, run := range []RefreshRun{pr, other} {
@@ -123,7 +123,7 @@ func TestUnknownEventIsAnError(t *testing.T) {
 func TestNoModelCLIKeepsOnboardingOpen(t *testing.T) {
 	h := newHarness()
 	h.mapper.result = clawpatch.MapResult{Status: clawpatch.MapSkipped, Source: clawpatch.MapSourceAgent, Reason: clawpatch.SkippedNoModelCLI}
-	out := h.run(t, RefreshRun{Event: RefreshNightly})
+	out := h.run(t, RefreshRun{Event: domain.TriggerNightly})
 	if out.Status != RefreshSkipped || out.Reason != "skipped (no model CLI)" || h.store.record.LastAgentRefreshAt != nil || h.reconciled != 0 {
 		t.Fatalf("skip: %+v record=%+v", out, h.store.record)
 	}
@@ -136,7 +136,7 @@ func TestAgentFailureKeepsHeuristicAndOnboardingOpen(t *testing.T) {
 	} {
 		h := newHarness()
 		h.mapper.result = result
-		out := h.run(t, RefreshRun{Event: RefreshNightly})
+		out := h.run(t, RefreshRun{Event: domain.TriggerNightly})
 		if out.Status != RefreshIncomplete || !out.ExplorationIncomplete || h.store.record.LastAgentRefreshAt != nil || h.reconciled != 0 {
 			t.Fatalf("%s: %+v", name, out)
 		}
@@ -148,7 +148,7 @@ func TestBlockedAgentKeepsOnboardingOpen(t *testing.T) {
 	good := h.mapper.result
 	h.mapper.result = clawpatch.MapResult{Status: clawpatch.MapBlocked}
 	h.mapper.err = errors.New("egress is not authorized")
-	out := h.run(t, RefreshRun{Event: RefreshNightly})
+	out := h.run(t, RefreshRun{Event: domain.TriggerNightly})
 	if out.Status != RefreshBlocked || h.store.record.LastAgentRefreshAt != nil {
 		t.Fatalf("blocked: %+v", out)
 	}

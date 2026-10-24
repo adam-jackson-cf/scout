@@ -1,8 +1,16 @@
-// Package guardrails detects guardrail erosion introduced by a change, comparing
-// base and head file contents (design §5.1/§5.2, allow-list table 1).
+// Package guardrails detects guardrail erosion introduced by a change (design
+// §5.1/§5.2, allow-list table 1). It has three mechanisms, all producing
+// Finding values and combined by ChangesAll:
 //
-// SuppressAdded finds lint/type-check suppressions that exist on lines added in
-// head relative to base:
+//   - SuppressAdded (suppress.go): lint/type-check suppressions on lines added
+//     in head relative to base.
+//   - FocusedTestsAdded (focused_tests.go): committed focused JS/TS tests
+//     (`.only`, `fit`, `fdescribe`).
+//   - ConfigChanges (config.go, config_*.go): effective erosion of tool
+//     configuration between two Trees: ignore sets that grew, strictness that
+//     dropped.
+//
+// Suppression check IDs:
 //
 //   - guardrails.SUPPRESS.added.unscoped (blocking-eligible): rule-less
 //     suppressions: Python bare `# noqa`, bare `# type: ignore`,
@@ -12,7 +20,9 @@
 //   - guardrails.SUPPRESS.added.scoped (report-only): the same mechanisms naming
 //     a rule/linter/code.
 //
-// Only non-test, non-generated files are examined (allow-list table 1).
+// SuppressAdded examines only non-test, non-generated files and
+// FocusedTestsAdded only non-generated JS/TS test files; the language, test
+// path and generated-file classification lives in classify.go.
 //
 // Limits (documented, deliberate): a small lexer per language decides whether a
 // marker sits in a comment. It handles line/block comments, single-line
@@ -25,9 +35,8 @@
 package guardrails
 
 import (
-	"path"
 	"regexp"
-	"sort"
+	"slices"
 	"strings"
 )
 
@@ -69,95 +78,13 @@ func (f Finding) BlockingEligible() bool { return f.CheckID == UnscopedCheckID }
 // file. changed restricts the examined paths; empty means every head path.
 // Results are sorted by path, line, mechanism.
 func SuppressAdded(base, head map[string][]byte, changed []string) []Finding {
-	paths := changed
-	if len(paths) == 0 {
-		for p := range head {
-			paths = append(paths, p)
+	return scanHeadFiles(head, changed, func(p string, hc []byte) []Finding {
+		l := langOf(p)
+		if l == langNone || isTestPath(p, l) || isGenerated(hc) {
+			return nil
 		}
-	}
-	seen := map[string]bool{}
-	var out []Finding
-	for _, p := range paths {
-		if seen[p] {
-			continue
-		}
-		seen[p] = true
-		hc, ok := head[p]
-		if !ok {
-			continue // deleted in head
-		}
-		lang := langOf(p)
-		if lang == langNone || isTestPath(p, lang) || isGenerated(hc) {
-			continue
-		}
-		out = append(out, fileFindings(p, lang, base[p], hc)...)
-	}
-	sort.SliceStable(out, func(i, j int) bool {
-		a, b := out[i], out[j]
-		if a.Path != b.Path {
-			return a.Path < b.Path
-		}
-		if a.Line != b.Line {
-			return a.Line < b.Line
-		}
-		return a.Mechanism < b.Mechanism
+		return fileFindings(p, l, base[p], hc)
 	})
-	return out
-}
-
-type lang int
-
-const (
-	langNone lang = iota
-	langPython
-	langGo
-	langTS
-)
-
-func langOf(p string) lang {
-	switch strings.ToLower(path.Ext(p)) {
-	case ".py":
-		return langPython
-	case ".go":
-		return langGo
-	case ".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".mts", ".cts":
-		return langTS
-	}
-	return langNone
-}
-
-func isTestPath(p string, l lang) bool {
-	base := path.Base(p)
-	lower := strings.ToLower(p)
-	for _, seg := range strings.Split(path.Dir(lower), "/") {
-		if seg == "tests" || seg == "test" || seg == "__tests__" {
-			return true
-		}
-	}
-	switch l {
-	case langGo:
-		return strings.HasSuffix(base, "_test.go")
-	case langPython:
-		return strings.HasPrefix(base, "test_") || strings.HasSuffix(base, "_test.py") || base == "conftest.py"
-	case langTS:
-		lb := strings.ToLower(base)
-		return strings.Contains(lb, ".test.") || strings.Contains(lb, ".spec.")
-	}
-	return false
-}
-
-func isGenerated(content []byte) bool {
-	lines := strings.SplitN(string(content), "\n", 21)
-	if len(lines) > 20 {
-		lines = lines[:20]
-	}
-	for _, l := range lines {
-		if strings.Contains(l, "@generated") || strings.Contains(l, "DO NOT EDIT") ||
-			(strings.Contains(l, "Code generated") && strings.Contains(l, "generated")) {
-			return true
-		}
-	}
-	return false
 }
 
 // hit is one suppression marker on a line.
@@ -166,30 +93,11 @@ type hit struct {
 	scoped    bool
 }
 
-func splitLines(b []byte) []string {
-	if len(b) == 0 {
-		return nil
-	}
-	s := strings.TrimSuffix(string(b), "\n")
-	lines := strings.Split(s, "\n")
-	for i, l := range lines {
-		lines[i] = strings.TrimSuffix(l, "\r")
-	}
-	return lines
-}
-
 func fileFindings(p string, l lang, baseSrc, headSrc []byte) []Finding {
 	headLines := splitLines(headSrc)
 	baseLines := splitLines(baseSrc)
 	headHits := lineHits(l, headLines)
-	any := false
-	for _, h := range headHits {
-		if len(h) > 0 {
-			any = true
-			break
-		}
-	}
-	if !any {
+	if !slices.ContainsFunc(headHits, func(h []hit) bool { return len(h) > 0 }) {
 		return nil
 	}
 	baseHits := lineHits(l, baseLines)

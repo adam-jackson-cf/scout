@@ -7,7 +7,7 @@ import (
 )
 
 func TestSemgrepJSONAccountsForScannedCleanAndFindingInputs(t *testing.T) {
-	spec := securitySpecs()[0]
+	spec := specForTest(t, "security.semgrep.python-unsafe-yaml-load")
 	raw := []byte(`{"version":"1.100.0","results":[{"check_id":"private.rules.scout.security.python.yaml-unsafe-load","path":"src/unsafe.py","start":{"line":4},"end":{"line":4},"extra":{"message":"unsafe YAML load","severity":"ERROR"}}],"errors":[],"paths":{"scanned":["src/unsafe.py","src/safe.py"]}}`)
 	parsed, err := parseOutput(spec, raw, "/tmp/fixture")
 	if err != nil {
@@ -54,7 +54,7 @@ func TestWorkflowRuleDoesNotClaimUnrelatedYAMLCoverage(t *testing.T) {
 		".github/workflows/build.json": false,
 	} {
 		file := domain.File{Path: path, Language: "yaml", Eligible: true}
-		if got := spec.Applicable(file); got != want {
+		if got := spec.Applies(file); got != want {
 			t.Errorf("workflow rule eligibility for %q: got %t, want %t", path, got, want)
 		}
 	}

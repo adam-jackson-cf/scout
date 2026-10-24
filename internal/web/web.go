@@ -8,8 +8,8 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
-	"path/filepath"
 	"regexp"
 	"strings"
 	"unicode/utf8"
@@ -72,10 +72,6 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		w.Header().Set("Allow", http.MethodGet)
 		h.writeError(w, http.StatusMethodNotAllowed, "method not allowed")
-		return
-	}
-	if h.store == nil {
-		h.writeError(w, http.StatusServiceUnavailable, "state store is unavailable")
 		return
 	}
 
@@ -249,8 +245,9 @@ func (h handler) writeRun(w http.ResponseWriter, ctx context.Context, run domain
 }
 
 func (h handler) features(w http.ResponseWriter, r *http.Request, asJSON bool) {
-	features, err := clawpatch.LoadFeatures(filepath.Join(h.store.Root(), ".scout", "clawpatch"))
+	features, err := clawpatch.LoadFeatures(clawpatch.StateDir(h.store.Root()))
 	if err != nil {
+		log.Printf("scout web: load canonical features: %v", err)
 		h.writeError(w, http.StatusInternalServerError, "could not load canonical feature mappings")
 		return
 	}
@@ -271,31 +268,42 @@ func (h handler) features(w http.ResponseWriter, r *http.Request, asJSON bool) {
 func (h handler) writeJSON(w http.ResponseWriter, status int, value any) {
 	safe, err := sanitize(value)
 	if err != nil {
+		log.Printf("scout web: sanitize state: %v", err)
+		h.writeError(w, http.StatusInternalServerError, "could not render state")
+		return
+	}
+	var rendered bytes.Buffer
+	if err := json.NewEncoder(&rendered).Encode(safe); err != nil {
+		log.Printf("scout web: encode state: %v", err)
 		h.writeError(w, http.StatusInternalServerError, "could not render state")
 		return
 	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(status)
-	if err := json.NewEncoder(w).Encode(safe); err != nil {
-		return
-	}
+	_, _ = w.Write(rendered.Bytes())
 }
 
 func (h handler) writeHTML(w http.ResponseWriter, title string, value any, links []link) {
 	safe, err := sanitize(value)
 	if err != nil {
+		log.Printf("scout web: sanitize state: %v", err)
 		h.writeError(w, http.StatusInternalServerError, "could not render state")
 		return
 	}
 	body, err := json.MarshalIndent(safe, "", "  ")
 	if err != nil {
+		log.Printf("scout web: encode state: %v", err)
+		h.writeError(w, http.StatusInternalServerError, "could not render state")
+		return
+	}
+	var rendered bytes.Buffer
+	if err := pageTemplate.Execute(&rendered, page{Title: title, Links: links, Body: string(body)}); err != nil {
+		log.Printf("scout web: render page: %v", err)
 		h.writeError(w, http.StatusInternalServerError, "could not render state")
 		return
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if err := pageTemplate.Execute(w, page{Title: title, Links: links, Body: string(body)}); err != nil {
-		return
-	}
+	_, _ = w.Write(rendered.Bytes())
 }
 
 func (h handler) writeStoreError(w http.ResponseWriter, err error) {
@@ -303,6 +311,7 @@ func (h handler) writeStoreError(w http.ResponseWriter, err error) {
 		h.writeError(w, http.StatusNotFound, "state record not found")
 		return
 	}
+	log.Printf("scout web: read state: %v", err)
 	h.writeError(w, http.StatusInternalServerError, "could not read state")
 }
 

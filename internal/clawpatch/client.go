@@ -21,6 +21,7 @@ const (
 	Version  = "0.7.3"
 
 	defaultMapTimeoutMS = "900000"
+	stderrTailBytes     = 512
 
 	// The agent map always runs on codex with this model and effort.
 	mapModel           = "gpt-6-luna"
@@ -89,7 +90,7 @@ func New(root string, config Config) (*Client, error) {
 	}
 
 	stateDir := config.StateDir
-	ownedState := filepath.Join(absoluteRoot, ".scout", "clawpatch")
+	ownedState := StateDir(absoluteRoot)
 	if stateDir == "" {
 		stateDir = ownedState
 	}
@@ -130,6 +131,9 @@ func New(root string, config Config) (*Client, error) {
 
 // Root returns the immutable assessment root.
 func (c *Client) Root() string { return c.root }
+
+// StateDir is where Scout keeps its Clawpatch state under an absolute root.
+func StateDir(root string) string { return filepath.Join(root, ".scout", "clawpatch") }
 
 // StateDir returns the configured Clawpatch state directory.
 func (c *Client) StateDir() string { return c.stateDir }
@@ -191,7 +195,7 @@ func (c *Client) Map(ctx context.Context, inputsChanged bool, source MapSource) 
 		return MapResult{Status: MapBlocked, Reason: err.Error()}, err
 	}
 	if !inputsChanged {
-		features, err := loadActiveFeatures(c.stateDir)
+		features, err := LoadFeatures(c.stateDir)
 		if err != nil {
 			return MapResult{Status: MapBlocked, Source: source, Reason: "canonical Clawpatch records are unavailable"}, err
 		}
@@ -236,7 +240,7 @@ func (c *Client) Map(ctx context.Context, inputsChanged bool, source MapSource) 
 		fallback.Reason = "agent mapping did not complete; heuristic map kept and exploration is incomplete"
 		return fallback, nil
 	}
-	features, err := loadActiveFeatures(c.stateDir)
+	features, err := LoadFeatures(c.stateDir)
 	if err != nil {
 		return MapResult{Status: MapBlocked, Source: source, Reason: "canonical Clawpatch records are unavailable"}, err
 	}
@@ -248,7 +252,7 @@ func (c *Client) Map(ctx context.Context, inputsChanged bool, source MapSource) 
 
 func (c *Client) mapHeuristicLocked(ctx context.Context) (MapResult, error) {
 	if _, err := c.invokeLocked(ctx, "map", "--source", "heuristic"); err != nil {
-		features, loadErr := loadActiveFeatures(c.stateDir)
+		features, loadErr := LoadFeatures(c.stateDir)
 		if loadErr != nil {
 			return MapResult{Status: MapBlocked, Source: MapSourceHeuristic, Reason: "pinned Clawpatch map did not complete"}, errors.Join(err, loadErr)
 		}
@@ -259,7 +263,7 @@ func (c *Client) mapHeuristicLocked(ctx context.Context) (MapResult, error) {
 			Reason:   "pinned Clawpatch map did not complete; prior canonical records were retained",
 		}, err
 	}
-	features, err := loadActiveFeatures(c.stateDir)
+	features, err := LoadFeatures(c.stateDir)
 	if err != nil {
 		return MapResult{Status: MapBlocked, Source: MapSourceHeuristic, Reason: "canonical Clawpatch records are unavailable"}, err
 	}
@@ -325,9 +329,23 @@ func (c *Client) invokeEnvLocked(ctx context.Context, extraEnv []string, args ..
 		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
 			return nil, context.DeadlineExceeded
 		}
-		return nil, errors.New("pinned Clawpatch command failed")
+		var exit *exec.ExitError
+		if errors.As(err, &exit) {
+			if tail := stderrTail(exit.Stderr); tail != "" {
+				return nil, fmt.Errorf("pinned Clawpatch command failed: %w: %s", err, tail)
+			}
+		}
+		return nil, fmt.Errorf("pinned Clawpatch command failed: %w", err)
 	}
 	return output, nil
+}
+
+// stderrTail is the redacted last stderrTailBytes of a failed command's stderr.
+func stderrTail(stderr []byte) string {
+	if len(stderr) > stderrTailBytes {
+		stderr = stderr[len(stderr)-stderrTailBytes:]
+	}
+	return sanitizeFindingText(compactWhitespace(string(stderr)))
 }
 
 func validatePinnedBinaryPath(path string) error {
@@ -358,10 +376,7 @@ const (
 type MapResult struct {
 	Status                MapStatus
 	Source                MapSource
-	Features              []Feature
+	Features              []domain.Feature
 	Reason                string
 	ExplorationIncomplete bool
 }
-
-// Feature is a canonical Clawpatch record in Scout's shared domain contract.
-type Feature = domain.Feature

@@ -28,10 +28,10 @@ func TestSchemaV8StoresAnnotationsRankingsAndAuditDraws(t *testing.T) {
 		t.Fatalf("schema version %d err %v", version, err)
 	}
 	issue := "issue:security:a"
-	if err := store.RecordAnnotation(ctx, annotationFor(issue, "triage.real_defect@old")); err != nil {
+	if err := store.RecordAnnotations(ctx, []domain.Annotation{annotationFor(issue, "triage.real_defect@old")}); err != nil {
 		t.Fatal(err)
 	}
-	if err := store.RecordAnnotation(ctx, annotationFor(issue, "triage.real_defect@new")); err != nil {
+	if err := store.RecordAnnotations(ctx, []domain.Annotation{annotationFor(issue, "triage.real_defect@new")}); err != nil {
 		t.Fatal(err)
 	}
 	// A model bump creates a new version key: annotations under another key are stale.
@@ -53,7 +53,7 @@ func TestSchemaV8StoresAnnotationsRankingsAndAuditDraws(t *testing.T) {
 	unsafe := annotationFor(issue, "triage.real_defect@new")
 	unsafe.AnnotationID = "annotation:unsafe"
 	unsafe.RequestBody = json.RawMessage(`{"state":{"excerpt":["api_key = abcdef123456789"]}}`)
-	if err := store.RecordAnnotation(ctx, unsafe); err == nil {
+	if err := store.RecordAnnotations(ctx, []domain.Annotation{unsafe}); err == nil {
 		t.Fatal("credential-bearing request body must be refused")
 	}
 

@@ -12,9 +12,8 @@ import (
 	"strings"
 )
 
-// Eligibility constants. The extension set and exclusion globs are the ones
-// E1 preregistered (`evaluation/inertia-v1/collect.py` EXTS and
-// `exclusions.json` "base"), so scope populations stay comparable with it.
+// Eligibility constants (design §8.2): the supported source extensions and the
+// non-production path-role globs below define the measured population.
 const (
 	// MinFileNLOC is the smallest file (lizard NLOC) in the eligible population.
 	MinFileNLOC = 10
@@ -40,8 +39,8 @@ var nonProductionGlobs = []string{
 
 var nonProductionPatterns = compileGlobs(nonProductionGlobs)
 
-// compileGlobs mirrors E1's glob_re: `**/` crosses directories (and may match
-// none), `**` matches anything, `*` and `?` stay within one path segment.
+// compileGlobs compiles path-role globs: `**/` crosses directories (and may
+// match none), `**` matches anything, `*` and `?` stay within one path segment.
 func compileGlobs(globs []string) []*regexp.Regexp {
 	compiled := make([]*regexp.Regexp, 0, len(globs))
 	for _, glob := range globs {

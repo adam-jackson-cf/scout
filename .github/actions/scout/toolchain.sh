@@ -14,7 +14,9 @@ if [[ "$(uname -s)" == Linux ]]; then
   sudo apt-get update -qq
   sudo apt-get install -y bubblewrap
   # Ubuntu 24.04 blocks unprivileged user namespaces, which bubblewrap needs.
+  # The key is absent on kernels without the AppArmor restriction; the check below decides.
   sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 > /dev/null 2>&1 || true
+  bwrap --unshare-user --ro-bind / / true || echo "::warning::bubblewrap cannot create user namespaces on this runner; sandboxed scanner lanes will report blocked"
 fi
 
 src="$TOOLCHAIN_DIR/source"

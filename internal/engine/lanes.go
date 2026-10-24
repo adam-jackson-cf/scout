@@ -8,8 +8,7 @@ import (
 	"scout/internal/modelcli"
 )
 
-// Lane is one registered analysis lane (design §5.1). The registry replaces
-// the families and optional stages that used to be hard-coded in Assess.
+// Lane is one registered analysis lane (design §5.1).
 type Lane struct {
 	ID       string
 	Family   domain.Family // coverage family the lane owns; empty for inline lanes
@@ -50,9 +49,6 @@ var lanes = []Lane{
 	{ID: LaneHistory, Triggers: []domain.LaneTrigger{domain.TriggerPush, domain.TriggerNightly}, Mode: domain.ModeSignal, Requires: domain.RequiresNone},
 }
 
-// Lanes returns a copy of the registry.
-func Lanes() []Lane { return append([]Lane(nil), lanes...) }
-
 // DefaultFamilies lists the scanner families assessed when none are selected.
 func DefaultFamilies() []domain.Family {
 	var families []domain.Family
@@ -89,26 +85,29 @@ func (l Lane) Required(trigger domain.LaneTrigger) bool {
 }
 
 // InlineLane is an in-process lane whose observations are persisted with the run.
-// Reason, when set, is read after Run and reports rules that could not run.
 type InlineLane struct {
-	Lane   string
-	Units  int
-	Run    func(ctx context.Context, runID string) ([]domain.Observation, error)
-	Reason func() string
+	Lane  string
+	Units int
+	Run   func(ctx context.Context, runID string) (InlineResult, error)
 }
 
-func inlineLaneHealth(lane InlineLane, found int, err error) domain.LaneHealth {
+// InlineResult is what an inline lane produced. Unmeasured, when set, names
+// the rules that could not run; the lane health reports it.
+type InlineResult struct {
+	Observations []domain.Observation
+	Unmeasured   string
+}
+
+func inlineLaneHealth(lane InlineLane, result InlineResult, err error) domain.LaneHealth {
 	health := domain.LaneHealth{Lane: lane.Lane, Units: lane.Units, Status: domain.LaneRan}
 	if err != nil {
 		health.Status, health.Reason = domain.LaneFailed, "lane failed: "+err.Error()
 	} else if lane.Units == 0 {
 		health.Status, health.Reason = domain.LaneSkipped, "no changed files"
-	} else if lane.Reason != nil {
-		if reason := lane.Reason(); reason != "" {
-			health.Reason = reason
-			if found == 0 {
-				health.Status = domain.LaneSkipped
-			}
+	} else if result.Unmeasured != "" {
+		health.Reason = result.Unmeasured
+		if len(result.Observations) == 0 {
+			health.Status = domain.LaneSkipped
 		}
 	}
 	return health
@@ -181,7 +180,7 @@ func LaneHealthOf(trigger domain.LaneTrigger, run domain.Run, inline []domain.La
 	}
 	drift := false
 	for _, failure := range run.Failures {
-		if failure.Code == "source_drift" {
+		if failure.Code == failureSourceDrift {
 			drift = true
 		}
 	}

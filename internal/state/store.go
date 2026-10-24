@@ -11,13 +11,12 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"regexp"
-	"strings"
 	"sync"
 	"syscall"
 	"time"
 
 	"scout/internal/domain"
+	"scout/internal/redact"
 
 	_ "modernc.org/sqlite"
 )
@@ -393,14 +392,6 @@ func ensureArtifactTx(ctx context.Context, tx *sql.Tx, ref domain.SafeArtifactRe
 	return nil
 }
 
-var (
-	persistedPrivateKey    = regexp.MustCompile(`(?s)-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----.+?-----END [A-Z0-9 ]*PRIVATE KEY-----`)
-	persistedAssignment    = regexp.MustCompile(`(?i)(?:api[_-]?key|access[_-]?key|secret|token|password|passwd|credential|client[_-]?secret)["']?\s*[:=]\s*["']?[^\s"']+`)
-	persistedURLCredential = regexp.MustCompile(`://[^\s/@:]+:[^\s/@]+@`)
-	persistedJWT           = regexp.MustCompile(`\beyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b`)
-	persistedKnownToken    = regexp.MustCompile(`\b(?:AKIA[0-9A-Z]{16}|gh[pousr]_[A-Za-z0-9_]{20,}|xox[baprs]-[A-Za-z0-9-]{20,})\b`)
-)
-
 func decode(payload []byte, target any) error {
 	if err := json.Unmarshal(payload, target); err != nil {
 		return fmt.Errorf("decode state record: %w", err)
@@ -420,7 +411,7 @@ func encode(value any) ([]byte, error) {
 }
 
 func rejectUnsafePersistence(value string) error {
-	if strings.ContainsRune(value, '\x00') || persistedPrivateKey.MatchString(value) || persistedAssignment.MatchString(value) || persistedURLCredential.MatchString(value) || persistedJWT.MatchString(value) || persistedKnownToken.MatchString(value) {
+	if redact.Contains(value) {
 		return errors.New("refusing to persist credential-bearing content")
 	}
 	return nil

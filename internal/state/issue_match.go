@@ -163,12 +163,10 @@ func (s *Store) ResolveIssue(ctx context.Context, issueID string, verification d
 			issue.Anchor.Path = followPath
 			issue.Files = []string{followPath}
 		}
-		if verification.Reason == domain.ResolutionFileDeleted {
-			if err := fileDeletedTx(ctx, tx, issue.Anchor.Path, verification.RunID); err != nil {
+		if verification.Reason != domain.ResolutionFileDeleted {
+			if err := verificationCoverageRelevantTx(ctx, tx, issue, verification); err != nil {
 				return err
 			}
-		} else if err := verificationCoverageRelevantTx(ctx, tx, issue, verification); err != nil {
-			return err
 		}
 		previous := issue.State
 		issue.State = domain.IssueResolved

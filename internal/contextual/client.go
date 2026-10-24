@@ -143,7 +143,8 @@ type ReviewMetadata struct {
 }
 
 // ModelRecord names the CLI that answered and the model it resolved to.
-// ResolvedModel is "<cli>:unreported" when the CLI did not state one.
+// ResolvedModel is always what the CLI reported; a CLI that names no model
+// fails the review instead of recording a placeholder.
 type ModelRecord struct {
 	CLI           string `json:"cli"`
 	ResolvedModel string `json:"resolvedModel"`
@@ -211,7 +212,7 @@ func (c *Client) Review(ctx context.Context, request ReviewRequest) (ReviewResul
 		coverage.OmittedPaths = omissionPaths(manifest.Omissions)
 		return ReviewResult{Coverage: coverage, Manifest: safeManifest}, fmt.Errorf("%s: %w", coverage.Reason, err)
 	}
-	result, validationErr := validateProviderResponse(request, answer, manifest, snapshotSources, record.ResolvedModel, request.PromptVersion)
+	result, validationErr := validateModelResponse(request, answer, manifest, snapshotSources, record.ResolvedModel, request.PromptVersion)
 	result.Manifest = safeManifest
 	result.Model = &record
 	if validationErr != nil {
@@ -288,13 +289,6 @@ func validateRequest(request ReviewRequest) error {
 		}
 	}
 	return nil
-}
-
-func effectivePromptVersion(configured, requested string) string {
-	if requested != "" {
-		return requested
-	}
-	return configured
 }
 
 func omissionPaths(omissions []ManifestOmission) []string {

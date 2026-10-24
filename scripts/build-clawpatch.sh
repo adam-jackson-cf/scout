@@ -43,6 +43,8 @@ absolute_directory() {
   (cd "$1" && pwd -P)
 }
 
+source "$script_dir/sha256.sh"
+
 while (($#)); do
   case "$1" in
     --source)
@@ -66,7 +68,7 @@ while (($#)); do
   esac
 done
 
-for prerequisite in git node pnpm tar shasum cut; do
+for prerequisite in git node pnpm tar cut; do
   command -v "$prerequisite" >/dev/null 2>&1 || die "required command is unavailable: $prerequisite"
 done
 
@@ -90,7 +92,7 @@ installed_pnpm_version="$(pnpm --version)" || die "cannot determine pnpm version
 [[ "$installed_pnpm_version" == "$PNPM_VERSION" ]] || die "pnpm $PNPM_VERSION is required; found $installed_pnpm_version"
 
 [[ -f "$safety_patch" ]] || die "review safety patch is unavailable: $safety_patch"
-actual_patch_sha256="$(shasum -a 256 "$safety_patch" | cut -d ' ' -f1)" || die "cannot checksum review safety patch"
+actual_patch_sha256="$(sha256 "$safety_patch")" || die "cannot checksum review safety patch"
 [[ "$actual_patch_sha256" == "$SCOUT_REVIEW_SAFETY_PATCH_SHA256" ]] || die "review safety patch checksum mismatch"
 
 stage_dir="$(mktemp -d "$output_root/.clawpatch-build.XXXXXX")" || die "cannot create build staging directory"

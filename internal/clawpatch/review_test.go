@@ -8,6 +8,9 @@ import (
 	"scout/internal/domain"
 )
 
+// testFindingCap is an arbitrary per-feature finding cap for coverage tests.
+const testFindingCap = 10
+
 func TestCoverageFromReviewPreservesCompletePromptManifest(t *testing.T) {
 	feature := reviewTestFeature("feature", "src/service.go")
 	response := reviewResponse{ReviewManifests: []featureReviewManifest{{
@@ -28,7 +31,7 @@ func TestCoverageFromReviewPreservesCompletePromptManifest(t *testing.T) {
 		},
 	}}}
 
-	coverage, manifest, incomplete := coverageFromReview(feature, response, defaultMaxFindingsPerFeature)
+	coverage, manifest, incomplete := coverageFromReview(feature, response, testFindingCap)
 	if incomplete || coverage.Status != domain.CoverageInspected {
 		t.Fatalf("complete prompt manifest became incomplete: %+v", coverage)
 	}
@@ -40,7 +43,7 @@ func TestCoverageFromReviewPreservesCompletePromptManifest(t *testing.T) {
 func TestCoverageFromReviewMarksDefaultFindingCapIncomplete(t *testing.T) {
 	feature := reviewTestFeature("feature", "src/service.go")
 	response := reviewResponse{
-		Findings: defaultMaxFindingsPerFeature,
+		Findings: testFindingCap,
 		ReviewManifests: []featureReviewManifest{{
 			FeatureID: feature.FeatureID,
 			Manifest: reviewPromptManifest{
@@ -60,7 +63,7 @@ func TestCoverageFromReviewMarksDefaultFindingCapIncomplete(t *testing.T) {
 		}},
 	}
 
-	coverage, manifest, incomplete := coverageFromReview(feature, response, defaultMaxFindingsPerFeature)
+	coverage, manifest, incomplete := coverageFromReview(feature, response, testFindingCap)
 	if !incomplete || coverage.Status != domain.CoverageIncomplete || !manifest.FindingCapReached {
 		t.Fatalf("finding-cap review was treated as complete: coverage=%+v manifest=%+v", coverage, manifest)
 	}

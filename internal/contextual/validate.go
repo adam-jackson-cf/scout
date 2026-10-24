@@ -14,33 +14,33 @@ import (
 	"scout/internal/domain"
 )
 
-type providerResponse struct {
-	Status                 string             `json:"status"`
-	Reason                 string             `json:"reason"`
-	Inspected              []providerCitation `json:"inspected"`
-	DeterministicBlindSpot string             `json:"deterministicBlindSpot"`
-	Findings               []providerFinding  `json:"findings"`
-	Omissions              []string           `json:"omissions"`
+type modelResponse struct {
+	Status                 string          `json:"status"`
+	Reason                 string          `json:"reason"`
+	Inspected              []modelCitation `json:"inspected"`
+	DeterministicBlindSpot string          `json:"deterministicBlindSpot"`
+	Findings               []modelFinding  `json:"findings"`
+	Omissions              []string        `json:"omissions"`
 }
 
-type providerCitation struct {
+type modelCitation struct {
 	Path      string `json:"path"`
 	StartLine int    `json:"startLine"`
 	EndLine   int    `json:"endLine"`
 	Quote     string `json:"quote"`
 }
 
-type providerFinding struct {
-	Mechanism    string           `json:"mechanism"`
-	Evidence     providerCitation `json:"evidence"`
-	Confidence   string           `json:"confidence"`
-	Uncertainty  string           `json:"uncertainty"`
-	Reproduction string           `json:"reproduction"`
-	Severity     json.RawMessage  `json:"severity"`
+type modelFinding struct {
+	Mechanism    string          `json:"mechanism"`
+	Evidence     modelCitation   `json:"evidence"`
+	Confidence   string          `json:"confidence"`
+	Uncertainty  string          `json:"uncertainty"`
+	Reproduction string          `json:"reproduction"`
+	Severity     json.RawMessage `json:"severity"`
 }
 
-func validateProviderResponse(request ReviewRequest, raw []byte, manifest Manifest, source []promptSource, model, promptVersion string) (ReviewResult, error) {
-	response, err := decodeProviderResponse(raw)
+func validateModelResponse(request ReviewRequest, raw []byte, manifest Manifest, source []promptSource, model, promptVersion string) (ReviewResult, error) {
+	response, err := decodeModelResponse(raw)
 	if err != nil {
 		return emptyResult(request), err
 	}
@@ -49,34 +49,34 @@ func validateProviderResponse(request ReviewRequest, raw []byte, manifest Manife
 		return emptyResult(request), err
 	}
 	if (status == domain.CoverageNotApplicable || status == domain.CoverageRequiresManualVerification) && strings.TrimSpace(response.Reason) == "" {
-		return emptyResult(request), errors.New("provider response requires a reason for non-covered status")
+		return emptyResult(request), errors.New("model answer requires a reason for non-covered status")
 	}
 	if len(response.Inspected) == 0 {
-		return emptyResult(request), errors.New("provider response has no inspected source rows")
+		return emptyResult(request), errors.New("model answer has no inspected source rows")
 	}
 	if strings.TrimSpace(response.DeterministicBlindSpot) == "" {
-		return emptyResult(request), errors.New("provider response has no deterministic blind-spot judgment")
+		return emptyResult(request), errors.New("model answer has no deterministic blind-spot judgment")
 	}
 	known := sourceByPath(source)
 	inspected := make([]domain.SourceRange, 0, len(response.Inspected))
 	for _, citation := range response.Inspected {
 		resolved, err := validateCitation(citation, manifest, known)
 		if err != nil {
-			return emptyResult(request), fmt.Errorf("provider inspected row: %w", err)
+			return emptyResult(request), fmt.Errorf("model inspected row: %w", err)
 		}
 		inspected = appendUniqueRange(inspected, resolved)
 	}
 	if len(inspected) == 0 {
-		return emptyResult(request), errors.New("provider response has no valid inspected source rows")
+		return emptyResult(request), errors.New("model answer has no valid inspected source rows")
 	}
 	if status == domain.CoverageFlagged && len(response.Findings) == 0 {
-		return emptyResult(request), errors.New("flagged provider response has no findings")
+		return emptyResult(request), errors.New("flagged model answer has no findings")
 	}
 	if status == domain.CoverageCovered && len(response.Findings) != 0 {
-		return emptyResult(request), errors.New("covered provider response cannot contain findings")
+		return emptyResult(request), errors.New("covered model answer cannot contain findings")
 	}
 	if status == domain.CoverageNotApplicable && len(response.Findings) != 0 {
-		return emptyResult(request), errors.New("not-applicable provider response cannot contain findings")
+		return emptyResult(request), errors.New("not-applicable model answer cannot contain findings")
 	}
 
 	redactor := secretRedactor{}
@@ -118,15 +118,15 @@ func emptyResult(request ReviewRequest) ReviewResult {
 	return ReviewResult{Coverage: domain.Coverage{Key: domain.CoverageKey{FeatureID: request.Feature.FeatureID, Family: request.Family, Category: request.Category}}}
 }
 
-// decodeProviderResponse parses the model's answer strictly: one JSON object
+// decodeModelResponse parses the model's answer strictly: one JSON object
 // with the declared fields only. No fence stripping, envelope or repair.
-func decodeProviderResponse(raw []byte) (providerResponse, error) {
-	var response providerResponse
+func decodeModelResponse(raw []byte) (modelResponse, error) {
+	var response modelResponse
 	if err := decodeStrictJSON(raw, &response); err != nil {
-		return providerResponse{}, fmt.Errorf("decode model answer JSON: %w", err)
+		return modelResponse{}, fmt.Errorf("decode model answer JSON: %w", err)
 	}
 	if response.Status == "" {
-		return providerResponse{}, errors.New("model answer has no status")
+		return modelResponse{}, errors.New("model answer has no status")
 	}
 	return response, nil
 }
@@ -142,7 +142,7 @@ func responseCoverageStatus(value string) (domain.CoverageStatus, error) {
 	case string(domain.CoverageRequiresManualVerification):
 		return domain.CoverageRequiresManualVerification, nil
 	default:
-		return "", fmt.Errorf("invalid provider coverage status %q", value)
+		return "", fmt.Errorf("invalid model coverage status %q", value)
 	}
 }
 
@@ -154,16 +154,16 @@ func sourceByPath(sources []promptSource) map[string]promptSource {
 	return byPath
 }
 
-func validateCitation(citation providerCitation, manifest Manifest, sources map[string]promptSource) (domain.SourceRange, error) {
+func validateCitation(citation modelCitation, manifest Manifest, sources map[string]promptSource) (domain.SourceRange, error) {
 	if citation.Path == "" || citation.StartLine < 1 || citation.EndLine < citation.StartLine || strings.TrimSpace(citation.Quote) == "" {
 		return domain.SourceRange{}, errors.New("citation requires path, line range, and quote")
 	}
 	source, exists := sources[citation.Path]
 	if !exists {
-		return domain.SourceRange{}, errors.New("citation path was not included in provider context")
+		return domain.SourceRange{}, errors.New("citation path was not included in model request context")
 	}
 	if citation.StartLine < source.StartLine || citation.EndLine > source.EndLine {
-		return domain.SourceRange{}, errors.New("citation range was not included in provider context")
+		return domain.SourceRange{}, errors.New("citation range was not included in model request context")
 	}
 	if !containsExactLineQuote(source.Text, citation.StartLine-source.StartLine+1, citation.EndLine-source.StartLine+1, citation.Quote) {
 		return domain.SourceRange{}, errors.New("citation quote does not match the source snapshot range")
@@ -224,7 +224,7 @@ func adapterResultIDs(results []domain.AdapterResult) []string {
 	return ids
 }
 
-func validatedObservation(request ReviewRequest, finding providerFinding, manifest Manifest, sources map[string]promptSource, model, promptVersion string, redactor secretRedactor) (domain.Observation, error) {
+func validatedObservation(request ReviewRequest, finding modelFinding, manifest Manifest, sources map[string]promptSource, model, promptVersion string, redactor secretRedactor) (domain.Observation, error) {
 	if strings.TrimSpace(finding.Mechanism) == "" {
 		return domain.Observation{}, errors.New("finding has no mechanism")
 	}

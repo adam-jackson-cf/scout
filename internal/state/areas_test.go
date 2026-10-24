@@ -55,7 +55,7 @@ func TestAreasExportImportExportIsByteIdenticalAndLeavesIdentityAlone(t *testing
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := len(splitLines(first[ExportAreas])); got != 2 {
+	if got := len(SplitLines(first[ExportAreas])); got != 2 {
 		t.Fatalf("areas.jsonl has %d rows, want 2", got)
 	}
 	if bytes.Contains(first[ExportAreas], []byte(`\u003c`)) {

@@ -6,16 +6,8 @@ import (
 	"time"
 
 	"scout/internal/clawpatch"
+	"scout/internal/domain"
 	"scout/internal/state"
-)
-
-// RefreshEvent is the kind of run asking whether the onboarding agent map is due.
-type RefreshEvent string
-
-const (
-	RefreshPR      RefreshEvent = "pr"
-	RefreshPush    RefreshEvent = "push"
-	RefreshNightly RefreshEvent = "nightly"
 )
 
 // RefreshStatus is the outcome of one agent-map evaluation.
@@ -50,7 +42,7 @@ type Refresher struct {
 
 // RefreshRun describes the run being evaluated.
 type RefreshRun struct {
-	Event         RefreshEvent
+	Event         domain.LaneTrigger
 	DefaultBranch bool // push runs: true only for pushes to the default branch
 	// Force is `scout map --refresh`: run the agent map now, ignoring the event.
 	Force bool
@@ -76,11 +68,11 @@ func (r *Refresher) Run(ctx context.Context, run RefreshRun) (RefreshOutcome, er
 		return r.refresh(ctx, record)
 	}
 	switch {
-	case run.Event == RefreshPR:
+	case run.Event == domain.TriggerPR:
 		return RefreshOutcome{Status: RefreshNone, Reason: "pull-request runs reuse the active snapshot"}, nil
-	case run.Event == RefreshPush && !run.DefaultBranch:
+	case run.Event == domain.TriggerPush && !run.DefaultBranch:
 		return RefreshOutcome{Status: RefreshNone, Reason: "only default-branch pushes onboard the map"}, nil
-	case run.Event != RefreshPush && run.Event != RefreshNightly:
+	case run.Event != domain.TriggerPush && run.Event != domain.TriggerNightly:
 		return RefreshOutcome{}, fmt.Errorf("unknown refresh event %q", run.Event)
 	case record.LastAgentRefreshAt != nil:
 		return RefreshOutcome{Status: RefreshNone, Reason: "onboarded; run `scout map --refresh` to remap"}, nil

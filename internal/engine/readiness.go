@@ -36,7 +36,7 @@ func AssessReadiness(ctx context.Context, config Config, options Options) (Readi
 		options.Scope.Kind = domain.ScopeRepository
 	}
 	if len(options.Scope.SelectedFamilies) == 0 {
-		options.Scope.SelectedFamilies = []domain.Family{domain.FamilyArchitecture, domain.FamilySecurity, domain.FamilyQuality, domain.FamilyPerformance}
+		options.Scope.SelectedFamilies = DefaultFamilies()
 	}
 	if err := options.Scope.Validate(); err != nil {
 		return result, err
@@ -76,39 +76,37 @@ func AssessReadiness(ctx context.Context, config Config, options Options) (Readi
 		return result, err
 	}
 
-	previousFiles := []domain.File(nil)
-	previousPlan := domain.Plan{}
-	latest := domain.Run{}
-	first := false
+	var previousFiles []domain.File
+	base := baselineState{}
 	store, err := state.OpenExistingReadOnly(root)
 	switch {
 	case errors.Is(err, state.ErrNotFound):
-		first = true
+		base.first = true
 	case err != nil:
 		add("baseline_state", true, errors.New("existing Scout state is unavailable"))
 		return result, nil
 	default:
 		defer store.Close()
-		latest, err = store.LatestFinalizedRun(ctx)
+		base.run, err = store.LatestFinalizedRun(ctx)
 		if errors.Is(err, state.ErrNotFound) {
-			first = true
+			base.first = true
 		} else if err == nil {
-			previousFiles, err = store.LoadInventory(ctx, latest.RunID)
+			previousFiles, err = store.LoadInventory(ctx, base.run.RunID)
 			if err == nil {
-				previousPlan, err = store.LoadPlan(ctx, latest.PlanID)
+				base.plan, err = store.LoadPlan(ctx, base.run.PlanID)
 			}
 		}
 		if err != nil && !errors.Is(err, state.ErrNotFound) {
 			add("baseline_state", true, errors.New("existing Scout baseline is unavailable"))
 			return result, nil
 		}
-		if errors.Is(err, state.ErrNotFound) && !first {
+		if errors.Is(err, state.ErrNotFound) && !base.first {
 			add("baseline_state", true, errors.New("latest Scout run lacks a finalized inventory"))
 			return result, nil
 		}
 	}
 	add("baseline_state", true, nil)
-	features, err := clawpatch.LoadFeatures(filepath.Join(root, ".scout", "clawpatch"))
+	features, err := clawpatch.LoadFeatures(clawpatch.StateDir(root))
 	if err != nil {
 		add("canonical_map_records", true, errors.New("canonical feature records are unavailable"))
 		return result, nil
@@ -122,7 +120,7 @@ func AssessReadiness(ctx context.Context, config Config, options Options) (Readi
 			return result, err
 		}
 	}
-	mappingRequired := options.ForceFull || first || len(features) == 0 || previousPlan.MapperDigest != mapperDigest || latest.Snapshot.WorktreeDigest != initial.Snapshot.WorktreeDigest || latest.Snapshot.IgnoreRulesDigest != initial.Snapshot.IgnoreRulesDigest || latest.Snapshot.ExclusionsDigest != initial.Snapshot.ExclusionsDigest
+	mappingRequired := needsMapping(options, base, len(features), initial.Snapshot, mapperDigest)
 	current, err := inventory.Scan(ctx, root, inventory.ScanOptions{Scope: options.Scope, Exclusions: options.Exclusions, Features: features})
 	if err != nil {
 		add("mapped_inventory", true, errors.New("feature-linked inventory is unavailable"))
@@ -133,51 +131,22 @@ func AssessReadiness(ctx context.Context, config Config, options Options) (Readi
 		add("change_plan", true, err)
 		return result, nil
 	}
-	selected := make(map[domain.Family]bool, len(options.Scope.SelectedFamilies))
-	featureCategories := make(map[domain.Family][]string, len(options.Scope.SelectedFamilies))
-	fileCategories := make(map[domain.Family][]string, len(options.Scope.SelectedFamilies))
-	for _, family := range options.Scope.SelectedFamilies {
-		selected[family] = true
-		featureCategories[family] = contextualCategories[family]
+	categories, err := selectCategories(specs, options.Scope.SelectedFamilies)
+	if err != nil {
+		add("change_plan", true, err)
+		return result, nil
 	}
-	byCategory := make(map[string]analyzers.Spec, len(specs))
-	for _, spec := range specs {
-		if !selected[spec.Family] {
-			continue
-		}
-		fileCategories[spec.Family] = append(fileCategories[spec.Family], spec.Category)
-		byCategory[categoryKey(spec.Family, spec.Category)] = spec
+	runID, err := newRunID()
+	if err != nil {
+		return result, err
 	}
-	baseline := make([]inventory.CachedCoverage, 0)
-	if !first {
-		fingerprints := make(map[string]string)
-		for _, job := range previousPlan.Jobs {
-			if job.CoverageKey != nil {
-				fingerprints[job.CoverageKey.String()] = job.InputFingerprint
-			}
-		}
-		for _, row := range latest.Coverage {
-			sourceRun := latest.RunID
-			if row.Status == domain.CoverageReused {
-				sourceRun = row.ReusedFromRunID
-			} else if !row.Status.Accounted() {
-				sourceRun = ""
-			}
-			baseline = append(baseline, inventory.CachedCoverage{Coverage: row, SourceRunID: sourceRun, InputFingerprint: fingerprints[row.Key.String()]})
-		}
-	}
-	runID := "readiness"
 	if resumePlan != nil {
 		runID = resumePlan.RunID
 	}
-	plan, err := inventory.Plan(inventory.PlanInput{
-		RunID: runID, Snapshot: current.Snapshot, Scope: current.Scope, ScopeDigest: current.ScopeDigest,
-		Files: current.Files, Features: features, Diff: diff, Dependencies: config.Dependencies,
-		FileCategories: fileCategories, FeatureCategories: featureCategories, Baseline: baseline,
-		ForceFull: options.ForceFull || first, MappingRequired: mappingRequired, ClawpatchReview: true,
-		PolicyDigest: digest("scout-policy-v2"), ToolDigest: digest(string(toolBytes)),
-		ModelDigest:  modelDigest,
-		MapperDigest: mapperDigest,
+	plan, err := planWork(planInput{
+		runID: runID, current: current, features: features, diff: diff, dependencies: config.Dependencies,
+		categories: categories, base: base, options: options, mappingRequired: mappingRequired,
+		toolDigest: digest(string(toolBytes)), modelDigest: modelDigest, mapperDigest: mapperDigest,
 	})
 	if err != nil {
 		add("change_plan", true, err)
@@ -186,11 +155,7 @@ func AssessReadiness(ctx context.Context, config Config, options Options) (Readi
 	committed := make(map[string]bool)
 	if resumePlan != nil {
 		jobs := append([]domain.Job(nil), plan.Plan.Jobs...)
-		jobs = append(jobs, domain.Job{
-			JobID: "job-" + digest(runID+"\x00final-inventory"),
-			Stage: domain.StageInventory, InputFingerprint: current.Snapshot.WorktreeDigest,
-			State: domain.JobPending, InvalidationReason: "verify source snapshot after analysis",
-		})
+		jobs = append(jobs, finalInventoryJob(runID, current.Snapshot))
 		if plan.Plan.PlanID != resumePlan.PlanID || !reflect.DeepEqual(jobs, resumePlan.Jobs) {
 			add("change_plan", true, errors.New("interrupted plan no longer matches current selected work"))
 			return result, nil
@@ -222,7 +187,7 @@ func AssessReadiness(ctx context.Context, config Config, options Options) (Readi
 		}
 		switch job.Stage {
 		case domain.StageFileAnalysis:
-			if spec, ok := byCategory[categoryKey(job.CoverageKey.Family, job.CoverageKey.Category)]; ok && spec.Applicable(files[job.CoverageKey.FilePath]) {
+			if spec, ok := categories.spec[categoryKey(job.CoverageKey.Family, job.CoverageKey.Category)]; ok && spec.Applies(files[job.CoverageKey.FilePath]) {
 				scannerIDs[spec.ID] = true
 			}
 		case domain.StageClawpatchReview:

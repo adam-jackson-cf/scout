@@ -1,5 +1,6 @@
 // Package policy loads and evaluates the repository policy file
-// (.scout/policy.yaml). It is pure: no store access. The file is always read
+// (.scout/policy.yaml). It has no store access; its only I/O is reading the
+// file from git. The file is always read
 // from the base ref so a pull request cannot change the rules that gate it.
 //
 // Schema:
@@ -115,6 +116,7 @@ func Default() Policy {
 		activations: map[string]Activation{},
 		maintainers: map[string]bool{},
 		decisions:   Decisions{Provider: ProviderJev, MaxPerRun: DefaultMaxPerRun, MaxCostUSD: DefaultMaxCostUSD},
+		mapping:     DefaultMapping(),
 	}
 }
 

@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
@@ -389,12 +388,12 @@ func wouldBlockID(base, head, check, issue string) string {
 type Ranking struct {
 	// Method is the disclosure line: `deterministic (<reason>)`,
 	// `jev (unvalidated, X1 pending)`, or a partial form naming n/N.
-	Method             string `json:"method"`
-	Mode               string `json:"mode"`
-	Reason             string `json:"reason,omitempty"`
-	RankFormulaVersion string `json:"rank_formula_version"`
-	BaselineVersion    string `json:"baseline_version"`
-	JevQuality         string `json:"jev_quality,omitempty"`
+	Method             string             `json:"method"`
+	Mode               domain.RankingMode `json:"mode"`
+	Reason             string             `json:"reason,omitempty"`
+	RankFormulaVersion string             `json:"rank_formula_version"`
+	BaselineVersion    string             `json:"baseline_version"`
+	JevQuality         string             `json:"jev_quality,omitempty"`
 	// Thresholds is the status of the threshold record in force for the Jev
 	// question (`provisional`, `ready`, or `provisional (stale: ...)`); empty
 	// when Jev did not run.
@@ -407,23 +406,14 @@ type Ranking struct {
 // items: design §6 never shows Jev's probability (it stays in the state store
 // for X1), only the position and its disclosure.
 type RankingItem struct {
-	IssueID         string   `json:"issueId"`
-	Position        int      `json:"position"`
-	Score           *float64 `json:"score,omitempty"`
-	Reason          string   `json:"reason"`
-	Mode            string   `json:"mode"`
-	Ranking         string   `json:"ranking"`
-	BaselineScore   float64  `json:"baselineScore"`
-	QuestionVersion string   `json:"questionVersion,omitempty"`
-}
-
-// RankingOf ranks introduced and regressed issues. Jev ranks them when
-// decisions are enabled, a key is present, egress is allowed and the run is
-// trusted; otherwise the deterministic baseline ranks them and the reason is
-// disclosed. Annotations only ever change this ranking, never an issue state
-// or the gate, and the lane health it returns is optional.
-func RankingOf(ctx context.Context, in RankingInput) (Ranking, domain.LaneHealth, error) {
-	return rankWithDecisions(ctx, in)
+	IssueID         string             `json:"issueId"`
+	Position        int                `json:"position"`
+	Score           *float64           `json:"score,omitempty"`
+	Reason          string             `json:"reason"`
+	Mode            domain.RankingMode `json:"mode"`
+	Ranking         string             `json:"ranking"`
+	BaselineScore   float64            `json:"baselineScore"`
+	QuestionVersion string             `json:"questionVersion,omitempty"`
 }
 
 const summaryLimit = 60

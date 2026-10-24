@@ -92,7 +92,11 @@ func (s *Store) TriageWouldBlock(ctx context.Context, id, triage, actor, reason 
 		if err != nil {
 			return fmt.Errorf("triage would_block: %w", err)
 		}
-		if n, _ := result.RowsAffected(); n == 0 {
+		n, err := result.RowsAffected()
+		if err != nil {
+			return fmt.Errorf("triage would_block: %w", err)
+		}
+		if n == 0 {
 			return fmt.Errorf("would_block %q: %w", id, ErrNotFound)
 		}
 		return nil

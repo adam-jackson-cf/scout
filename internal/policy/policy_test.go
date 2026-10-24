@@ -77,6 +77,13 @@ func TestParseErrors(t *testing.T) {
 	}
 }
 
+func TestArchitectureKeyAcceptedAndIgnored(t *testing.T) {
+	p := mustParse(t, "architecture:\n  layers: [a, b]\n  max_cc: 15\n")
+	if p.Profile() != "report" {
+		t.Fatalf("profile %s", p.Profile())
+	}
+}
+
 func TestMappingPolicy(t *testing.T) {
 	if got := mustParse(t, "").Mapping(); got != DefaultMapping() || got.AreasMatchJaccard != 0.5 {
 		t.Fatalf("default mapping = %+v", got)

@@ -33,7 +33,7 @@ func TestBatchRunMatchesSingleFileRuns(t *testing.T) {
 		t.Skip("semgrep is not installed")
 	}
 	root, files := batchFixture(t)
-	spec := securitySpecs()[0]
+	spec := specForTest(t, "security.semgrep.python-unsafe-yaml-load")
 	runner, err := NewRunner(spec, "run-batch")
 	if err != nil {
 		t.Fatal(err)

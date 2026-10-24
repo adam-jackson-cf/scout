@@ -40,32 +40,43 @@ func WithDispositionView(ctx context.Context, view string, annotationVisible boo
 	return context.WithValue(ctx, dispositionViewKey{}, dispositionView{view: view, visible: annotationVisible})
 }
 
-// RecordAnnotation persists one annotation. The request body and answer are
-// refused when they carry credential-shaped content.
-func (s *Store) RecordAnnotation(ctx context.Context, annotation domain.Annotation) error {
+// RecordAnnotations persists a unit's annotations in one transaction: all rows
+// are stored or none. Request bodies and answers are refused when they carry
+// credential-shaped content.
+func (s *Store) RecordAnnotations(ctx context.Context, annotations []domain.Annotation) error {
 	if s.readOnly {
 		return errors.New("state store is read-only")
 	}
-	if err := annotation.Validate(); err != nil {
-		return err
+	type row struct {
+		annotation domain.Annotation
+		payload    []byte
 	}
-	if annotation.CreatedAt.IsZero() {
-		annotation.CreatedAt = time.Now().UTC()
-	}
-	for _, value := range []string{string(annotation.RequestBody), string(annotation.Answer), string(annotation.Usage)} {
-		if err := rejectUnsafePersistence(value); err != nil {
+	rows := make([]row, 0, len(annotations))
+	for _, annotation := range annotations {
+		if err := annotation.Validate(); err != nil {
 			return err
 		}
-	}
-	payload, err := encode(annotation)
-	if err != nil {
-		return err
+		if annotation.CreatedAt.IsZero() {
+			annotation.CreatedAt = time.Now().UTC()
+		}
+		for _, value := range []string{string(annotation.RequestBody), string(annotation.Answer), string(annotation.Usage)} {
+			if err := rejectUnsafePersistence(value); err != nil {
+				return err
+			}
+		}
+		payload, err := encode(annotation)
+		if err != nil {
+			return err
+		}
+		rows = append(rows, row{annotation, payload})
 	}
 	return s.withTransaction(ctx, func(tx *sql.Tx) error {
-		_, err := tx.ExecContext(ctx, `INSERT INTO annotations(annotation_id, run_id, issue_id, unit_key, question_version, stale, created_at, payload) VALUES (?, ?, ?, ?, ?, 0, ?, ?)`,
-			annotation.AnnotationID, annotation.RunID, annotation.IssueID, annotation.UnitKey, annotation.QuestionVersion, unixMillis(annotation.CreatedAt), payload)
-		if err != nil {
-			return fmt.Errorf("record annotation: %w", err)
+		for _, r := range rows {
+			a := r.annotation
+			if _, err := tx.ExecContext(ctx, `INSERT INTO annotations(annotation_id, run_id, issue_id, unit_key, question_version, stale, created_at, payload) VALUES (?, ?, ?, ?, ?, 0, ?, ?)`,
+				a.AnnotationID, a.RunID, a.IssueID, a.UnitKey, a.QuestionVersion, unixMillis(a.CreatedAt), r.payload); err != nil {
+				return fmt.Errorf("record annotation: %w", err)
+			}
 		}
 		return nil
 	})

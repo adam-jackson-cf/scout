@@ -1,6 +1,7 @@
 package history
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -12,7 +13,10 @@ import (
 
 func mkSignal(sc Scope, w Window, o Options, metric string, population []string) domain.Signal {
 	id, ver, _ := strings.Cut(metric, "@")
-	v, _ := strconv.Atoi(ver)
+	v, err := strconv.Atoi(ver)
+	if err != nil { // metric IDs are package constants of the form name@version
+		panic(fmt.Sprintf("history metric %q has no integer version: %v", metric, err))
+	}
 	return domain.Signal{
 		MetricID:         id,
 		Version:          v,

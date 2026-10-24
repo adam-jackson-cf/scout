@@ -1,7 +1,6 @@
 package measures
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"encoding/xml"
@@ -14,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"scout/internal/analyzers"
 	"scout/internal/domain"
+	"scout/internal/sandbox"
 )
 
 // Pinned scanner versions (design §8.2). A different version is `unmeasured`:
@@ -63,11 +62,11 @@ func (t Tools) timeout() time.Duration {
 }
 
 // LizardDigest identifies the lizard tool and invocation.
-func LizardDigest() string { return digestOf("lizard", LizardVersion, "--xml", "-f", "-t 4") }
+func LizardDigest() string { return domain.Digest("lizard", LizardVersion, "--xml", "-f", "-t 4") }
 
 // JscpdDigest identifies the jscpd tool and invocation.
 func JscpdDigest() string {
-	return digestOf("jscpd", JscpdVersion, fmt.Sprint(jscpdMinTokens), fmt.Sprint(jscpdMinLines), fmt.Sprint(jscpdMaxLines), jscpdMaxSize, "json", "span=start+lines")
+	return domain.Digest("jscpd", JscpdVersion, fmt.Sprint(jscpdMinTokens), fmt.Sprint(jscpdMinLines), fmt.Sprint(jscpdMaxLines), jscpdMaxSize, "json", "span=start+lines")
 }
 
 // ConfigDigest identifies the eligibility rules and thresholds.
@@ -77,89 +76,65 @@ func ConfigDigest() string {
 		extensions = append(extensions, extension)
 	}
 	sort.Strings(extensions)
-	return digestOf("measures-config@1", strings.Join(extensions, ","), strings.Join(nonProductionGlobs, ","),
-		fmt.Sprint(MinFileNLOC), fmt.Sprint(HighCC), "scopes=feature+dir2@1")
+	return domain.Digest(fmt.Sprintf("measures-config@%d", metricVersion), strings.Join(extensions, ","), strings.Join(nonProductionGlobs, ","),
+		fmt.Sprint(MinFileNLOC), fmt.Sprint(HighCC), fmt.Sprintf("scopes=feature+dir2@%d", metricVersion))
 }
 
-func digestOf(parts ...string) string { return domain.Digest(parts...) }
-
-// scannerEnvironment gives a scanner no inherited credentials; PATH holds the
-// system directories plus the directory of the scanner (and of node, which
-// jscpd's launcher needs).
-func scannerEnvironment(state string, extraPath ...string) []string {
-	path := append(append([]string{}, extraPath...), "/usr/local/bin", "/usr/bin", "/bin", "/usr/sbin", "/sbin")
-	return []string{"HOME=" + state, "TMPDIR=" + state, "PATH=" + strings.Join(path, ":"), "LC_ALL=C"}
-}
-
-type limitedBuffer struct {
-	bytes.Buffer
-	limit    int
-	exceeded bool
-}
-
-func (b *limitedBuffer) Write(value []byte) (int, error) {
-	if b.Len()+len(value) > b.limit {
-		b.exceeded = true
-		return len(value), nil
+// request resolves binary on PATH and builds its sandboxed invocation. PATH
+// inside the sandbox adds the scanner's own directory and extraPath (node, for
+// jscpd's launcher).
+func (t Tools) request(workDir, state, binary string, args []string, extraPath []string) (sandbox.Request, error) {
+	resolved, err := exec.LookPath(binary)
+	if err != nil {
+		return sandbox.Request{}, fmt.Errorf("%s is not installed", filepath.Base(binary))
 	}
-	return b.Buffer.Write(value)
+	if err := sandbox.Available(); err != nil {
+		return sandbox.Request{}, errors.New("read-only scanner sandbox is not installed")
+	}
+	return sandbox.Request{
+		WorkDir: workDir, State: state, Binary: resolved, Args: args,
+		ExtraPath:   append([]string{filepath.Dir(resolved)}, extraPath...),
+		StdoutLimit: maxToolOutput, StderrLimit: 64 << 10,
+	}, nil
 }
 
 // runTool runs binary in the sandbox with workDir as the current directory and
 // returns stdout. Errors never carry scanner output.
 func (t Tools) runTool(ctx context.Context, workDir, state, binary string, args []string, extraPath ...string) ([]byte, error) {
-	resolved, err := exec.LookPath(binary)
-	if err != nil {
-		return nil, fmt.Errorf("%s is not installed", filepath.Base(binary))
-	}
-	if err := analyzers.SandboxAvailable(); err != nil {
-		return nil, errors.New("read-only scanner sandbox is not installed")
-	}
-	ctx, cancel := context.WithTimeout(ctx, t.timeout())
-	defer cancel()
-	command, err := analyzers.SandboxedCommand(ctx, workDir, state, resolved, args)
+	request, err := t.request(workDir, state, binary, args, extraPath)
 	if err != nil {
 		return nil, err
 	}
-	stdout, stderr := &limitedBuffer{limit: maxToolOutput}, &limitedBuffer{limit: 64 << 10}
-	command.Stdout, command.Stderr = stdout, stderr
-	command.Env = scannerEnvironment(state, append([]string{filepath.Dir(resolved)}, extraPath...)...)
-	if err := command.Run(); err != nil {
+	ctx, cancel := context.WithTimeout(ctx, t.timeout())
+	defer cancel()
+	stdout, _, err := sandbox.Run(ctx, request)
+	if err != nil {
 		if ctx.Err() != nil {
 			return nil, fmt.Errorf("%s timed out", filepath.Base(binary))
 		}
 		return nil, fmt.Errorf("%s failed: %w", filepath.Base(binary), err)
 	}
-	if stdout.exceeded {
+	if stdout.Exceeded() {
 		return nil, fmt.Errorf("%s output exceeds the bound", filepath.Base(binary))
 	}
 	return stdout.Bytes(), nil
 }
 
-// verifyVersion checks the scanner reports exactly the pinned version.
+// verifyVersion checks the scanner reports the pinned version.
 func (t Tools) verifyVersion(ctx context.Context, binary, want, state string, extraPath ...string) error {
-	output, err := t.runTool(ctx, state, state, binary, []string{"--version"}, extraPath...)
+	request, err := t.request(state, state, binary, []string{"--version"}, extraPath)
 	if err != nil {
 		return err
 	}
-	if got := strings.TrimSpace(string(output)); got != want {
-		return fmt.Errorf("%s version %q is not the pinned %s", filepath.Base(binary), got, want)
+	ctx, cancel := context.WithTimeout(ctx, t.timeout())
+	defer cancel()
+	if err := sandbox.VerifyVersion(ctx, request, want); err != nil {
+		return fmt.Errorf("%s is not the pinned version %s: %w", filepath.Base(binary), want, err)
 	}
 	return nil
 }
 
-func newState() (string, error) {
-	state, err := os.MkdirTemp("", "scout-measures-")
-	if err != nil {
-		return "", err
-	}
-	resolved, err := filepath.EvalSymlinks(state)
-	if err != nil {
-		_ = os.RemoveAll(state)
-		return "", err
-	}
-	return resolved, nil
-}
+func newState() (string, error) { return sandbox.NewState("scout-measures-") }
 
 // --- lizard ---------------------------------------------------------------
 

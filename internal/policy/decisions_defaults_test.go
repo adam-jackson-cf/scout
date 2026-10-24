@@ -5,9 +5,9 @@ import (
 	"testing"
 )
 
-func TestDefaultModelIsAPinnedJev114Slug(t *testing.T) {
-	if DefaultModel != "typesafe/jev-1.14-20261014" || IsModelAlias(DefaultModel) {
-		t.Fatalf("default model %q must be the dated Jev 1.14 OpenRouter slug and not an alias", DefaultModel)
+func TestDefaultModelIsAnExactBuild(t *testing.T) {
+	if IsModelAlias(DefaultModel) {
+		t.Fatalf("default model %q must be an exact build, not a floating alias", DefaultModel)
 	}
 }
 

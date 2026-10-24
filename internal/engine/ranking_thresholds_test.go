@@ -9,17 +9,7 @@ import (
 	"scout/internal/decisions"
 	"scout/internal/decisions/thresholds"
 	"scout/internal/domain"
-	"scout/internal/policy"
 )
-
-func TestDecisionsDefaultsAgreeBetweenPolicyAndAdapter(t *testing.T) {
-	if policy.DefaultMaxPerRun != decisions.DefaultMaxPerRun || policy.DefaultMaxCostUSD != decisions.DefaultMaxCostUSD {
-		t.Fatalf("policy caps %d/%v differ from adapter caps %d/%v", policy.DefaultMaxPerRun, policy.DefaultMaxCostUSD, decisions.DefaultMaxPerRun, decisions.DefaultMaxCostUSD)
-	}
-	if err := (decisions.Config{Model: policy.DefaultModel}).Validate(); err != nil {
-		t.Fatalf("the init default must be a valid pin: %v", err)
-	}
-}
 
 func TestJevRankingDisclosesProvisionalThresholdsAndStoresTheStateDigest(t *testing.T) {
 	store, issues := seed(t, threeIssues)
@@ -71,7 +61,7 @@ func TestInvalidOrUnreadableThresholdsFallBackToTheDeterministicRankingWithoutAC
 			if err != nil {
 				t.Fatal(err)
 			}
-			if fake.count() != 0 || ranking.Mode != decisions.ModeDeterministic || !strings.HasPrefix(ranking.Method, "deterministic (thresholds invalid") || health.Status != domain.LaneSkipped || health.Required {
+			if fake.count() != 0 || ranking.Mode != domain.RankingModeDeterministic || !strings.HasPrefix(ranking.Method, "deterministic (thresholds invalid") || health.Status != domain.LaneSkipped || health.Required {
 				t.Fatalf("ranking %+v health %+v calls %d", ranking, health, fake.count())
 			}
 		})

@@ -86,7 +86,7 @@ func stateCmd(ctx context.Context, args []string) int {
 		set.BoolVar(&trusted, "trusted", false, "assert a trusted default-branch run; PR and fork runs are read-only")
 	case "restore":
 	default:
-		fmt.Fprintln(os.Stderr, "unknown state command")
+		fmt.Fprintf(os.Stderr, "unknown state command %q\n", args[0])
 		return exitUnavailable
 	}
 	if !parse(set, args[1:], flags) {

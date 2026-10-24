@@ -2,6 +2,7 @@ package importgraph
 
 import (
 	"encoding/json"
+	"errors"
 	"path"
 	"regexp"
 	"sort"
@@ -135,18 +136,25 @@ type tsConfig struct {
 
 var reTrailingComma = regexp.MustCompile(`,\s*([}\]])`)
 
-func loadTSConfig(root, file string, seen map[string]bool) *tsConfig {
+// configError is a tsconfig that was read but could not be used; the importing
+// files are recorded as skipped. Read failures are returned as plain errors.
+type configError struct{ msg string }
+
+func (e *configError) Error() string { return e.msg }
+
+func loadTSConfig(root, file string, seen map[string]bool) (*tsConfig, error) {
 	dir := path.Dir(file)
 	if dir == "." {
 		dir = ""
 	}
 	if seen[file] {
-		return nil
+		return nil, &configError{"tsconfig extends cycle at " + file}
 	}
 	seen[file] = true
+	defer delete(seen, file) // seen is the current extends chain: a diamond is not a cycle
 	b, err := readFile(root, file)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	var raw struct {
 		Extends         json.RawMessage `json:"extends"` // string, or an array (TS 5)
@@ -156,8 +164,8 @@ func loadTSConfig(root, file string, seen map[string]bool) *tsConfig {
 		} `json:"compilerOptions"`
 	}
 	clean := reTrailingComma.ReplaceAllString(stripComments(string(b)), "$1")
-	if json.Unmarshal([]byte(clean), &raw) != nil {
-		return nil
+	if err := json.Unmarshal([]byte(clean), &raw); err != nil {
+		return nil, &configError{"tsconfig " + file + " is not valid JSON: " + err.Error()}
 	}
 	cfg := &tsConfig{dir: dir}
 	var extends []string
@@ -165,8 +173,8 @@ func loadTSConfig(root, file string, seen map[string]bool) *tsConfig {
 		var one string
 		if json.Unmarshal(raw.Extends, &one) == nil {
 			extends = []string{one}
-		} else {
-			_ = json.Unmarshal(raw.Extends, &extends)
+		} else if err := json.Unmarshal(raw.Extends, &extends); err != nil {
+			return nil, &configError{"tsconfig " + file + " has an unsupported extends value: " + err.Error()}
 		}
 	}
 	for _, e := range extends { // later entries override earlier ones
@@ -177,13 +185,15 @@ func loadTSConfig(root, file string, seen map[string]bool) *tsConfig {
 		if !strings.HasSuffix(ext, ".json") {
 			ext += ".json"
 		}
-		if parent := loadTSConfig(root, ext, seen); parent != nil {
-			if parent.hasBase {
-				cfg.baseURL, cfg.hasBase = parent.baseURL, true
-			}
-			if parent.paths != nil {
-				cfg.paths, cfg.pathsAt = parent.paths, parent.pathsAt
-			}
+		parent, err := loadTSConfig(root, ext, seen)
+		if err != nil {
+			return nil, err
+		}
+		if parent.hasBase {
+			cfg.baseURL, cfg.hasBase = parent.baseURL, true
+		}
+		if parent.paths != nil {
+			cfg.paths, cfg.pathsAt = parent.paths, parent.pathsAt
 		}
 	}
 	if raw.CompilerOptions.BaseURL != nil {
@@ -198,7 +208,7 @@ func loadTSConfig(root, file string, seen map[string]bool) *tsConfig {
 	if cfg.paths != nil && cfg.hasBase {
 		cfg.pathsAt = cfg.baseURL
 	}
-	return cfg
+	return cfg, nil
 }
 
 func buildTS(root string, files []string, es *edgeSet) ([]string, error) {
@@ -213,29 +223,42 @@ func buildTS(root string, files []string, es *edgeSet) ([]string, error) {
 	if len(ts) == 0 {
 		return nil, nil
 	}
-	cfgCache := map[string]*tsConfig{}
-	nearest := func(f string) *tsConfig {
+	type loaded struct {
+		cfg *tsConfig
+		bad *configError
+	}
+	cfgCache := map[string]*loaded{}
+	var loadErr error
+	// nearest returns the closest tsconfig above f. A config that exists but is
+	// unusable stops the search and is returned as bad.
+	nearest := func(f string) (*tsConfig, *configError) {
 		for d := path.Dir(f); ; d = path.Dir(d) {
 			dd := d
 			if dd == "." {
 				dd = ""
 			}
-			if c, ok := cfgCache[dd]; ok {
-				if c != nil {
-					return c
+			l, ok := cfgCache[dd]
+			if !ok {
+				l = &loaded{}
+				if file := path.Join(dd, "tsconfig.json"); fileSet[file] {
+					cfg, err := loadTSConfig(root, file, map[string]bool{})
+					var ce *configError
+					switch {
+					case errors.As(err, &ce):
+						l.bad = ce
+					case err != nil:
+						loadErr = err
+					default:
+						l.cfg = cfg
+					}
 				}
-			} else {
-				c := (*tsConfig)(nil)
-				if fileSet[path.Join(dd, "tsconfig.json")] {
-					c = loadTSConfig(root, path.Join(dd, "tsconfig.json"), map[string]bool{})
-				}
-				cfgCache[dd] = c
-				if c != nil {
-					return c
-				}
+				cfgCache[dd] = l
+			}
+			if l.cfg != nil || l.bad != nil {
+				return l.cfg, l.bad
 			}
 			if d == "." || d == "/" {
-				return nil
+				return nil, nil
 			}
 		}
 	}
@@ -281,8 +304,13 @@ func buildTS(root string, files []string, es *edgeSet) ([]string, error) {
 		if err != nil {
 			return nil, err
 		}
-		cfg := (*tsConfig)(nil)
-		cfgLoaded := false
+		cfg, bad := nearest(f)
+		if loadErr != nil {
+			return nil, loadErr
+		}
+		if bad != nil {
+			es.skip(f, bad.msg)
+		}
 		for _, imp := range parseTS(string(src)) {
 			spec := imp.spec
 			if strings.HasPrefix(spec, ".") {
@@ -293,9 +321,6 @@ func buildTS(root string, files []string, es *edgeSet) ([]string, error) {
 					es.unres[Unresolved{f, spec}] = true
 				}
 				continue
-			}
-			if !cfgLoaded {
-				cfg, cfgLoaded = nearest(f), true
 			}
 			if cfg != nil {
 				if t, matched, ok := resolveAlias(cfg, spec, resolveFile); matched {

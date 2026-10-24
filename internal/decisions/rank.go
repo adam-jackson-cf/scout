@@ -5,6 +5,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"sort"
+
+	"scout/internal/domain"
 )
 
 // Formula is the named rank formula composed in code over Jev outputs only,
@@ -48,13 +50,18 @@ func (f Formula) Version(resolvedModelID string) string {
 // Score combines stored answers (question id -> probability); ok is false if
 // a weighted question has no answer.
 func (f Formula) Score(answers map[string]float64) (float64, bool) {
+	ids := make([]string, 0, len(f.Weights))
+	for id := range f.Weights {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
 	score := 0.0
-	for id, weight := range f.Weights {
+	for _, id := range ids {
 		p, ok := answers[id]
 		if !ok {
 			return 0, false
 		}
-		score += weight * p
+		score += f.Weights[id] * p
 	}
 	return score, true
 }
@@ -73,13 +80,6 @@ func (b BaselineVersion) String() string {
 	return b.FormulaID + "+weights:" + b.RuleWeightDigest + "+path-role:" + b.PathRoleVersion
 }
 
-// Mode of one ranked finding.
-const (
-	ModeJev           = "jev"
-	ModeDeterministic = "deterministic"
-	ModePartial       = "partial"
-)
-
 // Item is one finding to rank.
 type Item struct {
 	IssueID  string
@@ -87,7 +87,7 @@ type Item struct {
 	// Answers holds stored probabilities by question id; nil when the finding
 	// has no annotation.
 	Answers    map[string]float64
-	Mode       string
+	Mode       domain.RankingMode
 	Disclosure string
 }
 

@@ -91,12 +91,12 @@ func baselineRanking(issues []domain.AttributedIssue, reason string) (Ranking, [
 	items := make([]decisions.Item, 0, len(issues))
 	reasons := map[string]string{}
 	for _, item := range rankable(issues) {
-		items = append(items, decisions.Item{IssueID: item.IssueID, Baseline: item.RankingScore, Mode: decisions.ModeDeterministic, Disclosure: disclosure})
+		items = append(items, decisions.Item{IssueID: item.IssueID, Baseline: item.RankingScore, Mode: domain.RankingModeDeterministic, Disclosure: disclosure})
 		reasons[item.IssueID] = item.RankingReason
 	}
 	ranked := decisions.Rank(decisions.LaunchFormula(), items)
 	ranking := Ranking{
-		Method: disclosure, Mode: decisions.ModeDeterministic, Reason: reason, Items: make([]RankingItem, 0, len(ranked)),
+		Method: disclosure, Mode: domain.RankingModeDeterministic, Reason: reason, Items: make([]RankingItem, 0, len(ranked)),
 		BaselineVersion: BaselineVersion().String(), RankFormulaVersion: decisions.LaunchFormula().Version(""),
 	}
 	for _, r := range ranked {
@@ -108,7 +108,12 @@ func baselineRanking(issues []domain.AttributedIssue, reason string) (Ranking, [
 	return ranking, ranked
 }
 
-func rankWithDecisions(ctx context.Context, in RankingInput) (Ranking, domain.LaneHealth, error) {
+// RankingOf ranks introduced and regressed issues. Jev ranks them when
+// decisions are enabled, a key is present, egress is allowed and the run is
+// trusted; otherwise the deterministic baseline ranks them and the reason is
+// disclosed. Annotations only ever change this ranking, never an issue state
+// or the gate, and the lane health it returns is optional.
+func RankingOf(ctx context.Context, in RankingInput) (Ranking, domain.LaneHealth, error) {
 	cfg := decisions.Config{
 		Enabled: in.Policy.Enabled, Model: in.Policy.Model, MaxPerRun: in.Policy.MaxPerRun, MaxCostUSD: in.Policy.MaxCostUSD, EgressAcknowledged: in.Policy.EgressAcknowledged,
 	}
@@ -267,7 +272,7 @@ func jevRanking(outcome decisions.Outcome, ranked []decisions.Ranked, results ma
 	ranking := Ranking{Items: make([]RankingItem, 0, len(ranked))}
 	for _, r := range ranked {
 		item := RankingItem{IssueID: r.IssueID, Position: r.Position, Reason: issues[r.IssueID].RankingReason, Mode: r.Mode, Ranking: r.Disclosure, BaselineScore: r.Baseline}
-		if r.Mode == decisions.ModeDeterministic {
+		if r.Mode == domain.RankingModeDeterministic {
 			score := r.Score
 			item.Score = &score
 		}
@@ -283,7 +288,7 @@ func jevRanking(outcome decisions.Outcome, ranked []decisions.Ranked, results ma
 	}
 	switch {
 	case outcome.Total == 0:
-		ranking.Mode, ranking.Method, ranking.Reason = decisions.ModeDeterministic, "deterministic (no units)", "no units"
+		ranking.Mode, ranking.Method, ranking.Reason = domain.RankingModeDeterministic, "deterministic (no units)", "no units"
 	case outcome.Annotated == 0:
 		reason := outcome.Results[0].Reason
 		for _, result := range outcome.Results {
@@ -292,11 +297,11 @@ func jevRanking(outcome decisions.Outcome, ranked []decisions.Ranked, results ma
 				break
 			}
 		}
-		ranking.Mode, ranking.Method, ranking.Reason = decisions.ModeDeterministic, "deterministic ("+reason+")", reason
+		ranking.Mode, ranking.Method, ranking.Reason = domain.RankingModeDeterministic, "deterministic ("+reason+")", reason
 	case outcome.Annotated == outcome.Total:
-		ranking.Mode, ranking.Method = decisions.ModeJev, jev
+		ranking.Mode, ranking.Method = domain.RankingModeJev, jev
 	default:
-		ranking.Mode = decisions.ModeJev
+		ranking.Mode = domain.RankingModeJev
 		var rest []string
 		if outcome.Capped > 0 {
 			rest = append(rest, fmt.Sprintf("partial (%d/%d)", outcome.Attempted, outcome.Total))
@@ -367,34 +372,36 @@ func (in RankingInput) drawAudit(ctx context.Context, store *state.Store, formul
 	if fraction <= 0 {
 		fraction = decisions.ProvisionalFraction
 	}
+	// DrawAudit takes a bare draw function, so a failed random source is
+	// carried out of the closure and returned: the draw never silently skips.
+	var sourceErr error
 	draw := in.Rand
 	if draw == nil {
-		draw = secureFloat
+		draw = func() float64 {
+			value, err := secureFloat()
+			if err != nil {
+				sourceErr = errors.Join(sourceErr, err)
+			}
+			return value
+		}
 	}
 	_, err := decisions.DrawAudit(ctx, store, in.RunID, formulaVersion, units, fraction, draw, now)
-	return err
+	return errors.Join(err, sourceErr)
 }
 
 // secureFloat is a uniform value in [0, 1) from crypto/rand.
-func secureFloat() float64 {
+func secureFloat() (float64, error) {
 	var buffer [8]byte
 	if _, err := rand.Read(buffer[:]); err != nil {
-		return 1 // never selects on a failed source
+		return 1, fmt.Errorf("audit draw random source: %w", err)
 	}
-	return float64(binary.BigEndian.Uint64(buffer[:])>>11) / (1 << 53)
+	return float64(binary.BigEndian.Uint64(buffer[:])>>11) / (1 << 53), nil
 }
 
-// ApplyDecisionsHealth sets the decisions lane row in health, replacing a
-// placeholder row. The lane is optional, so this never changes the exit code.
+// ApplyDecisionsHealth appends the decisions lane row to health. The lane is
+// optional, so this never changes the exit code.
 func ApplyDecisionsHealth(health []domain.LaneHealth, row domain.LaneHealth) []domain.LaneHealth {
-	out := append([]domain.LaneHealth(nil), health...)
-	for index := range out {
-		if out[index].Lane == LaneDecisions {
-			out[index] = row
-			return out
-		}
-	}
-	return append(out, row)
+	return append(append([]domain.LaneHealth(nil), health...), row)
 }
 
 // CommittedThresholds reads the thresholds override committed at ref, the ref

@@ -21,6 +21,9 @@ func (s Spec) Batches(root string, files []domain.File) [][]domain.File {
 	var bytes int64
 	var argBytes, manifestBytes int
 	for _, file := range files {
+		// An unstatable file contributes no scanned bytes: Run rejects it as
+		// unreadable with its own incomplete coverage row, so size 0 cannot
+		// push a batch past MaxTotalBytes.
 		size := int64(0)
 		if info, err := os.Stat(filepath.Join(root, file.Path)); err == nil {
 			size = info.Size()

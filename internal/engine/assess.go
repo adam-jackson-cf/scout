@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"sort"
 	"time"
 
 	"scout/internal/analyzers"
@@ -77,6 +76,7 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 			return result, err
 		}
 	}
+	base := baselineState{first: first, run: latest, plan: previousPlan}
 	client, err := clawpatch.New(root, clawpatch.Config{BinaryPath: config.ClawpatchBinary, EgressAuthorized: config.ClawpatchEgressAuthorized, Provider: config.ClawpatchProvider})
 	if err != nil {
 		return result, err
@@ -99,11 +99,12 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 			return result, err
 		}
 	}
-	mappingRequired := options.ForceFull || first || len(previousFeatures) == 0 || previousPlan.MapperDigest != mapperDigest || latest.Snapshot.WorktreeDigest != snapshot.Snapshot.WorktreeDigest || latest.Snapshot.IgnoreRulesDigest != snapshot.Snapshot.IgnoreRulesDigest || latest.Snapshot.ExclusionsDigest != snapshot.Snapshot.ExclusionsDigest
-	mapped, mapErr, persistErr := mapBeforeAnalysis(ctx, store, client, snapshot, mappingRequired && resumePlan == nil, digest("scout-policy-v2"), digest(string(toolDigest)), modelDigest, mapperDigest)
+	mappingRequired := needsMapping(options, base, len(previousFeatures), snapshot.Snapshot, mapperDigest)
+	outcome, persistErr := mapBeforeAnalysis(ctx, store, client, snapshot, mappingRequired && resumePlan == nil, digest(string(toolDigest)), modelDigest, mapperDigest)
 	if persistErr != nil {
 		return result, persistErr
 	}
+	mapped, mapErr := outcome.result, outcome.err
 	result.Map = mapped
 	features := mapped.Features
 	if mapErr != nil && len(features) == 0 {
@@ -128,27 +129,11 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 		}
 	}
 	result.MappingGaps = mergeMappingGaps(diff.MappingGaps, current.MappingGaps)
-	specByKey := make(map[string]analyzers.Spec, len(specs))
-	fileCategories := map[domain.Family][]string{}
-	selected := map[domain.Family]bool{}
-	for _, family := range options.Scope.SelectedFamilies {
-		selected[family] = true
+	categories, err := selectCategories(specs, options.Scope.SelectedFamilies)
+	if err != nil {
+		return result, err
 	}
-	for _, spec := range specs {
-		if !selected[spec.Family] {
-			continue
-		}
-		key := categoryKey(spec.Family, spec.Category)
-		if _, exists := specByKey[key]; exists {
-			return result, fmt.Errorf("multiple scanners claim %s", key)
-		}
-		specByKey[key] = spec
-		fileCategories[spec.Family] = append(fileCategories[spec.Family], spec.Category)
-	}
-	featureCategories := map[domain.Family][]string{}
-	for _, family := range options.Scope.SelectedFamilies {
-		featureCategories[family] = contextualCategories[family]
-	}
+	specByKey := categories.spec
 	runID, err := newRunID()
 	if err != nil {
 		return result, err
@@ -156,34 +141,16 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 	if resumePlan != nil {
 		runID = resumePlan.RunID
 	}
-	baseline := make([]inventory.CachedCoverage, 0)
-	if !first {
-		fingerprints := map[string]string{}
-		for _, job := range previousPlan.Jobs {
-			if job.CoverageKey != nil {
-				fingerprints[job.CoverageKey.String()] = job.InputFingerprint
-			}
-		}
-		for _, row := range latest.Coverage {
-			sourceRun := ""
-			if row.Status == domain.CoverageReused {
-				sourceRun = row.ReusedFromRunID
-			} else if row.Status.Accounted() {
-				sourceRun = latest.RunID
-			}
-			baseline = append(baseline, inventory.CachedCoverage{Coverage: row, SourceRunID: sourceRun, InputFingerprint: fingerprints[row.Key.String()]})
-		}
-	}
-	planResult, err := inventory.Plan(inventory.PlanInput{RunID: runID, Snapshot: current.Snapshot, Scope: current.Scope, ScopeDigest: current.ScopeDigest, Files: current.Files, Features: features, Diff: diff, Dependencies: config.Dependencies, FileCategories: fileCategories, FeatureCategories: featureCategories, Baseline: baseline, ForceFull: options.ForceFull || first, MappingRequired: mappingRequired, ClawpatchReview: true, PolicyDigest: digest("scout-policy-v2"), ToolDigest: digest(string(toolDigest)), ModelDigest: modelDigest, MapperDigest: mapperDigest})
+	planResult, err := planWork(planInput{
+		runID: runID, current: current, features: features, diff: diff, dependencies: config.Dependencies,
+		categories: categories, base: base, options: options, mappingRequired: mappingRequired,
+		toolDigest: digest(string(toolDigest)), modelDigest: modelDigest, mapperDigest: mapperDigest,
+	})
 	if err != nil {
 		return result, err
 	}
 	// Source drift is an explicit planned job so its failure is durable too.
-	finalJob := domain.Job{
-		JobID: "job-" + digest(runID+"\x00final-inventory"),
-		Stage: domain.StageInventory, InputFingerprint: current.Snapshot.WorktreeDigest,
-		State: domain.JobPending, InvalidationReason: "verify source snapshot after analysis",
-	}
+	finalJob := finalInventoryJob(runID, current.Snapshot)
 	planResult.Plan.Jobs = append(planResult.Plan.Jobs, finalJob)
 	if mapErr != nil && !mappingRequired {
 		planResult.Plan.Jobs = append(planResult.Plan.Jobs, domain.Job{
@@ -273,7 +240,7 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 		}
 		commit := state.RunJobCommit{JobID: job.JobID, CommittedAt: time.Now().UTC()}
 		if mapErr != nil {
-			failure := domain.Failure{Stage: domain.StageMapping, JobID: job.JobID, Code: "mapping_blocked", Message: "canonical Clawpatch mapping did not complete"}
+			failure := mappingBlockedFailure(job.JobID)
 			commit.Failures = []domain.Failure{failure}
 			run.Failures = append(run.Failures, failure)
 		}
@@ -437,7 +404,7 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 		if committed[finalJob.JobID] {
 			return result, errors.New("source changed after the interrupted final inventory check")
 		}
-		failure := domain.Failure{Stage: domain.StageInventory, JobID: finalJob.JobID, Code: "source_drift", Message: "source changed during assessment or could not be rechecked"}
+		failure := domain.Failure{Stage: domain.StageInventory, JobID: finalJob.JobID, Code: failureSourceDrift, Message: "source changed during assessment or could not be rechecked"}
 		inventoryFailures = append(inventoryFailures, failure)
 		run.Failures = append(run.Failures, failure)
 	}
@@ -446,9 +413,9 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 		var inlineObservations []domain.Observation
 		for _, lane := range options.Inline {
 			found, laneErr := lane.Run(ctx, runID)
-			inlineHealth = append(inlineHealth, inlineLaneHealth(lane, len(found), laneErr))
+			inlineHealth = append(inlineHealth, inlineLaneHealth(lane, found, laneErr))
 			if laneErr == nil {
-				inlineObservations = append(inlineObservations, found...)
+				inlineObservations = append(inlineObservations, found.Observations...)
 			}
 		}
 		if options.Measures != nil {
@@ -539,7 +506,7 @@ func matchingResumablePlan(ctx context.Context, store *state.Store, snapshot dom
 			continue // A mapping preplan has no file or feature jobs to resume.
 		}
 		if plan.Snapshot == snapshot && reflect.DeepEqual(plan.Scope, scope) &&
-			plan.PolicyDigest == digest("scout-policy-v2") && plan.ToolDigest == toolDigest &&
+			plan.PolicyDigest == digest(policyDigestSeed) && plan.ToolDigest == toolDigest &&
 			plan.ModelDigest == modelDigest && plan.MapperDigest == mapperDigest {
 			return &plan, nil
 		}
@@ -547,16 +514,24 @@ func matchingResumablePlan(ctx context.Context, store *state.Store, snapshot dom
 	return nil, nil
 }
 
+// mapOutcome is a canonical map attempt: err is the mapping failure, which the
+// run records and survives; it is distinct from a persistence failure.
+type mapOutcome struct {
+	result clawpatch.MapResult
+	err    error
+}
+
 // mapBeforeAnalysis records a mapping-only partial run before an authorized
-// mapper can inspect source. It never becomes a successful scan baseline.
-func mapBeforeAnalysis(ctx context.Context, store *state.Store, client *clawpatch.Client, snapshot inventory.ScanResult, requested bool, policyDigest, toolDigest, modelDigest, mapperDigest string) (clawpatch.MapResult, error, error) {
+// mapper can inspect source. It never becomes a successful scan baseline. The
+// returned error is a persistence failure; the mapping failure is in the outcome.
+func mapBeforeAnalysis(ctx context.Context, store *state.Store, client *clawpatch.Client, snapshot inventory.ScanResult, requested bool, toolDigest, modelDigest, mapperDigest string) (mapOutcome, error) {
 	if !requested {
 		mapped, err := client.Map(ctx, false, clawpatch.MapSourceHeuristic)
-		return mapped, err, nil
+		return mapOutcome{result: mapped, err: err}, nil
 	}
 	runID, err := newRunID()
 	if err != nil {
-		return clawpatch.MapResult{}, nil, err
+		return mapOutcome{}, err
 	}
 	job := domain.Job{
 		JobID: "job-" + digest(runID+"\x00canonical-mapping"), Stage: domain.StageMapping,
@@ -567,32 +542,33 @@ func mapBeforeAnalysis(ctx context.Context, store *state.Store, client *clawpatc
 	plan := domain.Plan{
 		PlanID: "plan-" + digest(runID+"\x00canonical-mapping"), RunID: runID,
 		Snapshot: snapshot.Snapshot, Scope: snapshot.Scope, Jobs: []domain.Job{job},
-		PolicyDigest: policyDigest, ToolDigest: toolDigest, ModelDigest: modelDigest,
+		PolicyDigest: digest(policyDigestSeed), ToolDigest: toolDigest, ModelDigest: modelDigest,
 		MapperDigest: mapperDigest, CreatedAt: started,
 	}
 	if err := store.SavePlan(ctx, plan); err != nil {
-		return clawpatch.MapResult{}, nil, err
+		return mapOutcome{}, err
 	}
 	run := domain.Run{RunID: runID, PlanID: plan.PlanID, Snapshot: snapshot.Snapshot, Scope: snapshot.Scope, State: domain.RunPartial, StartedAt: started}
 	if err := store.BeginRun(ctx, run); err != nil {
-		return clawpatch.MapResult{}, nil, err
+		return mapOutcome{}, err
 	}
 	mapped, mapErr := client.Map(ctx, true, clawpatch.MapSourceHeuristic)
+	outcome := mapOutcome{result: mapped, err: mapErr}
 	commit := state.RunJobCommit{JobID: job.JobID, CommittedAt: time.Now().UTC()}
 	if mapErr != nil {
-		failure := domain.Failure{Stage: domain.StageMapping, JobID: job.JobID, Code: "mapping_blocked", Message: "canonical Clawpatch mapping did not complete"}
+		failure := mappingBlockedFailure(job.JobID)
 		run.Failures = append(run.Failures, failure)
 		commit.Failures = []domain.Failure{failure}
 	}
 	if err := store.CommitRunJob(ctx, runID, commit); err != nil {
-		return mapped, mapErr, fmt.Errorf("persist pre-mapping job: %w", err)
+		return outcome, fmt.Errorf("persist pre-mapping job: %w", err)
 	}
 	finished := time.Now().UTC()
 	run.FinishedAt = &finished
 	if err := store.FinishRun(ctx, run, snapshot.Files); err != nil {
-		return mapped, mapErr, fmt.Errorf("finish pre-mapping run: %w", err)
+		return outcome, fmt.Errorf("finish pre-mapping run: %w", err)
 	}
-	return mapped, mapErr, nil
+	return outcome, nil
 }
 
 func newRunID() (string, error) {
@@ -667,18 +643,6 @@ func splitAdapter(batch domain.AdapterResult, found []domain.Observation, key do
 		}
 	}
 	return adapter, mine
-}
-
-// SortedCategories exposes the versioned contextual work queue for readiness.
-func SortedCategories() []string {
-	var result []string
-	for family, categories := range contextualCategories {
-		for _, category := range categories {
-			result = append(result, string(family)+":"+category)
-		}
-	}
-	sort.Strings(result)
-	return result
 }
 
 func mergeMappingGaps(groups ...[]inventory.MappingGap) []inventory.MappingGap {
@@ -829,5 +793,5 @@ func recordScanError(adapter *domain.AdapterResult, err error) {
 	if err == nil || len(adapter.Failures) > 0 {
 		return
 	}
-	adapter.Failures = []domain.Failure{{Stage: domain.StageFileAnalysis, Code: "scanner_failed", Message: "scanner batch did not complete"}}
+	adapter.Failures = []domain.Failure{{Stage: domain.StageFileAnalysis, Code: failureScannerFailed, Message: "scanner batch did not complete"}}
 }

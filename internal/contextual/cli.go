@@ -105,7 +105,11 @@ func (c *Client) run(parent context.Context, cli modelcli.Name, binary string, p
 		if len(bytes.TrimSpace(answer)) == 0 {
 			return nil, ModelRecord{}, errors.New("codex final message is empty")
 		}
-		return answer, ModelRecord{CLI: string(cli), ResolvedModel: codexModel(stdout.Bytes(), stderr.Bytes())}, nil
+		model, ok := codexModel(stdout.Bytes(), stderr.Bytes())
+		if !ok {
+			return nil, ModelRecord{}, errors.New("codex did not report the model that answered")
+		}
+		return answer, ModelRecord{CLI: string(cli), ResolvedModel: model}, nil
 	}
 }
 
@@ -128,25 +132,26 @@ func parseClaude(raw []byte) ([]byte, ModelRecord, error) {
 	for name := range envelope.ModelUsage {
 		models = append(models, name)
 	}
-	sort.Strings(models)
-	resolved := strings.Join(models, ",")
-	if resolved == "" {
-		resolved = "claude:unreported"
+	if len(models) == 0 {
+		return nil, ModelRecord{}, errors.New("claude result does not name the model that answered")
 	}
-	return []byte(*envelope.Result), ModelRecord{CLI: string(modelcli.Claude), ResolvedModel: resolved}, nil
+	sort.Strings(models)
+	return []byte(*envelope.Result), ModelRecord{CLI: string(modelcli.Claude), ResolvedModel: strings.Join(models, ",")}, nil
 }
 
 var codexModelLine = regexp.MustCompile(`(?m)^\s*model:\s*(\S+)\s*$`)
 
 // codexModel reads the model line codex prints in its run header
-// [INFERENCE: format taken from codex exec's banner; "codex:unreported" when absent].
-func codexModel(stdout, stderr []byte) string {
+// [INFERENCE: format taken from codex exec's banner]. It returns false when
+// the banner names no model: a review without an established model is not
+// recorded as if it had one.
+func codexModel(stdout, stderr []byte) (string, bool) {
 	for _, stream := range [][]byte{stderr, stdout} {
 		if match := codexModelLine.FindSubmatch(stream); match != nil {
-			return string(match[1])
+			return string(match[1]), true
 		}
 	}
-	return "codex:unreported"
+	return "", false
 }
 
 // limitedBuffer keeps at most maximumCLIOutputBytes and notes any overflow.

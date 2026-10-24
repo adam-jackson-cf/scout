@@ -3,6 +3,7 @@ package engine
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io/fs"
 	"os"
 	"os/exec"
@@ -71,7 +72,10 @@ func CapabilityMatrix(ctx context.Context, config Config, root string) (Matrix, 
 	if !info.IsDir() {
 		return Matrix{}, errors.New("assessment root is not a directory")
 	}
-	present := detectLanguages(ctx, root)
+	present, err := detectLanguages(ctx, root)
+	if err != nil {
+		return Matrix{}, err
+	}
 	matrix := Matrix{Languages: append([]string{}, MatrixLanguages...), InRepo: []string{}}
 	for _, language := range MatrixLanguages {
 		if present[language] {
@@ -145,7 +149,7 @@ func modelReviewCell(config Config) MatrixCell {
 
 // detectLanguages finds the matrix languages with source files in the
 // repository: tracked files when git answers, else a bounded walk.
-func detectLanguages(ctx context.Context, root string) map[string]bool {
+func detectLanguages(ctx context.Context, root string) (map[string]bool, error) {
 	found := map[string]bool{}
 	note := func(path string) {
 		if language, ok := matrixExtensions[strings.ToLower(filepath.Ext(path))]; ok {
@@ -156,13 +160,13 @@ func detectLanguages(ctx context.Context, root string) map[string]bool {
 		for _, name := range strings.Split(string(out), "\x00") {
 			note(name)
 		}
-		return found
+		return found, nil
 	}
 	skip := map[string]bool{".git": true, "node_modules": true, "vendor": true, ".scout": true, ".codegraph": true}
 	budget := 20000
-	_ = filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
+	err := filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
 		if err != nil {
-			return nil
+			return err
 		}
 		if entry.IsDir() {
 			if skip[entry.Name()] {
@@ -176,7 +180,10 @@ func detectLanguages(ctx context.Context, root string) map[string]bool {
 		note(path)
 		return nil
 	})
-	return found
+	if err != nil {
+		return nil, fmt.Errorf("detect repository languages: %w", err)
+	}
+	return found, nil
 }
 
 // Render prints the matrix as a Markdown table. Cells read `✓ (detail)` for

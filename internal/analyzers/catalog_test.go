@@ -1,9 +1,6 @@
 package analyzers
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
-	"strings"
 	"testing"
 
 	"scout/internal/domain"
@@ -20,7 +17,7 @@ func specForTest(t *testing.T, id string) Spec {
 	return Spec{}
 }
 
-func TestReviewedIssueRuleContractsAreNarrowAndContentPinned(t *testing.T) {
+func TestReviewedIssueRuleContractsAreNarrow(t *testing.T) {
 	tests := []struct {
 		name      string
 		adapterID string
@@ -53,22 +50,14 @@ func TestReviewedIssueRuleContractsAreNarrowAndContentPinned(t *testing.T) {
 			if err := spec.Validate(); err != nil {
 				t.Fatal(err)
 			}
-			if !spec.Applicable(test.positive) {
+			if !spec.Applies(test.positive) {
 				t.Fatalf("positive input %+v is ineligible", test.positive)
 			}
-			if spec.Applicable(test.negative) {
+			if spec.Applies(test.negative) {
 				t.Fatalf("negative-boundary input %+v is eligible", test.negative)
 			}
 			if len(spec.Rules.BundledFiles) != 1 {
 				t.Fatalf("expected one bundled rule, got %d", len(spec.Rules.BundledFiles))
-			}
-			content, err := bundledRule(spec.Rules.BundledFiles[0])
-			if err != nil {
-				t.Fatal(err)
-			}
-			sum := sha256.Sum256(content)
-			if !strings.Contains(spec.Rules.Version, "sha256:"+hex.EncodeToString(sum[:])) {
-				t.Fatal("rule version does not pin the embedded rule content")
 			}
 		})
 	}

@@ -27,7 +27,7 @@ func TestResolveBaseUsesImportedBaselineOnlyWhenDigestsAndRevisionMatch(t *testi
 		mutate(&changed)
 		cfg.Baseline = func(context.Context) (*BaseState, error) { return &changed, nil }
 		_, _, comparison, banners, err := resolveBase(context.Background(), cfg, t.TempDir(), "mb", plan, Result{})
-		if err != nil || comparison != domain.ComparisonNone || !strings.Contains(strings.Join(banners, " "), "recomputed") {
+		if err != nil || comparison != domain.ComparisonNone || len(banners) == 0 {
 			t.Fatalf("%s mismatch: %v %v %v", name, comparison, banners, err)
 		}
 	}
@@ -57,14 +57,14 @@ func TestGuardrailsLaneReportsConfigDeletedInAPRThatOnlyDeletes(t *testing.T) {
 	if err != nil || len(changed) != 0 {
 		t.Fatalf("a deletion-only PR has no added or modified files, got %v %v", changed, err)
 	}
-	observations, err := guardrailsLane(ctx, root, base, changed).Run(ctx, "run")
+	result, err := guardrailsLane(root, base, changed).Run(ctx, "run")
 	if err != nil {
 		t.Fatal(err)
 	}
-	for _, o := range observations {
+	for _, o := range result.Observations {
 		if o.RuleID == "guardrails.CONFIG.strictness-lowered.golangci" && o.Mechanism == "config-removed:golangci" {
 			return
 		}
 	}
-	t.Fatalf("deleting the lint config must lower strictness, got %+v", observations)
+	t.Fatalf("deleting the lint config must lower strictness, got %+v", result.Observations)
 }

@@ -8,6 +8,7 @@ import (
 	"go/parser"
 	"go/token"
 	"io"
+	"math"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
@@ -82,20 +83,33 @@ func client(f *fake) (*Client, *[]time.Duration) {
 	return &Client{Endpoint: f.server.URL, Key: testKey, Sleep: func(_ context.Context, d time.Duration) error { sleeps = append(sleeps, d); return nil }, Now: func() time.Time { return time.Unix(1_000, 0) }}, &sleeps
 }
 
+func testConfig() Config {
+	return Config{Model: testModel, MaxPerRun: 100, MaxCostUSD: 100}
+}
+
 func unit(id string, baseline float64) Unit {
-	return Unit{Family: FamilyTriage, Key: id, IssueID: id, Questions: []Question{TriageRealDefect}, State: json.RawMessage(fmt.Sprintf(`{"id":%q}`, id)), Baseline: baseline}
+	return Unit{Key: id, IssueID: id, Questions: []Question{TriageRealDefect}, State: json.RawMessage(fmt.Sprintf(`{"id":%q}`, id)), Baseline: baseline}
 }
 
 type memorySink struct {
 	mu   sync.Mutex
 	rows []domain.Annotation
+	fail error
 }
 
-func (m *memorySink) RecordAnnotation(_ context.Context, a domain.Annotation) error {
+func (m *memorySink) RecordAnnotations(_ context.Context, annotations []domain.Annotation) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	m.rows = append(m.rows, a)
-	return a.Validate()
+	if m.fail != nil {
+		return m.fail
+	}
+	for _, a := range annotations {
+		if err := a.Validate(); err != nil {
+			return err
+		}
+	}
+	m.rows = append(m.rows, annotations...)
+	return nil
 }
 
 func TestVersionKeyIsStableAndChangesOnEveryKeyedField(t *testing.T) {
@@ -233,7 +247,7 @@ func TestResolvedModelMismatchIsDiscardedAndIncomplete(t *testing.T) {
 	})
 	c, _ := client(f)
 	sink := &memorySink{}
-	out := Run(context.Background(), RunInput{Config: Config{Enabled: true, Model: testModel, MaxPerRun: 10}, Client: c, RunID: "run-1", Units: []Unit{unit("a", 2), unit("b", 1)}, Sink: sink})
+	out := Run(context.Background(), RunInput{Config: testConfig(), Client: c, RunID: "run-1", Units: []Unit{unit("a", 2), unit("b", 1)}, Sink: sink})
 	if out.Annotated != 1 || out.Incomplete != 1 || len(sink.rows) != 1 || sink.rows[0].IssueID != "a" {
 		t.Fatalf("outcome %+v annotations %d", out, len(sink.rows))
 	}
@@ -246,7 +260,7 @@ func TestResolvedModelMismatchIsDiscardedAndIncomplete(t *testing.T) {
 	if mismatched.Status != UnitIncomplete || len(mismatched.Annotations) != 0 {
 		t.Fatalf("mismatch result %+v", mismatched)
 	}
-	if mode, text := out.Disclosure(mismatched); mode != ModeDeterministic || text != "deterministic (model mismatch)" {
+	if mode, text := out.Disclosure(mismatched); mode != domain.RankingModeDeterministic || text != "deterministic (model mismatch)" {
 		t.Fatalf("disclosure %q %q", mode, text)
 	}
 	health := out.Health()
@@ -256,7 +270,7 @@ func TestResolvedModelMismatchIsDiscardedAndIncomplete(t *testing.T) {
 	// When every call is mismatched the lane has failed, never ran.
 	f2 := newFake(t, func(_ int, _ map[string]any, w http.ResponseWriter) { answer(w, "other", 0.9) })
 	c2, _ := client(f2)
-	all := Run(context.Background(), RunInput{Config: Config{Enabled: true, Model: testModel}, Client: c2, RunID: "r", Units: []Unit{unit("a", 1)}})
+	all := Run(context.Background(), RunInput{Config: testConfig(), Client: c2, RunID: "r", Units: []Unit{unit("a", 1)}})
 	if all.Health().Status != domain.LaneFailed {
 		t.Fatalf("health %+v", all.Health())
 	}
@@ -338,11 +352,11 @@ func TestOtherFailuresLeaveNoAnnotationAndNeverLeakTheKey(t *testing.T) {
 			f := newFake(t, func(_ int, _ map[string]any, w http.ResponseWriter) { respond(w) })
 			c, _ := client(f)
 			sink := &memorySink{}
-			out := Run(context.Background(), RunInput{Config: Config{Model: testModel}, Client: c, RunID: "r", Units: []Unit{unit("a", 1)}, Sink: sink})
+			out := Run(context.Background(), RunInput{Config: testConfig(), Client: c, RunID: "r", Units: []Unit{unit("a", 1)}, Sink: sink})
 			if out.Failed != 1 || len(sink.rows) != 0 || len(out.Results[0].Annotations) != 0 {
 				t.Fatalf("outcome %+v", out)
 			}
-			if mode, text := out.Disclosure(out.Results[0]); mode != ModeDeterministic || !strings.HasPrefix(text, "deterministic (") {
+			if mode, text := out.Disclosure(out.Results[0]); mode != domain.RankingModeDeterministic || !strings.HasPrefix(text, "deterministic (") {
 				t.Fatalf("disclosure %q", text)
 			}
 			if strings.Contains(out.Results[0].Reason, testKey) {
@@ -360,39 +374,6 @@ func TestOtherFailuresLeaveNoAnnotationAndNeverLeakTheKey(t *testing.T) {
 	_, err := c.Ask(context.Background(), []Question{TriageRealDefect}, testModel, "u", json.RawMessage(`{}`))
 	if failure, ok := err.(*Failure); !ok || failure.Kind != FailNetwork || strings.Contains(err.Error(), testKey) {
 		t.Fatalf("error %v", err)
-	}
-}
-
-func TestCapStopsAtMaxPerRunInDeterministicBaselineOrderAndCountsPartial(t *testing.T) {
-	var asked []string
-	var mu sync.Mutex
-	f := newFake(t, func(_ int, body map[string]any, w http.ResponseWriter) {
-		mu.Lock()
-		asked = append(asked, idOf(body))
-		mu.Unlock()
-		answer(w, testModel, 0.5)
-	})
-	c, _ := client(f)
-	units := []Unit{unit("e", 1), unit("c", 5), unit("b", 5), unit("a", 2), unit("d", 3)}
-	out := Run(context.Background(), RunInput{Config: Config{Model: testModel, MaxPerRun: 3}, Client: c, RunID: "r", Units: units})
-	if strings.Join(asked, ",") != "b,c,d" {
-		t.Fatalf("asked %v: want baseline order with ties by issue id", asked)
-	}
-	if out.Total != 5 || out.Attempted != 3 || out.Annotated != 3 || out.Capped != 2 {
-		t.Fatalf("outcome %+v", out)
-	}
-	health := out.Health()
-	if health.Status != domain.LaneRan || health.Reason != "partial (3/5)" || health.Units != 5 || health.Required {
-		t.Fatalf("health %+v", health)
-	}
-	var capped UnitResult
-	for _, r := range out.Results {
-		if r.Status == UnitCapped {
-			capped = r
-		}
-	}
-	if mode, text := out.Disclosure(capped); mode != ModePartial || text != "partial (3/5)" {
-		t.Fatalf("disclosure %q %q", mode, text)
 	}
 }
 
@@ -418,10 +399,45 @@ func TestCapOrderAcrossFamiliesFollowsDesign(t *testing.T) {
 		mk(FamilyRubric, RubricKey("pkg/b.go", 10), 0), mk(FamilyRubric, RubricKey("pkg/a.go", 100), 0), mk(FamilyRubric, RubricKey("pkg/a.go", 9), 0),
 		mk(FamilyTriage, "issue-low", 1), mk(FamilyTriage, "issue-high", 9),
 	}
-	Run(context.Background(), RunInput{Config: Config{Model: testModel, MaxPerRun: 100}, Client: c, RunID: "r", Units: units})
+	Run(context.Background(), RunInput{Config: testConfig(), Client: c, RunID: "r", Units: units})
 	want := []string{"issue-high", "issue-low", RubricKey("pkg/a.go", 9), RubricKey("pkg/a.go", 100), RubricKey("pkg/b.go", 10), "aaa", "bbb", "pkg/z.go"}
 	if fmt.Sprintf("%q", asked) != fmt.Sprintf("%q", want) {
 		t.Fatalf("asked %q\nwant  %q", asked, want)
+	}
+}
+
+func TestCapStopsAtMaxPerRunInDeterministicBaselineOrderAndCountsPartial(t *testing.T) {
+	var asked []string
+	var mu sync.Mutex
+	f := newFake(t, func(_ int, body map[string]any, w http.ResponseWriter) {
+		mu.Lock()
+		asked = append(asked, idOf(body))
+		mu.Unlock()
+		answer(w, testModel, 0.5)
+	})
+	c, _ := client(f)
+	units := []Unit{unit("e", 1), unit("c", 5), unit("b", 5), unit("a", 2), unit("d", 3)}
+	cfg := testConfig()
+	cfg.MaxPerRun = 3
+	out := Run(context.Background(), RunInput{Config: cfg, Client: c, RunID: "r", Units: units})
+	if strings.Join(asked, ",") != "b,c,d" {
+		t.Fatalf("asked %v: want baseline order with ties by issue id", asked)
+	}
+	if out.Total != 5 || out.Attempted != 3 || out.Annotated != 3 || out.Capped != 2 {
+		t.Fatalf("outcome %+v", out)
+	}
+	health := out.Health()
+	if health.Status != domain.LaneRan || health.Reason != "partial (3/5)" || health.Units != 5 || health.Required {
+		t.Fatalf("health %+v", health)
+	}
+	var capped UnitResult
+	for _, r := range out.Results {
+		if r.Status == UnitCapped {
+			capped = r
+		}
+	}
+	if mode, text := out.Disclosure(capped); mode != domain.RankingModePartial || text != "partial (3/5)" {
+		t.Fatalf("disclosure %q %q", mode, text)
 	}
 }
 
@@ -451,11 +467,26 @@ func TestEligibilityReasons(t *testing.T) {
 		t.Fatalf("health %+v", h)
 	}
 	for _, alias := range []string{"", "jev-latest", "typesafe/jev-preview"} {
-		if (Config{Model: alias}).Validate() == nil {
+		c := testConfig()
+		c.Model = alias
+		if c.Validate() == nil {
 			t.Fatalf("model %q must be rejected", alias)
 		}
 	}
-	if err := (Config{Model: testModel}).Validate(); err != nil {
+	for name, mutate := range map[string]func(*Config){
+		"zero call cap":     func(c *Config) { c.MaxPerRun = 0 },
+		"negative call cap": func(c *Config) { c.MaxPerRun = -1 },
+		"zero cost cap":     func(c *Config) { c.MaxCostUSD = 0 },
+		"negative cost cap": func(c *Config) { c.MaxCostUSD = -0.1 },
+		"NaN cost cap":      func(c *Config) { c.MaxCostUSD = math.NaN() },
+	} {
+		c := testConfig()
+		mutate(&c)
+		if c.Validate() == nil {
+			t.Fatalf("%s must be rejected", name)
+		}
+	}
+	if err := (testConfig()).Validate(); err != nil {
 		t.Fatal(err)
 	}
 }

@@ -49,15 +49,16 @@ type Input struct {
 	Coverage *Coverage
 }
 
-// Eligible returns the candidates that lizard measured at NLOC ≥ MinFileNLOC.
-func Eligible(candidates []domain.File, lizard map[string]FileMeasure) []domain.File {
-	var eligible []domain.File
+// MeasuredPopulation returns the candidates that lizard measured at NLOC ≥
+// MinFileNLOC: the population every scope metric is computed over.
+func MeasuredPopulation(candidates []domain.File, lizard map[string]FileMeasure) []domain.File {
+	var measured []domain.File
 	for _, file := range candidates {
 		if measure, ok := lizard[file.Path]; ok && measure.NLOC >= MinFileNLOC {
-			eligible = append(eligible, file)
+			measured = append(measured, file)
 		}
 	}
-	return eligible
+	return measured
 }
 
 // Candidates filters inventory files to production source of supported
@@ -82,12 +83,10 @@ func Compute(in Input) []domain.Signal {
 		candidateByPath[file.Path] = file
 	}
 	scopes := BuildScopes(in.Candidates, in.Features)
-	eligibleSet := map[string]bool{}
-	for _, file := range Eligible(in.Candidates, in.Facts.Lizard) {
-		eligibleSet[file.Path] = true
+	measured := map[string]bool{}
+	for _, file := range MeasuredPopulation(in.Candidates, in.Facts.Lizard) {
+		measured[file.Path] = true
 	}
-	lizardOK := in.Facts.LizardErr == ""
-	jscpdOK := lizardOK && in.Facts.JscpdErr == ""
 	scopesOfFile := map[string]int{}
 	for _, scope := range scopes {
 		for _, path := range scope.Paths {
@@ -95,145 +94,180 @@ func Compute(in Input) []domain.Signal {
 		}
 	}
 	configDigest := ConfigDigest()
-	lizardDigest, jscpdDigest := LizardDigest(), JscpdDigest()
 
 	var signals []domain.Signal
 	for _, scope := range scopes {
 		if len(scope.Paths) == 0 {
 			continue // no production source: nothing to measure, not a measurement gap
 		}
-		var population, members []domain.File
-		unmeasuredFiles := 0
+		view := scopeView{in: in, populationKind: "eligible"}
 		for _, path := range scope.Paths {
 			file := candidateByPath[path]
-			members = append(members, file)
-			if eligibleSet[path] {
-				population = append(population, file)
-			} else if _, measured := in.Facts.Lizard[path]; !measured && lizardOK {
-				unmeasuredFiles++
+			view.members = append(view.members, file)
+			if measured[path] {
+				view.population = append(view.population, file)
+			} else if _, seen := in.Facts.Lizard[path]; !seen && in.Facts.LizardErr == "" {
+				view.unmeasuredFiles++
 			}
 		}
 		// Without lizard the population is undefined; the digest then covers
 		// the candidates and Detail says so.
-		digestFiles, populationKind := population, "eligible"
-		if !lizardOK {
-			digestFiles, populationKind = members, "candidates"
+		digestFiles := view.population
+		if in.Facts.LizardErr != "" {
+			digestFiles, view.populationKind = view.members, "candidates"
 		}
-		overlap := 0
-		for _, file := range population {
+		for _, file := range view.population {
 			if scopesOfFile[file.Path] > 1 {
-				overlap++
+				view.overlap++
 			}
 		}
-		base := domain.Signal{
+		view.base = domain.Signal{
 			Version: metricVersion, ScopeKind: scope.Kind, ScopeAnchor: scope.Anchor,
 			Snapshot: in.Snapshot, ConfigDigest: configDigest, Claim: domain.ClaimDescriptive,
 			PopulationDigest: PopulationDigest(digestFiles),
 		}
-		detail := func(extra map[string]any) map[string]any {
-			d := map[string]any{
-				"population": populationKind, "n_files": len(population), "n_candidates": len(members),
-				"unmeasured_files": unmeasuredFiles, "overlap_files": overlap, "run_scope": in.RunScope,
-			}
-			for key, value := range extra {
-				d[key] = value
-			}
-			return d
-		}
-		lizardSignal := func(metric string) domain.Signal {
-			s := base
-			s.MetricID, s.ToolDigest = metric, lizardDigest
-			return s
-		}
-		missing := func(s domain.Signal, kind domain.SignalMissing, reason string) domain.Signal {
-			s.Missing, s.MissingReason, s.Detail = kind, reason, detail(nil)
-			return s
-		}
-
-		cc, burden, density := lizardSignal(MetricCC), lizardSignal(MetricComplexBurden), lizardSignal(MetricBurdenDensity)
-		switch {
-		case !lizardOK:
-			reason := "lizard did not run: " + in.Facts.LizardErr
-			cc, burden, density = missing(cc, domain.SignalUnmeasured, reason), missing(burden, domain.SignalUnmeasured, reason), missing(density, domain.SignalUnmeasured, reason)
-		case len(population) == 0:
-			reason := fmt.Sprintf("scope has no eligible files (production source with NLOC >= %d)", MinFileNLOC)
-			cc, burden, density = missing(cc, domain.SignalInsufficient, reason), missing(burden, domain.SignalInsufficient, reason), missing(density, domain.SignalInsufficient, reason)
-		default:
-			var ccs []int
-			var nloc, hi, total float64
-			for _, file := range population {
-				measure := in.Facts.Lizard[file.Path]
-				nloc += float64(measure.NLOC)
-				for _, fn := range measure.Functions {
-					ccs = append(ccs, fn.CC)
-					weight := float64(fn.CC) * math.Sqrt(float64(fn.NLOC))
-					total += weight
-					if fn.CC > HighCC {
-						hi += weight
-					}
-				}
-			}
-			sort.Ints(ccs)
-			nHigh := 0
-			for _, value := range ccs {
-				if value > HighCC {
-					nHigh++
-				}
-			}
-			extra := map[string]any{"n_functions": len(ccs), "n_high_cc": nHigh}
-			if len(ccs) > 0 {
-				extra["cc_p90"] = ccs[int(math.Ceil(0.9*float64(len(ccs))))-1]
-				extra["cc_max"] = ccs[len(ccs)-1]
-			}
-			cc.Numerator, cc.Denominator, cc.Value = domain.Float(float64(nHigh)), domain.Float(float64(len(ccs))), domain.Float(float64(nHigh))
-			cc.Detail = detail(extra)
-
-			burden.Numerator, burden.Denominator = domain.Float(hi), domain.Float(total)
-			burden.Detail = detail(extra)
-			if total == 0 {
-				burden = missing(burden, domain.SignalInsufficient, "eligible files hold no functions")
-				burden.Numerator, burden.Denominator = nil, nil
-			} else {
-				burden.Value = domain.Float(hi / total)
-			}
-			density.Numerator, density.Denominator, density.Value = domain.Float(hi), domain.Float(nloc), domain.Float(hi/nloc)
-			density.Detail = detail(extra)
-		}
-		signals = append(signals, cc, burden, density)
-
-		dup := base
-		dup.MetricID, dup.ToolDigest = MetricDupPct, jscpdDigest
-		switch {
-		case !lizardOK:
-			dup = missing(dup, domain.SignalUnmeasured, "the eligible population is undefined because lizard did not run: "+in.Facts.LizardErr)
-		case !jscpdOK:
-			dup = missing(dup, domain.SignalUnmeasured, "jscpd did not run: "+in.Facts.JscpdErr)
-		case len(population) == 0:
-			dup = missing(dup, domain.SignalInsufficient, fmt.Sprintf("scope has no eligible files (production source with NLOC >= %d)", MinFileNLOC))
-		default:
-			dupLines, lines, pairs, cross := duplicatedLines(population, in.Facts)
-			dup.Numerator, dup.Denominator = domain.Float(float64(dupLines)), domain.Float(float64(lines))
-			dup.Value = domain.Float(float64(dupLines) / float64(lines))
-			dup.Detail = detail(map[string]any{"clone_pairs": pairs, "cross_scope_clone_pairs": cross})
-		}
-		crap := base
-		crap.MetricID, crap.ToolDigest = MetricCrap, lizardDigest
-		switch {
-		case in.Coverage == nil:
-			crap = missing(crap, domain.SignalUnmeasured, "no coverage artifact was provided")
-		case in.Coverage.Unusable != "":
-			crap = missing(crap, domain.SignalUnmeasured, in.Coverage.Unusable)
-		case !lizardOK:
-			crap = missing(crap, domain.SignalUnmeasured, "lizard did not run: "+in.Facts.LizardErr)
-		case len(population) == 0:
-			crap = missing(crap, domain.SignalInsufficient, fmt.Sprintf("scope has no eligible files (production source with NLOC >= %d)", MinFileNLOC))
-		default:
-			crap.ToolDigest = domain.Digest(lizardDigest, "coverage", in.Coverage.Digest)
-			crap = crapSignal(crap, population, in.Facts.Lizard, in.Coverage, detail)
-		}
-		signals = append(signals, dup, crap)
+		cc, burden, density := view.complexity()
+		signals = append(signals, cc, burden, density, view.duplication(), view.crap())
 	}
+	setRunScope(signals, in.RunScope)
 	return signals
+}
+
+// setRunScope records what the run inventory covered in every signal's detail.
+func setRunScope(signals []domain.Signal, runScope string) {
+	for i := range signals {
+		if signals[i].Detail == nil {
+			signals[i].Detail = map[string]any{}
+		}
+		signals[i].Detail["run_scope"] = runScope
+	}
+}
+
+// scopeView is one scope's population and the scaffolding its metrics share.
+type scopeView struct {
+	in                       Input
+	base                     domain.Signal
+	population, members      []domain.File
+	populationKind           string
+	unmeasuredFiles, overlap int
+}
+
+func (v scopeView) lizardOK() bool { return v.in.Facts.LizardErr == "" }
+
+func (v scopeView) emptyReason() string {
+	return fmt.Sprintf("scope has no eligible files (production source with NLOC >= %d)", MinFileNLOC)
+}
+
+func (v scopeView) detail(extra map[string]any) map[string]any {
+	d := map[string]any{
+		"population": v.populationKind, "n_files": len(v.population), "n_candidates": len(v.members),
+		"unmeasured_files": v.unmeasuredFiles, "overlap_files": v.overlap,
+	}
+	for key, value := range extra {
+		d[key] = value
+	}
+	return d
+}
+
+func (v scopeView) missing(s domain.Signal, kind domain.SignalMissing, reason string) domain.Signal {
+	s.Missing, s.MissingReason, s.Detail = kind, reason, v.detail(nil)
+	return s
+}
+
+func (v scopeView) lizardSignal(metric string) domain.Signal {
+	s := v.base
+	s.MetricID, s.ToolDigest = metric, LizardDigest()
+	return s
+}
+
+// complexity derives scout.cc, scout.complex_burden and scout.burden_density.
+func (v scopeView) complexity() (cc, burden, density domain.Signal) {
+	cc, burden, density = v.lizardSignal(MetricCC), v.lizardSignal(MetricComplexBurden), v.lizardSignal(MetricBurdenDensity)
+	switch {
+	case !v.lizardOK():
+		reason := "lizard did not run: " + v.in.Facts.LizardErr
+		return v.missing(cc, domain.SignalUnmeasured, reason), v.missing(burden, domain.SignalUnmeasured, reason), v.missing(density, domain.SignalUnmeasured, reason)
+	case len(v.population) == 0:
+		reason := v.emptyReason()
+		return v.missing(cc, domain.SignalInsufficient, reason), v.missing(burden, domain.SignalInsufficient, reason), v.missing(density, domain.SignalInsufficient, reason)
+	}
+	var ccs []int
+	var nloc, hi, total float64
+	for _, file := range v.population {
+		measure := v.in.Facts.Lizard[file.Path]
+		nloc += float64(measure.NLOC)
+		for _, fn := range measure.Functions {
+			ccs = append(ccs, fn.CC)
+			weight := float64(fn.CC) * math.Sqrt(float64(fn.NLOC))
+			total += weight
+			if fn.CC > HighCC {
+				hi += weight
+			}
+		}
+	}
+	sort.Ints(ccs)
+	nHigh := 0
+	for _, value := range ccs {
+		if value > HighCC {
+			nHigh++
+		}
+	}
+	extra := map[string]any{"n_functions": len(ccs), "n_high_cc": nHigh}
+	if len(ccs) > 0 {
+		extra["cc_p90"] = ccs[int(math.Ceil(0.9*float64(len(ccs))))-1]
+		extra["cc_max"] = ccs[len(ccs)-1]
+	}
+	cc.Numerator, cc.Denominator, cc.Value = domain.Float(float64(nHigh)), domain.Float(float64(len(ccs))), domain.Float(float64(nHigh))
+	cc.Detail = v.detail(extra)
+
+	burden.Numerator, burden.Denominator = domain.Float(hi), domain.Float(total)
+	burden.Detail = v.detail(extra)
+	if total == 0 {
+		burden = v.missing(burden, domain.SignalInsufficient, "eligible files hold no functions")
+		burden.Numerator, burden.Denominator = nil, nil
+	} else {
+		burden.Value = domain.Float(hi / total)
+	}
+	density.Numerator, density.Denominator, density.Value = domain.Float(hi), domain.Float(nloc), domain.Float(hi/nloc)
+	density.Detail = v.detail(extra)
+	return cc, burden, density
+}
+
+// duplication derives scout.dup_pct.
+func (v scopeView) duplication() domain.Signal {
+	dup := v.base
+	dup.MetricID, dup.ToolDigest = MetricDupPct, JscpdDigest()
+	switch {
+	case !v.lizardOK():
+		return v.missing(dup, domain.SignalUnmeasured, "the eligible population is undefined because lizard did not run: "+v.in.Facts.LizardErr)
+	case v.in.Facts.JscpdErr != "":
+		return v.missing(dup, domain.SignalUnmeasured, "jscpd did not run: "+v.in.Facts.JscpdErr)
+	case len(v.population) == 0:
+		return v.missing(dup, domain.SignalInsufficient, v.emptyReason())
+	}
+	dupLines, lines, pairs, cross := duplicatedLines(v.population, v.in.Facts)
+	dup.Numerator, dup.Denominator = domain.Float(float64(dupLines)), domain.Float(float64(lines))
+	dup.Value = domain.Float(float64(dupLines) / float64(lines))
+	dup.Detail = v.detail(map[string]any{"clone_pairs": pairs, "cross_scope_clone_pairs": cross})
+	return dup
+}
+
+// crap derives scout.crap.
+func (v scopeView) crap() domain.Signal {
+	crap := v.lizardSignal(MetricCrap)
+	coverage := v.in.Coverage
+	switch {
+	case coverage == nil:
+		return v.missing(crap, domain.SignalUnmeasured, "no coverage artifact was provided")
+	case coverage.Unusable != "":
+		return v.missing(crap, domain.SignalUnmeasured, coverage.Unusable)
+	case !v.lizardOK():
+		return v.missing(crap, domain.SignalUnmeasured, "lizard did not run: "+v.in.Facts.LizardErr)
+	case len(v.population) == 0:
+		return v.missing(crap, domain.SignalInsufficient, v.emptyReason())
+	}
+	crap.ToolDigest = domain.Digest(LizardDigest(), "coverage", coverage.Digest)
+	return crapSignal(crap, v.population, v.in.Facts.Lizard, coverage, v.detail)
 }
 
 // duplicatedLines unions the clone spans over the scope's population:

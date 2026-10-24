@@ -9,7 +9,7 @@ import (
 func TestForceFullReschedulesCachedFile(t *testing.T) {
 	file := domain.File{Path: "main.go", Language: "go", ContentDigest: "abc", Eligible: true}
 	snapshot := domain.Snapshot{RepositoryID: "repository", WorktreeDigest: "worktree", IgnoreRulesDigest: "ignore", ExclusionsDigest: "exclude"}
-	input := PlanInput{RunID: "first", Snapshot: snapshot, Scope: domain.Scope{Kind: domain.ScopeRepository}, Files: []domain.File{file}, Diff: DiffResult{Added: []domain.File{file}}, FileCategories: map[domain.Family][]string{domain.FamilyQuality: {"complexity"}}, ForceFull: true}
+	input := PlanInput{ScopeDigest: "scope", RunID: "first", Snapshot: snapshot, Scope: domain.Scope{Kind: domain.ScopeRepository}, Files: []domain.File{file}, Diff: DiffResult{Added: []domain.File{file}}, FileCategories: map[domain.Family][]string{domain.FamilyQuality: {"complexity"}}, ForceFull: true}
 	first, err := Plan(input)
 	if err != nil {
 		t.Fatal(err)
@@ -43,6 +43,7 @@ func TestForceFullReschedulesCachedFile(t *testing.T) {
 func TestNewCategoryIsPlannedWithoutSourceChanges(t *testing.T) {
 	file := domain.File{Path: ".github/workflows/release.yml", Language: "yaml", ContentDigest: "abc", Eligible: true}
 	input := PlanInput{
+		ScopeDigest:    "scope",
 		RunID:          "first",
 		Snapshot:       domain.Snapshot{RepositoryID: "repository", WorktreeDigest: "worktree", IgnoreRulesDigest: "ignore", ExclusionsDigest: "exclude"},
 		Scope:          domain.Scope{Kind: domain.ScopeRepository},
@@ -91,6 +92,7 @@ func TestNewFeatureCategoryIsPlannedWithoutMapChanges(t *testing.T) {
 		RawOriginal: []byte(`{"schemaVersion":1,"featureId":"feature-1","kind":"config","source":"heuristic"}`),
 	}
 	input := PlanInput{
+		ScopeDigest:       "scope",
 		RunID:             "first",
 		Snapshot:          domain.Snapshot{RepositoryID: "repository", WorktreeDigest: "worktree", IgnoreRulesDigest: "ignore", ExclusionsDigest: "exclude"},
 		Scope:             domain.Scope{Kind: domain.ScopeRepository},
@@ -134,9 +136,10 @@ func TestPlanDependencyFootprintInvalidatesAffectedDependentFeature(t *testing.T
 	snapshot := domain.Snapshot{RepositoryID: "repository", WorktreeDigest: "worktree", IgnoreRulesDigest: "ignore", ExclusionsDigest: "exclude"}
 	consumer := testFeature("consumer", "consumer/handler.go")
 	input := PlanInput{
-		RunID:    "first",
-		Snapshot: snapshot,
-		Scope:    domain.Scope{Kind: domain.ScopeRepository},
+		ScopeDigest: "scope",
+		RunID:       "first",
+		Snapshot:    snapshot,
+		Scope:       domain.Scope{Kind: domain.ScopeRepository},
 		Files: []domain.File{
 			{Path: "shared/contract.go", ContentDigest: "contract-v1", Eligible: true, OwnedFeatureIDs: []string{"producer"}},
 			{Path: "consumer/handler.go", ContentDigest: "consumer-v1", Eligible: true, OwnedFeatureIDs: []string{"consumer"}},

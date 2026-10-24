@@ -5,11 +5,10 @@
 package importgraph
 
 import (
-	"io/fs"
+	"errors"
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 )
 
 // Edge is a directed internal import From -> To between two nodes.
@@ -25,12 +24,20 @@ type Unresolved struct {
 	Spec string
 }
 
+// Skipped is an input the extractors could not use. Its edges are absent from
+// the graph, so a nonzero count means the graph undercounts.
+type Skipped struct {
+	From   string // importing node the skip affects
+	Reason string
+}
+
 // Graph is the extracted internal import graph.
 type Graph struct {
 	Nodes         []string     // sorted node paths that are source files/packages
 	Edges         []Edge       // runtime internal edges, deduped, sorted, no self edges
 	TypeOnlyEdges []Edge       // type-only edges not also present as runtime edges; excluded from cycles
 	Unresolved    []Unresolved // sorted
+	Skipped       []Skipped    // inputs that could not be parsed or loaded; their edges are missing; sorted
 	External      int          // imports of third-party/stdlib packages (not internal)
 	Languages     []string     // languages with at least one source node, sorted
 }
@@ -38,64 +45,12 @@ type Graph struct {
 // Options controls extraction.
 type Options struct {
 	Root string
-	// Files optionally restricts the population to these repo-relative slash
-	// paths (the eligible-source population). When nil, Root is walked with
-	// default exclusions (vendored/generated dirs, tests).
+	// Files is the population: repo-relative slash paths of the eligible
+	// sources plus the config files the extractors read (go.mod, tsconfig).
+	// Required; the caller owns the exclusion rules.
 	Files []string
 	// PythonRoots are repo-relative source roots; when empty they are detected.
 	PythonRoots []string
-}
-
-var skipDirs = map[string]bool{
-	"node_modules": true, "vendor": true, ".git": true, "dist": true, "build": true,
-	"testdata": true, "__pycache__": true, "venv": true, ".venv": true, "site-packages": true,
-	".tox": true, ".mypy_cache": true, ".codegraph": true, "coverage": true,
-}
-
-func isTestPath(p string) bool {
-	base := filepath.Base(p)
-	if strings.HasSuffix(base, "_test.go") || strings.HasPrefix(base, "test_") && strings.HasSuffix(base, ".py") ||
-		strings.HasSuffix(base, "_test.py") || base == "conftest.py" {
-		return true
-	}
-	for _, m := range []string{".test.", ".spec."} {
-		if strings.Contains(base, m) {
-			return true
-		}
-	}
-	for _, seg := range strings.Split(filepath.ToSlash(filepath.Dir(p)), "/") {
-		if seg == "tests" || seg == "test" || seg == "__tests__" {
-			return true
-		}
-	}
-	return false
-}
-
-func walkFiles(root string) ([]string, error) {
-	var out []string
-	err := filepath.WalkDir(root, func(p string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		name := d.Name()
-		if d.IsDir() {
-			if p != root && (skipDirs[name] || strings.HasPrefix(name, ".")) {
-				return filepath.SkipDir
-			}
-			return nil
-		}
-		rel, err := filepath.Rel(root, p)
-		if err != nil {
-			return err
-		}
-		rel = filepath.ToSlash(rel)
-		if !isTestPath(rel) {
-			out = append(out, rel)
-		}
-		return nil
-	})
-	sort.Strings(out)
-	return out, err
 }
 
 // edgeSet accumulates deduped runtime and type-only edges.
@@ -103,11 +58,12 @@ type edgeSet struct {
 	runtime map[Edge]bool
 	typed   map[Edge]bool
 	unres   map[Unresolved]bool
+	skips   map[Skipped]bool
 	ext     int
 }
 
 func newEdgeSet() *edgeSet {
-	return &edgeSet{runtime: map[Edge]bool{}, typed: map[Edge]bool{}, unres: map[Unresolved]bool{}}
+	return &edgeSet{runtime: map[Edge]bool{}, typed: map[Edge]bool{}, unres: map[Unresolved]bool{}, skips: map[Skipped]bool{}}
 }
 
 func (s *edgeSet) add(from, to string, typeOnly bool) {
@@ -119,6 +75,10 @@ func (s *edgeSet) add(from, to string, typeOnly bool) {
 	} else {
 		s.runtime[Edge{from, to}] = true
 	}
+}
+
+func (s *edgeSet) skip(from, reason string) {
+	s.skips[Skipped{from, reason}] = true
 }
 
 func sortEdges(m map[Edge]bool, skip map[Edge]bool) []Edge {
@@ -137,18 +97,14 @@ func sortEdges(m map[Edge]bool, skip map[Edge]bool) []Edge {
 	return out
 }
 
-// Build extracts the import graph for all supported languages under opts.Root.
+// Build extracts the import graph for all supported languages from opts.Files
+// read under opts.Root.
 func Build(opts Options) (*Graph, error) {
-	files := opts.Files
-	if files == nil {
-		var err error
-		if files, err = walkFiles(opts.Root); err != nil {
-			return nil, err
-		}
-	} else {
-		files = append([]string(nil), files...)
-		sort.Strings(files)
+	if opts.Files == nil {
+		return nil, errors.New("importgraph: Options.Files is required")
 	}
+	files := append([]string(nil), opts.Files...)
+	sort.Strings(files)
 	es := newEdgeSet()
 	nodes := map[string]bool{}
 	langs := map[string]bool{}
@@ -198,6 +154,15 @@ func Build(opts Options) (*Graph, error) {
 		}
 		return g.Unresolved[i].Spec < g.Unresolved[j].Spec
 	})
+	for k := range es.skips {
+		g.Skipped = append(g.Skipped, k)
+	}
+	sort.Slice(g.Skipped, func(i, j int) bool {
+		if g.Skipped[i].From != g.Skipped[j].From {
+			return g.Skipped[i].From < g.Skipped[j].From
+		}
+		return g.Skipped[i].Reason < g.Skipped[j].Reason
+	})
 	return g, nil
 }
 
@@ -207,6 +172,7 @@ type Result struct {
 	InternalEdges int // internal runtime edges
 	CrossBoundary int // non-trivial cycle components spanning more than one scope
 	Unresolved    int
+	Skipped       int
 	TypeOnly      int
 	cycleEdge     map[Edge]bool
 }
@@ -234,7 +200,7 @@ func CycleMass(g *Graph, scopeOf func(node string) string) Result {
 	for _, c := range comp {
 		size[c]++
 	}
-	res := Result{InternalEdges: len(g.Edges), Unresolved: len(g.Unresolved), TypeOnly: len(g.TypeOnlyEdges), cycleEdge: map[Edge]bool{}}
+	res := Result{InternalEdges: len(g.Edges), Unresolved: len(g.Unresolved), Skipped: len(g.Skipped), TypeOnly: len(g.TypeOnlyEdges), cycleEdge: map[Edge]bool{}}
 	for _, e := range g.Edges {
 		f, ok1 := idx[e.From]
 		t, ok2 := idx[e.To]

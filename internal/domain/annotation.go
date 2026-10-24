@@ -52,19 +52,22 @@ func (a Annotation) Validate() error {
 	return nil
 }
 
+// RankingMode is how one finding was ranked.
+type RankingMode string
+
 // Ranking modes of one finding.
 const (
-	RankingModeJev           = "jev"
-	RankingModeDeterministic = "deterministic"
-	RankingModePartial       = "partial"
+	RankingModeJev           RankingMode = "jev"
+	RankingModeDeterministic RankingMode = "deterministic"
+	RankingModePartial       RankingMode = "partial"
 )
 
 // RankingRecord is the ranking disclosure stored for one finding on one run,
 // with the baseline and rank-formula versions design §6 requires on every one.
 type RankingRecord struct {
-	RunID   string `json:"runId"`
-	IssueID string `json:"issueId"`
-	Mode    string `json:"mode"`
+	RunID   string      `json:"runId"`
+	IssueID string      `json:"issueId"`
+	Mode    RankingMode `json:"mode"`
 	// Disclosure is the per-finding text: `deterministic (reason)`,
 	// `partial (n/N)` or `jev (unvalidated, X1 pending)`.
 	Disclosure         string    `json:"disclosure"`

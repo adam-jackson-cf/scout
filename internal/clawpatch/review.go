@@ -17,9 +17,8 @@ import (
 )
 
 const (
-	reviewSafetyPatchVersion     = "scout-review-sanitize-v3"
-	reviewSafetyPatchSHA256      = "dc867503f80cdb336681d72c221ec1dea24006f121b4cae56bf0fb284dae6ce3"
-	defaultMaxFindingsPerFeature = 10
+	reviewSafetyPatchVersion = "scout-review-sanitize-v3"
+	reviewSafetyPatchSHA256  = "dc867503f80cdb336681d72c221ec1dea24006f121b4cae56bf0fb284dae6ce3"
 )
 
 // SafetyFingerprint invalidates mapping/review caches when the pinned source
@@ -424,6 +423,8 @@ func reviewFindingCap(stateDir string) (int, error) {
 }
 
 func loadReviewObservations(root, stateDir, featureID, runID string) ([]domain.Observation, error) {
+	// Review rewrites the feature record with its new finding IDs, so the
+	// record is read again after the review rather than reused from before it.
 	features, err := loadFeatures(stateDir)
 	if err != nil {
 		return nil, err
@@ -485,7 +486,7 @@ func observationFromFinding(root, runID string, finding rawFinding) (domain.Obse
 	observation := domain.Observation{
 		ObservationID:     "clawpatch:" + runID + ":" + finding.FindingID,
 		RunID:             runID,
-		Source:            "clawpatch@0.7.3+scout-review-sanitize-v3",
+		Source:            "clawpatch@" + Version + "+" + reviewSafetyPatchVersion,
 		SourceFindingID:   finding.FindingID,
 		Family:            domain.FamilyClawpatch,
 		OriginalCategory:  finding.Category,

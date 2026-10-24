@@ -30,13 +30,7 @@ esac
 for prerequisite in curl tar git; do
   command -v "$prerequisite" >/dev/null 2>&1 || die "required command is unavailable: $prerequisite"
 done
-if command -v shasum >/dev/null 2>&1; then
-  sha256() { shasum -a 256 "$1" | cut -d ' ' -f1; }
-elif command -v sha256sum >/dev/null 2>&1; then
-  sha256() { sha256sum "$1" | cut -d ' ' -f1; }
-else
-  die "required command is unavailable: shasum or sha256sum"
-fi
+source "$repo/scripts/sha256.sh"
 
 while IFS='=' read -r key value; do
   [[ -z "$key" || "$key" == \#* ]] && continue

@@ -31,19 +31,19 @@ func MergeState(current, local Tree) (Tree, error) {
 		merged[path] = data
 	}
 
-	localDisp, err := indexRows(local[state.ExportDispositions])
+	localDisp, err := indexRows(local[state.ExportDispositions], true)
 	if err != nil {
 		return nil, fmt.Errorf("local %w", err)
 	}
-	currentDisp, err := indexRows(current[state.ExportDispositions])
+	currentDisp, err := indexRows(current[state.ExportDispositions], true)
 	if err != nil {
 		return nil, fmt.Errorf("tip %w", err)
 	}
-	localIssues, err := indexRows(local[state.ExportIssues])
+	localIssues, err := indexRows(local[state.ExportIssues], false)
 	if err != nil {
 		return nil, fmt.Errorf("local %w", err)
 	}
-	currentIssues, err := indexRows(current[state.ExportIssues])
+	currentIssues, err := indexRows(current[state.ExportIssues], false)
 	if err != nil {
 		return nil, fmt.Errorf("tip %w", err)
 	}
@@ -70,7 +70,7 @@ func MergeState(current, local Tree) (Tree, error) {
 			// local only
 		case issueRow == nil || disp == nil:
 			issueRow, disp = currentIssue, currentDispRow
-		case updated(currentDispRow).After(updated(disp)):
+		case currentDispRow.updated.After(disp.updated):
 			issueRow, disp = currentIssue, currentDispRow
 		}
 		if issueRow == nil || disp == nil {
@@ -92,9 +92,13 @@ func MergeState(current, local Tree) (Tree, error) {
 			if err := json.Unmarshal(line, &fields); err != nil || fields.ID == "" {
 				return nil, fmt.Errorf("would_block row %d is not a keyed record", number+1)
 			}
-			candidate := &row{line: append(append([]byte{}, line...), '\n'), updated: fields.TriagedAt}
+			triaged, err := parseTime(fields.TriagedAt, true)
+			if err != nil {
+				return nil, fmt.Errorf("would_block row %d has an unparseable triagedAt: %w", number+1, err)
+			}
+			candidate := &row{line: append(append([]byte{}, line...), '\n'), updated: triaged}
 			// The later maintainer triage wins; local wins ties (it is visited last).
-			if existing := blocks[fields.ID]; existing == nil || !updated(existing).After(updated(candidate)) {
+			if existing := blocks[fields.ID]; existing == nil || !existing.updated.After(candidate.updated) {
 				blocks[fields.ID] = candidate
 			}
 		}
@@ -135,19 +139,21 @@ func MergeState(current, local Tree) (Tree, error) {
 
 type row struct {
 	line    []byte
-	updated string
+	updated time.Time
 }
 
-func updated(r *row) time.Time {
-	parsed, err := time.Parse(time.RFC3339Nano, r.updated)
-	if err != nil {
-		return time.Time{}
+// parseTime reads a row timestamp. An empty value is the zero time only when
+// optional; anything else that does not parse is a merge error.
+func parseTime(raw string, optional bool) (time.Time, error) {
+	if raw == "" && optional {
+		return time.Time{}, nil
 	}
-	return parsed
+	return time.Parse(time.RFC3339Nano, raw)
 }
 
-// indexRows maps issueId to its JSONL row (kept with its trailing LF).
-func indexRows(data []byte) (map[string]*row, error) {
+// indexRows maps issueId to its JSONL row (kept with its trailing LF). The
+// updatedAt of each row must parse when requireTime is set.
+func indexRows(data []byte, requireTime bool) (map[string]*row, error) {
 	rows := map[string]*row{}
 	for number, line := range state.SplitLines(data) {
 		var fields struct {
@@ -157,7 +163,11 @@ func indexRows(data []byte) (map[string]*row, error) {
 		if err := json.Unmarshal(line, &fields); err != nil || fields.IssueID == "" {
 			return nil, fmt.Errorf("row %d is not a keyed record", number+1)
 		}
-		rows[fields.IssueID] = &row{line: append(append([]byte{}, line...), '\n'), updated: fields.UpdatedAt}
+		updated, err := parseTime(fields.UpdatedAt, !requireTime)
+		if err != nil {
+			return nil, fmt.Errorf("row %d has an unparseable updatedAt: %w", number+1, err)
+		}
+		rows[fields.IssueID] = &row{line: append(append([]byte{}, line...), '\n'), updated: updated}
 	}
 	return rows, nil
 }

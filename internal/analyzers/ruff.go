@@ -14,7 +14,7 @@ func (r *Runner) attestRuffInputs(ctx context.Context, root, state, rulesRoot, b
 	copy(listingArgs, args)
 	listingArgs[len(args)] = "--show-files"
 	stdout, stderr, err := r.runCommand(ctx, root, state, rulesRoot, binary, listingArgs)
-	if err != nil || stdout.exceeded || stderr.exceeded || !ruffInputsMatch(root, inputs, stdout.Bytes()) {
+	if err != nil || stdout.Exceeded() || stderr.Exceeded() || !ruffInputsMatch(root, inputs, stdout.Bytes()) {
 		parsed.success = false
 		return
 	}

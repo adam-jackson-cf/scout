@@ -13,6 +13,23 @@ import (
 // identity so a moved secret stays the same issue.
 const SecretMechanism = "secret diagnostic reported"
 
+// IssueAnchor is the identity-bearing evidence of an issue (design §3.3).
+// Line and byte ranges are locators on observations and never appear here.
+type IssueAnchor struct {
+	// Path is the rename-followed repository path. Empty for a digest-matched secret.
+	Path string `json:"path,omitempty"`
+	// Symbol is the qualified enclosing symbol when the analyzer supplied one.
+	Symbol string `json:"symbol,omitempty"`
+	// RuleKey is "<source>\x00<ruleId>".
+	RuleKey string `json:"ruleKey"`
+	// Mechanism is the normalized mechanism text.
+	Mechanism string `json:"mechanism"`
+	// Fingerprint is the normalized evidence fingerprint, or the secret digest.
+	Fingerprint string `json:"fingerprint,omitempty"`
+	// Secret marks Fingerprint as a secret digest that matches across paths.
+	Secret bool `json:"secretDigest,omitempty"`
+}
+
 // AnchorOf derives the identity anchor of an observation (design §3.3). Line
 // and byte ranges are deliberately ignored: they are locators, not identity.
 // ok is false for an observation with no evidence location.

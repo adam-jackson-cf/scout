@@ -387,27 +387,22 @@ func extractBlobs(ctx context.Context, root, rev string, paths []string, dir str
 // check id `delta.*` is never blocking-eligible. Rules that could not run are
 // reported as lane health, never as an empty result.
 func deltaLane(root, mergeBase string, changed []string, tools measures.Tools) InlineLane {
-	var unmeasured []string
 	return InlineLane{
 		Lane: LaneDelta, Units: len(changed),
-		Reason: func() string {
-			if len(unmeasured) == 0 {
-				return ""
-			}
-			return "unmeasured: " + strings.Join(unmeasured, "; ")
-		},
-		Run: func(ctx context.Context, runID string) ([]domain.Observation, error) {
+		Run: func(ctx context.Context, runID string) (InlineResult, error) {
 			if len(changed) == 0 {
-				return nil, nil
+				return InlineResult{}, nil
 			}
 			report := ComputeDeltas(ctx, root, mergeBase, changed, tools)
-			unmeasured = report.Unmeasured
 			now := time.Now().UTC()
-			observations := make([]domain.Observation, 0, len(report.Issues))
+			result := InlineResult{Observations: make([]domain.Observation, 0, len(report.Issues))}
 			for _, issue := range report.Issues {
-				observations = append(observations, issue.observation(runID, now))
+				result.Observations = append(result.Observations, issue.observation(runID, now))
 			}
-			return observations, nil
+			if len(report.Unmeasured) > 0 {
+				result.Unmeasured = "unmeasured: " + strings.Join(report.Unmeasured, "; ")
+			}
+			return result, nil
 		},
 	}
 }

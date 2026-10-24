@@ -24,7 +24,7 @@ func TestNoModelCLILanesAreSkippedAndExitCodeIsUnchanged(t *testing.T) {
 	}
 	for _, id := range []string{LaneContextual, LaneClawpatchReview} {
 		got := byLane[id]
-		if got.Status != domain.LaneSkipped || got.Reason != "skipped (no model CLI)" || got.Requires != domain.RequiresModelCLI || got.Required {
+		if got.Status != domain.LaneSkipped || got.Reason != modelcli.NoCLIReason || got.Requires != domain.RequiresModelCLI || got.Required {
 			t.Fatalf("%s health = %+v", id, got)
 		}
 	}
@@ -57,7 +57,7 @@ func TestNotOptedInLanesAreSkippedNotFailedAndExitCodeIsUnchanged(t *testing.T) 
 	}}
 	health := LaneHealthOf(domain.TriggerNightly, run, nil)
 	for _, h := range health {
-		if (h.Lane == LaneContextual || h.Lane == LaneClawpatchReview) && (h.Status != domain.LaneSkipped || h.Reason != "skipped (not opted in)" || h.Required) {
+		if (h.Lane == LaneContextual || h.Lane == LaneClawpatchReview) && (h.Status != domain.LaneSkipped || h.Reason != ReasonNotOptedIn || h.Required) {
 			t.Fatalf("%s = %+v", h.Lane, h)
 		}
 	}

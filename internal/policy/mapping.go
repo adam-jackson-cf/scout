@@ -20,12 +20,7 @@ func DefaultMapping() Mapping {
 }
 
 // Mapping returns the effective mapping policy.
-func (p Policy) Mapping() Mapping {
-	if p.mapping.AreasMatchJaccard == 0 {
-		return DefaultMapping()
-	}
-	return p.mapping
-}
+func (p Policy) Mapping() Mapping { return p.mapping }
 
 type rawMapping struct {
 	Areas *struct {

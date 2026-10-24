@@ -38,8 +38,8 @@ Use this lexicon to see which environment variables Scout and its toolchain read
   Purpose: Clawpatch provider for the `clawpatch-review` lane only, when none is configured. Only `codex` or `claude` are accepted; any other value is rejected. When it is unset, review tries `codex` first, then `claude`. It does not affect agent mapping, which always uses `codex` with model `gpt-6-luna` at reasoning effort `xhigh`; with `codex` off `PATH` mapping reports `skipped (no model CLI)` (no `claude` fallback).
   Source: `internal/clawpatch/provider.go`
 
-- `CLAWPATCH_CODEX_TIMEOUT_MS`
-  Purpose: overrides the agent-mapper timeout (default `900000`, 15 minutes).
+- `CLAWPATCH_CODEX_TIMEOUT_MS`, `CLAWPATCH_CLAUDE_TIMEOUT_MS`
+  Purpose: override the agent-mapper timeout of the matching provider (default `900000`, 15 minutes, for both).
   Source: `internal/clawpatch/client.go` `mapEnvironment`
 
 - `CLAWPATCH_CLAUDE_AUTH_CONTEXT`

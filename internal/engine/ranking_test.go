@@ -26,7 +26,7 @@ const (
 )
 
 func consent() policy.Decisions {
-	return policy.Decisions{Enabled: true, Provider: policy.ProviderJev, Model: rankModel, MaxPerRun: 100, EgressAcknowledged: true}
+	return policy.Decisions{Enabled: true, Provider: policy.ProviderJev, Model: rankModel, MaxPerRun: 100, MaxCostUSD: 1, EgressAcknowledged: true}
 }
 
 type rankFake struct {
