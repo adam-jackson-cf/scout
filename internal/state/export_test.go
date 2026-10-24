@@ -30,12 +30,7 @@ func seedLedger(t *testing.T, ctx context.Context, root string) *Store {
 	for _, id := range []string{"obs-1", "obs-2", "obs-3", "obs-4", "obs-5", "obs-6"} {
 		observations = append(observations, legacyObservation(id, "run-1", id+".go", "", "eval("+id+")", now))
 	}
-	if err := store.SavePlan(ctx, plan); err != nil {
-		t.Fatal(err)
-	}
-	if err := store.SaveRun(ctx, run, observations); err != nil {
-		t.Fatal(err)
-	}
+	seedRun(t, ctx, store, plan, run, observations, nil)
 	issue := func(id, observation string, state domain.IssueState, events ...domain.IssueHistoryEntry) domain.Issue {
 		history := []domain.IssueHistoryEntry{{At: now, To: domain.IssueOpen, Event: domain.EventCreated, Reason: "first observed"}}
 		return domain.Issue{

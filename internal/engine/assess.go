@@ -57,7 +57,7 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 	if recordedErr != nil && !errors.Is(recordedErr, state.ErrNotFound) {
 		return result, recordedErr
 	}
-	latest, latestErr := store.LatestRun(ctx)
+	latest, latestErr := store.LatestFinalizedRun(ctx)
 	first := errors.Is(latestErr, state.ErrNotFound)
 	if latestErr != nil && !first {
 		return result, latestErr
@@ -352,7 +352,9 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 					}
 					runners[spec.ID] = runner
 				}
-				chunk.adapter, chunk.found, _ = runner.Run(ctx, root, chunk.files)
+				var runErr error
+				chunk.adapter, chunk.found, runErr = runner.Run(ctx, root, chunk.files)
+				recordScanError(&chunk.adapter, runErr)
 				chunk.ran = true
 			}
 			adapter, found := splitAdapter(chunk.adapter, chunk.found, key)
@@ -818,4 +820,14 @@ func storeClawpatchManifests(ctx context.Context, store *state.Store, manifests 
 	}
 	run.ArtifactRefs = append(run.ArtifactRefs, ref)
 	return nil
+}
+
+// recordScanError keeps a scanner batch error visible in the run: a batch that
+// returned an error without recording a failure of its own gets one, so the
+// error is never reduced to an unexplained result.
+func recordScanError(adapter *domain.AdapterResult, err error) {
+	if err == nil || len(adapter.Failures) > 0 {
+		return
+	}
+	adapter.Failures = []domain.Failure{{Stage: domain.StageFileAnalysis, Code: "scanner_failed", Message: "scanner batch did not complete"}}
 }

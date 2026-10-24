@@ -110,7 +110,7 @@ git -C "$build_dir" apply "$safety_patch" || die "cannot apply review safety pat
 git -C "$build_dir" apply --check --reverse "$safety_patch" || die "review safety patch was not applied to the build source"
 rm -rf "$build_dir/.git"
 
-node - "$build_dir/package.json" "$CLAWPATCH_VERSION" "$PNPM_VERSION" <<'NODE'
+node - "$build_dir/package.json" "$CLAWPATCH_VERSION" "$PNPM_VERSION" <<'NODE' || die "pinned source package identity does not match Clawpatch $CLAWPATCH_VERSION"
 const fs = require("node:fs");
 const [manifestPath, expectedVersion, expectedPnpm] = process.argv.slice(2);
 const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
@@ -124,7 +124,6 @@ if (
   process.exitCode = 1;
 }
 NODE
-[[ $? -eq 0 ]] || die "pinned source package identity does not match Clawpatch $CLAWPATCH_VERSION"
 
 pnpm --dir "$build_dir" install --frozen-lockfile
 pnpm --dir "$build_dir" run build

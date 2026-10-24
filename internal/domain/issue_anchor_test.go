@@ -39,3 +39,19 @@ func TestAnchorIgnoresLocatorsButTracksEvidence(t *testing.T) {
 		t.Fatal("different evidence produced the same fingerprint")
 	}
 }
+
+func TestIssueWithoutAnchorIsInvalid(t *testing.T) {
+	now := time.UnixMilli(1_700_000_000_000)
+	issue := Issue{
+		IssueID: "issue:security:x", Title: "t", Mechanism: "m", State: IssueOpen, OriginalSeverity: SeverityHigh, EffectiveSeverity: SeverityHigh,
+		ObservationIDs: []string{"obs"}, History: []IssueHistoryEntry{{At: now, To: IssueOpen, Event: EventCreated, Reason: "first observed"}},
+		CreatedAt: now, UpdatedAt: now,
+	}
+	if err := issue.Validate(); err == nil {
+		t.Fatal("issue without a source anchor validated")
+	}
+	issue.Anchor = IssueAnchor{RuleKey: "scanner:rule", Path: "a.go"}
+	if err := issue.Validate(); err != nil {
+		t.Fatalf("anchored issue rejected: %v", err)
+	}
+}

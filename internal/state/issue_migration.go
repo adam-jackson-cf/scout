@@ -12,35 +12,6 @@ import (
 	"scout/internal/domain"
 )
 
-// MigrationAmbiguity is a v1 issue row that the v4→v5 re-anchoring could not
-// anchor to exactly one occurrence. It stays open and is never auto-merged.
-type MigrationAmbiguity struct {
-	IssueID  string `json:"issueId"`
-	LegacyID string `json:"legacyId"`
-	Reason   string `json:"reason"`
-}
-
-// ListMigrationAmbiguities lists the rows flagged by the v5 migration.
-func (s *Store) ListMigrationAmbiguities(ctx context.Context) ([]MigrationAmbiguity, error) {
-	rows := []MigrationAmbiguity{}
-	err := s.withRead(ctx, func(db *sql.DB) error {
-		result, err := db.QueryContext(ctx, `SELECT issue_id, legacy_id, reason FROM issue_migration_ambiguities ORDER BY legacy_id, issue_id`)
-		if err != nil {
-			return fmt.Errorf("query migration ambiguities: %w", err)
-		}
-		defer result.Close()
-		for result.Next() {
-			var row MigrationAmbiguity
-			if err := result.Scan(&row.IssueID, &row.LegacyID, &row.Reason); err != nil {
-				return fmt.Errorf("scan migration ambiguity: %w", err)
-			}
-			rows = append(rows, row)
-		}
-		return result.Err()
-	})
-	return rows, err
-}
-
 type migratedIssue struct {
 	issue   domain.Issue
 	legacy  string
@@ -108,10 +79,10 @@ func reanchorLegacyIssue(ctx context.Context, tx *sql.Tx, legacyID string, paylo
 		return nil, fmt.Errorf("decode legacy issue: %w", err)
 	}
 	if history, ok := raw["history"].([]any); ok {
-		for _, entry := range history {
+		for index, entry := range history {
 			fields, ok := entry.(map[string]any)
 			if !ok {
-				continue
+				return nil, fmt.Errorf("legacy issue %q: history entry %d is not an object", legacyID, index)
 			}
 			for _, key := range []string{"from", "to"} {
 				if state, _ := fields[key].(string); state == "pending_verification" || state == "unverified" {
@@ -182,19 +153,26 @@ func reanchorLegacyIssue(ctx context.Context, tx *sql.Tx, legacyID string, paylo
 			}
 		}
 		issue.Anchor = primary
+		if primaryID == "" {
+			item.reasons = append(item.reasons, "no linked observation carries an evidence location to anchor")
+		}
 		if len(anchors) > 1 {
 			item.reasons = append(item.reasons, fmt.Sprintf("legacy issue merged %d distinct occurrences in its latest run", len(anchors)))
 		}
 	} else {
 		item.reasons = append(item.reasons, "no linked observations to anchor")
 	}
-	if !family.Valid() {
-		family = domain.FamilySecurity
-	}
 	if issue.LegacyID == "" {
 		issue.LegacyID = legacyID
 	}
-	issue.IssueID = domain.NewIssueID(family, now)
+	if family.Valid() {
+		issue.IssueID = domain.NewIssueID(family, now)
+	} else {
+		// No family can be derived, so no durable ID is minted: the row keeps
+		// its legacy ID and is listed as ambiguous.
+		issue.IssueID = legacyID
+		item.reasons = append(item.reasons, fmt.Sprintf("unknown family in legacy ID %q", legacyID))
+	}
 	issue.History = append(issue.History, domain.IssueHistoryEntry{At: now, From: issue.State, To: issue.State, Event: domain.EventMigrated, Actor: "migration-v5", Reason: "re-anchored from legacy issue " + legacyID})
 	item.issue = issue
 	return item, nil

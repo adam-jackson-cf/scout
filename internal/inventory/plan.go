@@ -94,7 +94,7 @@ func Plan(input PlanInput) (PlanResult, error) {
 	jobs := make(map[string]domain.Job)
 	reusedCoverage := make(map[string]domain.Coverage)
 	if input.MappingRequired {
-		fingerprint := digestStrings([]string{"mapping", input.Snapshot.WorktreeDigest, input.Snapshot.IgnoreRulesDigest, input.Snapshot.ExclusionsDigest, input.ScopeDigest, input.MapperDigest})
+		fingerprint := orderedDigest("mapping", input.Snapshot.WorktreeDigest, input.Snapshot.IgnoreRulesDigest, input.Snapshot.ExclusionsDigest, input.ScopeDigest, input.MapperDigest)
 		addJob(jobs, job(domain.StageMapping, nil, fingerprint, "canonical map inputs changed", domain.JobPending, ""))
 	}
 
@@ -176,7 +176,7 @@ func Plan(input PlanInput) (PlanResult, error) {
 	}
 
 	result.Plan = domain.Plan{
-		PlanID:       "plan-" + digestStrings([]string{input.RunID, input.Snapshot.WorktreeDigest, input.ScopeDigest, input.PolicyDigest, input.ToolDigest, input.ModelDigest, input.MapperDigest}),
+		PlanID:       "plan-" + orderedDigest(input.RunID, input.Snapshot.WorktreeDigest, input.ScopeDigest, input.PolicyDigest, input.ToolDigest, input.ModelDigest, input.MapperDigest),
 		RunID:        input.RunID,
 		PolicyDigest: input.PolicyDigest,
 		ToolDigest:   input.ToolDigest,

@@ -81,8 +81,16 @@ func ComputeDeltas(ctx context.Context, root, mergeBase string, changed []string
 	if len(changedProd) == 0 {
 		return report
 	}
-	headPop := deltaHeadPopulation(ctx, root, changedProd)
-	basePop := deltaBasePopulation(ctx, root, mergeBase)
+	headPop, err := deltaHeadPopulation(ctx, root, changedProd)
+	if err != nil {
+		report.Unmeasured = append(report.Unmeasured, "delta rules: "+err.Error())
+		return report
+	}
+	basePop, err := deltaBasePopulation(ctx, root, mergeBase)
+	if err != nil {
+		report.Unmeasured = append(report.Unmeasured, "delta rules: "+err.Error())
+		return report
+	}
 	if len(headPop) > deltaMaxFiles || len(basePop) > deltaMaxFiles {
 		headPop, basePop = sortedKeys(changedProd), sortedKeys(changedProd)
 	}
@@ -267,29 +275,31 @@ func sortedKeys(set map[string]bool) []string {
 
 // deltaHeadPopulation is the head clone population: tracked and untracked
 // non-ignored production source plus the changed files.
-func deltaHeadPopulation(ctx context.Context, root string, changedProd map[string]bool) []string {
+func deltaHeadPopulation(ctx context.Context, root string, changedProd map[string]bool) ([]string, error) {
 	set := map[string]bool{}
 	for path := range changedProd {
 		set[path] = true
 	}
-	if out, err := git(ctx, root, "ls-files", "-z", "--cached", "--others", "--exclude-standard"); err == nil {
-		for _, name := range strings.Split(string(out), "\x00") {
-			if name == "" || !measures.IsProductionSource(name) {
-				continue
-			}
-			if info, statErr := os.Stat(filepath.Join(root, filepath.FromSlash(name))); statErr == nil && info.Mode().IsRegular() {
-				set[name] = true
-			}
+	out, err := git(ctx, root, "ls-files", "-z", "--cached", "--others", "--exclude-standard")
+	if err != nil {
+		return nil, fmt.Errorf("list head files: %w", err)
+	}
+	for _, name := range strings.Split(string(out), "\x00") {
+		if name == "" || !measures.IsProductionSource(name) {
+			continue
+		}
+		if info, statErr := os.Stat(filepath.Join(root, filepath.FromSlash(name))); statErr == nil && info.Mode().IsRegular() {
+			set[name] = true
 		}
 	}
-	return sortedKeys(set)
+	return sortedKeys(set), nil
 }
 
 // deltaBasePopulation is the production source tracked at the merge base.
-func deltaBasePopulation(ctx context.Context, root, mergeBase string) []string {
+func deltaBasePopulation(ctx context.Context, root, mergeBase string) ([]string, error) {
 	out, err := git(ctx, root, "ls-tree", "-r", "-z", "--name-only", mergeBase)
 	if err != nil {
-		return nil
+		return nil, fmt.Errorf("list merge-base files: %w", err)
 	}
 	var paths []string
 	for _, name := range strings.Split(string(out), "\x00") {
@@ -298,7 +308,7 @@ func deltaBasePopulation(ctx context.Context, root, mergeBase string) []string {
 		}
 	}
 	sort.Strings(paths)
-	return paths
+	return paths, nil
 }
 
 // extractBlobs writes the merge-base content of paths below dir with a single

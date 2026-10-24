@@ -17,6 +17,9 @@ func loadPRMetadata(ctx context.Context, store *state.Store, o *PRMetadataOption
 	if o == nil || (o.File == "" && !o.Fetch.Enabled) {
 		return nil, nil, ""
 	}
+	if o.File != "" && o.Fetch.Enabled {
+		return nil, nil, "PR metadata: a file and a GitHub fetch were both requested; choose one source"
+	}
 	var (
 		res prmeta.Result
 		err error

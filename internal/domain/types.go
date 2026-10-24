@@ -956,6 +956,11 @@ func (i Issue) Validate() error {
 	if i.EffectiveSeverity.Rank() > i.OriginalSeverity.Rank() {
 		return errors.New("effective severity cannot exceed immutable source severity")
 	}
+	// Only a migrated legacy row that could not be anchored (listed as an
+	// ambiguity by the migration) may lack an anchor.
+	if i.Anchor.RuleKey == "" && i.LegacyID == "" {
+		return errors.New("issue requires a source anchor")
+	}
 	if len(i.ObservationIDs) == 0 {
 		return errors.New("issue requires at least one observation")
 	}

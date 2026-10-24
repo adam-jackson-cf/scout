@@ -71,11 +71,11 @@ func diff(ctx context.Context, args []string) int {
 	return emit(flags, report.Gate.Status, report.Gate.ExitCode, report, nil)
 }
 
-// assessGate derives the gate block for a plain assessment: with no base there
-// is no differential, so nothing can be introduced or gated; only an
-// incomplete required lane changes the exit code.
-func assessGate(result engine.Result) engine.GateOutput {
+// assessGate derives the gate block for a plain assessment under the policy
+// committed at HEAD: with no base there is no differential, so nothing can be
+// introduced or gated; only an incomplete required lane changes the exit code.
+func assessGate(pol policy.Policy, result engine.Result) engine.GateOutput {
 	return engine.Evaluate(engine.GateInput{
-		Policy: policy.Default(), Head: result.Issues, Comparison: domain.ComparisonNone, Lanes: result.Lanes,
+		Policy: pol, Head: result.Issues, Comparison: domain.ComparisonNone, Lanes: result.Lanes,
 	})
 }

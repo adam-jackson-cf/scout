@@ -9,6 +9,7 @@ import (
 
 	"scout/internal/domain"
 	"scout/internal/state"
+	"scout/internal/state/statetest"
 )
 
 const testCategory = "security:test"
@@ -47,9 +48,6 @@ func (h *harness) run(findings []finding, coverage map[string]domain.CoverageSta
 	snapshot := domain.Snapshot{RepositoryID: "repository", WorktreeDigest: "worktree-" + suffix, IgnoreRulesDigest: "ignore", ExclusionsDigest: "exclude"}
 	scope := domain.Scope{Kind: domain.ScopeRepository, SelectedFamilies: []domain.Family{domain.FamilySecurity}}
 	plan := domain.Plan{PlanID: "plan-" + suffix, RunID: "run-" + suffix, Snapshot: snapshot, Scope: scope, CreatedAt: time.Now().UTC()}
-	if err := h.store.SavePlan(h.ctx, plan); err != nil {
-		h.t.Fatal(err)
-	}
 	observationsByPath := map[string][]string{}
 	observations := make([]domain.Observation, 0, len(findings))
 	for index, f := range findings {
@@ -83,9 +81,7 @@ func (h *harness) run(findings []finding, coverage map[string]domain.CoverageSta
 		}
 		run.Coverage = append(run.Coverage, row)
 	}
-	if err := h.store.SaveRun(h.ctx, run, observations); err != nil {
-		h.t.Fatal(err)
-	}
+	statetest.SeedRun(h.t, h.ctx, h.store, plan, run, observations, nil)
 	issues, err := Correlate(h.ctx, h.store, run, observations, opts...)
 	if err != nil {
 		h.t.Fatal(err)

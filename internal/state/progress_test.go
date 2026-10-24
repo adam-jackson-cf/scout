@@ -64,7 +64,7 @@ func TestCommittedJobSurvivesFreshStore(t *testing.T) {
 	if err != nil || string(content) != "sanitized scanner evidence" {
 		t.Fatalf("committed artifact content = %q, err = %v", content, err)
 	}
-	if _, err := fresh.LatestRun(ctx); !errors.Is(err, ErrNotFound) {
+	if _, err := fresh.LatestFinalizedRun(ctx); !errors.Is(err, ErrNotFound) {
 		t.Fatalf("interrupted run became a baseline: %v", err)
 	}
 	finished := time.Now().UTC()

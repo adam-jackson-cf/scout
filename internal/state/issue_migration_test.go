@@ -47,12 +47,7 @@ func TestV4IssueStoreIsReanchoredAndAmbiguousRowsListed(t *testing.T) {
 		legacyObservation("obs-d2", "run-1", "z.go", "", "eval(d2)", now),
 		legacyObservation("obs-e", "run-1", "e.go", "", "eval(e)", now),
 	}
-	if err := store.SavePlan(ctx, plan); err != nil {
-		t.Fatal(err)
-	}
-	if err := store.SaveRun(ctx, run, observations); err != nil {
-		t.Fatal(err)
-	}
+	seedRun(t, ctx, store, plan, run, observations, nil)
 	legacyRows := []struct {
 		id, state string
 		observed  []string
@@ -148,16 +143,24 @@ func TestV4IssueStoreIsReanchoredAndAmbiguousRowsListed(t *testing.T) {
 		t.Fatalf("approval data survived migration: %s", stored)
 	}
 
-	ambiguities, err := migrated.ListMigrationAmbiguities(ctx)
+	ambiguityRows, err := migrated.db.QueryContext(ctx, `SELECT issue_id, legacy_id, reason FROM issue_migration_ambiguities`)
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer ambiguityRows.Close()
 	reasons := map[string]string{}
-	for _, row := range ambiguities {
-		reasons[row.LegacyID] = row.Reason
-		if row.IssueID != byLegacy[row.LegacyID].IssueID {
-			t.Fatalf("ambiguity row points at the wrong issue: %#v", row)
+	for ambiguityRows.Next() {
+		var issueID, legacy, reason string
+		if err := ambiguityRows.Scan(&issueID, &legacy, &reason); err != nil {
+			t.Fatal(err)
 		}
+		reasons[legacy] = reason
+		if issueID != byLegacy[legacy].IssueID {
+			t.Fatalf("ambiguity row points at the wrong issue: %s %s", issueID, legacy)
+		}
+	}
+	if err := ambiguityRows.Err(); err != nil {
+		t.Fatal(err)
 	}
 	if len(reasons) != 3 || !strings.Contains(reasons[legacyID("b")], "indistinguishable") || !strings.Contains(reasons[legacyID("c")], "indistinguishable") || !strings.Contains(reasons[legacyID("d")], "merged") {
 		t.Fatalf("ambiguous rows = %#v", reasons)
@@ -165,5 +168,97 @@ func TestV4IssueStoreIsReanchoredAndAmbiguousRowsListed(t *testing.T) {
 	b, c := byLegacy[legacyID("b")], byLegacy[legacyID("c")]
 	if len(b.AmbiguousWith) != 1 || b.AmbiguousWith[0] != c.IssueID || len(c.AmbiguousWith) != 1 || c.AmbiguousWith[0] != b.IssueID || b.State != domain.IssueOpen {
 		t.Fatalf("indistinguishable issues were not linked and kept open: %#v %#v", b.AmbiguousWith, c.AmbiguousWith)
+	}
+}
+
+// legacyStoreWithRow returns the root of a v4-era store holding one legacy
+// issue row, optionally linked to a real observation.
+func legacyStoreWithRow(t *testing.T, id string, history any, link bool) string {
+	t.Helper()
+	ctx := context.Background()
+	now := time.Now().UTC().Truncate(time.Millisecond)
+	root := t.TempDir()
+	store, err := Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	snapshot := domain.Snapshot{RepositoryID: "repository", WorktreeDigest: "worktree", IgnoreRulesDigest: "ignore", ExclusionsDigest: "exclude"}
+	scope := domain.Scope{Kind: domain.ScopeRepository, SelectedFamilies: []domain.Family{domain.FamilySecurity}}
+	observation := legacyObservation("obs-a", "run-1", "a.go", "", "eval(a)", now)
+	seedRun(t, ctx, store, domain.Plan{PlanID: "plan-1", RunID: "run-1", Snapshot: snapshot, Scope: scope, CreatedAt: now}, domain.Run{RunID: "run-1", PlanID: "plan-1", Snapshot: snapshot, Scope: scope, State: domain.RunPartial, StartedAt: now}, []domain.Observation{observation}, nil)
+	payload, err := json.Marshal(map[string]any{
+		"issueId": id, "state": "open", "title": "security:test: unsafe path", "mechanism": "unsafe path",
+		"originalSeverity": "high", "effectiveSeverity": "high", "observationIds": []string{"obs-a"},
+		"history": history, "createdAt": now, "updatedAt": now,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := store.db.ExecContext(ctx, `INSERT INTO issues(issue_id, state, updated_at, payload) VALUES (?, 'open', ?, ?)`, id, unixMillis(now), payload); err != nil {
+		t.Fatal(err)
+	}
+	if link {
+		if _, err := store.db.ExecContext(ctx, `INSERT INTO issue_observations(issue_id, observation_id) VALUES (?, 'obs-a')`, id); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, statement := range []string{`DROP TABLE issue_migration_ambiguities`, `PRAGMA user_version=4`} {
+		if _, err := store.db.ExecContext(ctx, statement); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := store.Close(); err != nil {
+		t.Fatal(err)
+	}
+	return root
+}
+
+// A legacy row whose history is corrupt cannot be re-anchored faithfully: the
+// migration fails and names the legacy ID.
+func TestCorruptLegacyHistoryFailsMigrationNamingItsID(t *testing.T) {
+	id := legacyID("a")
+	root := legacyStoreWithRow(t, id, []any{"corrupt"}, true)
+	if migrated, err := Open(root); err == nil {
+		migrated.Close()
+		t.Fatal("migration accepted a corrupt legacy history entry")
+	} else if !strings.Contains(err.Error(), id) {
+		t.Fatalf("migration error does not name the legacy ID: %v", err)
+	}
+}
+
+// A legacy row that cannot be anchored, or whose family cannot be derived,
+// does not fail the store open: it is listed as ambiguous and never given a
+// guessed family.
+func TestUnanchorableLegacyRowIsListedAsAmbiguousAndStoreOpens(t *testing.T) {
+	history := []any{map[string]any{"at": time.Now().UTC(), "to": "open", "actor": "legacy", "reason": "legacy history"}}
+	for name, id := range map[string]string{
+		"valid family, no observations": legacyID("a"),
+		"unknown family":                "issue:bogus:" + strings.Repeat("b", 64),
+	} {
+		t.Run(name, func(t *testing.T) {
+			root := legacyStoreWithRow(t, id, history, false)
+			migrated, err := Open(root)
+			if err != nil {
+				t.Fatalf("unanchorable row failed the store open: %v", err)
+			}
+			defer migrated.Close()
+			var issueID, reason string
+			if err := migrated.db.QueryRowContext(context.Background(), `SELECT issue_id, reason FROM issue_migration_ambiguities WHERE legacy_id = ?`, id).Scan(&issueID, &reason); err != nil {
+				t.Fatalf("row was not listed as ambiguous: %v", err)
+			}
+			issue, err := migrated.LoadIssue(context.Background(), issueID)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if issue.LegacyID != id || issue.Anchor.RuleKey != "" {
+				t.Fatalf("unanchorable row was given an anchor or lost its legacy ID: %#v", issue)
+			}
+			if id == legacyID("a") && issue.IssueID == id {
+				t.Fatal("row with a valid family kept its legacy ID instead of a durable one")
+			}
+			if strings.Contains(id, "bogus") && issue.Family.Valid() {
+				t.Fatalf("row with an unknown family was given family %q", issue.Family)
+			}
+		})
 	}
 }

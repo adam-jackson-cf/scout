@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"scout/internal/domain"
+	"scout/internal/state/statetest"
 )
 
 // inventoryRun saves a run with the given state, scope and inventory (no
@@ -17,18 +18,13 @@ func (h *harness) inventoryRun(state domain.RunState, scope domain.Scope, invent
 	snapshot := domain.Snapshot{RepositoryID: "repository", WorktreeDigest: "worktree-" + suffix, IgnoreRulesDigest: "ignore", ExclusionsDigest: "exclude"}
 	scope.SelectedFamilies = []domain.Family{domain.FamilySecurity}
 	plan := domain.Plan{PlanID: "plan-" + suffix, RunID: "run-" + suffix, Snapshot: snapshot, Scope: scope, CreatedAt: time.Now().UTC()}
-	if err := h.store.SavePlan(h.ctx, plan); err != nil {
-		h.t.Fatal(err)
-	}
 	finished := time.Now().UTC()
 	run := domain.Run{RunID: plan.RunID, PlanID: plan.PlanID, Snapshot: snapshot, Scope: scope, State: state, StartedAt: finished, FinishedAt: &finished}
 	files := make([]domain.File, 0, len(inventory))
 	for _, path := range inventory {
 		files = append(files, domain.File{Path: path, Eligible: true})
 	}
-	if err := h.store.SaveRunWithInventory(h.ctx, run, nil, files); err != nil {
-		h.t.Fatal(err)
-	}
+	statetest.SeedRun(h.t, h.ctx, h.store, plan, run, nil, files)
 	_, err := Correlate(h.ctx, h.store, run, nil, opts...)
 	return err
 }

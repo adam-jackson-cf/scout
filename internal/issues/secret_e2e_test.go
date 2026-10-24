@@ -11,6 +11,7 @@ import (
 
 	"scout/internal/analyzers"
 	"scout/internal/domain"
+	"scout/internal/state/statetest"
 )
 
 // Real analyzer → correlator path: Gitleaks reports the secret redacted; the
@@ -54,14 +55,9 @@ func TestGitleaksSecretKeepsIssueAcrossMoveEndToEnd(t *testing.T) {
 		snapshot := domain.Snapshot{RepositoryID: "repository", WorktreeDigest: "worktree-" + suffix, IgnoreRulesDigest: "ignore", ExclusionsDigest: "exclude"}
 		scope := domain.Scope{Kind: domain.ScopeRepository, SelectedFamilies: []domain.Family{domain.FamilySecurity}}
 		plan := domain.Plan{PlanID: "plan-" + suffix, RunID: "run-" + suffix, Snapshot: snapshot, Scope: scope, CreatedAt: time.Now().UTC()}
-		if err := h.store.SavePlan(h.ctx, plan); err != nil {
-			t.Fatal(err)
-		}
 		row := domain.Coverage{Key: domain.CoverageKey{FilePath: path, Family: domain.FamilySecurity, Category: observations[0].OriginalCategory}, Status: domain.CoverageFlagged, InspectedRanges: []domain.SourceRange{{Path: path, StartLine: 1, EndLine: 1}}, ObservationIDs: []string{observations[0].ObservationID}}
 		run := domain.Run{RunID: plan.RunID, PlanID: plan.PlanID, Snapshot: snapshot, Scope: scope, State: domain.RunPartial, StartedAt: time.Now().UTC(), Coverage: []domain.Coverage{row}}
-		if err := h.store.SaveRun(h.ctx, run, observations); err != nil {
-			t.Fatal(err)
-		}
+		statetest.SeedRun(t, h.ctx, h.store, plan, run, observations, nil)
 		issues, err := Correlate(h.ctx, h.store, run, observations)
 		if err != nil {
 			t.Fatal(err)

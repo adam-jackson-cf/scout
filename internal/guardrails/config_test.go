@@ -83,6 +83,40 @@ func runGuardCases(t *testing.T, cases []guardCase) {
 func ign(tool string) string    { return IgnoresPrefix + tool }
 func strict(tool string) string { return StrictnessPrefix + tool }
 
+func TestConfigRemovalLowersStrictness(t *testing.T) {
+	const golangci = "linters:\n  enable:\n    - gosec\n"
+	runGuardCases(t, []guardCase{
+		{
+			name: "config file deleted",
+			base: map[string]string{".golangci.yml": golangci, "main.go": "package main\n"},
+			head: map[string]string{"main.go": "package main\n"},
+			want: []string{strict("golangci")}, path: ".golangci.yml",
+		},
+		{
+			name: "config made unparseable",
+			base: map[string]string{".golangci.yml": golangci},
+			head: map[string]string{".golangci.yml": "linters: [\n  enable: : :\n"},
+			want: []string{strict("golangci")}, path: ".golangci.yml",
+		},
+		{
+			name: "tool section emptied",
+			base: map[string]string{".golangci.yml": golangci},
+			head: map[string]string{".golangci.yml": "run:\n  timeout: 5m\n"},
+			want: []string{strict("golangci")},
+		},
+		{
+			name: "config renamed keeps the tool configured",
+			base: map[string]string{".golangci.yml": golangci},
+			head: map[string]string{".golangci.yaml": golangci},
+		},
+		{
+			name: "config new in head has no baseline",
+			base: map[string]string{"main.go": "package main\n"},
+			head: map[string]string{"main.go": "package main\n", ".golangci.yml": golangci},
+		},
+	})
+}
+
 func TestGoGuardrails(t *testing.T) {
 	runGuardCases(t, []guardCase{
 		{

@@ -144,10 +144,11 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 	if headSHA != checkedOut {
 		return fail(fmt.Errorf("--head %s is not the checked-out HEAD; check it out so the head scan never touches another tree", headRef))
 	}
-	mergeBase := baseSHA
-	if out, mbErr := git(ctx, root, "merge-base", baseSHA, headSHA); mbErr == nil {
-		mergeBase = strings.TrimSpace(string(out))
+	mbOut, err := git(ctx, root, "merge-base", baseSHA, headSHA)
+	if err != nil {
+		return fail(fmt.Errorf("merge base of %s and %s: %w", cfg.BaseRef, headRef, err))
 	}
+	mergeBase := strings.TrimSpace(string(mbOut))
 	pol, err := policy.Load(root, baseSHA)
 	if err != nil {
 		return fail(fmt.Errorf("load policy from base ref: %w", err))
@@ -406,12 +407,10 @@ func changedFiles(ctx context.Context, root, mergeBase string) ([]string, error)
 
 // guardrailsLane wires the guardrails mechanisms (SUPPRESS, TESTQ, CONFIG) as
 // a pr-trigger blocking-eligible lane: base from the merge base, head from
-// the working tree.
+// the working tree. Config erosion compares whole trees, so it runs even when
+// no file was added or modified (a PR that only deletes a config).
 func guardrailsLane(ctx context.Context, root, mergeBase string, changed []string) InlineLane {
 	return InlineLane{Lane: LaneGuardrails, Units: len(changed), Run: func(ctx context.Context, runID string) ([]domain.Observation, error) {
-		if len(changed) == 0 {
-			return nil, nil
-		}
 		baseTree, err := newGitTree(ctx, root, mergeBase)
 		if err != nil {
 			return nil, err

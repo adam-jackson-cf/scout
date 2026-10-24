@@ -140,6 +140,18 @@ func ConfigChanges(base, head Tree) []Finding {
 		}
 	}
 	sort.Strings(paths)
+	// A tool whose facts vanish from every head config file (file deleted,
+	// unparseable, section removed) has been disabled, not merely edited.
+	headTools := map[string]bool{}
+	for _, p := range paths {
+		for _, kind := range configKinds {
+			if kind.match(path.Base(p), p) {
+				for tool := range kind.extract(head, p) {
+					headTools[tool] = true
+				}
+			}
+		}
+	}
 	var out []Finding
 	for _, p := range paths {
 		name := path.Base(p)
@@ -161,6 +173,12 @@ func ConfigChanges(base, head Tree) []Finding {
 			for _, tool := range tools {
 				if h := hf[tool]; h != nil {
 					out = append(out, diffFacts(tool, p, bf[tool], h, string(hc))...)
+				} else if !headTools[tool] {
+					out = append(out, Finding{
+						Path: p, Line: 1, CheckID: StrictnessPrefix + tool, Version: StrictnessPrefix + tool + configVersion,
+						Mechanism: "config-removed:" + mechSlug(tool),
+						Evidence:  Evidence{Base: tool + " configuration present", Head: tool + " configuration absent or unparseable"},
+					})
 				}
 			}
 		}

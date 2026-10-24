@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"scout/internal/domain"
 )
 
 func TestOpenRegularFileNested(t *testing.T) {
@@ -35,5 +37,27 @@ func TestOpenRegularFileNested(t *testing.T) {
 	if linked, err := openRegularFile(root, "src/link.go"); err == nil {
 		linked.Close()
 		t.Fatal("source symlink accepted")
+	}
+}
+
+func TestScopeDigestIsOrderSensitiveWhereOrderMatters(t *testing.T) {
+	scope := domain.Scope{Kind: domain.ScopeKind("diff"), FromRevision: "aaa", ToRevision: "bbb", Paths: []string{"a", "b"}}
+	swapped := scope
+	swapped.FromRevision, swapped.ToRevision = "bbb", "aaa"
+	if scopeDigest(scope, nil) == scopeDigest(swapped, nil) {
+		t.Fatal("swapping from/to revisions must change the scope digest")
+	}
+	reordered := scope
+	reordered.Paths = []string{"b", "a"}
+	if scopeDigest(scope, nil) != scopeDigest(reordered, nil) {
+		t.Fatal("path order is a set and must not change the scope digest")
+	}
+	asExclusion := scope
+	asExclusion.Paths = []string{"a"}
+	if scopeDigest(asExclusion, []string{"b"}) == scopeDigest(scope, nil) {
+		t.Fatal("moving a value between path and exclusion sections must change the digest")
+	}
+	if orderedDigest("x", "y") == orderedDigest("y", "x") {
+		t.Fatal("orderedDigest must be order-sensitive")
 	}
 }

@@ -12,12 +12,6 @@ import (
 	"scout/internal/domain"
 )
 
-// SuccessfulUnit is the most recent complete-run coverage record for a unit.
-type SuccessfulUnit struct {
-	RunID    string
-	Coverage domain.Coverage
-}
-
 // SavePlan persists an immutable execution plan before its jobs execute.
 func (s *Store) SavePlan(ctx context.Context, plan domain.Plan) error {
 	if err := plan.Validate(); err != nil {
@@ -99,115 +93,6 @@ func (s *Store) ListResumablePlans(ctx context.Context) ([]domain.Plan, error) {
 	return plans, err
 }
 
-// SaveRun atomically persists an immutable run, its coverage, and validated observations.
-// A partial run remains durable but can never replace a unit from a complete run.
-func (s *Store) SaveRun(ctx context.Context, run domain.Run, observations []domain.Observation) error {
-	return s.saveRun(ctx, run, observations, nil)
-}
-
-// SaveRunWithInventory commits the scanned file index with its immutable run,
-// so a later delta never observes a run lacking its baseline snapshot.
-func (s *Store) SaveRunWithInventory(ctx context.Context, run domain.Run, observations []domain.Observation, files []domain.File) error {
-	if files == nil {
-		files = []domain.File{}
-	}
-	for _, file := range files {
-		if err := file.Validate(); err != nil {
-			return fmt.Errorf("inventory file: %w", err)
-		}
-	}
-	return s.saveRun(ctx, run, observations, files)
-}
-
-func (s *Store) saveRun(ctx context.Context, run domain.Run, observations []domain.Observation, files []domain.File) error {
-	if err := run.Validate(); err != nil {
-		return fmt.Errorf("run: %w", err)
-	}
-	for _, observation := range observations {
-		if err := observation.Validate(); err != nil {
-			return fmt.Errorf("observation %q: %w", observation.ObservationID, err)
-		}
-		if observation.RunID != run.RunID {
-			return fmt.Errorf("observation %q belongs to run %q, not %q", observation.ObservationID, observation.RunID, run.RunID)
-		}
-	}
-	payload, err := encode(run)
-	if err != nil {
-		return err
-	}
-	return s.withTransaction(ctx, func(tx *sql.Tx) error {
-		if err := s.ensureRepositoryIdentity(ctx, tx, run.Snapshot.RepositoryID); err != nil {
-			return err
-		}
-		for _, artifact := range run.ArtifactRefs {
-			if err := ensureArtifactTx(ctx, tx, artifact); err != nil {
-				return fmt.Errorf("run artifact: %w", err)
-			}
-		}
-		for _, observation := range observations {
-			for _, artifact := range observation.ArtifactRefs {
-				if err := ensureArtifactTx(ctx, tx, artifact); err != nil {
-					return fmt.Errorf("observation %q artifact: %w", observation.ObservationID, err)
-				}
-			}
-			for _, evidence := range observation.Evidence {
-				if evidence.Artifact != nil {
-					if err := ensureArtifactTx(ctx, tx, *evidence.Artifact); err != nil {
-						return fmt.Errorf("observation %q evidence artifact: %w", observation.ObservationID, err)
-					}
-				}
-			}
-		}
-		var plannedRun string
-		if err := tx.QueryRowContext(ctx, `SELECT run_id FROM plans WHERE plan_id = ?`, run.PlanID).Scan(&plannedRun); err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				return fmt.Errorf("run %q references unknown plan %q", run.RunID, run.PlanID)
-			}
-			return fmt.Errorf("load run plan: %w", err)
-		}
-		if plannedRun != run.RunID {
-			return fmt.Errorf("run %q does not match plan %q run %q", run.RunID, run.PlanID, plannedRun)
-		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO runs(run_id, plan_id, repository_id, state, started_at, finished_at, payload) VALUES (?, ?, ?, ?, ?, ?, ?)`, run.RunID, run.PlanID, run.Snapshot.RepositoryID, run.State, unixMillis(run.StartedAt), nullUnixMillis(run.FinishedAt), payload); err != nil {
-			if isUniqueViolation(err) {
-				return fmt.Errorf("run %q: %w", run.RunID, ErrImmutable)
-			}
-			return fmt.Errorf("save run: %w", err)
-		}
-		for _, coverage := range run.Coverage {
-			coveragePayload, err := encode(coverage)
-			if err != nil {
-				return err
-			}
-			if _, err := tx.ExecContext(ctx, `INSERT INTO coverage(run_id, coverage_key, status, payload) VALUES (?, ?, ?, ?)`, run.RunID, coverage.Key.String(), coverage.Status, coveragePayload); err != nil {
-				return fmt.Errorf("save coverage %q: %w", coverage.Key.String(), err)
-			}
-		}
-		for _, observation := range observations {
-			observationPayload, err := encode(observation)
-			if err != nil {
-				return err
-			}
-			if _, err := tx.ExecContext(ctx, `INSERT INTO observations(observation_id, run_id, observed_at, payload) VALUES (?, ?, ?, ?)`, observation.ObservationID, run.RunID, unixMillis(observation.ObservedAt), observationPayload); err != nil {
-				if isUniqueViolation(err) {
-					return fmt.Errorf("observation %q: %w", observation.ObservationID, ErrImmutable)
-				}
-				return fmt.Errorf("save observation %q: %w", observation.ObservationID, err)
-			}
-		}
-		if files != nil {
-			indexPayload, err := encode(files)
-			if err != nil {
-				return err
-			}
-			if _, err := tx.ExecContext(ctx, `INSERT INTO inventory_snapshots(run_id, payload) VALUES (?, ?)`, run.RunID, indexPayload); err != nil {
-				return fmt.Errorf("save inventory snapshot: %w", err)
-			}
-		}
-		return nil
-	})
-}
-
 // LoadRun restores a persisted run without mutating its recorded coverage state.
 func (s *Store) LoadRun(ctx context.Context, runID string) (domain.Run, error) {
 	if runID == "" {
@@ -254,39 +139,6 @@ func (s *Store) LoadObservations(ctx context.Context, runID string) ([]domain.Ob
 		return rows.Err()
 	})
 	return observations, err
-}
-
-// PreviousSuccessfulUnit returns the most recent accounted coverage from a complete run.
-func (s *Store) PreviousSuccessfulUnit(ctx context.Context, key domain.CoverageKey) (SuccessfulUnit, error) {
-	if err := key.Validate(); err != nil {
-		return SuccessfulUnit{}, fmt.Errorf("coverage key: %w", err)
-	}
-	var result SuccessfulUnit
-	err := s.withRead(ctx, func(db *sql.DB) error {
-		var payload []byte
-		err := db.QueryRowContext(ctx, `SELECT c.run_id, c.payload
-			FROM coverage c JOIN runs r ON r.run_id = c.run_id
-			WHERE c.coverage_key = ? AND r.state = ? AND r.finalized = 1 AND c.status IN (?, ?, ?, ?, ?)
-			ORDER BY r.finished_at DESC, r.started_at DESC LIMIT 1`, key.String(), domain.RunComplete,
-			domain.CoverageInspected, domain.CoverageReused, domain.CoverageNotApplicable, domain.CoverageCovered, domain.CoverageFlagged).Scan(&result.RunID, &payload)
-		if errors.Is(err, sql.ErrNoRows) {
-			return fmt.Errorf("successful unit %q: %w", key.String(), ErrNotFound)
-		}
-		if err != nil {
-			return fmt.Errorf("load successful unit: %w", err)
-		}
-		if err := decode(payload, &result.Coverage); err != nil {
-			return err
-		}
-		if err := result.Coverage.Validate(); err != nil {
-			return fmt.Errorf("stored successful coverage is invalid: %w", err)
-		}
-		if result.Coverage.Key.String() != key.String() {
-			return errors.New("stored successful coverage key does not match query")
-		}
-		return nil
-	})
-	return result, err
 }
 
 // CreateIssue persists a new durable issue and its initial audit history.
@@ -396,27 +248,6 @@ func (s *Store) TriageIssueWithEvidence(ctx context.Context, issueID string, sta
 	return s.transitionIssue(ctx, issueID, state, actor, reason, evidence, func(issue *domain.Issue) error {
 		issue.Owner = owner
 		issue.DispositionReason = dispositionReason
-		return nil
-	})
-}
-
-// DeleteIssue removes an issue only when callers explicitly choose to discard its audit history.
-func (s *Store) DeleteIssue(ctx context.Context, issueID string) error {
-	if issueID == "" {
-		return errors.New("issue ID is required")
-	}
-	return s.withTransaction(ctx, func(tx *sql.Tx) error {
-		result, err := tx.ExecContext(ctx, `DELETE FROM issues WHERE issue_id = ?`, issueID)
-		if err != nil {
-			return fmt.Errorf("delete issue: %w", err)
-		}
-		count, err := result.RowsAffected()
-		if err != nil {
-			return fmt.Errorf("count deleted issues: %w", err)
-		}
-		if count == 0 {
-			return fmt.Errorf("issue %q: %w", issueID, ErrNotFound)
-		}
 		return nil
 	})
 }

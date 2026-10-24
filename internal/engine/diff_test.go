@@ -32,3 +32,39 @@ func TestResolveBaseUsesImportedBaselineOnlyWhenDigestsAndRevisionMatch(t *testi
 		}
 	}
 }
+
+func TestDiffWithoutMergeBaseFailsInsteadOfComparingAgainstBaseTip(t *testing.T) {
+	root, _ := deltaRepo(t, map[string]string{"a.py": "x = 1\n"})
+	deltaGit(t, root, "checkout", "-q", "--orphan", "unrelated")
+	deltaWrite(t, root, "b.py", "y = 2\n")
+	deltaGit(t, root, "add", "-A")
+	deltaGit(t, root, "commit", "-qm", "unrelated")
+	_, err := Diff(context.Background(), DiffConfig{Config: Config{Root: root}, BaseRef: "main"})
+	if err == nil || !strings.Contains(err.Error(), "merge base") {
+		t.Fatalf("unrelated histories have no merge base and must fail, got %v", err)
+	}
+}
+
+func TestGuardrailsLaneReportsConfigDeletedInAPRThatOnlyDeletes(t *testing.T) {
+	root, base := deltaRepo(t, map[string]string{
+		".golangci.yml": "linters:\n  enable:\n    - errcheck\n    - govet\n",
+		"a.go":          "package a\n",
+	})
+	deltaGit(t, root, "rm", "-q", ".golangci.yml")
+	deltaGit(t, root, "commit", "-qm", "drop lint config")
+	ctx := context.Background()
+	changed, err := changedFiles(ctx, root, base)
+	if err != nil || len(changed) != 0 {
+		t.Fatalf("a deletion-only PR has no added or modified files, got %v %v", changed, err)
+	}
+	observations, err := guardrailsLane(ctx, root, base, changed).Run(ctx, "run")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, o := range observations {
+		if o.RuleID == "guardrails.CONFIG.strictness-lowered.golangci" && o.Mechanism == "config-removed:golangci" {
+			return
+		}
+	}
+	t.Fatalf("deleting the lint config must lower strictness, got %+v", observations)
+}

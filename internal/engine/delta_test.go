@@ -218,3 +218,12 @@ func TestCapabilityMatrixReportsPerRepoAvailability(t *testing.T) {
 		}
 	}
 }
+
+func TestDeltaPopulationGitFailureIsUnmeasuredNeverACloneAdded(t *testing.T) {
+	root, _ := deltaRepo(t, map[string]string{"a.py": branchy("a", 3)})
+	changed := commitChange(t, root, map[string]string{"a.py": branchy("a", 12)})
+	report := ComputeDeltas(context.Background(), root, "0000000000000000000000000000000000000000", changed, measures.Tools{})
+	if len(report.Issues) != 0 || len(report.Unmeasured) == 0 || !strings.Contains(report.Unmeasured[0], "merge-base") {
+		t.Fatalf("an unreadable base population must be unmeasured, not an empty base: %+v", report)
+	}
+}

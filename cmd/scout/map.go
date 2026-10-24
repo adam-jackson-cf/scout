@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"fmt"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -56,15 +57,22 @@ func mapCmd(ctx context.Context, args []string) int {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
 	run := engine.RefreshRun{Event: engine.RefreshEvent(event), DefaultBranch: defaultBranch, Force: force}
-	revision := ""
-	if out, gitErr := exec.CommandContext(ctx, "git", "-C", root, "rev-parse", "HEAD").Output(); gitErr == nil {
-		revision = strings.TrimSpace(string(out))
+	head, err := exec.CommandContext(ctx, "git", "-C", root, "rev-parse", "HEAD").Output()
+	if err != nil {
+		return emit(flags, "unavailable", exitUnavailable, nil, fmt.Errorf("resolve HEAD for the area snapshot: %w", err))
 	}
+	revision := strings.TrimSpace(string(head))
 	mapping := pol.Mapping()
+	var reconciled *areas.Report
 	refresher := &engine.Refresher{
 		Store: store, Mapper: client, Now: time.Now,
 		Reconcile: func(ctx context.Context, mapped clawpatch.MapResult) error {
-			return reconcileAreas(ctx, store, mapped, mapping.AreasMatchJaccard, revision)
+			report, err := reconcileAreas(ctx, store, mapped, mapping.AreasMatchJaccard, revision)
+			if err != nil {
+				return err
+			}
+			reconciled = &report
+			return nil
 		},
 	}
 	outcome, err := refresher.Run(ctx, run)
@@ -75,21 +83,22 @@ func mapCmd(ctx context.Context, args []string) int {
 	if outcome.Status == engine.RefreshBlocked {
 		code = exitPartial
 	}
-	return emit(flags, string(outcome.Status), code, outcome, nil)
+	result := struct {
+		engine.RefreshOutcome
+		Areas *areas.Report `json:"areas,omitempty"`
+	}{outcome, reconciled}
+	return emit(flags, string(outcome.Status), code, result, nil)
 }
 
-// reconcileAreas folds a successful agent refresh into the stored areas. Only
-// the latest merged output decides heuristic ownership.
-func reconcileAreas(ctx context.Context, store *state.Store, mapped clawpatch.MapResult, matchJaccard float64, revision string) error {
+// reconcileAreas folds a successful agent refresh into the stored areas and
+// returns what changed. Only the latest merged output decides heuristic
+// ownership.
+func reconcileAreas(ctx context.Context, store *state.Store, mapped clawpatch.MapResult, matchJaccard float64, revision string) (areas.Report, error) {
 	prev, err := store.ListAreas(ctx)
 	if err != nil {
-		return err
+		return areas.Report{}, err
 	}
 	active := mapped.Features // clawpatch returns only the latest map's (non-stale) records
-	snapshot := revision
-	if snapshot == "" {
-		snapshot = "refresh-" + time.Now().UTC().Format(time.RFC3339)
-	}
-	next, _ := areas.Reconcile(prev, active, areas.HeuristicOwner(active), areas.Config{MatchJaccard: matchJaccard, Snapshot: snapshot})
-	return store.ReplaceAreas(ctx, next)
+	next, report := areas.Reconcile(prev, active, areas.HeuristicOwner(active), areas.Config{MatchJaccard: matchJaccard, Snapshot: revision})
+	return report, store.ReplaceAreas(ctx, next)
 }

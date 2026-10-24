@@ -9,9 +9,9 @@ import (
 	"scout/internal/domain"
 )
 
-// LatestRun returns the most recently finalized complete assessment. A partial
-// or interrupted run remains durable but can never become an incremental baseline.
-func (s *Store) LatestRun(ctx context.Context) (domain.Run, error) {
+// LatestFinalizedRun returns the most recently finalized complete assessment. A
+// partial or interrupted run remains durable but can never become an incremental baseline.
+func (s *Store) LatestFinalizedRun(ctx context.Context) (domain.Run, error) {
 	var result domain.Run
 	err := s.withRead(ctx, func(db *sql.DB) error {
 		var payload []byte
@@ -54,12 +54,6 @@ func (s *Store) LatestRecordedRun(ctx context.Context) (domain.Run, error) {
 	return result, err
 }
 
-// LatestFinalizedRun is the explicit baseline API. LatestRun is retained for
-// existing callers and has identical finalized-only semantics.
-func (s *Store) LatestFinalizedRun(ctx context.Context) (domain.Run, error) {
-	return s.LatestRun(ctx)
-}
-
 // LoadInventory returns the immutable file index attached to one finalized run.
 func (s *Store) LoadInventory(ctx context.Context, runID string) ([]domain.File, error) {
 	if runID == "" {
@@ -88,7 +82,7 @@ func (s *Store) LoadInventory(ctx context.Context, runID string) ([]domain.File,
 	return files, err
 }
 
-// LoadLatestInventory returns the file index atomically stored with LatestRun.
+// LoadLatestInventory returns the file index atomically stored with LatestFinalizedRun.
 // A legacy run without an index is not a valid incremental baseline.
 func (s *Store) LoadLatestInventory(ctx context.Context) ([]domain.File, error) {
 	run, err := s.LatestFinalizedRun(ctx)

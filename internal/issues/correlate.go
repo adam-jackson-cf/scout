@@ -118,7 +118,7 @@ func Correlate(ctx context.Context, store *state.Store, run domain.Run, observat
 	pool := make([]*candidate, 0, len(existing))
 	for _, issue := range existing {
 		if issue.Anchor.RuleKey == "" {
-			continue // not re-anchored; the v5 migration anchors every stored issue
+			continue // migrated legacy row listed as ambiguous; it has nothing to match on
 		}
 		path := issue.Anchor.Path
 		if renamed, found := settings.renames[path]; found {

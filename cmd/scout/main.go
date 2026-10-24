@@ -66,10 +66,23 @@ type outcome struct {
 	Error    string `json:"error,omitempty"`
 }
 
+// withheldText replaces error or reason text the sanitiser rejects (NUL bytes,
+// invalid UTF-8); the failure is reported, never an empty string.
+const withheldText = "text withheld: contains unsafe characters"
+
+// sanitized returns text safe to print, or withheldText when it cannot be.
+func sanitized(text string) string {
+	safe, err := issues.SanitizeText(text)
+	if err != nil {
+		return withheldText
+	}
+	return safe
+}
+
 func emit(flags *commonFlags, status string, code int, result any, err error) int {
 	reply := outcome{Status: status, ExitCode: code, Result: result}
 	if err != nil {
-		reply.Error, _ = issues.SanitizeText(err.Error())
+		reply.Error = sanitized(err.Error())
 	}
 	if flags != nil && flags.json {
 		if encodeErr := json.NewEncoder(os.Stdout).Encode(reply); encodeErr != nil {
@@ -223,6 +236,9 @@ func assess(ctx context.Context, args []string) int {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
 	measureOpts := &engine.MeasuresOptions{History: scope.Kind == domain.ScopeRepository}
+	if prMetadata != "" && fetchPRs {
+		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("--pr-metadata and --fetch-pr-metadata are mutually exclusive"))
+	}
 	if prMetadata != "" || fetchPRs {
 		measureOpts.PRMetadata = &engine.PRMetadataOptions{File: prMetadata, Fetch: prmeta.FetchOptions{Enabled: fetchPRs, Repo: prRepo, Token: os.Getenv("GITHUB_TOKEN")}}
 	}
@@ -234,8 +250,12 @@ func assess(ctx context.Context, args []string) int {
 		unavailable := engine.UnavailableReport(err)
 		return emit(flags, unavailable.Gate.Status, unavailable.Gate.ExitCode, unavailable, err)
 	}
-	verdict := assessGate(result)
-	ranking, health, err := rankAssessment(ctx, flags, result, verdict)
+	pol, err := headPolicy(flags.root)
+	if err != nil {
+		return emit(flags, "unavailable", exitUnavailable, nil, err)
+	}
+	verdict := assessGate(pol, result)
+	ranking, health, err := rankAssessment(ctx, flags, pol, result, verdict)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
@@ -297,7 +317,7 @@ func readiness(ctx context.Context, args []string) int {
 	}
 	checks := make([]capability, len(assessmentReadiness.Capabilities))
 	for index, check := range assessmentReadiness.Capabilities {
-		reason, _ := issues.SanitizeText(check.Reason)
+		reason := sanitized(check.Reason)
 		checks[index] = capability{Name: check.Name, Required: check.Required, Ready: check.Ready, Reason: reason}
 	}
 	report := struct {

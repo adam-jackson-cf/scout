@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	"golang.org/x/sys/unix"
@@ -667,20 +668,28 @@ func scopeDigest(scope domain.Scope, exclusions []string) string {
 		families[i] = string(family)
 	}
 	sort.Strings(families)
+	// Positional fields and the sorted set sections are one ordered tuple, so
+	// swapping from/to or moving a value between sections changes the digest.
+	exclusionSet := normalizedExclusions(exclusions)
 	parts := []string{"kind", string(scope.Kind), "from", scope.FromRevision, "to", scope.ToRevision}
-	for _, path := range paths {
-		parts = append(parts, "path", path)
-	}
-	for _, family := range families {
-		parts = append(parts, "family", family)
-	}
-	for _, exclusion := range normalizedExclusions(exclusions) {
-		parts = append(parts, "exclude", exclusion)
-	}
-	return digestStrings(parts)
+	parts = append(parts, "paths", strconv.Itoa(len(paths)))
+	parts = append(parts, paths...)
+	parts = append(parts, "families", strconv.Itoa(len(families)))
+	parts = append(parts, families...)
+	parts = append(parts, "exclusions", strconv.Itoa(len(exclusionSet)))
+	parts = append(parts, exclusionSet...)
+	return orderedDigest(parts...)
 }
 
 func digestBytes(value []byte) string { sum := sha256.Sum256(value); return hex.EncodeToString(sum[:]) }
+
+// orderedDigest hashes values as an ordered tuple; use it wherever position
+// is meaningful. digestStrings hashes a set and ignores order.
+func orderedDigest(values ...string) string {
+	return digestStrings([]string{fingerprintTuple(values...)})
+}
+
+// digestStrings is order-insensitive: it hashes the sorted values.
 func digestStrings(values []string) string {
 	ordered := append([]string(nil), values...)
 	sort.Strings(ordered)

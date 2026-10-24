@@ -17,6 +17,7 @@ import (
 	"scout/internal/domain"
 	"scout/internal/policy"
 	"scout/internal/state"
+	"scout/internal/state/statetest"
 )
 
 const (
@@ -101,9 +102,6 @@ func seed(t *testing.T, specs []seededIssue) (*state.Store, []domain.AttributedI
 	snapshot := domain.Snapshot{RepositoryID: "repository", Revision: "abc123", WorktreeDigest: "worktree", IgnoreRulesDigest: "ignore", ExclusionsDigest: "exclude"}
 	scope := domain.Scope{Kind: domain.ScopeRepository, SelectedFamilies: []domain.Family{domain.FamilySecurity}}
 	finished := now.Add(time.Minute)
-	if err := store.SavePlan(ctx, domain.Plan{PlanID: "plan-1", RunID: "run-1", Snapshot: snapshot, Scope: scope, ToolDigest: "t", PolicyDigest: "p", CreatedAt: now}); err != nil {
-		t.Fatal(err)
-	}
 	var observations []domain.Observation
 	for _, spec := range specs {
 		observations = append(observations, domain.Observation{
@@ -114,9 +112,7 @@ func seed(t *testing.T, specs []seededIssue) (*state.Store, []domain.AttributedI
 			Validated: true, ObservedAt: now,
 		})
 	}
-	if err := store.SaveRun(ctx, domain.Run{RunID: "run-1", PlanID: "plan-1", Snapshot: snapshot, Scope: scope, State: domain.RunComplete, StartedAt: now, FinishedAt: &finished}, observations); err != nil {
-		t.Fatal(err)
-	}
+	statetest.SeedRun(t, ctx, store, domain.Plan{PlanID: "plan-1", RunID: "run-1", Snapshot: snapshot, Scope: scope, ToolDigest: "t", PolicyDigest: "p", CreatedAt: now}, domain.Run{RunID: "run-1", PlanID: "plan-1", Snapshot: snapshot, Scope: scope, State: domain.RunComplete, StartedAt: now, FinishedAt: &finished}, observations, nil)
 	var attributed []domain.AttributedIssue
 	for _, spec := range specs {
 		id := "issue:security:" + spec.id
