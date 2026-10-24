@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4337f187f1",
+  "title": "axum-extra handler composition",
+  "summary": "Handler composition helpers, including alternative handler selection.\n\nAgent mapper reason: The helper composes existing axum handlers and should be reviewed against their trait and service contracts.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Exports handler composition APIs."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Implements alternative handler composition."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines base handler behavior."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines handler dependencies and feature gates."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "handler",
+    "composition"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:59:37.867Z",
+  "updatedAt": "2026-10-24T00:59:37.867Z"
+}

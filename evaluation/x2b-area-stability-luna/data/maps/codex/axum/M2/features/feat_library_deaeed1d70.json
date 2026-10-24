@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_deaeed1d70",
+  "title": "Axum request and streaming bodies",
+  "summary": "Axum body wrappers and streaming response body support.\n\nAgent mapper reason: These modules implement Axum's body-facing API and streaming behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body API and exports."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Streaming body implementation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Underlying shared body abstraction."
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Public exports."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Feature and dependency configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "body",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:07:41.826Z",
+  "updatedAt": "2026-10-24T01:12:16.973Z"
+}

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_125782d1e9",
+  "title": "Axum extraction state and request-parts contracts",
+  "summary": "State extraction, request-parts composition, extractor exports, and rejection types.\n\nAgent mapper reason: These files define shared main-crate extraction behavior, state access, and rejection exports.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports main crate extractors."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines main crate extraction errors."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Implements request-parts extraction."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Implements typed application state extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines the core extraction contract."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor behavior."
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Documents state interaction with routing."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "state"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:12:16.865Z",
+  "updatedAt": "2026-10-24T01:12:16.865Z"
+}

@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f92bc252fb",
+  "title": "Axum-macros shared parsing and expansion support",
+  "summary": "Attribute parsing, positional helpers, and proc-macro crate exports.\n\nAgent mapper reason: These files provide common parsing and registration infrastructure used by the individual derives and attributes.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Source position tracking helper."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Proc-macro exports and dispatch."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Proc-macro dependencies."
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Macro crate overview."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "proc-macro"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:07:41.826Z"
+}

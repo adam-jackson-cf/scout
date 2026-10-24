@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3b6f03fbaf",
+  "title": "axum-extra public API",
+  "summary": "Exports optional Axum extensions and declares package configuration.\n\nAgent mapper reason: The crate root and manifest establish the extension package boundary and public API.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares package features and dependencies."
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Defines public extension exports."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Explains the extension crate."
+    },
+    {
+      "path": "axum-extra/CHANGELOG.md",
+      "reason": "Records package changes."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Provides the core package dependency context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "api"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:02:52.435Z",
+  "updatedAt": "2026-10-24T01:02:52.435Z"
+}

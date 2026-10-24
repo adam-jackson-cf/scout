@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d562fcded9",
+  "title": "Reverse proxy example",
+  "summary": "Routes inbound traffic to upstream services as a reverse proxy.\n\nAgent mapper reason: The sample accepts client traffic and relays it to upstream services.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Reverse proxy routing and forwarding."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/reverse-proxy/Cargo.toml",
+      "reason": "HTTP client and server dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "proxy"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:10:04.479Z"
+}

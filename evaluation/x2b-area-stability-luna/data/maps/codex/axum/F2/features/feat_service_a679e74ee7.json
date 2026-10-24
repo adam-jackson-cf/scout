@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_a679e74ee7",
+  "title": "Example: listen on multiple addresses",
+  "summary": "Demonstrates serving on multiple network addresses.\n\nAgent mapper reason: The package focuses on listener setup and concurrent service execution across addresses.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/listen-multiple-addrs/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Implements multiple listener setup."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Provides the server service adapter."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "network",
+    "listeners"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:59:37.867Z",
+  "updatedAt": "2026-10-24T00:59:37.867Z"
+}

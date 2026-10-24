@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_dfe456992b",
+  "title": "Listen on multiple addresses example",
+  "summary": "Demonstrates serving Axum on multiple socket addresses.\n\nAgent mapper reason: The example focuses on binding and serving more than one network address.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Configures multiple listeners and service startup."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/listen-multiple-addrs/Cargo.toml",
+      "reason": "Declares example dependencies."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Provides listener-facing service conversion."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "network",
+    "listeners"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:02:52.435Z",
+  "updatedAt": "2026-10-24T01:02:52.435Z"
+}

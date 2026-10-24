@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_ce8636e83c",
+  "title": "CORS example",
+  "summary": "Demonstrates cross-origin resource sharing configuration.\n\nAgent mapper reason: This standalone service demonstrates cross-origin policy configuration.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "Configures and runs the CORS example service."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/cors/Cargo.toml",
+      "reason": "Declares example dependencies."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Provides middleware integration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "cors",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "network",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:02:52.435Z",
+  "updatedAt": "2026-10-24T01:02:52.435Z"
+}

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_3197457f90",
+  "title": "Example: testing Axum services",
+  "summary": "Demonstrates testing routes and handlers with Axum.\n\nAgent mapper reason: The example demonstrates request-level verification of Axum service behavior.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run --manifest-path examples/testing/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/testing/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "Implements the service testing example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Exports in-process testing helpers."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Implements the test client."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "testing",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:10:04.400Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

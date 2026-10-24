@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f16b0e1543",
+  "title": "Axum public API and build setup",
+  "summary": "Defines Axum crate exports, package configuration, build metadata, and shared utility macros.\n\nAgent mapper reason: The crate root and package setup define the public library boundary and shared implementation utilities.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares package features and dependencies."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Provides package build-time setup."
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Defines the public crate API and module exports."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Provides shared Axum macros."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Contains shared internal utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/README.md",
+      "reason": "Documents package usage."
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "Records package changes."
+    },
+    {
+      "path": "Cargo.toml",
+      "reason": "Provides workspace context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "api",
+    "build"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:02:52.435Z",
+  "updatedAt": "2026-10-24T01:02:52.435Z"
+}

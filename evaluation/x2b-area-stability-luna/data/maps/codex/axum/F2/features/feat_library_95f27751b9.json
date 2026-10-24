@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_95f27751b9",
+  "title": "Axum body and boxed service utilities",
+  "summary": "Public body exports and boxed handler/service helpers.\n\nAgent mapper reason: This small slice covers public body wiring and type erasure helpers shared by handlers and routers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Exports the main crate body API."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Provides boxed handler and router support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines the underlying body type."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines handlers consumed by boxed helpers."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Defines routers consumed by boxed helpers."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "boxing",
+    "service"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:59:37.867Z",
+  "updatedAt": "2026-10-24T00:59:37.867Z"
+}

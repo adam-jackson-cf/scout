@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fed9746daf",
+  "title": "axum-core request and extraction primitives",
+  "summary": "Shared request traits, extractor contracts, state projection, tuple extraction, and rejection support.\n\nAgent mapper reason: These modules define shared request and extractor contracts that concrete axum extractors depend on.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Defines core error support used across request and response APIs."
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Exports request extension traits."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Implements request-level extension behavior."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "Implements extension behavior for decomposed request parts."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Defines the default request body limit."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Defines state projection for extractors."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Exports the core extraction API."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Defines shared extractor rejection support."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Defines extraction from request parts."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Implements sequential tuple extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Shows the crate-level exports."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Defines dependencies and feature gates."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows how axum builds public extractors on these contracts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "extractors",
+    "request",
+    "state"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:59:37.867Z",
+  "updatedAt": "2026-10-24T00:59:37.867Z"
+}

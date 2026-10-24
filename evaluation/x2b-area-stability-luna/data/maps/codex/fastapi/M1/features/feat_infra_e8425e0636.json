@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_e8425e0636",
+  "title": "Issue and pull request management workflows",
+  "summary": "Automates issue handling and approval labels.\n\nAgent mapper reason: These workflows automate repository issue and approval processes, and the issue templates define their intake context.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Defines issue-management automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Defines approval-label automation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue intake configuration."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Issue template context for privileged requests."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github",
+    "triage"
+  ],
+  "trustBoundaries": [
+    "network",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:49:15.193Z",
+  "updatedAt": "2026-10-24T00:53:45.343Z"
+}

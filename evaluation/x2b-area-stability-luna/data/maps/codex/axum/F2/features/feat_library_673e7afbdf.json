@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_673e7afbdf",
+  "title": "axum-extra extraction adapters",
+  "summary": "Cached extraction, custom rejection mapping, and extra form, multipart, and query extractors.\n\nAgent mapper reason: These modules extend the base extractor model with caching, rejection adaptation, and additional body or query formats.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Implements cached extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Provides extra form extraction behavior."
+    },
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Exports extra extractors."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Provides extra multipart support."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Provides extra query extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Adapts an extractor to a chosen rejection type."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Defines base extractor APIs extended here."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Defines shared rejection contracts."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines optional extractor dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "extractors",
+    "rejections"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:59:37.867Z",
+  "updatedAt": "2026-10-24T00:59:37.867Z"
+}

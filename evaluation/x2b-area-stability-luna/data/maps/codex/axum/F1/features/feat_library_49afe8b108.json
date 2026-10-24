@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_49afe8b108",
+  "title": "axum-extra asynchronous body reading",
+  "summary": "Adds async reader access to request bodies.\n\nAgent mapper reason: These files form the extra body-reading API and depend directly on the core body contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Implements async body reader extraction."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Exports body helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Feature and dependency configuration."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Underlying body abstraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "body",
+    "async"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T00:57:18.379Z"
+}

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_7f1324652f",
+  "title": "Stream request body to file example",
+  "summary": "Streams uploaded content into a file.\n\nAgent mapper reason: The example streams client-controlled content to persistent filesystem storage.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Request stream and file write behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/stream-to-file/Cargo.toml",
+      "reason": "Streaming and filesystem dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "streaming",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:12:17.013Z"
+}

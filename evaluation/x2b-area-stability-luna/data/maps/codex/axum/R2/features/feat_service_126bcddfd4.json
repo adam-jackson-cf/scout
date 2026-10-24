@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_126bcddfd4",
+  "title": "Example: low-level OpenSSL server",
+  "summary": "Demonstrates low-level TLS setup using OpenSSL.\n\nAgent mapper reason: Listener configuration and its certificate fixtures jointly define this low-level TLS example.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "Implements OpenSSL listener setup."
+    },
+    {
+      "path": "examples/low-level-openssl/self_signed_certs/cert.pem",
+      "reason": "Provides the example certificate fixture."
+    },
+    {
+      "path": "examples/low-level-openssl/self_signed_certs/key.pem",
+      "reason": "Provides the example private-key fixture."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/low-level-openssl/Cargo.toml",
+      "reason": "Shows TLS dependencies and configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "tls",
+    "openssl"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:07:41.898Z"
+}

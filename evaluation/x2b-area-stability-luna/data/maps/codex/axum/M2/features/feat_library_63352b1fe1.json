@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_63352b1fe1",
+  "title": "axum-extra encoded response formats",
+  "summary": "Provides JSON-lines, Protocol Buffers, and erased JSON response support.\n\nAgent mapper reason: These extensions encode values into distinct response formats and share Axum response conversion behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Implements JSON-lines support."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Implements Protocol Buffers support."
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Implements erased JSON response support."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Exports extra response APIs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Defines response conversion behavior."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines serialization dependencies and feature flags."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "response",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:10:04.400Z",
+  "updatedAt": "2026-10-24T01:12:16.955Z"
+}

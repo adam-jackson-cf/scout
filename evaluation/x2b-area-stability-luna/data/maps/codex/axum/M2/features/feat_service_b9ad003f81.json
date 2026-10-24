@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_b9ad003f81",
+  "title": "Example: OAuth",
+  "summary": "Demonstrates OAuth authorization flows.\n\nAgent mapper reason: The example coordinates authorization state and an external identity provider.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/oauth/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/oauth/Cargo.toml",
+      "reason": "Declares the runnable example package."
+    },
+    {
+      "path": "examples/oauth/src/main.rs",
+      "reason": "Implements OAuth endpoints and callbacks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Provides state for OAuth configuration and flow data."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "oauth",
+    "authentication"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "auth",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:12:16.865Z"
+}

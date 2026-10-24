@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_aafbd72cd0",
+  "title": "Axum request extractor contracts and rejections",
+  "summary": "Wires core extraction traits into Axum and defines request rejection behavior.\n\nAgent mapper reason: These files establish the common request extraction contract used by the individual extractor families.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Declares and exports Axum extractors."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines Axum rejection types."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Implements request-parts extraction integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines foundational extractor traits."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extraction behavior."
+    },
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "Generates implementations of extraction contracts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "rejections"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:12:16.965Z"
+}

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_6e20a9ab9c",
+  "title": "Example: customize extractor errors",
+  "summary": "Demonstrates custom extractors, derive-based extraction, and rejection customization.\n\nAgent mapper reason: The files show related ways to control extraction and rejection behavior for invalid request data.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run --manifest-path examples/customize-extractor-error/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/customize-extractor-error/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/custom_extractor.rs",
+      "reason": "Implements a custom extractor."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Demonstrates derived request extraction."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "Connects the extractor examples to routes."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Demonstrates rejection customization."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-extractor-error/README.md",
+      "reason": "Documents the example's intended cases."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines base rejection types."
+    },
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "Implements the related derive."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "extractors",
+    "errors",
+    "derive"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

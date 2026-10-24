@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_673e7afbdf",
+  "title": "axum-extra extractor adapters",
+  "summary": "Cached, form, multipart, query, and rejection-adapter extractors.\n\nAgent mapper reason: These modules add extractor implementations and adapters for request-provided data.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Implements cached extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Implements extra form extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Implements extra multipart extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Implements extra query extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Adapts extractor rejection types."
+    },
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Exports the extractor adapters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Extractor dependencies and feature configuration."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Base extractor API extended by this crate."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "extractor",
+    "form",
+    "query"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T00:57:18.379Z"
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1dafeac037",
+  "title": "axum-extra cookie extraction and signing",
+  "summary": "Cookie parsing, private cookie handling, and signed-cookie support.\n\nAgent mapper reason: Cookie parsing and integrity or confidentiality helpers share the same extraction surface and security-sensitive data flow.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "Defines cookie extraction and exports cookie helpers."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "Implements private cookie handling."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "Implements signed cookie handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Exports the extra extractor APIs."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Cookie-related dependencies and feature flags."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "cookie",
+    "extractor"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "auth",
+    "secrets",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T00:57:18.379Z"
+}

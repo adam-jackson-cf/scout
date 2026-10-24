@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_28baa4de26",
+  "title": "axum-extra form and query extractors",
+  "summary": "Form and query string extraction extensions.\n\nAgent mapper reason: These modules decode URL-encoded request data into typed values.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Implements form extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Implements query extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Exports both extractors."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Provides the main crate query extractor for comparison."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "extractors",
+    "forms",
+    "query"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:12:16.865Z",
+  "updatedAt": "2026-10-24T01:12:16.865Z"
+}

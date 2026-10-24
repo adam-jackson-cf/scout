@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_60cb207703",
+  "title": "Consume body in extractor or middleware example",
+  "summary": "Demonstrates request body consumption across extraction and middleware.\n\nAgent mapper reason: The example centers on ownership and ordering of a request body between middleware and extraction.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Body consumption example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/Cargo.toml",
+      "reason": "Package configuration."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware API demonstrated."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extractor contract demonstrated."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "body",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:07:41.826Z"
+}

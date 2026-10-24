@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_d12f60a075",
+  "title": "axum build, benchmark, and package metadata",
+  "summary": "Build-time setup, benchmarks, and package-level documentation and change history.\n\nAgent mapper reason: Build configuration and benchmark behavior are package-wide concerns that do not belong to a single runtime feature.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/build.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/build.rs",
+      "reason": "Build-time crate setup."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Defines performance benchmarks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Package and benchmark configuration."
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "Records release changes."
+    },
+    {
+      "path": "axum/LICENSE",
+      "reason": "Package licensing."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "build",
+    "benchmark"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:07:41.888Z"
+}

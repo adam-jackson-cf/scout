@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_37004e364e",
+  "title": "axum state and request limits",
+  "summary": "Application state extraction and body limit configuration.\n\nAgent mapper reason: State extraction and extractor exports define how application context reaches handlers; body limits are a related request boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Implements application state extraction."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports state and extractor APIs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Core body limit implementation."
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Documents router state propagation."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor use."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "state",
+    "extractor"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:10:04.458Z"
+}

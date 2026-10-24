@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3cca484920",
+  "title": "axum request and response body types",
+  "summary": "Body stream and boxed body types used by Axum handlers and services.\n\nAgent mapper reason: These files define body representations and streaming behavior at the framework boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines and exports Axum body types."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Implements stream-backed response bodies."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Implements boxed handler or service-related types."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Body and service dependencies."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Core body contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "body",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T00:57:18.379Z"
+}

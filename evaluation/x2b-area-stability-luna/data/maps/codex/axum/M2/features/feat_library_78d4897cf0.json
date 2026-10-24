@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_78d4897cf0",
+  "title": "Axum response headers and redirects",
+  "summary": "Response construction, redirect behavior, and typed header support.\n\nAgent mapper reason: Response conversion, redirects, and header typing define the main crate's response-facing API.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Defines main response exports and helpers."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Implements redirect responses."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Provides typed header extraction or response support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Defines response conversion behavior."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents response APIs."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "response",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:12:16.865Z",
+  "updatedAt": "2026-10-24T01:12:16.865Z"
+}

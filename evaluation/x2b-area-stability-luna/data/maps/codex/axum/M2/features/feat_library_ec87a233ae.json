@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ec87a233ae",
+  "title": "axum extensions and connection metadata",
+  "summary": "Request extensions, connection information, host, and matched-path extractors.\n\nAgent mapper reason: These APIs expose request and connection metadata to handlers and share the extractor surface.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Provides request extension access."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Extracts connection metadata."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Extracts host information."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Extracts the matched route path."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports request extractors."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents connection metadata integration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractor",
+    "request-metadata"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:12:16.975Z"
+}

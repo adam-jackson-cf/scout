@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_eee302b298",
+  "title": "Example: handling HEAD requests",
+  "summary": "Demonstrates explicit HEAD request handling.\n\nAgent mapper reason: The example is about method-specific behavior and relates directly to Axum's GET and HEAD routing semantics.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/handle-head-request/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run --manifest-path examples/handle-head-request/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/handle-head-request/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/handle-head-request/src/main.rs",
+      "reason": "Implements HEAD request behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Defines method-specific route dispatch."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "Tests GET and HEAD behavior."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "routing",
+    "http-methods"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

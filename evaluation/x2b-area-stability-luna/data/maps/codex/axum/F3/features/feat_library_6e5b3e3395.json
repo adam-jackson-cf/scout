@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6e5b3e3395",
+  "title": "axum-core response conversion",
+  "summary": "Converts values and response parts into HTTP responses and appends headers.\n\nAgent mapper reason: These modules define the shared response conversion contract and its header and parts helpers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "symbol": "IntoResponse",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Exports response conversion APIs."
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "Implements response header appending."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Implements full response conversion."
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "Implements response-parts conversion."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Shows public response exports."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Shows the framework-level response API."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "response",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:02:52.435Z",
+  "updatedAt": "2026-10-24T01:02:52.435Z"
+}

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1e1ff0af4a",
+  "title": "Axum service and utility API",
+  "summary": "Service extensions, boxed router support, typed headers, and small shared utilities.\n\nAgent mapper reason: These smaller APIs bridge Axum routers and services with supporting HTTP abstractions.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Boxed router support."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service extension methods."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Typed header integration."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared utility implementation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Public exports."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Optional dependencies and features."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "service",
+    "utilities"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:07:41.826Z",
+  "updatedAt": "2026-10-24T01:10:04.455Z"
+}

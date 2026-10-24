@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_b9ad003f81",
+  "title": "Example: OAuth",
+  "summary": "Demonstrates OAuth authorization flow integration.\n\nAgent mapper reason: The example connects user authorization, redirects, credentials, and an external identity provider.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/oauth/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run --manifest-path examples/oauth/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/oauth/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/oauth/src/main.rs",
+      "reason": "Implements the authorization flow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Provides request extraction APIs."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Provides redirect responses used in authorization flows."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "oauth",
+    "authentication"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "auth",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

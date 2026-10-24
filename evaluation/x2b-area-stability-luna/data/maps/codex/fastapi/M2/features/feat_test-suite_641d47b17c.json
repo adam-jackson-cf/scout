@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_641d47b17c",
+  "title": "Parameter and request parsing tests",
+  "summary": "Tests parameter inference, validation, request body construction, and repeated request metadata.\n\nAgent mapper reason: These tests exercise classification and validation of request inputs across locations and body shapes.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "Tests ambiguous parameter classification."
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "Tests annotated parameter declarations."
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "reason": "Tests parameter classes."
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "Tests path parameters combined with dependencies."
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "reason": "Tests inferred optionality."
+    },
+    {
+      "path": "tests/test_required_noneable.py",
+      "reason": "Tests required nullable parameters."
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "reason": "Tests invalid sequence parameter handling."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Tests errors from multiple body parameters."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Tests request body generation for GET operations."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Tests request body media types."
+    },
+    {
+      "path": "tests/test_repeated_parameter_alias.py",
+      "reason": "Tests repeated parameter aliases."
+    },
+    {
+      "path": "tests/test_repeated_cookie_headers.py",
+      "reason": "Tests repeated cookie and header values."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/path-params.md",
+      "reason": "Documents path inputs."
+    },
+    {
+      "path": "docs/en/docs/tutorial/query-params.md",
+      "reason": "Documents query inputs."
+    },
+    {
+      "path": "docs/en/docs/tutorial/body.md",
+      "reason": "Documents body parsing."
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tests",
+    "request-parsing",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:55:15.388Z",
+  "updatedAt": "2026-10-24T00:55:15.388Z"
+}

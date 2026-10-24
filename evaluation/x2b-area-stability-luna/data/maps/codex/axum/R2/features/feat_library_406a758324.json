@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_406a758324",
+  "title": "Axum middleware",
+  "summary": "Request and response middleware composition, including extractor-based and function-based middleware.\n\nAgent mapper reason: These adapters define the supported ways to intercept and transform requests and responses.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Middleware built from extractors."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Function middleware adapters."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Request mapping middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Response mapping middleware."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware API and exports."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware usage and ordering."
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Method router layer behavior."
+    },
+    {
+      "path": "axum/src/docs/method_routing/route_layer.md",
+      "reason": "Method route layer behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:07:41.826Z"
+}

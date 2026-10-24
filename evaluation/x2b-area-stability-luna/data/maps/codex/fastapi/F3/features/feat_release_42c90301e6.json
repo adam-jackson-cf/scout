@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_42c90301e6",
+  "title": "Change summary and release publishing",
+  "summary": "Workflows that prepare recent-change information and publish package releases.\n\nAgent mapper reason: The workflows cover the change-summary and publication stages of release operations.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Automates latest-change reporting."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Automates package publication."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Defines package and release metadata."
+    },
+    {
+      "path": "docs/en/docs/release-notes.md",
+      "reason": "Documents release information."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Provides release-related security policy context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "release",
+    "publishing",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "permissions",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:46:59.433Z",
+  "updatedAt": "2026-10-24T00:46:59.433Z"
+}

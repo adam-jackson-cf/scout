@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_b6fda26d3a",
+  "title": "Example: print request and response",
+  "summary": "Demonstrates observing requests and responses in a service pipeline.\n\nAgent mapper reason: The example observes traffic across the middleware boundary, including potentially sensitive request data.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run --manifest-path examples/print-request-response/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/print-request-response/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Implements request and response observation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Provides middleware composition."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines request and response bodies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "middleware",
+    "observability"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

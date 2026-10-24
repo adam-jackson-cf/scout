@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0f48d3db90",
+  "title": "Axum service startup adapters",
+  "summary": "Converts routers and services into listener-ready make-service forms.\n\nAgent mapper reason: These adapters connect Axum services to server listener interfaces.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "symbol": "IntoMakeService",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Implements listener-facing service conversion."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Provides service extension helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents connection metadata setup."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Shows router integration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "services",
+    "startup"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:02:52.435Z",
+  "updatedAt": "2026-10-24T01:02:52.435Z"
+}

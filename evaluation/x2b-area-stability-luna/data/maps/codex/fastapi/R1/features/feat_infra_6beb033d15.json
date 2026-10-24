@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_6beb033d15",
+  "title": "Documentation build and preview workflows",
+  "summary": "CI workflows for building and previewing the documentation site.\n\nAgent mapper reason: The workflows build the same documentation artifact for normal CI and preview use, so build configuration changes should be reviewed together.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Defines documentation builds."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Defines documentation preview builds."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "English site configuration."
+    },
+    {
+      "path": "docs/en/docs/index.md",
+      "reason": "English documentation site entry page."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Project tooling configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "documentation",
+    "build"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "filesystem",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:49:15.193Z",
+  "updatedAt": "2026-10-24T00:49:15.193Z"
+}

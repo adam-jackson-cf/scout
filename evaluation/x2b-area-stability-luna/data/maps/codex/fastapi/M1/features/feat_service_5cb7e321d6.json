@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_5cb7e321d6",
+  "title": "Preview watcher action",
+  "summary": "Monitors preview status and reports relevant changes.\n\nAgent mapper reason: The action monitors preview-related state; the preview and reporting workflows provide its likely operational context.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Implements preview monitoring behavior."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Declares action inputs and execution."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Defines the action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Preview workflow context."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Related preview-reporting workflow context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-action",
+    "preview"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:53:45.343Z",
+  "updatedAt": "2026-10-24T00:53:45.343Z"
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_04ab964301",
+  "title": "axum public API and package build",
+  "summary": "Crate exports, public macros, internal utilities, and build-time setup.\n\nAgent mapper reason: These files define the main crate facade and package-level build behavior that connect its feature modules.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Defines the Axum crate API and module exports."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Provides public and internal macros."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Provides shared crate utilities."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Runs Axum package build-time logic."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines package features and dependencies."
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Documents the main crate."
+    },
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Documents public handler concepts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "public-api",
+    "build"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:10:04.400Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a078fba746",
+  "title": "Axum response helpers and typed headers",
+  "summary": "Provides response construction, redirects, server-sent events, and typed headers.\n\nAgent mapper reason: These utilities construct HTTP responses and encode response metadata or event streams.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Defines response exports and helpers."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Implements redirect responses."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Implements server-sent events."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Implements typed header integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Defines response conversion contracts."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents response behavior."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Demonstrates server-sent events."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "response",
+    "headers",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:12:16.964Z"
+}

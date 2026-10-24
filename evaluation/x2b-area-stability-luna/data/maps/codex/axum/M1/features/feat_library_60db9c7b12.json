@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_60db9c7b12",
+  "title": "Axum body and structured request extractors",
+  "summary": "Reads and deserializes request bodies as forms, JSON, raw forms, or multipart data.\n\nAgent mapper reason: These modules consume and deserialize untrusted request bodies and expose related rejection behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Implements multipart extraction."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Extracts raw form bodies."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Implements form deserialization."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Implements JSON deserialization."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines extractor rejection types."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents body extractor behavior."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Defines request extraction integration."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines the request and response body type."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "request-body"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:10:04.400Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

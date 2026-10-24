@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_3a5d34229c",
+  "title": "axum-core package configuration",
+  "summary": "Core crate build setup and package-level dependency and feature configuration.\n\nAgent mapper reason: Package metadata and its build script affect all axum-core modules and should be reviewed together.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/build.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Defines the core package, features, and dependencies."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Implements the package build script."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/README.md",
+      "reason": "Documents the core crate's role."
+    },
+    {
+      "path": "axum-core/CHANGELOG.md",
+      "reason": "Records core crate changes."
+    },
+    {
+      "path": "Cargo.toml",
+      "reason": "Declares the workspace containing this package."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "build",
+    "package-config"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:59:37.867Z",
+  "updatedAt": "2026-10-24T00:59:37.867Z"
+}

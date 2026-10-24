@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1dafeac037",
+  "title": "Axum-extra cookie extraction and protection",
+  "summary": "Cookie parsing and private or signed cookie handling.\n\nAgent mapper reason: Cookie parsing and integrity or privacy protections share a single extraction and browser-facing boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "Cookie extractor and jar API."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "Private cookie protection."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "Signed cookie protection."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Extractor exports."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Cookie and cryptography dependencies."
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Cookie-related test fixture."
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Cookie-related test fixture."
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Cookie-related browser fixture."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "cookies",
+    "security"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "auth",
+    "secrets",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:07:41.826Z"
+}

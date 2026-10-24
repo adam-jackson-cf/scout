@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_25c2852c00",
+  "title": "Axum query, form, and JSON extraction",
+  "summary": "Structured request decoding for query strings, forms, and JSON payloads.\n\nAgent mapper reason: These modules decode client-controlled request data into typed or raw values.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/query.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query-string extraction."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extraction and encoding."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON extraction and response support."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form request parsing."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query-string extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Decode failure responses."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extractor exports."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extraction contracts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "forms",
+    "json"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:07:41.826Z",
+  "updatedAt": "2026-10-24T01:12:16.945Z"
+}

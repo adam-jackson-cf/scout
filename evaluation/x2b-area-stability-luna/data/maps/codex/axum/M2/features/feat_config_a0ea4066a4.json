@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_a0ea4066a4",
+  "title": "Workspace policy and dependency configuration",
+  "summary": "Workspace membership, dependency policy, and repository ignore configuration.\n\nAgent mapper reason: The root manifest and policy files control workspace composition, dependency constraints, and build inputs.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Defines workspace packages and shared Cargo configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Configures dependency and license policy."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Defines ignored repository paths."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Documents contributor workflow."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Representative workspace member configuration."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Representative workspace member configuration."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Representative workspace member configuration."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Representative workspace member configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "cargo",
+    "policy"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:12:16.930Z"
+}

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_59c89897ce",
+  "title": "Axum request metadata and state extractors",
+  "summary": "Extracts connection information, host and matched path metadata, and application state.\n\nAgent mapper reason: These extractors expose request and transport metadata or router-provided state to handlers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "symbol": "ConnectInfo",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Extracts transport connection metadata."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Extracts host information."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Extracts the matched route path."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Extracts application state."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports the extractor APIs."
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Documents state propagation through routing."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents connection information setup."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "state",
+    "request-metadata"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:02:52.435Z",
+  "updatedAt": "2026-10-24T01:02:52.435Z"
+}

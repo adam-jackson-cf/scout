@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_f53db75a91",
+  "title": "GitHub Action: translation notifications",
+  "summary": "Action implementation and metadata for notifying translation contributors or maintainers.\n\nAgent mapper reason: The action code and its execution metadata form a bounded automation unit, with the workflow showing its trigger and caller context.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Action interface and inputs."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Action implementation."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Workflow invoking the translation action."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "translations"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:51:16.858Z",
+  "updatedAt": "2026-10-24T00:53:45.423Z"
+}

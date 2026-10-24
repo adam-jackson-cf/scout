@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_a6ce59e56f",
+  "title": "Example: Unix domain socket",
+  "summary": "Demonstrates serving Axum over a Unix domain socket.\n\nAgent mapper reason: The example changes the server transport to a local filesystem socket.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/unix-domain-socket/Cargo.toml",
+      "reason": "Example package dependencies."
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Implements Unix socket serving."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Lists and explains examples."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "unix-socket",
+    "server"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:05:09.041Z"
+}

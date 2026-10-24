@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_3cd843f9e7",
+  "title": "People management action",
+  "summary": "GitHub Action and workflow for project people metadata or related automation.\n\nAgent mapper reason: The action and workflow are dedicated to people-related project automation; the data file gives likely domain context.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Declares action inputs and execution."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Implements the people automation."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Defines the action runtime image."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Provides the workflow trigger and job context."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Project people metadata may be consumed or maintained by this automation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "project-metadata"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "permissions",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:46:59.433Z",
+  "updatedAt": "2026-10-24T00:46:59.433Z"
+}

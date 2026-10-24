@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_7069c3b32f",
+  "title": "Example: WebSocket chat",
+  "summary": "Demonstrates a browser chat application backed by WebSockets.\n\nAgent mapper reason: The server and browser page jointly implement one interactive chat flow.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Implements the chat server and WebSocket flow."
+    },
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "Implements the browser chat interface."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/chat/Cargo.toml",
+      "reason": "Shows dependencies and example configuration."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Provides WebSocket extraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "websocket",
+    "browser"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:05:08.945Z"
+}

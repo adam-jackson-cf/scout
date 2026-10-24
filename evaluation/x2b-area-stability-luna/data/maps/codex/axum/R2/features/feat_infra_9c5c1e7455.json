@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_9c5c1e7455",
+  "title": "Continuous integration workflow",
+  "summary": "CI checks for formatting, compilation, tests, and repository validation.\n\nAgent mapper reason: These files define automated repository validation and patch workflow behavior.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Defines the continuous integration workflow."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Configures patch workflow behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace packages and Cargo configuration."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor checks and expectations."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "workflow"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:07:41.887Z"
+}

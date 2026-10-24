@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_91c87ac6ff",
+  "title": "Example: router for WebAssembly",
+  "summary": "Demonstrates a minimal router in a WebAssembly target.\n\nAgent mapper reason: This example exercises router compatibility in a distinct compilation target.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/simple-router-wasm/Cargo.toml",
+      "reason": "Declares the target-specific example package."
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "Implements a minimal router for WebAssembly."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Defines the router API being demonstrated."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "wasm",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:10:04.400Z",
+  "updatedAt": "2026-10-24T01:12:16.865Z"
+}

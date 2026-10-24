@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_0eea457d39",
+  "title": "Example: routes and handlers close together",
+  "summary": "Demonstrates organizing routes next to their handlers.\n\nAgent mapper reason: This package demonstrates a code organization pattern connecting route declarations to their handlers.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/routes-and-handlers-close-together/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run --manifest-path examples/routes-and-handlers-close-together/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/routes-and-handlers-close-together/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/routes-and-handlers-close-together/src/main.rs",
+      "reason": "Implements route and handler organization."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Defines route construction."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines handler behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "routing",
+    "handlers",
+    "organization"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:12:16.987Z"
+}

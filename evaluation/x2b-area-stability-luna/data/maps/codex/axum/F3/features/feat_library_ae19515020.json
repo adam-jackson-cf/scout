@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ae19515020",
+  "title": "axum-extra form and multipart extractors",
+  "summary": "Provides form and multipart parsing extensions.\n\nAgent mapper reason: Both modules parse submitted form data, while the HTML and JavaScript files serve as package fixtures.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Implements extended form extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Implements multipart extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Shows extension exports."
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Provides an HTML fixture for extension behavior."
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Provides an additional HTML fixture."
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Provides a browser-side fixture."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "forms",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:02:52.435Z",
+  "updatedAt": "2026-10-24T01:02:52.435Z"
+}

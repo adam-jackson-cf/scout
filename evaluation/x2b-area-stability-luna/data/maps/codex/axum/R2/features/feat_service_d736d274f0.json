@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d736d274f0",
+  "title": "Example: low-level Rustls",
+  "summary": "Demonstrates low-level TLS serving with Rustls.\n\nAgent mapper reason: The service and sample certificate pair demonstrate low-level Rustls setup.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/low-level-rustls/Cargo.toml",
+      "reason": "Example package dependencies."
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Implements low-level Rustls TLS serving."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/low-level-rustls/self_signed_certs/cert.pem",
+      "reason": "Sample certificate fixture."
+    },
+    {
+      "path": "examples/low-level-rustls/self_signed_certs/key.pem",
+      "reason": "Sample private key fixture."
+    },
+    {
+      "path": "examples/README.md",
+      "reason": "Lists and explains examples."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "tls",
+    "rustls"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:07:41.913Z"
+}

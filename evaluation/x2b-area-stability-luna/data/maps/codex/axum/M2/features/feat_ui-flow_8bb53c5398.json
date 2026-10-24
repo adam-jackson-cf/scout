@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_8bb53c5398",
+  "title": "Example: WebSockets",
+  "summary": "Demonstrates a WebSocket server and browser client.\n\nAgent mapper reason: The server, client module, and browser script form one bidirectional connection example.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/websockets/Cargo.toml",
+      "reason": "Declares the runnable example package."
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "Implements WebSocket client behavior."
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "Implements the server."
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Provides browser-side WebSocket behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Provides WebSocket upgrades."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "websocket"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:12:16.865Z",
+  "updatedAt": "2026-10-24T01:12:16.865Z"
+}

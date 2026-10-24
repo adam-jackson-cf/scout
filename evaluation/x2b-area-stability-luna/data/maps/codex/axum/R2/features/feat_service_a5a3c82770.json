@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_a5a3c82770",
+  "title": "Example: SQLx Postgres",
+  "summary": "Demonstrates an HTTP application backed by PostgreSQL through SQLx.\n\nAgent mapper reason: The routes and SQLx database access form one persistence-backed service.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "Example package dependencies."
+    },
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "Implements PostgreSQL-backed routes."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Lists and explains examples."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "database",
+    "postgres"
+  ],
+  "trustBoundaries": [
+    "network",
+    "database",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:07:41.907Z"
+}

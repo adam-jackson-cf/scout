@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_fbad037e44",
+  "title": "Axum-macros test harness",
+  "summary": "Shared harness for compile-pass and compile-fail macro fixtures.\n\nAgent mapper reason: The harness and fixture families define compile-time compatibility expectations for the proc macros.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Shared compile-test harness."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/tests/debug_handler/pass/ready.rs",
+      "reason": "Representative compile-pass fixture."
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "reason": "Representative derive fixture."
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/container.rs",
+      "reason": "Representative extractor derive fixture."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/unit_struct.rs",
+      "reason": "Representative typed-path fixture."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "tests",
+    "compile-tests"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:07:41.826Z"
+}

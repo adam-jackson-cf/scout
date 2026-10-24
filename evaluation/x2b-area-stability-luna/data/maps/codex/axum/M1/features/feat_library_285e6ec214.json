@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_285e6ec214",
+  "title": "Axum path extraction and URL parameters",
+  "summary": "Path deserialization, captured URL parameters, and routing parameter storage.\n\nAgent mapper reason: Path extraction and route parameter storage form one request-to-handler data flow.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Path parameter deserialization."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extractor API."
+    },
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Stores and exposes captured route parameters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Path extraction rejection types."
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Route matching supplies parameters."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "routing",
+    "path"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:07:41.826Z",
+  "updatedAt": "2026-10-24T01:10:04.456Z"
+}

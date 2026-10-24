@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_91c87ac6ff",
+  "title": "Example: router for WebAssembly",
+  "summary": "Demonstrates a router configured for a WebAssembly target.\n\nAgent mapper reason: The example is a bounded target-compatibility demonstration of router APIs under WebAssembly.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run --manifest-path examples/simple-router-wasm/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/simple-router-wasm/Cargo.toml",
+      "reason": "Defines the standalone target-specific example package."
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "Implements the WebAssembly router example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Defines router APIs."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "wasm",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:10:04.400Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_f128249f38",
+  "title": "Example: Hyper 1 integration",
+  "summary": "Demonstrates integrating Axum with Hyper 1.\n\nAgent mapper reason: This example focuses on the boundary between Axum and Hyper server APIs.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/hyper-1-0/Cargo.toml",
+      "reason": "Declares the runnable integration example."
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "Implements Hyper integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Provides the service adapter used for serving."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "hyper",
+    "integration"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:12:16.865Z"
+}

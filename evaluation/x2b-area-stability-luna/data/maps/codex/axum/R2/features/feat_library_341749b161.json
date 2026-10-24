@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_341749b161",
+  "title": "Axum core extraction framework",
+  "summary": "Core extractor traits, request-parts handling, rejection types, body limits, and tuple composition.\n\nAgent mapper reason: These modules define the shared extraction contract and how invalid requests become rejections.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Default request-body limiting behavior."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "State projection extraction."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extractor API and exports."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Shared rejection behavior."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Request-parts extraction contract."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Tuple extractor composition."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Shared implementation macros."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Public exports."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Feature and dependency configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:07:41.826Z"
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9d0b751c22",
+  "title": "x2_newpkg currency, slug, and unit utilities",
+  "summary": "A separate library package with currency, slug, and unit modules.\n\nAgent mapper reason: The package is independently manifested and its three domain modules form a small cohesive utility library.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "x2_newpkg/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "x2_newpkg/src/currency.rs",
+      "reason": "Implements currency utilities."
+    },
+    {
+      "path": "x2_newpkg/src/lib.rs",
+      "reason": "Exports the package API."
+    },
+    {
+      "path": "x2_newpkg/src/slugs.rs",
+      "reason": "Implements slug utilities."
+    },
+    {
+      "path": "x2_newpkg/src/units.rs",
+      "reason": "Implements unit utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "x2_newpkg/Cargo.toml",
+      "reason": "Defines package metadata and dependencies."
+    },
+    {
+      "path": "Cargo.toml",
+      "reason": "Defines workspace membership and shared settings."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "library",
+    "utility"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:10:04.400Z",
+  "updatedAt": "2026-10-24T01:12:16.962Z"
+}

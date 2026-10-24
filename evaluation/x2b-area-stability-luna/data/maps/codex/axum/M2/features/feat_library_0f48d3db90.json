@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0f48d3db90",
+  "title": "Axum service adapters",
+  "summary": "Adapters for converting routers and services into server-facing services.\n\nAgent mapper reason: These adapters connect Axum routers to the underlying service and server ecosystem.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Creates server-facing services from routers."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Provides service extension methods."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Defines the router being adapted."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Consumes connection information in service creation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "service",
+    "server"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:10:04.400Z",
+  "updatedAt": "2026-10-24T01:12:16.865Z"
+}

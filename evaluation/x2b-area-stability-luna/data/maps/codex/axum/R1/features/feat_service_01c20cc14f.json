@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_01c20cc14f",
+  "title": "Example: static file server",
+  "summary": "Demonstrates serving static files and browser assets.\n\nAgent mapper reason: The server maps filesystem assets to HTTP responses and includes the served browser assets.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/static-file-server/Cargo.toml",
+      "reason": "Example package dependencies."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Static page served by the example."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Browser script served by the example."
+    },
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Implements static file serving."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Lists and explains examples."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "static-files",
+    "filesystem"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:05:09.019Z"
+}

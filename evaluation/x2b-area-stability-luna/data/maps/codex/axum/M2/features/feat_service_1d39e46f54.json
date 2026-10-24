@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_1d39e46f54",
+  "title": "Example: WebSockets",
+  "summary": "Demonstrates a WebSocket service with browser and client code.\n\nAgent mapper reason: The server, Rust client, and browser script form one complete WebSocket interaction slice.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run --manifest-path examples/websockets/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/websockets/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "Implements a WebSocket client."
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "Implements the WebSocket server."
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Provides browser-side WebSocket behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/websockets/assets/index.html",
+      "reason": "Browser page associated with the WebSocket example."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Provides server-side WebSocket upgrade behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "websocket",
+    "browser"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:12:16.992Z"
+}

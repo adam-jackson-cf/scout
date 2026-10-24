@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_842b71e3c6",
+  "title": "Example: server-sent events",
+  "summary": "Demonstrates a browser flow driven by server-sent events.\n\nAgent mapper reason: Server event generation and browser consumption form one end-to-end flow.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Implements event production and serving."
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "Provides the browser page."
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "Connects the browser page to the event stream."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sse/Cargo.toml",
+      "reason": "Shows event-stream dependencies."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Provides the SSE response implementation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "sse",
+    "browser"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:05:08.945Z"
+}

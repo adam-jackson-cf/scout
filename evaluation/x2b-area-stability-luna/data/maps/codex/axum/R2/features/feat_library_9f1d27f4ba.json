@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9f1d27f4ba",
+  "title": "Axum response types, redirects, and server events",
+  "summary": "Response API, redirects, and server-sent event streaming.\n\nAgent mapper reason: The response modules expose common response types and the two specialized redirect and event-stream behaviors.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response API and exports."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect response types."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent event response stream."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Shared response conversion contract."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response usage guidance."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "response",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:07:41.826Z"
+}

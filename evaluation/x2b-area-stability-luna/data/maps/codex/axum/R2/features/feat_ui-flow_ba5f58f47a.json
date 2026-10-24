@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_ba5f58f47a",
+  "title": "WebSockets browser example",
+  "summary": "Demonstrates browser and server WebSocket communication.\n\nAgent mapper reason: The server, Rust client, and browser script implement the same bidirectional communication example.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "WebSocket server routes."
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "WebSocket client behavior."
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Browser-side WebSocket flow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/websockets/Cargo.toml",
+      "reason": "WebSocket dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "websocket",
+    "browser"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:07:41.826Z"
+}

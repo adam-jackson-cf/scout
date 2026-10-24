@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_56985dff19",
+  "title": "Example: parse body by content type",
+  "summary": "Demonstrates selecting request body parsing based on Content-Type.\n\nAgent mapper reason: The service branches on a client-provided content type to choose how to deserialize the request body.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run --manifest-path examples/parse-body-based-on-content-type/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/parse-body-based-on-content-type/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Implements content-type-based body parsing."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Provides request-parts access."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Provides JSON parsing."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Provides form parsing."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "request-body",
+    "content-type"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

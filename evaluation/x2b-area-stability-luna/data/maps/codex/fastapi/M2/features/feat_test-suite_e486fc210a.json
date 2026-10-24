@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_e486fc210a",
+  "title": "HTTP authentication security schemes",
+  "summary": "Tests HTTP Basic, Bearer, and Digest security behavior and documentation metadata.\n\nAgent mapper reason: These tests exercise HTTP authentication scheme construction, optional credentials, and exposed documentation metadata.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_security_http_base.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_security_http_base.py",
+      "reason": "Tests the HTTP security base scheme."
+    },
+    {
+      "path": "tests/test_security_http_base_optional.py",
+      "reason": "Tests an optional HTTP security scheme."
+    },
+    {
+      "path": "tests/test_security_http_base_description.py",
+      "reason": "Tests HTTP scheme descriptions."
+    },
+    {
+      "path": "tests/test_security_http_basic_optional.py",
+      "reason": "Tests optional Basic credentials."
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "Tests Basic authentication realms."
+    },
+    {
+      "path": "tests/test_security_http_basic_realm_description.py",
+      "reason": "Tests realm descriptions."
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "Tests Bearer [SCOUT_REDACTED_SECRET]."
+    },
+    {
+      "path": "tests/test_security_http_bearer_optional.py",
+      "reason": "Tests optional Bearer [SCOUT_REDACTED_SECRET]."
+    },
+    {
+      "path": "tests/test_security_http_bearer_description.py",
+      "reason": "Tests Bearer [SCOUT_REDACTED_SECRET]."
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "reason": "Tests Digest authentication."
+    },
+    {
+      "path": "tests/test_security_http_digest_optional.py",
+      "reason": "Tests optional Digest credentials."
+    },
+    {
+      "path": "tests/test_security_http_digest_description.py",
+      "reason": "Tests Digest descriptions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/security/http-basic-auth.md",
+      "reason": "Explains HTTP Basic authentication."
+    },
+    {
+      "path": "docs/en/docs/tutorial/security/first-steps.md",
+      "reason": "Provides security scheme overview."
+    },
+    {
+      "path": "tests/test_security_http_basic_optional.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_http_basic_optional.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "http-authentication"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:55:15.388Z",
+  "updatedAt": "2026-10-24T00:55:15.388Z"
+}

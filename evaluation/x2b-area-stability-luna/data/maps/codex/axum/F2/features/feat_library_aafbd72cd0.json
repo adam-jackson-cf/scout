@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_aafbd72cd0",
+  "title": "Axum shared extractor plumbing",
+  "summary": "Public extraction exports, request-part orchestration, and shared rejection wiring.\n\nAgent mapper reason: This slice owns the glue that connects concrete extractors to shared core contracts and public rejection behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Assembles and exports concrete extractors."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Provides request-parts extraction integration."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines public rejection types and conversions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines shared core extraction contracts."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Defines core request-parts extraction."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor ordering and behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractor",
+    "rejection",
+    "request-parts"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:59:37.867Z",
+  "updatedAt": "2026-10-24T00:59:37.867Z"
+}

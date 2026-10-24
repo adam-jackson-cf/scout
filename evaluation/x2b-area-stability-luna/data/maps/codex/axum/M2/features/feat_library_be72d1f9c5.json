@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_be72d1f9c5",
+  "title": "axum-macros procedural macro facade",
+  "summary": "Registers macro entry points and shared parsing helpers.\n\nAgent mapper reason: These shared implementation and registration files support several separately reviewed derives and attributes.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Implements shared attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Provides the axum_test macro implementation."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Registers procedural macro entry points."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Provides shared source-position helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Defines proc-macro package configuration."
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Documents macro usage."
+    },
+    {
+      "path": "axum-macros/CHANGELOG.md",
+      "reason": "Tracks macro package changes."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "procedural-macro",
+    "facade"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:12:16.967Z"
+}

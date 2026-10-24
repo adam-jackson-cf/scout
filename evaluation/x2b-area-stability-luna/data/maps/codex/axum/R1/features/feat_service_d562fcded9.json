@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d562fcded9",
+  "title": "Example: reverse proxy",
+  "summary": "Demonstrates forwarding traffic to an upstream service.\n\nAgent mapper reason: Upstream selection and response forwarding make this a distinct network boundary.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Implements reverse-proxy behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/reverse-proxy/Cargo.toml",
+      "reason": "Shows proxy dependencies and configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "proxy"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:05:08.945Z"
+}

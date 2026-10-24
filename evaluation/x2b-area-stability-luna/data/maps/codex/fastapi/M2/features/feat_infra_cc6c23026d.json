@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_cc6c23026d",
+  "title": "CI, release, and documentation workflows",
+  "summary": "Repository automation for tests, docs builds and previews, publishing, changelog generation, and release-related tasks.\n\nAgent mapper reason: These workflows coordinate repository-wide validation and publication; the test, docs, and publish jobs have distinct triggers but share the project's automation and configuration contract.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Builds documentation."
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Issue workflow automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Labels approved changes."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Generates latest changes."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Runs translation notifications."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Runs people-data automation."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Builds or manages documentation previews."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Publishes package releases."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Handles smoke test or preview reporting."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Runs repository tests."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Defines project and tool configuration used by automation."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Configures dependency update automation."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Defines local quality checks."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "release",
+    "documentation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "process-exec",
+    "secrets",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:51:16.858Z",
+  "updatedAt": "2026-10-24T00:55:15.516Z"
+}

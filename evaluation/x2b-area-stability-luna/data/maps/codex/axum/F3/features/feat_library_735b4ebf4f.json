@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_735b4ebf4f",
+  "title": "Axum extensions",
+  "summary": "Adds typed request extensions to handlers and extractors.\n\nAgent mapper reason: The extension extractor connects typed request metadata to handler inputs.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extension.rs",
+      "symbol": "Extension",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Implements typed extension extraction and insertion behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Defines request extension operations."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows extractor integration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extensions",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:02:52.435Z",
+  "updatedAt": "2026-10-24T01:02:52.435Z"
+}

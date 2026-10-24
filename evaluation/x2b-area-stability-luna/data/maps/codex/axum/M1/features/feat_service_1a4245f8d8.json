@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_1a4245f8d8",
+  "title": "Example: JWT authentication",
+  "summary": "Demonstrates JSON Web Token authentication in a service.\n\nAgent mapper reason: The example accepts and validates client-provided tokens to control access to routes.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run --manifest-path examples/jwt/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/jwt/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/jwt/src/main.rs",
+      "reason": "Implements token handling and protected service routes."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Provides request extraction APIs."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Provides request pipeline integration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "jwt",
+    "authentication"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "secrets",
+    "auth"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

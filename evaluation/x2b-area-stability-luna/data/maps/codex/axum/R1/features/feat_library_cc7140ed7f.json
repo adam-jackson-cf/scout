@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_cc7140ed7f",
+  "title": "Axum crate facade and benchmarks",
+  "summary": "Defines the public crate facade and benchmark entry point.\n\nAgent mapper reason: The facade and benchmarks expose and measure crate-wide behavior; the build script is excluded from ownership.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Defines public exports and crate documentation."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Defines exported macros."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Contains crate benchmarks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines package features and benchmark configuration."
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Documents package usage."
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "Tracks package changes."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Build script is relevant context but excluded from ownership."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "facade",
+    "macros",
+    "benchmarks"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:05:08.945Z"
+}

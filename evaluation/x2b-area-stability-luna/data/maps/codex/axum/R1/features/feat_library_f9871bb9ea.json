@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f9871bb9ea",
+  "title": "axum body-based extractors",
+  "summary": "Form, JSON, multipart, raw form, and request-parts extraction.\n\nAgent mapper reason: These extractors parse request bodies or request parts and share body-consumption and rejection constraints.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Implements multipart form extraction."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Provides raw form body extraction."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Defines extraction from request parts."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Implements typed form extraction."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Implements JSON extraction and rejection behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines extraction rejection types."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents body consumption and extractor order."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Serialization and multipart dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractor",
+    "body",
+    "json",
+    "form"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:05:09.018Z"
+}

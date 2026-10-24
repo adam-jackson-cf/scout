@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_2751bb445e",
+  "title": "Axum benchmark suite",
+  "summary": "Benchmarks Axum behavior using the package benchmark target.\n\nAgent mapper reason: The benchmark target is an independent performance review unit tied to Axum package configuration.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/benches/benches.rs",
+      "symbol": null,
+      "route": null,
+      "command": "cargo bench -p axum"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Defines the Axum benchmark target."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares benchmark configuration and dependencies."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Shows repository validation policy."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/benches/benches.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "benchmarks",
+    "performance"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:07:41.826Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

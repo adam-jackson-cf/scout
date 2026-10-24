@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_68a4adca38",
+  "title": "axum-extra public API and body utilities",
+  "summary": "Exports optional Axum extensions and supports asynchronous body reading.\n\nAgent mapper reason: These files expose optional extensions and provide body utilities built on Axum's core body types.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Exports axum-extra APIs."
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Implements async body reading."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Exports body utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines optional dependencies and package features."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Documents extension APIs."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines the base Axum body types."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "body",
+    "public-api"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:10:04.400Z",
+  "updatedAt": "2026-10-24T01:12:16.957Z"
+}

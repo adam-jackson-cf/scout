@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_c75967ee24",
+  "title": "Static file server example",
+  "summary": "Serves static assets through Axum routes.\n\nAgent mapper reason: The example maps local assets to HTTP responses.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Static file service setup."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Served page fixture."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Served JavaScript asset."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/static-file-server/Cargo.toml",
+      "reason": "Static-file dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "static-files"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:07:41.826Z",
+  "updatedAt": "2026-10-24T01:10:04.478Z"
+}

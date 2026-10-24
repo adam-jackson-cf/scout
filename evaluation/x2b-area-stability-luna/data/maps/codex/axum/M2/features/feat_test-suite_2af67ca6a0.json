@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_2af67ca6a0",
+  "title": "Example: testing Axum applications",
+  "summary": "Demonstrates testing application routes and responses.\n\nAgent mapper reason: This example is a runnable demonstration of exercising routes without an external server.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/testing/Cargo.toml",
+      "reason": "Declares testing dependencies."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "Implements application tests."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Provides in-process client support."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "testing",
+    "http"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:12:16.865Z"
+}

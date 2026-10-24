@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_90bcd51677",
+  "title": "axum-extra streaming body helpers",
+  "summary": "Helpers for reading bodies asynchronously and producing JSON Lines output.\n\nAgent mapper reason: These extensions handle streaming and body serialization, with shared dependence on core body types.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Provides asynchronous body reading support."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Exports body helpers."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Provides JSON Lines response support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Exports the body and JSON Lines APIs."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines the underlying body abstraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "body",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:12:16.865Z",
+  "updatedAt": "2026-10-24T01:12:16.865Z"
+}

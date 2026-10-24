@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_6d3ffe4bc4",
+  "title": "Example: Rustls TLS server",
+  "summary": "Demonstrates serving Axum traffic over Rustls TLS.\n\nAgent mapper reason: The package demonstrates TLS configuration with bundled self-signed certificate fixtures.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run --manifest-path examples/tls-rustls/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "reason": "Defines the standalone TLS example package."
+    },
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "Implements the Rustls TLS server."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/tls-rustls/self_signed_certs/cert.pem",
+      "reason": "Self-signed certificate fixture used by the example."
+    },
+    {
+      "path": "examples/tls-rustls/self_signed_certs/key.pem",
+      "reason": "Self-signed private-key fixture used by the example."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Provides the Axum service adapter."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "tls",
+    "rustls"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:12:17.010Z"
+}

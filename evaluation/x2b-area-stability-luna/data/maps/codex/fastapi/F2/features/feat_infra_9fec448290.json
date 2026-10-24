@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_9fec448290",
+  "title": "GitHub Actions integrations",
+  "summary": "Custom repository actions for documentation previews, translation notifications, and contributor metadata.\n\nAgent mapper reason: The action implementations and their declarations are small automation units whose behavior is driven by the corresponding repository workflows.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Implements the action that comments with a documentation preview."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Declares the documentation comment action interface."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Defines the action runtime image."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Implements preview watching behavior."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Declares the preview watcher action interface."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Defines the preview watcher runtime image."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Implements translation notification behavior."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Declares the translation action interface."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Defines the translation action runtime image."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Implements contributor metadata behavior."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Declares the contributor metadata action interface."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Defines the contributor metadata runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Invokes documentation preview automation."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Related preview reporting workflow."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Invokes translation notifications."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Invokes contributor metadata automation."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Builds documentation used by preview actions."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "automation",
+    "documentation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:44:38.658Z",
+  "updatedAt": "2026-10-24T00:44:38.658Z"
+}

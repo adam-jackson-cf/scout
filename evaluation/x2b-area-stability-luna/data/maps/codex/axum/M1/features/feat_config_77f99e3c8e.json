@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_77f99e3c8e",
+  "title": "Workspace policy and CI",
+  "summary": "Workspace membership, dependency policy, and automated checks.\n\nAgent mapper reason: These files govern repository-wide package configuration and automated checks, so changes should be reviewed together.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Defines workspace and shared package configuration."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Defines automated validation."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Configures the patch workflow."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Configures dependency and license checks."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Defines repository-wide ignored paths."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Documents contributor workflow."
+    },
+    {
+      "path": "examples/README.md",
+      "reason": "Indexes standalone example packages."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Package configuration within the workspace."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Package configuration within the workspace."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Package configuration within the workspace."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Package configuration within the workspace."
+    },
+    {
+      "path": "x2_newpkg/Cargo.toml",
+      "reason": "Package configuration within the workspace."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "dependency-policy"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:10:04.400Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

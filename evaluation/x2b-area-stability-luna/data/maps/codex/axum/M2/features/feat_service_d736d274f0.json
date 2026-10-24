@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d736d274f0",
+  "title": "Example: low-level Rustls server",
+  "summary": "Demonstrates low-level TLS server setup with Rustls.\n\nAgent mapper reason: The package demonstrates low-level Rustls listener setup and uses bundled self-signed certificate fixtures.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run --manifest-path examples/low-level-rustls/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/low-level-rustls/Cargo.toml",
+      "reason": "Defines the standalone TLS example package."
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Implements low-level Rustls server setup."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/low-level-rustls/self_signed_certs/cert.pem",
+      "reason": "Self-signed certificate fixture used by the example."
+    },
+    {
+      "path": "examples/low-level-rustls/self_signed_certs/key.pem",
+      "reason": "Self-signed private-key fixture used by the example."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Provides the Axum service adapter."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "tls",
+    "rustls"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:12:17.026Z"
+}

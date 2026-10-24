@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_2905b6fe58",
+  "title": "CI, packaging, and repository checks",
+  "summary": "Project metadata and automated test, lint, type-check, formatting, and pre-commit configuration.\n\nAgent mapper reason: These files determine how the project is installed and how changes are checked in automation and local contributor workflows.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Defines package metadata, dependencies, and Hatch commands."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Defines continuous integration test execution."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Defines repository pre-commit checks."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Configures dependency update automation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Documents contributor workflow."
+    },
+    {
+      "path": "README.md",
+      "reason": "Documents project usage and setup."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Provides project security reporting context."
+    },
+    {
+      "path": "tests/main.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/main.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "hatch",
+    "quality"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:43:01.263Z",
+  "updatedAt": "2026-10-24T00:51:16.918Z"
+}

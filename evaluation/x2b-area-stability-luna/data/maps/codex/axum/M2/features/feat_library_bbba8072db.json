@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_bbba8072db",
+  "title": "Axum path extraction",
+  "summary": "Path deserialization, parameter decoding, and path rejection behavior.\n\nAgent mapper reason: Path parsing and deserialization form one coherent boundary between URL input and typed handler values.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Deserializes path parameters."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Defines the Path extractor and its rejection behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines extractor rejection types."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents path extraction."
+    },
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Provides related typed path generation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "paths"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:12:16.865Z"
+}

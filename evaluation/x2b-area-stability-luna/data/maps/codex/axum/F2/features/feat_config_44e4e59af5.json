@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_44e4e59af5",
+  "title": "axum package configuration and build",
+  "summary": "Main crate package settings and build-time setup.\n\nAgent mapper reason: Package features and build-time behavior affect all modules in the main axum crate.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/build.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines the main package, features, and dependencies."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Implements the main package build script."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/README.md",
+      "reason": "Documents the public crate."
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "Records main crate changes."
+    },
+    {
+      "path": "Cargo.toml",
+      "reason": "Declares the workspace containing this package."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "build",
+    "package-config"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:59:37.867Z",
+  "updatedAt": "2026-10-24T00:59:37.867Z"
+}

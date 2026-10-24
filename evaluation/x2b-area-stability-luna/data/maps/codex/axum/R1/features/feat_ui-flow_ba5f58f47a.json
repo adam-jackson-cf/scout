@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_ba5f58f47a",
+  "title": "Example: WebSockets",
+  "summary": "Demonstrates WebSocket server and browser-client behavior.\n\nAgent mapper reason: The server, Rust client, and browser asset participate in one WebSocket flow.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "Implements client-side WebSocket behavior."
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "Implements server routes and connection handling."
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Provides browser client behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/websockets/Cargo.toml",
+      "reason": "Shows WebSocket dependencies."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Provides WebSocket extraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "websocket",
+    "browser"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:05:08.945Z"
+}

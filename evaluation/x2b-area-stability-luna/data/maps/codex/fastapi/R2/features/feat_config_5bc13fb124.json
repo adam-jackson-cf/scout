@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_5bc13fb124",
+  "title": "Documentation site configuration and shared assets",
+  "summary": "MkDocs configurations, shared English-site scripts, and site-level content data.\n\nAgent mapper reason: The site configuration, shared scripts, template override, and data files jointly determine the rendered English documentation site.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Configures the primary documentation site."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Provides shared documentation chat behavior."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Provides shared site behavior."
+    },
+    {
+      "path": "docs/en/docs/js/termynal.js",
+      "reason": "Provides terminal animation behavior."
+    },
+    {
+      "path": "docs/en/data/external_links.yml",
+      "reason": "Supplies external link data."
+    },
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Supplies contributor data."
+    },
+    {
+      "path": "docs/en/data/sponsors.yml",
+      "reason": "Supplies sponsor data."
+    },
+    {
+      "path": "docs/en/data/sponsors_badge.yml",
+      "reason": "Supplies sponsor badge data."
+    },
+    {
+      "path": "docs/en/data/github_sponsors.yml",
+      "reason": "Supplies GitHub sponsor data."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Overrides the documentation theme template."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/index.md",
+      "reason": "Primary site landing page."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Builds the configured site."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "documentation",
+    "mkdocs",
+    "site-config"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:49:15.193Z",
+  "updatedAt": "2026-10-24T00:51:16.919Z"
+}

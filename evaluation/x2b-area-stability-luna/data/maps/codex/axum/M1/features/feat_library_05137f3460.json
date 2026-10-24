@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_05137f3460",
+  "title": "axum-core body, errors, and extension traits",
+  "summary": "Shared HTTP body, error, and request extension primitives used by Axum crates.\n\nAgent mapper reason: These files provide the shared low-level types and request extension behavior on which extraction and response features depend.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines the shared body abstraction."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Defines core error behavior."
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Collects request extension traits."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Provides request extension helpers."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "Provides request-parts extension helpers."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Exposes the core crate API."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Provides macros used by core crate APIs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Defines core crate features and dependencies."
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Documents the core crate."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Provides package build configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "http",
+    "shared-primitives"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:10:04.400Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

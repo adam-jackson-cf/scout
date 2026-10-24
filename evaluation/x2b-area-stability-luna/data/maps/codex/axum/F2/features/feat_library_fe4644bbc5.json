@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fe4644bbc5",
+  "title": "Axum crate exports and benchmarks",
+  "summary": "Crate-level public API wiring, internal utility helpers, and routing benchmarks.\n\nAgent mapper reason: This slice covers the top-level public surface, internal shared utilities, and performance probes.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Defines crate-level exports and top-level documentation."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Provides crate macros and re-exports."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Provides internal utility functions."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Benchmarks routing and request handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/README.md",
+      "reason": "Documents the public crate."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines benchmark and crate feature configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "crate-api",
+    "benchmarks",
+    "utilities"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:59:37.867Z",
+  "updatedAt": "2026-10-24T00:59:37.867Z"
+}

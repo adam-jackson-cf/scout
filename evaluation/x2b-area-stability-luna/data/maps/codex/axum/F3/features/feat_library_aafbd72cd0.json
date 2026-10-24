@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_aafbd72cd0",
+  "title": "Axum extractor framework and rejections",
+  "summary": "Exports extractor types and implements request-parts extraction and common rejection behavior.\n\nAgent mapper reason: These files form the framework-level extractor exports and request-parts behavior over axum-core.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": "FromRequestParts",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Defines and exports the Axum extractor surface."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines framework extractor rejection types."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Implements extraction from request parts."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines the core extractor contracts."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extraction order and usage."
+    },
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "Generates implementations of these contracts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "rejections"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:02:52.435Z",
+  "updatedAt": "2026-10-24T01:02:52.435Z"
+}

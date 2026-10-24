@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8400aa8b7e",
+  "title": "Axum state and extension access",
+  "summary": "Access to shared application state and request extensions.\n\nAgent mapper reason: Application state and request extensions are shared data access mechanisms with closely related ownership and type constraints.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Implements application state extraction."
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Implements extension-based extraction and response behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows state and extension exports."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Defines state projection used by the state extractor."
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Documents router state."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractor",
+    "state",
+    "extensions"
+  ],
+  "trustBoundaries": [
+    "concurrency",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:59:37.867Z",
+  "updatedAt": "2026-10-24T00:59:37.867Z"
+}

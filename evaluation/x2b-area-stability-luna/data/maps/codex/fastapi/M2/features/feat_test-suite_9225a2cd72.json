@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_9225a2cd72",
+  "title": "Response serialization and response model contracts",
+  "summary": "Tests for response encoding, response models, filtering, status codes, and response classes.\n\nAgent mapper reason: These tests cover the response side of the request lifecycle, from converting values to producing HTTP response bodies and metadata.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Covers custom datetime encoding."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "Covers JSON-compatible encoding."
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "Covers the ORJSON response class."
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "Covers response serialization with ORM mode."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Covers response aliases."
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "Covers changing response status codes."
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "Covers response classes without a media type."
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "Covers status codes that do not allow a body."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Covers response models inferred from return annotations."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Covers response-model include and exclude behavior."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Covers invalid response models."
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Covers response-model subtypes."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Covers response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Covers dataclass response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Covers response-model serialization."
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Covers default-value serialization."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Documents response models."
+    },
+    {
+      "path": "docs/en/docs/advanced/custom-response.md",
+      "reason": "Documents custom responses."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:49:15.193Z",
+  "updatedAt": "2026-10-24T00:55:15.553Z"
+}

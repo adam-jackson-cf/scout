@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_2af67ca6a0",
+  "title": "Example: application testing",
+  "summary": "Demonstrates testing Axum application routes.\n\nAgent mapper reason: The package demonstrates route-level tests against an Axum application.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/testing/Cargo.toml",
+      "reason": "Example package and test dependencies."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "Defines an application and its tests."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Framework test client API."
+    },
+    {
+      "path": "examples/README.md",
+      "reason": "Lists and explains examples."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "test",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:07:41.927Z"
+}

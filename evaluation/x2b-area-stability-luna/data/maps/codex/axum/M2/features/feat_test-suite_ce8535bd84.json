@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_ce8535bd84",
+  "title": "Axum routing behavior tests",
+  "summary": "Integration-style tests for fallback, method behavior, error handling, merge, and nesting.\n\nAgent mapper reason: The tests exercise routing contracts across method selection, composition, fallback, and errors.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "Fallback behavior tests."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "GET and HEAD method behavior tests."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "Routing error handling tests."
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "Router merge tests."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "Routing test module."
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "Router nesting tests."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Implementation under test."
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Method dispatch implementation."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "routing",
+    "tests"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:12:17.041Z"
+}

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3774b3ca6b",
+  "title": "Axum service extensions and utilities",
+  "summary": "Provides service convenience methods and internal utility functions.\n\nAgent mapper reason: These small support modules are shared by routing, handler, and test-client service paths.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Implements service extension methods."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Contains shared Axum utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Uses service conversion behavior."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Uses service invocation behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "services",
+    "utilities"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:10:04.458Z"
+}

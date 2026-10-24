@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d16895f800",
+  "title": "axum-core body and request extension primitives",
+  "summary": "Core body and error types plus request extension traits shared with the main crate.\n\nAgent mapper reason: These low-level request and body contracts are shared across crates and should be reviewed as a unit.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/body.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines the core HTTP body abstraction."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Defines common error behavior."
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/mod.rs",
+      "reason": "Exports request extension traits."
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request.rs",
+      "reason": "Implements request extension behavior."
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request_parts.rs",
+      "reason": "Implements request-parts extension behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Exports these shared primitives."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Shows the main crate dependency on core."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "http",
+    "request"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:12:16.865Z",
+  "updatedAt": "2026-10-24T01:12:16.865Z"
+}

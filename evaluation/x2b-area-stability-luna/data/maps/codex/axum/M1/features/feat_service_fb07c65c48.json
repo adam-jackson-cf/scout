@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_fb07c65c48",
+  "title": "Example: hello world",
+  "summary": "Minimal runnable Axum service.\n\nAgent mapper reason: This package is the smallest self-contained server example and serves as an entry-level usage slice.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/hello-world/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run --manifest-path examples/hello-world/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/hello-world/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/hello-world/src/main.rs",
+      "reason": "Implements the minimal service."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Indexes example packages."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Provides route construction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "getting-started",
+    "service"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

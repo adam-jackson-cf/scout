@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_09ec6aaad5",
+  "title": "Axum response bodies and streaming responses",
+  "summary": "Builds response bodies, redirects, server-sent events, and typed response headers.\n\nAgent mapper reason: These modules produce outgoing response bodies, including streamed and protocol-significant responses.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines Axum body types."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Implements streaming body behavior."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Provides boxed body and response types."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Exports response APIs."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Implements redirect responses."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Implements server-sent events."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents response behavior."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Defines shared response conversion."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Documents the stream body implementation owned by this slice."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "response",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:10:04.400Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

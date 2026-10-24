@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_05a0c67aa4",
+  "title": "Release and change publication workflows",
+  "summary": "Publishing, release-note generation, and documentation build or deployment workflows.\n\nAgent mapper reason: Publishing and change-generation workflows affect released artifacts and public documentation, so they should be reviewed together with package and site metadata.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Defines package publishing workflow."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Defines latest changes generation."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Builds documentation for publication."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Provides package version and build metadata."
+    },
+    {
+      "path": "docs/en/docs/release-notes.md",
+      "reason": "Documents release history."
+    },
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Configures the English documentation site."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "release",
+    "publishing",
+    "docs"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "network",
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:43:01.263Z",
+  "updatedAt": "2026-10-24T00:49:15.312Z"
+}

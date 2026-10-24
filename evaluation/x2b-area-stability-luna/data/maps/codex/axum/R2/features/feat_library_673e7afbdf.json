@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_673e7afbdf",
+  "title": "Axum-extra request extractors",
+  "summary": "Cached, form, multipart, query, and rejection-adapting extractors.\n\nAgent mapper reason: These extensions add request decoding and rejection adaptation on top of Axum's common extractor API.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Cached extraction support."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Additional form extraction behavior."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Additional multipart extraction behavior."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Additional query extraction behavior."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Rejection type adaptation."
+    },
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Extractor exports."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional extractor dependencies."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Core extractor contracts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:07:41.826Z"
+}

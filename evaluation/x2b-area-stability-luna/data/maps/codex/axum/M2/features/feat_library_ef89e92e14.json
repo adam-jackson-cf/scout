@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ef89e92e14",
+  "title": "Axum query, form, JSON, and multipart extraction",
+  "summary": "Parses common structured request bodies and query strings.\n\nAgent mapper reason: These extractors decode untrusted request data and share rejection and body-limit considerations.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Implements multipart extraction."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Implements query extraction."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Implements raw form extraction."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Implements raw query extraction."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Implements form deserialization."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Implements JSON extraction and response support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines parsing failure responses."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extraction ordering and behavior."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Defines a shared body-size limit."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "json",
+    "forms",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:12:16.977Z"
+}

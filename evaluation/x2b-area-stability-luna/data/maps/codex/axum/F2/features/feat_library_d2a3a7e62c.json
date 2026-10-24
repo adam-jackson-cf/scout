@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d2a3a7e62c",
+  "title": "Axum multipart extraction",
+  "summary": "Multipart request body parsing and extraction.\n\nAgent mapper reason: Multipart parsing has distinct body and upload handling concerns that merit a focused review.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Implements multipart field extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows how multipart extraction is exported."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines extractor rejection support."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares multipart parser dependencies and feature gates."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractor",
+    "multipart",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "filesystem",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:59:37.867Z",
+  "updatedAt": "2026-10-24T00:59:37.867Z"
+}

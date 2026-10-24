@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_08aaf23f61",
+  "title": "Release, CI, and repository policy configuration",
+  "summary": "Packaging metadata, quality hooks, and workflows for tests, publishing, releases, and repository maintenance.\n\nAgent mapper reason: These files configure how the package is built, checked, tested, released, and maintained in the repository.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Defines package metadata, dependencies, and project tooling."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Defines repository hooks."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Runs the project test workflow."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Publishes package releases."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Automates release change reporting."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Automates approved change labeling."
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Automates issue management."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Configures dependency update automation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow guidance."
+    },
+    {
+      "path": "README.md",
+      "reason": "Project overview and installation context."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Project security reporting policy."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Repository issue intake configuration."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Repository issue template configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "ci",
+    "release",
+    "repository-config"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "process-exec",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:44:38.658Z",
+  "updatedAt": "2026-10-24T00:44:38.658Z"
+}

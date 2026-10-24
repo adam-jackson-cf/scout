@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_692dd4181d",
+  "title": "Axum-extra response encoding",
+  "summary": "JSON-line and protobuf response helpers, plus erased JSON responses.\n\nAgent mapper reason: These extensions encode response data in specialized or dynamically typed formats.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "JSON-lines format support."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protocol Buffers support."
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Type-erased JSON response."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Response extension exports."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Serialization and protobuf dependencies."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Core response contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "response",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:07:41.826Z",
+  "updatedAt": "2026-10-24T01:12:16.959Z"
+}

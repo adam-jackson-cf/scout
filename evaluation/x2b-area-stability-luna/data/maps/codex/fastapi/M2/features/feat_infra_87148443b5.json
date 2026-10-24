@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_87148443b5",
+  "title": "Documentation build and preview publishing",
+  "summary": "Builds documentation and manages its preview workflow.\n\nAgent mapper reason: These workflows build and publish documentation previews, and depend on the MkDocs configuration.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Defines documentation build automation."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Defines pull request documentation previews."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Supports the documentation preview workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Configures the main English documentation site."
+    },
+    {
+      "path": "docs/en/docs/contributing.md",
+      "reason": "Documents contribution expectations, including documentation work."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "ci",
+    "preview"
+  ],
+  "trustBoundaries": [
+    "network",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:55:15.388Z",
+  "updatedAt": "2026-10-24T00:55:15.388Z"
+}

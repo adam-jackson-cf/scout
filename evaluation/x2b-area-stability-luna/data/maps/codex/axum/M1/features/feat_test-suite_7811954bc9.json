@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_7811954bc9",
+  "title": "Axum in-process testing helpers and routing tests",
+  "summary": "Provides request test clients and exercises router integration behavior.\n\nAgent mapper reason: The helpers and routing tests form the in-process behavioral harness for public router semantics.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Exports in-process test helpers."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Implements a test request client."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "Collects routing tests."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "Tests fallback behavior."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "Tests GET and HEAD dispatch."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "Tests error handling."
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "Tests router merging."
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "Tests router nesting."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Defines the API exercised by routing tests."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "testing",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:10:04.400Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

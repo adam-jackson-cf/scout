@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_673e7afbdf",
+  "title": "axum-extra request extractors",
+  "summary": "Provides cached, form, multipart, query, and rejection-customizing extractors.\n\nAgent mapper reason: These request-facing utilities extend the same extraction API and share parsing and rejection behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Implements cached extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Implements extra form extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Exports extra extractors."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Implements multipart extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Implements extra query extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Wraps extractors with customized rejection behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines the underlying extractor contracts."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Shows feature and dependency configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "extractors",
+    "forms"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:05:08.945Z"
+}

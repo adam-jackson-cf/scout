@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_01c20cc14f",
+  "title": "Example: static file server",
+  "summary": "Serves static files with a browser-facing page and script.\n\nAgent mapper reason: The example maps filesystem assets to network responses, making path and file access behavior central.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run --manifest-path examples/static-file-server/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/static-file-server/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Implements static file serving."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Provides the served HTML page."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Provides the served JavaScript."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Provides route handling."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "static-files",
+    "browser"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:12:16.983Z"
+}

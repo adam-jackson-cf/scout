@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_17253ebe7c",
+  "title": "axum typed headers and shared utilities",
+  "summary": "Typed header support, utility functions, and framework exports and macros.\n\nAgent mapper reason: These files provide shared API surface and utility behavior that is not owned by one larger request or routing subsystem.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/typed_header.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Implements typed header extraction and response support."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Provides shared implementation utilities."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Provides Axum macros."
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Defines crate-level exports and docs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Package features and dependencies."
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Documents the main crate."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Related extractor exports."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "headers",
+    "crate-api"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:10:04.455Z"
+}

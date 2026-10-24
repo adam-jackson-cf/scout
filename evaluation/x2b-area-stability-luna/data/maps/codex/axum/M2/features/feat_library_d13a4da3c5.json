@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d13a4da3c5",
+  "title": "Axum routing and method dispatch",
+  "summary": "Route construction, method filters, nesting, fallback, and service conversion.\n\nAgent mapper reason: These modules comprise the router lifecycle from route definition through request dispatch and service creation.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Routing future behavior."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Router-to-service conversion."
+    },
+    {
+      "path": "axum/src/routing/method_filter.rs",
+      "reason": "HTTP method filter definitions."
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Method route composition and dispatch."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Router API and exports."
+    },
+    {
+      "path": "axum/src/routing/not_found.rs",
+      "reason": "Not-found fallback behavior."
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Route service behavior."
+    },
+    {
+      "path": "axum/src/routing/strip_prefix.rs",
+      "reason": "Route prefix handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/fallback.md",
+      "reason": "Fallback semantics."
+    },
+    {
+      "path": "axum/src/docs/routing/merge.md",
+      "reason": "Router merge semantics."
+    },
+    {
+      "path": "axum/src/docs/routing/nest.md",
+      "reason": "Router nesting semantics."
+    },
+    {
+      "path": "axum/src/docs/routing/route.md",
+      "reason": "Route construction guidance."
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Router layer behavior."
+    },
+    {
+      "path": "axum/src/docs/routing/route_layer.md",
+      "reason": "Route-layer behavior."
+    },
+    {
+      "path": "axum/src/docs/routing/route_service.md",
+      "reason": "Service route behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:07:41.826Z",
+  "updatedAt": "2026-10-24T01:12:16.969Z"
+}

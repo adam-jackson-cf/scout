@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_46b4b751ce",
+  "title": "GitHub Action: people data maintenance",
+  "summary": "Action implementation and metadata for maintaining people-related repository data.\n\nAgent mapper reason: The action owns its runtime and implementation; the people workflow and data file explain the repository-facing effect.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action interface and inputs."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Action implementation."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Workflow invoking the people action."
+    },
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "People data consumed or maintained by repository automation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "repository-data"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:51:16.858Z",
+  "updatedAt": "2026-10-24T00:53:45.422Z"
+}

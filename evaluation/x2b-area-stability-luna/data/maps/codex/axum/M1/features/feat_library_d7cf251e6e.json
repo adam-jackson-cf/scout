@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d7cf251e6e",
+  "title": "axum router service and make-service adapters",
+  "summary": "Future handling and conversions from routers into services and make-services.\n\nAgent mapper reason: These files adapt router execution to the underlying service lifecycle.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Defines routing future behavior."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Converts routers into make-services."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Provides extension methods for services."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents make-service conversion and connection metadata."
+    },
+    {
+      "path": "axum/src/docs/routing/route_service.md",
+      "reason": "Documents route service integration."
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Documents service layering."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "routing",
+    "service"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:10:04.465Z"
+}

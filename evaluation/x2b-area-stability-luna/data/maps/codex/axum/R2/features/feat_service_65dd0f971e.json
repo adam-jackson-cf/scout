@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_65dd0f971e",
+  "title": "Tokio PostgreSQL example",
+  "summary": "Demonstrates PostgreSQL access using tokio-postgres.\n\nAgent mapper reason: The sample exercises a direct asynchronous PostgreSQL client from HTTP handlers.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "reason": "Database-backed route behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/tokio-postgres/Cargo.toml",
+      "reason": "Tokio PostgreSQL dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "postgres",
+    "database"
+  ],
+  "trustBoundaries": [
+    "network",
+    "database",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:07:41.826Z"
+}

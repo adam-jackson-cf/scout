@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_5610b49ff2",
+  "title": "Repository people automation",
+  "summary": "Implements the people-related GitHub Action.\n\nAgent mapper reason: The implementation and action metadata are a bounded unit; the workflow and people page clarify its role.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Contains the action implementation."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Declares the action interface."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Defines the action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Provides the workflow invocation context."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "Documents people-related project information."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-action",
+    "community"
+  ],
+  "trustBoundaries": [
+    "network",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:55:15.388Z",
+  "updatedAt": "2026-10-24T00:55:15.388Z"
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f92bc252fb",
+  "title": "axum-macros shared procedural-macro support",
+  "summary": "Macro crate entry point and shared parsing helpers used by derive and attribute macros.\n\nAgent mapper reason: These files implement shared macro registration and parsing behavior used by the focused macro slices.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Provides shared attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Registers and exports procedural macros."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Provides shared source-position handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Defines proc-macro crate settings and dependencies."
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Documents the macro crate."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Pins toolchain behavior for this package."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "procedural-macros",
+    "shared-support"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

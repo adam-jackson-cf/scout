@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_199af8c7f9",
+  "title": "GitHub Actions automation",
+  "summary": "Custom repository actions for documentation previews, translation notifications, contributor data, and preview watching.\n\nAgent mapper reason: Each action has a declared interface and implementation, while the workflows provide its trigger and execution context.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Declares the pull request preview comment action."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Implements the preview comment action."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Declares the translation notification action."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Implements translation notifications."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Declares the people data action."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Implements contributor or people data processing."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Declares the preview watcher action."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Implements preview watching."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Runs documentation preview automation."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Runs translation notification automation."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Runs people data automation."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Related preview workflow configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "automation",
+    "docs"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "process-exec",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:43:01.263Z",
+  "updatedAt": "2026-10-24T00:53:45.421Z"
+}

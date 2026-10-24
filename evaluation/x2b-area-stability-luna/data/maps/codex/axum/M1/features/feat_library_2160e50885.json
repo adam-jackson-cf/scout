@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_2160e50885",
+  "title": "Axum testing utilities",
+  "summary": "In-process test client helpers for exercising Axum services.\n\nAgent mapper reason: These helpers provide a reusable test surface for service request and response behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Testing helper exports and setup."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "In-process client implementation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "Examples of helper use in routing tests."
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Public API exposure."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:05:08.945Z",
+  "updatedAt": "2026-10-24T01:10:04.456Z"
+}

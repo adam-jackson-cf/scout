@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_1e4a23c8c5",
+  "title": "Release and change publication workflows",
+  "summary": "Workflows for publishing releases and maintaining latest-change and preview status artifacts.\n\nAgent mapper reason: These workflows support package publication and its associated change and preview reporting.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Defines package publication."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Maintains latest change information."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Runs publication-related preview checks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Contains package metadata."
+    },
+    {
+      "path": "docs/en/docs/release-notes.md",
+      "reason": "Documents release changes."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "release",
+    "publishing",
+    "ci"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "secrets",
+    "permissions"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:49:15.193Z",
+  "updatedAt": "2026-10-24T00:51:16.939Z"
+}

@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_dd3bb7aa74",
+  "title": "Larger application example",
+  "summary": "Example package showing routers, shared dependencies, and internal administrative routes.\n\nAgent mapper reason: The three variants demonstrate the same multi-module application structure, with routers and dependencies wired by a shared entrypoint.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/bigger_applications/app/dependencies.py",
+      "reason": "Shared dependencies for the example application."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/internal/admin.py",
+      "reason": "Internal administrative routes."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "reason": "Main application composition."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/items.py",
+      "reason": "Items router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/users.py",
+      "reason": "Users router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/dependencies.py",
+      "reason": "Annotated variant dependencies."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/internal/admin.py",
+      "reason": "Annotated variant administrative routes."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/main.py",
+      "reason": "Annotated variant application composition."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/routers/items.py",
+      "reason": "Annotated variant items router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/routers/users.py",
+      "reason": "Annotated variant users router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/dependencies.py",
+      "reason": "Python 3.9 variant dependencies."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/internal/admin.py",
+      "reason": "Python 3.9 variant administrative routes."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/main.py",
+      "reason": "Python 3.9 variant application composition."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/routers/items.py",
+      "reason": "Python 3.9 variant items router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/routers/users.py",
+      "reason": "Python 3.9 variant users router."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/bigger-applications.md",
+      "reason": "Documents the package structure and router composition."
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an_py39.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an_py39.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "documentation",
+    "routers",
+    "examples"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "auth"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:49:15.193Z",
+  "updatedAt": "2026-10-24T00:51:16.936Z"
+}

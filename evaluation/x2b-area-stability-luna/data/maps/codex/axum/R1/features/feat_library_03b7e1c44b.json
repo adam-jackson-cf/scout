@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_03b7e1c44b",
+  "title": "axum routing registration and composition",
+  "summary": "Router construction, route registration, nesting, merging, and fallback behavior.\n\nAgent mapper reason: Router registration and composition determine which handlers receive incoming requests and how unmatched requests are handled.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Defines router construction and exports."
+    },
+    {
+      "path": "axum/src/routing/not_found.rs",
+      "reason": "Implements not-found fallback behavior."
+    },
+    {
+      "path": "axum/src/routing/strip_prefix.rs",
+      "reason": "Implements prefix stripping for nested routing."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/fallback.md",
+      "reason": "Documents fallback behavior."
+    },
+    {
+      "path": "axum/src/docs/routing/merge.md",
+      "reason": "Documents router merging."
+    },
+    {
+      "path": "axum/src/docs/routing/nest.md",
+      "reason": "Documents nested routing."
+    },
+    {
+      "path": "axum/src/docs/routing/route.md",
+      "reason": "Documents route registration."
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Documents state propagation through routers."
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "Exercises fallback behavior."
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "Exercises route merging."
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "Exercises nested routing."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "routing",
+    "router"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:05:09.012Z"
+}

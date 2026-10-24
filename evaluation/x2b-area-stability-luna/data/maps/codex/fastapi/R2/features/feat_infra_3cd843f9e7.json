@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_3cd843f9e7",
+  "title": "GitHub Actions: contributor management",
+  "summary": "Custom action and workflow for repository people management.\n\nAgent mapper reason: The action and workflow are a bounded automation feature that operates on repository data.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Defines the action interface."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Implements contributor management behavior."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Defines the action runtime image."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Invokes the action."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Related repository issue automation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "repository-automation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "permissions"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:49:15.193Z",
+  "updatedAt": "2026-10-24T00:51:16.921Z"
+}

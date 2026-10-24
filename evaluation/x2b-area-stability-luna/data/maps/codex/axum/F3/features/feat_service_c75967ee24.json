@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_c75967ee24",
+  "title": "Static file server example",
+  "summary": "Serves static assets through an Axum application.\n\nAgent mapper reason: The server and sample assets jointly demonstrate filesystem-backed HTTP responses.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Implements static file serving."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Provides the served page."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Provides a served browser script."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/static-file-server/Cargo.toml",
+      "reason": "Declares file-serving dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "static-files",
+    "filesystem"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:02:52.435Z",
+  "updatedAt": "2026-10-24T01:02:52.435Z"
+}

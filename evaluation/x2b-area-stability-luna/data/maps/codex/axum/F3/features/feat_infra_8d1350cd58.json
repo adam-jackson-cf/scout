@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_8d1350cd58",
+  "title": "Workspace and CI configuration",
+  "summary": "Defines the Cargo workspace, dependency policy, continuous integration, and patch workflow.\n\nAgent mapper reason: These files jointly govern workspace builds, CI execution, and dependency policy.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Declares workspace membership and shared package settings."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Defines repository CI checks."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Configures the repository patch workflow."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Sets dependency and license policy."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Documents contribution and development workflow."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "dependencies"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:02:52.435Z",
+  "updatedAt": "2026-10-24T01:02:52.435Z"
+}

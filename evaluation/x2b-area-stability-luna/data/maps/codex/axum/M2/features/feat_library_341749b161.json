@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_341749b161",
+  "title": "axum-core extraction contracts",
+  "summary": "Traits and helpers for extracting values from request parts, state, and bodies, including rejection behavior.\n\nAgent mapper reason: These files define shared extractor interfaces, limits, and rejection semantics consumed by the main crate and extensions.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Defines default body size limits for extraction."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Defines state projection behavior."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Exports core extractor contracts."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Defines common extraction rejection types."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Defines request-parts extraction behavior."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Supports tuple extractor composition."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Publicly exports extraction contracts."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows how the main crate builds on these contracts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "extractors",
+    "request"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:12:16.865Z"
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e0fd8c7833",
+  "title": "Axum handlers and error handling",
+  "summary": "Handler conversion, service integration, future behavior, and error handling.\n\nAgent mapper reason: Handler adaptation and error conversion jointly determine how application functions run as HTTP services.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler future behavior."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Handler service state propagation."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler traits and conversions."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Handler-to-service adapter."
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Error handling layer and response conversion."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler contracts and usage."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error handling guidance."
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Handler type troubleshooting."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "handlers",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T01:07:41.826Z",
+  "updatedAt": "2026-10-24T01:12:16.974Z"
+}

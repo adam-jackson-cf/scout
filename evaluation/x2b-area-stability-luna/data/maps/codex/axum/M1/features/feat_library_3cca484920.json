@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3cca484920",
+  "title": "axum HTTP body and response boxing",
+  "summary": "Defines Axum body types, stream bodies, and boxed response values.\n\nAgent mapper reason: These modules implement the body and response erasure layer exposed by the main crate.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Exports Axum body types."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Implements streaming body behavior."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Implements boxed response handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines the shared body abstraction."
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Shows public exports."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Provides package feature and dependency context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "body",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:10:04.459Z"
+}

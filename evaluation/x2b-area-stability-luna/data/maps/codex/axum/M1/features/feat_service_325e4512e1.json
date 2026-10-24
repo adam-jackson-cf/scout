@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_325e4512e1",
+  "title": "Example: global 404 handler",
+  "summary": "Demonstrates handling requests that match no route.\n\nAgent mapper reason: This example focuses on the fallback path for unmatched incoming requests.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/global-404-handler/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run --manifest-path examples/global-404-handler/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/global-404-handler/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/global-404-handler/src/main.rs",
+      "reason": "Implements the global not-found example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/not_found.rs",
+      "reason": "Defines not-found behavior."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Defines router fallback APIs."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "routing",
+    "fallback"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:10:04.400Z"
+}

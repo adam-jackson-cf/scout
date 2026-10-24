@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6e5b3e3395",
+  "title": "Axum core response conversion",
+  "summary": "Conversion of values and response parts into HTTP responses, including header appending.\n\nAgent mapper reason: The modules jointly implement the response conversion API shared by Axum.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "Response header append behavior."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Value-to-response conversion."
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "Response-parts conversion."
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response API exports."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Response conversion integrates with shared errors."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Public exports."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Feature and dependency configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "response"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:57:18.379Z",
+  "updatedAt": "2026-10-24T01:07:41.826Z"
+}

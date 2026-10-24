@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_d8fbd39fad",
+  "title": "Python package and developer tooling",
+  "summary": "Defines package metadata and local formatting hooks.\n\nAgent mapper reason: These files define the project’s Python tooling and package configuration, so they belong in one setup review slice.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Primary project and tool configuration."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Configures repository commit-time checks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "x2_newpkg/pyproject.toml",
+      "reason": "Secondary package manifest; its relationship to the main package is unclear from the inventory."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "developer-tooling"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:53:45.343Z",
+  "updatedAt": "2026-10-24T00:53:45.343Z"
+}

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_87148443b5",
+  "title": "Documentation build and preview workflows",
+  "summary": "Workflows that build, preview, and report documentation artifacts.\n\nAgent mapper reason: These workflows collectively build the site and manage its preview lifecycle.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Builds the documentation site."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Creates or manages pull request previews."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Provides related preview reporting."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Configures the English documentation site."
+    },
+    {
+      "path": "docs/az/mkdocs.yml",
+      "reason": "Shows localized site configuration."
+    },
+    {
+      "path": "docs/de/mkdocs.yml",
+      "reason": "Shows localized site configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "documentation",
+    "ci",
+    "previews"
+  ],
+  "trustBoundaries": [
+    "network",
+    "permissions",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-24T00:46:59.433Z",
+  "updatedAt": "2026-10-24T00:46:59.433Z"
+}
