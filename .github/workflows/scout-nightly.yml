@@ -37,7 +37,7 @@ jobs:
       contents: read
     uses: ./.github/workflows/scout-guardian.yml
     with:
-      scout-version: v0.1.4
+      scout-version: v0.1.5
       release-repo: ${{ github.repository }}
 
   trusted:
@@ -47,7 +47,7 @@ jobs:
       pull-requests: read
     uses: ./.github/workflows/scout-guardian-trusted.yml
     with:
-      scout-version: v0.1.4
+      scout-version: v0.1.5
       release-repo: ${{ github.repository }}
       full: ${{ inputs.full || false }}
       refresh-map: ${{ inputs.refresh-map || false }}
