@@ -1,0 +1,112 @@
+--- x2/collect.py
++++ x2b/collect_x2b.py
+@@ -1,3 +1,9 @@
+ #!/usr/bin/env python3
+-"""Record the X2 agent maps (PREREGISTRATION sections 2 and 9). Needs a logged-in `codex` or `claude` CLI; NOT run during review.
++"""Record the X2b agent maps (X2b PREREGISTRATION section 2; X2 PREREGISTRATION sections 2 and 9 otherwise). Needs a logged-in `codex` CLI; NOT run during review.
++
++COPY OF evaluation/x2-area-stability/collect.py (sha256 89948f3c...), changed ONLY as the pinned diff in validation/ records: the agent map runs with Scout's
++current mapping configuration (`--model gpt-6-luna --reasoning-effort xhigh`, derived from internal/clawpatch/client.go and refused on drift, x2b.map_flags),
++the model probe mirrors that invocation and records the served model AND effort, one arm (codex), X2b's data/work defaults, and the claude branches are removed.
++Every X2 safeguard (preflight refusals, build-safety check, append-only bookkeeping, snapshot retry, per-call timeout, stop rule, abort record) is the X2 code.
++Original X2 text follows.
+ 
+@@ -31,3 +37,4 @@
+ 
+-import common as C
++import x2b  # noqa: E402 (puts the frozen X2 directory on sys.path)
++import common as C  # noqa: E402 (X2's frozen common.py)
+ 
+@@ -142,3 +149,4 @@
+ def base_meta(a, spec, ws, map_id, fresh, extra_meta):
+-    return {"schema": "x2-map-v3", "arm": a.arm, "repo": a.repo, "map_id": map_id, "fresh": fresh, "provider": a.arm,
++    return {"schema": "x2b-map-v1", "arm": a.arm, "repo": a.repo, "map_id": map_id, "fresh": fresh, "provider": a.arm,
++            "map_model": x2b.MAP_MODEL, "map_reasoning_effort": x2b.MAP_REASONING_EFFORT, "map_flags": x2b.map_flags(),
+             "rev": spec["rev"], "tree": sh(["git", "rev-parse", "HEAD^{tree}"], cwd=ws).stdout.strip(), **extra_meta}
+@@ -171,3 +179,3 @@
+             rc, out, err, timed_out, ended_by = run_limited([a.node, a.cli, "--root", ws, "--state-dir", state, "--json", "map", "--source", "agent",
+-                                                             "--provider", a.arm], env, a.call_timeout, grace=a.term_grace)
++                                                             "--provider", a.arm, *x2b.map_flags()], env, a.call_timeout, grace=a.term_grace)
+         seconds = round(time.time() - t0, 1)
+@@ -282,10 +290,6 @@
+         sys.exit("refusing to start: Clawpatch CLI %s is not the review-safety build (%s); rebuild with scripts/bootstrap-tools.sh" % (a.cli, chk["reason"]))
+-    if a.arm == "claude":
+-        exe = C.claude_executable(os.environ)  # CLAWPATCH_CLAUDE_BIN is honoured by Clawpatch's claude provider (providers/claude.ts claudeExecutable)
+-        if not shutil.which(exe):
+-            sys.exit("refusing to start: the claude executable %r (CLAWPATCH_CLAUDE_BIN or `claude`) is not runnable" % exe)
+-        out = sh([exe, "--version"], check=False, timeout=C.VERSION_TIMEOUT_SECONDS).stdout
+-        ver = C.parse_version(out)
+-        if ver is None or ver < C.CLAUDE_MIN_VERSION:
+-            sys.exit("claude arm needs Claude Code >= %s for CLAWPATCH_CLAUDE_AUTH_CONTEXT=host; found %r" % (".".join(map(str, C.CLAUDE_MIN_VERSION)), out.strip()))
++    bad = x2b.verify_pins()
++    if bad:  # X2b reuses the frozen X2 files by import: any change to them voids the reuse
++        sys.exit("refusing to start: frozen X2 files differ from their pinned digests: %s" % "; ".join(bad))
++    x2b.map_flags()  # SystemExit when Scout's Go source no longer states gpt-6-luna / xhigh via the codex-only resolver
+ 
+@@ -293,8 +297,7 @@
+ def probe_model(arm, grace=C.TERM_GRACE_SECONDS):
+-    """One trivial model call through the arm's CLI, to record the model it serves in the context of the map calls (Clawpatch only exposes its option,
+-    `default`; section 2 [INFERENCE]: the maps' model is taken to be the probes' model; a transient roll or a weight change under the same name is invisible). The call mirrors Clawpatch's
+-    provider invocation (providers/codex.ts:77-90, providers/claude.ts:174-203,234-275) so that user configuration, settings and environment resolve the
+-    model exactly as for the maps: codex `exec --cd <tmp> --sandbox read-only --skip-git-repo-check -` under Clawpatch's own (process) environment, with
+-    NO --ignore-user-config/--ignore-rules; claude `-p --output-format json ... --safe-mode ...` in claudeEnv(host)'s replaced, allow-listed environment, with
+-    NO --setting-sources, the executable CLAWPATCH_CLAUDE_BIN when set. claude: the sorted, comma-joined `modelUsage` keys; codex: the `model:` line (as label.py)."""
++    """One trivial model call through the codex CLI, to record the model AND reasoning effort it serves in the context of the map calls (Clawpatch only
++    exposes its option; section 2 [INFERENCE]: the maps' model is taken to be the probes' model; a transient roll or a weight change under the same name
++    is invisible). The call mirrors Clawpatch's codex provider invocation for the options Scout passes (providers/codex.ts:77-90,130-141 via
++    x2b.codex_probe_args): `exec --cd <tmp> --sandbox read-only --skip-git-repo-check --model gpt-6-luna -c model_reasoning_effort="xhigh" -` under
++    Clawpatch's own (process) environment, with NO --ignore-user-config/--ignore-rules. Values: the `model:` and `reasoning effort:` banner lines."""
+     t0 = time.time()
+@@ -302,22 +305,16 @@
+     with tempfile.TemporaryDirectory() as d:
+-        if arm == "claude":
+-            cmd = [C.claude_executable(env), "-p", "--output-format", "json", "--tools", "", "--no-session-persistence", "--safe-mode", "--strict-mcp-config",
+-                   "--mcp-config", json.dumps({"mcpServers": {}}, separators=(",", ":")), "--disable-slash-commands", "--no-chrome"]
+-            env = C.claude_provider_env(env, d)
+-        else:
+-            cmd = ["codex", "exec", "--cd", d, "--sandbox", "read-only", "--skip-git-repo-check", "-"]
++        cmd = ["codex", *x2b.codex_probe_args(d)]
+         rc, out, err, timed_out, _sig = run_limited(cmd, env, C.PROBE_TIMEOUT_SECONDS, cwd=d, grace=grace, inp="Reply with the single word: ok")
+-    res = {"model": None, "error": None, "seconds": round(time.time() - t0, 1), "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+-    try:
+-        if rc != 0:
+-            res["error"] = "rc=%s%s" % (rc, " (timed out)" if timed_out else "")
+-        elif arm == "claude":
+-            res["model"] = ",".join(sorted(json.loads(out).get("modelUsage", {}))) or None
+-        else:
+-            m = re.search(r"^model:\s*(\S+)", out + err, re.M)
+-            res["model"] = m.group(1) if m else None
+-    except ValueError as e:
+-        res["error"] = "unparsable probe output: %s" % e
+-    if res["model"] is None and res["error"] is None:
++    res = {"model": None, "reasoning_effort": None, "error": None, "seconds": round(time.time() - t0, 1), "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
++    if rc != 0:
++        res["error"] = "rc=%s%s" % (rc, " (timed out)" if timed_out else "")
++    else:
++        m = re.search(r"^model:\s*(\S+)", out + err, re.M)
++        e = re.search(r"^reasoning effort:\s*(\S+)", out + err, re.M)
++        res["model"] = m.group(1) if m else None
++        res["reasoning_effort"] = e.group(1) if e else None
++    if res["error"] is None and res["model"] is None:
+         res["error"] = "no model named in the probe output"
++    if res["error"] is None and res["reasoning_effort"] is None:
++        res["error"] = "no reasoning effort named in the probe output"
+     return res
+@@ -349,2 +346,6 @@
+               "workspace_config_presence": {p: os.path.exists(os.path.join(ws, p)) for p in C.WORKSPACE_CONFIG_PATHS},  # names only; the probes run outside the workspace
++              "x2b": {"map_provider": x2b.MAP_PROVIDER, "map_model": x2b.MAP_MODEL, "map_reasoning_effort": x2b.MAP_REASONING_EFFORT, "map_flags": x2b.map_flags(),
++                      "probe_argv_tail": x2b.codex_probe_args("<tmp>"), "go_map_config": x2b.go_map_config(),
++                      "client_go_sha256": C.sha256_file(x2b.GO_CLIENT), "provider_go_sha256": C.sha256_file(x2b.GO_PROVIDER),
++                      "collect_x2b_sha256": C.sha256_file(os.path.abspath(__file__)), "x2_pins": x2b.X2_PINS},
+               "model_probe_before": probe_before, "model_probe_after": None, "cli_versions_after": None, "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())})
+@@ -368,7 +369,7 @@
+     ap = argparse.ArgumentParser()
+-    ap.add_argument("--arm", required=True, choices=C.ARMS)
++    ap.add_argument("--arm", required=True, choices=list(x2b.ARMS))
+     ap.add_argument("--repo", required=True)
+     ap.add_argument("--source", required=True, help="path or URL of a clone containing the pinned revision")
+-    ap.add_argument("--work", default="/tmp/scout-x2")
+-    ap.add_argument("--data", default=C.DATA)
++    ap.add_argument("--work", default="/tmp/scout-x2b")
++    ap.add_argument("--data", default=x2b.DATA)
+     ap.add_argument("--node", default=shutil.which("node"))
