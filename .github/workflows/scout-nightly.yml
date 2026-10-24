@@ -38,7 +38,6 @@ jobs:
     uses: ./.github/workflows/scout-guardian.yml
     with:
       scout-version: v0.1.5
-      release-repo: ${{ github.repository }}
 
   trusted:
     if: github.event_name != 'pull_request'
@@ -48,7 +47,6 @@ jobs:
     uses: ./.github/workflows/scout-guardian-trusted.yml
     with:
       scout-version: v0.1.5
-      release-repo: ${{ github.repository }}
       full: ${{ inputs.full || false }}
       refresh-map: ${{ inputs.refresh-map || false }}
       authorize-egress: ${{ inputs.authorize-egress || false }}

@@ -17,7 +17,7 @@ Every lane downloads the Scout binary and the Clawpatch bundle from a release by
 
 ## Preconditions
 
-- A Scout release tag exists in `release-repo` (default `adam-jackson-cf/scout`).
+- A Scout release tag exists in the repository that publishes releases. By default that is the repository hosting the called workflow or action, so a fork or mirror uses its own releases without configuration.
 - `.scout/policy.yaml` is committed on the default branch. Run `scout init` locally first; see [policy-file.md](policy-file.md).
 - To use Jev ranking, set the `OPENROUTER_API_KEY` repository secret and enable `decisions` in the policy. Only the trusted workflow reads the secret.
 
@@ -48,8 +48,7 @@ Every lane downloads the Scout binary and the Clawpatch bundle from a release by
          contents: read
        uses: ./.github/workflows/scout-guardian.yml
        with:
-         scout-version: v0.1.0
-         release-repo: ${{ github.repository }}
+         scout-version: v0.1.5
 
      trusted:
        if: github.event_name != 'pull_request'
@@ -58,8 +57,7 @@ Every lane downloads the Scout binary and the Clawpatch bundle from a release by
          pull-requests: read
        uses: ./.github/workflows/scout-guardian-trusted.yml
        with:
-         scout-version: v0.1.0
-         release-repo: ${{ github.repository }}
+         scout-version: v0.1.5
          full: ${{ inputs.full || false }}
          refresh-map: ${{ inputs.refresh-map || false }}
          authorize-egress: ${{ inputs.authorize-egress || false }}
@@ -67,7 +65,7 @@ Every lane downloads the Scout binary and the Clawpatch bundle from a release by
          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
    ```
 
-   Another repository references the workflows as `<owner>/scout/.github/workflows/<file>@<ref>` instead of `./.github/workflows/<file>`.
+   Another repository references the workflows as `<owner>/<repo>/.github/workflows/<file>@<ref>` instead of `./.github/workflows/<file>`; releases are then fetched from `<owner>/<repo>` unless `release-repo` says otherwise.
 2. Merge to the default branch. The first trusted run finds no `scout/state` branch, runs a full assessment, and publishes the first baseline.
 3. Open a pull request. The PR lane compares against the baseline. If the baseline is missing or its digests don't match, it rescans the base and reports `comparison: recomputed`.
 4. Under the `report` profile, collect `would_block` evidence during the shadow window. Then activate checks under `blocking.checks` and switch to `profile: guardian`.
@@ -76,8 +74,8 @@ Every lane downloads the Scout binary and the Clawpatch bundle from a release by
 
 | Input | Workflow | Default | Effect |
 | --- | --- | --- | --- |
-| `scout-version` | both | required | Release tag, for example `v0.1.0`. |
-| `release-repo` | both | `adam-jackson-cf/scout` | `owner/name` that publishes releases. |
+| `scout-version` | both | required | Release tag, for example `v0.1.5`. |
+| `release-repo` | both | empty → the repository hosting the workflow (`job.workflow_repository`) | `owner/name` that publishes releases. The composite action falls back to `github.action_repository`, then `github.repository` for a local `./` action. |
 | `fail-on-incomplete` | both | `false` | Fail the job on exit 2 or 3 instead of a neutral warning. |
 | `full` | trusted | `false` | Force `assess --full`. |
 | `refresh-map` | trusted | `false` | Run `scout map --refresh` before assessing. |

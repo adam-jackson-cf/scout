@@ -76,8 +76,10 @@ func TestGuardianWorkflowTrustBoundary(t *testing.T) {
 				t.Errorf("%s: forbidden reference %q", name, banned)
 			}
 		}
-		if !strings.Contains(code, "default: adam-jackson-cf/scout") {
-			t.Errorf("%s: release-repo must default to adam-jackson-cf/scout", name)
+		// The release source is the repository hosting the workflow unless the
+		// caller names one; no owner is hard-coded.
+		if !strings.Contains(code, "default: ''") || strings.Count(code, "RELEASE_REPO: ${{ inputs.release-repo || job.workflow_repository }}") != 2 || strings.Contains(code, "RELEASE_REPO: ${{ inputs.release-repo }}") {
+			t.Errorf("%s: release-repo must default to job.workflow_repository in both release steps", name)
 		}
 	}
 	prCode := regexp.MustCompile(`(?m)^\s*#.*$`).ReplaceAllString(prRaw, "")
@@ -227,6 +229,9 @@ func TestCompositeActionInstallsFromVerifiedRelease(t *testing.T) {
 		if strings.Contains(text, banned) {
 			t.Errorf("forbidden %q", banned)
 		}
+	}
+	if !strings.Contains(string(action), "default: ''") || strings.Count(string(action), "RELEASE_REPO: ${{ inputs.release-repo || github.action_repository || github.repository }}") != 2 {
+		t.Error("composite action: release-repo must default to the repository hosting the action")
 	}
 	if !strings.Contains(text, "toolchain.sh") {
 		t.Error("composite action must provision the scanner toolchain")

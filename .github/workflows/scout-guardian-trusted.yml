@@ -17,9 +17,9 @@ on:
         required: true
         type: string
       release-repo:
-        description: owner/name of the repository publishing Scout releases
+        description: owner/name of the repository publishing Scout releases; empty means the repository that hosts this workflow (job.workflow_repository)
         required: false
-        default: adam-jackson-cf/scout
+        default: ''
         type: string
       full:
         description: Force a full assessment (workflow_dispatch full)
@@ -67,7 +67,6 @@ jobs:
       pull-requests: read
     env:
       SCOUT_VERSION: ${{ inputs.scout-version }}
-      RELEASE_REPO: ${{ inputs.release-repo }}
       FORCE_FULL: ${{ inputs.full }}
       REFRESH_MAP: ${{ inputs.refresh-map }}
       AUTHORIZE_EGRESS: ${{ inputs.authorize-egress }}
@@ -83,6 +82,8 @@ jobs:
 
       - name: Install pinned Scout release
         shell: bash
+        env:
+          RELEASE_REPO: ${{ inputs.release-repo || job.workflow_repository }}
         run: |
           set -euo pipefail
           [[ "$SCOUT_VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.]+)?$ ]] || { echo '::error::scout-version must be a release tag such as v0.1.0.'; exit 3; }
@@ -128,6 +129,7 @@ jobs:
         shell: bash
         env:
           TOOLCHAIN_DIR: ${{ runner.temp }}/scout-toolchain
+          RELEASE_REPO: ${{ inputs.release-repo || job.workflow_repository }}
         run: |
           set -euo pipefail
           sudo apt-get update -qq

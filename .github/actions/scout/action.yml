@@ -6,9 +6,9 @@ inputs:
     description: Release tag of Scout (for example v0.1.0)
     required: true
   release-repo:
-    description: owner/name of the repository publishing Scout releases
+    description: owner/name of the repository publishing Scout releases; empty means the repository that hosts this action (github.action_repository, or github.repository for a local ./ action)
     required: false
-    default: adam-jackson-cf/scout
+    default: ''
   mode:
     description: pr (diff against base-sha; read-only) or trusted (full assess on the default branch)
     required: true
@@ -47,7 +47,7 @@ runs:
       shell: bash
       env:
         SCOUT_VERSION: ${{ inputs.scout-version }}
-        RELEASE_REPO: ${{ inputs.release-repo }}
+        RELEASE_REPO: ${{ inputs.release-repo || github.action_repository || github.repository }}
         DEST: ${{ runner.temp }}/scout-release
       run: bash "$GITHUB_ACTION_PATH/install.sh"
 
@@ -61,7 +61,7 @@ runs:
       shell: bash
       env:
         SCOUT_VERSION: ${{ inputs.scout-version }}
-        RELEASE_REPO: ${{ inputs.release-repo }}
+        RELEASE_REPO: ${{ inputs.release-repo || github.action_repository || github.repository }}
         TOOLCHAIN_DIR: ${{ runner.temp }}/scout-toolchain
       run: bash "$GITHUB_ACTION_PATH/toolchain.sh"
 
