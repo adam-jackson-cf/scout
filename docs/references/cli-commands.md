@@ -28,7 +28,7 @@ When more than one applies, the highest code wins: 3 > 2 > 1 > 0. Under the `rep
 | `triage` | Sets a human disposition on an issue. The change is recorded in an audit trail. | `--id`, `--state investigating\|accepted\|false_positive\|wont_fix`, `--actor`, `--reason`, `--authorize`, `--owner`, `--run`, `--artifact`, `--disposition` | `cmd/scout/main.go` `triage` |
 | `coverage` | Shows what a run examined, reused, skipped or blocked, and why. | `--run` (default latest) | `cmd/scout/main.go` `coverage` |
 | `mapping` | Shows the feature map; `--areas` lists area labels, `--unowned` lists directory scopes that no heuristic feature owns. | `--areas`, `--unowned` | `cmd/scout/main.go` `mapping`, `cmd/scout/mapping_areas.go` |
-| `map` | Evaluates the map refresh triggers for a run, or forces an agent map refresh. | `--refresh`, `--event pr\|push\|nightly`, `--base`, `--head`, `--default-branch`, `--allow-egress` | `cmd/scout/map.go` |
+| `map` | Runs the Clawpatch agent map at onboarding (`--event` check: attempted on default-branch pushes and nightly runs until one map has completed) or forces one with `--refresh`. | `--refresh`, `--event pr\|push\|nightly`, `--default-branch`, `--allow-egress` | `cmd/scout/map.go` |
 | `signals` | Shows the descriptive measurements (`scout.cc`, `dup_pct`, `cycle_mass`, history measures, …). | `--metric`, `--scope feature:<id>\|<dir>`, `--snapshot`, `--history` | `cmd/scout/signals.go` |
 | `export` | Writes the ledger as `state/v1/*` files in deterministic order. | `--out <dir>` | `cmd/scout/state_cmds.go` |
 | `import` | Loads `state/v1/*` into the local ledger. Export → import → export round-trips byte for byte. | `--from <dir>` | `cmd/scout/state_cmds.go` |

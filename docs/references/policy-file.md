@@ -27,8 +27,7 @@ profile: report
 | `decisions.enabled`, `.model`, `.max_per_run`, `.max_cost_usd`, `.egress_acknowledged` | Consent for Jev ranking through OpenRouter. `scout init --decisions --decisions-model <id> --acknowledge-egress` sets these. Undated model aliases are rejected. | off; 2000 calls; $0.50 per run | `consent.go` |
 | `model_cli.provider` | `claude` or `codex` for the opted-in model-CLI lanes. Takes precedence over `SCOUT_MODEL_CLI`. | unset | `consent.go`; `cmd/scout/main.go` `providerConfig` |
 | `model_cli.lanes` | Opted-in lanes: `contextual`, `clawpatch-review`. | none | `consent.go` |
-| `mapping.refresh.debounce` | Minimum time between agent map refreshes triggered by pushes. | `1h` | `mapping.go` |
-| `mapping.areas.match_jaccard` | File-set Jaccard threshold at which a new agent feature matches an existing area, in (0, 1]. | `0.5` | `mapping.go` |
+| `mapping.areas.match_jaccard` | File-set Jaccard threshold at which a new agent feature matches an existing area, in (0, 1]. Applies at onboarding and manual agent maps. | `0.5` | `mapping.go` |
 | `architecture` | Reserved for declared boundaries (design §5.1 row 7). | — | `policy.go` `rawPolicy` |
 
 ## Example
@@ -50,3 +49,4 @@ blocking:
 - `scout init` is idempotent: it keeps existing activations and comments, and keeps an existing `profile` unless you pass `--profile`.
 - Model-CLI lanes and Jev stay off for a repository without a committed policy, even if `SCOUT_MODEL_CLI` is set.
 - The `mapping` keys are part of Phase 4 work that is in the working tree but not yet committed (`internal/policy/mapping.go`).
+- `mapping.refresh` was removed in revision 2.6; a policy that still sets it (for example `mapping.refresh.debounce`) fails to parse because the decoder is strict.

@@ -18,7 +18,8 @@ import (
 
 const (
 	// DefaultMatchJaccard is the file-set Jaccard at or above which an agent
-	// feature matches a prior area. [ASSUMPTION, X2]: not validated.
+	// feature matches a prior area. [ASSUMPTION; X2b `fallback`, X2's 0.30 is
+	// for another model]: no threshold is evidence-backed.
 	DefaultMatchJaccard = 0.5
 
 	// OriginAgent marks an area labelled from an agent-mapped feature.

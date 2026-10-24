@@ -9,7 +9,7 @@ Scout ships two reusable workflows and one composite action. Each workflow decla
 | Piece | Runs on | Does | Permissions | Evidence source |
 | --- | --- | --- | --- | --- |
 | `.github/workflows/scout-guardian.yml` | `pull_request` | `scout diff` against the PR base, reading the `scout/state` baseline; writes the Markdown summary to the job summary. | `contents: read`; no secrets | workflow header and job `pull-request` |
-| `.github/workflows/scout-guardian-trusted.yml` | push, schedule or dispatch on the default branch only | `state restore` → `map` (refresh triggers) → `assess --fetch-pr-metadata` → `state publish --trusted` on exit 0 or 1 → uploads evidence artifacts for 90 days. | `contents: write`, `pull-requests: read`; optional `OPENROUTER_API_KEY` secret | job `trusted` |
+| `.github/workflows/scout-guardian-trusted.yml` | push, schedule or dispatch on the default branch only | `state restore` → `map` (onboarding or manual) → `assess --fetch-pr-metadata` → `state publish --trusted` on exit 0 or 1 → uploads evidence artifacts for 90 days. | `contents: write`, `pull-requests: read`; optional `OPENROUTER_API_KEY` secret | job `trusted` |
 | `.github/actions/scout/` | any job | Installs a pinned release and runs `diff` (`mode: pr`) or `assess` (`mode: trusted`). | caller's | `action.yml` |
 | `.github/workflows/release.yml` | tag `v*` | Builds `scout-{linux,darwin}-{amd64,arm64}` and the Clawpatch bundle, writes `.sha256` files, and verifies them before creating the release. | `contents: write` | `release.yml` |
 
@@ -89,7 +89,7 @@ Every lane downloads the Scout binary and the Clawpatch bundle from a release by
 - Exit handling: `0` passes, `1` fails the job, and `2`/`3` give a neutral warning unless `fail-on-incomplete` is set.
 - The evidence artifact: `scout-assessment-<run_id>-pr` (kept 30 days) holds the assessment JSON, its stderr, the summary and SARIF if one was produced. `scout-assessment-<run_id>-<event>` (kept 90 days) holds the trusted run's JSON, stderr, `scout-map.json` and SARIF.
 - The `scout/state` branch advances after each trusted run that exits 0 or 1.
-- On GitHub-hosted runners, the model-CLI lanes and agent map refresh report `skipped (no model CLI)`. That is expected and does not change the exit code.
+- On GitHub-hosted runners, the model-CLI lanes and the agent map report `skipped (no model CLI)`. That is expected and does not change the exit code.
 
 ## Related Docs
 

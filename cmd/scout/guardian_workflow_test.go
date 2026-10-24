@@ -118,9 +118,14 @@ func TestGuardianWorkflowTrustBoundary(t *testing.T) {
 	if mapAt < 0 || assessAt < 0 || mapAt > assessAt || strings.Index(trCode, "state restore") > mapAt || strings.Index(trCode, "state publish") < assessAt {
 		t.Error("trusted job order must be state restore, map, assess, state publish")
 	}
-	for _, want := range []string{"--event push --default-branch --base", "--event nightly --default-branch", "--refresh"} {
+	for _, want := range []string{"--event push --default-branch", "--event nightly --default-branch", "--refresh"} {
 		if !strings.Contains(trCode, want) {
 			t.Errorf("trusted map step lacks %q", want)
+		}
+	}
+	for _, gone := range []string{"--base", "BEFORE_SHA", "HEAD_SHA"} {
+		if strings.Contains(trCode[mapAt:assessAt], gone) {
+			t.Errorf("trusted map step must not use %q (refresh-on-merge was removed)", gone)
 		}
 	}
 	if got := strings.Count(trCode, "secrets."); got != 1 || !strings.Contains(trCode, "secrets.OPENROUTER_API_KEY") {

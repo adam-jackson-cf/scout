@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"time"
 )
@@ -14,20 +13,10 @@ const ExportMappingRefresh = ExportDir + "/mapping-refresh.json"
 
 const metadataMappingRefresh = "mapping_refresh"
 
-// PendingRefresh is a debounced agent-refresh request raised by default-branch
-// merges that changed monitored areas.
-type PendingRefresh struct {
-	FirstTriggerAt time.Time `json:"first_trigger_at"`
-	LastTriggerAt  time.Time `json:"last_trigger_at"`
-	Reasons        []string  `json:"reasons"`
-	Revisions      []string  `json:"revisions"`
-}
-
-// MappingRefresh is the durable refresh state: the pending request, if any, and
-// when an agent map last completed (absent = onboarding has not happened).
+// MappingRefresh records when an agent map last completed (absent = onboarding
+// has not happened).
 type MappingRefresh struct {
-	LastAgentRefreshAt *time.Time      `json:"last_agent_refresh_at,omitempty"`
-	Pending            *PendingRefresh `json:"pending,omitempty"`
+	LastAgentRefreshAt *time.Time `json:"last_agent_refresh_at,omitempty"`
 }
 
 // LoadMappingRefresh returns the recorded refresh state (zero value if none).
@@ -65,7 +54,7 @@ func (s *Store) ExportMappingRefreshFile(ctx context.Context) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	if record.LastAgentRefreshAt == nil && record.Pending == nil {
+	if record.LastAgentRefreshAt == nil {
 		return nil, nil
 	}
 	return canonicalRefresh(record)
@@ -80,9 +69,6 @@ func importMappingRefresh(ctx context.Context, tx *sql.Tx, data []byte) error {
 	if err := unmarshalNumbers(data, &record); err != nil {
 		return fmt.Errorf("decode %s: %w", ExportMappingRefresh, err)
 	}
-	if record.Pending != nil && record.Pending.LastTriggerAt.Before(record.Pending.FirstTriggerAt) {
-		return errors.New("mapping refresh pending: last_trigger_at precedes first_trigger_at")
-	}
 	line, err := canonicalRefresh(record)
 	if err != nil {
 		return err
@@ -93,22 +79,11 @@ func importMappingRefresh(ctx context.Context, tx *sql.Tx, data []byte) error {
 	return nil
 }
 
-// normalizeRefresh pins UTC times and non-nil slices so export bytes are stable.
+// normalizeRefresh pins UTC times so export bytes are stable.
 func normalizeRefresh(record MappingRefresh) MappingRefresh {
 	if record.LastAgentRefreshAt != nil {
 		t := record.LastAgentRefreshAt.UTC()
 		record.LastAgentRefreshAt = &t
-	}
-	if record.Pending != nil {
-		p := *record.Pending
-		p.FirstTriggerAt, p.LastTriggerAt = p.FirstTriggerAt.UTC(), p.LastTriggerAt.UTC()
-		if p.Reasons == nil {
-			p.Reasons = []string{}
-		}
-		if p.Revisions == nil {
-			p.Revisions = []string{}
-		}
-		record.Pending = &p
 	}
 	return record
 }

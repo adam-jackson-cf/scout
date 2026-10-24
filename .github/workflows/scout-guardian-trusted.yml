@@ -155,13 +155,11 @@ jobs:
             printf 'available=false\n' >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Refresh the feature map
+      - name: Agent map (onboarding or manual refresh)
         id: map
         shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
-          BEFORE_SHA: ${{ github.event.before }}
-          HEAD_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
           args=(map --root "$GITHUB_WORKSPACE" --clawpatch "$CLAWPATCH_BIN" --json)
@@ -172,11 +170,7 @@ jobs:
           if [[ "$REFRESH_MAP" == 'true' ]]; then
             args+=(--refresh)
           elif [[ "$EVENT_NAME" == 'push' ]]; then
-            if [[ -z "$BEFORE_SHA" || "$BEFORE_SHA" =~ ^0+$ ]]; then
-              echo 'No previous commit on this push; skipping the incremental map refresh.'
-              run=false
-            fi
-            args+=(--event push --default-branch --base "$BEFORE_SHA" --head "$HEAD_SHA")
+            args+=(--event push --default-branch)
           elif [[ "$EVENT_NAME" == 'schedule' ]]; then
             args+=(--event nightly --default-branch)
           else
@@ -186,14 +180,14 @@ jobs:
             out="$RUNNER_TEMP/scout-out"
             mkdir -p "$out"
             # Exit 2 (blocked/incomplete) and 3 (unavailable) never fail the job
-            # before publish; a skipped no-model-CLI refresh is normal on hosted
-            # runners. The pending refresh record persists with the published baseline.
+            # before publish; a skipped no-model-CLI map is normal on hosted
+            # runners and leaves onboarding open for the next default-branch run.
             set +e
             "$SCOUT_BIN" "${args[@]}" > "$out/scout-map.json" 2> "$out/scout-map.stderr"
             code=$?
             set -e
-            echo "Map refresh exit code: $code"
-            [[ "$code" == '0' ]] || echo "::notice::Feature-map refresh did not complete (exit $code); see scout-map.stderr."
+            echo "Agent map exit code: $code"
+            [[ "$code" == '0' ]] || echo "::notice::Agent map did not complete (exit $code); see scout-map.stderr."
           fi
 
       - name: Assess the repository

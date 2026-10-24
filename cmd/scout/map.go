@@ -15,19 +15,18 @@ import (
 	"scout/internal/state"
 )
 
-// mapCmd is `scout map`: it evaluates the agent-map refresh triggers for a run
-// and performs at most one debounced refresh (design §4). `--refresh` forces one.
+// mapCmd is `scout map`: the Clawpatch agent map runs only at onboarding (the
+// `--event` check, attempted until one map has completed) and on manual
+// `--refresh` (design §4).
 func mapCmd(ctx context.Context, args []string) int {
 	set := flag.NewFlagSet("map", flag.ContinueOnError)
 	flags := common(set)
 	var force, defaultBranch, authorized bool
-	var event, base, head string
-	set.BoolVar(&force, "refresh", false, "force one agent map refresh now")
+	var event string
+	set.BoolVar(&force, "refresh", false, "force one agent map now")
 	set.BoolVar(&authorized, "allow-egress", false, "authorize source egress for the agent mapper")
-	set.StringVar(&event, "event", "", "run kind for trigger evaluation: pr|push|nightly")
+	set.StringVar(&event, "event", "", "run kind for the onboarding check: pr|push|nightly")
 	set.BoolVar(&defaultBranch, "default-branch", false, "the push targets the default branch")
-	set.StringVar(&base, "base", "", "commit before the push (diff base)")
-	set.StringVar(&head, "head", "HEAD", "pushed commit")
 	if !parse(set, args, flags) {
 		return exitUnavailable
 	}
@@ -56,24 +55,16 @@ func mapCmd(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	features, _ := clawpatch.LoadFeatures(client.StateDir()) // absent before the first map
-	run := engine.RefreshRun{Event: engine.RefreshEvent(event), DefaultBranch: defaultBranch, Force: force, Features: features}
-	if out, gitErr := exec.CommandContext(ctx, "git", "-C", root, "rev-parse", head).Output(); gitErr == nil {
-		run.Revision = strings.TrimSpace(string(out))
-	}
-	if event == string(engine.RefreshPush) && defaultBranch && !force {
-		if base == "" {
-			return emit(flags, "unavailable", exitUnavailable, nil, errors.New("push evaluation requires --base"))
-		}
-		if run.Changes, err = engine.GitChanges(ctx, root, base, head); err != nil {
-			return emit(flags, "unavailable", exitUnavailable, nil, err)
-		}
+	run := engine.RefreshRun{Event: engine.RefreshEvent(event), DefaultBranch: defaultBranch, Force: force}
+	revision := ""
+	if out, gitErr := exec.CommandContext(ctx, "git", "-C", root, "rev-parse", "HEAD").Output(); gitErr == nil {
+		revision = strings.TrimSpace(string(out))
 	}
 	mapping := pol.Mapping()
 	refresher := &engine.Refresher{
-		Store: store, Mapper: client, Now: time.Now, Mapping: mapping,
+		Store: store, Mapper: client, Now: time.Now,
 		Reconcile: func(ctx context.Context, mapped clawpatch.MapResult) error {
-			return reconcileAreas(ctx, store, mapped, mapping.AreasMatchJaccard, run.Revision)
+			return reconcileAreas(ctx, store, mapped, mapping.AreasMatchJaccard, revision)
 		},
 	}
 	outcome, err := refresher.Run(ctx, run)

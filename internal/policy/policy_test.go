@@ -52,17 +52,18 @@ func TestParseErrors(t *testing.T) {
 		return "profile: guardian\nblocking:\n  - id: " + id + "\n    version: \"1\"\n    activated_at: 2026-01-01\n    evidence: {would_block: 1}\n"
 	}
 	cases := map[string]string{
-		"wildcard":          entry("guardrails.CONFIG.*"),
-		"secrets wild":      entry("security.secrets.*"),
-		"generic key":       entry("security.secrets.generic-api-key"),
-		"unknown id":        entry("performance.ruff-perf"),
-		"unknown key":       "profile: guardian\nbogus: 1\n",
-		"bad profile":       "profile: strict\n",
-		"missing version":   "blocking:\n  - id: guardrails.SUPPRESS.added.unscoped\n    activated_at: 2026-01-01\n    provisional: true\n",
-		"bad date":          "blocking:\n  - id: guardrails.SUPPRESS.added.unscoped\n    version: \"1\"\n    activated_at: yesterday\n    provisional: true\n",
-		"no evidence":       "blocking:\n  - id: guardrails.SUPPRESS.added.unscoped\n    version: \"1\"\n    activated_at: 2026-01-01\n",
-		"duplicate":         entry("guardrails.SUPPRESS.added.unscoped") + strings.SplitN(entry("guardrails.SUPPRESS.added.unscoped"), "blocking:\n", 2)[1],
-		"unknown entry key": "blocking:\n  - id: guardrails.SUPPRESS.added.unscoped\n    version: \"1\"\n    activated_at: 2026-01-01\n    nope: 1\n    provisional: true\n",
+		"wildcard":                         entry("guardrails.CONFIG.*"),
+		"secrets wild":                     entry("security.secrets.*"),
+		"generic key":                      entry("security.secrets.generic-api-key"),
+		"unknown id":                       entry("performance.ruff-perf"),
+		"unknown key":                      "profile: guardian\nbogus: 1\n",
+		"bad profile":                      "profile: strict\n",
+		"missing version":                  "blocking:\n  - id: guardrails.SUPPRESS.added.unscoped\n    activated_at: 2026-01-01\n    provisional: true\n",
+		"bad date":                         "blocking:\n  - id: guardrails.SUPPRESS.added.unscoped\n    version: \"1\"\n    activated_at: yesterday\n    provisional: true\n",
+		"no evidence":                      "blocking:\n  - id: guardrails.SUPPRESS.added.unscoped\n    version: \"1\"\n    activated_at: 2026-01-01\n",
+		"duplicate":                        entry("guardrails.SUPPRESS.added.unscoped") + strings.SplitN(entry("guardrails.SUPPRESS.added.unscoped"), "blocking:\n", 2)[1],
+		"unknown entry key":                "blocking:\n  - id: guardrails.SUPPRESS.added.unscoped\n    version: \"1\"\n    activated_at: 2026-01-01\n    nope: 1\n    provisional: true\n",
+		"removed mapping.refresh.debounce": "mapping:\n  refresh:\n    debounce: 1h\n",
 	}
 	for name, src := range cases {
 		t.Run(name, func(t *testing.T) {
@@ -73,6 +74,18 @@ func TestParseErrors(t *testing.T) {
 	}
 	if _, err := Parse([]byte("blocking:\n  - id: security.secrets.generic-api-key\n")); err == nil || !strings.Contains(err.Error(), "generic-api-key") {
 		t.Fatalf("error should name the id: %v", err)
+	}
+}
+
+func TestMappingPolicy(t *testing.T) {
+	if got := mustParse(t, "").Mapping(); got != DefaultMapping() || got.AreasMatchJaccard != 0.5 {
+		t.Fatalf("default mapping = %+v", got)
+	}
+	if got := mustParse(t, "mapping:\n  areas:\n    match_jaccard: 0.4\n").Mapping(); got.AreasMatchJaccard != 0.4 {
+		t.Fatalf("match_jaccard = %+v", got)
+	}
+	if _, err := Parse([]byte("mapping:\n  refresh:\n    debounce: 1h\n")); err == nil || !strings.Contains(err.Error(), "invalid policy") {
+		t.Fatalf("mapping.refresh was removed in revision 2.6 and must fail to parse: %v", err)
 	}
 }
 
