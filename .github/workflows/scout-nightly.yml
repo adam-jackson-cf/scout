@@ -37,7 +37,7 @@ jobs:
       contents: read
     uses: ./.github/workflows/scout-guardian.yml
     with:
-      scout-version: v0.1.5
+      scout-version: v0.1.6
 
   trusted:
     if: github.event_name != 'pull_request'
@@ -46,7 +46,7 @@ jobs:
       pull-requests: read
     uses: ./.github/workflows/scout-guardian-trusted.yml
     with:
-      scout-version: v0.1.5
+      scout-version: v0.1.6
       full: ${{ inputs.full || false }}
       refresh-map: ${{ inputs.refresh-map || false }}
       authorize-egress: ${{ inputs.authorize-egress || false }}

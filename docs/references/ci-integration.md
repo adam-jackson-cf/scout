@@ -4,20 +4,19 @@ Use this guide to run Scout in GitHub Actions: pull-request checks, default-bran
 
 ## Purpose
 
-Scout ships two reusable workflows and one composite action. Each workflow declares its own permission ceiling, so the pull-request lane never holds write access or secrets:
+Scout ships two reusable workflows. Each workflow declares its own permission ceiling, so the pull-request lane never holds write access or secrets:
 
 | Piece | Runs on | Does | Permissions | Evidence source |
 | --- | --- | --- | --- | --- |
 | `.github/workflows/scout-guardian.yml` | `pull_request` | `scout diff` against the PR base, reading the `scout/state` baseline; writes the Markdown summary to the job summary. | `contents: read`; no secrets | workflow header and job `pull-request` |
 | `.github/workflows/scout-guardian-trusted.yml` | push, schedule or dispatch on the default branch only | `state restore` → `map` (onboarding or manual) → `assess --fetch-pr-metadata` → `state publish --trusted` on exit 0 or 1 → uploads evidence artifacts for 90 days. | `contents: write`, `pull-requests: read`; optional `OPENROUTER_API_KEY` secret | job `trusted` |
-| `.github/actions/scout/` | any job | Installs a pinned release and runs `diff` (`mode: pr`) or `assess` (`mode: trusted`). | caller's | `action.yml` |
 | `.github/workflows/release.yml` | tag `v*` | Builds `scout-{linux,darwin}-{amd64,arm64}` and the Clawpatch bundle, writes `.sha256` files, and verifies them before creating the release. | `contents: write` | `release.yml` |
 
 Every lane downloads the Scout binary and the Clawpatch bundle from a release by tag and checks their sha256 sums. Nothing is built from the PR checkout.
 
 ## Preconditions
 
-- A Scout release tag exists in the repository that publishes releases. By default that is the repository hosting the called workflow or action, so a fork or mirror uses its own releases without configuration.
+- A Scout release tag at or after `v0.1.6` exists in the repository that publishes releases (the tag must carry `scripts/install-release.sh` and `scripts/ci-toolchain.sh`; an older tag ends the install step with exit 3). By default that is the repository hosting the called workflow, so a fork or mirror uses its own releases without configuration.
 - `.scout/policy.yaml` is committed on the default branch. Run `scout init` locally first; see [policy-file.md](policy-file.md).
 - To use Jev ranking, set the `OPENROUTER_API_KEY` repository secret and enable `decisions` in the policy. Only the trusted workflow reads the secret.
 
@@ -48,7 +47,7 @@ Every lane downloads the Scout binary and the Clawpatch bundle from a release by
          contents: read
        uses: ./.github/workflows/scout-guardian.yml
        with:
-         scout-version: v0.1.5
+         scout-version: v0.1.6
 
      trusted:
        if: github.event_name != 'pull_request'
@@ -57,7 +56,7 @@ Every lane downloads the Scout binary and the Clawpatch bundle from a release by
          pull-requests: read
        uses: ./.github/workflows/scout-guardian-trusted.yml
        with:
-         scout-version: v0.1.5
+         scout-version: v0.1.6
          full: ${{ inputs.full || false }}
          refresh-map: ${{ inputs.refresh-map || false }}
          authorize-egress: ${{ inputs.authorize-egress || false }}
@@ -74,8 +73,8 @@ Every lane downloads the Scout binary and the Clawpatch bundle from a release by
 
 | Input | Workflow | Default | Effect |
 | --- | --- | --- | --- |
-| `scout-version` | both | required | Release tag, for example `v0.1.5`. |
-| `release-repo` | both | empty → the repository hosting the workflow (`job.workflow_repository`) | `owner/name` that publishes releases. The composite action falls back to `github.action_repository`, then `github.repository` for a local `./` action. |
+| `scout-version` | both | required | Release tag at or after `v0.1.6`, for example `v0.1.6`. |
+| `release-repo` | both | empty → the repository hosting the workflow (`job.workflow_repository`) | `owner/name` that publishes releases. |
 | `fail-on-incomplete` | both | `false` | Fail the job on exit 2 or 3 instead of a neutral warning. |
 | `full` | trusted | `false` | Force `assess --full`. |
 | `refresh-map` | trusted | `false` | Run `scout map --refresh` before assessing. |

@@ -88,36 +88,12 @@ jobs:
           set -euo pipefail
           [[ "$SCOUT_VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.]+)?$ ]] || { echo '::error::scout-version must be a release tag such as v0.1.0.'; exit 3; }
           [[ "$RELEASE_REPO" =~ ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$ ]] || { echo '::error::release-repo must be owner/name.'; exit 3; }
-          base="https://github.com/${RELEASE_REPO}/releases/download/${SCOUT_VERSION}"
-          dest="$RUNNER_TEMP/scout-release"
-          mkdir -p "$dest/clawpatch"
-          cd "$dest"
-          fetch() { curl --fail --silent --show-error --location --retry 3 --output "$1" "$base/$1"; }
-          verify() {
-            local want got
-            want="$(cut -d ' ' -f1 "$2")"
-            got="$(sha256sum "$1" | cut -d ' ' -f1)"
-            [[ -n "$want" && "$want" == "$got" ]] || { echo "::error::sha256 mismatch for $1."; exit 3; }
-          }
-          fetch scout-linux-amd64
-          fetch scout-linux-amd64.sha256
-          verify scout-linux-amd64 scout-linux-amd64.sha256
-          chmod +x scout-linux-amd64
-          fetch clawpatch-manifest.json
-          fetch clawpatch-manifest.json.sha256
-          verify clawpatch-manifest.json clawpatch-manifest.json.sha256
-          asset="$(jq -er .asset clawpatch-manifest.json)"
-          entrypoint="$(jq -er .entrypoint clawpatch-manifest.json)"
-          manifest_sha="$(jq -er .sha256 clawpatch-manifest.json)"
-          [[ "$asset" =~ ^clawpatch-[A-Za-z0-9._-]+\.tar\.gz$ ]] || { echo '::error::Unexpected Clawpatch asset name.'; exit 3; }
-          [[ "$entrypoint" != /* && "$entrypoint" != *..* ]] || { echo '::error::Unexpected Clawpatch entrypoint.'; exit 3; }
-          fetch "$asset"
-          fetch "$asset.sha256"
-          verify "$asset" "$asset.sha256"
-          [[ "$(sha256sum "$asset" | cut -d ' ' -f1)" == "$manifest_sha" ]] || { echo '::error::Clawpatch bundle does not match its manifest.'; exit 3; }
-          tar -xzf "$asset" -C clawpatch
-          printf 'SCOUT_BIN=%s\n' "$dest/scout-linux-amd64" >> "$GITHUB_ENV"
-          printf 'CLAWPATCH_BIN=%s\n' "$dest/clawpatch/$entrypoint" >> "$GITHUB_ENV"
+          src="$RUNNER_TEMP/scout-source"
+          rm -rf "$src"
+          git clone --quiet --depth 1 --branch "$SCOUT_VERSION" --recurse-submodules --shallow-submodules \
+            "https://github.com/${RELEASE_REPO}.git" "$src"
+          [[ -f "$src/scripts/install-release.sh" && -f "$src/scripts/ci-toolchain.sh" ]] || { echo '::error::scout-version predates the CI install scripts; use v0.1.6 or later.'; exit 3; }
+          bash "$src/scripts/install-release.sh"
 
       - name: Restore the scanner toolchain cache
         uses: actions/cache@v4
@@ -130,21 +106,7 @@ jobs:
         env:
           TOOLCHAIN_DIR: ${{ runner.temp }}/scout-toolchain
           RELEASE_REPO: ${{ inputs.release-repo || job.workflow_repository }}
-        run: |
-          set -euo pipefail
-          sudo apt-get update -qq
-          sudo apt-get install -y bubblewrap
-          # Ubuntu 24.04 blocks unprivileged user namespaces, which bubblewrap needs.
-          # The key is absent on kernels without the AppArmor restriction; the check below decides.
-          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 > /dev/null 2>&1 || true
-          bwrap --unshare-user --ro-bind / / true || echo "::warning::bubblewrap cannot create user namespaces on this runner; sandboxed scanner lanes will report blocked"
-          src="$TOOLCHAIN_DIR/source"
-          rm -rf "$src"
-          git clone --quiet --depth 1 --branch "$SCOUT_VERSION" --recurse-submodules --shallow-submodules \
-            "https://github.com/${RELEASE_REPO}.git" "$src"
-          SCOUT_TOOLS_DIR="$TOOLCHAIN_DIR/tools" bash "$src/scripts/bootstrap-tools.sh"
-          printf 'SCOUT_TOOLS_DIR=%s\n' "$TOOLCHAIN_DIR/tools" >> "$GITHUB_ENV"
-          printf '%s\n' "$TOOLCHAIN_DIR/tools/bin" >> "$GITHUB_PATH"
+        run: bash "$RUNNER_TEMP/scout-source/scripts/ci-toolchain.sh"
 
       - name: Restore the scout/state baseline
         id: baseline

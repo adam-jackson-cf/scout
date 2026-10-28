@@ -51,29 +51,37 @@ func TestGuardianWorkflowTrustBoundary(t *testing.T) {
 		if strings.Contains(code, "go build") || strings.Contains(code, "./cmd/scout") {
 			t.Errorf("%s builds Scout from the checkout", name)
 		}
-		// Scanner tools come from a clone of the release tag outside the
-		// workspace, never from scripts of the assessed checkout.
-		for _, want := range []string{`git clone --quiet --depth 1 --branch "$SCOUT_VERSION"`, `"https://github.com/${RELEASE_REPO}.git" "$src"`, `bash "$src/scripts/bootstrap-tools.sh"`, "TOOLCHAIN_DIR: ${{ runner.temp }}/scout-toolchain", "bubblewrap"} {
+		// The install and the scanner toolchain come from two scripts of a clone of
+		// the release tag outside the workspace, never from the assessed checkout.
+		for _, want := range []string{
+			`git clone --quiet --depth 1 --branch "$SCOUT_VERSION"`,
+			`"https://github.com/${RELEASE_REPO}.git" "$src"`,
+			`src="$RUNNER_TEMP/scout-source"`,
+			`-f "$src/scripts/install-release.sh" && -f "$src/scripts/ci-toolchain.sh"`,
+			"use v0.1.6 or later",
+			`bash "$src/scripts/install-release.sh"`,
+			`bash "$RUNNER_TEMP/scout-source/scripts/ci-toolchain.sh"`,
+			"TOOLCHAIN_DIR: ${{ runner.temp }}/scout-toolchain",
+		} {
 			if !strings.Contains(code, want) {
-				t.Errorf("%s: release-tag toolchain provisioning is missing %q", name, want)
+				t.Errorf("%s: release-tag install is missing %q", name, want)
 			}
 		}
-		for _, banned := range []string{"$GITHUB_WORKSPACE/scripts", "bash scripts/", "./scripts/", "source .tools/activate", "GITHUB_WORKSPACE/.tools"} {
+		if !regexp.MustCompile(`use v0\.1\.6 or later\.'; exit 3`).MatchString(code) {
+			t.Errorf("%s: a tag without the install scripts must exit 3 naming the minimum tag", name)
+		}
+		for _, banned := range []string{"$GITHUB_WORKSPACE/scripts", "bash scripts/", "./scripts/", "source .tools/activate", "GITHUB_WORKSPACE/.tools", "uses: ./.github/actions", "bootstrap-tools.sh", "curl", "sha256sum", "releases/download", "clawpatch-manifest.json"} {
 			if strings.Contains(code, banned) {
-				t.Errorf("%s: tools must not come from the assessed workspace (%q)", name, banned)
+				t.Errorf("%s: install logic must live in the release scripts, not here (%q)", name, banned)
 			}
 		}
-		if strings.Count(code, "bootstrap-tools.sh") != 1 || strings.Index(code, "bootstrap-tools.sh") > strings.Index(code, `"$SCOUT_BIN"`) {
-			t.Errorf("%s: the release bootstrap must run exactly once, before Scout", name)
+		install, toolchain, use := strings.Index(code, `bash "$src/scripts/install-release.sh"`), strings.Index(code, `bash "$RUNNER_TEMP/scout-source/scripts/ci-toolchain.sh"`), strings.Index(code, `"$SCOUT_BIN"`)
+		if strings.Count(code, `install-release.sh"`) != 2 || strings.Count(code, `ci-toolchain.sh"`) != 2 || strings.Index(code, "git clone") > install || install > toolchain || toolchain > use {
+			t.Errorf("%s: the scripts must be checked and invoked once each, after the clone and before Scout", name)
 		}
-		for _, want := range []string{"releases/download/${SCOUT_VERSION}", "sha256sum", "clawpatch-manifest.json", "scout-linux-amd64"} {
+		for _, want := range []string{`[[ "$SCOUT_VERSION" =~`, `[[ "$RELEASE_REPO" =~`} {
 			if !strings.Contains(code, want) {
-				t.Errorf("%s: release download with checksum verification is missing %q", name, want)
-			}
-		}
-		for _, banned := range []string{"OPENAI_API_KEY", "ANTHROPIC_API_KEY", "CLAWPATCH_OPENAI", "CLAWPATCH_ANTHROPIC", "aws-actions", "AWS_", "SCOUT_AWS", "s3://", "id-token"} {
-			if strings.Contains(code, banned) {
-				t.Errorf("%s: forbidden reference %q", name, banned)
+				t.Errorf("%s: input validation (guarding git clone --branch) must stay in the workflow: missing %q", name, want)
 			}
 		}
 		// The release source is the repository hosting the workflow unless the
@@ -203,51 +211,37 @@ func TestCalledWorkflowPermissionsFitCallerCeiling(t *testing.T) {
 	}
 }
 
-func TestCompositeActionInstallsFromVerifiedRelease(t *testing.T) {
-	dir := filepath.Join("..", "..", ".github", "actions", "scout")
-	action, err := os.ReadFile(filepath.Join(dir, "action.yml"))
-	if err != nil {
-		t.Fatal(err)
+func TestInstallScriptsInstallFromVerifiedRelease(t *testing.T) {
+	if _, err := os.Stat(filepath.Join("..", "..", ".github", "actions", "scout")); !os.IsNotExist(err) {
+		t.Errorf("the composite action must be removed: %v", err)
 	}
-	var parsed struct {
-		Runs struct{ Using string } `yaml:"runs"`
+	read := func(name string) string {
+		raw, err := os.ReadFile(filepath.Join("..", "..", "scripts", name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		return string(raw)
 	}
-	if err := yaml.Unmarshal(action, &parsed); err != nil || parsed.Runs.Using != "composite" {
-		t.Fatalf("not a composite action: %v %q", err, parsed.Runs.Using)
-	}
-	install, err := os.ReadFile(filepath.Join(dir, "install.sh"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	text := string(action) + string(install)
-	for _, want := range []string{"releases/download", "digest", "clawpatch-manifest.json"} {
-		if !strings.Contains(text, want) {
-			t.Errorf("missing %q", want)
+	install := read("install-release.sh")
+	for _, want := range []string{"releases/download", "die()", "scripts/sha256.sh", "sha256 ", "clawpatch-manifest.json", "$RUNNER_TEMP/scout-release", "SCOUT_BIN=", "CLAWPATCH_BIN="} {
+		if !strings.Contains(install, want) {
+			t.Errorf("install-release.sh missing %q", want)
 		}
 	}
-	for _, banned := range []string{"go build", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "aws"} {
-		if strings.Contains(text, banned) {
-			t.Errorf("forbidden %q", banned)
+	for _, banned := range []string{"go build", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "aws", "sha256sum"} {
+		if strings.Contains(install, banned) {
+			t.Errorf("install-release.sh forbidden %q", banned)
 		}
 	}
-	if !strings.Contains(string(action), "default: ''") || strings.Count(string(action), "RELEASE_REPO: ${{ inputs.release-repo || github.action_repository || github.repository }}") != 2 {
-		t.Error("composite action: release-repo must default to the repository hosting the action")
-	}
-	if !strings.Contains(text, "toolchain.sh") {
-		t.Error("composite action must provision the scanner toolchain")
-	}
-	tool, err := os.ReadFile(filepath.Join(dir, "toolchain.sh"))
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, want := range []string{`--branch "$SCOUT_VERSION"`, `bash "$src/scripts/bootstrap-tools.sh"`, "bubblewrap", `TOOLCHAIN_DIR/source`} {
-		if !strings.Contains(string(tool), strings.ReplaceAll(want, "TOOLCHAIN_DIR/source", `$TOOLCHAIN_DIR/source`)) {
-			t.Errorf("toolchain.sh missing %q", want)
+	tool := read("ci-toolchain.sh")
+	for _, want := range []string{`$(dirname "$0")/..`, `bash "$src/scripts/bootstrap-tools.sh"`, "bubblewrap", "SCOUT_TOOLS_DIR=", "GITHUB_PATH"} {
+		if !strings.Contains(tool, want) {
+			t.Errorf("ci-toolchain.sh missing %q", want)
 		}
 	}
-	for _, banned := range []string{"GITHUB_WORKSPACE", "go build"} {
-		if strings.Contains(string(tool), banned) {
-			t.Errorf("toolchain.sh must not reference %q", banned)
+	for _, banned := range []string{"GITHUB_WORKSPACE", "go build", "git clone"} {
+		if strings.Contains(tool, banned) {
+			t.Errorf("ci-toolchain.sh must not reference %q", banned)
 		}
 	}
 }

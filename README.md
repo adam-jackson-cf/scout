@@ -54,7 +54,7 @@ Scout runs on pull requests, default-branch pushes, nightly runs and locally. It
 - `internal/clawpatch`, `internal/areas`: feature mapping through the pinned Clawpatch submodule.
 - `internal/issues`, `internal/state`: stable issue identity, the SQLite ledger, and the `state/v1` export and import.
 - `internal/decisions`: optional Jev ranking through OpenRouter, with a deterministic fallback.
-- `.github/workflows/scout-guardian*.yml`, `.github/actions/scout/`: reusable CI that installs a pinned, checksum-verified release.
+- `.github/workflows/scout-guardian*.yml`: reusable CI that installs a pinned, checksum-verified release through `scripts/install-release.sh` and `scripts/ci-toolchain.sh`.
 - `evaluation/`: product experiments and their review rounds; `docs/`: design, status and ledgers.
 
 ## Core Concepts
