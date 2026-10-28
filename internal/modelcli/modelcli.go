@@ -36,8 +36,13 @@ func Parse(value string) (Name, error) {
 	return "", fmt.Errorf("unsupported model CLI %q: only claude and codex are allowed", value)
 }
 
+// Order is the one default detection order: Detect tries these in turn when
+// no CLI is preferred. Readiness, the capability matrix and the contextual
+// fingerprint all resolve through Detect, so none keeps an order of its own.
+var Order = []Name{Claude, Codex}
+
 // Detect resolves the CLI to use and its absolute path. With an empty
-// preference it tries claude then codex. A CLI counts as available when its
+// preference it tries Order (claude then codex). A CLI counts as available when its
 // executable is on PATH; a missing login surfaces as a failed run, which the
 // lane reports as incomplete rather than clean. No CLI on PATH returns ErrNoCLI.
 func Detect(preferred string) (Name, string, error) {
@@ -45,7 +50,7 @@ func Detect(preferred string) (Name, string, error) {
 	if err != nil {
 		return "", "", err
 	}
-	candidates := []Name{Claude, Codex}
+	candidates := Order
 	if want != "" {
 		candidates = []Name{want}
 	}

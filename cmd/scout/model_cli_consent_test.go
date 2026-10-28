@@ -26,7 +26,6 @@ func fakeModelCLIs(t *testing.T, names ...string) (log string) {
 	}
 	t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
 	t.Setenv("SCOUT_MODEL_CLI", "")
-	t.Setenv("CLAWPATCH_PROVIDER", "")
 	return log
 }
 
@@ -44,7 +43,6 @@ func isolatedPath(t *testing.T) {
 	}
 	t.Setenv("PATH", dir)
 	t.Setenv("SCOUT_MODEL_CLI", "")
-	t.Setenv("CLAWPATCH_PROVIDER", "")
 }
 
 func invoked(t *testing.T, log string) string {

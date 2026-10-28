@@ -10,7 +10,8 @@ import (
 	"scout/internal/domain"
 )
 
-var schemaV6 = []string{
+// schemaWouldBlock is the shadow-mode block ledger (design §7.3).
+var schemaWouldBlock = []string{
 	`CREATE TABLE IF NOT EXISTS would_block (id TEXT PRIMARY KEY, head_revision TEXT NOT NULL, base_revision TEXT NOT NULL, issue_id TEXT NOT NULL, check_id TEXT NOT NULL, rule_version TEXT NOT NULL, path TEXT NOT NULL, attribution TEXT NOT NULL, profile TEXT NOT NULL, triage TEXT NOT NULL DEFAULT 'undecided', triage_actor TEXT NOT NULL DEFAULT '', triage_reason TEXT NOT NULL DEFAULT '', recorded_at INTEGER NOT NULL, triaged_at INTEGER)`,
 	`CREATE INDEX IF NOT EXISTS would_block_by_check ON would_block(check_id, recorded_at)`,
 }

@@ -25,8 +25,8 @@ import (
 )
 
 // BaseState is a previously computed base: an imported baseline. Gaps names
-// the scanner families the baseline run did not fully inspect; nil means the
-// baseline carries no lane health (a legacy export), which forces a recompute.
+// the scanner families the baseline run did not fully inspect; it is never
+// nil (empty means all were inspected).
 type BaseState struct {
 	Issues       []domain.Issue
 	Revision     string
@@ -320,9 +320,8 @@ func gapsOfLanes(health []domain.LaneHealth) BaseGaps {
 }
 
 // resolveBase returns the base issues and their coverage gaps: an imported
-// baseline when its digests and revision match head and it carries lane
-// health, else a paired scan of the merge-base worktree. A baseline without
-// lane health cannot show which lanes inspected the base, so it is recomputed.
+// baseline when its digests and revision match head, else a paired scan of the
+// merge-base worktree.
 func resolveBase(ctx context.Context, cfg DiffConfig, root, mergeBase string, headPlan domain.Plan, head Result) ([]domain.Issue, BaseGaps, domain.Comparison, []string, error) {
 	var banners []string
 	if cfg.Baseline != nil {
@@ -338,8 +337,6 @@ func resolveBase(ctx context.Context, cfg DiffConfig, root, mergeBase string, he
 			banners = append(banners, "baseline policy digest "+short(imported.PolicyDigest)+" differs from head "+short(headPlan.PolicyDigest)+"; comparison recomputed")
 		case imported.Revision != mergeBase:
 			banners = append(banners, "baseline revision "+short(imported.Revision)+" is not the merge base "+short(mergeBase)+"; comparison recomputed")
-		case imported.Gaps == nil:
-			banners = append(banners, "baseline carries no lane health; comparison recomputed")
 		default:
 			return imported.Issues, imported.Gaps, domain.ComparisonBaseline, banners, nil
 		}

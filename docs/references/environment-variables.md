@@ -27,16 +27,12 @@ Use this lexicon to see which environment variables Scout and its toolchain read
 ### Model-CLI lanes
 
 - `SCOUT_MODEL_CLI`
-  Purpose: `claude` or `codex`: a local choice of CLI for the opted-in `contextual` lane. It applies only when the committed policy leaves `model_cli.provider` unset. With neither set, the first CLI found on `PATH` is used. It never turns a lane on; consent comes from `model_cli.lanes`.
+  Purpose: `claude` or `codex`: a local choice of CLI for the opted-in `contextual` lane. It applies only when the committed policy leaves `model_cli.provider` unset. With neither set, the first CLI found on `PATH` is used, in the order `claude`, `codex` (the one default order, `modelcli.Detect`). It never turns a lane on; consent comes from `model_cli.lanes`. Scout does not read `CLAWPATCH_PROVIDER` (Clawpatch's own variable); agent mapping always uses `codex` with model `gpt-6-luna` at reasoning effort `xhigh`, and with `codex` off `PATH` reports `skipped (no model CLI)` (no `claude` fallback).
   Source: `cmd/scout/main.go` `providerConfig`
 
 - `SCOUT_MODEL`
   Purpose: optional model name passed to the model CLI. Without it, the CLI uses its own default.
   Source: `cmd/scout/main.go` `providerConfig`
-
-- `CLAWPATCH_PROVIDER`
-  Purpose: Clawpatch provider for the `clawpatch-review` lane only, when none is configured. Only `codex` or `claude` are accepted; any other value is rejected. When it is unset, review tries `codex` first, then `claude`. It does not affect agent mapping, which always uses `codex` with model `gpt-6-luna` at reasoning effort `xhigh`; with `codex` off `PATH` mapping reports `skipped (no model CLI)` (no `claude` fallback).
-  Source: `internal/clawpatch/provider.go`
 
 - `CLAWPATCH_CODEX_TIMEOUT_MS`, `CLAWPATCH_CLAUDE_TIMEOUT_MS`
   Purpose: override the agent-mapper timeout of the matching provider (default `900000`, 15 minutes, for both).

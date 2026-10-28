@@ -123,14 +123,3 @@ func TestImportedBaselineGapsAttributeUnknown(t *testing.T) {
 		t.Fatalf("inspected imported baseline must still block: %+v", out.Gate)
 	}
 }
-
-func TestImportedBaselineWithoutLaneHealthIsRecomputed(t *testing.T) {
-	plan := domain.Plan{ToolDigest: "tool", PolicyDigest: "policy"}
-	imported := &BaseState{Revision: "mb", ToolDigest: "tool", PolicyDigest: "policy"}
-	cfg := DiffConfig{Baseline: func(context.Context) (*BaseState, error) { return imported, nil }}
-	_, _, comparison, banners, err := resolveBase(context.Background(), cfg, t.TempDir(), "mb", plan, Result{})
-	// The scratch root is not a git repository, so the recompute has no base.
-	if err != nil || comparison != domain.ComparisonNone || !strings.Contains(strings.Join(banners, " "), "no lane health") {
-		t.Fatalf("legacy baseline: %v %v %v", comparison, banners, err)
-	}
-}

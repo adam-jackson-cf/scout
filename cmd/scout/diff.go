@@ -42,11 +42,9 @@ func diff(ctx context.Context, args []string) int {
 				return nil, err
 			}
 			state := &engine.BaseState{Issues: loaded.Issues, Revision: loaded.Revision, ToolDigest: loaded.ToolDigest, PolicyDigest: loaded.PolicyDigest}
-			if loaded.Uninspected != nil {
-				state.Gaps = engine.BaseGaps{}
-				for _, gap := range loaded.Uninspected {
-					state.Gaps[gap.Family] = "baseline family " + string(gap.Family) + " not fully inspected: " + gap.Reason
-				}
+			state.Gaps = engine.BaseGaps{}
+			for _, gap := range loaded.Uninspected {
+				state.Gaps[gap.Family] = "baseline family " + string(gap.Family) + " not fully inspected: " + gap.Reason
 			}
 			return state, nil
 		}

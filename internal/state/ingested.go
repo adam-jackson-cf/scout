@@ -7,10 +7,10 @@ import (
 	"time"
 )
 
-// schemaV9 adds the provenance ledger of ingested coverage and test-result
+// schemaIngested records the provenance ledger of ingested coverage and test-result
 // artifacts (design §8.2, §8.7): which file was read for which snapshot, who
 // produced it, the revision it claims, and whether it matched the snapshot.
-var schemaV9 = []string{
+var schemaIngested = []string{
 	`CREATE TABLE IF NOT EXISTS ingested_artifacts (snapshot TEXT NOT NULL, digest TEXT NOT NULL, kind TEXT NOT NULL, revision TEXT NOT NULL, producer TEXT NOT NULL, source TEXT NOT NULL, revision_match TEXT NOT NULL, reason TEXT NOT NULL, ingested_at INTEGER NOT NULL, payload BLOB NOT NULL, PRIMARY KEY(snapshot, digest))`,
 	`CREATE INDEX IF NOT EXISTS ingested_artifacts_by_snapshot ON ingested_artifacts(snapshot, kind)`,
 }

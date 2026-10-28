@@ -462,11 +462,15 @@ func shellPayload(run domain.Run) ([]byte, error) {
 	return encode(run)
 }
 
-// migrateV4 adds plan_jobs, backfills it for existing plans, and rewrites
+// schemaPlanJobs is the per-plan job table. A new store creates it directly;
+// a re-anchored v1 store creates it in backfillPlanJobs.
+const schemaPlanJobs = `CREATE TABLE plan_jobs (plan_id TEXT NOT NULL, run_id TEXT NOT NULL, job_id TEXT NOT NULL, payload BLOB NOT NULL, PRIMARY KEY(plan_id, job_id), FOREIGN KEY(plan_id) REFERENCES plans(plan_id))`
+
+// backfillPlanJobs adds plan_jobs, backfills it for existing plans, and rewrites
 // unfinished run payloads into the shell form whose progress lives in the
-// coverage and run_job_commits tables.
-func migrateV4(ctx context.Context, tx *sql.Tx) error {
-	if _, err := tx.ExecContext(ctx, `CREATE TABLE plan_jobs (plan_id TEXT NOT NULL, run_id TEXT NOT NULL, job_id TEXT NOT NULL, payload BLOB NOT NULL, PRIMARY KEY(plan_id, job_id), FOREIGN KEY(plan_id) REFERENCES plans(plan_id))`); err != nil {
+// coverage and run_job_commits tables. It serves the v1 re-anchor path only.
+func backfillPlanJobs(ctx context.Context, tx *sql.Tx) error {
+	if _, err := tx.ExecContext(ctx, schemaPlanJobs); err != nil {
 		return err
 	}
 	rows, err := tx.QueryContext(ctx, `SELECT payload FROM plans`)

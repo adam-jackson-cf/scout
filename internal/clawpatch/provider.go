@@ -1,8 +1,8 @@
 package clawpatch
 
 import (
+	"errors"
 	"fmt"
-	"os"
 	"strings"
 
 	"scout/internal/domain"
@@ -27,15 +27,13 @@ const (
 )
 
 // resolveProvider picks the Clawpatch provider for a model-using invocation.
-// The configured value, else CLAWPATCH_PROVIDER, must be codex or claude;
-// anything else is rejected. With none configured, codex (Clawpatch's own
-// default) then claude is used. The CLI must be on PATH; otherwise the error
-// is modelcli.ErrNoCLI and the caller reports `skipped (no model CLI)`.
+// The configured provider (policy `model_cli.provider`) must be codex or
+// claude; anything else, including empty, is an error: there is no review
+// default, and CLAWPATCH_PROVIDER (Clawpatch's own variable) is not read. The
+// CLI must be on PATH; otherwise the error is modelcli.ErrNoCLI and the
+// caller reports `skipped (no model CLI)`.
 func (c *Client) resolveProvider() (string, error) {
 	configured := strings.TrimSpace(c.provider)
-	if configured == "" {
-		configured = strings.TrimSpace(os.Getenv("CLAWPATCH_PROVIDER"))
-	}
 	switch configured {
 	case ProviderCodex, ProviderClaude:
 		if _, _, err := modelcli.Detect(configured); err != nil {
@@ -43,21 +41,15 @@ func (c *Client) resolveProvider() (string, error) {
 		}
 		return configured, nil
 	case "":
-		for _, name := range []string{ProviderCodex, ProviderClaude} {
-			if _, _, err := modelcli.Detect(name); err == nil {
-				return name, nil
-			}
-		}
-		return "", modelcli.ErrNoCLI
+		return "", errors.New("no Clawpatch provider configured: set model_cli.provider to codex or claude")
 	default:
 		return "", fmt.Errorf("Clawpatch provider %q is not allowed: only codex and claude are supported", configured)
 	}
 }
 
 // resolveMapProvider picks the provider for the agent map: always codex.
-// The configured provider and CLAWPATCH_PROVIDER govern only the
-// clawpatch-review lane and are ignored here. Without codex on PATH the error
-// is modelcli.ErrNoCLI.
+// The configured provider governs only the clawpatch-review lane and is
+// ignored here. Without codex on PATH the error is modelcli.ErrNoCLI.
 func (c *Client) resolveMapProvider() (string, error) {
 	if _, _, err := modelcli.Detect(ProviderCodex); err != nil {
 		return "", err

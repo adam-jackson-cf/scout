@@ -23,17 +23,13 @@ func legacyObservation(id, runID, path, symbol, quote string, observed time.Time
 	}
 }
 
-// A v1-era issue store (hash IDs, approval fields and states, feature-merged
-// issues) is re-anchored by the v4→v5 migration: every row gets a durable ID and
-// anchor, keeps its legacy ID, loses approval data, and ambiguous rows are
-// listed instead of merged.
-func TestV4IssueStoreIsReanchoredAndAmbiguousRowsListed(t *testing.T) {
+// A v1 issue store (user_version 3, built from the v1 DDL: hash IDs, approval
+// fields and states, feature-merged issues) is re-anchored on open: every row
+// gets a durable ID and anchor, keeps its legacy ID, loses approval data, and
+// ambiguous rows are listed instead of merged.
+func TestV1IssueStoreIsReanchoredAndAmbiguousRowsListed(t *testing.T) {
 	ctx := context.Background()
-	root := t.TempDir()
-	store, err := Open(root)
-	if err != nil {
-		t.Fatal(err)
-	}
+	v1 := newV1Store(t)
 	now := time.Now().UTC().Truncate(time.Millisecond)
 	snapshot := domain.Snapshot{RepositoryID: "repository", WorktreeDigest: "worktree", IgnoreRulesDigest: "ignore", ExclusionsDigest: "exclude"}
 	scope := domain.Scope{Kind: domain.ScopeRepository, SelectedFamilies: []domain.Family{domain.FamilySecurity}}
@@ -47,7 +43,7 @@ func TestV4IssueStoreIsReanchoredAndAmbiguousRowsListed(t *testing.T) {
 		legacyObservation("obs-d2", "run-1", "z.go", "", "eval(d2)", now),
 		legacyObservation("obs-e", "run-1", "e.go", "", "eval(e)", now),
 	}
-	seedRun(t, ctx, store, plan, run, observations, nil)
+	v1.insertRun(t, plan, run, observations)
 	legacyRows := []struct {
 		id, state string
 		observed  []string
@@ -73,27 +69,21 @@ func TestV4IssueStoreIsReanchoredAndAmbiguousRowsListed(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := store.db.ExecContext(ctx, `INSERT INTO issues(issue_id, state, updated_at, payload) VALUES (?, ?, ?, ?)`, row.id, row.state, unixMillis(now), encoded); err != nil {
+		if _, err := v1.db.ExecContext(ctx, `INSERT INTO issues(issue_id, state, updated_at, payload) VALUES (?, ?, ?, ?)`, row.id, row.state, unixMillis(now), encoded); err != nil {
 			t.Fatal(err)
 		}
 		for _, observationID := range row.observed {
-			if _, err := store.db.ExecContext(ctx, `INSERT INTO issue_observations(issue_id, observation_id) VALUES (?, ?)`, row.id, observationID); err != nil {
+			if _, err := v1.db.ExecContext(ctx, `INSERT INTO issue_observations(issue_id, observation_id) VALUES (?, ?)`, row.id, observationID); err != nil {
 				t.Fatal(err)
 			}
 		}
 		history, _ := json.Marshal(payload["history"].([]any)[0])
-		if _, err := store.db.ExecContext(ctx, `INSERT INTO issue_history(issue_id, ordinal, payload) VALUES (?, 0, ?)`, row.id, history); err != nil {
+		if _, err := v1.db.ExecContext(ctx, `INSERT INTO issue_history(issue_id, ordinal, payload) VALUES (?, 0, ?)`, row.id, history); err != nil {
 			t.Fatal(err)
 		}
 	}
-	for _, statement := range []string{`DROP TABLE issue_migration_ambiguities`, `PRAGMA user_version=4`} {
-		if _, err := store.db.ExecContext(ctx, statement); err != nil {
-			t.Fatal(err)
-		}
-	}
-	if err := store.Close(); err != nil {
-		t.Fatal(err)
-	}
+	v1.close(t)
+	root := v1.root
 
 	migrated, err := Open(root)
 	if err != nil {
@@ -171,21 +161,16 @@ func TestV4IssueStoreIsReanchoredAndAmbiguousRowsListed(t *testing.T) {
 	}
 }
 
-// legacyStoreWithRow returns the root of a v4-era store holding one legacy
-// issue row, optionally linked to a real observation.
+// legacyStoreWithRow returns the root of a v1 store (built from the v1 DDL)
+// holding one legacy issue row, optionally linked to a real observation.
 func legacyStoreWithRow(t *testing.T, id string, history any, link bool) string {
 	t.Helper()
-	ctx := context.Background()
 	now := time.Now().UTC().Truncate(time.Millisecond)
-	root := t.TempDir()
-	store, err := Open(root)
-	if err != nil {
-		t.Fatal(err)
-	}
+	v1 := newV1Store(t)
 	snapshot := domain.Snapshot{RepositoryID: "repository", WorktreeDigest: "worktree", IgnoreRulesDigest: "ignore", ExclusionsDigest: "exclude"}
 	scope := domain.Scope{Kind: domain.ScopeRepository, SelectedFamilies: []domain.Family{domain.FamilySecurity}}
 	observation := legacyObservation("obs-a", "run-1", "a.go", "", "eval(a)", now)
-	seedRun(t, ctx, store, domain.Plan{PlanID: "plan-1", RunID: "run-1", Snapshot: snapshot, Scope: scope, CreatedAt: now}, domain.Run{RunID: "run-1", PlanID: "plan-1", Snapshot: snapshot, Scope: scope, State: domain.RunPartial, StartedAt: now}, []domain.Observation{observation}, nil)
+	v1.insertRun(t, domain.Plan{PlanID: "plan-1", RunID: "run-1", Snapshot: snapshot, Scope: scope, CreatedAt: now}, domain.Run{RunID: "run-1", PlanID: "plan-1", Snapshot: snapshot, Scope: scope, State: domain.RunPartial, StartedAt: now}, []domain.Observation{observation})
 	payload, err := json.Marshal(map[string]any{
 		"issueId": id, "state": "open", "title": "security:test: unsafe path", "mechanism": "unsafe path",
 		"originalSeverity": "high", "effectiveSeverity": "high", "observationIds": []string{"obs-a"},
@@ -194,23 +179,16 @@ func legacyStoreWithRow(t *testing.T, id string, history any, link bool) string 
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := store.db.ExecContext(ctx, `INSERT INTO issues(issue_id, state, updated_at, payload) VALUES (?, 'open', ?, ?)`, id, unixMillis(now), payload); err != nil {
+	if _, err := v1.db.Exec(`INSERT INTO issues(issue_id, state, updated_at, payload) VALUES (?, 'open', ?, ?)`, id, unixMillis(now), payload); err != nil {
 		t.Fatal(err)
 	}
 	if link {
-		if _, err := store.db.ExecContext(ctx, `INSERT INTO issue_observations(issue_id, observation_id) VALUES (?, 'obs-a')`, id); err != nil {
+		if _, err := v1.db.Exec(`INSERT INTO issue_observations(issue_id, observation_id) VALUES (?, 'obs-a')`, id); err != nil {
 			t.Fatal(err)
 		}
 	}
-	for _, statement := range []string{`DROP TABLE issue_migration_ambiguities`, `PRAGMA user_version=4`} {
-		if _, err := store.db.ExecContext(ctx, statement); err != nil {
-			t.Fatal(err)
-		}
-	}
-	if err := store.Close(); err != nil {
-		t.Fatal(err)
-	}
-	return root
+	v1.close(t)
+	return v1.root
 }
 
 // A legacy row whose history is corrupt cannot be re-anchored faithfully: the

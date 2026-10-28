@@ -203,8 +203,9 @@ func (s *Store) exportWouldBlock(ctx context.Context) ([][]byte, string, error) 
 // ManifestMeta carries the manifest fields that are not derived from the files.
 // Revision, ToolDigest and PolicyDigest come from the latest finalized complete
 // run and its plan; they let a reader decide whether a baseline is comparable.
-// Uninspected lists the scanner families that run did not fully inspect; nil
-// (absent from the manifest) means the exporter recorded no lane health.
+// Uninspected lists the scanner families that run did not fully inspect; an
+// empty list means all were inspected. The exporter always writes it; nil only
+// results from reading a manifest that lacks it.
 type ManifestMeta struct {
 	RepositoryID string              `json:"repositoryId"`
 	WouldBlock   string              `json:"wouldBlock"`
@@ -248,9 +249,11 @@ func RenderManifest(meta ManifestMeta, files map[string][]byte) []byte {
 		"absent":       absentFiles(paths),
 		"wouldBlock":   meta.WouldBlock,
 	}
-	if meta.Uninspected != nil {
-		manifest["uninspected"] = meta.Uninspected
+	uninspected := meta.Uninspected
+	if uninspected == nil {
+		uninspected = []UninspectedFamily{}
 	}
+	manifest["uninspected"] = uninspected
 	line, err := CanonicalLine(manifest)
 	if err != nil { // map of plain values: cannot fail
 		panic(err)
@@ -368,12 +371,21 @@ func (s *Store) baseInfo(ctx context.Context) (ManifestMeta, error) {
 		return ManifestMeta{}, err
 	}
 	if !found {
+		meta.Uninspected = []UninspectedFamily{}
 		imported, err := s.metadataValue(ctx, metadataExportBase)
 		if err != nil {
 			return ManifestMeta{}, err
 		}
 		if imported != "" {
-			return meta, json.Unmarshal([]byte(imported), &meta)
+			var recorded ManifestMeta
+			if err := json.Unmarshal([]byte(imported), &recorded); err != nil {
+				return ManifestMeta{}, fmt.Errorf("decode recorded base info: %w", err)
+			}
+			// A recorded base without lane health counts as none: identifiers are
+			// never re-emitted beside lane health they did not come with.
+			if recorded.Uninspected != nil {
+				return recorded, nil
+			}
 		}
 	}
 	return meta, nil
@@ -612,7 +624,10 @@ func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []doma
 		if err := importMappingRefresh(ctx, tx, refresh); err != nil {
 			return err
 		}
-		if meta.Revision != "" || meta.ToolDigest != "" || meta.PolicyDigest != "" {
+		// The comparison identifiers travel with lane health: a manifest that
+		// carries `uninspected` records both, any other manifest records none and
+		// clears a base left by an earlier import.
+		if meta.Uninspected != nil {
 			baseJSON, err := json.Marshal(meta)
 			if err != nil {
 				return fmt.Errorf("encode imported base info: %w", err)
@@ -620,6 +635,8 @@ func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []doma
 			if _, err := tx.ExecContext(ctx, `INSERT INTO metadata(key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`, metadataExportBase, string(baseJSON)); err != nil {
 				return fmt.Errorf("record imported base info: %w", err)
 			}
+		} else if _, err := tx.ExecContext(ctx, `DELETE FROM metadata WHERE key = ?`, metadataExportBase); err != nil {
+			return fmt.Errorf("clear imported base info: %w", err)
 		}
 		if len(summary) != 0 {
 			if _, err := tx.ExecContext(ctx, `INSERT INTO metadata(key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`, metadataCoverageSummary, string(summary)); err != nil {

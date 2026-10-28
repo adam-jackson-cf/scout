@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 	"sync"
 	"syscall"
 	"time"
@@ -66,6 +67,24 @@ func Open(root string) (*Store, error) {
 
 	stateDir := filepath.Join(absoluteRoot, ".scout")
 	artifactsDir := filepath.Join(stateDir, "artifacts")
+	databasePath := filepath.Join(stateDir, "state.sqlite")
+	// An existing store's version is read on a read-only connection before
+	// .scout/, artifacts/, the lock or the journal mode are touched, so a store
+	// this build cannot migrate is refused unchanged.
+	if err := rejectSymlink(databasePath); err != nil {
+		return nil, err
+	}
+	if _, err := os.Lstat(databasePath); err == nil {
+		version, err := readUserVersion(databasePath)
+		if err != nil {
+			return nil, err
+		}
+		if version != 0 && version != schemaVersion && version != reanchorSourceVersion {
+			return nil, unsupportedVersionError(version)
+		}
+	} else if !errors.Is(err, fs.ErrNotExist) {
+		return nil, fmt.Errorf("inspect state database: %w", err)
+	}
 	if err := secureDir(stateDir); err != nil {
 		return nil, fmt.Errorf("create state directory: %w", err)
 	}
@@ -82,10 +101,6 @@ func Open(root string) (*Store, error) {
 		return nil, openErr
 	}
 
-	databasePath := filepath.Join(stateDir, "state.sqlite")
-	if err := rejectSymlink(databasePath); err != nil {
-		return cleanup(err)
-	}
 	db, err := sql.Open("sqlite", databasePath)
 	if err != nil {
 		return cleanup(fmt.Errorf("open state database: %w", err))
@@ -147,8 +162,18 @@ func OpenExistingReadOnly(root string) (*Store, error) {
 	if !info.Mode().IsRegular() {
 		return nil, errors.New("state database must be a regular file")
 	}
-	databaseURL := (&url.URL{Scheme: "file", Path: databasePath, RawQuery: "mode=ro"}).String()
-	db, err := sql.Open("sqlite", databaseURL)
+	version, err := readUserVersion(databasePath)
+	if err != nil {
+		return nil, err
+	}
+	switch version {
+	case schemaVersion:
+	case reanchorSourceVersion:
+		return nil, fmt.Errorf("state schema version %d requires writable re-anchor to version %d", version, schemaVersion)
+	default:
+		return nil, unsupportedVersionError(version)
+	}
+	db, err := sql.Open("sqlite", (&url.URL{Scheme: "file", Path: databasePath, RawQuery: "mode=ro"}).String())
 	if err != nil {
 		return nil, fmt.Errorf("open read-only state database: %w", err)
 	}
@@ -156,18 +181,6 @@ func OpenExistingReadOnly(root string) (*Store, error) {
 	if err := db.Ping(); err != nil {
 		_ = db.Close()
 		return nil, fmt.Errorf("ping read-only state database: %w", err)
-	}
-	var version int
-	if err := db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
-		_ = db.Close()
-		return nil, fmt.Errorf("read state schema version: %w", err)
-	}
-	if version != schemaVersion {
-		_ = db.Close()
-		if version > schemaVersion {
-			return nil, fmt.Errorf("state schema version %d is newer than supported version %d", version, schemaVersion)
-		}
-		return nil, fmt.Errorf("state schema version %d requires writable migration to version %d", version, schemaVersion)
 	}
 	return &Store{root: absoluteRoot, stateDir: stateDir, artifactsDir: filepath.Join(stateDir, "artifacts"), db: db, readOnly: true}, nil
 }
@@ -228,105 +241,35 @@ func (s *Store) withRead(ctx context.Context, fn func(*sql.DB) error) error {
 	return fn(s.db)
 }
 
+// reanchorSourceVersion is the one older schema a store may carry and still be
+// migrated: the Scout v1 implementation's last schema (design §3.3).
+const reanchorSourceVersion = 3
+
 func (s *Store) migrate(ctx context.Context) error {
 	return s.withTransaction(ctx, func(tx *sql.Tx) error {
 		var current int
 		if err := tx.QueryRowContext(ctx, "PRAGMA user_version").Scan(&current); err != nil {
 			return fmt.Errorf("read state schema version: %w", err)
 		}
-		if current > schemaVersion {
-			return fmt.Errorf("state schema version %d is newer than supported version %d", current, schemaVersion)
-		}
-		if current == 0 {
-			for _, statement := range schemaV1 {
-				if _, err := tx.ExecContext(ctx, statement); err != nil {
-					return fmt.Errorf("apply state schema v1: %w", err)
-				}
+		switch current {
+		case schemaVersion:
+			return nil
+		case 0:
+			if err := execAll(ctx, tx, schemaCurrent); err != nil {
+				return fmt.Errorf("create state schema: %w", err)
 			}
-			current = 1
-		}
-		if current == 1 {
-			if _, err := tx.ExecContext(ctx, `CREATE TABLE inventory_snapshots (run_id TEXT PRIMARY KEY, payload BLOB NOT NULL, FOREIGN KEY(run_id) REFERENCES runs(run_id))`); err != nil {
-				return fmt.Errorf("apply state schema v2: %w", err)
+		case reanchorSourceVersion:
+			if err := backfillPlanJobs(ctx, tx); err != nil {
+				return fmt.Errorf("backfill plan jobs: %w", err)
 			}
-			current = 2
-		}
-		if current == 2 {
-			for _, statement := range schemaV3 {
-				if _, err := tx.ExecContext(ctx, statement); err != nil {
-					return fmt.Errorf("apply state schema v3: %w", err)
-				}
+			if err := reanchorIssues(ctx, tx); err != nil {
+				return fmt.Errorf("re-anchor issues: %w", err)
 			}
-			current = 3
-		}
-		if current == 3 {
-			if err := migrateV4(ctx, tx); err != nil {
-				return fmt.Errorf("apply state schema v4: %w", err)
+			if err := execAll(ctx, tx, schemaAddedAfterV1); err != nil {
+				return fmt.Errorf("create tables added since the v1 schema: %w", err)
 			}
-			current = 4
-		}
-		if current == 4 {
-			if err := migrateV5(ctx, tx); err != nil {
-				return fmt.Errorf("apply state schema v5: %w", err)
-			}
-			current = 5
-		}
-		if current == 5 {
-			for _, statement := range schemaV6 {
-				if _, err := tx.ExecContext(ctx, statement); err != nil {
-					return fmt.Errorf("apply state schema v6: %w", err)
-				}
-			}
-			current = 6
-		}
-		if current == 6 {
-			for _, statement := range schemaV7 {
-				if _, err := tx.ExecContext(ctx, statement); err != nil {
-					return fmt.Errorf("apply state schema v7: %w", err)
-				}
-			}
-			current = 7
-		}
-		if current == 7 {
-			for _, statement := range schemaV8 {
-				if _, err := tx.ExecContext(ctx, statement); err != nil {
-					return fmt.Errorf("apply state schema v8: %w", err)
-				}
-			}
-			current = 8
-		}
-		if current == 8 {
-			for _, statement := range schemaV9 {
-				if _, err := tx.ExecContext(ctx, statement); err != nil {
-					return fmt.Errorf("apply state schema v9: %w", err)
-				}
-			}
-			current = 9
-		}
-		if current == 9 {
-			for _, statement := range schemaV10 {
-				if _, err := tx.ExecContext(ctx, statement); err != nil {
-					return fmt.Errorf("apply state schema v10: %w", err)
-				}
-			}
-			current = 10
-		}
-		if current == 10 {
-			// v11: issue and observation payloads gain the optional `claim` and
-			// `rule` fields (design §3.2). Payloads are JSON, so no DDL is needed;
-			// rows written before v11 decode with both fields empty.
-			current = 11
-		}
-		if current == 11 {
-			for _, statement := range schemaV12 {
-				if _, err := tx.ExecContext(ctx, statement); err != nil {
-					return fmt.Errorf("apply state schema v12: %w", err)
-				}
-			}
-			current = 12
-		}
-		if current != schemaVersion {
-			return fmt.Errorf("no migration from state schema version %d", current)
+		default:
+			return unsupportedVersionError(current)
 		}
 		if _, err := tx.ExecContext(ctx, fmt.Sprintf("PRAGMA user_version=%d", schemaVersion)); err != nil {
 			return fmt.Errorf("record state schema version: %w", err)
@@ -335,27 +278,72 @@ func (s *Store) migrate(ctx context.Context) error {
 	})
 }
 
-var schemaV1 = []string{
+func execAll(ctx context.Context, tx *sql.Tx, statements []string) error {
+	for _, statement := range statements {
+		if _, err := tx.ExecContext(ctx, statement); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// unsupportedVersionError names the remedy for a store this build cannot open:
+// a newer store needs a newer Scout, any other version is re-baselined from the
+// state export, which is the durable baseline (design §7.2).
+func unsupportedVersionError(version int) error {
+	if version > schemaVersion {
+		return fmt.Errorf("state schema version %d is newer than supported version %d", version, schemaVersion)
+	}
+	return fmt.Errorf("state schema version %d is not supported; re-baseline: remove .scout/state.sqlite* and run scout state restore --remote origin (or scout import --from <export directory>)", version)
+}
+
+// readUserVersion reads PRAGMA user_version of an existing database on a
+// read-only connection: the file is not written and no migration runs.
+func readUserVersion(databasePath string) (int, error) {
+	databaseURL := (&url.URL{Scheme: "file", Path: databasePath, RawQuery: "mode=ro"}).String()
+	db, err := sql.Open("sqlite", databaseURL)
+	if err != nil {
+		return 0, fmt.Errorf("open read-only state database: %w", err)
+	}
+	defer db.Close()
+	db.SetMaxOpenConns(1)
+	if err := db.Ping(); err != nil {
+		return 0, fmt.Errorf("ping read-only state database: %w", err)
+	}
+	var version int
+	if err := db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
+		return 0, fmt.Errorf("read state schema version: %w", err)
+	}
+	return version, nil
+}
+
+// schemaBase is the schema of the tables the Scout v1 implementation created,
+// in their current shape (runs.finalized is part of the table).
+var schemaBase = []string{
 	`CREATE TABLE metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL)`,
 	`CREATE TABLE plans (plan_id TEXT PRIMARY KEY, run_id TEXT NOT NULL UNIQUE, repository_id TEXT NOT NULL, created_at INTEGER NOT NULL, payload BLOB NOT NULL)`,
-	`CREATE TABLE runs (run_id TEXT PRIMARY KEY, plan_id TEXT NOT NULL UNIQUE, repository_id TEXT NOT NULL, state TEXT NOT NULL, started_at INTEGER NOT NULL, finished_at INTEGER, payload BLOB NOT NULL, FOREIGN KEY(plan_id) REFERENCES plans(plan_id))`,
+	`CREATE TABLE runs (run_id TEXT PRIMARY KEY, plan_id TEXT NOT NULL UNIQUE, repository_id TEXT NOT NULL, state TEXT NOT NULL, started_at INTEGER NOT NULL, finished_at INTEGER, payload BLOB NOT NULL, finalized INTEGER NOT NULL DEFAULT 1, FOREIGN KEY(plan_id) REFERENCES plans(plan_id))`,
 	`CREATE TABLE coverage (run_id TEXT NOT NULL, coverage_key TEXT NOT NULL, status TEXT NOT NULL, payload BLOB NOT NULL, PRIMARY KEY(run_id, coverage_key), FOREIGN KEY(run_id) REFERENCES runs(run_id) ON DELETE CASCADE)`,
 	`CREATE TABLE observations (observation_id TEXT PRIMARY KEY, run_id TEXT NOT NULL, observed_at INTEGER NOT NULL, payload BLOB NOT NULL, FOREIGN KEY(run_id) REFERENCES runs(run_id) ON DELETE RESTRICT)`,
 	`CREATE TABLE artifacts (digest TEXT PRIMARY KEY, artifact_id TEXT NOT NULL UNIQUE, content_type TEXT NOT NULL, size_bytes INTEGER NOT NULL, created_at INTEGER NOT NULL)`,
 	`CREATE TABLE issues (issue_id TEXT PRIMARY KEY, state TEXT NOT NULL, updated_at INTEGER NOT NULL, payload BLOB NOT NULL)`,
 	`CREATE TABLE issue_observations (issue_id TEXT NOT NULL, observation_id TEXT NOT NULL, PRIMARY KEY(issue_id, observation_id), FOREIGN KEY(issue_id) REFERENCES issues(issue_id) ON DELETE CASCADE, FOREIGN KEY(observation_id) REFERENCES observations(observation_id) ON DELETE RESTRICT)`,
 	`CREATE TABLE issue_history (issue_id TEXT NOT NULL, ordinal INTEGER NOT NULL, payload BLOB NOT NULL, PRIMARY KEY(issue_id, ordinal), FOREIGN KEY(issue_id) REFERENCES issues(issue_id) ON DELETE CASCADE)`,
+	`CREATE TABLE inventory_snapshots (run_id TEXT PRIMARY KEY, payload BLOB NOT NULL, FOREIGN KEY(run_id) REFERENCES runs(run_id))`,
+	`CREATE TABLE run_job_commits (run_id TEXT NOT NULL, job_id TEXT NOT NULL, committed_at INTEGER NOT NULL, payload BLOB NOT NULL, PRIMARY KEY(run_id, job_id), FOREIGN KEY(run_id) REFERENCES runs(run_id) ON DELETE CASCADE)`,
 	`CREATE INDEX coverage_success_lookup ON coverage(coverage_key, status, run_id)`,
 	`CREATE INDEX runs_success_lookup ON runs(state, finished_at DESC)`,
 	`CREATE INDEX observations_by_run ON observations(run_id, observed_at)`,
 	`CREATE INDEX issues_by_state ON issues(state, updated_at DESC)`,
-}
-
-var schemaV3 = []string{
-	`ALTER TABLE runs ADD COLUMN finalized INTEGER NOT NULL DEFAULT 1`,
-	`CREATE TABLE run_job_commits (run_id TEXT NOT NULL, job_id TEXT NOT NULL, committed_at INTEGER NOT NULL, payload BLOB NOT NULL, PRIMARY KEY(run_id, job_id), FOREIGN KEY(run_id) REFERENCES runs(run_id) ON DELETE CASCADE)`,
 	`CREATE INDEX run_job_commits_by_run ON run_job_commits(run_id, committed_at, job_id)`,
 }
+
+// schemaAddedAfterV1 holds the tables a v1 store lacks that need no backfill.
+// A re-anchored v1 store and a new store both end with them.
+var schemaAddedAfterV1 = slices.Concat(schemaWouldBlock, schemaSignals, schemaAnnotations, schemaIngested, schemaPRMetadata, schemaAreas)
+
+// schemaCurrent creates a new store at schemaVersion.
+var schemaCurrent = slices.Concat(schemaBase, []string{schemaPlanJobs, schemaMigrationAmbiguities}, schemaAddedAfterV1)
 
 func (s *Store) ensureRepositoryIdentity(ctx context.Context, tx *sql.Tx, repositoryID string) error {
 	var stored string

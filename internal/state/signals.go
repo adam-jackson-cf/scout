@@ -11,10 +11,10 @@ import (
 	"scout/internal/domain"
 )
 
-// schemaV7 adds the append-only signals ledger (design §3.2). The primary key
+// schemaSignals adds the append-only signals ledger (design §3.2). The primary key
 // is the signal identity plus tool and config digests, so recomputing a
 // snapshot with the same tool is idempotent and a different tool appends.
-var schemaV7 = []string{
+var schemaSignals = []string{
 	`CREATE TABLE IF NOT EXISTS signals (seq INTEGER PRIMARY KEY AUTOINCREMENT, metric TEXT NOT NULL, scope_kind TEXT NOT NULL, scope_anchor TEXT NOT NULL, snapshot TEXT NOT NULL, window TEXT NOT NULL, tool_digest TEXT NOT NULL, config_digest TEXT NOT NULL, payload BLOB NOT NULL, UNIQUE(metric, scope_kind, scope_anchor, snapshot, window, tool_digest, config_digest))`,
 	`CREATE INDEX IF NOT EXISTS signals_by_scope ON signals(scope_anchor, metric, seq)`,
 }

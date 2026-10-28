@@ -13,8 +13,8 @@ type Config struct {
 	Root                      string
 	ClawpatchBinary           string
 	ClawpatchEgressAuthorized bool
-	// ClawpatchProvider is "codex" or "claude"; empty falls back to
-	// CLAWPATCH_PROVIDER, then to the installed CLI. Others are rejected.
+	// ClawpatchProvider is "codex" or "claude"; empty is an error, the
+	// provider comes from policy (model_cli.provider). Others are rejected.
 	ClawpatchProvider string
 	Provider          contextual.Config
 	// ModelLanes are the model-CLI lanes opted in by policy; any other

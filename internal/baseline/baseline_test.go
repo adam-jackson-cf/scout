@@ -238,3 +238,61 @@ func TestFetchReportsMissingBranch(t *testing.T) {
 		t.Fatalf("LoadBase on missing branch = %v, %v", ok, err)
 	}
 }
+
+// publishedTree publishes tree as the scout/state tip and returns the options
+// that read it back.
+func publishedTree(t *testing.T, tree Tree) Options {
+	t.Helper()
+	bare, clones := remoteWithClones(t, 1)
+	opts := Options{Repo: clones[0], Remote: bare, Trusted: true}
+	if _, err := Publish(context.Background(), opts, func(Tree) (Tree, error) { return tree, nil }); err != nil {
+		t.Fatal(err)
+	}
+	return opts
+}
+
+// A manifest without `uninspected` is not a baseline: LoadBase refuses it with
+// the re-baseline error, whatever else it carries.
+func TestLoadBaseRefusesManifestWithoutLaneHealth(t *testing.T) {
+	for name, mutate := range map[string]func(map[string]any){
+		"absent": func(fields map[string]any) { delete(fields, "uninspected") },
+		"null":   func(fields map[string]any) { fields["uninspected"] = nil },
+	} {
+		t.Run(name, func(t *testing.T) {
+			tree := ledger(t, "2026-10-01T00:00:00Z")
+			fields := map[string]any{}
+			if err := json.Unmarshal(tree[state.ExportManifest], &fields); err != nil {
+				t.Fatal(err)
+			}
+			mutate(fields)
+			var err error
+			if tree[state.ExportManifest], err = state.CanonicalLine(fields); err != nil {
+				t.Fatal(err)
+			}
+			_, ok, err := LoadBase(context.Background(), publishedTree(t, tree))
+			if ok || !errors.Is(err, ErrNoLaneHealth) {
+				t.Fatalf("LoadBase = ok %v, err %v; want ErrNoLaneHealth", ok, err)
+			}
+			if !strings.Contains(err.Error(), "carries no lane health; re-baseline") {
+				t.Fatalf("error does not name cause and remedy: %v", err)
+			}
+		})
+	}
+}
+
+// An empty `uninspected` list (every family inspected) loads, and the list is
+// never nil.
+func TestLoadBaseAcceptsEmptyAndListedLaneHealth(t *testing.T) {
+	tree := ledger(t, "2026-10-01T00:00:00Z")
+	base, ok, err := LoadBase(context.Background(), publishedTree(t, tree))
+	if err != nil || !ok || base.Uninspected == nil || len(base.Uninspected) != 0 {
+		t.Fatalf("LoadBase = %+v, ok %v, err %v; want an empty non-nil list", base, ok, err)
+	}
+
+	listed := ledger(t, "2026-10-01T00:00:00Z")
+	listed[state.ExportManifest] = state.RenderManifest(state.ManifestMeta{RepositoryID: "repo", WouldBlock: state.WouldBlockPresent, Uninspected: []state.UninspectedFamily{{Family: "security", Reason: "blocked"}}}, listed)
+	base, ok, err = LoadBase(context.Background(), publishedTree(t, listed))
+	if err != nil || !ok || len(base.Uninspected) != 1 || base.Uninspected[0].Family != "security" {
+		t.Fatalf("LoadBase = %+v, ok %v, err %v; want the listed family", base, ok, err)
+	}
+}

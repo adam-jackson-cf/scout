@@ -3,12 +3,14 @@ package clawpatch
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	"scout/internal/domain"
+	"scout/internal/modelcli"
 )
 
 func TestMapReusesCanonicalRecordsWithoutExecutingClawpatch(t *testing.T) {
@@ -143,7 +145,7 @@ func setProviderCredentials(t *testing.T) {
 	for _, name := range []string{"ANTHROPIC_API_KEY", "OPENAI_API_KEY", "CLAWPATCH_OPENAI_API_KEY", "CLAWPATCH_ANTHROPIC_API_KEY", "CLAWPATCH_CODEX_API_KEY", "OPENROUTER_API_KEY"} {
 		t.Setenv(name, "must-not-reach-clawpatch")
 	}
-	t.Setenv("CLAWPATCH_PROVIDER", "")
+
 }
 
 func assertCredentialFreeHostEnv(t *testing.T, envLog string) {
@@ -179,7 +181,7 @@ func TestAgentMapWithoutEgressIsBlocked(t *testing.T) {
 
 func TestAgentMapWithoutModelCLIIsSkippedAndNeverInvokesClawpatch(t *testing.T) {
 	t.Setenv("PATH", t.TempDir())
-	t.Setenv("CLAWPATCH_PROVIDER", "")
+
 	client, log := fakeMapper(t, true, false)
 	result, err := client.Map(context.Background(), true, MapSourceAgent)
 	if err != nil || result.Status != MapSkipped || result.Reason != "skipped (no model CLI)" || result.ExplorationIncomplete {
@@ -218,33 +220,26 @@ func TestAgentMapUsesCodexLunaXHighInHostAuthContextWithoutAPIKeys(t *testing.T)
 	}
 }
 
-func TestAgentMapIgnoresProviderConfigAndEnv(t *testing.T) {
+func TestAgentMapIgnoresProviderConfig(t *testing.T) {
 	useFakeCLIs(t, "codex", "claude")
-	for _, viaEnv := range []bool{false, true} {
-		client, log := fakeMapper(t, true, false)
-		t.Setenv("CLAWPATCH_PROVIDER", "")
-		if viaEnv {
-			t.Setenv("CLAWPATCH_PROVIDER", "claude")
-		} else {
-			client.provider = "claude"
-		}
-		result, err := client.Map(context.Background(), true, MapSourceAgent)
-		if err != nil || result.Status != MapMapped || result.Source != MapSourceAgent {
-			t.Fatalf("map (env=%t) = %+v, %v", viaEnv, result, err)
-		}
-		argv, err := os.ReadFile(log)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !strings.Contains(string(argv), "--json map --source agent --provider codex --model gpt-6-luna --reasoning-effort xhigh\n") {
-			t.Fatalf("map (env=%t) argv = %q", viaEnv, argv)
-		}
+	client, log := fakeMapper(t, true, false)
+	client.provider = "claude"
+	result, err := client.Map(context.Background(), true, MapSourceAgent)
+	if err != nil || result.Status != MapMapped || result.Source != MapSourceAgent {
+		t.Fatalf("map = %+v, %v", result, err)
+	}
+	argv, err := os.ReadFile(log)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(argv), "--json map --source agent --provider codex --model gpt-6-luna --reasoning-effort xhigh\n") {
+		t.Fatalf("map argv = %q", argv)
 	}
 }
 
 func TestAgentMapWithOnlyClaudeInstalledIsSkipped(t *testing.T) {
 	useFakeCLIs(t, "claude")
-	t.Setenv("CLAWPATCH_PROVIDER", "")
+
 	client, log := fakeMapper(t, true, false)
 	result, err := client.Map(context.Background(), true, MapSourceAgent)
 	if err != nil || result.Status != MapSkipped || result.Reason != "skipped (no model CLI)" {
@@ -258,18 +253,21 @@ func TestAgentMapWithOnlyClaudeInstalledIsSkipped(t *testing.T) {
 func TestAnyOtherClawpatchProviderIsRejectedForReview(t *testing.T) {
 	useFakeCLIs(t, "codex", "claude")
 	for _, provider := range []string{"acpx", "mock", "opencode", "grok"} {
-		for _, viaEnv := range []bool{false, true} {
-			client, _ := fakeMapper(t, true, false)
-			t.Setenv("CLAWPATCH_PROVIDER", "")
-			if viaEnv {
-				t.Setenv("CLAWPATCH_PROVIDER", provider)
-			} else {
-				client.provider = provider
-			}
-			if got, err := client.resolveProvider(); err == nil {
-				t.Fatalf("provider %q (env=%t) must be rejected, got %q", provider, viaEnv, got)
-			}
+		client, _ := fakeMapper(t, true, false)
+		client.provider = provider
+		if got, err := client.resolveProvider(); err == nil {
+			t.Fatalf("provider %q must be rejected, got %q", provider, got)
 		}
+	}
+}
+
+func TestReviewWithoutConfiguredProviderIsAnErrorAndIgnoresClawpatchEnv(t *testing.T) {
+	useFakeCLIs(t, "codex", "claude")
+	t.Setenv("CLAWPATCH_PROVIDER", "codex")
+	client, _ := fakeMapper(t, true, false)
+	client.provider = ""
+	if got, err := client.resolveProvider(); err == nil || errors.Is(err, modelcli.ErrNoCLI) {
+		t.Fatalf("empty provider must be an error independent of CLAWPATCH_PROVIDER, got %q, %v", got, err)
 	}
 }
 
@@ -277,6 +275,7 @@ func TestReviewInvokesProviderInHostAuthContextWithoutAPIKeys(t *testing.T) {
 	useFakeCLIs(t, "claude")
 	setProviderCredentials(t)
 	client, log := fakeMapper(t, true, false)
+	client.provider = "claude"
 	if err := os.WriteFile(filepath.Join(client.StateDir(), "features", "feat.json"), []byte(`{"schemaVersion":1,"featureId":"feat","kind":"service","source":"heuristic","confidence":"high"}`), 0o600); err != nil {
 		t.Fatal(err)
 	}
@@ -298,8 +297,8 @@ func TestReviewInvokesProviderInHostAuthContextWithoutAPIKeys(t *testing.T) {
 
 func TestReviewWithoutModelCLIIsSkippedNotBlockedOrClean(t *testing.T) {
 	t.Setenv("PATH", t.TempDir())
-	t.Setenv("CLAWPATCH_PROVIDER", "")
 	client, log := fakeMapper(t, false, false)
+	client.provider = "codex"
 	result, err := client.Review(context.Background(), []string{"feat"})
 	if err != nil || len(result.Coverage) != 1 || result.Coverage[0].Status != domain.CoverageSkipped || result.Coverage[0].Reason != "skipped (no model CLI)" {
 		t.Fatalf("review coverage = %+v, %v", result.Coverage, err)

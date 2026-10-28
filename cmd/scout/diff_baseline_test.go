@@ -74,4 +74,17 @@ func TestDiffUsesPublishedBaselineUnlessDigestsDiffer(t *testing.T) {
 	if report["comparison"] != "recomputed" || !strings.Contains(reason, "tool digest") {
 		t.Fatalf("bumped baseline: comparison %v reason %q", report["comparison"], reason)
 	}
+
+	// A manifest without `uninspected` (a v0.1.0/v0.1.1 publish) is not a
+	// baseline: the differential run ends unavailable (exit 3), naming the
+	// cause and remedy, instead of recomputing around it.
+	delete(manifest, "uninspected")
+	raw, _ = json.Marshal(manifest)
+	commitFiles(t, state, "stale", map[string]string{"state/v1/manifest.json": string(raw)})
+	gitIn(t, state, "push", "-q", "origin", "scout/state")
+	code, report := runDiffJSON(t, pr, "--base", "origin/main", "--baseline-remote", origin)
+	encoded, _ := json.Marshal(report)
+	if code != exitUnavailable || !strings.Contains(string(encoded), "scout/state manifest carries no lane health; re-baseline") {
+		t.Fatalf("manifest without uninspected: exit %d report %s", code, encoded)
+	}
 }

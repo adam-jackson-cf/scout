@@ -44,8 +44,8 @@ type Config struct {
 	// EgressAuthorized explicitly permits Clawpatch map/review provider requests.
 	EgressAuthorized bool
 	// Provider is the Clawpatch provider for model-using calls: "codex" or
-	// "claude". Empty falls back to CLAWPATCH_PROVIDER, then to whichever CLI
-	// is installed. Any other value is rejected when a model call is made.
+	// "claude". Empty is an error; the provider comes from policy
+	// (model_cli.provider). Any other value is rejected when a model call is made.
 	Provider string
 }
 

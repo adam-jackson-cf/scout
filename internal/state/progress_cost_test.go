@@ -251,8 +251,9 @@ func TestDuplicateCommitRejectedAndLeavesProgressIntact(t *testing.T) {
 	}
 }
 
-// A v3 store (plan snapshot only, runs.payload rewritten per commit) must
-// migrate to v4 and resume exactly where it stopped.
+// A v3 store (plan snapshot only, runs.payload rewritten per commit) is
+// brought to the current schema on open and resumes exactly where it stopped.
+// (The schema equality of a migrated store is TestReanchoredV1StoreHasTheSchemaOfANewStore.)
 func TestV3StoreMigratesAndResumes(t *testing.T) {
 	ctx := context.Background()
 	root := t.TempDir()

@@ -11,9 +11,9 @@ import (
 	"scout/internal/areas"
 )
 
-// schemaV12 adds the area labels table (design §4, §7.2). Areas are labels over
+// schemaAreas is the area labels table (design §4, §7.2). Areas are labels over
 // Clawpatch output: nothing here feeds issue identity or signal scope keys.
-var schemaV12 = []string{
+var schemaAreas = []string{
 	`CREATE TABLE IF NOT EXISTS areas (area_id TEXT PRIMARY KEY, payload BLOB NOT NULL)`,
 }
 

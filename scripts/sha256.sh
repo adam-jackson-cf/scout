@@ -1,4 +1,4 @@
-# Sourced by scripts/bootstrap-tools.sh and scripts/build-clawpatch.sh (never executed directly).
+# Sourced by scripts/bootstrap-tools.sh, scripts/build-clawpatch.sh and scripts/install-release.sh (never executed directly).
 # Defines `sha256 FILE`, which prints the file's SHA-256 with shasum or sha256sum, whichever the
 # host has. The sourcing script must define `die`.
 if command -v shasum >/dev/null 2>&1; then

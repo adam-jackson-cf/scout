@@ -20,9 +20,13 @@ type Base struct {
 	ToolDigest   string
 	PolicyDigest string
 	// Uninspected lists the scanner families the baseline run did not fully
-	// inspect; nil means the manifest carries no lane health (legacy export).
+	// inspect; never nil (an empty list means all were inspected).
 	Uninspected []state.UninspectedFamily
 }
+
+// ErrNoLaneHealth reports a scout/state manifest without the required
+// `uninspected` field: it cannot show which lanes inspected the baseline.
+var ErrNoLaneHealth = errors.New("scout/state manifest carries no lane health; re-baseline: run the default-branch workflow so `scout state publish` writes a manifest with `uninspected`")
 
 // LoadBase fetches the scout/state tip read-only. ok is false (with a nil
 // error) when the remote has no scout/state branch, so nothing is introduced yet.
@@ -41,6 +45,9 @@ func LoadBase(ctx context.Context, opts Options) (Base, bool, error) {
 	meta, err := state.ReadManifestMeta(tree[state.ExportManifest])
 	if err != nil {
 		return Base{}, false, err
+	}
+	if meta.Uninspected == nil {
+		return Base{}, false, ErrNoLaneHealth
 	}
 	return Base{Issues: issues, Tip: tip, Revision: meta.Revision, ToolDigest: meta.ToolDigest, PolicyDigest: meta.PolicyDigest, Uninspected: meta.Uninspected}, true, nil
 }

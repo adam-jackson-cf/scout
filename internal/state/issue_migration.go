@@ -18,12 +18,16 @@ type migratedIssue struct {
 	reasons []string
 }
 
-// migrateV5 re-anchors the v1 issue store (design §3.3): every issue gets a
+// schemaMigrationAmbiguities lists issues the re-anchor could not place
+// unambiguously. Every store has the table, so new and re-anchored schemas match.
+const schemaMigrationAmbiguities = `CREATE TABLE issue_migration_ambiguities (issue_id TEXT PRIMARY KEY, legacy_id TEXT NOT NULL, reason TEXT NOT NULL)`
+
+// reanchorIssues re-anchors the v1 issue store (design §3.3): every issue gets a
 // durable opaque ID and an anchor derived from its linked observations, keeps
 // its old ID as legacy_id, loses approval fields and states, and ambiguous rows
 // are listed rather than merged.
-func migrateV5(ctx context.Context, tx *sql.Tx) error {
-	if _, err := tx.ExecContext(ctx, `CREATE TABLE issue_migration_ambiguities (issue_id TEXT PRIMARY KEY, legacy_id TEXT NOT NULL, reason TEXT NOT NULL)`); err != nil {
+func reanchorIssues(ctx context.Context, tx *sql.Tx) error {
+	if _, err := tx.ExecContext(ctx, schemaMigrationAmbiguities); err != nil {
 		return fmt.Errorf("create migration ambiguity table: %w", err)
 	}
 	if _, err := tx.ExecContext(ctx, `PRAGMA defer_foreign_keys = ON`); err != nil {
@@ -55,7 +59,7 @@ func migrateV5(ctx context.Context, tx *sql.Tx) error {
 	migrated := make([]*migratedIssue, 0, len(legacy))
 	now := time.Now().UTC()
 	for _, row := range legacy {
-		item, err := reanchorLegacyIssue(ctx, tx, row.id, row.payload, now)
+		item, err := reanchorIssue(ctx, tx, row.id, row.payload, now)
 		if err != nil {
 			return fmt.Errorf("re-anchor issue %q: %w", row.id, err)
 		}
@@ -73,7 +77,7 @@ func migrateV5(ctx context.Context, tx *sql.Tx) error {
 	return nil
 }
 
-func reanchorLegacyIssue(ctx context.Context, tx *sql.Tx, legacyID string, payload []byte, now time.Time) (*migratedIssue, error) {
+func reanchorIssue(ctx context.Context, tx *sql.Tx, legacyID string, payload []byte, now time.Time) (*migratedIssue, error) {
 	var raw map[string]any
 	if err := json.Unmarshal(payload, &raw); err != nil {
 		return nil, fmt.Errorf("decode legacy issue: %w", err)

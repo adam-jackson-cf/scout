@@ -12,11 +12,11 @@ import (
 	"scout/internal/domain"
 )
 
-// schemaV8 adds the decision-model tables (design §6): annotations (advisory
+// schemaAnnotations adds the decision-model tables (design §6): annotations (advisory
 // answers), ranking records (disclosure plus baseline and rank-formula
 // versions for every finding), audit draws (stored inclusion probability and
 // sampler version) and the view context of every human disposition.
-var schemaV8 = []string{
+var schemaAnnotations = []string{
 	`CREATE TABLE IF NOT EXISTS annotations (annotation_id TEXT PRIMARY KEY, run_id TEXT NOT NULL, issue_id TEXT NOT NULL, unit_key TEXT NOT NULL, question_version TEXT NOT NULL, stale INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, payload BLOB NOT NULL)`,
 	`CREATE INDEX IF NOT EXISTS annotations_by_issue ON annotations(issue_id, created_at, annotation_id)`,
 	`CREATE TABLE IF NOT EXISTS ranking_records (run_id TEXT NOT NULL, issue_id TEXT NOT NULL, mode TEXT NOT NULL, created_at INTEGER NOT NULL, payload BLOB NOT NULL, PRIMARY KEY(run_id, issue_id))`,
