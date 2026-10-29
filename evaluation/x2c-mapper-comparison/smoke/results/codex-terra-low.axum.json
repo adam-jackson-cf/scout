@@ -1,0 +1,42 @@
+{
+ "arm": "codex-terra-low",
+ "repo": "axum",
+ "provider": "codex",
+ "model_flag": "gpt-6.1-terra",
+ "effort_flag": "low",
+ "init_rc": 0,
+ "rc": 0,
+ "seconds": 67.0,
+ "features_total": 109,
+ "features_active": 109,
+ "features_by_source": {
+  "rust-command": 46,
+  "shared-infra-heuristic": 1,
+  "shell-workflow-heuristic": 1,
+  "agent-mapper": 32,
+  "rust-source-group": 25,
+  "rust-library": 4
+ },
+ "features_agent": 0,
+ "owned_files_agent": 0,
+ "owned_files_all_active": 175,
+ "workspace_dirty": false,
+ "probe_before": {
+  "rc": 0,
+  "seconds": 33.4,
+  "model": "gpt-6.1-terra",
+  "reasoning effort": "low",
+  "provider": "openai",
+  "tokens_used": "8,939"
+ },
+ "probe_after": {
+  "rc": 0,
+  "seconds": 33.0,
+  "model": "gpt-6.1-terra",
+  "reasoning effort": "low",
+  "provider": "openai",
+  "tokens_used": "3,695"
+ },
+ "stdout_tail": "{\n  \"features\": 109,\n  \"new\": 109,\n  \"changed\": 0,\n  \"stale\": 0,\n  \"source\": \"agent\",\n  \"usedAgent\": true,\n  \"reason\": \"heuristic map is meaningful\",\n  \"next\": \"clawpatch review --limit 3\"\n}\n",
+ "stderr_tail": "clawpatch map start source=agent existing=0 dryRun=false\nclawpatch map mapper-start mapper=node\nclawpatch map mapper-start mapper=next\nclawpatch map mapper-start mapper=react\nclawpatch map mapper-start mapper=node-routes\nclawpatch map mapper-start mapper=go\nclawpatch map mapper-start mapper=python\nclawpatch map mapper-start mapper=ruby\nclawpatch map mapper-start mapper=elixir\nclawpatch map mapper-start mapper=rust\nclawpatch map mapper-start mapper=dotnet\nclawpatch map mapper-start mapper=c-cpp\nclawpatch map mapper-start mapper=swift\nclawpatch map mapper-start mapper=apple\nclawpatch map mapper-start mapper=gradle\nclawpatch map mapper-start mapper=maven\nclawpatch map mapper-start mapper=laravel\nclawpatch map mapper-start mapper=config\nclawpatch map mapper-done mapper=go seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=elixir seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=laravel seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=python seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=config seeds=2 elapsed=0s\nclawpatch map mapper-done mapper=ruby seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=c-cpp seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=dotnet seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=maven seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=swift seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=apple seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=gradle seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=node seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=next seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=react seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=node-routes seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=rust seeds=75 elapsed=0s\nclawpatch map heuristic-done features=77 new=77 changed=0 stale=0\nclawpatch map inventory-start\nclawpatch map inventory-done files=417 sourceFiles=158 ownedSourceFiles=149 weak=false elapsed=0s\nclawpatch map agent-start provider=codex model=gpt-6.1-terra\nclawpatch map agent-done features=32 elapsed=67s\nclawpatch map write-start features=109\nclawpatch map done features=109 usedAgent=true elapsed=67s\n"
+}

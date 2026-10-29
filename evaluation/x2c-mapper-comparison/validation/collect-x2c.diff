@@ -1,0 +1,115 @@
+--- x2/collect.py
++++ x2c/collect_x2c.py
+@@ -1,3 +1,9 @@
+ #!/usr/bin/env python3
+-"""Record the X2 agent maps (PREREGISTRATION sections 2 and 9). Needs a logged-in `codex` or `claude` CLI; NOT run during review.
++"""Record the X2c agent maps (X2c PREREGISTRATION section 3; X2 PREREGISTRATION sections 2 and 9 otherwise). Needs logged-in `codex` and `claude` CLIs; NOT run during review.
++
++COPY OF evaluation/x2-area-stability/collect.py (sha256 89948f3c...), changed ONLY as the pinned diff in validation/ records: the arm is one of the four preregistered mapper
++arms (x2c.ARMS: provider, model, reasoning effort), every map call is Clawpatch invoked directly with `--provider P --model M --reasoning-effort E`, the model probe mirrors
++that invocation (codex: banner model and effort; claude: modelUsage keys, effort as requested) and records both, the frozen-X2 pins are verified before anything runs, and the
++`--arm/--work/--data` arguments are X2c's. Every X2 safeguard (preflight refusals, build-safety check, append-only bookkeeping, snapshot retry, per-call timeout, stop rule,
++abort record, claude host-auth version check) is the X2 code. Original X2 text follows.
+ 
+@@ -31,3 +37,4 @@
+ 
+-import common as C
++import x2c  # noqa: E402 (puts the frozen X2 directory on sys.path)
++import common as C  # noqa: E402 (X2's frozen common.py)
+ 
+@@ -142,3 +149,5 @@
+ def base_meta(a, spec, ws, map_id, fresh, extra_meta):
+-    return {"schema": "x2-map-v3", "arm": a.arm, "repo": a.repo, "map_id": map_id, "fresh": fresh, "provider": a.arm,
++    arm = x2c.ARMS[a.arm]
++    return {"schema": "x2c-map-v1", "arm": a.arm, "repo": a.repo, "map_id": map_id, "fresh": fresh, "provider": arm["provider"],
++            "map_model": arm["model"], "map_reasoning_effort": arm["effort"], "map_flags": x2c.arm_flags(a.arm),
+             "rev": spec["rev"], "tree": sh(["git", "rev-parse", "HEAD^{tree}"], cwd=ws).stdout.strip(), **extra_meta}
+@@ -171,3 +180,3 @@
+             rc, out, err, timed_out, ended_by = run_limited([a.node, a.cli, "--root", ws, "--state-dir", state, "--json", "map", "--source", "agent",
+-                                                             "--provider", a.arm], env, a.call_timeout, grace=a.term_grace)
++                                                             "--provider", x2c.ARMS[a.arm]["provider"], *x2c.arm_flags(a.arm)], env, a.call_timeout, grace=a.term_grace)
+         seconds = round(time.time() - t0, 1)
+@@ -273,4 +282,4 @@
+         sys.exit("refusing to start: %s set in the environment (they change the model, reasoning effort, provider or sandbox Clawpatch uses; section 2 requires defaults)" % ", ".join(set_names))
+-    if not shutil.which(a.arm):
+-        sys.exit("refusing to start: the %s CLI is not on PATH (Scout's provider resolution requires it)" % a.arm)
++    if not shutil.which(x2c.ARMS[a.arm]["provider"]):
++        sys.exit("refusing to start: the %s CLI is not on PATH (arm %s needs it)" % (x2c.ARMS[a.arm]["provider"], a.arm))
+     expect = a.expect_clawpatch_version
+@@ -282,3 +291,3 @@
+         sys.exit("refusing to start: Clawpatch CLI %s is not the review-safety build (%s); rebuild with scripts/bootstrap-tools.sh" % (a.cli, chk["reason"]))
+-    if a.arm == "claude":
++    if x2c.ARMS[a.arm]["provider"] == "claude":
+         exe = C.claude_executable(os.environ)  # CLAWPATCH_CLAUDE_BIN is honoured by Clawpatch's claude provider (providers/claude.ts claudeExecutable)
+@@ -290,2 +299,5 @@
+             sys.exit("claude arm needs Claude Code >= %s for CLAWPATCH_CLAUDE_AUTH_CONTEXT=host; found %r" % (".".join(map(str, C.CLAUDE_MIN_VERSION)), out.strip()))
++    bad = x2c.verify_pins()
++    if bad:  # X2c reuses the frozen X2 files by import: any change to them voids the reuse
++        sys.exit("refusing to start: frozen X2 files differ from their pinned digests: %s" % "; ".join(bad))
+ 
+@@ -293,19 +305,23 @@
+ def probe_model(arm, grace=C.TERM_GRACE_SECONDS):
+-    """One trivial model call through the arm's CLI, to record the model it serves in the context of the map calls (Clawpatch only exposes its option,
+-    `default`; section 2 [INFERENCE]: the maps' model is taken to be the probes' model; a transient roll or a weight change under the same name is invisible). The call mirrors Clawpatch's
+-    provider invocation (providers/codex.ts:77-90, providers/claude.ts:174-203,234-275) so that user configuration, settings and environment resolve the
+-    model exactly as for the maps: codex `exec --cd <tmp> --sandbox read-only --skip-git-repo-check -` under Clawpatch's own (process) environment, with
+-    NO --ignore-user-config/--ignore-rules; claude `-p --output-format json ... --safe-mode ...` in claudeEnv(host)'s replaced, allow-listed environment, with
+-    NO --setting-sources, the executable CLAWPATCH_CLAUDE_BIN when set. claude: the sorted, comma-joined `modelUsage` keys; codex: the `model:` line (as label.py)."""
++    """One trivial model call through the arm's CLI, to record the model AND reasoning effort it serves in the context of the map calls (Clawpatch only exposes its
++    option; section 2 [INFERENCE]: the maps' model is taken to be the probes' model; a transient roll or a weight change under the same name is invisible). The call
++    mirrors Clawpatch's provider invocation for the arm's options (providers/codex.ts:77-90,130-141, providers/claude.ts:170-212,234-275) so that user configuration,
++    settings and environment resolve the model exactly as for the maps: codex `exec --cd <tmp> --sandbox read-only --skip-git-repo-check --model M -c model_reasoning_effort="E" -`
++    under Clawpatch's own (process) environment, with NO --ignore-user-config/--ignore-rules; claude `-p --output-format json ... --safe-mode ... --model M [--effort E]` in
++    claudeEnv(host)'s replaced, allow-listed environment, with NO --setting-sources, the executable CLAWPATCH_CLAUDE_BIN when set. Values: codex the `model:` and
++    `reasoning effort:` banner lines (`reasoning_effort_source` "banner"); claude the sorted, comma-joined `modelUsage` keys and the REQUESTED effort ("requested": the
++    claude CLI does not report the effort it served; for effort `none` no flag is passed and the recorded effort is `none`)."""
+     t0 = time.time()
+     env = C.clawpatch_map_env(os.environ)
++    provider, want_effort = x2c.ARMS[arm]["provider"], x2c.ARMS[arm]["effort"]
+     with tempfile.TemporaryDirectory() as d:
+-        if arm == "claude":
++        if provider == "claude":
+             cmd = [C.claude_executable(env), "-p", "--output-format", "json", "--tools", "", "--no-session-persistence", "--safe-mode", "--strict-mcp-config",
+-                   "--mcp-config", json.dumps({"mcpServers": {}}, separators=(",", ":")), "--disable-slash-commands", "--no-chrome"]
++                   "--mcp-config", json.dumps({"mcpServers": {}}, separators=(",", ":")), "--disable-slash-commands", "--no-chrome", *x2c.claude_probe_tail(arm)]
+             env = C.claude_provider_env(env, d)
+         else:
+-            cmd = ["codex", "exec", "--cd", d, "--sandbox", "read-only", "--skip-git-repo-check", "-"]
++            cmd = ["codex", *x2c.codex_probe_args(arm, d)]
+         rc, out, err, timed_out, _sig = run_limited(cmd, env, C.PROBE_TIMEOUT_SECONDS, cwd=d, grace=grace, inp="Reply with the single word: ok")
+-    res = {"model": None, "error": None, "seconds": round(time.time() - t0, 1), "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
++    res = {"model": None, "reasoning_effort": None, "reasoning_effort_source": "requested" if provider == "claude" else "banner", "error": None,
++           "seconds": round(time.time() - t0, 1), "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+     try:
+@@ -313,7 +329,10 @@
+             res["error"] = "rc=%s%s" % (rc, " (timed out)" if timed_out else "")
+-        elif arm == "claude":
++        elif provider == "claude":
+             res["model"] = ",".join(sorted(json.loads(out).get("modelUsage", {}))) or None
++            res["reasoning_effort"] = want_effort
+         else:
+             m = re.search(r"^model:\s*(\S+)", out + err, re.M)
++            e = re.search(r"^reasoning effort:\s*(\S+)", out + err, re.M)
+             res["model"] = m.group(1) if m else None
++            res["reasoning_effort"] = e.group(1) if e else None
+     except ValueError as e:
+@@ -322,2 +341,4 @@
+         res["error"] = "no model named in the probe output"
++    if res["reasoning_effort"] is None and res["error"] is None:
++        res["error"] = "no reasoning effort named in the probe output"
+     return res
+@@ -349,2 +370,3 @@
+               "workspace_config_presence": {p: os.path.exists(os.path.join(ws, p)) for p in C.WORKSPACE_CONFIG_PATHS},  # names only; the probes run outside the workspace
++              "x2c": {"arm": a.arm, **x2c.ARMS[a.arm], "map_flags": x2c.arm_flags(a.arm), "collect_x2c_sha256": C.sha256_file(os.path.abspath(__file__)), "x2_pins": x2c.X2_PINS},
+               "model_probe_before": probe_before, "model_probe_after": None, "cli_versions_after": None, "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())})
+@@ -368,7 +390,7 @@
+     ap = argparse.ArgumentParser()
+-    ap.add_argument("--arm", required=True, choices=C.ARMS)
++    ap.add_argument("--arm", required=True, choices=list(x2c.ARMS))
+     ap.add_argument("--repo", required=True)
+     ap.add_argument("--source", required=True, help="path or URL of a clone containing the pinned revision")
+-    ap.add_argument("--work", default="/tmp/scout-x2")
+-    ap.add_argument("--data", default=C.DATA)
++    ap.add_argument("--work", default="/tmp/scout-x2c")
++    ap.add_argument("--data", default=x2c.DATA)
+     ap.add_argument("--node", default=shutil.which("node"))
