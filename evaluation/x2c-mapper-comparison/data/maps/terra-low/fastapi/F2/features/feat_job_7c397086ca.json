@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_7c397086ca",
+  "title": "Documentation preview comment action",
+  "summary": "GitHub action that comments on documentation previews.\n\nAgent mapper reason: The action definition, runtime image, and implementation are deployed together.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Action definition."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Action implementation."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Related preview workflow."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "documentation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:07:58.751Z",
+  "updatedAt": "2026-10-29T01:07:58.751Z"
+}

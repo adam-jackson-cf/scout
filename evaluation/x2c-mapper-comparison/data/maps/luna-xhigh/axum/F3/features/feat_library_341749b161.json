@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_341749b161",
+  "title": "axum-core extractor contracts",
+  "summary": "Core extractor traits, request-part handling, tuple composition, body limits, and rejection types.\n\nAgent mapper reason: These files define the reusable extraction contract and its limits, composition, and failure semantics.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Implements default request body limits."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Defines state projection for extractors."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines and exports core extractor contracts."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Defines extractor rejection behavior."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Handles extraction from request parts."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Composes multiple extractors."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Declares extractor dependencies and features."
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Documents the core crate."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "request-validation"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

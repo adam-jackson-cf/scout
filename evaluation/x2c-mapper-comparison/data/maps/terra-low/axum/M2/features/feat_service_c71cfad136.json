@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_c71cfad136",
+  "title": "Observability, middleware, and testing examples",
+  "summary": "CORS, request logging, metrics, tracing, and application testing examples.\n\nAgent mapper reason: These examples demonstrate integration and verification around request handling.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "CORS middleware example"
+    },
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Request and response inspection"
+    },
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "reason": "Metrics integration"
+    },
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "reason": "Tracing integration"
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "Application testing example"
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "Wasm router example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/testing/Cargo.toml",
+      "reason": "Testing dependencies"
+    },
+    {
+      "path": "examples/prometheus-metrics/Cargo.toml",
+      "reason": "Metrics dependencies"
+    },
+    {
+      "path": "examples/cors/Cargo.toml",
+      "reason": "CORS dependencies"
+    },
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware documentation"
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "middleware",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:29:26.547Z",
+  "updatedAt": "2026-10-29T07:32:52.960Z"
+}

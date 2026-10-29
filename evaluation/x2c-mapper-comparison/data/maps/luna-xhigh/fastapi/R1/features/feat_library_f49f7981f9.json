@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f49f7981f9",
+  "title": "Larger application composition",
+  "summary": "Package layout, shared dependencies, routers, and internal routes for a multi-module application.\n\nAgent mapper reason: The modules form one documented example where router boundaries and shared dependencies need to remain consistent.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "reason": "Composes the example application."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/dependencies.py",
+      "reason": "Defines shared application dependencies."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/items.py",
+      "reason": "Defines the items router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/users.py",
+      "reason": "Defines the users router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/internal/admin.py",
+      "reason": "Defines an internal admin route."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/bigger-applications.md",
+      "reason": "Documents the package structure and router composition."
+    },
+    {
+      "path": "docs/en/docs/img/tutorial/bigger-applications/package.svg",
+      "reason": "Illustrates the example package structure."
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an_py39.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an_py39.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routers",
+    "application-structure",
+    "dependencies"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "auth"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:40:33.924Z",
+  "updatedAt": "2026-10-29T00:40:33.924Z"
+}

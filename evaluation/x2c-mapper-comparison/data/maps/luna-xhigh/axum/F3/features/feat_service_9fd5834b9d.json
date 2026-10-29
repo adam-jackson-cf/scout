@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_9fd5834b9d",
+  "title": "Example: higher-level Rustls TLS server",
+  "summary": "Demonstrates serving Axum over Rustls TLS integration.\n\nAgent mapper reason: This example demonstrates the higher-level Rustls server integration and its local test certificate.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "Implements the TLS server."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "reason": "Declares TLS dependencies."
+    },
+    {
+      "path": "examples/tls-rustls/self_signed_certs/cert.pem",
+      "reason": "Local demonstration certificate."
+    },
+    {
+      "path": "examples/tls-rustls/self_signed_certs/key.pem",
+      "reason": "Local demonstration key fixture."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "tls",
+    "rustls"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_69f79139a4",
+  "title": "Middleware, observability, and error examples",
+  "summary": "Demonstrates CORS, request and response logging, metrics, tracing, and error handling.\n\nAgent mapper reason: These small examples cover cross-cutting HTTP middleware, instrumentation, and error responses.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "CORS middleware example."
+    },
+    {
+      "path": "examples/cors/Cargo.toml",
+      "reason": "CORS example configuration."
+    },
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Request and response inspection."
+    },
+    {
+      "path": "examples/print-request-response/Cargo.toml",
+      "reason": "Inspection example configuration."
+    },
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "reason": "Metrics instrumentation."
+    },
+    {
+      "path": "examples/prometheus-metrics/Cargo.toml",
+      "reason": "Metrics example configuration."
+    },
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "reason": "Tracing setup."
+    },
+    {
+      "path": "examples/tracing-aka-logging/Cargo.toml",
+      "reason": "Tracing example configuration."
+    },
+    {
+      "path": "examples/anyhow-error-response/src/main.rs",
+      "reason": "Error response example."
+    },
+    {
+      "path": "examples/anyhow-error-response/Cargo.toml",
+      "reason": "Error response configuration."
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/src/main.rs",
+      "reason": "Error handling and dependency injection example."
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/Cargo.toml",
+      "reason": "Error handling example configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware model."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error handling model."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "middleware",
+    "observability",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_2a4c56a62e",
+  "title": "Path and query extraction",
+  "summary": "Deserializes path parameters and query strings, including raw query access.\n\nAgent mapper reason: These extractors interpret URL-derived data and depend on routing parameters.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extractor."
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Path parameter deserialization."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query deserialization."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query access."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Matched route path extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Route parameter source."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Extractor rejection types."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Query parsing example."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:31:41.701Z",
+  "updatedAt": "2026-10-29T07:32:52.929Z"
+}

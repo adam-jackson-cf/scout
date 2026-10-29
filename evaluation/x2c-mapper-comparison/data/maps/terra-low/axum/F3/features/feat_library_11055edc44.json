@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_11055edc44",
+  "title": "Extra routing and handler composition",
+  "summary": "Adds typed routes, resource routing, and alternative handler composition.\n\nAgent mapper reason: These adapters compose handlers and routes on top of the main routing API.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Extra routing exports."
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Resource routing API."
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Typed route integration."
+    },
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Extra handler exports."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Alternative handler composition."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Typed path derive implementation."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Underlying router."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/named_fields_struct.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/typed_path/pass/named_fields_struct.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "typed-path",
+    "handlers"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:28:16.061Z",
+  "updatedAt": "2026-10-29T07:28:16.061Z"
+}

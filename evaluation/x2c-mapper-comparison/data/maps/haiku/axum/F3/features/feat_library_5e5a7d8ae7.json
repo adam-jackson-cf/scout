@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_5e5a7d8ae7",
+  "title": "axum-extra handler combinators, middleware, and crate root",
+  "summary": "Or handler combinator, Either type, middleware helpers, and axum-extra lib.rs exports.\n\nAgent mapper reason: Small combinator and crate-root set; they share the axum-extra public surface.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Crate root and feature-gated module exports"
+    },
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Handler extension traits"
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Or combinator that tries one handler then another"
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either type used by Or"
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Middleware helpers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Crate overview"
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Base Handler trait that Or extends"
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "combinators",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:14:23.770Z",
+  "updatedAt": "2026-10-29T07:14:23.770Z"
+}

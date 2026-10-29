@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b1066aee35",
+  "title": "FromRef derive macro",
+  "summary": "Derives substate references from fields of a parent state.\n\nAgent mapper reason: The derive and its compile fixtures govern state field conversion.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": "derive_from_ref",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "reason": "FromRef derive expansion."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Trait targeted by generated code."
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.stderr",
+      "reason": "Expected compile diagnostic."
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/skip.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/skip.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "procedural-macro",
+    "state"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:41:26.742Z",
+  "updatedAt": "2026-10-29T07:45:07.909Z"
+}

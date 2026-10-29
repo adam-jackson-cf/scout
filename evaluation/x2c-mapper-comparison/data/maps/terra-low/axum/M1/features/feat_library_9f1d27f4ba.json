@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9f1d27f4ba",
+  "title": "Response helpers and server-sent events",
+  "summary": "Provides response exports, redirects, and server-sent event streaming.\n\nAgent mapper reason: These modules provide HTTP response behavior on top of the core conversion contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response module exports."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect responses."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent event responses."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Response conversion contract."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Streaming event usage."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response documentation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:31:41.701Z"
+}

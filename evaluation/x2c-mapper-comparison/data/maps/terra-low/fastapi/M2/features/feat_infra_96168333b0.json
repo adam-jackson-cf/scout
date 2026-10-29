@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_96168333b0",
+  "title": "CI and release configuration",
+  "summary": "Project packaging, test automation, publication, and dependency maintenance configuration.\n\nAgent mapper reason: These files govern project installation, verification, and release operations.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Project metadata and tool configuration."
+    },
+    {
+      "path": "x2_newpkg/pyproject.toml",
+      "reason": "Additional package metadata."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Automated test workflow."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Publishing workflow."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Release-change automation."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update configuration."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local quality hook configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow context."
+    },
+    {
+      "path": "README.md",
+      "reason": "Project overview."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "packaging",
+    "release"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "permissions",
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:12:07.574Z",
+  "updatedAt": "2026-10-29T01:12:59.395Z"
+}

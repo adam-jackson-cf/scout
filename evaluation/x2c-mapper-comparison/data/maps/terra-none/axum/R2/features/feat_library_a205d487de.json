@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a205d487de",
+  "title": "TypedPath derive",
+  "summary": "Generates typed route path and URI behavior from annotated types.\n\nAgent mapper reason: Typed path generation and its fixtures define the route-template and URI conversion contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Typed route derive expansion."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Typed-routing consumer."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Macro entrypoint and UI harness."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/into_uri.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/typed_path/pass/into_uri.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "procedural-macros",
+    "routing",
+    "compile-tests"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:43:05.416Z"
+}

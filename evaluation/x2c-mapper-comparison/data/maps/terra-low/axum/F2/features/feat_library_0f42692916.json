@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0f42692916",
+  "title": "WebSocket upgrade and messaging",
+  "summary": "WebSocket extraction, upgrade, and message handling.\n\nAgent mapper reason: The upgrade and message stream form a distinct bidirectional protocol boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "WebSocket protocol integration"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "WebSocket feature dependencies"
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "WebSocket server example"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "WebSocket testing example"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "websocket",
+    "upgrade"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:26:54.302Z",
+  "updatedAt": "2026-10-29T07:26:54.302Z"
+}

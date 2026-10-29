@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_448e4a2755",
+  "title": "Repository automation workflows",
+  "summary": "Issue handling, approval labeling, change summaries, and translation notifications.\n\nAgent mapper reason: These workflows automate repository and contributor processes through GitHub.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Automates issue management."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Automates approval labeling."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Automates latest-change reporting."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Coordinates translation notifications."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Defines the translation notification action."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Implements the notification action."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "repository-automation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:47:09.724Z",
+  "updatedAt": "2026-10-29T00:47:09.724Z"
+}

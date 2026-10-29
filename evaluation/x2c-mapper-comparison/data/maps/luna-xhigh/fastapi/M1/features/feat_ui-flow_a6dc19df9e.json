@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_a6dc19df9e",
+  "title": "Documentation site client scripts and styling",
+  "summary": "Browser-side behavior and styling for the documentation site.\n\nAgent mapper reason: These scripts and styles run together in the browser-facing documentation site. The MkDocs config and template show how they enter the rendered pages.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Implements custom documentation page behavior."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Implements the documentation chat interaction."
+    },
+    {
+      "path": "docs/en/docs/js/termynal.js",
+      "reason": "Implements terminal-style documentation examples."
+    },
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Styles custom documentation elements."
+    },
+    {
+      "path": "docs/en/docs/css/termynal.css",
+      "reason": "Styles terminal-style examples."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Connects scripts and styles to the site build."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Provides the page template that hosts site assets."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "documentation",
+    "javascript",
+    "css"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:43:58.083Z",
+  "updatedAt": "2026-10-29T00:43:58.083Z"
+}

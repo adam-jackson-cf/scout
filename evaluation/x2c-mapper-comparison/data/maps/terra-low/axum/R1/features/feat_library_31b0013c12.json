@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_31b0013c12",
+  "title": "Extra body and serialization utilities",
+  "summary": "Async-read bodies, JSON Lines, Protocol Buffers, and erased JSON responses.\n\nAgent mapper reason: These optional components adapt streaming data and structured formats to HTTP bodies.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Extra crate exports"
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Body utility exports"
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Async reader body adapter"
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "JSON Lines streaming"
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protocol Buffer payload support"
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Extra response exports"
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Erased JSON response"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional serialization features"
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Crate overview"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:29:26.547Z",
+  "updatedAt": "2026-10-29T07:29:26.547Z"
+}

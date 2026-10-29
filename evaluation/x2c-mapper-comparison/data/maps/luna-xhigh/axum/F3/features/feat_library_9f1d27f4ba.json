@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9f1d27f4ba",
+  "title": "Axum response types and streaming responses",
+  "summary": "Response exports, redirects, and server-sent events.\n\nAgent mapper reason: These response types define outgoing HTTP behavior, including a streaming event protocol.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Defines and exports response types."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Implements redirect responses."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Implements server-sent event responses."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents response conversion."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares response dependencies."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Demonstrates server-sent events."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "redirect",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

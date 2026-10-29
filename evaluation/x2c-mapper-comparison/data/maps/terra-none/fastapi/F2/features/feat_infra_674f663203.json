@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_674f663203",
+  "title": "Release, CI, and repository automation",
+  "summary": "Build, test, publishing, issue, and dependency update workflow configuration.\n\nAgent mapper reason: These files control repository checks, automation, and publication; the individual workflows can be split further during a focused review.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Test workflow."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Release publication workflow."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build workflow."
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Issue automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Approval labeling automation."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Change tracking automation."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update configuration."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local pre-commit checks."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Package metadata and development tool configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow context."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Security reporting context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "release",
+    "configuration"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "secrets",
+    "permissions",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:52:33.196Z",
+  "updatedAt": "2026-10-29T00:52:33.196Z"
+}

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ab52db3823",
+  "title": "axum-extra body and data formats",
+  "summary": "Async body reading, choice types, JSON Lines, and protobuf support.\n\nAgent mapper reason: These extensions adapt body streams and provide serialization formats for HTTP payloads.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Adapts request bodies for async reading."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Defines body extension exports."
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Provides a choice type for heterogeneous results."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Implements JSON Lines streaming."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Implements protobuf request or response integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines optional format and body dependencies."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines the core body abstraction."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Provides the base JSON integration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "body",
+    "serialization",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:05:21.079Z"
+}

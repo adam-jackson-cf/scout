@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9f1d27f4ba",
+  "title": "Axum response types and server-sent events",
+  "summary": "Response conversion, redirects, and server-sent event output.\n\nAgent mapper reason: These modules produce HTTP response forms, including redirects and streamed event output.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Exports response types and response conversion."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Implements redirect responses."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Implements server-sent event responses."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines response dependencies."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents response behavior."
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Defines shared response conversion contracts."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Provides streaming body support."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "response",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

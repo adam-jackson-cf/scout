@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8c246f8fda",
+  "title": "Extra body and serialization formats",
+  "summary": "Provides async-read bodies, JSON lines, protobuf, erased JSON responses, and either values.\n\nAgent mapper reason: These optional extensions adapt bodies and serialized values at the request or response boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Extra crate exports."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Extra body exports."
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Async reader body adapter."
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either type integration."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "JSON lines streaming format."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protocol Buffers payload integration."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Extra response exports."
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Erased JSON response support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional format feature configuration."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Extra crate purpose."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "serialization",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:32:52.857Z",
+  "updatedAt": "2026-10-29T07:32:52.857Z"
+}

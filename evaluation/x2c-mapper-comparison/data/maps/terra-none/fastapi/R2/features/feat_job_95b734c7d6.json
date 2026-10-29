@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_95b734c7d6",
+  "title": "People and sponsorship automation",
+  "summary": "A GitHub Action gathers contributor and sponsor information for project documentation.\n\nAgent mapper reason: The action and workflow collect related GitHub community data for the site.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action definition."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Action runtime image."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Contributor and sponsor collection implementation."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "People automation workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "People data used by documentation."
+    },
+    {
+      "path": "docs/en/data/github_sponsors.yml",
+      "reason": "Sponsor data used by documentation."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "People page."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "contributors",
+    "sponsors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "filesystem",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:50:05.534Z",
+  "updatedAt": "2026-10-29T01:00:10.202Z"
+}

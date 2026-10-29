@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_270a4d6310",
+  "title": "Documentation preview automation",
+  "summary": "GitHub Actions and workflows for building and reporting documentation previews.\n\nAgent mapper reason: The workflow and custom actions support documentation build and preview reporting; exact wiring should be verified during review.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build workflow."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Documentation preview workflow."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Preview-related workflow."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Preview comment action definition."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Preview comment action runtime."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Preview comment action implementation."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Preview watcher action definition."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Preview watcher runtime."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Preview watcher implementation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "English documentation build configuration."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Project dependencies and tooling."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "documentation",
+    "previews"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "permissions",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:10:20.020Z",
+  "updatedAt": "2026-10-29T01:10:20.020Z"
+}

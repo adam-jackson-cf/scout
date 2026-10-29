@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_17d61befa4",
+  "title": "Authentication and session examples",
+  "summary": "Demonstrates JWT authentication, OAuth, and session handling.\n\nAgent mapper reason: These examples demonstrate identity and session boundaries.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "reason": "JWT authentication example."
+    },
+    {
+      "path": "examples/jwt/Cargo.toml",
+      "reason": "JWT dependencies."
+    },
+    {
+      "path": "examples/oauth/src/main.rs",
+      "reason": "OAuth flow example."
+    },
+    {
+      "path": "examples/oauth/Cargo.toml",
+      "reason": "OAuth dependencies."
+    },
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Session example."
+    },
+    {
+      "path": "examples/sessions/Cargo.toml",
+      "reason": "Session dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "Cookie-related framework context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "authentication",
+    "sessions"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "auth",
+    "secrets",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:45:07.909Z",
+  "updatedAt": "2026-10-29T07:45:07.909Z"
+}

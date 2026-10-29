@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_5cb7e321d6",
+  "title": "Preview watcher action",
+  "summary": "Monitors documentation preview activity.\n\nAgent mapper reason: The action code, interface, and runtime image should be reviewed as one unit.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Implements preview monitoring."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Declares the action interface."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Defines the action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Provides the preview workflow context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-action",
+    "docs-preview"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:47:09.724Z",
+  "updatedAt": "2026-10-29T00:47:09.724Z"
+}

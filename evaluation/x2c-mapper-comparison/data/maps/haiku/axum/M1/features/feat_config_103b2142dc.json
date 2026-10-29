@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_103b2142dc",
+  "title": "Workspace config, CI and release metadata",
+  "summary": "Root Cargo workspace manifest, CI workflow, dependency policy (cargo-deny) and the patch.toml workflow config.\n\nAgent mapper reason: Workspace and CI configuration govern how every crate is built and tested; reviewed together.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": "cargo check --workspace --all-targets"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace members and shared dependency versions."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "CI matrix, fmt and test commands."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Patch workflow configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "cargo-deny dependency and license policy."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue template configuration."
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "PR checklist."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contribution and release process."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Ignore rules."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "config",
+    "ci",
+    "workspace"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:19:20.641Z"
+}

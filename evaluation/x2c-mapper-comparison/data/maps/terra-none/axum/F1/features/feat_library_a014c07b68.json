@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a014c07b68",
+  "title": "Core extractor contracts and request extensions",
+  "summary": "Request extraction traits, body limits, rejection types, tuple extraction and extension methods.\n\nAgent mapper reason: These files collectively define how request data is consumed, composed and rejected.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extraction trait definitions and exports."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Body limit configuration."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "State projection contract."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Shared extractor rejection types."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Request-parts extraction."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Composition of multiple extractors."
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Extension trait module."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Request extraction extensions."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "Request-parts extraction extensions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "User-facing extraction semantics."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Higher-level extractor exports."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "command": null
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "command": null
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "request",
+    "body-limits"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:35:56.660Z"
+}

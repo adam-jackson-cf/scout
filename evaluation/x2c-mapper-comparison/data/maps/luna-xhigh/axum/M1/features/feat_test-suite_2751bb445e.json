@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_2751bb445e",
+  "title": "Axum benchmarks",
+  "summary": "Benchmarks Axum request and routing performance.\n\nAgent mapper reason: This is the package's benchmark target and should be reviewed independently from functional routing changes.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/benches/benches.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Defines crate benchmarks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines benchmark dependencies and targets."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Contains behavior measured by routing benchmarks."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/benches/benches.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "benchmarks",
+    "performance"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:08:04.674Z"
+}

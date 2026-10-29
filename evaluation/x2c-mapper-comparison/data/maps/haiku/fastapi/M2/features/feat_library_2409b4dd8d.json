@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_2409b4dd8d",
+  "title": "Docs tutorial examples (docs_src)",
+  "summary": "Runnable tutorial snippets under docs_src that the docs cite and tests/test_tutorial exercises, with per-Python-version variants.\n\nAgent mapper reason: Tutorial examples are paired with tests/test_tutorial; grouped as the example surface to keep in sync with docs.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs_src/first_steps/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/advanced_middleware_x2moved/tutorial001.py",
+      "reason": "Middleware tutorial example; directory renamed in X2 M2."
+    },
+    {
+      "path": "docs_src/advanced_middleware_x2moved/tutorial002.py",
+      "reason": "Middleware tutorial example."
+    },
+    {
+      "path": "docs_src/advanced_middleware_x2moved/tutorial003.py",
+      "reason": "Middleware tutorial example."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "reason": "Multi-router application example."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial001.py",
+      "reason": "Dependency tutorial example."
+    },
+    {
+      "path": "docs_src/query_params_str_validations/tutorial001.py",
+      "reason": "Parameter validation tutorial example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial001.py",
+      "reason": "Exercises the renamed middleware examples; still imports the old docs_src path if not updated."
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "reason": "Exercises bigger_applications example."
+    },
+    {
+      "path": "tests/test_tutorial/test_dependencies/test_tutorial001.py",
+      "reason": "Dependency tutorial test."
+    },
+    {
+      "path": "docs_src/app_testing/test_main.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "docs_src/app_testing/test_main.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "examples",
+    "tutorial"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:09:49.659Z",
+  "updatedAt": "2026-10-29T07:09:49.659Z"
+}

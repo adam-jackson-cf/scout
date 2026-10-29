@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_35be29ff79",
+  "title": "Axum state and connection metadata extraction",
+  "summary": "Application state, host, matched-path, connection information, and extension access.\n\nAgent mapper reason: These APIs expose server-provided state and request metadata to handlers through a shared extraction and extension model.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "symbol": "State",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Implements application state extraction."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Implements connection metadata extraction."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Extracts host information."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Exposes the matched route path."
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Provides extension-based request data access."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Adds Axum service extension methods."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Documents router state behavior."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents connection metadata setup."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares relevant HTTP service dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "state",
+    "connection-info"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:11:29.691Z"
+}

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_7ad93f86c6",
+  "title": "Handlers and service error conversion",
+  "summary": "Handler invocation, service adaptation, and conversion of service errors into responses.\n\nAgent mapper reason: These adapters bridge application handlers, service execution, and error responses.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler contracts and invocation"
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler futures"
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Handler-to-service adaptation"
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Handler service state adaptation"
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Service error handling adapters"
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service extension methods"
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Boxed service support"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler usage"
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error conversion contract"
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Route integration"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "tower",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:29:26.547Z"
+}

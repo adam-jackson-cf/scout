@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_71e37dd6ad",
+  "title": "Main crate wiring and test support",
+  "summary": "Owns main crate exports, internal utilities, build configuration, and shared test client.\n\nAgent mapper reason: These shared support files connect the main crate and its internal tests and benchmarks.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Crate exports and feature wiring."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Internal support macros."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared utility implementation."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Build-time configuration."
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Shared test support interface."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Test client implementation."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Performance benchmark harness."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Crate features, dependencies, and benchmark declaration."
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Public crate overview."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "crate-wiring",
+    "test-support",
+    "benchmarks"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

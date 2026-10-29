@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b91d2c1147",
+  "title": "Extra handler and middleware composition",
+  "summary": "Implements alternative handlers, either values, and extra middleware helpers.\n\nAgent mapper reason: These optional abstractions compose handlers and request-processing branches.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Handler extension API."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Alternative handler composition."
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either-based extraction and response composition."
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Extra middleware utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Base handler contract."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Base middleware contract."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "middleware",
+    "composition"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:45:07.909Z",
+  "updatedAt": "2026-10-29T07:45:07.909Z"
+}

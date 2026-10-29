@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b91d2c1147",
+  "title": "axum-extra handler composition and middleware",
+  "summary": "Alternative handlers, either-type utility, and middleware extensions.\n\nAgent mapper reason: The modules extend handler and middleware composition while relying on Axum's core service contracts.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Defines a sum type used to unify alternative values."
+    },
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Exports supplemental handler utilities."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Implements alternative handler composition."
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Provides supplemental middleware."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines extension dependencies."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines the core handler contract."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Defines core middleware constructors."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "handlers",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:11:29.627Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_6102365ad0",
+  "title": "GitHub Action: watch previews",
+  "summary": "Composite GitHub Action that watches docs preview deployments and reports their status.\n\nAgent mapper reason: Single action with its own entrypoint; related to the docs preview workflow.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Action logic"
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Action definition"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Container build for the action"
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Workflow that invokes the action"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "github-action",
+    "preview"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "external-api",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:14:50.304Z",
+  "updatedAt": "2026-10-29T07:08:55.457Z"
+}

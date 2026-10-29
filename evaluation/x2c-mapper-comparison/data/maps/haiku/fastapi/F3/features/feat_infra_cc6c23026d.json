@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_cc6c23026d",
+  "title": "GitHub Actions CI, docs and release workflows",
+  "summary": "Workflow definitions that run the test/lint matrix, build and preview docs, publish releases, generate people and release notes, and triage issues.\n\nAgent mapper reason: Workflow files share triggers, permissions and secrets handling, and are reviewed together as CI policy.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Main test and lint CI workflow"
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Release and package publishing workflow"
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build workflow"
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Docs preview deployment workflow"
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Coverage reporting workflow"
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Release notes automation"
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Scheduled people/sponsors refresh"
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Translation notification workflow"
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Issue triage automation"
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "PR approval labeling"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update schedule"
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Test and tool commands invoked by CI"
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/test.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "github-actions",
+    "release",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "permissions",
+    "process-exec",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:06.331Z",
+  "updatedAt": "2026-10-29T01:18:06.331Z"
+}

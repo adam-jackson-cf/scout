@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_accfd5d6dd",
+  "title": "Lifespan events and background tasks",
+  "summary": "Application startup and shutdown hooks, router events, and deferred background work.\n\nAgent mapper reason: Lifecycle hooks and background tasks both rely on application execution timing and async behavior. The listed tutorial tests exercise the documented task examples.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "tests/test_router_events.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "Covers router event handling."
+    },
+    {
+      "path": "docs_src/events/tutorial001.py",
+      "reason": "Demonstrates event registration."
+    },
+    {
+      "path": "docs_src/events/tutorial002.py",
+      "reason": "Shows an additional event pattern."
+    },
+    {
+      "path": "docs_src/background_tasks/tutorial001.py",
+      "reason": "Demonstrates background tasks."
+    },
+    {
+      "path": "docs_src/background_tasks/tutorial002.py",
+      "reason": "Covers a second background task example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/events.md",
+      "reason": "Documents lifecycle events."
+    },
+    {
+      "path": "docs/en/docs/tutorial/background-tasks.md",
+      "reason": "Documents deferred background work."
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial002.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial002_an.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial002_py310.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_router_events.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial002.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial002_an.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial002_py310.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "lifespan",
+    "background-tasks",
+    "async"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:43:58.083Z",
+  "updatedAt": "2026-10-29T00:43:58.083Z"
+}

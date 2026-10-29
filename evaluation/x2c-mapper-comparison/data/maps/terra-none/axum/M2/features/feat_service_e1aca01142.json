@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e1aca01142",
+  "title": "Extractor customization examples",
+  "summary": "Custom extractor errors, path rejections, body consumption, and content-type dispatch.\n\nAgent mapper reason: These examples explore extension points and rejection behavior in the request extraction lifecycle.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "Composes extractor error examples."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/custom_extractor.rs",
+      "reason": "Implements a custom extractor."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Demonstrates derive-based extraction."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Demonstrates rejection substitution."
+    },
+    {
+      "path": "examples/customize-extractor-error/Cargo.toml",
+      "reason": "Defines example dependencies."
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Customizes path extraction failures."
+    },
+    {
+      "path": "examples/customize-path-rejection/Cargo.toml",
+      "reason": "Defines path example dependencies."
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Demonstrates body consumption."
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/Cargo.toml",
+      "reason": "Defines body example dependencies."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Selects parsing by content type."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/Cargo.toml",
+      "reason": "Defines parsing example dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-extractor-error/README.md",
+      "reason": "Explains the variants."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines the extractor contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "extractors",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:47:01.861Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

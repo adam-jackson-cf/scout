@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_53e2d27ca1",
+  "title": "axum body, response and error handling",
+  "summary": "Body wrappers, streaming bodies, SSE, redirects and the HandleError/error handling helpers.\n\nAgent mapper reason: Response construction and error mapping are reviewed together as the output side of handlers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body re-exports and helpers"
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "StreamBody response"
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "HandleError and error handling"
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response module surface"
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect responses"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent events response"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documented response rules"
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Documented error handling rules"
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Core response traits"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "errors",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:22:16.654Z",
+  "updatedAt": "2026-10-29T07:22:16.654Z"
+}

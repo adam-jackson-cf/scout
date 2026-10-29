@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e5ae2bf3cb",
+  "title": "Proxy and protocol multiplexing examples",
+  "summary": "Demonstrates proxying HTTP requests and multiplexing REST with gRPC.\n\nAgent mapper reason: These examples route or forward traffic across service and protocol boundaries.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "HTTP proxy example."
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Reverse proxy example."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "REST and gRPC server setup."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "Protocol multiplexing service."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "Protocol compilation setup."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "gRPC interface definition."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/http-proxy/Cargo.toml",
+      "reason": "Proxy dependencies."
+    },
+    {
+      "path": "examples/reverse-proxy/Cargo.toml",
+      "reason": "Reverse proxy dependencies."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/Cargo.toml",
+      "reason": "Multiplexing dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "proxy",
+    "grpc"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:32:52.857Z"
+}

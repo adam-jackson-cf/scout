@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_b26f8ee50f",
+  "title": "Core library tests: responses and serialization",
+  "summary": "Repo-level tests for response models, response classes, status codes, response serialization and JSON encoding.\n\nAgent mapper reason: Response construction and encoding are one pipeline and are tested together.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Response model serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass response serialization."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Include and exclude options in response models."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "JSON encoding helper."
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "ORJSON response class."
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "Default response class configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom encoder behavior."
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "Status code override behavior."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "serialization",
+    "encoding"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:08:55.373Z",
+  "updatedAt": "2026-10-29T07:09:49.871Z"
+}

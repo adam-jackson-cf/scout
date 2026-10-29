@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_57bdf1009b",
+  "title": "Request bodies, forms, and file uploads",
+  "summary": "Tests for request body construction, media types, multipart dependencies, and body validation errors.\n\nAgent mapper reason: These tests cover conversion of incoming body, form, and file data into operation inputs, including media type and validation behavior.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Covers request body generation."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Covers validation errors across multiple body fields."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Covers request body media type selection."
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Covers form extraction from sequence types."
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "Covers multipart dependency availability behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs_src/body/tutorial001.py",
+      "reason": "Basic request body example."
+    },
+    {
+      "path": "docs_src/body_multiple_params/tutorial001.py",
+      "reason": "Shows multiple body parameters."
+    },
+    {
+      "path": "docs_src/body_fields/tutorial001.py",
+      "reason": "Shows field metadata and validation for request bodies."
+    },
+    {
+      "path": "docs_src/request_files/tutorial001.py",
+      "reason": "Shows file upload handling."
+    },
+    {
+      "path": "docs/en/docs/tutorial/body.md",
+      "reason": "Documents request bodies."
+    },
+    {
+      "path": "docs/en/docs/tutorial/request-forms-and-files.md",
+      "reason": "Documents form and file uploads."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "request-body",
+    "multipart",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:39:03.202Z",
+  "updatedAt": "2026-10-29T00:39:03.202Z"
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_7bcdaa1e4c",
+  "title": "Workspace and CI configuration",
+  "summary": "Workspace membership, dependency policy, contribution templates, and CI workflow configuration.\n\nAgent mapper reason: These files govern repository-wide development, dependency policy, and automation rather than one library feature.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Defines the Cargo workspace and shared package settings."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Sets dependency and licensing policy."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Controls ignored repository artifacts."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Defines automated validation."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Configures patch workflow behavior."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Configures issue reporting."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "reason": "Defines bug-report intake."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "reason": "Defines feature-request intake."
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "Defines pull-request reporting."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Explains contributor workflow."
+    },
+    {
+      "path": "ECOSYSTEM.md",
+      "reason": "Documents ecosystem integrations."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "policy"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

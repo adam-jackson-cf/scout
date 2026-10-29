@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_1976d98696",
+  "title": "Axum test client helpers",
+  "summary": "Provides test utilities for issuing requests against Axum services.\n\nAgent mapper reason: These helpers define the framework's in-process testing interface and request/response behavior.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Exports test helper APIs."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Implements a client for exercising services in tests."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares test-related dependencies."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Helpers operate on service interfaces."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "test-support",
+    "http"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

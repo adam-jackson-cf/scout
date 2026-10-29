@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0611060b4d",
+  "title": "axum-core shared primitives",
+  "summary": "Core body and error contracts, request extension traits, macros, and crate exports used by the higher-level Axum package.\n\nAgent mapper reason: These modules establish shared HTTP body, error, and request extension contracts consumed by Axum and related crates.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Exports the core crate API."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines shared body abstractions."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Defines shared error contracts."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Provides macros used by core modules."
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/mod.rs",
+      "reason": "Exports request extension traits."
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request.rs",
+      "reason": "Implements request extension traits."
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request_parts.rs",
+      "reason": "Implements request-parts extension traits."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Defines core dependencies and features."
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Documents the core crate."
+    },
+    {
+      "path": "axum-core/CHANGELOG.md",
+      "reason": "Records core crate changes."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Build-time input listed for the package."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "http",
+    "shared-contracts"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:11:29.627Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_be72d1f9c5",
+  "title": "axum-macros shared parsing and registration",
+  "summary": "Registers procedural macros and provides shared attribute parsing and test support.\n\nAgent mapper reason: These files provide shared syntax and registration machinery used by the individual derive and attribute macros.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Provides shared attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Provides macro crate test support."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Registers and exports procedural macros."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Provides shared syntax positioning utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Defines procedural macro dependencies and features."
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Documents macro usage."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Pins the crate's compiler toolchain."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "procedural-macros"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:08:04.674Z",
+  "updatedAt": "2026-10-29T08:08:04.674Z"
+}

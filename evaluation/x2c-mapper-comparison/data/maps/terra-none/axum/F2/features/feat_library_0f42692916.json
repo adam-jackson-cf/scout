@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0f42692916",
+  "title": "WebSocket upgrades and streams",
+  "summary": "Implements WebSocket handshake extraction, upgrade responses, and socket message handling.\n\nAgent mapper reason: Handshake validation and the upgraded socket lifecycle form a single protocol boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "symbol": "WebSocketUpgrade",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Implements WebSocket upgrade and transport APIs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "Demonstrates server-side socket usage."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "Demonstrates WebSocket testing."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines the WebSocket feature and dependencies."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "websocket",
+    "upgrade"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

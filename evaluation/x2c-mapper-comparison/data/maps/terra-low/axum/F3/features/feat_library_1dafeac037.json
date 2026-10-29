@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1dafeac037",
+  "title": "Extra cookie extractors",
+  "summary": "Provides cookie jars including signed and private variants.\n\nAgent mapper reason: Cookie parsing, response updates, signing, and privacy share a single HTTP cookie lifecycle.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "Cookie jar and extraction behavior."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "Private cookie jar."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "Signed cookie jar."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Cookie feature and dependencies."
+    },
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Session-related usage example."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "cookies",
+    "security"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "secrets",
+    "auth",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:28:16.061Z",
+  "updatedAt": "2026-10-29T07:28:16.061Z"
+}

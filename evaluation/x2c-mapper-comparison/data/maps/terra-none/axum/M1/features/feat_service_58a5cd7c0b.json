@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_58a5cd7c0b",
+  "title": "Error handling and fallback examples",
+  "summary": "Demonstrates application error responses, dependency injection, and global fallback handling.\n\nAgent mapper reason: The examples focus on converting failures and unmatched requests into responses.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/anyhow-error-response/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/anyhow-error-response/src/main.rs",
+      "reason": "Error response example."
+    },
+    {
+      "path": "examples/anyhow-error-response/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/src/main.rs",
+      "reason": "Error and dependency injection example."
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/global-404-handler/src/main.rs",
+      "reason": "Global 404 example."
+    },
+    {
+      "path": "examples/global-404-handler/Cargo.toml",
+      "reason": "Example dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Framework error-handling behavior."
+    },
+    {
+      "path": "axum/src/docs/routing/fallback.md",
+      "reason": "Fallback contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "errors",
+    "fallback"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:45:07.909Z",
+  "updatedAt": "2026-10-29T07:45:07.909Z"
+}

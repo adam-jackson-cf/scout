@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_51a0e6c550",
+  "title": "axum crate root, macros, utilities and test helpers",
+  "summary": "Crate root, re-exports, utility helpers, test client and benchmarks.\n\nAgent mapper reason: Crate-level glue and test infrastructure used across axum modules.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Crate root and re-exports"
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Internal macros"
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared helpers"
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Test helper module"
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Test client used by unit tests"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Benchmarks"
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Build script for axum"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Features and dev dependencies"
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Public crate documentation"
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "command": null
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "test-helpers",
+    "bench",
+    "crate-root"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:22:16.654Z",
+  "updatedAt": "2026-10-29T07:22:16.654Z"
+}

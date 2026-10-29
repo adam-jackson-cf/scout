@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_75030da9ef",
+  "title": "Example: todos application",
+  "summary": "Implements a task-list application with HTTP routes and persistent data.\n\nAgent mapper reason: This is a standalone application example; the exact persistence boundary is not visible in the inventory.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/todos/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "Implements todo routes and application behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/todos/Cargo.toml",
+      "reason": "Defines application dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "application",
+    "crud"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "database"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

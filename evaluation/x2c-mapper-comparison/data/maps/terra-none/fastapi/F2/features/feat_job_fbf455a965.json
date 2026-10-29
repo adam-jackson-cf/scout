@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_fbf455a965",
+  "title": "Documentation preview automation",
+  "summary": "GitHub actions and workflows that watch documentation previews and comment on pull requests.\n\nAgent mapper reason: The actions and workflows coordinate preview artifacts and pull request feedback.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Preview comment action definition."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Preview comment action implementation."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Action runtime image."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Preview watcher action definition."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Preview watcher implementation."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Watcher runtime image."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Preview workflow."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Preview publication workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Related documentation build."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "documentation",
+    "previews"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "network",
+    "secrets",
+    "permissions",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:52:33.196Z",
+  "updatedAt": "2026-10-29T00:52:33.196Z"
+}

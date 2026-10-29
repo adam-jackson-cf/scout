@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_0999a99ac7",
+  "title": "Example: parse body by content type",
+  "summary": "Demonstrates selecting request body parsing based on Content-Type.\n\nAgent mapper reason: This example demonstrates dispatching untrusted body parsing by request metadata.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Implements content-type-dependent parsing."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/parse-body-based-on-content-type/Cargo.toml",
+      "reason": "Defines parsing dependencies."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines request body handling."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines invalid input behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "content-type",
+    "parsing"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:08:04.674Z"
+}

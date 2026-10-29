@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b73d0e91f9",
+  "title": "axum responses, body, SSE, and redirects",
+  "summary": "Response body types, streaming bodies, SSE responses, and redirect helpers.\n\nAgent mapper reason: Streaming and SSE response code shares body and timing concerns and is best reviewed together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "symbol": "Sse",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body re-exports and helpers"
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Streaming body wrapper"
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response module root"
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect responses"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent events response"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response guide"
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "Response behaviour changes"
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "Browser client for SSE"
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "streaming",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:11:19.210Z",
+  "updatedAt": "2026-10-29T07:11:19.210Z"
+}

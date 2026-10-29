@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d6fd200042",
+  "title": "Database and stateful application examples",
+  "summary": "Demonstrates key-value, todo, SQLx PostgreSQL, and Tokio PostgreSQL applications.\n\nAgent mapper reason: These bounded examples demonstrate application state and persistent or shared data access.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "reason": "Key-value application."
+    },
+    {
+      "path": "examples/key-value-store/Cargo.toml",
+      "reason": "Key-value example configuration."
+    },
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "Todo application."
+    },
+    {
+      "path": "examples/todos/Cargo.toml",
+      "reason": "Todo example configuration."
+    },
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "SQLx PostgreSQL example."
+    },
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "SQLx example configuration."
+    },
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "reason": "Tokio PostgreSQL example."
+    },
+    {
+      "path": "examples/tokio-postgres/Cargo.toml",
+      "reason": "PostgreSQL example configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Application state extraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "database",
+    "state"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "database",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

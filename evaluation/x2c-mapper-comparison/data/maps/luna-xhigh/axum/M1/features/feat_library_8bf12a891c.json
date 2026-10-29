@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8bf12a891c",
+  "title": "Axum error handling",
+  "summary": "Maps service and handler failures into HTTP responses.\n\nAgent mapper reason: This module owns the conversion boundary from failed service execution to HTTP error responses.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Implements error handling service integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Documents error propagation and recovery."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "Covers route-level error handling behavior."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Defines the shared error type."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Defines the response result of handled failures."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "errors",
+    "services"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:08:04.674Z"
+}

@@ -1,0 +1,285 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_df3aeffe5c",
+  "title": "Dependency injection and overrides",
+  "summary": "Dependency declaration, sub-dependencies, caching, overrides, and cleanup behavior.\n\nAgent mapper reason: These examples and tests center on dependency graph construction, execution, caching, overrides, and cleanup.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/dependencies/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/dependencies/tutorial001.py",
+      "reason": "Basic dependency declaration example."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial001_02_an.py",
+      "reason": "Alternate annotated dependency form."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial001_02_an_py310.py",
+      "reason": "Python 3.10 annotated variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial001_02_an_py39.py",
+      "reason": "Python 3.9 annotated variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial001_an.py",
+      "reason": "Annotated dependency form."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial001_an_py310.py",
+      "reason": "Python 3.10 annotated variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial001_an_py39.py",
+      "reason": "Python 3.9 annotated variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial001_py310.py",
+      "reason": "Python 3.10 variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial002.py",
+      "reason": "Shows dependency composition."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial002_an.py",
+      "reason": "Annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial002_an_py310.py",
+      "reason": "Python 3.10 annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial002_an_py39.py",
+      "reason": "Python 3.9 annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial002_py310.py",
+      "reason": "Python 3.10 variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial003.py",
+      "reason": "Additional dependency composition example."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial003_an.py",
+      "reason": "Annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial003_an_py310.py",
+      "reason": "Python 3.10 annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial003_an_py39.py",
+      "reason": "Python 3.9 annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial003_py310.py",
+      "reason": "Python 3.10 variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial004.py",
+      "reason": "Additional dependency behavior."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial004_an.py",
+      "reason": "Annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial004_an_py310.py",
+      "reason": "Python 3.10 annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial004_an_py39.py",
+      "reason": "Python 3.9 annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial004_py310.py",
+      "reason": "Python 3.10 variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial005.py",
+      "reason": "Additional dependency behavior."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial005_an.py",
+      "reason": "Annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial005_an_py310.py",
+      "reason": "Python 3.10 annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial005_an_py39.py",
+      "reason": "Python 3.9 annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial005_py310.py",
+      "reason": "Python 3.10 variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial006.py",
+      "reason": "Additional dependency behavior."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial006_an.py",
+      "reason": "Annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial006_an_py39.py",
+      "reason": "Python 3.9 annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial007.py",
+      "reason": "Additional dependency behavior."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial008.py",
+      "reason": "Additional dependency behavior."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial008_an.py",
+      "reason": "Annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial008_an_py39.py",
+      "reason": "Python 3.9 annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial009.py",
+      "reason": "Additional dependency behavior."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial010.py",
+      "reason": "Additional dependency behavior."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial011.py",
+      "reason": "Additional dependency behavior."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial011_an.py",
+      "reason": "Annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial011_an_py39.py",
+      "reason": "Python 3.9 annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial012.py",
+      "reason": "Additional dependency behavior."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial012_an.py",
+      "reason": "Annotated typing variant."
+    },
+    {
+      "path": "docs_src/dependencies/tutorial012_an_py39.py",
+      "reason": "Python 3.9 annotated typing variant."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/dependencies/index.md",
+      "reason": "Overview of dependency injection."
+    },
+    {
+      "path": "docs/en/docs/tutorial/dependencies/sub-dependencies.md",
+      "reason": "Explains dependency composition."
+    },
+    {
+      "path": "docs/en/docs/tutorial/dependencies/dependencies-with-yield.md",
+      "reason": "Documents dependency cleanup semantics."
+    },
+    {
+      "path": "docs/en/docs/tutorial/dependencies/global-dependencies.md",
+      "reason": "Documents application-level dependency configuration."
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "injection",
+    "overrides",
+    "cleanup"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:35:34.686Z",
+  "updatedAt": "2026-10-29T00:35:34.686Z"
+}

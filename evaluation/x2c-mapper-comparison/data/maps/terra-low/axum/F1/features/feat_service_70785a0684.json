@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_70785a0684",
+  "title": "Persistence examples",
+  "summary": "Demonstrates in-memory and database-backed application state.\n\nAgent mapper reason: These examples demonstrate request handling around application data storage.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "reason": "Key-value application"
+    },
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "Todo application"
+    },
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "SQLx PostgreSQL example"
+    },
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "reason": "Tokio PostgreSQL example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "SQLx dependencies"
+    },
+    {
+      "path": "examples/tokio-postgres/Cargo.toml",
+      "reason": "PostgreSQL dependencies"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "persistence"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "database",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:25:32.591Z"
+}

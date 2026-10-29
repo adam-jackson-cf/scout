@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_cf24a9d897",
+  "title": "Examples: stateful data and database demos",
+  "summary": "Example apps using in-memory state, todos, key-value store, sqlx and tokio-postgres.\n\nAgent mapper reason: Data-backed examples share state and database handling patterns.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/todos/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": "cargo run --manifest-path examples/todos/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "In-memory CRUD example with shared state."
+    },
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "reason": "Shared key-value store example."
+    },
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "sqlx Postgres integration."
+    },
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "reason": "tokio-postgres integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "Database dependencies."
+    },
+    {
+      "path": "examples/tokio-postgres/Cargo.toml",
+      "reason": "Database dependencies."
+    },
+    {
+      "path": "examples/todos/Cargo.toml",
+      "reason": "Dependencies."
+    },
+    {
+      "path": "examples/key-value-store/Cargo.toml",
+      "reason": "Dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "database",
+    "state"
+  ],
+  "trustBoundaries": [
+    "database",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:22:16.703Z"
+}

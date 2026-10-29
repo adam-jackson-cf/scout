@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_9119d706e5",
+  "title": "Request bodies, forms, files, and multipart handling",
+  "summary": "Core tests for request body construction, media types, multipart parsing, and body validation.\n\nAgent mapper reason: These tests exercise how untrusted request payloads and uploaded files are parsed and validated.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Covers request body generation."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Covers request body media types."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Covers errors for multiple body parameters."
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "Covers combined request validation errors."
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Covers form data from non-typing sequences."
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "Covers behavior when multipart support is installed or missing."
+    },
+    {
+      "path": "tests/test_put_no_body.py",
+      "reason": "Covers bodyless PUT operations."
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "reason": "Covers tuple-shaped request data."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/body.md",
+      "reason": "Documents request body handling."
+    },
+    {
+      "path": "docs/en/docs/tutorial/request-forms.md",
+      "reason": "Documents form parsing."
+    },
+    {
+      "path": "docs/en/docs/tutorial/request-forms-and-files.md",
+      "reason": "Documents form and file uploads."
+    },
+    {
+      "path": "docs/en/docs/tutorial/request-files.md",
+      "reason": "Documents uploaded files."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "request-body",
+    "forms",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:43:58.155Z"
+}

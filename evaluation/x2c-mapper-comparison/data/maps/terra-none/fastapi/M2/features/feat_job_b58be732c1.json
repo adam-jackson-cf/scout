@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_b58be732c1",
+  "title": "Preview watcher action",
+  "summary": "GitHub action and workflows for monitoring documentation previews.\n\nAgent mapper reason: The watcher and preview workflows belong to the same preview automation area; exact workflow wiring should be checked during review.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Action definition."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Preview watcher implementation."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Action container build."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Preview-related workflow."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Documentation preview workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Related preview notification action."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "preview"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "network",
+    "secrets",
+    "permissions"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:01:44.182Z",
+  "updatedAt": "2026-10-29T01:04:20.994Z"
+}

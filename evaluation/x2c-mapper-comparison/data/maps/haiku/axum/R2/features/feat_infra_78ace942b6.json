@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_78ace942b6",
+  "title": "CI, workspace config, and supply-chain policy",
+  "summary": "Workspace manifest, CI workflow, release-plz/patch config, cargo-deny policy, and GitHub issue/PR templates.\n\nAgent mapper reason: Workspace and CI configuration govern how every slice is built and tested; reviewed as one infra unit.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": "cargo test --workspace"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "CI pipeline"
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Patch/release config"
+    },
+    {
+      "path": "deny.toml",
+      "reason": "cargo-deny supply-chain policy"
+    },
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace manifest and member list"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue template config"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "PR template"
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Ignore rules"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contribution process"
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "config",
+    "supply-chain"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:17:47.257Z",
+  "updatedAt": "2026-10-29T07:17:47.257Z"
+}

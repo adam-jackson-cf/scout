@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_2a02632472",
+  "title": "Handler and service adaptation",
+  "summary": "Adapts async handlers into services and provides service construction and extension helpers.\n\nAgent mapper reason: Handler execution and service adapters form the path from a routed request to a handler response.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait and extractor invocation."
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler response future."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Handler-to-service adapter."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "State-in-extension service adapter."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Router-to-make-service adapter."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service extension methods."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Boxed service support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler usage and contracts."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Server connection integration."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "services",
+    "state"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

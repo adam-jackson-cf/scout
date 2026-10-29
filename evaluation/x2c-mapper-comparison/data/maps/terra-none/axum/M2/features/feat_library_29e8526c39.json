@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_29e8526c39",
+  "title": "Path and query extraction",
+  "summary": "Path parameter deserialization and query string extraction.\n\nAgent mapper reason: These extractors interpret URL-derived input and share decoding and rejection concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Extracts typed route parameters."
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Deserializes route parameter values."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Deserializes query parameters."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Extracts the raw query string."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Supplies matched path parameters."
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Demonstrates path rejection handling."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Exercises query edge cases."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "path",
+    "query"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:47:01.861Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

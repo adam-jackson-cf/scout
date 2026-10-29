@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_acbf117039",
+  "title": "Release and documentation publishing workflows",
+  "summary": "GitHub workflows build documentation and publish project artifacts.\n\nAgent mapper reason: These workflows build or publish artifacts and share release credentials and deployment boundaries.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Package publishing workflow."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build workflow."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Documentation preview workflow."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Documentation preview publication workflow."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Latest-changes automation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package and build configuration."
+    },
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Documentation build configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "release",
+    "documentation",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "permissions",
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:00:10.202Z",
+  "updatedAt": "2026-10-29T01:01:44.278Z"
+}

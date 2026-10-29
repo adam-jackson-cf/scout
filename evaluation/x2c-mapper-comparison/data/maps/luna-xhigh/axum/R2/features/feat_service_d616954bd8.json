@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d616954bd8",
+  "title": "Example: JWT authentication",
+  "summary": "Demonstrates issuing or validating JWTs in request handling.\n\nAgent mapper reason: Token parsing and verification cross authentication and cryptographic boundaries.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "reason": "Implements JWT request handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/jwt/Cargo.toml",
+      "reason": "Defines token and cryptography dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "jwt",
+    "authentication"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:05:21.079Z"
+}

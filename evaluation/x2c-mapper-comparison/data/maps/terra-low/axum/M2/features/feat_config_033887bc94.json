@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_033887bc94",
+  "title": "Workspace configuration and CI",
+  "summary": "Controls workspace dependencies, security policy, and continuous integration.\n\nAgent mapper reason: Workspace and CI configuration jointly define build and validation behavior.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace configuration."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Framework package features and dependencies."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core package features and dependencies."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Extra package features and dependencies."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Macro package configuration."
+    },
+    {
+      "path": "x2_newpkg/Cargo.toml",
+      "reason": "Additional package configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Dependency policy."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Continuous integration workflow."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "CI patch configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow guidance."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "cargo",
+    "ci",
+    "configuration"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:32:52.857Z",
+  "updatedAt": "2026-10-29T07:32:52.857Z"
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_9872b7a73c",
+  "title": "Axum crate wiring and test support",
+  "summary": "Owns the main crate's public API, package features, build setup, internal helpers, and benchmark harness.\n\nAgent mapper reason: These cross-cutting files control crate integration and support tests across modules.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Public crate API and module wiring."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Shared internal macros."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared implementation utilities."
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Internal test utilities."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "HTTP test client."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Benchmark harness."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Build-time configuration."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Package features and dependency configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/README.md",
+      "reason": "Crate usage and goals."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "crate-api",
+    "build",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:45:07.909Z",
+  "updatedAt": "2026-10-29T07:45:07.909Z"
+}

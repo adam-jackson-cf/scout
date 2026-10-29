@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_341749b161",
+  "title": "axum-core extraction contracts",
+  "summary": "Traits and helpers for extracting values from requests and request parts, including body limits and rejection types.\n\nAgent mapper reason: These files define the shared extraction lifecycle and contracts that higher-level request extractors implement.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Exports core extraction traits and helpers."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Defines the default request body limit behavior."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Defines state-reference extraction."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Defines common extraction rejection behavior."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Defines extraction from request parts."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Implements tuple-based extraction composition."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Defines package features and dependencies."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Re-exports the extraction API."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "extractors",
+    "request"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

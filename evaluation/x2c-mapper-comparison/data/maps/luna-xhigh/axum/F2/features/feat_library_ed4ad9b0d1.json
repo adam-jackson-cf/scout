@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ed4ad9b0d1",
+  "title": "Axum handler invocation",
+  "summary": "Defines handler conversion, future behavior, and service-state integration.\n\nAgent mapper reason: Handler invocation connects extractor ordering, future constraints, service adaptation, and response conversion.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Defines handler future behavior."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Connects handler services to router state extensions."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines handler traits and conversion APIs."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Adapts handlers into services."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Documents handler conventions."
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Explains handler type constraints."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Handlers receive values through extractors."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Handlers return values converted into responses."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "handlers",
+    "services"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

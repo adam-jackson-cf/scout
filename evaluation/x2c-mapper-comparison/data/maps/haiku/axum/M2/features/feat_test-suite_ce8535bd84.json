@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_ce8535bd84",
+  "title": "axum routing tests",
+  "summary": "Integration-style unit tests for routing behavior: fallbacks, HEAD handling for GET routes, error handling, merge and nest.\n\nAgent mapper reason: These are the executable checks for routing behavior and are reviewed alongside the routing core they exercise.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "Test module declarations and shared helpers."
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "Fallback behavior tests."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "GET-to-HEAD fallback tests."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "Error handling tests for routed services."
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "Router merge tests."
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "Router nest tests."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Test client used by these tests."
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Test helper module."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Code under test."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tests",
+    "routing"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:17:47.257Z",
+  "updatedAt": "2026-10-29T07:22:16.705Z"
+}

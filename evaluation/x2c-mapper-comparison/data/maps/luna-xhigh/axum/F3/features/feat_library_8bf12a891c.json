@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8bf12a891c",
+  "title": "Axum error handling",
+  "summary": "Converts handler and service errors into HTTP responses.\n\nAgent mapper reason: The adapter and its usage examples define how fallible services and handlers become HTTP responses.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Implements error handling adapters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Explains error handling behavior."
+    },
+    {
+      "path": "examples/anyhow-error-response/src/main.rs",
+      "reason": "Demonstrates mapping an application error to a response."
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/src/main.rs",
+      "reason": "Demonstrates handler error handling."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares crate dependencies."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "errors",
+    "handlers"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

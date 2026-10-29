@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_77f99e3c8e",
+  "title": "Workspace and CI configuration",
+  "summary": "Cargo workspace policy, dependency checks, formatting, and continuous integration.\n\nAgent mapper reason: These files govern workspace-wide development and CI behavior, so changes should be reviewed together.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Defines the workspace and shared package configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Defines dependency and license policy."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Runs repository checks in CI."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Configures the patch workflow."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Defines repository-wide ignored paths."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Explains contributor workflows."
+    },
+    {
+      "path": "examples/README.md",
+      "reason": "Documents the example applications."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "dependency-policy"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:05:21.079Z"
+}

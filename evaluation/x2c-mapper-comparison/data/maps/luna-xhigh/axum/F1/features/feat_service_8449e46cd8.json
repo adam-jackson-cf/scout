@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_8449e46cd8",
+  "title": "Example: WebSocket testing",
+  "summary": "Demonstrates testing WebSocket interactions.\n\nAgent mapper reason: The package demonstrates exercising the WebSocket protocol through a test workflow.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/testing-websockets/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "Implements WebSocket test setup and interactions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Provides in-process test client context."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Defines WebSocket upgrade behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "testing",
+    "websocket"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T07:51:17.230Z"
+}

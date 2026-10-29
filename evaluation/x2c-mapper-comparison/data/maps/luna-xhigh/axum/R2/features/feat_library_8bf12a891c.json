@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8bf12a891c",
+  "title": "axum error handling",
+  "summary": "Converts handler and service errors into HTTP responses.\n\nAgent mapper reason: This API defines how failures cross the service boundary and become client-visible HTTP responses.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Defines error-to-response handling APIs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Documents error propagation and response conversion."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines handler result behavior."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "Exercises routing error handling."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Defines shared error conversion behavior."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "errors",
+    "responses"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:05:21.079Z"
+}

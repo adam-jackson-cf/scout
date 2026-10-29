@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_fbc8ff93a7",
+  "title": "Authentication and sessions examples",
+  "summary": "JWT, OAuth, and session example applications.\n\nAgent mapper reason: These independent examples demonstrate related identity and session boundaries.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "reason": "JWT example"
+    },
+    {
+      "path": "examples/oauth/src/main.rs",
+      "reason": "OAuth example"
+    },
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Session example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/jwt/Cargo.toml",
+      "reason": "JWT dependencies"
+    },
+    {
+      "path": "examples/oauth/Cargo.toml",
+      "reason": "OAuth dependencies"
+    },
+    {
+      "path": "examples/sessions/Cargo.toml",
+      "reason": "Session dependencies"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "authentication"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "auth",
+    "secrets",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:26:54.302Z",
+  "updatedAt": "2026-10-29T07:26:54.302Z"
+}

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_6e4a8a029e",
+  "title": "Release and change publication",
+  "summary": "Automation for publishing releases and preparing release change summaries.\n\nAgent mapper reason: The workflows share release inputs and publishing credentials, while change summaries provide release context.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Publishes package releases."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Prepares latest change information."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Defines package metadata and release configuration."
+    },
+    {
+      "path": "README.md",
+      "reason": "Provides package usage and project context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "release",
+    "publishing",
+    "package"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:47:09.802Z"
+}

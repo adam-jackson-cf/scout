@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_7b78b0fe4a",
+  "title": "Preview monitoring action",
+  "summary": "GitHub action for monitoring documentation previews.\n\nAgent mapper reason: The definition, implementation, and runtime image make up one action.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Action definition."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Preview monitoring implementation."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Related preview workflow."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Related preview workflow configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "previews"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:07:58.751Z",
+  "updatedAt": "2026-10-29T01:07:58.751Z"
+}

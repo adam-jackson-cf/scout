@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_321897f0ad",
+  "title": "Core parameter and request-body validation tests",
+  "summary": "Tests for query, path, body, and form parameter parsing, validation errors, and signature inference.\n\nAgent mapper reason: Parameter parsing and validation error behavior in one area.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_query.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_query.py",
+      "reason": "Query parameter behavior."
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "Multi-query error reporting."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Multi-body error reporting."
+    },
+    {
+      "path": "tests/test_required_noneable.py",
+      "reason": "Required nullable params."
+    },
+    {
+      "path": "tests/test_enforce_once_required_parameter.py",
+      "reason": "Required param enforcement."
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "Ambiguous parameter detection."
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "reason": "Optionality inference."
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "reason": "Param class behavior."
+    },
+    {
+      "path": "tests/test_params_repr.py",
+      "reason": "Param repr."
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "reason": "Invalid path params."
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "reason": "Invalid sequence params."
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "Param sharing between path and dependencies."
+    },
+    {
+      "path": "tests/test_param_include_in_schema.py",
+      "reason": "Schema inclusion of params."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "GET request bodies."
+    },
+    {
+      "path": "tests/test_put_no_body.py",
+      "reason": "PUT without body."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Body media types."
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Form parsing."
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "Multipart dependency checks."
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "Annotated syntax."
+    },
+    {
+      "path": "tests/test_operations_signatures.py",
+      "reason": "Operation signatures."
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "reason": "Tuple params."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/main.py",
+      "reason": "Shared test app used by several tests."
+    },
+    {
+      "path": "tests/test_query.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_query.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tests",
+    "params",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:16:38.944Z",
+  "updatedAt": "2026-10-29T01:16:38.944Z"
+}

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d9d85e7b25",
+  "title": "axum-macros debug_handler, typed_path and axum_test",
+  "summary": "debug_handler attribute, TypedPath derive and test-helper macro.\n\nAgent mapper reason: Diagnostics-focused macros and their trybuild suites share snapshot maintenance.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "debug_handler attribute"
+    },
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "TypedPath derive"
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "axum_test helper macro"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Macro entrypoints"
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Pinned toolchain for trybuild snapshots"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/ready.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/pass/ready.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "debug",
+    "typed-path"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:16:27.607Z",
+  "updatedAt": "2026-10-29T07:22:16.654Z"
+}

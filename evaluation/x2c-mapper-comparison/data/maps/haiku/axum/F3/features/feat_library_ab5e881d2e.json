@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ab5e881d2e",
+  "title": "axum-core body, error, and crate root",
+  "summary": "Body type alias, core error type, crate root exports, and the macros used across axum-core.\n\nAgent mapper reason: Foundational body and error types with shared macros; reviewed together because they are the base of the axum-core API surface.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Crate root, module declarations, and public exports"
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Body and body-stream types"
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Boxed error type used across extractors and responses"
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Internal macros for generating trait impls"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Build script that sets cfg flags; read-only context, not owned"
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Dependencies such as http-body and tower"
+    },
+    {
+      "path": "axum-core/CHANGELOG.md",
+      "reason": "Documents body and error API changes"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "body",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:14:23.770Z",
+  "updatedAt": "2026-10-29T07:14:23.770Z"
+}

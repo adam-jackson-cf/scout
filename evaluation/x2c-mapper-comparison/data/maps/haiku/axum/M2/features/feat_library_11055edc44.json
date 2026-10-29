@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_11055edc44",
+  "title": "axum-extra routing, typed paths and handler combinators",
+  "summary": "Resource routing, typed routes and Handler::or combinators.\n\nAgent mapper reason: Routing and handler extensions depend on the same Router and Handler surfaces.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Routing exports"
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "RouterExt resource routing"
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Typed path routing"
+    },
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Handler extension trait"
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Handler::or combinator"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "TypedPath derive used by typed routing"
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Router API these extensions attach to"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "typed-path",
+    "handlers"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:22:16.654Z",
+  "updatedAt": "2026-10-29T07:22:16.654Z"
+}

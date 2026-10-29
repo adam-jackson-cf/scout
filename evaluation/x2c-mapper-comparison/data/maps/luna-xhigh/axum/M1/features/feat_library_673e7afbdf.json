@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_673e7afbdf",
+  "title": "axum-extra extraction helpers",
+  "summary": "Adds cached, form, multipart, query, and rejection-wrapping extractors.\n\nAgent mapper reason: These optional extractors extend Axum's request parsing and rejection behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Implements cached extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Implements extra form extraction behavior."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Implements extra multipart extraction behavior."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Implements extra query extraction behavior."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Wraps an extractor with customized rejection behavior."
+    },
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Declares and exports extra extractor APIs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines feature and dependency configuration."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Documents extra crate APIs."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Defines the base extractor contract."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents the core extraction model."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:08:04.674Z"
+}

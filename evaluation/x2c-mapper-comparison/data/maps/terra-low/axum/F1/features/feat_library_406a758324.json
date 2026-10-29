@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_406a758324",
+  "title": "Middleware adapters",
+  "summary": "Creates middleware from functions, extractors, and request or response transformations.\n\nAgent mapper reason: The adapters share middleware ordering and request/response forwarding concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware API"
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Extractor-based middleware"
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Function-based middleware"
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Request transformation"
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Response transformation"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware ordering and usage"
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Body consumption example"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:25:32.591Z"
+}

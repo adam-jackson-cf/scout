@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_f0447a06f4",
+  "title": "Dependency injection",
+  "summary": "Resolves dependency graphs for path operations, including sub-dependencies, caching, yield-based lifecycles, and overrides.\n\nAgent mapper reason: Dependency models, solver, and concurrency helpers form one resolution pipeline.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/dependencies/__init__.py",
+      "reason": "Package marker for dependency code."
+    },
+    {
+      "path": "fastapi/dependencies/models.py",
+      "reason": "Dependant data model describing a resolved dependency tree."
+    },
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "Dependency analysis, parameter extraction, and per-request solving."
+    },
+    {
+      "path": "fastapi/concurrency.py",
+      "reason": "Thread and async bridging used by dependency execution."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/params.py",
+      "reason": "Param types that dependency analysis reads."
+    },
+    {
+      "path": "fastapi/exceptions.py",
+      "reason": "Errors raised during dependency resolution."
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "Caching semantics for dependencies."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "Yield-based dependency lifecycle."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "Dependency override mechanism."
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "Class-based dependencies."
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "Duplicate dependency handling."
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "di",
+    "async"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:09:49.659Z",
+  "updatedAt": "2026-10-29T07:09:49.659Z"
+}

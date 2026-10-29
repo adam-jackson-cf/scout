@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_e330e02ba3",
+  "title": "Documentation site configuration and assets",
+  "summary": "English documentation site configuration, templates, and client-side customization.\n\nAgent mapper reason: These files configure and customize the documentation site as a deployable interface.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "English site configuration."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Site template override."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Site client behavior."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Site client customization."
+    },
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Site styling."
+    },
+    {
+      "path": "docs/en/data/external_links.yml",
+      "reason": "External links data."
+    },
+    {
+      "path": "docs/en/data/github_sponsors.yml",
+      "reason": "Sponsor data."
+    },
+    {
+      "path": "docs/en/data/sponsors.yml",
+      "reason": "Sponsor data."
+    },
+    {
+      "path": "docs/en/data/sponsors_badge.yml",
+      "reason": "Sponsor badge data."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Site build workflow."
+    },
+    {
+      "path": "docs/en/docs/index.md",
+      "reason": "Documentation landing page."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_local_docs.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "documentation",
+    "mkdocs",
+    "frontend"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:09:24.368Z",
+  "updatedAt": "2026-10-29T01:09:24.368Z"
+}

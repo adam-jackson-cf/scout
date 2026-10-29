@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_3fbed46ec2",
+  "title": "Response serialization and models tests",
+  "summary": "Regression tests for response model validation, encoding, filtering, and status handling.\n\nAgent mapper reason: These tests cover conversion from endpoint results into HTTP response payloads and metadata.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "JSON encoding tests."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom datetime encoding tests."
+    },
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "reason": "Submodel filtering tests."
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "ORM model reading tests."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Response alias tests."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Return annotation model tests."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Response model filtering tests."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid response model tests."
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Response subtype tests."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Response serialization tests."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass serialization tests."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Model serialization tests."
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Default omission tests."
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "Status code change tests."
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "No-body status code tests."
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "Response media type tests."
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "Alternative JSON response tests."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Response model documentation."
+    },
+    {
+      "path": "docs/en/docs/tutorial/encoder.md",
+      "reason": "Encoding documentation."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tests",
+    "responses",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:50:05.534Z",
+  "updatedAt": "2026-10-29T01:04:21.070Z"
+}

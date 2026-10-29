@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_673e7afbdf",
+  "title": "Extra request extractors",
+  "summary": "Adds cached, form, query, multipart, and custom-rejection extractors.\n\nAgent mapper reason: These optional extractors extend common request parsing and rejection behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Extra extractor exports."
+    },
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Cached request extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Extra form extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Extra multipart extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Extra query extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Custom rejection adapter."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Base extractor integration."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Rejection adapter example."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "forms",
+    "query"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:32:52.857Z"
+}

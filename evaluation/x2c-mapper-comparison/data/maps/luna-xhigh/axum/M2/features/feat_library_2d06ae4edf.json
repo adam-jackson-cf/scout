@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_2d06ae4edf",
+  "title": "Axum service utilities and test client",
+  "summary": "Provides service extensions, utility helpers, and an in-process HTTP test client.\n\nAgent mapper reason: These helpers support service composition and in-process request testing; the grouping is inferred from their shared utility role.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Implements service convenience extensions."
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Declares test helper APIs."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Implements the in-process test client."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Contains shared utility logic used across the crate."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Defines service conversion used by callers and tests."
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Shows which utilities are public."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines package-level test and runtime dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "services",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:08:04.674Z",
+  "updatedAt": "2026-10-29T08:11:29.690Z"
+}

@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ae8e58243c",
+  "title": "axum extractors",
+  "summary": "Path, query, raw query/form, Host, MatchedPath, ConnectInfo, State, Request parts, Multipart and WebSocket upgrade extractors.\n\nAgent mapper reason: Extractors read untrusted request data and are reviewed together because they share rejection and parsing patterns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extractor module surface."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extractor and rejection."
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Deserializer for path parameters."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query string extractor."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query extractor."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form body extractor."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Host header extraction, a spoofable input."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "MatchedPath extractor."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "ConnectInfo peer address extraction."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "State extractor."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Request metadata extractors."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Rejection types for extractors in this crate."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart upload extractor with size and parsing concerns."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "WebSocket upgrade extractor and handshake validation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extractor documentation."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Core traits implemented by these extractors."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Feature flags for multipart, ws and matched-path."
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Example of customizing path rejections."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "path",
+    "query",
+    "websocket",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:16:27.607Z",
+  "updatedAt": "2026-10-29T07:19:20.641Z"
+}

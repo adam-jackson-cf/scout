@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_2a4c56a62e",
+  "title": "Path and query extraction",
+  "summary": "Deserializes route parameters and query strings and reports extraction failures.\n\nAgent mapper reason: These extractors convert externally supplied URI data into typed application values.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extractor and parameter handling."
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Path parameter deserializer."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Typed query extraction."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query extraction."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Matched route path extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Produces route parameter data."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Extraction rejection types."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "path",
+    "query"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:35:56.660Z"
+}

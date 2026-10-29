@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_931c719a20",
+  "title": "WebSocket, chat, and SSE examples",
+  "summary": "Interactive streaming examples, including browser assets, WebSocket clients, and testing.\n\nAgent mapper reason: Servers and client assets demonstrate related long-lived HTTP and WebSocket interactions.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Chat server"
+    },
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "Chat browser client"
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "WebSocket server"
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "WebSocket client"
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Browser WebSocket client"
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "SSE server"
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "SSE browser page"
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "SSE browser client"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "WebSocket test example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/chat/Cargo.toml",
+      "reason": "Chat dependencies"
+    },
+    {
+      "path": "examples/websockets/Cargo.toml",
+      "reason": "WebSocket dependencies"
+    },
+    {
+      "path": "examples/sse/Cargo.toml",
+      "reason": "SSE dependencies"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "websocket",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:29:26.547Z",
+  "updatedAt": "2026-10-29T07:29:26.547Z"
+}

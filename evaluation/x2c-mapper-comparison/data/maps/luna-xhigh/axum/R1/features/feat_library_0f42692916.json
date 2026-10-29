@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0f42692916",
+  "title": "Axum WebSocket extraction",
+  "summary": "WebSocket upgrade extraction and connection setup.\n\nAgent mapper reason: Upgrade validation and connection handling form a distinct network-facing extraction flow.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "symbol": "WebSocketUpgrade",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Defines upgrade extraction and WebSocket connection handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports the WebSocket extractor."
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "Demonstrates server-side WebSocket use."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "Demonstrates WebSocket testing."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "websocket",
+    "upgrade"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:02:22.984Z"
+}

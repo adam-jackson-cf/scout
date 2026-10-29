@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e158b822ac",
+  "title": "Extra routing and typed paths",
+  "summary": "Adds typed routes, query parameters, resource routing, and router extension methods.\n\nAgent mapper reason: Typed and resource routing extend the same router APIs and path contracts.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Router extensions."
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Resource route construction."
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Typed path and query integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "TypedPath derive implementation."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Base router contract."
+    },
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "typed-routing",
+    "resources"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:43:05.416Z",
+  "updatedAt": "2026-10-29T07:47:01.927Z"
+}

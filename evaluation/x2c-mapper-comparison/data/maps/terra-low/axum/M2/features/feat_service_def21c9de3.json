@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_def21c9de3",
+  "title": "TLS and server transport examples",
+  "summary": "Demonstrates TLS, alternative listeners, Hyper integration, and graceful shutdown.\n\nAgent mapper reason: These examples configure server transports and lifecycle rather than application-specific handlers.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "Rustls server example."
+    },
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "Low-level OpenSSL server example."
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Low-level Rustls server example."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Multiple listener example."
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Unix socket server example."
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "Hyper server integration example."
+    },
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Graceful server shutdown example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "reason": "TLS dependencies."
+    },
+    {
+      "path": "examples/low-level-openssl/Cargo.toml",
+      "reason": "OpenSSL dependencies."
+    },
+    {
+      "path": "examples/low-level-rustls/Cargo.toml",
+      "reason": "Rustls dependencies."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/Cargo.toml",
+      "reason": "Listener dependencies."
+    },
+    {
+      "path": "examples/unix-domain-socket/Cargo.toml",
+      "reason": "Unix socket dependencies."
+    },
+    {
+      "path": "examples/hyper-1-0/Cargo.toml",
+      "reason": "Hyper integration dependencies."
+    },
+    {
+      "path": "examples/graceful-shutdown/Cargo.toml",
+      "reason": "Shutdown dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "tls",
+    "server"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "secrets",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:32:52.857Z",
+  "updatedAt": "2026-10-29T07:32:52.857Z"
+}

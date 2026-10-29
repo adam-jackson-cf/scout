@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1f6febbbfb",
+  "title": "Core HTTP bodies, errors, and responses",
+  "summary": "Foundational body and error types and conversion of values and response parts into HTTP responses.\n\nAgent mapper reason: These primitives form the common body and response representation consumed by higher-level APIs.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Core HTTP body abstraction"
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Core error wrapper"
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response module interface"
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "Header response parts"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Response conversion implementations"
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "Response-part conversion"
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Core crate exports"
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Shared implementation macros"
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Core build configuration"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Crate configuration"
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response behavior documentation"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "http",
+    "response"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:29:26.547Z",
+  "updatedAt": "2026-10-29T07:30:36.678Z"
+}

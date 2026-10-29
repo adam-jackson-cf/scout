@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_6f886b3ac3",
+  "title": "Workspace CI and dependency policy",
+  "summary": "Workspace membership, continuous integration, and dependency policy.\n\nAgent mapper reason: These files jointly govern how the workspace is built, checked, and contributed to.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Defines workspace packages and shared Cargo settings."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Defines dependency and license policy."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Runs repository CI checks."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Configures patch automation."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Configures issue intake."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "reason": "Defines bug report intake."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "reason": "Defines feature request intake."
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "Guides pull request submissions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow guidance."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Repository-level file exclusions."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Build-time behavior relevant to workspace CI."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Build-time behavior relevant to workspace CI."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "dependencies"
+  ],
+  "trustBoundaries": [
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:02:22.984Z",
+  "updatedAt": "2026-10-29T08:02:22.984Z"
+}

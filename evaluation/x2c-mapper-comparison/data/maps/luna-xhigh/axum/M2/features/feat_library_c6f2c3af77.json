@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_c6f2c3af77",
+  "title": "Axum service adapters and extensions",
+  "summary": "Service utilities, boxed services, and extension insertion.\n\nAgent mapper reason: These APIs adapt services and attach shared request data across the routing boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Provides boxed routing and service types."
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Inserts extension values into requests."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Adds Axum service extension methods."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Provides shared service implementation utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Routes consume these service adapters."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Defines related request extension behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "services",
+    "extensions"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:02:22.984Z",
+  "updatedAt": "2026-10-29T08:11:29.703Z"
+}

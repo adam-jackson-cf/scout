@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ba75083040",
+  "title": "axum body, response, and data-type modules",
+  "summary": "JSON, form, typed header, extension, SSE, redirect, body streaming, error-handling, and crate root modules.\n\nAgent mapper reason: These modules hold axum's user-facing data types and crate-level public surface, which changes with feature flags and docs.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Crate root, feature docs, and re-exports"
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Json extractor and response"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extractor and response"
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "TypedHeader extractor"
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Extension extractor and layer"
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body re-exports and helpers"
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Streaming body response"
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "HandleError adapter"
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response module exports"
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect responses"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent events response"
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Internal macros for axum crate"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response documentation"
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error handling documentation"
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Feature flags for json, form, sse, and typed-header support"
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "Documented public API changes"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "json",
+    "forms",
+    "responses",
+    "sse",
+    "public-api"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:16:27.607Z",
+  "updatedAt": "2026-10-29T07:19:20.762Z"
+}

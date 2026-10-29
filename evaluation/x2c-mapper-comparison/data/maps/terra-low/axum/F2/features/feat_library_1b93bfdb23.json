@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1b93bfdb23",
+  "title": "Core response conversion and body primitives",
+  "summary": "Shared response conversion, header composition, body, and error types.\n\nAgent mapper reason: The response traits and supporting body and error types jointly define the framework's output contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response module interface"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Response conversion"
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "Response parts conversion"
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "Header composition"
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Shared HTTP body abstraction"
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Shared error abstraction"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core dependencies and features"
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response usage contracts"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "response",
+    "body"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:26:54.302Z",
+  "updatedAt": "2026-10-29T07:26:54.302Z"
+}

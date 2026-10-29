@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_9fec448290",
+  "title": "GitHub Actions automation",
+  "summary": "Repository actions for documentation preview comments, translation notifications, people metadata, and preview watching.\n\nAgent mapper reason: Each action has a manifest, Python implementation, and container definition, while workflow files show its invocation context. They share the repository automation boundary and review needs around inputs, permissions, and external services.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Declares the preview comment action interface."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Implements the preview comment action."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Defines the action runtime image."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Declares the translation notification action interface."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Implements translation notifications."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Defines the action runtime image."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Declares the people metadata action interface."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Implements people metadata processing."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Defines the action runtime image."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Declares the preview watcher action interface."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Implements preview watching."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Defines the action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Runs documentation preview automation."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Runs translation notifications."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Runs people metadata automation."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Builds documentation consumed by preview automation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "automation",
+    "docs"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "process-exec",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:42:06.912Z",
+  "updatedAt": "2026-10-29T00:43:58.142Z"
+}

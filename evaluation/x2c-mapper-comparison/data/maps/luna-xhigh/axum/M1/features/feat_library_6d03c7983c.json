@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6d03c7983c",
+  "title": "Axum public API and shared adapters",
+  "summary": "Crate exports, body wrappers, boxed services, utility types, and macros.\n\nAgent mapper reason: These files establish the crate-wide public surface and shared adapters that other Axum modules rely on.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Defines the public crate surface and exports."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Provides Axum-facing macros."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Provides boxed service and handler adapters."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Contains shared internal utilities."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines body module exports and behavior."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Implements streaming body support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares crate dependencies and feature gates."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Provides package build-time behavior."
+    },
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Explains the handler model exposed by the crate."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "public-api",
+    "body",
+    "service"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:08:04.755Z"
+}

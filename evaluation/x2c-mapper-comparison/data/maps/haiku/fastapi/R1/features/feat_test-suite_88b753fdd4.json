@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_88b753fdd4",
+  "title": "Dependency injection test suite",
+  "summary": "Core tests for FastAPI's Depends system: caching, class and generator dependencies, context vars, duplicates, exception propagation, and overrides.\n\nAgent mapper reason: All files exercise the same dependency resolution machinery and are reviewed together.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "Verifies dependency result caching per request"
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "Class-based dependencies"
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "Yield-based dependency lifecycle"
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "Context var propagation through dependencies"
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "Repeated dependency handling"
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "Exception behavior in dependencies"
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "app.dependency_overrides behavior"
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "Overrides applied to security dependencies"
+    },
+    {
+      "path": "tests/test_repeated_dependency_schema.py",
+      "reason": "OpenAPI schema for repeated dependencies"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/main.py",
+      "reason": "Shared test helper module"
+    },
+    {
+      "path": "docs_src/dependencies/tutorial001.py",
+      "reason": "Reference dependency example"
+    },
+    {
+      "path": "docs/en/docs/tutorial/dependencies/index.md",
+      "reason": "Documented intent of Depends"
+    },
+    {
+      "path": "docs/en/docs/advanced/advanced-dependencies.md",
+      "reason": "Documented advanced dependency behavior"
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "di",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "permissions",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:14:50.304Z",
+  "updatedAt": "2026-10-29T01:18:45.900Z"
+}

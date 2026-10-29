@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6d9ce52b64",
+  "title": "HTTP method routing",
+  "summary": "Selects handlers and services by HTTP method, including method fallback behavior.\n\nAgent mapper reason: Method filtering and dispatch jointly determine which endpoint handles an HTTP request.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Method router and method-specific helpers."
+    },
+    {
+      "path": "axum/src/routing/method_filter.rs",
+      "reason": "HTTP method filtering."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/method_routing/fallback.md",
+      "reason": "Method fallback semantics."
+    },
+    {
+      "path": "axum/src/docs/method_routing/merge.md",
+      "reason": "Method router merge semantics."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Parent router integration."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "http-methods"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:28:16.061Z",
+  "updatedAt": "2026-10-29T07:28:16.061Z"
+}

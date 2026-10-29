@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_e0ca95505e",
+  "title": "Documentation site configuration and presentation",
+  "summary": "Configures the English documentation site and its custom browser behavior.\n\nAgent mapper reason: These files compose the site shell and its custom client-side behavior.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Defines site navigation and build settings."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Customizes the site template."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Implements site chat behavior."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Implements custom site behavior."
+    },
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Styles custom site presentation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Builds the site in automation."
+    },
+    {
+      "path": "docs/en/docs/index.md",
+      "reason": "Site landing-page content."
+    },
+    {
+      "path": "docs/en/docs/js/termynal.js",
+      "reason": "Terminal presentation dependency; ownership is uncertain."
+    },
+    {
+      "path": "docs/en/docs/css/termynal.css",
+      "reason": "Terminal presentation styling; ownership is uncertain."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_local_docs.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "documentation",
+    "mkdocs",
+    "frontend"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:50:05.534Z",
+  "updatedAt": "2026-10-29T01:00:10.328Z"
+}

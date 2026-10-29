@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_1a93edd495",
+  "title": "Response serialization and model filtering tests",
+  "summary": "Regression tests cover response validation, filtering, aliases, encoders, and status behavior.\n\nAgent mapper reason: The tests jointly define the response transformation and filtering contract.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Response serialization coverage."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass serialization coverage."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Model serialization coverage."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Response alias coverage."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Return annotation coverage."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Model filtering coverage."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid response model coverage."
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Response subtype coverage."
+    },
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "reason": "Nested model filtering coverage."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "JSON encoding coverage."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom encoder coverage."
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "Response status changes coverage."
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "Bodyless response status coverage."
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Default value filtering coverage."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Response model documentation."
+    },
+    {
+      "path": "docs/en/docs/tutorial/encoder.md",
+      "reason": "JSON encoding documentation."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "serialization",
+    "regression-tests"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:00:10.202Z",
+  "updatedAt": "2026-10-29T01:00:10.202Z"
+}

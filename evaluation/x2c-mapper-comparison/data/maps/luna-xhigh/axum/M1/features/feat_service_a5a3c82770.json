@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_a5a3c82770",
+  "title": "SQLx PostgreSQL example",
+  "summary": "Demonstrates database-backed routes using SQLx and PostgreSQL.\n\nAgent mapper reason: The application connects request handling to PostgreSQL operations through SQLx.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "Declares database and runtime dependencies."
+    },
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "Implements PostgreSQL-backed handlers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Provides shared connection state."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "postgres",
+    "sqlx"
+  ],
+  "trustBoundaries": [
+    "database",
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:08:04.802Z"
+}

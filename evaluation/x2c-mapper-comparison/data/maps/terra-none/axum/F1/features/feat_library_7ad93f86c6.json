@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_7ad93f86c6",
+  "title": "Handler adaptation and error handling",
+  "summary": "Converts async handlers into services and adapts service errors to responses.\n\nAgent mapper reason: Handler invocation, service adaptation and error conversion form one request execution boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait and implementations."
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler future wrapper."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Handler-to-service adapter."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "State injection into handler services."
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Service error-to-response adapters."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Boxed service support."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service extension methods."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler semantics."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error handling model."
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Routing consumes adapted services."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "services",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:35:56.660Z"
+}

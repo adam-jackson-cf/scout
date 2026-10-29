@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_b56ff327c4",
+  "title": "Security dependency schemes",
+  "summary": "Tests for API key, HTTP authentication, OAuth2, and OpenID Connect dependency behavior and OpenAPI descriptions.\n\nAgent mapper reason: The tests cover authentication scheme parsing and its generated OpenAPI security requirements, so behavior and schema changes should be reviewed together.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "reason": "Covers API key authentication from cookies."
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_description.py",
+      "reason": "Covers cookie API key schema descriptions."
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_optional.py",
+      "reason": "Covers optional cookie API keys."
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "Covers API key authentication from headers."
+    },
+    {
+      "path": "tests/test_security_api_key_header_description.py",
+      "reason": "Covers header API key schema descriptions."
+    },
+    {
+      "path": "tests/test_security_api_key_header_optional.py",
+      "reason": "Covers optional header API keys."
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "reason": "Covers API key authentication from query parameters."
+    },
+    {
+      "path": "tests/test_security_api_key_query_description.py",
+      "reason": "Covers query API key schema descriptions."
+    },
+    {
+      "path": "tests/test_security_api_key_query_optional.py",
+      "reason": "Covers optional query API keys."
+    },
+    {
+      "path": "tests/test_security_http_base.py",
+      "reason": "Covers base HTTP authentication behavior."
+    },
+    {
+      "path": "tests/test_security_http_base_description.py",
+      "reason": "Covers HTTP authentication schema descriptions."
+    },
+    {
+      "path": "tests/test_security_http_base_optional.py",
+      "reason": "Covers optional HTTP authentication."
+    },
+    {
+      "path": "tests/test_security_http_basic_optional.py",
+      "reason": "Covers optional HTTP Basic authentication."
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "Covers HTTP Basic realm handling."
+    },
+    {
+      "path": "tests/test_security_http_basic_realm_description.py",
+      "reason": "Covers HTTP Basic realm schema descriptions."
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "Covers HTTP Bearer [SCOUT_REDACTED_SECRET]."
+    },
+    {
+      "path": "tests/test_security_http_bearer_description.py",
+      "reason": "Covers HTTP Bearer [SCOUT_REDACTED_SECRET] descriptions."
+    },
+    {
+      "path": "tests/test_security_http_bearer_optional.py",
+      "reason": "Covers optional HTTP Bearer [SCOUT_REDACTED_SECRET]."
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "reason": "Covers HTTP Digest authentication."
+    },
+    {
+      "path": "tests/test_security_http_digest_description.py",
+      "reason": "Covers HTTP Digest schema descriptions."
+    },
+    {
+      "path": "tests/test_security_http_digest_optional.py",
+      "reason": "Covers optional HTTP Digest authentication."
+    },
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "Covers OAuth2 dependency behavior."
+    },
+    {
+      "path": "tests/test_security_oauth2_authorization_code_bearer.py",
+      "reason": "Covers OAuth2 authorization code with Bearer [SCOUT_REDACTED_SECRET]."
+    },
+    {
+      "path": "tests/test_security_oauth2_authorization_code_bearer_description.py",
+      "reason": "Covers OAuth2 authorization schema descriptions."
+    },
+    {
+      "path": "tests/test_security_oauth2_optional.py",
+      "reason": "Covers optional OAuth2 authentication."
+    },
+    {
+      "path": "tests/test_security_oauth2_optional_description.py",
+      "reason": "Covers optional OAuth2 schema descriptions."
+    },
+    {
+      "path": "tests/test_security_oauth2_password_bearer_optional.py",
+      "reason": "Covers optional password Bearer [SCOUT_REDACTED_SECRET]."
+    },
+    {
+      "path": "tests/test_security_oauth2_password_bearer_optional_description.py",
+      "reason": "Covers optional password Bearer [SCOUT_REDACTED_SECRET] descriptions."
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "reason": "Covers OpenID Connect dependency behavior."
+    },
+    {
+      "path": "tests/test_security_openid_connect_description.py",
+      "reason": "Covers OpenID Connect schema descriptions."
+    },
+    {
+      "path": "tests/test_security_openid_connect_optional.py",
+      "reason": "Covers optional OpenID Connect authentication."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs_src/handling_errors/tutorial001.py",
+      "reason": "Shows an authentication-related error handling example."
+    },
+    {
+      "path": "docs/en/docs/tutorial/security/index.md",
+      "reason": "Documents security dependencies."
+    },
+    {
+      "path": "docs/en/docs/advanced/security/index.md",
+      "reason": "Documents advanced security integrations."
+    },
+    {
+      "path": "docs/en/docs/tutorial/security/oauth2-jwt.md",
+      "reason": "Documents OAuth2 and JWT usage."
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_basic_optional.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_basic_optional.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_oauth2.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "authentication",
+    "openapi"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:39:03.202Z",
+  "updatedAt": "2026-10-29T00:39:03.202Z"
+}

@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8db5a6d8c7",
+  "title": "axum-macros FromRequest and FromRef derives",
+  "summary": "Proc-macro derives for FromRequest, FromRequestParts, and FromRef, plus shared attribute parsing.\n\nAgent mapper reason: The derive implementations and their attribute parser must be reviewed together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": "FromRequest",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Proc-macro entrypoints."
+    },
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "FromRequest derive implementation."
+    },
+    {
+      "path": "axum-macros/src/from_request/attr.rs",
+      "reason": "Attribute parsing for FromRequest."
+    },
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "reason": "FromRef derive implementation."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Position-aware helper used by the derives."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/tests/from_request/pass/container.rs",
+      "reason": "Passing derive cases."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic_without_via.rs",
+      "reason": "Failing derive cases with expected stderr."
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "reason": "Passing FromRef cases."
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "reason": "Generics diagnostic for FromRef."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Proc-macro crate manifest."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Toolchain pin for the macro crate."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_request/pass/container.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "derive",
+    "FromRequest",
+    "FromRef"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:12:39.825Z",
+  "updatedAt": "2026-10-29T07:12:39.825Z"
+}

@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_81d4561d4b",
+  "title": "Documentation and release notes",
+  "summary": "Top-level and per-crate README and CHANGELOG files, ECOSYSTEM index, and example README.\n\nAgent mapper reason: Prose and changelog files are reviewed against the code they describe; grouped to keep doc drift checks in one place.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "CHANGELOG.md",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "CHANGELOG.md",
+      "reason": "Workspace changelog"
+    },
+    {
+      "path": "ECOSYSTEM.md",
+      "reason": "Ecosystem index"
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "axum changelog"
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "axum readme"
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "axum-extra readme"
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "axum-macros readme"
+    },
+    {
+      "path": "examples/README.md",
+      "reason": "Example index"
+    },
+    {
+      "path": "examples/async-graphql/README.md",
+      "reason": "Example narrative without a matching manifest in inventory"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Crate docs are the source of truth for README parity"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "release"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:17:47.257Z",
+  "updatedAt": "2026-10-29T07:19:20.810Z"
+}

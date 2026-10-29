@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0f42692916",
+  "title": "axum WebSocket extraction",
+  "summary": "Upgrades HTTP requests to WebSocket connections and extracts socket state.\n\nAgent mapper reason: WebSocket extraction crosses the HTTP upgrade boundary and owns connection lifecycle behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Implements WebSocket request extraction and upgrade behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows extractor exports."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Provides a neighboring streaming response API."
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "Demonstrates WebSocket server usage."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "Demonstrates WebSocket testing."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "websocket",
+    "upgrade"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:05:21.079Z"
+}

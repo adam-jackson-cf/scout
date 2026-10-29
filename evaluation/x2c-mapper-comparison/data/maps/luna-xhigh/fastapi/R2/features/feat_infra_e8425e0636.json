@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_e8425e0636",
+  "title": "GitHub Actions: issue management and approval labeling",
+  "summary": "Automation workflows for issue management and approved contribution labeling.\n\nAgent mapper reason: These workflows automate repository issue state and labels, so their triggers and permission scopes belong together.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Configures issue management automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Configures approval-based labeling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Defines issue template routing."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Provides privileged issue template configuration."
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/questions.yml",
+      "reason": "Provides discussion intake configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "issues",
+    "permissions"
+  ],
+  "trustBoundaries": [
+    "permissions",
+    "external-api",
+    "secrets"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:42:06.972Z"
+}

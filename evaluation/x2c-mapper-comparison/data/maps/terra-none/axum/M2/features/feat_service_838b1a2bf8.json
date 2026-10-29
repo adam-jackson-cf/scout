@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_838b1a2bf8",
+  "title": "Basic routing and request examples",
+  "summary": "Demonstrates simple routers, fallback behavior, HEAD requests, versioning, and query parameters.\n\nAgent mapper reason: These small applications exercise basic routing and request interpretation without a separate integration dependency.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/hello-world/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/hello-world/src/main.rs",
+      "reason": "Minimal server."
+    },
+    {
+      "path": "examples/readme/src/main.rs",
+      "reason": "README example server."
+    },
+    {
+      "path": "examples/global-404-handler/src/main.rs",
+      "reason": "Global fallback example."
+    },
+    {
+      "path": "examples/handle-head-request/src/main.rs",
+      "reason": "HEAD handling example."
+    },
+    {
+      "path": "examples/routes-and-handlers-close-together/src/main.rs",
+      "reason": "Route organization example."
+    },
+    {
+      "path": "examples/versioning/src/main.rs",
+      "reason": "API versioning example."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Query parsing example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Example catalog."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Router implementation."
+    },
+    {
+      "path": "examples/hello-world/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/hello-world/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:41:26.742Z",
+  "updatedAt": "2026-10-29T07:47:01.933Z"
+}

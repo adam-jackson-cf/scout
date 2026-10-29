@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1cc672fc13",
+  "title": "Extra extractor and handler composition",
+  "summary": "Composes extractors and handlers with caching, custom rejections, alternatives, and middleware.\n\nAgent mapper reason: These utilities combine or adapt existing request extraction and handler behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Cached extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Custom extractor rejection adaptation."
+    },
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Extra handler module interface."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Alternative handler composition."
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either-type composition."
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Extra middleware helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Underlying extractor contracts."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Underlying handler contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "composition",
+    "extractors",
+    "handlers"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

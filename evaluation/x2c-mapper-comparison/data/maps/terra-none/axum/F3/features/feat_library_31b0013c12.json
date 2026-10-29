@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_31b0013c12",
+  "title": "Extra body and serialization formats",
+  "summary": "Adds async-read bodies, JSON Lines, Protobuf, and erased JSON responses.\n\nAgent mapper reason: These optional adapters convert application values and readers to or from HTTP body representations.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Extra crate exports and feature wiring."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Extra body exports."
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Async reader to HTTP body adapter."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "JSON Lines streaming format."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protobuf request and response handling."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Extra response exports."
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Type-erased JSON response."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional format and streaming dependencies."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Extra crate overview."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "serialization",
+    "streaming",
+    "protobuf"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

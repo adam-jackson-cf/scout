@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8ed5ca265c",
+  "title": "axum-core ext_traits_x2moved extension traits (x2 rename)",
+  "summary": "Request and RequestParts extension traits, moved from ext_traits to ext_traits_x2moved on the x2 branch.\n\nAgent mapper reason: Isolated directory rename on branch x2 (commit 0698d84b); reviewed alone to verify module paths and trait exports after the move.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/ext_traits_x2moved/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/ext_traits_x2moved/mod.rs",
+      "reason": "Module root for the moved extension traits"
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request.rs",
+      "reason": "Request extension trait"
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request_parts.rs",
+      "reason": "RequestParts extension trait"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Must declare the renamed module path; check it matches the directory"
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Overlapping request-parts extraction code"
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Consumers of the extension traits"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "x2",
+    "rename",
+    "traits"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:22:16.654Z",
+  "updatedAt": "2026-10-29T07:22:16.654Z"
+}

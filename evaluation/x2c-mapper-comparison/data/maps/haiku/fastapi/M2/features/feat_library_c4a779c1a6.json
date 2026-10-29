@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_c4a779c1a6",
+  "title": "Security schemes",
+  "summary": "OAuth2, API key, HTTP auth and OpenID Connect security dependencies and their OpenAPI declarations.\n\nAgent mapper reason: Security scheme classes and their tests/OpenAPI output change together; auth handling is a trust boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/security/oauth2.py",
+      "symbol": "OAuth2PasswordBearer",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/security/oauth2.py",
+      "reason": "OAuth2 flows and Bearer [SCOUT_REDACTED_SECRET]"
+    },
+    {
+      "path": "fastapi/security/http.py",
+      "reason": "HTTP basic, Bearer [SCOUT_REDACTED_SECRET] digest handling"
+    },
+    {
+      "path": "fastapi/security/api_key.py",
+      "reason": "API key in header, query and cookie"
+    },
+    {
+      "path": "fastapi/security/open_id_connect_url.py",
+      "reason": "OpenID Connect discovery URL"
+    },
+    {
+      "path": "fastapi/security/base.py",
+      "reason": "SecurityBase model"
+    },
+    {
+      "path": "fastapi/security/utils.py",
+      "reason": "Authorization header parsing helper"
+    },
+    {
+      "path": "fastapi/security/__init__.py",
+      "reason": "Public security exports"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "OAuth2 behavior"
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "Basic auth realm handling"
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "API key header behavior"
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "reason": "OpenID Connect behavior"
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "Security dependency overrides"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "auth",
+    "openapi-security"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:19:28.910Z",
+  "updatedAt": "2026-10-29T07:09:49.837Z"
+}

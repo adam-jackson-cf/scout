@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0e49684393",
+  "title": "Macro crate dispatch and shared parsing",
+  "summary": "Wires procedural macro entrypoints, shared attribute parsing, positioned diagnostics, and the compile-test harness.\n\nAgent mapper reason: These shared components select macro implementations and run their compile fixtures.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Macro exports and trybuild test harness."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Position-aware macro utilities."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Internal test attribute macro."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Macro features and dependencies."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Macro crate toolchain selection."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Macro crate usage."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "procedural-macro",
+    "trybuild",
+    "configuration"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:45:07.909Z"
+}

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0f42692916",
+  "title": "Axum WebSocket upgrade extractor",
+  "summary": "WebSocket upgrade extraction and handshake integration.\n\nAgent mapper reason: The module owns the HTTP-to-WebSocket handshake boundary and resulting network connection.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Implements the WebSocket upgrade extractor and connection type."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines WebSocket dependencies and feature gates."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports the upgrade extractor."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines the HTTP body integration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "websocket",
+    "upgrade"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

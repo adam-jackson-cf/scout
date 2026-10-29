@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_103b2142dc",
+  "title": "Workspace configuration and CI",
+  "summary": "Cargo workspace membership, dependency policy, and continuous integration.\n\nAgent mapper reason: These files jointly define the scope and automated checks for the workspace.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": "cargo test --workspace"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Defines workspace membership and default members."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Defines automated validation."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Provides CI patch configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Defines dependency policy."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Documents contributor workflows."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "cargo"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:47:01.861Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

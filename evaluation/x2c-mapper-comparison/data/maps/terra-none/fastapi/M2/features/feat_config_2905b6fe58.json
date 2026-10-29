@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_2905b6fe58",
+  "title": "Continuous integration and package configuration",
+  "summary": "Project metadata, pre-commit checks, and CI define the test and quality execution environment.\n\nAgent mapper reason: These files establish the dependency and automated verification environment.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package metadata, dependencies, and tool configuration."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Pre-commit tool configuration."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "CI test workflow."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow guidance."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "hatch",
+    "quality"
+  ],
+  "trustBoundaries": [
+    "network",
+    "process-exec",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:00:10.202Z",
+  "updatedAt": "2026-10-29T01:04:20.985Z"
+}

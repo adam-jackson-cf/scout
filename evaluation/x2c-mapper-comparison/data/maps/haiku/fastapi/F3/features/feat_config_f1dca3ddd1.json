@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_f1dca3ddd1",
+  "title": "Docs site data files (sponsors, people, links)",
+  "summary": "YAML data consumed by docs pages and the people/sponsor automation.\n\nAgent mapper reason: Generated-looking data consumed together by docs templates; owned as data, not code.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/data/people.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Contributor data"
+    },
+    {
+      "path": "docs/en/data/sponsors.yml",
+      "reason": "Sponsor data"
+    },
+    {
+      "path": "docs/en/data/github_sponsors.yml",
+      "reason": "GitHub sponsor data"
+    },
+    {
+      "path": "docs/en/data/sponsors_badge.yml",
+      "reason": "Sponsor badge data"
+    },
+    {
+      "path": "docs/en/data/external_links.yml",
+      "reason": "External links data"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Writes people data"
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "Renders people data"
+    },
+    {
+      "path": "docs/en/docs/external-links.md",
+      "reason": "Renders external links"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "data"
+  ],
+  "trustBoundaries": [
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:06.331Z",
+  "updatedAt": "2026-10-29T01:18:06.331Z"
+}

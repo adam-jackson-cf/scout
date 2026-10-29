@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_b1c8a7da7c",
+  "title": "Translation notification automation",
+  "summary": "GitHub action and workflow for translation notifications.\n\nAgent mapper reason: The workflow and action implement the same notification process.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Action definition."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Notification implementation."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Action runtime image."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Workflow invoking translation notifications."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Source documentation configuration."
+    },
+    {
+      "path": "docs/es/mkdocs.yml",
+      "reason": "Example translated documentation configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "translations"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "permissions",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:07:01.777Z",
+  "updatedAt": "2026-10-29T01:11:15.690Z"
+}

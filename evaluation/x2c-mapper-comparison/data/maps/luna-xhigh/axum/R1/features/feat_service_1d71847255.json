@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_1d71847255",
+  "title": "Tracing and logging example",
+  "summary": "Demonstrates request tracing and logging integration.\n\nAgent mapper reason: The sample demonstrates tracing request activity through the application.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/tracing-aka-logging/Cargo.toml",
+      "reason": "Declares tracing dependencies."
+    },
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "reason": "Implements tracing integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Provides middleware integration points."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "tracing",
+    "observability"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:02:22.984Z"
+}

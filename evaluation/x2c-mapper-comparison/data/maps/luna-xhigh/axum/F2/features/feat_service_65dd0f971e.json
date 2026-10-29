@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_65dd0f971e",
+  "title": "Example: Tokio PostgreSQL",
+  "summary": "Connects an Axum service to PostgreSQL using Tokio Postgres.\n\nAgent mapper reason: The example connects HTTP request handling with PostgreSQL operations.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "reason": "Implements database-backed routes."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/tokio-postgres/Cargo.toml",
+      "reason": "Defines Tokio Postgres dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "database",
+    "postgresql"
+  ],
+  "trustBoundaries": [
+    "network",
+    "database",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

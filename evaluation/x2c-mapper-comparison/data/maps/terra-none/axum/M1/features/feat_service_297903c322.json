@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_297903c322",
+  "title": "TLS and listener examples",
+  "summary": "Shows TLS configurations, multiple listeners, Unix sockets, and lower-level server integration.\n\nAgent mapper reason: These examples configure transport listeners and server integration.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "OpenSSL server example."
+    },
+    {
+      "path": "examples/low-level-openssl/Cargo.toml",
+      "reason": "OpenSSL dependencies."
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Low-level Rustls server."
+    },
+    {
+      "path": "examples/low-level-rustls/Cargo.toml",
+      "reason": "Rustls dependencies."
+    },
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "TLS server example."
+    },
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "reason": "TLS dependencies."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Multiple listener example."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/Cargo.toml",
+      "reason": "Listener dependencies."
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Unix socket server."
+    },
+    {
+      "path": "examples/unix-domain-socket/Cargo.toml",
+      "reason": "Socket dependencies."
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "Hyper server integration."
+    },
+    {
+      "path": "examples/hyper-1-0/Cargo.toml",
+      "reason": "Hyper integration dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/low-level-openssl/self_signed_certs/cert.pem",
+      "reason": "Example certificate fixture."
+    },
+    {
+      "path": "examples/low-level-rustls/self_signed_certs/cert.pem",
+      "reason": "Example certificate fixture."
+    },
+    {
+      "path": "examples/tls-rustls/self_signed_certs/cert.pem",
+      "reason": "Example certificate fixture."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "tls",
+    "listeners"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "secrets",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:45:07.909Z",
+  "updatedAt": "2026-10-29T07:45:07.909Z"
+}

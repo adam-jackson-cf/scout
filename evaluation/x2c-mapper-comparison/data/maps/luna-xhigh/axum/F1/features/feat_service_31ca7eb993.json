@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_31ca7eb993",
+  "title": "Example: consume body in extractor or middleware",
+  "summary": "Demonstrates request body consumption and coordination with middleware or extractors.\n\nAgent mapper reason: The example focuses on the single-consumption constraint for request bodies across middleware and extraction.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Implements body-consuming request logic."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines body behavior used by the sample."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Defines the middleware contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "body",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T07:51:17.230Z"
+}

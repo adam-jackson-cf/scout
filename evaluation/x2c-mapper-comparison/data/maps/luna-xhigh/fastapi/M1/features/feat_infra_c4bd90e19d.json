@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_c4bd90e19d",
+  "title": "Documentation build and preview workflows",
+  "summary": "CI workflows that build documentation or publish and monitor pull request previews.\n\nAgent mapper reason: The workflows and actions form the build-to-preview path and share external preview services and repository credentials.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Builds documentation in automation."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Publishes documentation previews."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Supports preview reporting."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Defines the preview comment action."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Implements preview comment behavior."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Defines the action runtime image."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Defines preview monitoring behavior."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Implements preview monitoring."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Defines the action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Provides the site configuration consumed by the build."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "documentation",
+    "preview",
+    "ci"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "process-exec",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:40:33.924Z",
+  "updatedAt": "2026-10-29T00:43:58.143Z"
+}

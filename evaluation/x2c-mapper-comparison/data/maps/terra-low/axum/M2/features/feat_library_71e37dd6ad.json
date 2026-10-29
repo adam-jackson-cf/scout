@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_71e37dd6ad",
+  "title": "Framework crate integration and test infrastructure",
+  "summary": "Defines framework exports, shared utilities, build configuration, and test clients.\n\nAgent mapper reason: These files provide the crate-wide integration and support infrastructure for the other slices.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Framework crate surface."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Framework internal macros."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared framework utilities."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Framework build configuration."
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Shared test utilities."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Test client implementation."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Framework performance benchmarks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Framework feature and dependency configuration."
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Framework usage context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "crate-integration",
+    "testing",
+    "benchmarks"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:29:26.547Z",
+  "updatedAt": "2026-10-29T07:32:52.857Z"
+}

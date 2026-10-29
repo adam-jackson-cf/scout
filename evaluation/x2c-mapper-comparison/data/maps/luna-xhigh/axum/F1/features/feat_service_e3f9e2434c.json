@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e3f9e2434c",
+  "title": "Example: HTTP proxy",
+  "summary": "Demonstrates forwarding HTTP requests to an upstream service.\n\nAgent mapper reason: The sample forwards client traffic across an upstream network boundary.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "Implements the proxy service."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares service and HTTP dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "proxy",
+    "http"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T07:51:17.230Z"
+}

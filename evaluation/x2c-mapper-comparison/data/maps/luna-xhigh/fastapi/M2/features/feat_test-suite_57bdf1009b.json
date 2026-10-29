@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_57bdf1009b",
+  "title": "Request body, forms, and file inputs",
+  "summary": "Request body parsing, multiple body parameters, multipart inputs, and parameter media types.\n\nAgent mapper reason: These cases share request-body decoding and validation boundaries, while the examples distinguish JSON bodies from forms and uploaded files.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Covers request body extraction."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Checks errors for multiple body values."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Covers media types for body parameters."
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Checks form parsing for sequence types."
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "Covers multipart dependency behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs_src/body/tutorial001.py",
+      "reason": "Demonstrates request body declarations."
+    },
+    {
+      "path": "docs_src/body_multiple_params/tutorial001.py",
+      "reason": "Shows multiple body parameters."
+    },
+    {
+      "path": "docs_src/request_files/tutorial001.py",
+      "reason": "Demonstrates file input handling."
+    },
+    {
+      "path": "docs/en/docs/tutorial/body.md",
+      "reason": "Documents request body behavior."
+    },
+    {
+      "path": "docs/en/docs/tutorial/request-forms-and-files.md",
+      "reason": "Documents form and file inputs."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_get_request_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "request-body",
+    "forms",
+    "files",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:43:58.083Z",
+  "updatedAt": "2026-10-29T00:47:09.805Z"
+}

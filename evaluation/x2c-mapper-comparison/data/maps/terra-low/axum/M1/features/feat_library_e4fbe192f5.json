@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e4fbe192f5",
+  "title": "Path, query, and request metadata extractors",
+  "summary": "Extracts URL parameters, query data, host, matched path, and connection metadata.\n\nAgent mapper reason: These extractors interpret request metadata and routing-derived values.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extractor module API"
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extraction"
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Path deserialization"
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query extraction"
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query access"
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Host extraction"
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Matched route extraction"
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Connection metadata"
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Request parts extractors"
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Extractor rejection types"
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Typed header extraction"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Route parameter source"
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extractor contracts"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "url"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:31:41.752Z"
+}

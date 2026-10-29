@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_940a5a5c41",
+  "title": "Core body, error, and crate wiring",
+  "summary": "Shared body and error types, crate exports, internal macros, and build configuration.\n\nAgent mapper reason: These files provide the core crate's shared infrastructure and public module wiring.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Defines crate modules and public exports."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines shared body functionality."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Defines the shared error wrapper."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Provides crate-internal macros."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Controls crate build configuration."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Defines crate dependencies and features."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/README.md",
+      "reason": "Describes the crate's intended scope."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "body",
+    "crate-wiring"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:45:07.909Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

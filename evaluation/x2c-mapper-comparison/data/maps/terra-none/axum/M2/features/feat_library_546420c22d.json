@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_546420c22d",
+  "title": "Request context and state extractors",
+  "summary": "Extracts connection information, host, matched path, state, extensions, headers, and request parts.\n\nAgent mapper reason: These components expose request metadata and application context to handlers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports request extractors."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Supplies connection metadata."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Extracts host information."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Extracts matched route paths."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Extracts request parts."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Extracts application state."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines extractor rejection types."
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Provides request-extension extraction."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Extracts and emits typed headers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Documents router state."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents connection metadata setup."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "state",
+    "request-context"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:47:01.861Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

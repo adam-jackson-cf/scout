@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_e8a9355e93",
+  "title": "Response and serialization test suite",
+  "summary": "Tests for response model handling, response classes, status codes, jsonable_encoder and dataclass/model serialization.\n\nAgent mapper reason: All exercise how return values are validated, filtered and serialized to responses.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Core response serialization"
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass response serialization"
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Model response serialization"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "include/exclude filtering"
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid response model handling"
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Sub-type response handling"
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Alias handling in responses"
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "Status code overrides"
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "jsonable_encoder behavior"
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "skip_defaults option"
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom JSON encoders"
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "ORJSON response class"
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "Default response class"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Documented response_model intent"
+    },
+    {
+      "path": "docs/en/docs/advanced/custom-response.md",
+      "reason": "Custom response documentation"
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "serialization",
+    "pydantic"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:14:50.304Z",
+  "updatedAt": "2026-10-29T01:19:29.029Z"
+}

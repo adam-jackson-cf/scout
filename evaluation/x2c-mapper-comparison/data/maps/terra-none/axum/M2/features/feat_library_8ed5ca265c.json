@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8ed5ca265c",
+  "title": "Core request extension traits",
+  "summary": "Request and request-parts extension helpers in the moved extension-traits directory.\n\nAgent mapper reason: The three files implement one request extension API; the crate root's module declaration is important context.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/ext_traits_x2moved/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/ext_traits_x2moved/mod.rs",
+      "reason": "Groups the extension traits."
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request.rs",
+      "reason": "Implements request extension methods."
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request_parts.rs",
+      "reason": "Implements request-parts extension methods."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Declares and re-exports the extension traits."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines the extraction contracts used by the helpers."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "request",
+    "extractors",
+    "module-resolution"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:47:01.861Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

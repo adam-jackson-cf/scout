@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_25095c7429",
+  "title": "Request input and validation examples",
+  "summary": "Demonstrates form, multipart, query, and validation handling.\n\nAgent mapper reason: These examples demonstrate parsing and validation of user-supplied HTTP input.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/form/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Form example."
+    },
+    {
+      "path": "examples/form/Cargo.toml",
+      "reason": "Form example configuration."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart example."
+    },
+    {
+      "path": "examples/multipart-form/Cargo.toml",
+      "reason": "Multipart example configuration."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Query parsing example."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/Cargo.toml",
+      "reason": "Query example configuration."
+    },
+    {
+      "path": "examples/validator/src/main.rs",
+      "reason": "Request validation example."
+    },
+    {
+      "path": "examples/validator/Cargo.toml",
+      "reason": "Validation example configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extraction implementation."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart extraction implementation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "forms",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_406a758324",
+  "title": "Request middleware adapters",
+  "summary": "Middleware built from functions, extractors and request or response mapping.\n\nAgent mapper reason: These adapters implement the same interception and transformation pipeline.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware exports."
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Extractor-driven middleware."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Function-driven middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Request mapping."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Response mapping."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware usage and ordering."
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Router layer application."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "services"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "auth"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:35:56.660Z"
+}

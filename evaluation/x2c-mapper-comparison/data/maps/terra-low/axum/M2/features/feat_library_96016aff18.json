@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_96016aff18",
+  "title": "Middleware adapters and error handling",
+  "summary": "Transforms requests and responses, runs extractor or function middleware, and maps service errors.\n\nAgent mapper reason: These layers intercept request processing and determine transformed requests, responses, and errors.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware module surface."
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Extractor middleware adapter."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Function middleware adapter."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Request mapping middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Response mapping middleware."
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Service error conversion."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware ordering and usage."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error handling contract."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:30:36.636Z",
+  "updatedAt": "2026-10-29T07:32:52.857Z"
+}

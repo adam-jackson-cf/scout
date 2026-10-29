@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_93cb154521",
+  "title": "Security scheme test suite",
+  "summary": "Tests for API key, HTTP auth, OAuth2 and OpenID Connect security schemes, including optional and description variants and their OpenAPI output.\n\nAgent mapper reason: Each file covers one security scheme variant; they share the same security dependency and OpenAPI generation paths.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "reason": "API key in cookie"
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "API key in header"
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "reason": "API key in query"
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "HTTP basic realm handling"
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "Bearer [SCOUT_REDACTED_SECRET] handling"
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "reason": "HTTP digest handling"
+    },
+    {
+      "path": "tests/test_security_http_base.py",
+      "reason": "Generic HTTP auth scheme"
+    },
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "OAuth2 password flow"
+    },
+    {
+      "path": "tests/test_security_oauth2_authorization_code_bearer.py",
+      "reason": "OAuth2 authorization code flow"
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "reason": "OpenID Connect scheme"
+    },
+    {
+      "path": "tests/test_security_oauth2_optional.py",
+      "reason": "Optional OAuth2 auth"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "Swagger UI OAuth configuration"
+    },
+    {
+      "path": "docs/en/docs/advanced/security/http-basic-auth.md",
+      "reason": "Documented HTTP basic behavior"
+    },
+    {
+      "path": "docs/en/docs/advanced/security/oauth2-scopes.md",
+      "reason": "Documented OAuth2 scopes"
+    },
+    {
+      "path": "docs/en/docs/tutorial/security/index.md",
+      "reason": "Security tutorial intent"
+    },
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "auth",
+    "openapi"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "user-input",
+    "secrets"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:14:50.304Z",
+  "updatedAt": "2026-10-29T07:08:55.475Z"
+}

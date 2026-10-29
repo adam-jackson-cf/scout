@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_1d1fb7eea0",
+  "title": "Proxy and protocol multiplexing examples",
+  "summary": "Demonstrates HTTP forwarding, reverse proxying, and combined REST and gRPC services.\n\nAgent mapper reason: These examples forward or dispatch requests across service and protocol boundaries.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "HTTP proxy application."
+    },
+    {
+      "path": "examples/http-proxy/Cargo.toml",
+      "reason": "Proxy dependencies."
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Reverse proxy application."
+    },
+    {
+      "path": "examples/reverse-proxy/Cargo.toml",
+      "reason": "Reverse proxy dependencies."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "REST and gRPC server setup."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "Protocol dispatch service."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "Protocol schema build integration."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "Source protocol schema."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/Cargo.toml",
+      "reason": "Multiplexing dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service integration context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "proxy",
+    "grpc"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "external-api",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:45:07.909Z",
+  "updatedAt": "2026-10-29T07:45:07.909Z"
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d9d85e7b25",
+  "title": "axum-macros debug_handler, typed_path, and axum_test",
+  "summary": "debug_handler attribute diagnostics, TypedPath derive, and axum_test helper macro with their trybuild suites.\n\nAgent mapper reason: Diagnostic-focused macros with their own trybuild expectations, separate from the derive set.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "#[debug_handler] implementation"
+    },
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "TypedPath derive implementation"
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "axum_test attribute implementation"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/tests/debug_handler/pass/state_and_body.rs",
+      "reason": "Passing debug_handler case"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/wrong_return_type.rs",
+      "reason": "Failing debug_handler diagnostic case"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "reason": "Wildcard typed path case"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_field.rs",
+      "reason": "Missing field diagnostic case"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/pass/state_and_body.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/wrong_return_type.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_field.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "diagnostics",
+    "typed-path"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:16:27.607Z",
+  "updatedAt": "2026-10-29T07:16:27.607Z"
+}

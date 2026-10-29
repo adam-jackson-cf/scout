@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_31245d713a",
+  "title": "axum-macros debug_handler and FromRef derives",
+  "summary": "debug_handler attribute macro that produces better handler type errors, and the FromRef derive.\n\nAgent mapper reason: Both macros have trybuild-style pass/fail tests and produce compile-time diagnostics.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "debug_handler implementation."
+    },
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "reason": "FromRef derive implementation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Documents debug_handler usage."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Macro entry points."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/ready.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/pass/ready.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "debug-handler",
+    "from-ref"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:22:16.695Z"
+}

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_95b734c7d6",
+  "title": "Community and sponsor data automation",
+  "summary": "Collects GitHub community activity and sponsor information for project documentation.\n\nAgent mapper reason: The action and workflow share the same GitHub data collection and publication lifecycle.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Defines the action interface."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Queries and processes community and sponsorship data."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Builds the action runtime."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Invokes community data automation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Community data used by documentation."
+    },
+    {
+      "path": "docs/en/data/github_sponsors.yml",
+      "reason": "Sponsor data used by documentation."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "Documents the people directory."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "community"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "filesystem",
+    "process-exec",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:50:05.534Z",
+  "updatedAt": "2026-10-29T01:04:20.875Z"
+}

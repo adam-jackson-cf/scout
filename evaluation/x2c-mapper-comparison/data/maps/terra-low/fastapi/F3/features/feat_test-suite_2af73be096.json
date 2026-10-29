@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_2af73be096",
+  "title": "API key security behavioral tests",
+  "summary": "Tests for API keys supplied through cookies, headers, and query parameters.\n\nAgent mapper reason: The tests cover the same API key security contract across three credential locations.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "reason": "Cookie API key behavior."
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_description.py",
+      "reason": "Cookie scheme description."
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_optional.py",
+      "reason": "Optional cookie API key."
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "Header API key behavior."
+    },
+    {
+      "path": "tests/test_security_api_key_header_description.py",
+      "reason": "Header scheme description."
+    },
+    {
+      "path": "tests/test_security_api_key_header_optional.py",
+      "reason": "Optional header API key."
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "reason": "Query API key behavior."
+    },
+    {
+      "path": "tests/test_security_api_key_query_description.py",
+      "reason": "Query scheme description."
+    },
+    {
+      "path": "tests/test_security_api_key_query_optional.py",
+      "reason": "Optional query API key."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/security/first-steps.md",
+      "reason": "Security dependency context."
+    },
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "api-key",
+    "regression"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:09:24.368Z",
+  "updatedAt": "2026-10-29T01:09:24.368Z"
+}

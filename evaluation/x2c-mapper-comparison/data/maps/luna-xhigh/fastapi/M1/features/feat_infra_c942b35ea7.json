@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_c942b35ea7",
+  "title": "Continuous integration and repository checks",
+  "summary": "GitHub test workflow and pre-commit configuration for repository validation.\n\nAgent mapper reason: The workflow and pre-commit configuration define how repository checks are invoked in CI and locally. The project manifest supplies command and tool context.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Defines automated test workflow execution."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Defines local pre-commit checks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Declares project checks and tooling configuration."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Provides contributor workflow context."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/test.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "testing",
+    "quality-gates"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:43:58.083Z"
+}

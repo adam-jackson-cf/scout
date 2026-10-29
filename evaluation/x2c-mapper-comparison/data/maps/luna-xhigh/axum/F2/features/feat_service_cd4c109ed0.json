@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_cd4c109ed0",
+  "title": "Example: sessions",
+  "summary": "Implements session handling for an Axum application.\n\nAgent mapper reason: The service reads and writes session state associated with client requests.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sessions/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Implements session storage and route behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sessions/Cargo.toml",
+      "reason": "Defines session and storage dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "sessions",
+    "authentication"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "secrets",
+    "auth",
+    "database"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

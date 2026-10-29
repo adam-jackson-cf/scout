@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b73d0e91f9",
+  "title": "Streaming responses and body adapters",
+  "summary": "Provides body stream adapters, redirects, and server-sent event responses.\n\nAgent mapper reason: These files implement HTTP response and streaming body behavior at the public response boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "symbol": "Sse",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body exports and helpers."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Streaming HTTP body adapter."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response exports."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect response construction."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent event framing and streaming."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Underlying response conversion."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "SSE usage."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "streaming",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:41:26.742Z",
+  "updatedAt": "2026-10-29T07:43:05.776Z"
+}

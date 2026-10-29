@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_278e69fe9e",
+  "title": "Project and package configuration",
+  "summary": "Hatch project configuration and the separately declared x2_newpkg package.\n\nAgent mapper reason: These manifests define build and development behavior. Keep the nested package configuration distinct because its source files are unavailable here.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Defines the root package, development tooling, and project commands."
+    },
+    {
+      "path": "x2_newpkg/pyproject.toml",
+      "reason": "Declares a separate package whose implementation files are not present in the supplied inventory."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Shows repository-wide checks used alongside the project configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "hatch",
+    "tooling"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:43:58.083Z",
+  "updatedAt": "2026-10-29T00:43:58.083Z"
+}

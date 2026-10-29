@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_unknown_5956a408dd",
+  "title": "Examples: realtime and gRPC",
+  "summary": "Examples for chat, SSE, WebSockets, testing WebSockets, and REST plus gRPC multiplexing.\n\nAgent mapper reason: Long-lived connections and multiplexing share concurrency and input-handling concerns.",
+  "kind": "unknown",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "WebSocket chat server"
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "SSE example"
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "WebSocket server example"
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "WebSocket client example"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "WebSocket testing example"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "REST and gRPC server"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "Multiplex service dispatch"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "Front-end for chat example"
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "SSE front-end"
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "SSE client script"
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "WebSocket client script"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "Build script generating gRPC code; read-only context, not owned"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "gRPC schema"
+    },
+    {
+      "path": "examples/chat/Cargo.toml",
+      "reason": "Example manifest"
+    },
+    {
+      "path": "examples/sse/Cargo.toml",
+      "reason": "Example manifest"
+    },
+    {
+      "path": "examples/websockets/Cargo.toml",
+      "reason": "Example manifest"
+    },
+    {
+      "path": "examples/testing-websockets/Cargo.toml",
+      "reason": "Example manifest"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/Cargo.toml",
+      "reason": "Example manifest"
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "websockets",
+    "sse",
+    "grpc"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:14:23.770Z",
+  "updatedAt": "2026-10-29T07:14:23.770Z"
+}

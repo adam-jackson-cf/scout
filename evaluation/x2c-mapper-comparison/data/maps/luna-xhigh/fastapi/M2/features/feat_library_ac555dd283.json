@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ac555dd283",
+  "title": "Larger application composition example",
+  "summary": "Documented multi-module application with routers, shared dependencies, and internal routes.\n\nAgent mapper reason: These modules form one example application and are tested as a unit. Annotation variants are included because they demonstrate the same package composition under supported typing styles.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "reason": "Composes the example application."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/dependencies.py",
+      "reason": "Defines dependencies shared by example routes."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/items.py",
+      "reason": "Implements the example items router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/users.py",
+      "reason": "Implements the example users router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/internal/admin.py",
+      "reason": "Defines an internal admin route."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/main.py",
+      "reason": "Typed-annotation variant of the composed example."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/main.py",
+      "reason": "Python 3.9 annotation variant of the composed example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/bigger-applications.md",
+      "reason": "Explains the package structure and router composition."
+    },
+    {
+      "path": "docs/en/docs/img/tutorial/bigger-applications/package.svg",
+      "reason": "Shows the documented package layout."
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an_py39.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an_py39.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routers",
+    "example-app",
+    "documentation-examples"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:43:58.083Z",
+  "updatedAt": "2026-10-29T00:47:09.796Z"
+}

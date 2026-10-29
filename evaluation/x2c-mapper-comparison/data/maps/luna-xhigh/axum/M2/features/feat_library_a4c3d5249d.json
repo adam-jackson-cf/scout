@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a4c3d5249d",
+  "title": "axum response utilities and redirects",
+  "summary": "Response construction, response-part composition, and redirect helpers.\n\nAgent mapper reason: The response API and redirects share response construction contracts and client-visible semantics.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Defines the response module API and common response types."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Builds redirect responses."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Defines lower-level response conversion."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents response behavior."
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Shows public response exports."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "responses",
+    "redirects"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:11:29.699Z"
+}

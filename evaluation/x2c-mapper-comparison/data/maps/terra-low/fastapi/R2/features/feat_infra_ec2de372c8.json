@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_ec2de372c8",
+  "title": "Documentation preview automation",
+  "summary": "GitHub actions and workflows for documentation builds and previews.\n\nAgent mapper reason: The actions and workflows collaborate around documentation preview publication and notifications.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Preview comment action definition."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Preview comment implementation."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Action runtime image."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Preview watcher action definition."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Preview watcher implementation."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Action runtime image."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build workflow."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Documentation preview workflow."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Preview hosting workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Documentation site configuration."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Project tooling configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "documentation",
+    "preview"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "permissions",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:07:01.777Z",
+  "updatedAt": "2026-10-29T01:11:15.689Z"
+}

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_1db338e439",
+  "title": "Observability, CORS, and application testing examples",
+  "summary": "Demonstrates request logging, tracing, metrics, CORS, and application testing.\n\nAgent mapper reason: These examples demonstrate cross-cutting application behavior and its verification.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "Application testing example."
+    },
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "CORS configuration example."
+    },
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Request and response inspection example."
+    },
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "reason": "Metrics instrumentation example."
+    },
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "reason": "Tracing and logging example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/testing/Cargo.toml",
+      "reason": "Testing dependencies."
+    },
+    {
+      "path": "examples/cors/Cargo.toml",
+      "reason": "CORS dependencies."
+    },
+    {
+      "path": "examples/print-request-response/Cargo.toml",
+      "reason": "Request logging dependencies."
+    },
+    {
+      "path": "examples/prometheus-metrics/Cargo.toml",
+      "reason": "Metrics dependencies."
+    },
+    {
+      "path": "examples/tracing-aka-logging/Cargo.toml",
+      "reason": "Tracing dependencies."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "observability",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:32:52.857Z"
+}

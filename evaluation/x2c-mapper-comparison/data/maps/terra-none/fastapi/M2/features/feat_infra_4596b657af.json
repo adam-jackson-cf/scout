@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_4596b657af",
+  "title": "Continuous integration and publication workflows",
+  "summary": "Defines test, documentation build, release, and repository management automation.\n\nAgent mapper reason: These workflow files control repository-wide automation; action implementations are reviewed in separate slices.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Defines automated test execution."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Defines publication automation."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Defines documentation build automation."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Defines documentation preview automation."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Defines preview artifact publication."
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Defines issue management automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Defines approval labeling automation."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Defines latest-change automation."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Configures dependency update automation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Project build and test configuration."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Related local quality checks."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "release",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "permissions",
+    "process-exec",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:04:20.875Z",
+  "updatedAt": "2026-10-29T01:04:20.875Z"
+}

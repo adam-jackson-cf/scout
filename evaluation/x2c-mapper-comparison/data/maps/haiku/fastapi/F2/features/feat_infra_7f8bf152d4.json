@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_7f8bf152d4",
+  "title": "Community automation workflows",
+  "summary": "Workflows for issue triage, approval labels, people updates, and translation notifications.\n\nAgent mapper reason: All four are repo-automation triggers with token permissions and similar risk.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Automated issue management."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Labels PRs after approval."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Scheduled people-data refresh."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Triggers translation notifications."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action run by people.yml."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Action run by notify-translations.yml."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "community",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "permissions",
+    "secrets",
+    "auth",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:16:38.944Z",
+  "updatedAt": "2026-10-29T01:16:38.944Z"
+}

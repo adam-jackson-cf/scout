@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_5ae907c0cd",
+  "title": "Extractor and rejection examples",
+  "summary": "Demonstrates custom extractors, body consumption, rejection customization, and query parsing.\n\nAgent mapper reason: These examples explore extraction and error handling at request boundaries.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "Runs the custom rejection examples."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/custom_extractor.rs",
+      "reason": "Implements a custom extractor."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Shows derive-based customization."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Shows rejection wrapping."
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Customizes path extraction failures."
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Demonstrates body consumption."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Demonstrates query parsing edge cases."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Selects body parsing by content type."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-extractor-error/README.md",
+      "reason": "Explains the customization approaches."
+    },
+    {
+      "path": "examples/customize-extractor-error/Cargo.toml",
+      "reason": "Defines the example package."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor contracts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "extractors",
+    "rejections"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

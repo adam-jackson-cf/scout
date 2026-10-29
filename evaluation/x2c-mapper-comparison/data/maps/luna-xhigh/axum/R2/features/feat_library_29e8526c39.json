@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_29e8526c39",
+  "title": "axum path and query extraction",
+  "summary": "Path parameters and query-string extraction, including raw query access.\n\nAgent mapper reason: These extractors parse URL-controlled input and share deserialization and rejection semantics.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Deserializes captured path parameters."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Defines path extraction and rejection behavior."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Deserializes query parameters."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Exposes the undecoded query string."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Defines the extractor API surface."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor behavior."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Provides shared rejection types."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "path",
+    "query"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:02:22.984Z",
+  "updatedAt": "2026-10-29T08:05:21.079Z"
+}

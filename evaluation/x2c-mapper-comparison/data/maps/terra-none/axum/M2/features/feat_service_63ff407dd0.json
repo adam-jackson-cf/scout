@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_63ff407dd0",
+  "title": "Routing and validation examples",
+  "summary": "Demonstrates CORS, HEAD requests, route organization, versioning, validation, and a WASM router.\n\nAgent mapper reason: These small examples illustrate routing policy and input handling around handlers.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "CORS middleware example."
+    },
+    {
+      "path": "examples/cors/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/handle-head-request/src/main.rs",
+      "reason": "HEAD request handling."
+    },
+    {
+      "path": "examples/handle-head-request/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/routes-and-handlers-close-together/src/main.rs",
+      "reason": "Route organization."
+    },
+    {
+      "path": "examples/routes-and-handlers-close-together/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/versioning/src/main.rs",
+      "reason": "API versioning example."
+    },
+    {
+      "path": "examples/versioning/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/validator/src/main.rs",
+      "reason": "Input validation example."
+    },
+    {
+      "path": "examples/validator/Cargo.toml",
+      "reason": "Validation dependencies."
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "WASM router example."
+    },
+    {
+      "path": "examples/simple-router-wasm/Cargo.toml",
+      "reason": "WASM dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Base router implementation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "routing",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:45:07.909Z",
+  "updatedAt": "2026-10-29T07:47:01.932Z"
+}

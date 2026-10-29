@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_1312b55e7f",
+  "title": "Example: customize extractor errors",
+  "summary": "Shows custom extractors and rejection conversion strategies.\n\nAgent mapper reason: The example's separate implementations compare custom extraction and rejection behavior as one topic.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/customize-extractor-error/src/custom_extractor.rs",
+      "reason": "Implements a custom extractor."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Demonstrates derive-based extraction."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "Wires extractor examples into routes."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Demonstrates rejection conversion."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-extractor-error/Cargo.toml",
+      "reason": "Defines example dependencies."
+    },
+    {
+      "path": "examples/customize-extractor-error/README.md",
+      "reason": "Explains the example variations."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines rejection behavior."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Provides a related rejection wrapper."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "extractors",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

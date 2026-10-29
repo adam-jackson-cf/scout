@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_24670ee277",
+  "title": "WebSocket upgrades and streaming responses",
+  "summary": "Implements WebSocket upgrades, server-sent events, redirects, and framework response exports.\n\nAgent mapper reason: These modules implement specialized response and connection behaviors at the HTTP boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "WebSocket upgrade and messaging."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent event responses."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect response construction."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Framework response module exports."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "WebSocket server example."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Server-sent event example."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "websocket",
+    "streaming",
+    "responses"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:32:52.857Z",
+  "updatedAt": "2026-10-29T07:32:52.857Z"
+}

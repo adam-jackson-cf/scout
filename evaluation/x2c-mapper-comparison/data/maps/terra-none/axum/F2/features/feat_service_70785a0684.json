@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_70785a0684",
+  "title": "Database and stateful application examples",
+  "summary": "Demonstrates in-memory state, a todo application, and PostgreSQL integrations.\n\nAgent mapper reason: These examples demonstrate persistence or shared mutable application state behind HTTP handlers.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "reason": "Implements a stateful key-value example."
+    },
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "Implements the todo example."
+    },
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "Integrates PostgreSQL through SQLx."
+    },
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "reason": "Integrates PostgreSQL through tokio-postgres."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "Defines SQLx dependencies."
+    },
+    {
+      "path": "examples/tokio-postgres/Cargo.toml",
+      "reason": "Defines PostgreSQL dependencies."
+    },
+    {
+      "path": "examples/todos/Cargo.toml",
+      "reason": "Defines the todo package."
+    },
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/todos/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "state",
+    "database"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "database",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

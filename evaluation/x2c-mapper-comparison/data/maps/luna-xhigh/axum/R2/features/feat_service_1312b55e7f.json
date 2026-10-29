@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_1312b55e7f",
+  "title": "Example: customize extractor errors",
+  "summary": "Demonstrates custom extractors, derive-based extraction, and rejection mapping.\n\nAgent mapper reason: The files demonstrate related ways to customize extractor parsing and client-visible rejection behavior.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/customize-extractor-error/src/custom_extractor.rs",
+      "reason": "Defines a custom extractor."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Demonstrates derive-based extraction."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "Wires the custom extraction examples into a server."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Demonstrates rejection customization."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-extractor-error/Cargo.toml",
+      "reason": "Defines macro and extractor dependencies."
+    },
+    {
+      "path": "examples/customize-extractor-error/README.md",
+      "reason": "Explains the example's variants."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "extractors",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:05:21.079Z"
+}

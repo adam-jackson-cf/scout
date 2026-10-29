@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_c6d7573591",
+  "title": "Response helpers and streamed bodies",
+  "summary": "Provides redirects, server-sent events, and streaming body adapters.\n\nAgent mapper reason: These modules create and stream common response forms.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/redirect.rs",
+      "symbol": "Redirect",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response helpers and re-exports."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect response construction."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent event streaming."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body API and exports."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Stream-to-body adapter."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Core response conversion."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "SSE usage."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "sse",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:45:07.909Z",
+  "updatedAt": "2026-10-29T07:47:01.925Z"
+}

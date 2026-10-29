@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_4115aef90b",
+  "title": "Example: print requests and responses",
+  "summary": "Logs or displays HTTP request and response data for inspection.\n\nAgent mapper reason: The example intercepts request and response data and should be reviewed for its middleware behavior.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Implements request and response inspection."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/print-request-response/Cargo.toml",
+      "reason": "Defines logging dependencies."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Provides related request transformation middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Provides related response transformation middleware."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "logging",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

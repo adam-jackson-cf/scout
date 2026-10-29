@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_c05290094c",
+  "title": "OAuth2 and OpenID Connect",
+  "summary": "OAuth2 flows, scopes, optional credentials, and OpenID Connect declarations.\n\nAgent mapper reason: OAuth2 and OpenID Connect helpers contribute related authentication metadata and OpenAPI security declarations. Their flow and optionality tests belong together.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "Covers OAuth2 security declarations."
+    },
+    {
+      "path": "tests/test_security_oauth2_authorization_code_bearer.py",
+      "reason": "Checks authorization-code Bearer [SCOUT_REDACTED_SECRET] behavior."
+    },
+    {
+      "path": "tests/test_security_oauth2_optional.py",
+      "reason": "Covers optional OAuth2 credentials."
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "reason": "Covers OpenID Connect declarations."
+    },
+    {
+      "path": "tests/test_security_openid_connect_optional.py",
+      "reason": "Checks optional OpenID Connect credentials."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/security/oauth2-jwt.md",
+      "reason": "Documents OAuth2 and JWT usage."
+    },
+    {
+      "path": "docs/en/docs/tutorial/security/simple-oauth2.md",
+      "reason": "Documents a simple OAuth2 flow."
+    },
+    {
+      "path": "docs/en/docs/advanced/security/oauth2-scopes.md",
+      "reason": "Explains OAuth2 scopes."
+    },
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_oauth2_authorization_code_bearer.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_oauth2_optional.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_openid_connect_optional.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_oauth2_authorization_code_bearer.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_oauth2_optional.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_openid_connect_optional.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "oauth2",
+    "openid-connect"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:43:58.083Z",
+  "updatedAt": "2026-10-29T00:47:09.809Z"
+}

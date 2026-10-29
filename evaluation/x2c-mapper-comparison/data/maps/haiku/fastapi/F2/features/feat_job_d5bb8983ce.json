@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_d5bb8983ce",
+  "title": "Watch-previews action",
+  "summary": "Docker-based action that watches docs preview deployments and reports status.\n\nAgent mapper reason: Grouped with the preview-docs workflow by name; the caller link is inferred, not confirmed.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Action entrypoint polling preview status."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Action metadata."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Container build."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Likely caller of this action (inferred from the name)."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "docs-preview"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "network",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:16:38.944Z",
+  "updatedAt": "2026-10-29T01:16:38.944Z"
+}

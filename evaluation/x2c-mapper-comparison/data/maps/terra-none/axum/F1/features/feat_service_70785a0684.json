@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_70785a0684",
+  "title": "Database and stateful application examples",
+  "summary": "Key-value, todo and PostgreSQL-backed application examples.\n\nAgent mapper reason: These applications demonstrate request handling with persistent or shared mutable state.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "reason": "Key-value application."
+    },
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "Todo application."
+    },
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "SQLx PostgreSQL example."
+    },
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "reason": "Tokio PostgreSQL example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/key-value-store/Cargo.toml",
+      "reason": "Application dependencies."
+    },
+    {
+      "path": "examples/todos/Cargo.toml",
+      "reason": "Application dependencies."
+    },
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "Database dependencies."
+    },
+    {
+      "path": "examples/tokio-postgres/Cargo.toml",
+      "reason": "Database dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "database",
+    "state"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "database",
+    "concurrency",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:35:56.660Z"
+}

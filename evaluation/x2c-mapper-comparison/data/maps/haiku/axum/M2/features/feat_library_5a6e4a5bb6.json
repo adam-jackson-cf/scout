@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_5a6e4a5bb6",
+  "title": "axum-extra body, response and misc helpers",
+  "summary": "Async read bodies, JSON lines, protobuf, erased JSON, middleware helpers.\n\nAgent mapper reason: Body and response helpers share serialization and streaming concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "AsyncReadBody"
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Body module"
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "JSON Lines body/extractor"
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Middleware helpers"
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protobuf extractor/response"
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Type-erased JSON response"
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Response module"
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Crate root"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/CHANGELOG.md",
+      "reason": "Documented changes"
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional feature flags for protobuf and json-lines"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "response",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:22:16.654Z",
+  "updatedAt": "2026-10-29T07:22:16.654Z"
+}

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4984c7e697",
+  "title": "axum-macros FromRequest derive",
+  "summary": "Derives request extraction for structs and enums with state and rejection options.\n\nAgent mapper reason: The derive expansion, attribute parser, and compile-pass/fail cases jointly define generated request extraction and its constraints.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "symbol": "FromRequest",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "Implements FromRequest derive expansion."
+    },
+    {
+      "path": "axum-macros/src/from_request/attr.rs",
+      "reason": "Parses derive attributes."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Registers the derive macro."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Provides shared attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Provides syntax position support."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Declares macro dependencies."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines the extraction trait contract."
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/container.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/tuple_via.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/unknown_attr_field.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_request/pass/container.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/tuple_via.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/unknown_attr_field.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "derive",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T07:51:17.230Z"
+}

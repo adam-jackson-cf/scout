@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_d9d8a749ad",
+  "title": "Request parameter regression tests",
+  "summary": "Tests parameter inference, validation, aliases, and request body parsing.\n\nAgent mapper reason: These tests cover binding and validating untrusted request input.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "Tests ambiguous parameter declarations."
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "Tests annotated parameters."
+    },
+    {
+      "path": "tests/test_enforce_once_required_parameter.py",
+      "reason": "Tests required parameter handling."
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Tests form sequence handling."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Tests request body access."
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "reason": "Tests optionality inference."
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "reason": "Tests invalid path parameters."
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "reason": "Tests invalid sequence parameters."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Tests multiple body validation errors."
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "Tests multiple query validation errors."
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "Tests multipart dependency handling."
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "reason": "Tests parameter classes."
+    },
+    {
+      "path": "tests/test_param_include_in_schema.py",
+      "reason": "Tests parameter schema inclusion."
+    },
+    {
+      "path": "tests/test_params_repr.py",
+      "reason": "Tests parameter representations."
+    },
+    {
+      "path": "tests/test_path.py",
+      "reason": "Tests path parameters."
+    },
+    {
+      "path": "tests/test_query.py",
+      "reason": "Tests query parameters."
+    },
+    {
+      "path": "tests/test_repeated_cookie_headers.py",
+      "reason": "Tests repeated cookie headers."
+    },
+    {
+      "path": "tests/test_repeated_parameter_alias.py",
+      "reason": "Tests repeated parameter aliases."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Tests request media types."
+    },
+    {
+      "path": "tests/test_required_noneable.py",
+      "reason": "Tests required nullable parameters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/query-params.md",
+      "reason": "Describes query input."
+    },
+    {
+      "path": "docs/en/docs/tutorial/body.md",
+      "reason": "Describes request bodies."
+    },
+    {
+      "path": "tests/test_path.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_query.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_path.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_query.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "validation",
+    "parameters",
+    "tests"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:04:20.875Z",
+  "updatedAt": "2026-10-29T01:04:20.875Z"
+}

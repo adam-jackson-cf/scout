@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_406a758324",
+  "title": "Middleware adapters",
+  "summary": "Constructs middleware from functions and extractors and maps requests or responses.\n\nAgent mapper reason: The adapters transform the same request-response pipeline and share middleware ordering concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware exports."
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Extractor middleware."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Function middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Request mapping."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Response mapping."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware behavior and ordering."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extractor contracts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:32:52.930Z"
+}

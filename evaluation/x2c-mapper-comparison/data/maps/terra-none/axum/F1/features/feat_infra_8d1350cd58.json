@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_8d1350cd58",
+  "title": "Workspace and continuous integration",
+  "summary": "Workspace membership, dependency policy and CI configuration.\n\nAgent mapper reason: Workspace and CI settings jointly determine what gets built and checked.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace membership and shared configuration."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Continuous integration workflow."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "CI dependency patch configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Dependency policy."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow."
+    },
+    {
+      "path": "Cargo.toml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "Cargo.toml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "dependencies"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:35:56.660Z"
+}

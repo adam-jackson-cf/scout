@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_df262a1597",
+  "title": "Sessions example",
+  "summary": "Demonstrates session management in an Axum application.\n\nAgent mapper reason: Session state and its cookie transport form a single authentication-related flow.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sessions/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sessions/Cargo.toml",
+      "reason": "Declares the example package and session dependencies."
+    },
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Implements session handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "Provides cookie support used in session flows."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "sessions",
+    "authentication"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:02:22.984Z"
+}

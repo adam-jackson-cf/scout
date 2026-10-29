@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_ce0b722b60",
+  "title": "Workspace configuration and continuous integration",
+  "summary": "Defines workspace membership, dependency policy, and automated checks.\n\nAgent mapper reason: These files jointly determine package membership, feature configurations, and automated validation.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Defines workspace members and defaults."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines main framework package configuration."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Defines core package configuration."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines extension package configuration."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Defines procedural macro package configuration."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Selects the macro crate toolchain."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Runs repository automation."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Configures workflow patching."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Defines dependency policy."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Describes contributor workflows."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "cargo",
+    "ci",
+    "dependency-policy"
+  ],
+  "trustBoundaries": [
+    "network",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

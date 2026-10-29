@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_be72d1f9c5",
+  "title": "Macro crate infrastructure",
+  "summary": "Defines procedural macro entrypoints and shared parsing and test support.\n\nAgent mapper reason: Shared parsing and entrypoint infrastructure affects multiple procedural macros.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Macro crate entrypoints."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Shared syntax position support."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Macro test support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Macro package configuration."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Macro toolchain selection."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "procedural-macros",
+    "test-support"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:28:16.061Z",
+  "updatedAt": "2026-10-29T07:28:16.061Z"
+}

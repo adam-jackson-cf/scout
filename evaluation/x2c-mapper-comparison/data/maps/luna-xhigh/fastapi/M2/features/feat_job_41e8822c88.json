@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_41e8822c88",
+  "title": "GitHub action: translation notifications",
+  "summary": "Action and workflow for notifying translation contributors or maintainers.\n\nAgent mapper reason: The action and its calling workflow jointly define how translation notifications execute.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Implements translation notification behavior."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Defines the action interface."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Defines the action runtime image."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Schedules and configures the translation notification action."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Provides repository contributor metadata that may inform documentation ownership."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "translations",
+    "notifications"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:47:09.791Z"
+}

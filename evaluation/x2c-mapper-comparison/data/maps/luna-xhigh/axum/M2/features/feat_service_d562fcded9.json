@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d562fcded9",
+  "title": "Example: reverse proxy",
+  "summary": "Demonstrates forwarding requests to a reverse-proxy target.\n\nAgent mapper reason: This example bridges inbound requests and a configured upstream service.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Implements reverse-proxy routing and forwarding."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/reverse-proxy/Cargo.toml",
+      "reason": "Defines proxy dependencies."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Provides streaming body behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "proxy"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:11:29.727Z"
+}

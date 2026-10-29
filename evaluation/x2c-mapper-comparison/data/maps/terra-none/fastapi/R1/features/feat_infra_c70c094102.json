@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_c70c094102",
+  "title": "Issue and approval management",
+  "summary": "Configures repository issue intake and moderation workflows.\n\nAgent mapper reason: These configurations govern repository submissions and their automated handling.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Defines issue-management automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Defines approval labeling automation."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Configures issue intake."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Defines a privileged issue template."
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/questions.yml",
+      "reason": "Defines question discussion intake."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "SECURITY.md",
+      "reason": "Security reporting context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github",
+    "issues",
+    "moderation"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "permissions",
+    "external-api",
+    "secrets"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:50:05.534Z",
+  "updatedAt": "2026-10-29T00:57:44.473Z"
+}

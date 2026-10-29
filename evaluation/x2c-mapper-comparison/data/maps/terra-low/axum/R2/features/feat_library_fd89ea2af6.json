@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fd89ea2af6",
+  "title": "Core body and request extensions",
+  "summary": "Provides the core body type, errors, request extension traits, and crate wiring.\n\nAgent mapper reason: These shared primitives and crate wiring underpin the core extraction and response APIs.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Core HTTP body implementation."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Core error wrapper."
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Extension trait module."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Request extension methods."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "Request parts extension methods."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Core exports."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Shared implementation macros."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Core build configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Dependencies and build settings."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extraction traits used by extensions."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "core"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:30:36.636Z",
+  "updatedAt": "2026-10-29T07:30:36.636Z"
+}

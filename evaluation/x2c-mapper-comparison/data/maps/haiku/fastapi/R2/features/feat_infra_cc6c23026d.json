@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_cc6c23026d",
+  "title": "GitHub Actions CI and release workflows",
+  "summary": "Test, publish, docs build/preview and maintenance workflows under .github/workflows, plus issue and discussion templates.\n\nAgent mapper reason: Workflow YAML files share secrets, permissions and release triggers; reviewed together for CI security.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "CI test matrix"
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Release publishing"
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Docs build"
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Docs preview"
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Coverage reporting"
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Release notes automation"
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Contributors list automation"
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Translation notifications"
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Issue automation"
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "PR label automation"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update config"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Lint hooks run in CI"
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Build and test tooling referenced by workflows"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "release",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "external-api",
+    "process-exec",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:45.804Z",
+  "updatedAt": "2026-10-29T01:19:28.910Z"
+}

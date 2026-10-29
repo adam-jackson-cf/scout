@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_a804106b1f",
+  "title": "docs_src: database and external-service examples",
+  "summary": "Examples of async SQL, NoSQL and GraphQL integrations plus the SQL app and its tests.\n\nAgent mapper reason: Database and external-service integrations share connection handling and are grouped for review; the main app files were truncated from the inventory, so this group is less certain.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "low",
+  "entrypoints": [
+    {
+      "path": "docs_src/async_sql_databases/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/async_sql_databases/tutorial001.py",
+      "reason": "Async database connection example."
+    },
+    {
+      "path": "docs_src/nosql_databases/tutorial001.py",
+      "reason": "NoSQL client example."
+    },
+    {
+      "path": "docs_src/graphql/tutorial001.py",
+      "reason": "GraphQL router example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs_src/sql_databases/sql_app/tests/test_sql_app.py",
+      "reason": "Test suite for the SQL example app."
+    },
+    {
+      "path": "tests/test_tutorial/test_async_sql_databases/test_tutorial001.py",
+      "reason": "Test for the async SQL example."
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_async_sql_databases/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "docs_src/sql_databases/sql_app/tests/test_sql_app.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "docs-example",
+    "database",
+    "external-api"
+  ],
+  "trustBoundaries": [
+    "database",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:08:55.373Z",
+  "updatedAt": "2026-10-29T07:08:55.373Z"
+}

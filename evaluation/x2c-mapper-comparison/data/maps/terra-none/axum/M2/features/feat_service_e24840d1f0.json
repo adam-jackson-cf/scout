@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e24840d1f0",
+  "title": "Form, upload, and validation examples",
+  "summary": "Form parsing, multipart uploads, streaming to files, empty query values, and validation.\n\nAgent mapper reason: These examples process user-provided data and illustrate parsing, validation, and file output.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/form/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Demonstrates form handling."
+    },
+    {
+      "path": "examples/form/Cargo.toml",
+      "reason": "Defines form dependencies."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Demonstrates multipart uploads."
+    },
+    {
+      "path": "examples/multipart-form/Cargo.toml",
+      "reason": "Defines multipart dependencies."
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Streams request data to a file."
+    },
+    {
+      "path": "examples/stream-to-file/Cargo.toml",
+      "reason": "Defines streaming dependencies."
+    },
+    {
+      "path": "examples/validator/src/main.rs",
+      "reason": "Demonstrates input validation."
+    },
+    {
+      "path": "examples/validator/Cargo.toml",
+      "reason": "Defines validation dependencies."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Demonstrates query parsing edge cases."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/Cargo.toml",
+      "reason": "Defines query example dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Implements multipart extraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "input",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "filesystem",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:47:01.861Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

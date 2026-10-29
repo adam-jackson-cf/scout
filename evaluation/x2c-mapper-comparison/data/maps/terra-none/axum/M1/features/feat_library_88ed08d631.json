@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_88ed08d631",
+  "title": "Utility package",
+  "summary": "Provides currency formatting, slug generation, and unit conversion utilities.\n\nAgent mapper reason: These small utilities share a standalone crate and public module root.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "x2_newpkg/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "x2_newpkg/src/lib.rs",
+      "reason": "Utility package exports."
+    },
+    {
+      "path": "x2_newpkg/src/currency.rs",
+      "reason": "Currency formatting."
+    },
+    {
+      "path": "x2_newpkg/src/slugs.rs",
+      "reason": "Slug generation."
+    },
+    {
+      "path": "x2_newpkg/src/units.rs",
+      "reason": "Unit conversions."
+    },
+    {
+      "path": "x2_newpkg/Cargo.toml",
+      "reason": "Package manifest."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace membership context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "utilities",
+    "formatting"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:45:07.909Z",
+  "updatedAt": "2026-10-29T07:45:07.909Z"
+}

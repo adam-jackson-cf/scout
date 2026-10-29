@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_663642d64b",
+  "title": "Tutorial example apps and their tests (docs_src + tests/test_tutorial)",
+  "summary": "Runnable docs_src examples mirrored by test_tutorial tests, which keep documentation code working.\n\nAgent mapper reason: Docs examples are executed by tests; changes must be reviewed alongside their tutorial tests.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs_src/first_steps/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/first_steps/tutorial001.py",
+      "reason": "Smallest app example"
+    },
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "reason": "Multi-router application example"
+    },
+    {
+      "path": "docs_src/security/tutorial001.py",
+      "reason": "Security tutorial example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_tutorial/__init__.py",
+      "reason": "Tutorial test package"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "reason": "Tests the bigger_applications example"
+    },
+    {
+      "path": "tests/test_tutorial/test_body/test_tutorial001.py",
+      "reason": "Tests body tutorial"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_body/test_tutorial001.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "examples",
+    "tutorial"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:19:28.910Z",
+  "updatedAt": "2026-10-29T07:09:49.864Z"
+}

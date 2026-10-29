@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b1d172eb34",
+  "title": "axum typed headers",
+  "summary": "Typed HTTP header extraction and conversion.\n\nAgent mapper reason: Typed header parsing handles client-controlled protocol values and their conversion failures.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/typed_header.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Implements typed header extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows extractor integration."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Provides extraction rejection context."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines header dependencies and features."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "headers",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:05:21.079Z"
+}

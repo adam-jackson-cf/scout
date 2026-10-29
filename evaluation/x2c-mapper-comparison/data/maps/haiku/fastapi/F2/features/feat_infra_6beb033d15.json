@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_6beb033d15",
+  "title": "Docs build and preview workflows",
+  "summary": "Workflows that build the MkDocs site and deploy per-PR documentation previews.\n\nAgent mapper reason: Both workflows build the same MkDocs site, so they are reviewed together.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Builds the docs site on main."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Builds and deploys PR docs previews."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "MkDocs configuration the build uses."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Theme override rendered by the build."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Preview comment step called by preview-docs."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "ci",
+    "preview"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:16:38.944Z",
+  "updatedAt": "2026-10-29T01:16:38.944Z"
+}

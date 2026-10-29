@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_f62afda421",
+  "title": "GitHub Action: people metadata",
+  "summary": "Action and workflow for maintaining or publishing people-related project data.\n\nAgent mapper reason: The action, workflow, and people data file are the bounded unit for automated people metadata updates.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Declares the action interface."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Implements the people metadata operation."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Defines the action container."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Configures when the people action runs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Provides the people data consumed or maintained by this workflow."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "Documents project people information."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "project-metadata"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "network",
+    "external-api",
+    "secrets"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:40:33.983Z"
+}

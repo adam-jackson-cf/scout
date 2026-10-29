@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_616614006c",
+  "title": "Observability, CORS, and testing examples",
+  "summary": "Demonstrates cross-origin policy, request logging, metrics, tracing, and application testing.\n\nAgent mapper reason: These examples demonstrate operational middleware and verification around HTTP request handling.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "CORS middleware example."
+    },
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Request and response inspection."
+    },
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "reason": "Metrics integration."
+    },
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "reason": "Tracing integration."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "Application test example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/testing/Cargo.toml",
+      "reason": "Test example dependencies."
+    },
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware composition guidance."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "observability",
+    "cors",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:41:26.742Z",
+  "updatedAt": "2026-10-29T07:45:07.983Z"
+}

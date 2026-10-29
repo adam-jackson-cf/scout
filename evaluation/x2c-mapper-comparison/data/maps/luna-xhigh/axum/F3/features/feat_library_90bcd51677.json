@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_90bcd51677",
+  "title": "axum-extra body adapters and JSON Lines",
+  "summary": "Extra body-reading utilities and JSON Lines streaming support.\n\nAgent mapper reason: These utilities read or frame streamed request and response bodies.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Adapts bodies to asynchronous reading."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Exports extra body utilities."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Implements JSON Lines framing."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares optional dependencies and features."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Documents extra crate features."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "streaming",
+    "json"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

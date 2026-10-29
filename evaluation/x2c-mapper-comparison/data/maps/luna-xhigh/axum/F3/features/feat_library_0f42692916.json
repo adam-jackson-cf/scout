@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0f42692916",
+  "title": "Axum WebSocket upgrade extractor",
+  "summary": "Upgrades HTTP requests to WebSocket connections and extracts socket messages.\n\nAgent mapper reason: The extractor owns the HTTP upgrade and socket message boundary used by WebSocket applications.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Implements WebSocket upgrade and extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports the WebSocket extractor."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractors."
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "Demonstrates WebSocket server handling."
+    },
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Demonstrates multi-client WebSocket handling."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares WebSocket dependencies and features."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "websocket",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

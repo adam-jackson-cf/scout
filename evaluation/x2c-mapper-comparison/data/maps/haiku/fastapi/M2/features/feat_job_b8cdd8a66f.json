@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_b8cdd8a66f",
+  "title": "PR docs preview GitHub actions",
+  "summary": "Composite actions that comment docs preview links on pull requests and watch for preview deployments.\n\nAgent mapper reason: Both scripts act on pull request content and use tokens, so they share a trust boundary and are reviewed together.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Python script that writes PR comments using the GitHub token."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Action wiring, inputs and Docker entrypoint for the comment script."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Python script that polls preview deployments and reports status."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Action wiring and inputs for the watcher."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Container image the action runs in."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Container image the watcher runs in."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Workflow that calls these actions and passes them tokens."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "pull-request",
+    "docs-preview",
+    "secrets"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "network",
+    "external-api",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:08:55.373Z",
+  "updatedAt": "2026-10-29T07:09:49.826Z"
+}

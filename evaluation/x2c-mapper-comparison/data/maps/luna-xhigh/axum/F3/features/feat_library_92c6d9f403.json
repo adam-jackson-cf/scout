@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_92c6d9f403",
+  "title": "Axum state extraction",
+  "summary": "Provides application state access and state projection for handlers.\n\nAgent mapper reason: State extraction and projection define how handlers access shared application state.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Implements state extraction and state-related traits."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Documents router state behavior."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents state extraction."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Defines state projection support."
+    },
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "reason": "Provides the FromRef derive."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares crate dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "state"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

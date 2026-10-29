@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_91c9028690",
+  "title": "Core test suite (root tests/)",
+  "summary": "Pytest suite covering the fastapi package: routing, dependencies, params, security, OpenAPI, serialization, and tutorial-derived tests.\n\nAgent mapper reason: Test package shell; the per-feature slices above own the tests that target each module.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/__init__.py",
+      "reason": "Test package marker."
+    },
+    {
+      "path": "tests/main.py",
+      "reason": "Shared test application fixture."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Pytest and coverage configuration."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/__init__.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/__init__.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tests",
+    "pytest"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:19:28.910Z",
+  "updatedAt": "2026-10-29T07:09:49.659Z"
+}

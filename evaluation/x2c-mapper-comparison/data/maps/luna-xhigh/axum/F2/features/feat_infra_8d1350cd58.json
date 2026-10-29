@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_8d1350cd58",
+  "title": "Workspace and CI configuration",
+  "summary": "Defines workspace membership, dependency policy, and continuous integration checks.\n\nAgent mapper reason: These files govern workspace-wide builds and policy, so configuration changes should be reviewed together.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Declares the Cargo workspace and shared package configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Configures dependency and license policy checks."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Runs the repository's CI workflow."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Configures repository patch workflow behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor guidance for repository changes."
+    },
+    {
+      "path": "ECOSYSTEM.md",
+      "reason": "Describes the surrounding Axum ecosystem."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "dependency-policy"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

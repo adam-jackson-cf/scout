@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_d9ebc0a321",
+  "title": "API key security regression tests",
+  "summary": "Tests API key extraction from cookies, headers, and query parameters, including optional and documented schemes.\n\nAgent mapper reason: These tests cover one family of credential extraction schemes and their OpenAPI descriptions.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "reason": "Cookie API key behavior."
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_description.py",
+      "reason": "Cookie scheme documentation."
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_optional.py",
+      "reason": "Optional cookie scheme."
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "Header API key behavior."
+    },
+    {
+      "path": "tests/test_security_api_key_header_description.py",
+      "reason": "Header scheme documentation."
+    },
+    {
+      "path": "tests/test_security_api_key_header_optional.py",
+      "reason": "Optional header scheme."
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "reason": "Query API key behavior."
+    },
+    {
+      "path": "tests/test_security_api_key_query_description.py",
+      "reason": "Query scheme documentation."
+    },
+    {
+      "path": "tests/test_security_api_key_query_optional.py",
+      "reason": "Optional query scheme."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/security/first-steps.md",
+      "reason": "Provides security tutorial context."
+    },
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "api-key",
+    "regression-tests"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "auth",
+    "secrets",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:54:57.019Z",
+  "updatedAt": "2026-10-29T00:54:57.019Z"
+}

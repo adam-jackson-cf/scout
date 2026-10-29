@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_87148443b5",
+  "title": "Documentation build and preview workflows",
+  "summary": "Builds and publishes documentation previews.\n\nAgent mapper reason: These workflows form the documentation build and preview pipeline, while their reusable actions have separate ownership.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Defines documentation build automation."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Defines preview automation."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Defines preview publication automation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Primary documentation configuration."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Related preview action."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Related preview-comment action."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "documentation",
+    "previews"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "secrets",
+    "permissions",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:50:05.534Z",
+  "updatedAt": "2026-10-29T00:50:05.534Z"
+}

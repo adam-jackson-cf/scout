@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f2d07eef0f",
+  "title": "axum-extra response formats",
+  "summary": "Response helpers for erased JSON values.\n\nAgent mapper reason: The module pair implements and exports the extension crate's JSON response helper.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Implements erased JSON response values."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Defines response exports."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines response serialization dependencies."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Defines base response conversions."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "responses",
+    "json"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:02:22.984Z",
+  "updatedAt": "2026-10-29T08:05:21.079Z"
+}

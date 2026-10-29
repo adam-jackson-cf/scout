@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_0f51e47812",
+  "title": "Core library tests: dependency injection",
+  "summary": "Repo-level tests for dependency caching, classes, context managers, contextvars, overrides, duplicates and exceptions.\n\nAgent mapper reason: All of these cover one dependency-injection subsystem and share fixtures.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "Dependency caching behavior."
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "Class-based dependency behavior."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "Yield-based dependency lifecycle."
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "Context variables across dependencies."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "Dependency override mechanism."
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "Duplicate dependency handling."
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "Exception propagation from dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/main.py",
+      "reason": "Shared test app used by some dependency tests."
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "di",
+    "tests"
+  ],
+  "trustBoundaries": [
+    "permissions",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:08:55.373Z",
+  "updatedAt": "2026-10-29T07:08:55.373Z"
+}

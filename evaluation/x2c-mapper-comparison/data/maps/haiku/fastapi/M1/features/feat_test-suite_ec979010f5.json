@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_ec979010f5",
+  "title": "Core library tests: security and auth",
+  "summary": "Repo-level test suites for OpenAPI security schemes (API key, HTTP basic, bearer, digest, OAuth2, OpenID Connect) and dependency overrides for security.\n\nAgent mapper reason: The security test files share one scheme-coverage pattern, so they are reviewed as one unit. The per-scheme files that were not listed here follow the same pattern.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "OAuth2 password flow behavior and schema tests."
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "HTTP Bearer [SCOUT_REDACTED_SECRET] tests."
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "API key header scheme tests."
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "HTTP basic realm tests."
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "reason": "OpenID Connect scheme tests."
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "reason": "HTTP digest scheme tests."
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "Dependency override tests for security dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_security_oauth2_optional.py",
+      "reason": "Optional-security variant tests."
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "Swagger UI OAuth configuration tests."
+    },
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "auth",
+    "security",
+    "openapi",
+    "tests"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:08:55.373Z",
+  "updatedAt": "2026-10-29T07:08:55.373Z"
+}

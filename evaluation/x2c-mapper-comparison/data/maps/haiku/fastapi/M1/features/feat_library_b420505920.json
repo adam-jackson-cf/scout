@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b420505920",
+  "title": "Routing and path operation core",
+  "summary": "Application object, APIRouter, route registration and request-handling pipeline that turns path operations into ASGI endpoints.\n\nAgent mapper reason: Core request routing and public API surface change together; most behavior tests exercise these modules.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/applications.py",
+      "symbol": "FastAPI",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "FastAPI app class, middleware stack, exception handler and router wiring"
+    },
+    {
+      "path": "fastapi/routing.py",
+      "reason": "APIRoute, APIRouter, include_router and request/response handling for path operations"
+    },
+    {
+      "path": "fastapi/param_functions.py",
+      "reason": "Public Query/Path/Header/Cookie/Body/Depends factory functions"
+    },
+    {
+      "path": "fastapi/params.py",
+      "reason": "Param class hierarchy used by the public factory functions"
+    },
+    {
+      "path": "fastapi/__init__.py",
+      "reason": "Public package exports"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_application.py",
+      "reason": "App-level behavior tests"
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "include_router behavior"
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "Router lifecycle events"
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "reason": "Route scope handling"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "fastapi-core",
+    "asgi"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "permissions"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:19:28.910Z",
+  "updatedAt": "2026-10-29T07:08:55.463Z"
+}

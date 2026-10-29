@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_dd3bb7aa74",
+  "title": "Larger application and router composition examples",
+  "summary": "Package-style applications with shared dependencies, routers, and internal routes.\n\nAgent mapper reason: The example variants share the same application architecture and are tested together by the corresponding tutorial suite.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/bigger_applications/app/dependencies.py",
+      "reason": "Defines dependencies shared across the example application."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "reason": "Assembles the application."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/items.py",
+      "reason": "Defines the items router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/users.py",
+      "reason": "Defines the users router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/internal/admin.py",
+      "reason": "Defines internal administrative routes."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/main.py",
+      "reason": "Provides the annotated-type variant."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/dependencies.py",
+      "reason": "Defines dependencies for the annotated variant."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/routers/items.py",
+      "reason": "Defines the annotated items router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/routers/users.py",
+      "reason": "Defines the annotated users router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/internal/admin.py",
+      "reason": "Defines internal routes for the annotated variant."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/main.py",
+      "reason": "Provides the Python 3.9 variant."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/dependencies.py",
+      "reason": "Defines dependencies for the Python 3.9 variant."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/routers/items.py",
+      "reason": "Defines the Python 3.9 items router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/routers/users.py",
+      "reason": "Defines the Python 3.9 users router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/internal/admin.py",
+      "reason": "Defines internal routes for the Python 3.9 variant."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/bigger-applications.md",
+      "reason": "Explains the package and router structure."
+    },
+    {
+      "path": "docs/en/docs/img/tutorial/bigger-applications/package.svg",
+      "reason": "Illustrates the example package layout."
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an_py39.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an_py39.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tutorial",
+    "routers",
+    "application-structure"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "auth"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:47:09.724Z",
+  "updatedAt": "2026-10-29T00:47:09.724Z"
+}

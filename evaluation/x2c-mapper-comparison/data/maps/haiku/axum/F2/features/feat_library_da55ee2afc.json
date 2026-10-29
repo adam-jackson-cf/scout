@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_da55ee2afc",
+  "title": "axum response, body, and form/json helpers",
+  "summary": "Public response helpers in axum: redirect, SSE, StreamBody, Json, Form, typed headers, Extension, and general utilities.\n\nAgent mapper reason: These public helpers are re-exported from the crate root and share the response and serialization surface.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Crate root, public API docs, and re-exports."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Crate-local macros."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body re-exports and helpers."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "StreamBody response type."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response module root."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect responses."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent events response."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Json extractor and response."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extractor and response."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Typed header support."
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Extension extractor and layer."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Internal utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response documentation."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Crate manifest and feature flags."
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "Documents public API changes."
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "json",
+    "form",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:12:39.825Z",
+  "updatedAt": "2026-10-29T07:12:39.825Z"
+}

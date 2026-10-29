@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_b9ad003f81",
+  "title": "OAuth example",
+  "summary": "Demonstrates OAuth authentication and provider interaction.\n\nAgent mapper reason: The sample coordinates browser-facing authentication with an external identity provider.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/oauth/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/oauth/Cargo.toml",
+      "reason": "Declares the example package and OAuth dependencies."
+    },
+    {
+      "path": "examples/oauth/src/main.rs",
+      "reason": "Implements the OAuth flow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Provides request middleware."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "oauth",
+    "authentication"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "network",
+    "external-api",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:02:22.984Z"
+}

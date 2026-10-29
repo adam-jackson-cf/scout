@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_96aaa3bf8f",
+  "title": "Extra form, query, and multipart extractors",
+  "summary": "Adds alternative form, query, and multipart extraction behavior.\n\nAgent mapper reason: These optional extractors extend parsing of common request representations.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Extra extractor exports."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Alternative form extractor."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Alternative query extractor."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Extra multipart extraction utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Main crate form behavior."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Main multipart implementation."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Feature configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "forms",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

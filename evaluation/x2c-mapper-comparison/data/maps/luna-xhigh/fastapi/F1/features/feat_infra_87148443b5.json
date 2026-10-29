@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_87148443b5",
+  "title": "GitHub Actions: documentation build, preview, and visual reporting",
+  "summary": "Workflows for building documentation, publishing previews, and reporting visual test results.\n\nAgent mapper reason: These workflows share the documentation build and preview lifecycle, including reporting the resulting artifacts.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Builds the documentation site."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Builds or publishes preview documentation."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Configures visual test reporting."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Provides the documentation site configuration."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Provides the preview comment action interface."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Provides the preview monitoring action interface."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "documentation",
+    "preview"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "filesystem",
+    "network",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:32:50.325Z"
+}

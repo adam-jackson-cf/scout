@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_295de19826",
+  "title": "Request parsing examples",
+  "summary": "Demonstrates forms, multipart uploads, content-type selection, and query parsing.\n\nAgent mapper reason: These examples show distinct HTTP input formats using the same extraction model.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/form/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Form example."
+    },
+    {
+      "path": "examples/form/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart form example."
+    },
+    {
+      "path": "examples/multipart-form/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Content-type-dependent parsing."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Empty query parameter handling."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/Cargo.toml",
+      "reason": "Example dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extractor usage."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "forms",
+    "query"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:45:07.909Z",
+  "updatedAt": "2026-10-29T07:45:07.909Z"
+}

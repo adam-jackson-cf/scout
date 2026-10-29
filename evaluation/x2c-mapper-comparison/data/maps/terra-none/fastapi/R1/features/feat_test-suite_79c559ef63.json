@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_79c559ef63",
+  "title": "Interactive API documentation tests",
+  "summary": "Tests local API documentation and Swagger UI redirect and OAuth configuration.\n\nAgent mapper reason: The tests share the interactive documentation HTTP surface.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_local_docs.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "Local documentation endpoints."
+    },
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "reason": "Custom OAuth redirect."
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "reason": "Disabled OAuth redirect."
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "Swagger UI OAuth initialization."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/conditional-openapi.md",
+      "reason": "Documentation and OpenAPI availability."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_local_docs.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "swagger-ui",
+    "documentation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "auth"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:57:44.320Z",
+  "updatedAt": "2026-10-29T00:57:44.320Z"
+}

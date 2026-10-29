@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_ef8d9da9ab",
+  "title": "Documentation site configuration and browser behavior",
+  "summary": "English site configuration, template, JavaScript, and styles control the documentation experience.\n\nAgent mapper reason: These assets jointly configure and render the English documentation site.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "English documentation site configuration."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Documentation theme override."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Documentation browser behavior."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Documentation browser behavior."
+    },
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Documentation styling."
+    },
+    {
+      "path": "docs/en/data/external_links.yml",
+      "reason": "Site external-link data."
+    },
+    {
+      "path": "docs/en/data/sponsors.yml",
+      "reason": "Site sponsor data."
+    },
+    {
+      "path": "docs/en/data/sponsors_badge.yml",
+      "reason": "Sponsor badge data."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build workflow."
+    },
+    {
+      "path": "docs/en/docs/index.md",
+      "reason": "Documentation landing page."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_local_docs.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "documentation",
+    "mkdocs",
+    "frontend"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:00:10.202Z",
+  "updatedAt": "2026-10-29T01:01:44.297Z"
+}

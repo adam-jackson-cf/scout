@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6e5b3e3395",
+  "title": "Core response conversion",
+  "summary": "Converts values, response parts, and appended headers into HTTP responses.\n\nAgent mapper reason: Response conversion and response-part composition form one shared HTTP output contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "symbol": "IntoResponse",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response module and exports."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Response conversion implementations."
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "Response part composition."
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "Header append behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documented response contract."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Public axum response surface."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:41:26.742Z"
+}

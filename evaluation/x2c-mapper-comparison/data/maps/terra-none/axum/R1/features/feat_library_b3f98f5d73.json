@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b3f98f5d73",
+  "title": "Core request body and error types",
+  "summary": "Shared HTTP body representation and error handling used by the framework.\n\nAgent mapper reason: These foundational types define body and error behavior shared across higher-level request and response code.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/body.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Body implementation and inline tests."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Shared error representation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core dependencies and feature flags."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Framework body interface."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/body.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:41:27.037Z"
+}

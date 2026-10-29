@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_535a3a3056",
+  "title": "Extra routing and handler composition",
+  "summary": "Typed routes, resource routing, handler alternatives and middleware support.\n\nAgent mapper reason: These extensions compose routes, middleware and alternative handlers over the framework router.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Routing extensions."
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Resource routing abstraction."
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Typed route support."
+    },
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Handler extension exports."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Alternative handler composition."
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Additional middleware utilities."
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either type used for alternative behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Derives typed path implementations."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Underlying router."
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "command": null
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "command": null
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "typed-path",
+    "handlers"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:41:27.035Z"
+}

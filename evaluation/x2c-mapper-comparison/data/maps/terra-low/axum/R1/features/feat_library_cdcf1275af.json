@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_cdcf1275af",
+  "title": "Body formats and multipart extraction",
+  "summary": "Handles JSON, forms, multipart bodies, and streaming request bodies.\n\nAgent mapper reason: Body consumption and format parsing share size, content type, and serialization boundaries.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON extraction and responses"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extraction and responses"
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form extraction"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart extraction"
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body API"
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Streaming bodies"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Body size limits"
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart usage"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:29:26.702Z"
+}

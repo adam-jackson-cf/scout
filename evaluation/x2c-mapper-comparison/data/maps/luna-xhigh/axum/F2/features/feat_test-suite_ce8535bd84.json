@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_ce8535bd84",
+  "title": "Axum routing tests",
+  "summary": "Exercises fallback selection, method handling, errors, router merging, and nesting.\n\nAgent mapper reason: These tests cover the central routing contracts, so changes to router composition or dispatch should be checked against them.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "Tests route and router fallback behavior."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "Tests GET and HEAD handling."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "Tests routing error handling."
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "Tests router merging."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "Organizes routing tests."
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "Tests nested routers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Implementation under test."
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Implements method dispatch."
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Implements tested error handling."
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "routing",
+    "tests"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

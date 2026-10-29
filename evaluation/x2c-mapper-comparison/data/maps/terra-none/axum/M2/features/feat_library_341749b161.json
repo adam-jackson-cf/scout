@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_341749b161",
+  "title": "Core request extraction contracts",
+  "summary": "Foundational request extraction traits, request-parts handling, body limits, rejections, and tuple composition.\n\nAgent mapper reason: The extraction traits and supporting implementations define a shared contract used throughout axum.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines core extraction contracts."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Implements extraction body limits."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Defines state projection."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Defines extraction failures."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Extracts request parts."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Composes extractors."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Defines crate features and dependencies."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Explains extractor behavior to users."
+    },
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "Generates implementations of these contracts."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "request",
+    "body-limits"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:47:01.861Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

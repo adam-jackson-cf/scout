@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f92bc252fb",
+  "title": "axum-macros procedural macro infrastructure",
+  "summary": "Macro registration, common attribute parsing, and syntax-position utilities.\n\nAgent mapper reason: These files provide shared macro registration and parsing infrastructure; specific macro behavior is reviewed in the bounded macro slices.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Registers and exports procedural macros."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Implements common attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Implements shared syntax-position behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Declares procedural macro dependencies and crate type."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Pins the toolchain used for macro development."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "procedural-macro",
+    "infrastructure"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T07:51:17.230Z"
+}

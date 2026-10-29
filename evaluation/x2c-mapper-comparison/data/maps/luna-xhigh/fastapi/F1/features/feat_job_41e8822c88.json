@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_41e8822c88",
+  "title": "GitHub Action: notify translation contributors",
+  "summary": "Action and workflow for notifying translation contributors.\n\nAgent mapper reason: The action and workflow jointly define notification behavior, trigger conditions, and required external credentials.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Declares the action interface."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Implements translation notifications."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Defines the action container."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Schedules and configures translation notifications."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/contributing.md",
+      "reason": "Provides contributor workflow context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "translations",
+    "notifications"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:32:50.325Z"
+}

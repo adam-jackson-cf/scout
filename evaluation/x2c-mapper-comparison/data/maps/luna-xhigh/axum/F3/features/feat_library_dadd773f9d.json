@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_dadd773f9d",
+  "title": "Axum structured body extractors",
+  "summary": "Parses JSON, form, raw form, and multipart request bodies.\n\nAgent mapper reason: These extractors consume and deserialize request bodies into structured values.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Parses form-encoded bodies."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Parses JSON bodies."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Parses multipart body fields."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Exposes raw form body data."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports the body extractors."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines extractor failure types."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents body extraction."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares body parsing dependencies and features."
+    },
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Demonstrates form extraction."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Demonstrates multipart extraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "json",
+    "forms",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

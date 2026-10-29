@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_3cd843f9e7",
+  "title": "Community people automation",
+  "summary": "GitHub Action and workflow for repository people and contributor automation.\n\nAgent mapper reason: The action and workflow jointly determine how repository events drive people-related automation.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Defines the people action interface."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Implements people-related automation."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Defines the action runtime image."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Connects the action to repository events."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Contributor and people data used by the project."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Repository contribution interface context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "community",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "permissions",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:39:03.202Z",
+  "updatedAt": "2026-10-29T00:39:03.202Z"
+}

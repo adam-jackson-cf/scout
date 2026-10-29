@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8db5a6d8c7",
+  "title": "axum-macros derive macros",
+  "summary": "Derive macros FromRequest, FromRequestParts, and FromRef, plus attribute parsing and position helpers.\n\nAgent mapper reason: Derive implementations and their trybuild pass/fail suites change together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Proc-macro entrypoints"
+    },
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "FromRequest derive implementation"
+    },
+    {
+      "path": "axum-macros/src/from_request/attr.rs",
+      "reason": "FromRequest attribute parsing"
+    },
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "reason": "FromRef derive implementation"
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parsing"
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Helper for generated code positions"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Proc-macro crate configuration"
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Pinned toolchain for macro compile tests"
+    },
+    {
+      "path": "axum-macros/CHANGELOG.md",
+      "reason": "Documented derive behaviour changes"
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Macro usage documentation"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/fail/generics.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "derive",
+    "codegen"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:16:27.607Z",
+  "updatedAt": "2026-10-29T07:16:27.607Z"
+}

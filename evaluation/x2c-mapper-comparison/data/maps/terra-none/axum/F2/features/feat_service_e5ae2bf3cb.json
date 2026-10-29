@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e5ae2bf3cb",
+  "title": "Proxy and protocol multiplexing examples",
+  "summary": "Demonstrates HTTP proxying, reverse proxying, and a combined REST and gRPC service.\n\nAgent mapper reason: These examples route incoming traffic across protocol or upstream service boundaries.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "Implements an HTTP proxy example."
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Implements a reverse proxy example."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "Sets up REST and gRPC multiplexing."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "Selects the service for a request."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "Builds the protocol bindings."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "Defines the gRPC service schema."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/http-proxy/Cargo.toml",
+      "reason": "Defines HTTP proxy dependencies."
+    },
+    {
+      "path": "examples/reverse-proxy/Cargo.toml",
+      "reason": "Defines reverse proxy dependencies."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/Cargo.toml",
+      "reason": "Defines multiplexing dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "proxy",
+    "grpc"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "external-api",
+    "serialization",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

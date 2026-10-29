@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_406a758324",
+  "title": "Axum middleware",
+  "summary": "Implements middleware for request extraction, request mapping, and response mapping.\n\nAgent mapper reason: The middleware adapters share request/response transformation and service-layer composition semantics.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Builds middleware from an extractor."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Builds middleware from functions."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Maps or transforms requests."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Maps or transforms responses."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Exports middleware constructors and documentation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Documents middleware composition."
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Documents router layers."
+    },
+    {
+      "path": "axum/src/docs/routing/route_layer.md",
+      "reason": "Documents route-specific layers."
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Documents method-router layers."
+    },
+    {
+      "path": "axum/src/docs/method_routing/route_layer.md",
+      "reason": "Documents method-specific route layers."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "middleware",
+    "request",
+    "response"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

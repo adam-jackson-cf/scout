@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9f1d27f4ba",
+  "title": "Redirect and server-sent event responses",
+  "summary": "Redirect and server-sent event response implementations.\n\nAgent mapper reason: These are framework-provided HTTP response types built on core response conversion.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response exports"
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect construction"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent event streaming"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Response conversion contract"
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Event stream example"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:26:54.302Z",
+  "updatedAt": "2026-10-29T07:26:54.302Z"
+}

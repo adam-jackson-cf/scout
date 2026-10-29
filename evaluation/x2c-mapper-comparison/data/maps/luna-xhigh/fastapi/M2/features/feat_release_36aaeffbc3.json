@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_36aaeffbc3",
+  "title": "Release and publication workflow",
+  "summary": "Automated package publication workflow.\n\nAgent mapper reason: The workflow publishes the project artifact and depends on package metadata plus privileged automation credentials.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Defines package publication automation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Defines package metadata and build configuration."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Provides project security reporting context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "release",
+    "publishing",
+    "ci"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:43:58.083Z",
+  "updatedAt": "2026-10-29T00:47:09.801Z"
+}

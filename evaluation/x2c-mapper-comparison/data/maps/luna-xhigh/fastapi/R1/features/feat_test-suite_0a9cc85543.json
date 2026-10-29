@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_0a9cc85543",
+  "title": "Application construction and router composition",
+  "summary": "Core behavior for creating FastAPI applications, mounting routers, and registering routes.\n\nAgent mapper reason: These tests exercise the shared application and router composition surface, so route registration and mounting changes should be reviewed together.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_application.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_application.py",
+      "reason": "Exercises application creation and behavior."
+    },
+    {
+      "path": "tests/test_callable_endpoint.py",
+      "reason": "Covers callable endpoint registration."
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "reason": "Covers empty router handling."
+    },
+    {
+      "path": "tests/test_extra_routes.py",
+      "reason": "Covers additional routes attached to an application."
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "Covers route inclusion."
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "reason": "Covers router-level defaults and overrides."
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "reason": "Covers route scope behavior."
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "Covers router lifecycle events."
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "reason": "Covers router prefixes with path templates."
+    },
+    {
+      "path": "tests/test_starlette_urlconvertors.py",
+      "reason": "Covers integration with Starlette URL converters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/first-steps.md",
+      "reason": "Documents the basic application and route setup."
+    },
+    {
+      "path": "docs/en/docs/tutorial/bigger-applications.md",
+      "reason": "Explains router composition across larger applications."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "application",
+    "router"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:40:33.987Z"
+}

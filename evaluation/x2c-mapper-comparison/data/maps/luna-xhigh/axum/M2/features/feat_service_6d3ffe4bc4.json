@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_6d3ffe4bc4",
+  "title": "Rustls TLS example",
+  "summary": "Demonstrates TLS serving with Rustls.\n\nAgent mapper reason: The example demonstrates TLS serving with its local certificate fixtures.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "reason": "Declares the example package and TLS dependencies."
+    },
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "Implements Rustls serving."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/tls-rustls/self_signed_certs/cert.pem",
+      "reason": "Provides a local self-signed certificate fixture."
+    },
+    {
+      "path": "examples/tls-rustls/self_signed_certs/key.pem",
+      "reason": "Provides the matching local test key fixture."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "tls",
+    "rustls"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:11:29.716Z"
+}

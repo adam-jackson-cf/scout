@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6e5b3e3395",
+  "title": "axum-core response conversion",
+  "summary": "Core response and response-part conversion plus header appending.\n\nAgent mapper reason: The files implement one response conversion surface shared by the main crate and extensions.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "Adds headers to response parts."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Converts values into HTTP responses."
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "Converts values into response parts."
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Exports core response conversion APIs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Declares core response dependencies."
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Documents the core crate."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "http"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

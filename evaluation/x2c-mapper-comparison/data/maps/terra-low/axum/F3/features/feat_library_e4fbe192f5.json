@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e4fbe192f5",
+  "title": "Path, query, and request metadata extraction",
+  "summary": "Extracts route captures, queries, host information, matched paths, and connection metadata.\n\nAgent mapper reason: These extractors interpret request metadata and route captures, sharing rejection and deserialization behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extractor exports."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path parameter extraction."
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Path parameter deserialization."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query deserialization."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query extraction."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Host extraction."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Matched route extraction."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Connection metadata extraction."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Request-parts extractors."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Framework extractor rejection types."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Typed header extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Source of route captures."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extractor documentation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "routing",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:28:16.061Z",
+  "updatedAt": "2026-10-29T07:28:16.061Z"
+}

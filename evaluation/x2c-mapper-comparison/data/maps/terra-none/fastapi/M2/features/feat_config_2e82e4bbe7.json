@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_2e82e4bbe7",
+  "title": "Package and quality configuration",
+  "summary": "Defines package metadata, dependencies, build configuration, and Python quality-tool settings.\n\nAgent mapper reason: These files govern the package and shared development checks.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Owns project metadata and tool configuration."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Configures pre-commit checks."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Defines repository file exclusions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Automated validation consumes project configuration."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor-facing workflow guidance."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "quality"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:57:44.320Z",
+  "updatedAt": "2026-10-29T01:04:20.875Z"
+}

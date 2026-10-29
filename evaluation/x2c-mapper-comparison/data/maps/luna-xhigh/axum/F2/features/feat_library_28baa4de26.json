@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_28baa4de26",
+  "title": "axum-extra form and query extractors",
+  "summary": "Provides extended form and query-string extraction helpers.\n\nAgent mapper reason: Both extensions decode user-supplied structured values into application types.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Implements the extra form extractor."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Implements the extra query extractor."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Exports the extra extractors."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares serialization and form dependencies."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Provides the corresponding base query extractor."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Provides the corresponding base form extractor."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "extractors",
+    "forms",
+    "query"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

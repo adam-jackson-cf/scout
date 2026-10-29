@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f17441f3da",
+  "title": "Middleware, request/response helpers and ASGI utilities",
+  "summary": "Bundled Starlette middleware wrappers, response/request/websocket re-exports, static files, templates, background tasks and concurrency helpers, and the test client.\n\nAgent mapper reason: Mostly thin re-export shims grouped by Starlette dependency surface; reviewed together for compatibility.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/middleware/cors.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/middleware/asyncexitstack.py",
+      "reason": "AsyncExitStack middleware used for dependency lifecycles"
+    },
+    {
+      "path": "fastapi/middleware/cors.py",
+      "reason": "CORS re-export"
+    },
+    {
+      "path": "fastapi/middleware/gzip.py",
+      "reason": "GZip re-export"
+    },
+    {
+      "path": "fastapi/middleware/httpsredirect.py",
+      "reason": "HTTPS redirect re-export"
+    },
+    {
+      "path": "fastapi/middleware/trustedhost.py",
+      "reason": "Trusted host re-export"
+    },
+    {
+      "path": "fastapi/middleware/wsgi.py",
+      "reason": "WSGI middleware re-export"
+    },
+    {
+      "path": "fastapi/middleware/__init__.py",
+      "reason": "Middleware package exports"
+    },
+    {
+      "path": "fastapi/requests.py",
+      "reason": "Request re-export"
+    },
+    {
+      "path": "fastapi/responses.py",
+      "reason": "Response classes re-export"
+    },
+    {
+      "path": "fastapi/websockets.py",
+      "reason": "WebSocket re-export"
+    },
+    {
+      "path": "fastapi/staticfiles.py",
+      "reason": "StaticFiles re-export"
+    },
+    {
+      "path": "fastapi/templating.py",
+      "reason": "Jinja2 templating re-export"
+    },
+    {
+      "path": "fastapi/background.py",
+      "reason": "BackgroundTasks re-export"
+    },
+    {
+      "path": "fastapi/concurrency.py",
+      "reason": "run_in_threadpool and async context helpers"
+    },
+    {
+      "path": "fastapi/testclient.py",
+      "reason": "TestClient wrapper"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "Middleware exception behavior"
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Request/websocket injection"
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "Response class defaults"
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "Alternate response class"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "asgi",
+    "responses",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:19:28.910Z",
+  "updatedAt": "2026-10-29T01:19:28.910Z"
+}

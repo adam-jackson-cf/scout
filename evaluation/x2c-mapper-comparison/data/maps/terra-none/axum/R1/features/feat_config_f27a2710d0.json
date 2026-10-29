@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_f27a2710d0",
+  "title": "Workspace build and CI configuration",
+  "summary": "Defines workspace membership, package features, dependency policy, and continuous integration.\n\nAgent mapper reason: Workspace membership, feature selection, dependency policy, and CI jointly determine what is built and checked.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": "cargo test --workspace"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace membership."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Main crate features and dependencies."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core crate configuration."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional extension features."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Macro crate configuration."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Continuous integration workflow."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "CI dependency patch configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Dependency policy."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "cargo",
+    "ci",
+    "features"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:41:26.742Z",
+  "updatedAt": "2026-10-29T07:41:26.742Z"
+}

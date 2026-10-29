@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_963e57741d",
+  "title": "Core response conversion",
+  "summary": "Implements conversion of values and response parts into HTTP responses.\n\nAgent mapper reason: Response construction and response-part composition form a shared HTTP output contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "symbol": "IntoResponse",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response module and exports."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Response conversion implementations."
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "Response-part conversion."
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "Header append behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "User-facing response contract."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Framework-level response integrations."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core package configuration."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "http",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:45:07.909Z",
+  "updatedAt": "2026-10-29T07:47:01.921Z"
+}

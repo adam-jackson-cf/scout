@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8e7cf334ca",
+  "title": "Handlers and service adaptation",
+  "summary": "Adapts async handlers and their state into services, futures, and responses.\n\nAgent mapper reason: These adapters form the execution path between routed requests and handler futures.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait and implementations."
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler future implementation."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Handler service adapter."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Service state adaptation."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service extension helpers."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Boxed service support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler behavior and intended usage."
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Handler routing consumer."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "services"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:30:36.636Z",
+  "updatedAt": "2026-10-29T07:32:52.857Z"
+}

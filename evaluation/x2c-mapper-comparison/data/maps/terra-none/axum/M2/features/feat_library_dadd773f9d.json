@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_dadd773f9d",
+  "title": "JSON, form, and multipart bodies",
+  "summary": "Typed request and response serialization for JSON and forms, plus multipart and raw form extraction.\n\nAgent mapper reason: These body-oriented extractors share content-type, parsing, and body-limit concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": "Json",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Handles JSON extraction and responses."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Handles URL-encoded forms."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Extracts raw form data."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Processes multipart bodies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Defines body limits applied to extraction."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Demonstrates multipart handling."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/json.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "json",
+    "forms",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:45:07.909Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

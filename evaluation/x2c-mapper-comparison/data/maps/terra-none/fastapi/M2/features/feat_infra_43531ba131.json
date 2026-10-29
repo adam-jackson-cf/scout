@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_43531ba131",
+  "title": "Continuous integration and release configuration",
+  "summary": "Test, documentation build, publishing and dependency maintenance workflows.\n\nAgent mapper reason: These files define the build, validation and publication environment for the project.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Continuous integration tests."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build workflow."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Release publishing workflow."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update configuration."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local quality hooks."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Package, dependency and tooling configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow documentation."
+    },
+    {
+      "path": "README.md",
+      "reason": "Project and installation context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "release",
+    "packaging"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "permissions",
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:01:44.182Z",
+  "updatedAt": "2026-10-29T01:04:20.987Z"
+}

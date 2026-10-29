@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1e1ff0af4a",
+  "title": "Axum service adapters and boxed types",
+  "summary": "Provides service extensions, boxed handlers, typed headers, and shared utility support.\n\nAgent mapper reason: These files provide shared adapters across handler, router, and HTTP header APIs.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Defines boxed handler or service types."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Provides extension methods for services."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Provides typed header integration."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Contains shared internal utility behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares service and header dependencies."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Adapts handlers into services."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Converts routers into services."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "service",
+    "headers",
+    "utilities"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

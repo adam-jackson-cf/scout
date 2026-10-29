@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_578b511581",
+  "title": "Translation notification action",
+  "summary": "Docker-based GitHub action that notifies translation teams about docs changes.\n\nAgent mapper reason: Action code, metadata, and its trigger workflow form one unit.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Action entrypoint that posts translation notifications."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Action inputs and metadata."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Container build for the action."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Workflow that triggers the action."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "translations",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "external-api",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:16:38.944Z",
+  "updatedAt": "2026-10-29T01:16:38.944Z"
+}

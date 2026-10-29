@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_11a5835f5e",
+  "title": "Static content, templates, and file streaming examples",
+  "summary": "Demonstrates static assets, rendered templates, and streamed file output.\n\nAgent mapper reason: Each example connects HTTP requests to file or template content.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Static file server."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Served example page."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Served browser script."
+    },
+    {
+      "path": "examples/templates/src/main.rs",
+      "reason": "Template rendering server."
+    },
+    {
+      "path": "examples/templates/templates/hello.html",
+      "reason": "Rendered template."
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "File streaming example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/static-file-server/Cargo.toml",
+      "reason": "Static server dependencies."
+    },
+    {
+      "path": "examples/templates/Cargo.toml",
+      "reason": "Template dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "files",
+    "templates"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:29:26.547Z",
+  "updatedAt": "2026-10-29T07:32:52.950Z"
+}

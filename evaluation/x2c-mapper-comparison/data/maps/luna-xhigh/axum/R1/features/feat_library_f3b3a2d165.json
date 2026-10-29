@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f3b3a2d165",
+  "title": "axum-macros shared proc-macro infrastructure",
+  "summary": "Macro exports, attribute parsing helpers, position-aware parsing, and test support.\n\nAgent mapper reason: These shared files define macro registration and reusable parsing infrastructure used by several derives and attributes.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Declares the proc-macro package and dependencies."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Provides shared attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Provides test-related macro support."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Registers and exports procedural macros."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Provides position-aware parsing support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Documents the proc-macro package."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Pins the toolchain used by this package."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "proc-macro",
+    "parsing"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:02:22.984Z",
+  "updatedAt": "2026-10-29T08:02:22.984Z"
+}

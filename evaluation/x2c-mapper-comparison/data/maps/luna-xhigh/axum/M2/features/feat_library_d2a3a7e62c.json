@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d2a3a7e62c",
+  "title": "Axum multipart extraction",
+  "summary": "Multipart request extraction and its Axum extractor integration.\n\nAgent mapper reason: Multipart parsing has distinct boundary and payload handling from form and JSON extraction.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Implements multipart request extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines multipart dependencies and feature gates."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports the multipart extractor."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents request extraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "filesystem",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:11:29.627Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

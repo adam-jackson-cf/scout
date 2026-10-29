@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_49beafcc84",
+  "title": "Project configuration and contributor docs",
+  "summary": "Repository-level config and contributor documentation: pyproject, pre-commit, contributing and security policy.\n\nAgent mapper reason: Top-level tooling config is reviewed together so that lint, type, and test command changes are checked against each other.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "hatch project, dependency, test and lint configuration"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "pre-commit hooks"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "contributor guide"
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "security policy"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "CI invocation of hatch commands"
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_multipart_installation.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "config",
+    "tooling"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:45.804Z",
+  "updatedAt": "2026-10-29T07:08:55.455Z"
+}

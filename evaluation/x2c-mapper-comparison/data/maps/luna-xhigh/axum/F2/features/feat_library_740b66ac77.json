@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_740b66ac77",
+  "title": "Axum routing and method dispatch",
+  "summary": "Implements routers, route registration, method routing, nesting, fallbacks, and path parameter handling.\n\nAgent mapper reason: Route selection, composition, parameter handling, and fallbacks form one externally observable request-dispatch contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Implements future behavior used by routing."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Converts routers into make-service values."
+    },
+    {
+      "path": "axum/src/routing/method_filter.rs",
+      "reason": "Defines method filtering."
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Implements method-specific route handlers."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Defines the Router API and its composition behavior."
+    },
+    {
+      "path": "axum/src/routing/not_found.rs",
+      "reason": "Implements not-found handling."
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Implements route service behavior."
+    },
+    {
+      "path": "axum/src/routing/strip_prefix.rs",
+      "reason": "Implements prefix handling for nested routing."
+    },
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Handles URL route parameters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/route.md",
+      "reason": "Documents route registration."
+    },
+    {
+      "path": "axum/src/docs/routing/nest.md",
+      "reason": "Documents nested routing."
+    },
+    {
+      "path": "axum/src/docs/routing/merge.md",
+      "reason": "Documents router merging."
+    },
+    {
+      "path": "axum/src/docs/routing/fallback.md",
+      "reason": "Documents fallback behavior."
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Documents router state."
+    },
+    {
+      "path": "axum/src/docs/method_routing/merge.md",
+      "reason": "Documents method router composition."
+    },
+    {
+      "path": "axum/src/docs/method_routing/fallback.md",
+      "reason": "Documents method router fallback behavior."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Consumes route path parameters."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares routing dependencies and features."
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "routing",
+    "http"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

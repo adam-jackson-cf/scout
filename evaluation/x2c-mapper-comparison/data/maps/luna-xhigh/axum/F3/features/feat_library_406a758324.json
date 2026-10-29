@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_406a758324",
+  "title": "Axum middleware adapters",
+  "summary": "Builds request and response middleware from extractors or functions and maps requests and responses.\n\nAgent mapper reason: The adapters share middleware execution rules and transform requests or responses around handlers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Builds middleware from an extractor."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Builds middleware from a function."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Transforms incoming requests."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Transforms outgoing responses."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Defines and exports middleware APIs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Documents middleware behavior."
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Explains router layers."
+    },
+    {
+      "path": "axum/src/docs/routing/route_layer.md",
+      "reason": "Explains route layers."
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Explains method-router layers."
+    },
+    {
+      "path": "axum/src/docs/method_routing/route_layer.md",
+      "reason": "Explains method route layers."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares middleware dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "request",
+    "response"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

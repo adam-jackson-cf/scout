@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_963e57741d",
+  "title": "axum-core response traits",
+  "summary": "IntoResponse, IntoResponseParts, and header-appending helpers used to build HTTP responses.\n\nAgent mapper reason: Response conversion traits are a cohesive unit with their header-append helpers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "symbol": "IntoResponse",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response module exports"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "IntoResponse trait and impls"
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "IntoResponseParts trait for header and extension additions"
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "AppendHeaders helper for multi-valued headers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Re-exports these traits for the main crate"
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "User-facing description of response conversion"
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "traits"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:14:23.770Z",
+  "updatedAt": "2026-10-29T07:14:23.770Z"
+}

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d9d85e7b25",
+  "title": "axum-macros debug_handler and typed_path macros",
+  "summary": "debug_handler attribute and TypedPath derive, plus the axum_test helper macro, with their trybuild suites.\n\nAgent mapper reason: debug_handler and TypedPath have separate trybuild suites and separate implementation files, grouped by macro rather than by test directory.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "debug_handler implementation"
+    },
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "TypedPath derive implementation"
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "axum_test test-helper macro"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Docs for debug_handler output"
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Runtime side of TypedPath"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/state_and_body.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/generics.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/pass/state_and_body.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/generics.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "debug",
+    "typed-path"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:16:27.607Z",
+  "updatedAt": "2026-10-29T07:19:20.774Z"
+}

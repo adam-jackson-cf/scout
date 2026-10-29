@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_30899e045c",
+  "title": "Dependency graph and injection",
+  "summary": "Dependency resolution, caching, overrides, context managers, and dependency-derived parameters.\n\nAgent mapper reason: These tests cover the dependency graph's resolution and lifecycle rules, including caching and override behavior.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "Covers dependency result caching."
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "Covers class-based dependencies."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "Covers context manager dependency lifecycles."
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "Covers context variable handling in dependencies."
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "Covers duplicate dependency declarations."
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "Covers dependency exception behavior."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "Covers application dependency overrides."
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "Covers overrides for security dependencies."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Covers injecting HTTP connection objects."
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "Covers parameters shared between paths and dependencies."
+    },
+    {
+      "path": "tests/test_repeated_dependency_schema.py",
+      "reason": "Covers schema output for repeated dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/dependencies/index.md",
+      "reason": "Defines the dependency injection concepts and examples."
+    },
+    {
+      "path": "docs/en/docs/advanced/testing-dependencies.md",
+      "reason": "Documents dependency override testing."
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "injection",
+    "lifecycle"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:47:09.804Z"
+}

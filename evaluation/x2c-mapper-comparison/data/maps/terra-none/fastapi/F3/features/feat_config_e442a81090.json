@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_e442a81090",
+  "title": "Documentation build and site configuration",
+  "summary": "Builds and configures the English documentation site and its browser behavior.\n\nAgent mapper reason: The build workflows, site configuration, and first-party template assets govern the same documentation delivery path.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Defines the documentation build workflow."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Defines preview deployment automation."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Supports documentation preview automation."
+    },
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Configures the English documentation site."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Overrides the site template."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Implements site chat behavior."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Implements custom site behavior."
+    },
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Styles site customizations."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Contains documentation tool dependencies and environment configuration."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Related preview watcher action."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "documentation",
+    "mkdocs",
+    "site"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:54:57.019Z",
+  "updatedAt": "2026-10-29T00:54:57.019Z"
+}

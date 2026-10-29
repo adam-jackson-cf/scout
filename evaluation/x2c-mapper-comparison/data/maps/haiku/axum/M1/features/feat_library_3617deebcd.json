@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3617deebcd",
+  "title": "axum-extra extractors, cookies and form helpers",
+  "summary": "Cookie jar, signed and private cookies, cached extraction, form and query extractors with rejection, multipart and Either.\n\nAgent mapper reason: Cookie and extractor helpers share the same parsing and key-handling boundary and are reviewed together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Extractor module surface."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "CookieJar extractor and response."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "Encrypted cookie handling, a secrets boundary."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "Signed cookie handling, a tamper-detection boundary."
+    },
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Cached extractor wrapper."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Form extractor variant."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Query extractor variant."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Multipart extractor variant."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "WithRejection wrapper for custom rejections."
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either type implementing extractor and response traits."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Feature flags for cookie-encryption, cookie-signed and multipart."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Crate overview and feature descriptions."
+    },
+    {
+      "path": "axum-extra/CHANGELOG.md",
+      "reason": "API change history."
+    },
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Real-world cookie usage."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Example of WithRejection."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "cookies",
+    "extractors",
+    "secrets",
+    "forms"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "auth",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:11:19.210Z",
+  "updatedAt": "2026-10-29T07:19:20.641Z"
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e158b822ac",
+  "title": "axum-extra routing: resources and typed paths",
+  "summary": "Resource-style routing helpers and the TypedPath routing integration.\n\nAgent mapper reason: Typed routing and resource helpers build on the router and axum-macros derive.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Routing module exports"
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Resource route builder"
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "TypedPath trait and typed routing helpers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "TypedPath derive macro that implements the trait"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "reason": "Typed path wildcard behavior"
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Core Router API used by resource helpers"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/into_uri.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/typed_path/pass/into_uri.rs",
+      "command": null
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "typed-path",
+    "resources"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:14:23.770Z",
+  "updatedAt": "2026-10-29T07:14:23.770Z"
+}

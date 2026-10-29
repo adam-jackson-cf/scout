@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_103b2142dc",
+  "title": "Workspace and CI configuration",
+  "summary": "Workspace membership, dependency policy, and CI workflows.\n\nAgent mapper reason: These files govern repository-wide build, dependency, and contribution checks rather than one runtime library feature.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Defines the Rust workspace and shared package settings."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Defines dependency and license policy."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Defines automated CI checks."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Configures patch workflow behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".gitignore",
+      "reason": "Repository-level file exclusions."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Documents contributor workflow."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Repository issue intake configuration."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "reason": "Bug report template."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "reason": "Feature request template."
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "Pull request template."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "dependencies"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:11:29.627Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

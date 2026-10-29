@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_77667e539b",
+  "title": "axum body, form/json, and crate utilities",
+  "summary": "Body wrappers, JSON and Form types, typed headers, extensions, service extension trait, and crate-root wiring.\n\nAgent mapper reason: These are the user-facing data wrapper types and the crate root that gates them; grouped so feature-gated re-exports stay consistent.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body re-exports"
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "StreamBody response type"
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "BoxedIntoRoute type-erasure"
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Extension extractor and layer"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extractor/response"
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Json extractor/response (deserialization boundary)"
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "TypedHeader extractor"
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "ServiceExt helpers"
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Internal utilities"
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Internal macros"
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Crate root, feature gates, public re-exports"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Feature flags gating these modules"
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Read-only context for cfg generation; not owned"
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Public crate documentation"
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "json",
+    "form",
+    "body",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:17:47.257Z",
+  "updatedAt": "2026-10-29T07:22:16.697Z"
+}

@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_638b1cff0d",
+  "title": "Response classes and status codes tests",
+  "summary": "Tests response class defaults, media types, status changes, and bodyless responses.\n\nAgent mapper reason: These tests cover HTTP response construction separately from model serialization.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_default_response_class.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "Application response defaults."
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "reason": "Router response defaults."
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "ORJSON response integration."
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "Response without a media type."
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "Changing response status."
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "Status codes that disallow bodies."
+    },
+    {
+      "path": "tests/test_reponse_set_reponse_code_empty.py",
+      "reason": "Empty response status behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/custom-response.md",
+      "reason": "Response class behavior."
+    },
+    {
+      "path": "docs/en/docs/advanced/response-change-status-code.md",
+      "reason": "Dynamic status behavior."
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_default_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "http-status"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:57:44.320Z",
+  "updatedAt": "2026-10-29T01:04:21.079Z"
+}

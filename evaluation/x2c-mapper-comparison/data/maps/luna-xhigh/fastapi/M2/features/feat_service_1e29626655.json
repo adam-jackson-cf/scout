@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_1e29626655",
+  "title": "Translation notification action",
+  "summary": "Sends notifications related to translation activity.\n\nAgent mapper reason: The action and its workflow jointly define notification behavior.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Implements translation notification behavior."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Declares the action interface."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Defines the action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Schedules and configures the action."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-action",
+    "translations"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:47:09.724Z",
+  "updatedAt": "2026-10-29T00:47:09.724Z"
+}

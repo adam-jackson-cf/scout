@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_42bccae2de",
+  "title": "Core library tests: parameters and validation",
+  "summary": "Repo-level tests for query, path, header and cookie parameters, Annotated and class-based parameters, and validation error reporting.\n\nAgent mapper reason: Parameter parsing and validation share one request-input pipeline.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_query.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_query.py",
+      "reason": "Query parameter behavior."
+    },
+    {
+      "path": "tests/test_path.py",
+      "reason": "Path parameter behavior."
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "reason": "Class-based parameter declarations."
+    },
+    {
+      "path": "tests/test_params_repr.py",
+      "reason": "Parameter repr output."
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "Annotated parameter form."
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "Validation errors for multiple query params."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Validation errors for multiple body params."
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "reason": "Optionality inference."
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "reason": "Invalid path parameter declarations."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_required_noneable.py",
+      "reason": "Required nullable parameter behavior."
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "Ambiguous parameter declarations."
+    },
+    {
+      "path": "tests/test_query.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_query.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "parameters",
+    "validation",
+    "tests"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:08:55.373Z",
+  "updatedAt": "2026-10-29T07:08:55.373Z"
+}

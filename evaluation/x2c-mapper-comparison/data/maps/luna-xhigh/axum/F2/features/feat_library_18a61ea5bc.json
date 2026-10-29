@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_18a61ea5bc",
+  "title": "Axum connection and host metadata extraction",
+  "summary": "Exposes connection information and host-related request metadata to handlers.\n\nAgent mapper reason: Both extractors expose request-origin metadata and depend on transport or HTTP header values.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Implements connection information extraction."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Extracts host information from a request."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports the extractors."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Configures connection metadata for services."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents connection information integration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "connection",
+    "host"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

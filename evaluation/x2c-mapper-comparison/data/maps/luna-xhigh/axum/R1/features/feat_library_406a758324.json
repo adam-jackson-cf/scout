@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_406a758324",
+  "title": "Axum middleware",
+  "summary": "Middleware adapters for extractor, request, and response transformations.\n\nAgent mapper reason: These adapters share request and response transformation semantics across router and handler layers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Builds middleware from an extractor."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Builds middleware from async functions."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Transforms incoming requests."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Transforms outgoing responses."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Exports middleware constructors and traits."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Documents middleware usage."
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Documents router-wide middleware layers."
+    },
+    {
+      "path": "axum/src/docs/routing/route_layer.md",
+      "reason": "Documents route-specific middleware layers."
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Documents method-router layers."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "middleware",
+    "request-pipeline"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:02:22.984Z"
+}

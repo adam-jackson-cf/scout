@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b1d172eb34",
+  "title": "Axum typed headers",
+  "summary": "Exposes typed HTTP header integration.\n\nAgent mapper reason: Typed headers form a focused serialization and parsing adapter over HTTP header values.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/typed_header.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Implements typed header extraction and response integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows extractor integration."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Shows response integration."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines header dependency and feature configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "headers",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:08:04.674Z"
+}

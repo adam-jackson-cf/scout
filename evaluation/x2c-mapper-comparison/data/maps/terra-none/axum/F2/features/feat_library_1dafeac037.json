@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1dafeac037",
+  "title": "Extra cookie jars",
+  "summary": "Implements ordinary, signed, and private cookie extraction and response handling.\n\nAgent mapper reason: The cookie jar variants share request and response behavior while differing in integrity and confidentiality guarantees.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "Implements cookie jar extraction and response updates."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "Implements private cookie jars."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "Implements signed cookie jars."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines cookie feature gates and cryptographic dependencies."
+    },
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Provides a session-related usage example."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "command": null
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "cookies",
+    "cryptography",
+    "sessions"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "auth",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

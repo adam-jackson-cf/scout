@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0f42692916",
+  "title": "Axum WebSocket extraction",
+  "summary": "Upgrades eligible requests and exposes WebSocket connection handling.\n\nAgent mapper reason: The extractor crosses from HTTP request handling into a long-lived bidirectional network connection.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Implements WebSocket request extraction and upgrade behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows the public extractor export."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents WebSocket extraction constraints."
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "Demonstrates server-side WebSocket handling."
+    },
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Demonstrates WebSocket use in a chat flow."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "websocket",
+    "network"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:08:04.674Z"
+}

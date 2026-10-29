@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a014c07b68",
+  "title": "Core request extraction contracts",
+  "summary": "Defines request extractors, state references, request extensions, rejections, and default body limits.\n\nAgent mapper reason: These files jointly define how request data and state enter extractor implementations.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extractor traits and common implementations."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Request body limit policy."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "State reference conversion contract."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Shared extraction rejection types."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Request-parts extraction."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Tuple extraction composition."
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Extension trait module."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Request extraction extension methods."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "Request-parts extraction extension methods."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core crate dependencies and features."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Framework extractor integration."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extractor usage and ordering guidance."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "request",
+    "body-limits"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:43:05.416Z"
+}

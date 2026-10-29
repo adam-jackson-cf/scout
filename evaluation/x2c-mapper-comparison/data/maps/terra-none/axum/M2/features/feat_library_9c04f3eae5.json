@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9c04f3eae5",
+  "title": "Typed paths and resource routing",
+  "summary": "Typed route APIs and resource-oriented routing extensions.\n\nAgent mapper reason: Both extensions build route registration and URL construction on top of the main router.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "symbol": "TypedPath",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Exports routing extensions."
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Defines typed paths and typed routing."
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Defines resource routing."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Generates typed-path implementations."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Provides the underlying router."
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "typed-path",
+    "resources"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:41:26.742Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

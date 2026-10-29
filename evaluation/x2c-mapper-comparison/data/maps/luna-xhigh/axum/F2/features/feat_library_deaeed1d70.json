@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_deaeed1d70",
+  "title": "Axum request body types",
+  "summary": "Provides body wrappers and streaming response-body support.\n\nAgent mapper reason: The body wrapper and streaming implementation share request and response body semantics.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines and exports Axum body types."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Implements streaming body behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares body and HTTP dependencies."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Provides the underlying body abstraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "body",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

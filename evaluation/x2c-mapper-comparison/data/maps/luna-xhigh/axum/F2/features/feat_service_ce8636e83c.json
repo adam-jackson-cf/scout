@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_ce8636e83c",
+  "title": "Example: CORS",
+  "summary": "Shows configuring cross-origin request handling.\n\nAgent mapper reason: This package demonstrates cross-origin policy configuration for an HTTP service.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "Configures the example service and CORS behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/cors/Cargo.toml",
+      "reason": "Defines CORS-related dependencies."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Provides middleware layering."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "cors",
+    "http"
+  ],
+  "trustBoundaries": [
+    "network",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

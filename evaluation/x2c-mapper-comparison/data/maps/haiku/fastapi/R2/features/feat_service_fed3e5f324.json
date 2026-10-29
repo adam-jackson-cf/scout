@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_fed3e5f324",
+  "title": "OpenAPI generation and docs UI",
+  "summary": "Builds OpenAPI schema from routes and dependencies, and serves Swagger UI and ReDoc pages.\n\nAgent mapper reason: Schema generation and docs HTML are one output pipeline with shared tests.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/openapi/utils.py",
+      "symbol": "get_openapi",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/openapi/utils.py",
+      "reason": "OpenAPI schema generation from routes"
+    },
+    {
+      "path": "fastapi/openapi/docs.py",
+      "reason": "Swagger UI and ReDoc HTML generation"
+    },
+    {
+      "path": "fastapi/openapi/models.py",
+      "reason": "OpenAPI Pydantic models"
+    },
+    {
+      "path": "fastapi/openapi/constants.py",
+      "reason": "OpenAPI constants"
+    },
+    {
+      "path": "fastapi/openapi/__init__.py",
+      "reason": "Package marker"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_openapi_servers.py",
+      "reason": "servers entry"
+    },
+    {
+      "path": "tests/test_openapi_route_extensions.py",
+      "reason": "Route-level OpenAPI extensions"
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "reason": "Schema deduplication"
+    },
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "reason": "Docs UI redirect"
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "Local docs assets"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_openapi_servers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "openapi",
+    "docs-ui",
+    "schema"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:19:28.910Z",
+  "updatedAt": "2026-10-29T01:19:28.910Z"
+}

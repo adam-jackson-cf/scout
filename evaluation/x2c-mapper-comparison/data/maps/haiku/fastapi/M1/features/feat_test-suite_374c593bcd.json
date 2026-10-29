@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_374c593bcd",
+  "title": "OpenAPI and docs UI test suite",
+  "summary": "Tests for generated OpenAPI schema, extra schema fields, additional responses, Swagger/ReDoc UI routes and operation IDs.\n\nAgent mapper reason: All verify generated OpenAPI documents and the docs UI endpoints from the same schema pipeline.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_application.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_openapi_route_extensions.py",
+      "reason": "OpenAPI route extensions"
+    },
+    {
+      "path": "tests/test_openapi_servers.py",
+      "reason": "Servers in OpenAPI"
+    },
+    {
+      "path": "tests/test_openapi_query_parameter_extension.py",
+      "reason": "Query parameter extensions"
+    },
+    {
+      "path": "tests/test_custom_schema_fields.py",
+      "reason": "Custom schema fields"
+    },
+    {
+      "path": "tests/test_schema_extra_examples.py",
+      "reason": "Schema examples"
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "reason": "Duplicate model names in schema"
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "reason": "Operation ID generation"
+    },
+    {
+      "path": "tests/test_additional_responses_router.py",
+      "reason": "Additional responses on routers"
+    },
+    {
+      "path": "tests/test_additional_responses_custom_model_in_callback.py",
+      "reason": "Additional responses with callbacks"
+    },
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "reason": "Swagger UI redirect"
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "reason": "Swagger UI redirect disabled"
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "Local docs assets"
+    },
+    {
+      "path": "tests/test_deprecated_openapi_prefix.py",
+      "reason": "Deprecated OpenAPI prefix option"
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "Swagger UI OAuth init"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/extending-openapi.md",
+      "reason": "Documented OpenAPI customization"
+    },
+    {
+      "path": "docs/en/docs/advanced/path-operation-advanced-configuration.md",
+      "reason": "Documented per-operation OpenAPI options"
+    },
+    {
+      "path": "tests/test_openapi_servers.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_openapi_servers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "openapi",
+    "docs",
+    "schema"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:14:50.304Z",
+  "updatedAt": "2026-10-29T07:08:55.469Z"
+}

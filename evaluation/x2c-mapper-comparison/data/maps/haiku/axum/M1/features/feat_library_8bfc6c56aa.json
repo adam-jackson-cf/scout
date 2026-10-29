@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8bfc6c56aa",
+  "title": "axum-macros typed_path and axum_test helpers",
+  "summary": "TypedPath derive and attribute support, plus the axum_test helper macro used for testing.\n\nAgent mapper reason: TypedPath and axum_test are separate macros; grouped here as the remaining macro surface.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "TypedPath derive implementation and route validation."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "axum_test helper macro."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Runtime TypedPath consumer."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/route_not_starting_with_slash.stderr",
+      "reason": "Expected diagnostic output."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "typed-path",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:19:20.641Z"
+}

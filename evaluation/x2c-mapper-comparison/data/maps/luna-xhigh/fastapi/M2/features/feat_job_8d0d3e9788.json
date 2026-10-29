@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_8d0d3e9788",
+  "title": "Repository maintenance workflows",
+  "summary": "Issue management, approval labeling, and latest-change automation.\n\nAgent mapper reason: These workflows automate repository maintenance and operate on GitHub issues, labels, or change reporting. Their intake templates clarify the user-facing repository process.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Automates issue management."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Applies labels based on approval state."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Automates latest-change reporting."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Configures issue template behavior."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Provides context for privileged issue handling."
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/questions.yml",
+      "reason": "Configures discussion intake."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "maintenance",
+    "issues"
+  ],
+  "trustBoundaries": [
+    "network",
+    "permissions",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:43:58.083Z",
+  "updatedAt": "2026-10-29T00:47:09.791Z"
+}

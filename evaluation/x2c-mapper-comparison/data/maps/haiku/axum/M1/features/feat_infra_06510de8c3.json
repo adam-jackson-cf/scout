@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_06510de8c3",
+  "title": "Examples: server runtime, TLS and proxy demos",
+  "summary": "Examples for graceful shutdown, multiple listen addresses, Unix sockets, rustls/openssl TLS, hyper 1.0 usage, and HTTP/reverse proxying.\n\nAgent mapper reason: Runtime and networking examples share listener, TLS and upstream-connection concerns.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": "cargo run --manifest-path examples/tls-rustls/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Graceful shutdown signal handling."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Multiple listener setup."
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Unix socket listener, a filesystem boundary."
+    },
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "TLS server with bundled test certs."
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Low-level rustls integration."
+    },
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "Low-level OpenSSL integration."
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "Direct hyper 1.0 integration."
+    },
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "HTTP CONNECT proxy, an outbound network boundary."
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Reverse proxy forwarding requests upstream."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/tls-rustls/self_signed_certs/cert.pem",
+      "reason": "Test certificate; not a production secret."
+    },
+    {
+      "path": "examples/tls-rustls/self_signed_certs/key.pem",
+      "reason": "Test key; reviewed only as context."
+    },
+    {
+      "path": "examples/low-level-rustls/self_signed_certs/cert.pem",
+      "reason": "Test certificate."
+    },
+    {
+      "path": "examples/low-level-openssl/self_signed_certs/cert.pem",
+      "reason": "Test certificate."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "tls",
+    "proxy",
+    "runtime"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "filesystem",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:19:20.641Z"
+}

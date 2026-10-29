@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_20a03aabbd",
+  "title": "GitHub action: preview watcher",
+  "summary": "Action that watches documentation preview activity.\n\nAgent mapper reason: These files define one runnable repository action. The related workflows give context for the preview lifecycle it observes.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Implements preview watching behavior."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Defines the action interface."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Defines the action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Provides preview workflow context."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "May provide related preview or deployment reporting context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "documentation",
+    "preview"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:43:58.083Z",
+  "updatedAt": "2026-10-29T00:47:09.790Z"
+}

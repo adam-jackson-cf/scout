@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_406a758324",
+  "title": "Middleware adapters",
+  "summary": "Adapters for extractor, function, request-mapping, and response-mapping middleware.\n\nAgent mapper reason: These implementations provide related request and response processing layers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware exports"
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Extractor middleware"
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Function middleware"
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Request transformation"
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Response transformation"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware contract"
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Router layering semantics"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "tower"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:30:36.679Z"
+}

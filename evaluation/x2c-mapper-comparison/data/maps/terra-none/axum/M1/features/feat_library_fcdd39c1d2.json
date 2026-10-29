@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fcdd39c1d2",
+  "title": "Axum crate assembly and test infrastructure",
+  "summary": "Public crate exports, build configuration, test client and shared utilities.\n\nAgent mapper reason: These shared crate-level files determine feature selection, exports and test support across the framework.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Framework entrypoint and exports."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Framework internal macros."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared framework utilities."
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Shared test helpers."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Test HTTP client."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Framework build configuration."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Framework features and dependencies."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Framework benchmark harness."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/README.md",
+      "reason": "Framework overview."
+    },
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace membership and configuration."
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "crate",
+    "build",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:45:07.977Z"
+}

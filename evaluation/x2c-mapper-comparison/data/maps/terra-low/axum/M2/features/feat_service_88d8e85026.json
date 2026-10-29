@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_88d8e85026",
+  "title": "Extractor customization examples",
+  "summary": "Demonstrates custom extractor errors, body consumption, validation, and alternate payload parsing.\n\nAgent mapper reason: These examples focus on controlling extraction, validation, and rejection of user input.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "Custom extractor error example setup."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/custom_extractor.rs",
+      "reason": "Custom extractor implementation."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Derived extractor example."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Rejection customization example."
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Path rejection customization."
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Body consumption example."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Content-type-dependent parsing example."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Empty query parameter handling."
+    },
+    {
+      "path": "examples/validator/src/main.rs",
+      "reason": "Input validation example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-extractor-error/README.md",
+      "reason": "Example design explanation."
+    },
+    {
+      "path": "examples/customize-extractor-error/Cargo.toml",
+      "reason": "Custom extraction dependencies."
+    },
+    {
+      "path": "examples/customize-path-rejection/Cargo.toml",
+      "reason": "Path rejection dependencies."
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/Cargo.toml",
+      "reason": "Body consumption dependencies."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/Cargo.toml",
+      "reason": "Content parsing dependencies."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/Cargo.toml",
+      "reason": "Query example dependencies."
+    },
+    {
+      "path": "examples/validator/Cargo.toml",
+      "reason": "Validation dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "extractors",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:32:52.857Z",
+  "updatedAt": "2026-10-29T07:32:52.857Z"
+}

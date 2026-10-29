@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_cbd0606dbb",
+  "title": "Request parameter validation behavioral tests",
+  "summary": "Regression tests for endpoint parameter classification, validation, aliases, and request bodies.\n\nAgent mapper reason: The tests exercise input classification and validation across request parameter sources.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_param_class.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "Ambiguous parameter handling."
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "Annotated parameter handling."
+    },
+    {
+      "path": "tests/test_enforce_once_required_parameter.py",
+      "reason": "Required parameter behavior."
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Form sequence handling."
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "Request body extraction."
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "reason": "Optional parameter inference."
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "reason": "Invalid path parameters."
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "reason": "Invalid sequence parameters."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Multiple body validation errors."
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "Multiple query validation errors."
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "reason": "Parameter class behavior."
+    },
+    {
+      "path": "tests/test_repeated_parameter_alias.py",
+      "reason": "Repeated alias handling."
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Body media types."
+    },
+    {
+      "path": "tests/test_required_noneable.py",
+      "reason": "Required nullable inputs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/body.md",
+      "reason": "Body parameter contract."
+    },
+    {
+      "path": "docs/en/docs/tutorial/query-params-str-validations.md",
+      "reason": "Query validation contract."
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "parameters",
+    "validation",
+    "regression"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:09:24.368Z",
+  "updatedAt": "2026-10-29T01:09:24.368Z"
+}

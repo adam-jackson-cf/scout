@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1c34c71996",
+  "title": "Extra handler and middleware utilities",
+  "summary": "Alternative handler composition, either values, and middleware extensions.\n\nAgent mapper reason: These optional utilities extend handler and middleware composition over the main crate.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Exports handler extensions."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Combines alternative handlers."
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Supports alternative typed values."
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Provides extra middleware."
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Defines extra crate exports."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines crate features and dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines the underlying handler contract."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Describes the extension crate."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handler",
+    "middleware",
+    "composition"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:47:01.861Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

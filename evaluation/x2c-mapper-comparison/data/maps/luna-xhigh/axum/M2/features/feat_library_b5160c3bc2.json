@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b5160c3bc2",
+  "title": "Axum crate facade and build-time API support",
+  "summary": "Public crate exports, crate-level macros and utilities; build script is included as context.\n\nAgent mapper reason: The facade determines the public API surface and connects otherwise separate Axum modules.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Defines the public Axum crate facade and crate-level documentation."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Provides macros exposed by the crate."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Provides shared internal utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines the library dependencies and features."
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Documents the public crate."
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "Records Axum changes."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Build-time input listed for the package."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "public-api"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:11:29.627Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

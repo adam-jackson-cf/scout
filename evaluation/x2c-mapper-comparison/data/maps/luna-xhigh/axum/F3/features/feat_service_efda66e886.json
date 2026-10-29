@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_efda66e886",
+  "title": "Example: WebSocket chat",
+  "summary": "Demonstrates a multi-client chat over WebSockets.\n\nAgent mapper reason: The server and browser page together implement the chat user flow over concurrent socket connections.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Implements chat connections and message broadcast."
+    },
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "Provides the browser chat interface."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/chat/Cargo.toml",
+      "reason": "Declares example dependencies."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Implements WebSocket upgrades."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "websocket",
+    "chat"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

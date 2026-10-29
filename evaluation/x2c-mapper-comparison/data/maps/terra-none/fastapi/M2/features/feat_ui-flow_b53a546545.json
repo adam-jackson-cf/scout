@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_b53a546545",
+  "title": "Documentation site frontend and configuration",
+  "summary": "Configures the English documentation site and its custom frontend behavior.\n\nAgent mapper reason: The template, scripts, styles, and site configuration jointly control the documentation user interface.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Configures the English site."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Customizes the site template."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Implements site chat behavior."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Implements custom frontend behavior."
+    },
+    {
+      "path": "docs/en/docs/js/termynal.js",
+      "reason": "Implements terminal presentation behavior."
+    },
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Styles the site."
+    },
+    {
+      "path": "docs/en/docs/css/termynal.css",
+      "reason": "Styles terminal presentations."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Builds documentation."
+    },
+    {
+      "path": "docs/en/docs/index.md",
+      "reason": "English documentation homepage."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "documentation",
+    "frontend",
+    "mkdocs"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:04:20.875Z",
+  "updatedAt": "2026-10-29T01:04:20.875Z"
+}

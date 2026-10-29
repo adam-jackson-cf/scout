@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_341749b161",
+  "title": "Core request extraction contracts",
+  "summary": "Defines request extraction traits, state references, body limits, rejection types, and tuple extraction.\n\nAgent mapper reason: These files jointly define the extraction interface and shared constraints used by the rest of the framework.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extraction trait definitions and module interface."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Default request body limit behavior."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "State projection contract."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Core extraction rejection types."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Request-parts extraction implementations."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Composition of extractors into tuples."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core package dependencies and features."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "User-facing extractor semantics."
+    },
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "Derive implementation targeting these contracts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "extractors",
+    "state"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:28:16.061Z",
+  "updatedAt": "2026-10-29T07:28:16.061Z"
+}

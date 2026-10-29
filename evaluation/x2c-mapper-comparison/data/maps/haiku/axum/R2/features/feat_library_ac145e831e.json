@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ac145e831e",
+  "title": "axum handlers, middleware, and boxed services",
+  "summary": "Handler trait and future types, service adapters, from_fn/map_request/map_response middleware, from_extractor, boxed router state, and service extension helpers.\n\nAgent mapper reason: Handler and middleware machinery are tightly coupled through the Handler and Service traits.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait and blanket impls"
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler future type"
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "HandlerService adapter"
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Handler state wiring"
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware module exports"
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "from_fn middleware"
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "from_extractor middleware"
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "map_request middleware"
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "map_response middleware"
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "BoxedIntoRoute type erasure"
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service extension helpers"
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared internal utilities"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler documentation"
+    },
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware documentation"
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Handler error guidance"
+    },
+    {
+      "path": "axum/src/docs/method_routing/route_layer.md",
+      "reason": "Layering documentation"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Performance benchmarks for handler dispatch"
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "middleware",
+    "services"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:16:27.607Z",
+  "updatedAt": "2026-10-29T07:17:47.538Z"
+}

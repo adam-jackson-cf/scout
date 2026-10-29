@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_c751e8a851",
+  "title": "workspace config, CI, and templates",
+  "summary": "Workspace-level CI workflow, patch config, cargo-deny policy, and GitHub issue and PR templates.\n\nAgent mapper reason: Repo-level CI and policy files that gate every crate.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "CI pipeline definition."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Patch configuration for CI."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "cargo-deny dependency policy."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue template configuration."
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "PR template."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace manifest that CI builds and tests."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Ignore rules."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "config",
+    "release"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:12:39.825Z",
+  "updatedAt": "2026-10-29T07:12:39.825Z"
+}

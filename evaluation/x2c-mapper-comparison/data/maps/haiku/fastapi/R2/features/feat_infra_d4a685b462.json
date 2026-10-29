@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_d4a685b462",
+  "title": "Custom GitHub actions (Python apps)",
+  "summary": "Docker-based GitHub Actions with Python entrypoints for docs preview comments, translation notifications, people list generation and preview watching.\n\nAgent mapper reason: Each action is a small standalone script; grouped because they share GitHub API token handling and Docker packaging.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Contributor data generation via GitHub API"
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Posts docs preview comments on PRs"
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Translation notification logic"
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Watches preview deployments"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action metadata"
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Action metadata"
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Action metadata"
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Action metadata"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "github-api",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "external-api",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:19:28.910Z",
+  "updatedAt": "2026-10-29T01:19:28.910Z"
+}

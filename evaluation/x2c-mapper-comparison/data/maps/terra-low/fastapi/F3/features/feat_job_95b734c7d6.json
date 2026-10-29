@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_95b734c7d6",
+  "title": "People data automation",
+  "summary": "GitHub action and workflow for maintaining project people data.\n\nAgent mapper reason: The action and workflow form the people-data automation.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action definition."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "People automation implementation."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Action runtime image."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "People workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "People data used by documentation."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "People page context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "people"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "filesystem",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:09:24.368Z",
+  "updatedAt": "2026-10-29T01:09:24.368Z"
+}

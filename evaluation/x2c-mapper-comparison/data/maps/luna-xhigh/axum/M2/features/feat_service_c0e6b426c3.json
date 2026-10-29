@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_c0e6b426c3",
+  "title": "Example: Prometheus metrics",
+  "summary": "Demonstrates exposing service metrics for Prometheus.\n\nAgent mapper reason: The package focuses on collecting and exposing metrics through an HTTP service.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/prometheus-metrics/Cargo.toml",
+      "reason": "Defines the example package and dependencies."
+    },
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "reason": "Implements metric collection and exposition."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Indexes standalone examples."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Provides request instrumentation integration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "metrics",
+    "observability"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

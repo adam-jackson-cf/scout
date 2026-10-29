@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6e5b3e3395",
+  "title": "Core response conversion",
+  "summary": "Converts response values and parts into HTTP responses, including header handling.\n\nAgent mapper reason: Response traits and header composition form one shared HTTP output contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response module wiring"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Response conversion"
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "Response parts conversion"
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "Header append behavior"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response contract documentation"
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core dependencies"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "response"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:29:26.696Z"
+}

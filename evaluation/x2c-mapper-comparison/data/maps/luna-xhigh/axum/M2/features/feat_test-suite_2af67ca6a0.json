@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_2af67ca6a0",
+  "title": "Application testing example",
+  "summary": "Demonstrates testing an Axum application with test helpers.\n\nAgent mapper reason: This sample focuses on exercising an application through Axum's test client.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/testing/Cargo.toml",
+      "reason": "Declares the example package."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "Implements the application testing example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Exports test helpers."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Provides the in-process test client."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:02:22.984Z",
+  "updatedAt": "2026-10-29T08:11:29.743Z"
+}

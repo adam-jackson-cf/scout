@@ -1,0 +1,175 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_6a35e3b6e5",
+  "title": "Response models and serialization",
+  "summary": "Response validation, filtering, encoding, aliases, and status or response class behavior.\n\nAgent mapper reason: These cases define the conversion from endpoint return values to HTTP responses, including model validation and output filtering. Response class and status behavior are adjacent parts of the same public contract.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Covers response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Checks model-based response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Checks dataclass response serialization."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Covers invalid response models."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Checks response field filtering."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Covers response aliases."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "Tests conversion of values to JSON-compatible forms."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Covers custom datetime encoding."
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "Checks default response class behavior."
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "Covers status changes during response handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs_src/custom_response/tutorial001.py",
+      "reason": "Demonstrates custom response behavior."
+    },
+    {
+      "path": "docs_src/encoder/tutorial001.py",
+      "reason": "Demonstrates JSON-compatible encoding."
+    },
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Documents response model behavior."
+    },
+    {
+      "path": "docs/en/docs/advanced/custom-response.md",
+      "reason": "Documents custom response classes."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "serialization",
+    "models"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:43:58.083Z",
+  "updatedAt": "2026-10-29T00:43:58.083Z"
+}

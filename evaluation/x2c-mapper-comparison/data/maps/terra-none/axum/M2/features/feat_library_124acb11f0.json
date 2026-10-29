@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_124acb11f0",
+  "title": "Response helpers and error handling",
+  "summary": "Provides redirects, server-sent events, and service error-to-response adaptation.\n\nAgent mapper reason: These helpers translate application output and service failures into HTTP responses.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Framework response exports."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect responses."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent event streams."
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Service error handling adapters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error handling contract."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response API guidance."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Underlying conversion contract."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "sse",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:43:05.416Z",
+  "updatedAt": "2026-10-29T07:47:01.914Z"
+}

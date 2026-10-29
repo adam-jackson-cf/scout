@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_bd107d4388",
+  "title": "Security schemes",
+  "summary": "Security dependency classes for API keys, HTTP auth, OAuth2, and OpenID Connect, including their OpenAPI declarations.\n\nAgent mapper reason: Credential extraction and security scheme declarations are one auth surface and should be reviewed together.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/security/oauth2.py",
+      "symbol": "OAuth2PasswordBearer",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/security/__init__.py",
+      "reason": "Security package exports."
+    },
+    {
+      "path": "fastapi/security/base.py",
+      "reason": "Base security model."
+    },
+    {
+      "path": "fastapi/security/api_key.py",
+      "reason": "API key header, query, and cookie schemes."
+    },
+    {
+      "path": "fastapi/security/http.py",
+      "reason": "HTTP basic, bearer, and digest schemes."
+    },
+    {
+      "path": "fastapi/security/oauth2.py",
+      "reason": "OAuth2 password and authorization code flows."
+    },
+    {
+      "path": "fastapi/security/open_id_connect_url.py",
+      "reason": "OpenID Connect discovery scheme."
+    },
+    {
+      "path": "fastapi/security/utils.py",
+      "reason": "Authorization header parsing helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/openapi/models.py",
+      "reason": "Security scheme OpenAPI models."
+    },
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "OAuth2 behavior."
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "Basic auth realm handling."
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "API key header handling."
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "Bearer [SCOUT_REDACTED_SECRET] handling."
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "Security dependency overrides."
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "auth",
+    "oauth2"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:09:49.659Z",
+  "updatedAt": "2026-10-29T07:09:49.659Z"
+}

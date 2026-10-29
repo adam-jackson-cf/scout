@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_a7260dcfb1",
+  "title": "Streaming and static content examples",
+  "summary": "Demonstrates server-sent events, file streaming, static files, and templates.\n\nAgent mapper reason: These examples pair HTTP streaming or rendered content with their local assets.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "SSE server."
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "SSE client page."
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "SSE client logic."
+    },
+    {
+      "path": "examples/sse/Cargo.toml",
+      "reason": "SSE dependencies."
+    },
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Static file server."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Served page."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Served script."
+    },
+    {
+      "path": "examples/static-file-server/Cargo.toml",
+      "reason": "Static server dependencies."
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Streaming to a file."
+    },
+    {
+      "path": "examples/stream-to-file/Cargo.toml",
+      "reason": "Streaming example dependencies."
+    },
+    {
+      "path": "examples/templates/src/main.rs",
+      "reason": "Template rendering example."
+    },
+    {
+      "path": "examples/templates/templates/hello.html",
+      "reason": "Rendered template."
+    },
+    {
+      "path": "examples/templates/Cargo.toml",
+      "reason": "Template dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "SSE framework implementation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "streaming",
+    "static-files",
+    "templates"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:45:07.909Z",
+  "updatedAt": "2026-10-29T07:45:07.909Z"
+}

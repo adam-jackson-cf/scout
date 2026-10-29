@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_81f1da569e",
+  "title": "Response helpers and streaming bodies",
+  "summary": "Response exports, redirects, server-sent events, and streaming body utilities.\n\nAgent mapper reason: These helpers construct responses and transport streaming content.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Exports response types."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Implements redirects."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Implements server-sent event responses."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Exports body utilities."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Adapts streams into bodies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Defines response conversion."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Demonstrates server-sent events."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "streaming",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:47:01.861Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

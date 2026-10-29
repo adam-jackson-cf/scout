@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_aa32e394b0",
+  "title": "axum-extra middleware and either type",
+  "summary": "Provides extra middleware utilities and an either type for compatible alternatives.\n\nAgent mapper reason: The inventory places these crate-level utilities together; their exact functional relationship is less certain than the other slices.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Implements extra middleware support."
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Implements the shared Either type."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines crate feature configuration."
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Shows public exports."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Defines the core middleware API."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "middleware",
+    "types"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:08:04.674Z",
+  "updatedAt": "2026-10-29T08:11:29.700Z"
+}

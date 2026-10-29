@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_bbba8072db",
+  "title": "Axum path extraction",
+  "summary": "Deserializes path parameters and reports path-specific failures.\n\nAgent mapper reason: Path parsing and route capture behavior form a focused input deserialization boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Implements path parameter deserialization."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Defines the path extractor and its public behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Contains shared rejection integration."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents path extraction."
+    },
+    {
+      "path": "axum/src/docs/routing/route.md",
+      "reason": "Explains route patterns that provide path captures."
+    },
+    {
+      "path": "axum/src/docs/routing/nest.md",
+      "reason": "Documents path behavior under nested routers."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "path"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:08:04.674Z",
+  "updatedAt": "2026-10-29T08:11:29.702Z"
+}

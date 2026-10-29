@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fd2c33b473",
+  "title": "axum-extra routing, handlers, middleware, and responses",
+  "summary": "Typed routes, resource routing, handler composition with Or, middleware helpers, JSON lines, protobuf, erased JSON, async-read body, and crate root.\n\nAgent mapper reason: Extension helpers for routing and responses are a cohesive secondary API layer over axum.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Crate root and feature exports"
+    },
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Routing extensions module"
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "TypedPath routing support"
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Resource routing helper"
+    },
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Handler extensions"
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Or handler combinator"
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Middleware helpers"
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Body helpers"
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "AsyncReadBody response"
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "JSON Lines streaming"
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protobuf extractor and response"
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Response module exports"
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Type-erased JSON response"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Fixture used by file-serving behaviour"
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Fixture used by file-serving behaviour"
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Fixture used by file-serving behaviour"
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Crate scope and feature summary"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "responses",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:11:19.210Z",
+  "updatedAt": "2026-10-29T07:16:27.607Z"
+}

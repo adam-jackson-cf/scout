@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_aafbd72cd0",
+  "title": "Axum extraction foundation and rejections",
+  "summary": "Provides extractor registration, request-parts extraction, and shared rejection support.\n\nAgent mapper reason: This is the shared framework layer that connects concrete extractors to handler invocation and rejection responses.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports the framework's extractors."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines shared rejection types and behavior."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Implements request-parts extraction support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines core extractor traits."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extraction behavior."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handlers consume extractors as arguments."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "rejections"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

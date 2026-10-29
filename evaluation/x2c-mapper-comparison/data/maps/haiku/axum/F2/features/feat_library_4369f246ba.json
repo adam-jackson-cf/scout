@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4369f246ba",
+  "title": "axum handlers, middleware, and error handling",
+  "summary": "Handler trait and futures, service adapters, middleware constructors (from_fn, map_request, map_response, from_extractor), error-handling layer, and boxed/service extension helpers.\n\nAgent mapper reason: Handler, middleware, and error adapters are all tower Service glue that is tested through the same routing tests.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait."
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler future type."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Handler-to-Service adapter."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "State-in-extension service adapter."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware module root."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "from_fn middleware."
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "from_extractor middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "map_request middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "map_response middleware."
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "HandleError adapter."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "BoxedIntoRoute type."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service extension helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler documentation."
+    },
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware documentation."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error-handling documentation."
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Handler type-error documentation."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "Tests for the error-handling adapter."
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "Tests for fallback service behavior."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handler",
+    "middleware",
+    "error-handling",
+    "tower"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:12:39.825Z",
+  "updatedAt": "2026-10-29T07:12:39.825Z"
+}

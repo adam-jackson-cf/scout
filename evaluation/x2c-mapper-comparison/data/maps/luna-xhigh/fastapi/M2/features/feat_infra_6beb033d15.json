@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_6beb033d15",
+  "title": "Documentation build and preview workflows",
+  "summary": "Workflows for building documentation and publishing pull request previews.\n\nAgent mapper reason: These workflows implement the documentation build and preview pipeline. The site configuration and preview actions explain their inputs and outputs.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Builds the documentation site."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Builds or publishes documentation previews."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Configures the primary documentation build."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Shows the action interface used for preview comments."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Shows a related preview lifecycle action."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "documentation",
+    "preview"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "secrets"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:43:58.083Z",
+  "updatedAt": "2026-10-29T00:47:09.788Z"
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ed4ad9b0d1",
+  "title": "Axum handlers and service conversion",
+  "summary": "Converts handlers to services and manages handler futures and state extensions.\n\nAgent mapper reason: These files define the handler lifecycle and conversion to the service model used by routing.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Defines handler future behavior."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Stores handler state in service extensions."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines and exports handler APIs."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Converts handlers into services."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Explains handler contracts."
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Documents handler type diagnostics."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares service dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "services"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_d2cc3d825d",
+  "title": "Workspace, CI and dependency policy config",
+  "summary": "Root workspace manifest, CI workflow, cargo-deny policy and patch config.\n\nAgent mapper reason: Workspace and CI configuration govern how every other slice is built and checked.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace members and profiles"
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "CI pipeline"
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Patch config"
+    },
+    {
+      "path": "deny.toml",
+      "reason": "cargo-deny policy"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue template config"
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Ignore rules"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor expectations for CI"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "config",
+    "ci",
+    "workspace"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:11:19.210Z",
+  "updatedAt": "2026-10-29T07:22:16.654Z"
+}

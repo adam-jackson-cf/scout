@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d9c0e19cb8",
+  "title": "Error and extractor customization examples",
+  "summary": "Demonstrates custom extractor failures, error responses, body consumption, and dependency injection.\n\nAgent mapper reason: These small examples demonstrate closely related extractor, rejection, and error response contracts.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/anyhow-error-response/src/main.rs",
+      "reason": "Error response example."
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Body consumption example."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "Extractor error example entrypoint."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/custom_extractor.rs",
+      "reason": "Custom extractor implementation."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Derived extractor implementation."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Rejection adapter example."
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Path rejection customization."
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/src/main.rs",
+      "reason": "Error and state injection example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-extractor-error/README.md",
+      "reason": "Example intent."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Framework error contract."
+    },
+    {
+      "path": "examples/customize-extractor-error/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "errors",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:41:26.742Z",
+  "updatedAt": "2026-10-29T07:43:05.804Z"
+}

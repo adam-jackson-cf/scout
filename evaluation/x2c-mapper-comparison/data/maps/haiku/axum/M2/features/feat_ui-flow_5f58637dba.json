@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_5f58637dba",
+  "title": "Examples: server transport, TLS, and proxying",
+  "summary": "Examples for graceful shutdown, multiple listeners, TLS via rustls and OpenSSL, Unix sockets, hyper 1.0 usage, HTTP/reverse proxying, and WASM-compatible routing.\n\nAgent mapper reason: Transport-level examples cover listeners, TLS material, and proxying and share networking concerns.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Graceful shutdown example"
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Multiple listeners example"
+    },
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "Low-level OpenSSL example"
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Low-level rustls example"
+    },
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "TLS with rustls example"
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Unix socket example"
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "hyper 1.0 integration example"
+    },
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "HTTP proxy example"
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Reverse proxy example"
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "WASM-compatible router example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/low-level-openssl/self_signed_certs/cert.pem",
+      "reason": "Test certificate fixture for OpenSSL example"
+    },
+    {
+      "path": "examples/low-level-rustls/self_signed_certs/cert.pem",
+      "reason": "Test certificate fixture for rustls example"
+    },
+    {
+      "path": "examples/tls-rustls/self_signed_certs/cert.pem",
+      "reason": "Test certificate fixture for TLS example"
+    },
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "reason": "TLS example manifest"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "tls",
+    "proxy",
+    "transport"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "network",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:16:27.607Z",
+  "updatedAt": "2026-10-29T07:22:16.706Z"
+}

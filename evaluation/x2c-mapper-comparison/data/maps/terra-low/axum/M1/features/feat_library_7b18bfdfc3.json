@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_7b18bfdfc3",
+  "title": "Typed path derive and routing",
+  "summary": "Derives typed URL paths and integrates them with routing.\n\nAgent mapper reason: The derive and typed router share the path representation and extraction contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Typed path derive implementation."
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Typed path routing integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Routing exports."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extraction integration."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "typed-path",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:30:36.636Z",
+  "updatedAt": "2026-10-29T07:31:41.749Z"
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_b314830e68",
+  "title": "GitHub Action: people and contributor listing",
+  "summary": "Composite GitHub Action that regenerates contributor and sponsor data for the docs.\n\nAgent mapper reason: Single action that reads GitHub API data and writes docs data files.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Action logic"
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action definition"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Container build for the action"
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Workflow that invokes the action"
+    },
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Data written by the action"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "github-action",
+    "data"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "external-api",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:14:50.304Z",
+  "updatedAt": "2026-10-29T07:09:49.820Z"
+}

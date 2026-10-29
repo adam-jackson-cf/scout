@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_1254110203",
+  "title": "Maintainer scripts",
+  "summary": "Standalone scripts for docs management and release-note bot tasks.\n\nAgent mapper reason: Maintainer scripts that call external services and run shell commands.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "scripts/docs.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "scripts/docs.py",
+      "reason": "Docs build and translation helper script."
+    },
+    {
+      "path": "scripts/gitter_releases_bot.py",
+      "reason": "Release notification bot script."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Tooling and dependency declarations for scripts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "scripts",
+    "maintainer",
+    "release"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:09:49.659Z",
+  "updatedAt": "2026-10-29T07:09:49.659Z"
+}

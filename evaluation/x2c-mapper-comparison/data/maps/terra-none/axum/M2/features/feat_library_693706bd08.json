@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_693706bd08",
+  "title": "Request body formats and rejection handling",
+  "summary": "Parses JSON, forms, and multipart request bodies and exposes extractor rejection types.\n\nAgent mapper reason: These extractors consume and interpret request bodies and share content-type, limit, and rejection behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": "Json",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON extraction and response conversion."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extraction and response conversion."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form extraction."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart body parsing."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Public extractor rejections."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extractor exports and shared content-type check."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Body size limit contract."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extractor usage and ordering."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/json.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "json",
+    "forms",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:41:26.742Z",
+  "updatedAt": "2026-10-29T07:47:01.919Z"
+}

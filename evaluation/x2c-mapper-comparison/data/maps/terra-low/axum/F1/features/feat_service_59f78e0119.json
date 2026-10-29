@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_59f78e0119",
+  "title": "Streaming and static content examples",
+  "summary": "Serves server-sent events, static files, templates, and streamed uploads.\n\nAgent mapper reason: These examples connect HTTP responses or streams to files and browser assets.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "SSE server"
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "SSE page"
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "SSE browser client"
+    },
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Static file server"
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Static page"
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Static client asset"
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Streaming upload to file"
+    },
+    {
+      "path": "examples/templates/src/main.rs",
+      "reason": "Template rendering"
+    },
+    {
+      "path": "examples/templates/templates/hello.html",
+      "reason": "Template"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "SSE response implementation"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "streaming",
+    "assets"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:25:32.591Z"
+}

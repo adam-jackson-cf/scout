@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_1a4245f8d8",
+  "title": "Example: JWT authentication",
+  "summary": "Demonstrates validating JSON Web Tokens in request handling.\n\nAgent mapper reason: The package demonstrates how token input and signing material affect route authorization.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/jwt/Cargo.toml",
+      "reason": "Defines the example package and dependencies."
+    },
+    {
+      "path": "examples/jwt/src/main.rs",
+      "reason": "Implements token validation and protected routes."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Indexes standalone examples."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Provides access to application authentication state."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "jwt",
+    "authentication"
+  ],
+  "trustBoundaries": [
+    "network",
+    "auth",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

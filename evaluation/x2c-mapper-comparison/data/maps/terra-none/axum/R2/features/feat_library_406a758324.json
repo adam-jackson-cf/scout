@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_406a758324",
+  "title": "Request middleware",
+  "summary": "Builds middleware from functions and extractors and maps requests or responses.\n\nAgent mapper reason: The module's adapters implement related request and response middleware flows.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware module and exports."
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Extractor-based middleware."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Function-based middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Request transformation middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Response transformation middleware."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware usage and ordering."
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Router layering behavior."
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Body consumption example."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "tower"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:43:05.416Z"
+}

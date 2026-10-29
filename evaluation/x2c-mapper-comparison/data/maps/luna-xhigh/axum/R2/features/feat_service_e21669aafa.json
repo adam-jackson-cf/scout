@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e21669aafa",
+  "title": "Example: WebSockets",
+  "summary": "Demonstrates a WebSocket application with a browser client.\n\nAgent mapper reason: The server and client components demonstrate the full WebSocket connection and messaging flow.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "Implements the WebSocket server."
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "Implements a client-side Rust component."
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Implements the browser WebSocket client."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/websockets/Cargo.toml",
+      "reason": "Defines WebSocket and runtime dependencies."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Defines WebSocket upgrade behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "websocket"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:05:21.079Z"
+}

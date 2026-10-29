@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_c70c094102",
+  "title": "Community issue automation",
+  "summary": "Configures issue intake and issue or approval management workflows.\n\nAgent mapper reason: These files govern community-submitted issues and related repository automation.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Automates issue management."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Automates approval labeling."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Configures issue intake."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Defines a privileged issue template."
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/questions.yml",
+      "reason": "Defines question discussion intake."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "SECURITY.md",
+      "reason": "Provides security reporting context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github",
+    "issue-management"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "external-api",
+    "permissions",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:54:57.019Z",
+  "updatedAt": "2026-10-29T00:54:57.019Z"
+}

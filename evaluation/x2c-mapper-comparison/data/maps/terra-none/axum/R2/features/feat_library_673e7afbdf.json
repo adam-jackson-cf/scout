@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_673e7afbdf",
+  "title": "Extra request extractors",
+  "summary": "Adds cached extraction, configurable rejection handling, form, query, and multipart extractors.\n\nAgent mapper reason: These are optional extensions to the same extractor and rejection contracts.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Extra extractor exports."
+    },
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Cached extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Extractor rejection customization."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Extra form parsing."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Extra query parsing."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Extra multipart handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional extractor features."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Core extractor traits."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Rejection customization example."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "command": null
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "forms",
+    "query",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:43:05.416Z"
+}

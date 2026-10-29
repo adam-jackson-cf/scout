@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_1ccb7168af",
+  "title": "Docs-site sample apps with their own tests",
+  "summary": "Self-contained sample applications under docs_src that include their own pytest suites (SQL databases, app testing, async tests).\n\nAgent mapper reason: These are self-contained apps whose own test files exercise them; reviewing app and test together is the natural unit.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs_src/sql_databases/sql_app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/sql_databases/sql_app/tests/test_sql_app.py",
+      "reason": "SQL app test suite"
+    },
+    {
+      "path": "docs_src/app_testing/test_main.py",
+      "reason": "app testing example suite"
+    },
+    {
+      "path": "docs_src/app_testing/main.py",
+      "reason": "app testing example app"
+    },
+    {
+      "path": "docs_src/async_tests/test_main.py",
+      "reason": "async testing example suite"
+    },
+    {
+      "path": "docs_src/async_tests/main.py",
+      "reason": "async testing example app"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/sql-databases.md",
+      "reason": "prose for SQL database tutorial"
+    },
+    {
+      "path": "docs/en/docs/tutorial/testing.md",
+      "reason": "prose for testing tutorial"
+    },
+    {
+      "path": "docs_src/sql_databases/sql_app/tests/test_sql_app.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "docs_src/app_testing/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "docs_src/async_tests/test_main.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "docs_src/sql_databases/sql_app/tests/test_sql_app.py",
+      "command": null
+    },
+    {
+      "path": "docs_src/app_testing/test_main.py",
+      "command": null
+    },
+    {
+      "path": "docs_src/async_tests/test_main.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "examples",
+    "sample-apps"
+  ],
+  "trustBoundaries": [
+    "database",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:45.804Z",
+  "updatedAt": "2026-10-29T01:18:45.804Z"
+}

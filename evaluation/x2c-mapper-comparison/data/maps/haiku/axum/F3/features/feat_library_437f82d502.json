@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_437f82d502",
+  "title": "axum middleware, error handling, and service extensions",
+  "summary": "from_fn, map_request, map_response, from_extractor middleware helpers; error handling adapters; ServiceExt and Extension.\n\nAgent mapper reason: Middleware and error adapters both wrap services and are reviewed together for layering behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware module exports"
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "from_fn middleware constructor"
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "from_extractor middleware"
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "map_request middleware"
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "map_response middleware"
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "HandleError adapter for fallible services"
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "ServiceExt helpers for layering"
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Extension extractor and layer"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware usage docs"
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error handling docs"
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Layer docs"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "Tests for error handling integration"
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "errors",
+    "tower"
+  ],
+  "trustBoundaries": [
+    "permissions",
+    "auth",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:14:23.770Z",
+  "updatedAt": "2026-10-29T07:14:23.770Z"
+}

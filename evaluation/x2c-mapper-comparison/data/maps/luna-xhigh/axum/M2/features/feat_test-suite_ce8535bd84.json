@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_ce8535bd84",
+  "title": "Axum routing behavior tests",
+  "summary": "Exercises route matching, fallback, method behavior, merging, nesting, and error handling.\n\nAgent mapper reason: The routing tests share a focused behavior contract across fallback, method dispatch, route composition, and nested routers.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "Tests routing fallback behavior."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "Tests GET and HEAD method behavior."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "Tests route error handling."
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "Tests router merging."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "Collects the routing test modules."
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "Tests nested router behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Implementation under test."
+    },
+    {
+      "path": "axum/src/docs/routing/merge.md",
+      "reason": "Documents expected merge behavior."
+    },
+    {
+      "path": "axum/src/docs/routing/nest.md",
+      "reason": "Documents expected nesting behavior."
+    },
+    {
+      "path": "axum/src/docs/routing/fallback.md",
+      "reason": "Documents expected fallback behavior."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tests",
+    "axum",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:02:22.984Z",
+  "updatedAt": "2026-10-29T08:11:29.745Z"
+}

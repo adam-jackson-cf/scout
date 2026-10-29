@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e2f0ca65e3",
+  "title": "axum-core body, error, and response traits",
+  "summary": "Body type, core Error type, IntoResponse and IntoResponseParts traits, and AppendHeaders response helper.\n\nAgent mapper reason: Body, error, and IntoResponse types form the response half of the core crate and are changed together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Request/response body type and conversions"
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Boxed error type shared by axum crates"
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Internal macros for response and extractor impls"
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "AppendHeaders response helper"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "IntoResponse trait and blanket impls"
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "IntoResponseParts trait for header/extension composition"
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response module exports"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Crate root and public exports"
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Shared extractor types used with responses"
+    },
+    {
+      "path": "axum-core/CHANGELOG.md",
+      "reason": "Documented response and body changes"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "body",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:16:27.607Z",
+  "updatedAt": "2026-10-29T07:16:27.607Z"
+}

@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_7e9b1a8e5a",
+  "title": "axum-macros compile fixtures",
+  "summary": "Compile-pass and compile-fail fixtures that define procedural macro behavior.\n\nAgent mapper reason: The fixture directories specify the accepted syntax and diagnostic behavior of all procedural macros; representative files show each fixture family.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/tests/debug_handler/pass/associated_fn_without_self.rs",
+      "reason": "Compile-pass fixture for debug_handler."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/duplicate_args.rs",
+      "reason": "Compile-fail fixture for debug_handler attributes."
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/reference-types.rs",
+      "reason": "Compile-pass fixture for FromRef reference types."
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/skip.rs",
+      "reason": "Compile-pass fixture for skipped fields."
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/container.rs",
+      "reason": "Compile-pass fixture for container attributes."
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "reason": "Compile-pass fixture for inferred state."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/into_uri.rs",
+      "reason": "Compile-pass fixture for URI construction."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/route_not_starting_with_slash.rs",
+      "reason": "Compile-fail fixture for invalid route patterns."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Defines test dependencies and package configuration."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Provides internal macro test support."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/associated_fn_without_self.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/reference-types.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/container.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/into_uri.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/pass/associated_fn_without_self.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/reference-types.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/container.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/into_uri.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tests",
+    "compile-tests",
+    "axum-macros"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:08:04.674Z",
+  "updatedAt": "2026-10-29T08:08:04.674Z"
+}

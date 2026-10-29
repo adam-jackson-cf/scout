@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ba1bbf9e0c",
+  "title": "axum-core shared traits and extractors",
+  "summary": "Core crate defining FromRequest/FromRequestParts, IntoResponse, body types, rejections, and the tuple/extension traits that the rest of the workspace builds on.\n\nAgent mapper reason: Single crate with a cohesive trait surface; changes here ripple to axum and axum-extra, so it is reviewed as one unit. build.rs is excluded as a build file.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Body type alias and conversions used by extractors and responses"
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Shared boxed error type"
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Extension trait module root"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "RequestExt helpers for extraction"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "RequestPartsExt helpers"
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Default body size limit layer/extension"
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "FromRef state substate trait"
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extractor trait exports"
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Core rejection types"
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "FromRequestParts implementations"
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Tuple extractor implementations via macros"
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Crate root and re-exports"
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Internal macros used across core impls"
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "AppendHeaders response helper"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "IntoResponse trait and impls"
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "IntoResponseParts trait and impls"
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response module exports"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Crate features and dependencies"
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Crate-level intent"
+    },
+    {
+      "path": "axum-core/CHANGELOG.md",
+      "reason": "Recent API changes"
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "traits",
+    "extractors",
+    "responses"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:11:19.210Z",
+  "updatedAt": "2026-10-29T07:19:20.761Z"
+}

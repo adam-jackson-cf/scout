@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_19f0b7dce8",
+  "title": "Extractor and error handling examples",
+  "summary": "Demonstrates extractor customization, body consumption, errors, forms, and validation.\n\nAgent mapper reason: These bounded examples illustrate related request extraction and failure paths.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/anyhow-error-response/src/main.rs",
+      "reason": "Error response example."
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Body consumption example."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "Extractor error example entry point."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/custom_extractor.rs",
+      "reason": "Custom extractor example."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Derive-based extractor example."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Customized rejection example."
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Path rejection example."
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/src/main.rs",
+      "reason": "Error and dependency injection example."
+    },
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Form example."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart form example."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Content-type based parsing."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Query parsing example."
+    },
+    {
+      "path": "examples/validator/src/main.rs",
+      "reason": "Input validation example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-extractor-error/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/customize-extractor-error/README.md",
+      "reason": "Example intent."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Underlying extractor contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:30:36.636Z",
+  "updatedAt": "2026-10-29T07:31:41.754Z"
+}

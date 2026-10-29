@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d57682f3f9",
+  "title": "Axum request extraction and parsing",
+  "summary": "Path, query, form, JSON, multipart, raw-body, and rejection handling for incoming requests.\n\nAgent mapper reason: These components turn untrusted HTTP request data into typed values and define failures for invalid or unsupported input.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": "FromRequest",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports the built-in extractors."
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Deserializes path captures."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Implements path extraction."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Implements query extraction."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Exposes raw form data."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Exposes raw query data."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines built-in extraction rejections."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Supports extraction from request parts."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Implements multipart extraction."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Implements form parsing."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Implements JSON extraction and response conversion."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor order, behavior, and rejection semantics."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Explains error and rejection handling."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents JSON response conversion."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares optional parsing dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "parsing"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:05:21.195Z"
+}

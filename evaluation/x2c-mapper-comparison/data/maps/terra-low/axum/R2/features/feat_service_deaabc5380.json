@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_deaabc5380",
+  "title": "Server transport and lifecycle examples",
+  "summary": "TLS, Unix sockets, multiple listeners, and graceful shutdown demonstrations.\n\nAgent mapper reason: These examples configure server listeners, transport security, and lifecycle behavior.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Shutdown lifecycle"
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Multiple listeners"
+    },
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "OpenSSL transport"
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Low-level rustls transport"
+    },
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "Rustls transport"
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Unix socket transport"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/low-level-openssl/Cargo.toml",
+      "reason": "OpenSSL dependencies"
+    },
+    {
+      "path": "examples/low-level-rustls/Cargo.toml",
+      "reason": "Rustls dependencies"
+    },
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "reason": "TLS dependencies"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "transport",
+    "lifecycle"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "secrets",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:29:26.547Z",
+  "updatedAt": "2026-10-29T07:30:36.687Z"
+}

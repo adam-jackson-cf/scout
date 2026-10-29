@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_680afbb71c",
+  "title": "Axum extractor framework and request metadata",
+  "summary": "Extractor exports, request-parts handling, state, host, matched path, and connection information.\n\nAgent mapper reason: These modules implement shared extraction entry points and metadata/state access for handlers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Extracts connection metadata."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Extracts the request host."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Extracts the matched route path."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports extractor APIs."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines main crate rejection types."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Implements extraction from request parts."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Extracts application state."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor ordering and behavior."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines foundational extraction contracts."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents connection metadata integration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "state",
+    "request-metadata"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:02:22.984Z",
+  "updatedAt": "2026-10-29T08:08:04.754Z"
+}

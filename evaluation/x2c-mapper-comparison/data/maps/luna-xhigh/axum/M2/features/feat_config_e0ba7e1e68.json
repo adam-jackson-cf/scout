@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_e0ba7e1e68",
+  "title": "axum-core build metadata",
+  "summary": "Build-time configuration for the core crate.\n\nAgent mapper reason: The build script has package-wide compile-time effects and is best reviewed with its crate manifest and public crate root.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/build.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Implements the core crate build script."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Declares the crate and build configuration."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Shows how the crate consumes and exposes core functionality."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "build",
+    "axum-core"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:08:04.674Z",
+  "updatedAt": "2026-10-29T08:11:29.687Z"
+}

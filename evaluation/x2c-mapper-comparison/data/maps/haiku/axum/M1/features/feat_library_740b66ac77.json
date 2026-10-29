@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_740b66ac77",
+  "title": "axum routing core",
+  "summary": "Router, method routing, route matching, fallbacks, nesting/merging, URL params, and make-service plumbing.\n\nAgent mapper reason: Router internals and method routing share matching and fallback logic; reviewing them together keeps the dispatch semantics consistent.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "symbol": "Router",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Route future types"
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "IntoMakeService wrapper"
+    },
+    {
+      "path": "axum/src/routing/method_filter.rs",
+      "reason": "MethodFilter bitflags"
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "get/post/... method router builders"
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Router implementation and public API"
+    },
+    {
+      "path": "axum/src/routing/not_found.rs",
+      "reason": "Default 404 fallback"
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Single route service wrapper"
+    },
+    {
+      "path": "axum/src/routing/strip_prefix.rs",
+      "reason": "Prefix stripping for nest"
+    },
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Path parameter capture bookkeeping"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/fallback.md",
+      "reason": "Fallback semantics docs"
+    },
+    {
+      "path": "axum/src/docs/routing/nest.md",
+      "reason": "Nest semantics docs"
+    },
+    {
+      "path": "axum/src/docs/routing/merge.md",
+      "reason": "Merge semantics docs"
+    },
+    {
+      "path": "axum/src/docs/routing/route.md",
+      "reason": "Route docs"
+    },
+    {
+      "path": "axum/src/docs/routing/route_service.md",
+      "reason": "route_service docs"
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "with_state docs"
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "layer docs"
+    },
+    {
+      "path": "axum/src/docs/routing/route_layer.md",
+      "reason": "route_layer docs"
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Connect info docs"
+    },
+    {
+      "path": "axum/src/docs/method_routing/fallback.md",
+      "reason": "Method router fallback docs"
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Method router layer docs"
+    },
+    {
+      "path": "axum/src/docs/method_routing/merge.md",
+      "reason": "Method router merge docs"
+    },
+    {
+      "path": "axum/src/docs/method_routing/route_layer.md",
+      "reason": "Method router route_layer docs"
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Feature flags for routing"
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "router",
+    "http"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:11:19.210Z",
+  "updatedAt": "2026-10-29T07:19:20.738Z"
+}

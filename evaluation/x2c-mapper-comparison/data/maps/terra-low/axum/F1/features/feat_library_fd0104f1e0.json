@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fd0104f1e0",
+  "title": "Extra body and serialization formats",
+  "summary": "Provides async-read bodies, JSON lines, protobuf, and erased JSON responses.\n\nAgent mapper reason: These optional adapters transform streams and serialized payloads.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Extra body module"
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Async reader body adapter"
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "JSON lines format"
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protobuf format"
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Extra response module"
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Erased JSON response"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional format features"
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Underlying body type"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:25:32.591Z"
+}

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_7ad93f86c6",
+  "title": "Handlers, services, and error adaptation",
+  "summary": "Adapts async handlers into services and converts service errors into responses.\n\nAgent mapper reason: Handler conversion, service execution, and error adaptation meet at the same Tower service boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait and implementations."
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler future."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Handler service adapter."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "State-in-extension service adapter."
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Service error conversion."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service extension helpers."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Boxed service support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler usage."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error handling contract."
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Consumes service adapters."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handler",
+    "tower",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:41:26.742Z"
+}

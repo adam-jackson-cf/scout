@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_78a8125c12",
+  "title": "axum method routing and fallback",
+  "summary": "Routes requests by HTTP method and handles unmatched routes and method behavior.\n\nAgent mapper reason: Method dispatch and fallback handling jointly determine which handler receives a request and how unmatched requests are represented.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/method_filter.rs",
+      "reason": "Defines HTTP method filters."
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Implements method-specific route construction and dispatch."
+    },
+    {
+      "path": "axum/src/routing/not_found.rs",
+      "reason": "Implements fallback behavior for unmatched requests."
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Defines route dispatch behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Defines the router API that uses method routes."
+    },
+    {
+      "path": "axum/src/docs/method_routing/fallback.md",
+      "reason": "Documents method-router fallback behavior."
+    },
+    {
+      "path": "axum/src/docs/routing/fallback.md",
+      "reason": "Documents router fallback behavior."
+    },
+    {
+      "path": "axum/src/docs/method_routing/route_layer.md",
+      "reason": "Documents route-level middleware behavior."
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "routing",
+    "http-methods",
+    "fallback"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:05:21.079Z"
+}

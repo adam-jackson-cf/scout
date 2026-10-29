@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_90103016ca",
+  "title": "Response serialization and model tests",
+  "summary": "Tests for response validation, encoding, filtering, aliases, and status codes.\n\nAgent mapper reason: These tests cover the transformation from application return values to HTTP responses.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "JSON encoding behavior."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom datetime encoding."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Model response serialization."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Response aliases."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Return annotation response model."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Response model filtering."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid response model handling."
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Response model subtype behavior."
+    },
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "reason": "Nested model filtering."
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "Response status changes."
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "No-body response codes."
+    },
+    {
+      "path": "tests/test_reponse_set_reponse_code_empty.py",
+      "reason": "Empty response status behavior."
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Default value exclusion."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Response model contract."
+    },
+    {
+      "path": "docs/en/docs/tutorial/encoder.md",
+      "reason": "JSON-compatible encoding documentation."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "serialization",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:07:01.777Z",
+  "updatedAt": "2026-10-29T01:11:15.704Z"
+}

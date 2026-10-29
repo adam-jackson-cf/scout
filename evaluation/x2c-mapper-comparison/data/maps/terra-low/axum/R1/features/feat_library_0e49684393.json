@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0e49684393",
+  "title": "Macro crate shared infrastructure",
+  "summary": "Registers procedural macros and provides shared parsing, source positions, and test harness support.\n\nAgent mapper reason: Shared parsing and registration affect several macro implementations.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Procedural macro exports"
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parsing"
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Source position support"
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Macro test support"
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Macro package configuration"
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Macro toolchain selection"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Macro package overview"
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "macros",
+    "infrastructure"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:29:26.693Z"
+}

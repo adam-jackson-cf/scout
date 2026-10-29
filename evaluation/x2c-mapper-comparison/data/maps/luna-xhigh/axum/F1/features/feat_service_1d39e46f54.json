@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_1d39e46f54",
+  "title": "Example: WebSockets",
+  "summary": "Demonstrates a WebSocket server and browser client.\n\nAgent mapper reason: The server, client module, and browser script form one WebSocket connection flow.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/websockets/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "Implements the WebSocket server."
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "Implements a client component."
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Implements browser-side WebSocket behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Defines the WebSocket API used by the sample."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "websocket",
+    "client-server"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T07:51:17.230Z"
+}

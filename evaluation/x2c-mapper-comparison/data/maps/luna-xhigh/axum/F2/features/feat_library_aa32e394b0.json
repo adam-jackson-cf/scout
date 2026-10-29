@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_aa32e394b0",
+  "title": "axum-extra middleware and common result types",
+  "summary": "Provides middleware helpers and a two-branch result type for composing responses or values.\n\nAgent mapper reason: These are small standalone utilities exposed by Axum Extra; review together when changing their crate-level composition contracts.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Defines an either-branch value used by extension APIs."
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Provides extra middleware support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Shows crate-level exports."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares dependencies and feature flags."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Defines the base middleware API."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "middleware",
+    "composition"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

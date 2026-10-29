@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_74bf4d4f26",
+  "title": "axum response, body and serialization helpers",
+  "summary": "Redirect, SSE, StreamBody, Json, Form, TypedHeader and Extension helpers, including their rejection behavior.\n\nAgent mapper reason: Serialization and streaming helpers share parsing and response concerns and are reviewed together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response helper module surface."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect responses, including URL handling."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent events streaming response."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body module surface."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Streaming body response."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON extractor and response with deserialization limits."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extractor and response."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Typed header extractor and response."
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Extension extractor and response."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response documentation."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Rejection types used by Json and Form."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Example usage of SSE responses."
+    },
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Example usage of Form."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "json",
+    "form",
+    "sse",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:19:20.641Z"
+}

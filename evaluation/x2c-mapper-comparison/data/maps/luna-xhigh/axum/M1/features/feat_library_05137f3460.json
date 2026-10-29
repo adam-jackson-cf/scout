@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_05137f3460",
+  "title": "axum-core shared primitives",
+  "summary": "Core body and error types, request extension traits, and crate-level utilities.\n\nAgent mapper reason: These modules provide shared low-level request, body, and error abstractions used by higher-level Axum functionality.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines core body support."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Defines shared error behavior."
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Exports request extension traits."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Adds extensions to requests."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "Adds extensions to request parts."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Defines crate exports and shared API."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Provides internal and public macros."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Declares core crate dependencies and features."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Provides package build-time behavior."
+    },
+    {
+      "path": "axum-core/LICENSE",
+      "reason": "Provides package licensing context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "body",
+    "request"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:08:04.744Z"
+}

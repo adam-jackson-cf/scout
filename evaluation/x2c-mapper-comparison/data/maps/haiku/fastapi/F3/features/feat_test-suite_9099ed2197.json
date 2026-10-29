@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_9099ed2197",
+  "title": "Core tests: routing, app and router behavior",
+  "summary": "Tests for FastAPI app construction, include_router, route scoping, router events and custom route classes.\n\nAgent mapper reason: Routing and app-construction tests share the same subject area. Library code under fastapi/ was not in the inventory list, so this slice is mapped by test name only.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "tests/test_application.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_application.py",
+      "reason": "App-level behavior"
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "include_router route copying"
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "reason": "Router default overrides"
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "Router startup/shutdown events"
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "reason": "Prefix templating"
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "reason": "ASGI scope handling"
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "reason": "Custom APIRoute classes"
+    },
+    {
+      "path": "tests/test_callable_endpoint.py",
+      "reason": "Callable endpoints"
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "Default response class"
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "reason": "Router-level default response class"
+    },
+    {
+      "path": "tests/test_extra_routes.py",
+      "reason": "Extra route registration"
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "reason": "Empty router behavior"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/custom-request-and-route.md",
+      "reason": "Docs for custom routes"
+    },
+    {
+      "path": "docs/en/docs/advanced/sub-applications.md",
+      "reason": "Mounted sub-app behavior"
+    },
+    {
+      "path": "docs/en/docs/tutorial/bigger-applications.md",
+      "reason": "Router composition docs"
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tests",
+    "routing",
+    "app"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:06.331Z",
+  "updatedAt": "2026-10-29T01:18:06.331Z"
+}

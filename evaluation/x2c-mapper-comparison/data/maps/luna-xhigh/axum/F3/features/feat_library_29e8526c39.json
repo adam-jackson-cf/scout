@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_29e8526c39",
+  "title": "Axum path and query extraction",
+  "summary": "Parses path captures, query parameters, and raw query strings.\n\nAgent mapper reason: These files parse URL path and query input into handler-facing values.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Deserializes path captures."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Implements path extraction."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Parses query parameters."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Exposes the unparsed query string."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports path and query extractors."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extraction behavior."
+    },
+    {
+      "path": "axum/src/docs/routing/route.md",
+      "reason": "Explains route path captures."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares parsing dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "path",
+    "query"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

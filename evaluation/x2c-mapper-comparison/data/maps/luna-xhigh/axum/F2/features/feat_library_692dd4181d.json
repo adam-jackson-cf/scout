@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_692dd4181d",
+  "title": "axum-extra streaming and encoded response helpers",
+  "summary": "Adds JSON Lines, Protocol Buffers, and erased JSON response support.\n\nAgent mapper reason: These helpers encode structured data into response bodies and share response conversion expectations.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Implements JSON Lines support."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Implements Protocol Buffers support."
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Implements a type-erased JSON response."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Exports extra response helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares serialization dependencies and optional features."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Defines the response conversion contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "response",
+    "serialization",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fd0104f1e0",
+  "title": "Extra streaming and serialization formats",
+  "summary": "Provides async-read bodies, JSON Lines, protobuf, and erased JSON response support.\n\nAgent mapper reason: These optional modules adapt structured or streaming data to HTTP bodies.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Extra body exports."
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Async-reader body adapter."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Streaming JSON Lines format."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protobuf extraction and response conversion."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Extra response module."
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Erased JSON response."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Format-specific optional features."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Underlying body interfaces."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "streaming",
+    "json",
+    "protobuf"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:43:05.416Z"
+}

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_df2be6e242",
+  "title": "Server-sent events example",
+  "summary": "Demonstrates a browser-facing server-sent event stream.\n\nAgent mapper reason: The server stream and browser consumer make up one end-to-end SSE flow.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sse/Cargo.toml",
+      "reason": "Declares the example package."
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "Provides the browser page."
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "Consumes the server-sent event stream."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Implements the event stream server."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Provides server-sent event responses."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "sse",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:05:21.230Z"
+}

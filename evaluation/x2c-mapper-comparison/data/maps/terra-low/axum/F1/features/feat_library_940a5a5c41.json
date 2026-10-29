@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_940a5a5c41",
+  "title": "Core body and crate foundations",
+  "summary": "Provides core HTTP body and error types, shared macros, and crate configuration.\n\nAgent mapper reason: These foundational types and configuration underpin the other core APIs.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Core public API"
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Core body implementation"
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Core error abstraction"
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Shared implementation macros"
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Core build configuration"
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core package configuration"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/README.md",
+      "reason": "Package intent"
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Framework body integration"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "body"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:25:32.591Z"
+}

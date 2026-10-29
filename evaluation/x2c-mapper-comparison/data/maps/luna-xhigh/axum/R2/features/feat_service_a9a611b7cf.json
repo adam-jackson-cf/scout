@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_a9a611b7cf",
+  "title": "Example: validator integration",
+  "summary": "Demonstrates validating extracted request data.\n\nAgent mapper reason: The example demonstrates validation at the boundary where client input is converted into application data.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/validator/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/validator/src/main.rs",
+      "reason": "Implements request validation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/validator/Cargo.toml",
+      "reason": "Defines validation and serialization dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "validation",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:05:21.079Z"
+}

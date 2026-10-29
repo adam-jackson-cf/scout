@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_18ff2aa418",
+  "title": "Axum router composition and dispatch",
+  "summary": "Builds routers, resolves routes and URL parameters, and handles fallback and nesting behavior.\n\nAgent mapper reason: Router construction, matching, composition, and fallback share URL and dispatch semantics validated by the routing suite.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Defines routing future behavior."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Defines router construction and composition."
+    },
+    {
+      "path": "axum/src/routing/not_found.rs",
+      "reason": "Implements not-found behavior."
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Defines route dispatch."
+    },
+    {
+      "path": "axum/src/routing/strip_prefix.rs",
+      "reason": "Handles route prefix transformations."
+    },
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Stores and resolves URL parameters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/route.md",
+      "reason": "Documents route dispatch."
+    },
+    {
+      "path": "axum/src/docs/routing/fallback.md",
+      "reason": "Documents fallback behavior."
+    },
+    {
+      "path": "axum/src/docs/routing/nest.md",
+      "reason": "Documents nested routers."
+    },
+    {
+      "path": "axum/src/docs/routing/merge.md",
+      "reason": "Documents router merging."
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Documents router state."
+    },
+    {
+      "path": "axum/src/docs/routing/route_service.md",
+      "reason": "Documents route services."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares routing dependencies."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "router",
+    "fallback"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

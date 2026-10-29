@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f9faef409c",
+  "title": "Background tasks and asynchronous integrations",
+  "summary": "Examples covering background task declarations and asynchronous SQL database integration.\n\nAgent mapper reason: These are separate tutorial topics but both exercise asynchronous work that continues beyond ordinary synchronous route handling. They are grouped as a bounded async integration slice; review database and task-specific changes against their individual examples and tests.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs_src/background_tasks/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/background_tasks/tutorial001.py",
+      "reason": "Introduces background task behavior."
+    },
+    {
+      "path": "docs_src/background_tasks/tutorial002.py",
+      "reason": "Demonstrates task composition."
+    },
+    {
+      "path": "docs_src/async_sql_databases/tutorial001.py",
+      "reason": "Demonstrates an asynchronous database integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/background-tasks.md",
+      "reason": "Explains background task use."
+    },
+    {
+      "path": "docs/en/docs/advanced/async-sql-databases.md",
+      "reason": "Explains asynchronous database integration."
+    },
+    {
+      "path": "docs/en/docs/async.md",
+      "reason": "Provides shared async execution context."
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial002.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_async_sql_databases/test_tutorial001.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial002.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_async_sql_databases/test_tutorial001.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "async",
+    "background-tasks",
+    "database"
+  ],
+  "trustBoundaries": [
+    "concurrency",
+    "database",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:42:06.912Z",
+  "updatedAt": "2026-10-29T00:42:06.912Z"
+}

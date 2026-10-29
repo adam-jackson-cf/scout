@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_981027b5fb",
+  "title": "Middleware wrappers",
+  "summary": "FastAPI-provided ASGI middleware for CORS, gzip, trusted hosts, HTTPS redirect, WSGI bridging, and async exit stacks.\n\nAgent mapper reason: Thin middleware wrappers that re-export Starlette classes; grouped for the request-pipeline boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/middleware/cors.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/middleware/__init__.py",
+      "reason": "Middleware package exports."
+    },
+    {
+      "path": "fastapi/middleware/asyncexitstack.py",
+      "reason": "Async exit stack middleware."
+    },
+    {
+      "path": "fastapi/middleware/cors.py",
+      "reason": "CORS re-export."
+    },
+    {
+      "path": "fastapi/middleware/gzip.py",
+      "reason": "Gzip re-export."
+    },
+    {
+      "path": "fastapi/middleware/httpsredirect.py",
+      "reason": "HTTPS redirect re-export."
+    },
+    {
+      "path": "fastapi/middleware/trustedhost.py",
+      "reason": "Trusted host re-export."
+    },
+    {
+      "path": "fastapi/middleware/wsgi.py",
+      "reason": "WSGI bridge."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs_src/advanced_middleware_x2moved/tutorial001.py",
+      "reason": "Middleware usage example in docs (renamed in X2 M2)."
+    },
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial001.py",
+      "reason": "Middleware tutorial test."
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "Middleware exception path."
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_advanced_middleware/test_tutorial001.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "asgi",
+    "network"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:09:49.659Z",
+  "updatedAt": "2026-10-29T07:09:49.659Z"
+}

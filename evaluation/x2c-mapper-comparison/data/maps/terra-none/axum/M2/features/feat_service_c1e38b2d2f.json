@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_c1e38b2d2f",
+  "title": "Middleware, error, observability, and testing examples",
+  "summary": "Examples of cross-origin middleware, error handling, logging, metrics, and application tests.\n\nAgent mapper reason: These examples illustrate cross-cutting application behavior around request processing and verification.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "Demonstrates cross-origin middleware."
+    },
+    {
+      "path": "examples/cors/Cargo.toml",
+      "reason": "Defines CORS dependencies."
+    },
+    {
+      "path": "examples/anyhow-error-response/src/main.rs",
+      "reason": "Converts errors into responses."
+    },
+    {
+      "path": "examples/anyhow-error-response/Cargo.toml",
+      "reason": "Defines error example dependencies."
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/src/main.rs",
+      "reason": "Demonstrates error handling with injected dependencies."
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/Cargo.toml",
+      "reason": "Defines dependency-injection example dependencies."
+    },
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Demonstrates request and response inspection."
+    },
+    {
+      "path": "examples/print-request-response/Cargo.toml",
+      "reason": "Defines inspection example dependencies."
+    },
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "reason": "Demonstrates metrics collection."
+    },
+    {
+      "path": "examples/prometheus-metrics/Cargo.toml",
+      "reason": "Defines metrics dependencies."
+    },
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "reason": "Demonstrates tracing."
+    },
+    {
+      "path": "examples/tracing-aka-logging/Cargo.toml",
+      "reason": "Defines tracing dependencies."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "Demonstrates application testing."
+    },
+    {
+      "path": "examples/testing/Cargo.toml",
+      "reason": "Defines test example dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Documents middleware behavior."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Documents error conversion."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "middleware",
+    "observability",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:47:01.861Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

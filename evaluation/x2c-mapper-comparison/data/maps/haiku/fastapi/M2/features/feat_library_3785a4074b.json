@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3785a4074b",
+  "title": "Application and routing core",
+  "summary": "ASGI application class and the router that matches paths, builds route handlers, and wires dependencies, responses, and OpenAPI metadata into each endpoint.\n\nAgent mapper reason: Application and router modules are tightly coupled and share the request lifecycle, so they are reviewed together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/applications.py",
+      "symbol": "FastAPI",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/__init__.py",
+      "reason": "Public package exports for FastAPI and its helpers."
+    },
+    {
+      "path": "fastapi/applications.py",
+      "reason": "FastAPI application class: route registration, middleware stack, exception handler setup, docs routes."
+    },
+    {
+      "path": "fastapi/routing.py",
+      "reason": "APIRouter and APIRoute: request handling, path matching, response construction, and route-level config."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "Dependency resolution called from route handling."
+    },
+    {
+      "path": "fastapi/openapi/utils.py",
+      "reason": "Route metadata consumed by OpenAPI generation."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "Application-level behavior tests."
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "Router include and route composition behavior."
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "Router startup and shutdown event behavior."
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "reason": "Edge case for empty routers."
+    },
+    {
+      "path": "tests/test_path.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_path.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "asgi",
+    "core"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:09:49.659Z",
+  "updatedAt": "2026-10-29T07:09:49.659Z"
+}

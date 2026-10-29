@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fc63d21f7d",
+  "title": "Axum request metadata extractors",
+  "summary": "Connection information, host, matched route path, and typed headers.\n\nAgent mapper reason: These extractors interpret request and transport metadata that influences handler behavior and observability.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Extracts connection metadata supplied by the server."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Extracts host information from requests."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Exposes the matched route path."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Implements typed HTTP header extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines HTTP type dependencies."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports request extractors."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents connection metadata setup."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "http-metadata"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:11:29.627Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

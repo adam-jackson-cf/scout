@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_4b7479b389",
+  "title": "Test and quality automation",
+  "summary": "CI and local hooks for test, lint, formatting, and repository checks.\n\nAgent mapper reason: These files define the repository's automated and local quality gates and should be reviewed as one configuration surface.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Runs the repository test workflow."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Defines local pre-commit checks."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Defines test and quality tool configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Documents contributor checks."
+    },
+    {
+      "path": "tests/__init__.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/__init__.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "tests",
+    "lint",
+    "format"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:40:33.924Z",
+  "updatedAt": "2026-10-29T00:47:09.788Z"
+}

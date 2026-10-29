@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_f2a854c0e2",
+  "title": "Streaming, uploads, and file serving examples",
+  "summary": "Demonstrates server-sent events, multipart forms, streaming uploads, static files, and templates.\n\nAgent mapper reason: These examples exchange streamed data or file-backed content across the HTTP boundary.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Server-sent events server."
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "Event client page."
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "Event client script."
+    },
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Static file serving example."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Static page asset."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Static script asset."
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Streaming request data to a file."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart form example."
+    },
+    {
+      "path": "examples/templates/src/main.rs",
+      "reason": "Template rendering example."
+    },
+    {
+      "path": "examples/templates/templates/hello.html",
+      "reason": "Template used by the example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sse/Cargo.toml",
+      "reason": "SSE dependencies."
+    },
+    {
+      "path": "examples/static-file-server/Cargo.toml",
+      "reason": "Static server dependencies."
+    },
+    {
+      "path": "examples/stream-to-file/Cargo.toml",
+      "reason": "Streaming upload dependencies."
+    },
+    {
+      "path": "examples/multipart-form/Cargo.toml",
+      "reason": "Multipart example dependencies."
+    },
+    {
+      "path": "examples/templates/Cargo.toml",
+      "reason": "Template example dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "streaming",
+    "files"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "filesystem",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:32:52.857Z",
+  "updatedAt": "2026-10-29T07:32:52.857Z"
+}

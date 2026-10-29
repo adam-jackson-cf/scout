@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4631d81eba",
+  "title": "Path and query extraction",
+  "summary": "Parses route captures and query strings into typed values and exposes raw and matched request metadata.\n\nAgent mapper reason: These extractors interpret URI and routing metadata supplied by clients.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": "Path",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Implements path parameter extraction."
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Deserializes route captures."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Deserializes query parameters."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Exposes raw query strings."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Exposes matched route patterns."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Extracts request host information."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Provides matched path captures."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines extraction error responses."
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Demonstrates custom path rejection handling."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "path",
+    "query",
+    "deserialization"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

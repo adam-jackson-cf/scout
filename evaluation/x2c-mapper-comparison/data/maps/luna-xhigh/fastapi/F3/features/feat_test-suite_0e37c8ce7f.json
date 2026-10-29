@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_0e37c8ce7f",
+  "title": "Exception handling and middleware",
+  "summary": "Tests for exception handlers, middleware failures, Starlette exception integration, and custom request routes.\n\nAgent mapper reason: These tests exercise request processing around middleware, routing hooks, and exception conversion, which share the same application execution path.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "Covers registered exception handlers."
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "Covers Starlette exception compatibility."
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "Covers exceptions passing through custom middleware."
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "reason": "Covers custom route classes."
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "reason": "Covers inherited custom classes."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Covers request and connection injection."
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "Covers router event handlers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs_src/middleware/tutorial001.py",
+      "reason": "Shows middleware usage."
+    },
+    {
+      "path": "docs_src/advanced_middleware/tutorial001.py",
+      "reason": "Shows advanced middleware behavior."
+    },
+    {
+      "path": "docs_src/custom_request_and_route/tutorial001.py",
+      "reason": "Shows custom request and route classes."
+    },
+    {
+      "path": "docs_src/events/tutorial001.py",
+      "reason": "Shows application event handlers."
+    },
+    {
+      "path": "docs/en/docs/tutorial/handling-errors.md",
+      "reason": "Documents error handling."
+    },
+    {
+      "path": "docs/en/docs/tutorial/middleware.md",
+      "reason": "Documents middleware."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "exceptions",
+    "lifecycle"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:39:03.202Z",
+  "updatedAt": "2026-10-29T00:39:03.202Z"
+}

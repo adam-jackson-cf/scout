@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8aab67f1cb",
+  "title": "axum-core body and response traits",
+  "summary": "Body type, error type, IntoResponse and IntoResponseParts traits, header-append responses and related macros.\n\nAgent mapper reason: Response and body conversion traits form one coherent unit that determines what bytes and headers reach the client.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Body type alias and conversions for request/response bodies."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Shared boxed error type."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Internal macros used across axum-core."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Crate root, module declarations and public exports."
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "IntoResponse module surface and tuple response impls."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "IntoResponse trait and base impls."
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "IntoResponseParts trait for composing headers and extensions."
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "AppendHeaders response wrapper."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Feature flags for the body and response surface."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Build script for cfg setup."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Rejection types that flow through response conversions."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "User-facing documentation of response semantics."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "body",
+    "core"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:22:16.698Z"
+}

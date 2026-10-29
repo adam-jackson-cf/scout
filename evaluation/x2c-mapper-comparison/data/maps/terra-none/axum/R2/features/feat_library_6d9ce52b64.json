@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6d9ce52b64",
+  "title": "HTTP method routing",
+  "summary": "Selects handlers and services by HTTP method, including method fallbacks and HEAD behavior.\n\nAgent mapper reason: Method filtering and method-router dispatch implement the same method selection contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "symbol": "MethodRouter",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Method-specific handler and service routing."
+    },
+    {
+      "path": "axum/src/routing/method_filter.rs",
+      "reason": "Method selection filters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Router integration."
+    },
+    {
+      "path": "axum/src/docs/method_routing/fallback.md",
+      "reason": "Method fallback contract."
+    },
+    {
+      "path": "axum/src/docs/method_routing/merge.md",
+      "reason": "Method router merge behavior."
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Method router layer semantics."
+    },
+    {
+      "path": "axum/src/docs/method_routing/route_layer.md",
+      "reason": "Route layer semantics."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "http-methods"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:43:05.416Z"
+}

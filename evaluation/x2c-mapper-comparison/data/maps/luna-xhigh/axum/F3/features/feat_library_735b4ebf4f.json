@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_735b4ebf4f",
+  "title": "Axum request extensions",
+  "summary": "Extracts and inserts typed values through HTTP request extensions.\n\nAgent mapper reason: This type bridges typed request extensions and handler extraction.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extension.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Implements the Extension extractor and response layer."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Documents and exports extraction APIs."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Explains request extraction."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares crate dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "request-extensions"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

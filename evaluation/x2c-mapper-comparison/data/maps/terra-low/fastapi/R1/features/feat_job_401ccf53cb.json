@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_401ccf53cb",
+  "title": "Community people automation",
+  "summary": "GitHub workflow and custom action associated with community people data.\n\nAgent mapper reason: The action and workflow share a named community automation responsibility.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/people.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "People workflow."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action definition."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Action runtime."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Action implementation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "People data potentially consumed or produced by the workflow."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "Community people documentation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "community"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "permissions",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:10:20.020Z",
+  "updatedAt": "2026-10-29T01:10:20.020Z"
+}

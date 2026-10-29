@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_unknown_8d250c4be3",
+  "title": "example: networking, TLS, proxies, and runtime integration",
+  "summary": "Examples for HTTP and reverse proxies, hyper 1.0 integration, low-level OpenSSL and rustls TLS, rustls TLS, multi-address listeners, Unix domain sockets, graceful shutdown, WASM router, and in-process testing.\n\nAgent mapper reason: These examples exercise networking, TLS, and proxying and share the same transport concerns.",
+  "kind": "unknown",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run -p example-reverse-proxy"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "HTTP proxy example."
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Reverse proxy example."
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "hyper 1.0 integration example."
+    },
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "Low-level OpenSSL TLS example."
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Low-level rustls example."
+    },
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "TLS with rustls example."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Multiple listeners example."
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Unix socket example."
+    },
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Graceful shutdown example."
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "WASM router example."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "In-process testing example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/low-level-openssl/self_signed_certs/cert.pem",
+      "reason": "Example self-signed certificate fixture."
+    },
+    {
+      "path": "examples/low-level-rustls/self_signed_certs/cert.pem",
+      "reason": "Example self-signed certificate fixture."
+    },
+    {
+      "path": "examples/tls-rustls/self_signed_certs/cert.pem",
+      "reason": "Example self-signed certificate fixture."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "tls",
+    "proxy",
+    "network"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:12:39.825Z",
+  "updatedAt": "2026-10-29T07:12:39.825Z"
+}

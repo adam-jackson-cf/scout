@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_aafbd72cd0",
+  "title": "Axum shared extraction API",
+  "summary": "Public extractor module structure, request-parts integration, and rejection behavior.\n\nAgent mapper reason: These files establish the common public extractor API used by the specialized extractor groups.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Declares the public extractor surface."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines shared rejection types for built-in extractors."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Bridges public extraction APIs to request-parts extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines the lower-level extraction contract."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor ordering and behavior."
+    },
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Explains how handlers consume extractors."
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Shows public exports."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "rejections"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:08:04.674Z",
+  "updatedAt": "2026-10-29T08:11:29.700Z"
+}

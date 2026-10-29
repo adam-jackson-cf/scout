@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b6c5fb35c4",
+  "title": "Core body, error, and crate support",
+  "summary": "Contains core body and error primitives and shared crate-level infrastructure.\n\nAgent mapper reason: These foundational primitives and crate wiring support the other core modules.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Core crate exports."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Core HTTP body abstraction."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Core error wrapper."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Internal support macros."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Core crate build-time configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Crate feature and dependency configuration."
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Core crate purpose."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "errors",
+    "core"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

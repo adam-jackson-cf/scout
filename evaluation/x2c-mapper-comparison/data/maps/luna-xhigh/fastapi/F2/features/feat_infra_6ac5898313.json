@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_6ac5898313",
+  "title": "GitHub Actions: preview watchers",
+  "summary": "Action implementation for watching documentation preview activity.\n\nAgent mapper reason: The available inventory identifies a standalone action and its runtime; confidence is medium because no dedicated invoking workflow is listed.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Implements preview watching behavior."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Defines action metadata and invocation."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Defines the action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Provides preview workflow context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "automation",
+    "docs-preview"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:35:34.686Z",
+  "updatedAt": "2026-10-29T00:35:34.686Z"
+}

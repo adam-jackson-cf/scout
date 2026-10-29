@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_fe67616e25",
+  "title": "Example: HEAD requests",
+  "summary": "Demonstrates handling HEAD requests and GET-to-HEAD behavior.\n\nAgent mapper reason: The example demonstrates method-specific HTTP response behavior for HEAD.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/handle-head-request/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/handle-head-request/src/main.rs",
+      "reason": "Implements the HEAD request example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/handle-head-request/Cargo.toml",
+      "reason": "Declares example dependencies."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "Tests GET-to-HEAD routing behavior."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "http-methods"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

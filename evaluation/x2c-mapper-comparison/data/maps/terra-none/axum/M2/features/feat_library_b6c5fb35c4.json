@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b6c5fb35c4",
+  "title": "Core body and common infrastructure",
+  "summary": "Provides body primitives, shared error types, crate exports, and internal macros.\n\nAgent mapper reason: These foundational types and crate wiring are consumed by both core extraction and response conversion.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Shared body utilities."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Shared error wrapper."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Core public API and module wiring."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Internal code-generation helpers."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Core crate build configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Features and dependencies."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Framework body integration."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/body.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "errors",
+    "shared"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:41:26.742Z",
+  "updatedAt": "2026-10-29T07:47:01.923Z"
+}

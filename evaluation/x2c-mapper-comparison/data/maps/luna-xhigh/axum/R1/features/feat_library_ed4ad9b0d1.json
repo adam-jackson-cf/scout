@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ed4ad9b0d1",
+  "title": "Axum handlers and service conversion",
+  "summary": "Handler futures, handler traits, and conversions to services.\n\nAgent mapper reason: These files define the handler execution contract and its bridge to the Tower service model.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Defines handler future behavior."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Adapts handler state into service extensions."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines handler traits and implementations."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Converts handlers into services."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Explains handler requirements and use."
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Documents handler type diagnostics."
+    },
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "Provides a related diagnostic attribute."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "handlers",
+    "services"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:02:22.984Z"
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_5c8a360a4f",
+  "title": "axum-extra body, response, and encoding helpers",
+  "summary": "Async read body, JSON lines, protobuf, erased JSON responses, and Either.\n\nAgent mapper reason: Encoding and streaming helpers share serialization concerns and are reviewed together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Body module root."
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "AsyncReadBody streaming body."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "JSON lines streaming."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protobuf extractor and response."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Response module root."
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Type-erased JSON response."
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either extractor and response helper."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Feature gates for these modules."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Feature flags for protobuf and json-lines."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "streaming",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:12:39.825Z",
+  "updatedAt": "2026-10-29T07:12:39.825Z"
+}

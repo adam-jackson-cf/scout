@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_88816578e4",
+  "title": "Preview-docs PR comment action",
+  "summary": "Docker-based GitHub action that posts a comment with the docs preview link on pull requests.\n\nAgent mapper reason: Single-purpose action; its inputs, container, and calling workflow are reviewed together.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Action entrypoint that comments on PRs using the GitHub API."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Action inputs and Docker wiring."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Container build for the action."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Workflow that invokes this action."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "ci",
+    "docs-preview"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "network",
+    "external-api",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:16:38.944Z",
+  "updatedAt": "2026-10-29T01:16:38.944Z"
+}

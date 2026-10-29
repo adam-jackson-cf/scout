@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a50f927278",
+  "title": "Core response conversion and bodies",
+  "summary": "Implements core response conversion, response parts, appended headers, body handling, and shared errors.\n\nAgent mapper reason: These primitives jointly construct HTTP responses and are shared by the public framework.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Organizes response conversion."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Converts values into HTTP responses."
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "Applies response parts."
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "Appends headers to responses."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Provides core body abstractions."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Wraps shared errors."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Provides internal core implementation macros."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Exposes the core API."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents response conversion."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Defines dependencies and features."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "command": null
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "headers",
+    "body"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

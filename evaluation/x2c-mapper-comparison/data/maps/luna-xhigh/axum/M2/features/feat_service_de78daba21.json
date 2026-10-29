@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_de78daba21",
+  "title": "Example: customize path rejection",
+  "summary": "Demonstrates custom behavior for path extraction failures.\n\nAgent mapper reason: This example isolates customization of a path extractor failure.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Implements the customized path rejection example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-path-rejection/Cargo.toml",
+      "reason": "Defines example dependencies."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Defines path extraction."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines rejection behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "path",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:11:29.733Z"
+}

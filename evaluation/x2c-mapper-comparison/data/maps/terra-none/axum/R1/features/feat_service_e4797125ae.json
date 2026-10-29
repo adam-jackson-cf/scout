@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e4797125ae",
+  "title": "Form, multipart, and validation examples",
+  "summary": "Demonstrates structured request bodies, content-type selection, multipart uploads, and validation.\n\nAgent mapper reason: These examples focus on request body interpretation, validation, and upload handling.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/form/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Form handling example."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart handling example."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Content-type dispatch example."
+    },
+    {
+      "path": "examples/validator/src/main.rs",
+      "reason": "Validation integration example."
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Streaming request body to disk."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart extractor implementation."
+    },
+    {
+      "path": "examples/multipart-form/Cargo.toml",
+      "reason": "Multipart example dependencies."
+    },
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/form/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "forms",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:41:26.742Z",
+  "updatedAt": "2026-10-29T07:41:26.742Z"
+}

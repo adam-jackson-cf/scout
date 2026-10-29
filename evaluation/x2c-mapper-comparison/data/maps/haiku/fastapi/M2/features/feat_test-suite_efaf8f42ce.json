@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_efaf8f42ce",
+  "title": "Core library tests: routing, applications and exceptions",
+  "summary": "Repo-level tests for application setup, routers, including routers, route classes, event handlers and exception handlers.\n\nAgent mapper reason: Router construction and error handling are one routing layer; the group is less certain than the others because the core fastapi package files were not enumerated.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "tests/test_application.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_application.py",
+      "reason": "Application-level behavior."
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "Including routes into routers."
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "reason": "Router defaults overrides."
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "Router startup and shutdown events."
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "reason": "Router prefix templating."
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "reason": "Route scope behavior."
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "reason": "Custom route classes."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "Exception handler registration."
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "Starlette exception passthrough."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_empty_router.py",
+      "reason": "Empty router edge case."
+    },
+    {
+      "path": "tests/test_extra_routes.py",
+      "reason": "Additional route registration."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Connection injection into handlers."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "applications",
+    "exceptions"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:08:55.373Z",
+  "updatedAt": "2026-10-29T07:09:49.875Z"
+}

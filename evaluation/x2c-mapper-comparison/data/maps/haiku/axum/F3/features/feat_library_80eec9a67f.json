@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_80eec9a67f",
+  "title": "axum-extra extractors and cookies",
+  "summary": "Extra extractors: cookies (plain, private, signed), cached, form, multipart, query, with_rejection, and async-read body.\n\nAgent mapper reason: Cookie jars handle secret key material and extractors parse untrusted input; grouped to review crypto and parsing together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Extractor module exports"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "CookieJar and cookie extractors"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "Encrypted PrivateCookieJar"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "Signed SignedCookieJar"
+    },
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Cached extractor wrapper"
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Extra form extractor"
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Multipart extractor with size handling"
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Extra query extractor"
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "WithRejection wrapper"
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Body helpers"
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "AsyncReadBody for streaming from readers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Static fixture used by extra tests"
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Static fixture"
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Static fixture"
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Crate overview including cookie feature flags"
+    },
+    {
+      "path": "axum-extra/CHANGELOG.md",
+      "reason": "Cookie and extractor change history"
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Cookie crypto dependencies and feature flags"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "cookies",
+    "secrets",
+    "extractors",
+    "crypto"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "auth",
+    "user-input",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:14:23.770Z",
+  "updatedAt": "2026-10-29T07:14:23.770Z"
+}

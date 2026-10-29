@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_2e82e4bbe7",
+  "title": "Root project config and contributor docs",
+  "summary": "Project-level configuration (pyproject, pre-commit, gitignore) plus contributor-facing root docs.\n\nAgent mapper reason: Tooling and manifest config that defines how every other slice is linted, typed, and tested.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package metadata, hatch environments, and ruff/mypy/pytest configuration."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Pre-commit hook set."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Ignored paths for the repo."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Development workflow that matches these tools."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Security reporting policy."
+    },
+    {
+      "path": "README.md",
+      "reason": "Project overview."
+    },
+    {
+      "path": "LICENSE",
+      "reason": "License text."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "config",
+    "tooling"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:16:38.944Z",
+  "updatedAt": "2026-10-29T01:16:38.944Z"
+}

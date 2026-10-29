@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_81f1da569e",
+  "title": "Streaming responses and redirects",
+  "summary": "Provides server-sent events, redirect responses, and response module exports.\n\nAgent mapper reason: These response-facing adapters produce HTTP output and streaming bodies.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response exports and helpers."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent event encoding and streaming."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect response construction."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body module exports."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Streaming response body adapter."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Response conversion contract."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Server-sent event usage."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "streaming",
+    "redirects"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

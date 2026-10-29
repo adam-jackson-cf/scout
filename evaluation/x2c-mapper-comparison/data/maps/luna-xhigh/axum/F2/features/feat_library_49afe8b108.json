@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_49afe8b108",
+  "title": "axum-extra asynchronous body adapters",
+  "summary": "Provides adapters for reading HTTP bodies through asynchronous I/O interfaces.\n\nAgent mapper reason: These files expose one body-reading adapter and its module boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Implements an asynchronous reader over a body."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Exports the extra body adapters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares optional body and async I/O dependencies."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines the underlying body abstraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "body",
+    "async-io"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

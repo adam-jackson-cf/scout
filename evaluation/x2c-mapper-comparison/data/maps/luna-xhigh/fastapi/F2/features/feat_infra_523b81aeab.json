@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_523b81aeab",
+  "title": "GitHub Actions: translation notifications",
+  "summary": "Action implementation and workflow configuration for translation notifications.\n\nAgent mapper reason: The action and its invoking workflow make up a single notification behavior.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Implements translation notification behavior."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Defines action interface and execution."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Defines the action runtime image."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Invokes the translation notification action."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "May provide project-maintainer context for notifications."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "automation",
+    "translations"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:35:34.686Z",
+  "updatedAt": "2026-10-29T00:35:34.686Z"
+}

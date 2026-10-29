@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_19185629f6",
+  "title": "debug_handler attribute macro",
+  "summary": "Handler diagnostics attribute and its compile-pass and compile-fail cases.\n\nAgent mapper reason: The macro and compile fixtures jointly specify which handler signatures are accepted and how invalid signatures are diagnosed.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "symbol": "debug_handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "Implements handler diagnostics."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Registers the attribute."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines handler constraints diagnosed by the macro."
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Documents related handler diagnostics."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/state_and_body.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/multiple_request_consumers.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/multiple_request_consumers.stderr",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/pass/state_and_body.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/multiple_request_consumers.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/multiple_request_consumers.stderr",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "handlers",
+    "compile-tests"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:02:22.984Z",
+  "updatedAt": "2026-10-29T08:02:22.984Z"
+}

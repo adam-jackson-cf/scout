@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_db398b9b94",
+  "title": "Server-sent events example",
+  "summary": "Streaming events from an Axum endpoint to a browser client.\n\nAgent mapper reason: The server and browser assets jointly implement the event streaming example.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Event stream server."
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "Browser page."
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "Browser event handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sse/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Underlying event stream implementation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:35:56.660Z"
+}

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_85ab58178c",
+  "title": "Axum form and JSON body extraction",
+  "summary": "Parses form and JSON request bodies into application types.\n\nAgent mapper reason: These extractors consume request bodies and convert serialized formats into typed values.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/form.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Exposes raw form body handling."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Implements structured form extraction."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Implements JSON extraction and rejection behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports related extractor APIs."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Provides shared rejection behavior."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents body extractor behavior."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines body types consumed by these extractors."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "forms",
+    "json"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

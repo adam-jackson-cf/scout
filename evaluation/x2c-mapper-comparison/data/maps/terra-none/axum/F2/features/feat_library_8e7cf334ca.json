@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8e7cf334ca",
+  "title": "Handler and service adapters",
+  "summary": "Converts async handlers into services and connects application state to request handling.\n\nAgent mapper reason: These adapters bridge user handlers, extracted arguments, state, and the Tower service interface.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines handler conversion and invocation."
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Implements handler futures."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Adapts handlers to services."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Integrates service state through extensions."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Provides service extension helpers."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Provides boxed service utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Describes handler behavior."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Consumes application state."
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Registers handlers for methods."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "services",
+    "state"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

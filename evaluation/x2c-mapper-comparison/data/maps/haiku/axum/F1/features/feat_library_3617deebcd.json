@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3617deebcd",
+  "title": "axum-extra extractors and cookies",
+  "summary": "Extra extractors including cookies (plain, private, signed), forms, multipart, query, cached, and rejection wrapping.\n\nAgent mapper reason: Cookie encryption and signing share key handling and extractor patterns, so they are reviewed together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either extractor helper"
+    },
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Cached extractor wrapper"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "CookieJar extractor and response"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "Encrypted cookie handling, secret-bearing"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "Signed cookie handling, secret-bearing"
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Extra form extractor"
+    },
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Extractor module root"
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Extra multipart extractor"
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Extra query extractor"
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Rejection wrapper extractor"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Feature flags for cookie and multipart support"
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Crate overview"
+    },
+    {
+      "path": "axum-extra/CHANGELOG.md",
+      "reason": "Extractor behaviour history"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "cookies",
+    "secrets",
+    "extra"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "secrets",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:11:19.210Z",
+  "updatedAt": "2026-10-29T07:11:19.210Z"
+}

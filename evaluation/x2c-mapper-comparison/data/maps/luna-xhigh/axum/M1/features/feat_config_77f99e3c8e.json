@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_77f99e3c8e",
+  "title": "Workspace, CI, and repository policy",
+  "summary": "Workspace membership, dependency policy, CI, and contributor guidance.\n\nAgent mapper reason: These files jointly establish repository-level build, contribution, and dependency rules rather than a runtime feature.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Defines the workspace and shared package configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Sets repository dependency and license policy."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Defines the automated build and validation workflow."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Configures the patch workflow."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Defines repository-wide ignored paths."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Explains contributor workflow."
+    },
+    {
+      "path": "ECOSYSTEM.md",
+      "reason": "Documents ecosystem context."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Provides issue template configuration."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "reason": "Documents the bug report format."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "reason": "Documents the feature request format."
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "Documents pull request expectations."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "policy"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:08:04.674Z"
+}

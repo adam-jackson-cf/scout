@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_be72d1f9c5",
+  "title": "Macro infrastructure and routing test expansion",
+  "summary": "Provides shared procedural macro parsing and test expansion infrastructure.\n\nAgent mapper reason: Shared parsing, macro registration, and test expansion support multiple macro features.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Declares macro entry points and compile-test harness."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shares attribute parsing logic."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Supports position-aware macro processing."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Expands routing tests into nested-service variants."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Defines macro dependencies and features."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "Exercises generated routing test variants."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "procedural-macro",
+    "test-infrastructure"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

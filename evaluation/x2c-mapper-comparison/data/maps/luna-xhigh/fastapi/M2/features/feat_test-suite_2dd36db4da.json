@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_2dd36db4da",
+  "title": "Dependency injection and overrides",
+  "summary": "Dependency graph resolution, caching, overrides, context managers, and request injection.\n\nAgent mapper reason: Dependency resolution has shared graph, caching, lifetime, and override semantics. Keeping these tests together makes changes to that contract reviewable as one slice.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "Covers dependency result caching."
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "Checks class-based dependencies."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "Covers context manager dependency lifetimes."
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "Checks dependency behavior with context variables."
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "Covers duplicate dependency declarations."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "Checks dependency override behavior."
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "Covers exceptions raised during dependency resolution."
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "Checks overrides for security dependencies."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Covers injection of HTTP connection objects."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs_src/dependencies/tutorial001.py",
+      "reason": "Introduces dependency injection."
+    },
+    {
+      "path": "docs_src/dependency_testing/tutorial001.py",
+      "reason": "Demonstrates dependency replacement for testing."
+    },
+    {
+      "path": "docs/en/docs/tutorial/dependencies/index.md",
+      "reason": "Documents dependency concepts."
+    },
+    {
+      "path": "docs/en/docs/advanced/testing-dependencies.md",
+      "reason": "Explains dependency overrides in tests."
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "injection",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "auth",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:43:58.083Z",
+  "updatedAt": "2026-10-29T00:47:09.803Z"
+}

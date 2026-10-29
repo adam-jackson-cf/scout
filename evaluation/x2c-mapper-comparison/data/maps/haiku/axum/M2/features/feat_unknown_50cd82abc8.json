@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_unknown_50cd82abc8",
+  "title": "Examples: networking, TLS, proxies and gRPC multiplexing",
+  "summary": "Examples for proxies, TLS (rustls, openssl), unix sockets, multiple listeners, hyper 1.0, gRPC multiplexing, graceful shutdown and wasm.\n\nAgent mapper reason: Networking examples share listener, TLS and proxy patterns; build.rs runs protobuf codegen so it is grouped here.",
+  "kind": "unknown",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "HTTP proxy example"
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Reverse proxy example"
+    },
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "OpenSSL example"
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Low-level rustls example"
+    },
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "rustls example"
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Unix socket example"
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Multiple listeners example"
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "hyper 1.0 example"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "gRPC multiplex entrypoint"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "Multiplex service"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "Protobuf codegen build script"
+    },
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Graceful shutdown example"
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "Wasm router example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "Protobuf schema used by build.rs"
+    },
+    {
+      "path": "examples/low-level-openssl/self_signed_certs/cert.pem",
+      "reason": "Test certificate fixture, not owned"
+    },
+    {
+      "path": "examples/low-level-rustls/self_signed_certs/cert.pem",
+      "reason": "Test certificate fixture, not owned"
+    },
+    {
+      "path": "examples/tls-rustls/self_signed_certs/cert.pem",
+      "reason": "Test certificate fixture, not owned"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "networking",
+    "tls",
+    "proxy",
+    "grpc"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "filesystem",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:22:16.654Z",
+  "updatedAt": "2026-10-29T07:22:16.654Z"
+}

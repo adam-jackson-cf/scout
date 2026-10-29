@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_dca4c1754e",
+  "title": "Build, test, and publishing workflows",
+  "summary": "Repository configuration for quality checks, documentation builds, and releases.\n\nAgent mapper reason: These files govern how the project is checked, built, and published; their shared configuration makes cross-workflow review useful.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Test workflow."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build workflow."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Documentation preview workflow."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Preview publishing workflow."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Release publishing workflow."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local quality hooks."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Package and tool configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow guidance."
+    },
+    {
+      "path": "README.md",
+      "reason": "Project overview."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "release",
+    "configuration"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "secrets",
+    "permissions",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:09:24.368Z",
+  "updatedAt": "2026-10-29T01:09:24.368Z"
+}

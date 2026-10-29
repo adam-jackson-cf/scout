@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6b299a995a",
+  "title": "X2 new package x2_newpkg",
+  "summary": "New unowned package added in X2 M1 with currency, units, and slug helpers and its own pyproject manifest.\n\nAgent mapper reason: Isolated new package with no tests or ownership yet; kept as its own slice so it is reviewed independently of fastapi core.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "x2_newpkg/__init__.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "x2_newpkg/__init__.py",
+      "reason": "Package exports."
+    },
+    {
+      "path": "x2_newpkg/currency.py",
+      "reason": "Currency helpers."
+    },
+    {
+      "path": "x2_newpkg/units.py",
+      "reason": "Unit helpers."
+    },
+    {
+      "path": "x2_newpkg/slugs.py",
+      "reason": "Slug helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "x2_newpkg/pyproject.toml",
+      "reason": "Package manifest; build file, so excluded from owned files."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "x2",
+    "new-package",
+    "unowned"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:09:49.659Z",
+  "updatedAt": "2026-10-29T07:09:49.659Z"
+}

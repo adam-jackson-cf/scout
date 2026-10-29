@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_49afe8b108",
+  "title": "axum-extra body adapters",
+  "summary": "Async read adapter for request bodies.\n\nAgent mapper reason: These files provide a focused bridge between Axum body streams and async read consumers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Adapts an HTTP body to async read behavior."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Exports body adapters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines body adapter dependencies."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines shared body types."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "body",
+    "io"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:11:29.627Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

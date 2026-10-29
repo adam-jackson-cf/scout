@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6d78458195",
+  "title": "Framework package entry points and test utilities",
+  "summary": "Defines crate exports, internal helpers, build configuration, and the shared HTTP test client.\n\nAgent mapper reason: These cross-cutting files establish crate boundaries and shared test infrastructure.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Defines public framework exports and feature gates."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Provides internal implementation macros."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Provides shared internal utilities."
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Organizes shared test support."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Provides the shared test client."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Configures framework build behavior."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Defines core crate exports."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Configures core crate build behavior."
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Defines extra crate exports and feature gates."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Benchmarks framework behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines framework features and dependencies."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Defines core features and dependencies."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines optional extension features."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "crate-api",
+    "build",
+    "test-support"
+  ],
+  "trustBoundaries": [
+    "network",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

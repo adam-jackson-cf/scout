@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9d0b751c22",
+  "title": "x2_newpkg new package (currency, slugs, units)",
+  "summary": "New unowned package added on branch x2 with currency, slug and unit helpers.\n\nAgent mapper reason: Self-contained new package, reviewed alone since it has no existing consumers in the inventory.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "x2_newpkg/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "x2_newpkg/src/lib.rs",
+      "reason": "Crate root"
+    },
+    {
+      "path": "x2_newpkg/src/currency.rs",
+      "reason": "Currency helpers"
+    },
+    {
+      "path": "x2_newpkg/src/slugs.rs",
+      "reason": "Slug helpers"
+    },
+    {
+      "path": "x2_newpkg/src/units.rs",
+      "reason": "Unit helpers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "x2_newpkg/Cargo.toml",
+      "reason": "Package manifest added in commit 9b3fc1ec"
+    },
+    {
+      "path": "Cargo.toml",
+      "reason": "Confirm whether the package is a workspace member"
+    },
+    {
+      "path": "x2_newpkg/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "x2_newpkg/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "x2",
+    "new-package"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:22:16.654Z"
+}

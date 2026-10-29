@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4127742740",
+  "title": "Exceptions and exception handlers",
+  "summary": "Defines HTTP and validation exceptions and the default handlers that convert them into responses.\n\nAgent mapper reason: Exception types and their handlers define the client-visible error contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/exception_handlers.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/exceptions.py",
+      "reason": "HTTPException, RequestValidationError, and related types."
+    },
+    {
+      "path": "fastapi/exception_handlers.py",
+      "reason": "Default handlers for HTTP and validation errors."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "Registers the default exception handlers."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "Custom and default handler behavior."
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "Starlette exception interop."
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "Exceptions raised through middleware."
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Validation error shape for body fields."
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "errors",
+    "validation",
+    "handlers"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:09:49.659Z",
+  "updatedAt": "2026-10-29T07:09:49.659Z"
+}

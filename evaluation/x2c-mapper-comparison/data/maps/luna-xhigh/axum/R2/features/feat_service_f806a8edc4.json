@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_f806a8edc4",
+  "title": "Error handling and dependency injection example",
+  "summary": "Demonstrates application errors and injected shared dependencies.\n\nAgent mapper reason: The sample combines shared dependency access with handler error behavior.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/error-handling-and-dependency-injection/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/error-handling-and-dependency-injection/Cargo.toml",
+      "reason": "Declares the example package."
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/src/main.rs",
+      "reason": "Implements dependency injection and error handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Provides error conversion."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Provides shared application state extraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "errors",
+    "state"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:05:21.233Z"
+}

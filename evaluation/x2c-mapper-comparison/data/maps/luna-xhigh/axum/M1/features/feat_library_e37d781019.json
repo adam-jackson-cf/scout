@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e37d781019",
+  "title": "axum-extra protobuf responses",
+  "summary": "Protobuf response encoding support.\n\nAgent mapper reason: This module adapts protobuf serialization to the shared response conversion API.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "symbol": "Protobuf",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Encodes protobuf values as HTTP responses."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Exports the protobuf extension."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Defines the response conversion contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "protobuf",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:02:22.984Z",
+  "updatedAt": "2026-10-29T08:08:04.770Z"
+}

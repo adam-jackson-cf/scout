@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_673e7afbdf",
+  "title": "Extra extractor adapters and formats",
+  "summary": "Cached extraction, custom rejections, and additional form, query, and multipart extractors.\n\nAgent mapper reason: These components extend the shared extraction contract with reusable adapters and alternate parsers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Exports extra extractors."
+    },
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Caches extracted values."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Overrides extractor rejections."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Implements extra form extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Implements extra query extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Implements extra multipart extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines the underlying extraction traits."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Demonstrates rejection customization."
+    },
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "parsing",
+    "rejections"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

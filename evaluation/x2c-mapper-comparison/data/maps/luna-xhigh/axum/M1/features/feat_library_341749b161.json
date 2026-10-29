@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_341749b161",
+  "title": "axum-core extraction protocol",
+  "summary": "Request-parts extraction traits, tuple composition, state projection, body limits, and rejection types.\n\nAgent mapper reason: These modules define the shared extraction contract and its composition, limits, and failure behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Defines the default request body limit behavior."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Defines state projection through FromRef."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Declares and exports extraction APIs."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Defines common extraction rejection behavior."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Defines extraction from request parts."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Composes multiple extractors into tuple extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Shows public exports."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Provides the body abstraction used by extractors."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Defines crate dependencies and features."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "extractors",
+    "request"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:08:04.674Z"
+}

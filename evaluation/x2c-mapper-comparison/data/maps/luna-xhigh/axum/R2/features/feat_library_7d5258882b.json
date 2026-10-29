@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_7d5258882b",
+  "title": "axum-extra middleware and response adapters",
+  "summary": "Additional middleware, erased JSON response, and Protocol Buffers response support.\n\nAgent mapper reason: These extensions adapt request processing or response serialization using Axum's middleware and response interfaces.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Implements extension middleware helpers."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Implements Protocol Buffers response conversion."
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Implements type-erased JSON responses."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Exports additional response helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares optional middleware and serialization dependencies."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Provides base middleware contracts."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Provides base response contracts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "middleware",
+    "response",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:05:21.191Z"
+}

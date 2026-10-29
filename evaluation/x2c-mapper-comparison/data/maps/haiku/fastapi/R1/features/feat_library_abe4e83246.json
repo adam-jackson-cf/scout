@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_abe4e83246",
+  "title": "Core routing and application layer",
+  "summary": "FastAPI application class, APIRouter/route handling, and request-to-response plumbing in the fastapi package.\n\nAgent mapper reason: routing.py and applications.py are the central request dispatch surface; tests exercise route registration and app behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/applications.py",
+      "symbol": "FastAPI",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "FastAPI app class: middleware, exception handler, OpenAPI and docs wiring"
+    },
+    {
+      "path": "fastapi/routing.py",
+      "reason": "APIRouter, path operation registration, request/response handling"
+    },
+    {
+      "path": "fastapi/__init__.py",
+      "reason": "public package exports"
+    },
+    {
+      "path": "fastapi/requests.py",
+      "reason": "Request re-exports"
+    },
+    {
+      "path": "fastapi/responses.py",
+      "reason": "Response class re-exports"
+    },
+    {
+      "path": "fastapi/websockets.py",
+      "reason": "WebSocket re-exports and websocket support"
+    },
+    {
+      "path": "fastapi/background.py",
+      "reason": "background task support"
+    },
+    {
+      "path": "fastapi/concurrency.py",
+      "reason": "threadpool and async bridging helpers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/exception_handlers.py",
+      "reason": "default exception handlers used by the app"
+    },
+    {
+      "path": "fastapi/exceptions.py",
+      "reason": "HTTPException and validation error types raised by routing"
+    },
+    {
+      "path": "fastapi/types.py",
+      "reason": "shared type aliases"
+    },
+    {
+      "path": "fastapi/utils.py",
+      "reason": "shared helpers for route and response generation"
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "application",
+    "asgi"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:45.804Z",
+  "updatedAt": "2026-10-29T01:18:45.804Z"
+}

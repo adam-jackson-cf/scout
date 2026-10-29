@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_adb45d1813",
+  "title": "axum-core extract, response, body and error types",
+  "summary": "Core FromRequest/FromRequestParts, IntoResponse, body, rejection and error types that axum builds on.\n\nAgent mapper reason: Shared core traits and types form one dependency layer, reviewed together so trait contracts stay consistent.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Body type shared by extractors and responses"
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Shared boxed error type"
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Default body size limit handling"
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "FromRef state extraction trait"
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "FromRequest and FromRequestParts definitions"
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Built-in extractor rejections"
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Request-parts extraction impls"
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Tuple extractor impls"
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Internal macros for tuple impls"
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "AppendHeaders response helper"
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "IntoResponse trait and impls"
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "IntoResponseParts trait and impls"
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response module surface"
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Crate root and module exports"
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Build script for axum-core"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Crate features and dependencies"
+    },
+    {
+      "path": "axum-core/CHANGELOG.md",
+      "reason": "Documented behaviour changes"
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "traits",
+    "extractors",
+    "responses"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:22:16.654Z",
+  "updatedAt": "2026-10-29T07:22:16.654Z"
+}

@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_7ad93f86c6",
+  "title": "Handler and service adapters",
+  "summary": "Adapts handlers into services and supplies state and error handling across service boundaries.\n\nAgent mapper reason: Handler execution and its service adapters share state, response, and error contracts.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler contracts"
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler futures"
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Handler service adapter"
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "State extension adapter"
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Service error handling"
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service extension methods"
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Boxed service support"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler semantics"
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error handling behavior"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "services"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:25:32.591Z"
+}

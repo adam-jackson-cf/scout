@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_4a4f39d7ca",
+  "title": "CI, publishing, and repository maintenance workflows",
+  "summary": "Workflow definitions for testing, release publishing, issue management, approval labels, and generated change summaries.\n\nAgent mapper reason: These files define how the project is checked, released, and maintained. The project command inventory identifies Hatch test, lint, format, and typecheck commands; workflow execution is the key operational context.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Defines the CI test workflow."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Defines package publishing."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Defines latest changes automation."
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Defines issue management automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Defines approved label automation."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Defines smoke test reporting."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Configures dependency update automation."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Defines local pre-commit checks."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Defines package metadata, dependencies, and project commands."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Documents contributor workflow expectations."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Documents security reporting and policy."
+    },
+    {
+      "path": "README.md",
+      "reason": "Documents the project and installation entry point."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/test.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "release",
+    "maintenance",
+    "hatch"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "secrets",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:42:06.912Z",
+  "updatedAt": "2026-10-29T00:42:06.912Z"
+}

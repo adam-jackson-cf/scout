@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_96873d0553",
+  "title": "Asynchronous application testing tutorial",
+  "summary": "An async example application and its async test.\n\nAgent mapper reason: The application, example test, and tutorial test form a single async testing flow.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/async_tests/main.py",
+      "symbol": "root",
+      "route": "/",
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/async_tests/__init__.py",
+      "reason": "Example package."
+    },
+    {
+      "path": "docs_src/async_tests/main.py",
+      "reason": "Async example application."
+    },
+    {
+      "path": "docs_src/async_tests/test_main.py",
+      "reason": "Example application test."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/async-tests.md",
+      "reason": "Tutorial text."
+    },
+    {
+      "path": "docs_src/async_tests/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_async_tests/test_main.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "docs_src/async_tests/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_async_tests/test_main.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tutorial",
+    "async",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:57:44.320Z",
+  "updatedAt": "2026-10-29T01:04:21.036Z"
+}

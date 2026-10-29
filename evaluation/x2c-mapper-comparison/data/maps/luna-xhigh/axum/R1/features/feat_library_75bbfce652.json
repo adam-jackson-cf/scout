@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_75bbfce652",
+  "title": "axum-macros debug_handler macro",
+  "summary": "Procedural macro support for validating and diagnosing handler signatures.\n\nAgent mapper reason: The implementation and compile-pass/fail fixtures define the macro's accepted handler signatures and diagnostic behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "symbol": "debug_handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "Implements the debug_handler procedural macro."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Provides macro-specific test support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Registers procedural macro entry points."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shares attribute parsing support."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Shares syntax-position utilities."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Declares procedural macro dependencies."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/argument_not_extractor.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/multiple_request_consumers.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/multiple_extractors.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/infer_state.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/fail/argument_not_extractor.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/multiple_request_consumers.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/multiple_extractors.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/infer_state.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "procedural-macro",
+    "handler"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:02:23.046Z"
+}

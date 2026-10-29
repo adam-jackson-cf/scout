@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_cb55cc2e05",
+  "title": "axum middleware, responses, and error handling",
+  "summary": "from_fn/map_request/map_response middleware, from_extractor, Redirect and SSE responses, and HandleError/error_handling helpers.\n\nAgent mapper reason: Middleware and response adapters both wrap services and share error-handling conventions.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "from_extractor middleware"
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "from_fn middleware"
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "map_request middleware"
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "map_response middleware"
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware exports"
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response exports"
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect responses"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent events response"
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "HandleError adapter for fallible services"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware docs"
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response docs"
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error handling docs"
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Layer semantics used by middleware"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "responses",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:17:47.257Z",
+  "updatedAt": "2026-10-29T07:17:47.257Z"
+}

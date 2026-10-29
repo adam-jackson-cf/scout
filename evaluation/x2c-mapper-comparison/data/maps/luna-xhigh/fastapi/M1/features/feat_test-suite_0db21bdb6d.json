@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_0db21bdb6d",
+  "title": "API key and HTTP authentication schemes",
+  "summary": "Cookie, header, query, HTTP Basic, Bearer, and Digest security helpers.\n\nAgent mapper reason: These helpers share request credential extraction and authentication scheme behavior. Optionality and description variants are separate tests in the inventory and should be reviewed with their corresponding scheme changes.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "reason": "Covers API keys supplied in cookies."
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "Covers API keys supplied in headers."
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "reason": "Covers API keys supplied in query parameters."
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "Checks HTTP Basic authentication realm behavior."
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "Covers HTTP Bearer [SCOUT_REDACTED_SECRET]."
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "reason": "Covers HTTP Digest authentication."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/security/http-basic-auth.md",
+      "reason": "Documents HTTP Basic authentication."
+    },
+    {
+      "path": "docs/en/docs/tutorial/security/first-steps.md",
+      "reason": "Introduces FastAPI security helpers."
+    },
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "authentication",
+    "api-key"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:43:58.083Z",
+  "updatedAt": "2026-10-29T00:43:58.083Z"
+}

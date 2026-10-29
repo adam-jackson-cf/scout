@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3617deebcd",
+  "title": "axum-extra extractors",
+  "summary": "Extra extractors: cookies (plain, private, signed), cached extraction, typed form and query, multipart, WithRejection, and Either.\n\nAgent mapper reason: Cookie jars depend on signing and encryption keys and parse untrusted input, so they are reviewed as a security-sensitive group.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Extractor module exports"
+    },
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Cached extractor wrapper"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "CookieJar extractor"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "Encrypted PrivateCookieJar"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "Signed SignedCookieJar"
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Typed Form extractor"
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Typed Query extractor"
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Multipart extractor"
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "WithRejection wrapper"
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either extractor/response type"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Feature flags for cookie crypto and multipart"
+    },
+    {
+      "path": "axum-extra/CHANGELOG.md",
+      "reason": "Documented extractor changes"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "cookies",
+    "secrets",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "secrets",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:11:19.210Z",
+  "updatedAt": "2026-10-29T07:16:27.607Z"
+}

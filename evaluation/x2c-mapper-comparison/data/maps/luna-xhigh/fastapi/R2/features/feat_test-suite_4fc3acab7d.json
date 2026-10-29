@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_4fc3acab7d",
+  "title": "Dependency resolution and overrides",
+  "summary": "Dependency graph evaluation, caching, overrides, context managers, and dependency testing.\n\nAgent mapper reason: These tests exercise dependency graph semantics and overrides, including security dependencies and resource cleanup, so they form a cohesive review slice.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "Covers dependency result caching."
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "Covers dependency classes."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "Covers context-manager dependencies."
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "Covers context variable behavior."
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "Covers duplicate dependency declarations."
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "Covers dependency exception handling."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "Covers dependency override behavior."
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "Covers overrides of security dependencies."
+    },
+    {
+      "path": "tests/test_repeated_dependency_schema.py",
+      "reason": "Covers repeated dependencies in generated schemas."
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "Covers annotated dependency declarations."
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "Covers parameters combined with dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs_src/dependencies/tutorial001.py",
+      "reason": "Shows basic dependency injection."
+    },
+    {
+      "path": "docs_src/dependency_testing/tutorial001.py",
+      "reason": "Shows dependency overrides in tests."
+    },
+    {
+      "path": "docs/en/docs/tutorial/dependencies/index.md",
+      "reason": "Documents dependency behavior."
+    },
+    {
+      "path": "docs/en/docs/advanced/testing-dependencies.md",
+      "reason": "Documents testing and overriding dependencies."
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "injection",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "auth",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:40:33.924Z",
+  "updatedAt": "2026-10-29T00:42:06.982Z"
+}

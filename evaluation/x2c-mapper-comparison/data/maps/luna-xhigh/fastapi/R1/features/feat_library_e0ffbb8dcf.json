@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e0ffbb8dcf",
+  "title": "Background tasks and application events",
+  "summary": "Deferred response work and application startup or shutdown event handling.\n\nAgent mapper reason: Both features schedule work around request or application lifecycles and are affected by execution ordering and cleanup.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/background_tasks/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/background_tasks/tutorial001.py",
+      "reason": "Demonstrates background task use."
+    },
+    {
+      "path": "docs_src/background_tasks/tutorial002.py",
+      "reason": "Demonstrates composed background tasks."
+    },
+    {
+      "path": "docs_src/events/tutorial001.py",
+      "reason": "Demonstrates application lifecycle events."
+    },
+    {
+      "path": "docs_src/events/tutorial002.py",
+      "reason": "Demonstrates additional event behavior."
+    },
+    {
+      "path": "docs_src/events/tutorial003.py",
+      "reason": "Demonstrates another event lifecycle pattern."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/background-tasks.md",
+      "reason": "Documents deferred task behavior."
+    },
+    {
+      "path": "docs/en/docs/advanced/events.md",
+      "reason": "Documents application event behavior."
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial001.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_router_events.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial001.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "background-tasks",
+    "lifecycle",
+    "concurrency"
+  ],
+  "trustBoundaries": [
+    "concurrency",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:40:33.924Z",
+  "updatedAt": "2026-10-29T00:40:33.924Z"
+}

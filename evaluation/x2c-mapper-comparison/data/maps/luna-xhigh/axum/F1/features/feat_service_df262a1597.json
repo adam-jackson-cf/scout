@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_df262a1597",
+  "title": "Example: sessions",
+  "summary": "Demonstrates session state and cookie-backed user continuity.\n\nAgent mapper reason: The sample manages client session identity across requests using server and cookie state.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sessions/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sessions/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Implements session handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "Provides cookie API context."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Provides state handling context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "sessions",
+    "cookies"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "secrets",
+    "auth"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T07:51:17.230Z"
+}

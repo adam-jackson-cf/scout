@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_341749b161",
+  "title": "axum-core extraction contracts",
+  "summary": "Request extraction traits, state projection, rejection types, and body limits.\n\nAgent mapper reason: These files define the common contracts and limits that higher-level request extractors implement.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Controls default request body limits."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Defines state projection from shared state."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Exports core extraction contracts."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Defines shared extraction rejection behavior."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Defines extraction from request parts."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Composes multiple extractors as tuples."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Shared macros support rejection declarations."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Explains the higher-level extraction contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "extractors",
+    "request-validation"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:02:22.984Z"
+}

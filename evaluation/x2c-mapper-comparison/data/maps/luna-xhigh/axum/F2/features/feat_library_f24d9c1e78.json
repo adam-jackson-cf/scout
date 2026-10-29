@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f24d9c1e78",
+  "title": "Axum path extraction",
+  "summary": "Deserializes captured URL path segments into typed values and tracks matched route paths.\n\nAgent mapper reason: Path deserialization and matched-path reporting depend on router capture semantics and URL decoding.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Deserializes path captures."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Implements Path extraction."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Exposes the matched route pattern."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Supplies captured route parameters."
+    },
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Generates typed path support."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents path extraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "path",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

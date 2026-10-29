@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_90bcd51677",
+  "title": "axum-extra bodies and streaming formats",
+  "summary": "Async body reading and JSON Lines streaming support.\n\nAgent mapper reason: These extensions bridge HTTP bodies to asynchronous reads and line-delimited JSON streams.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Adapts a body to asynchronous reading."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Exports extra body utilities."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Implements JSON Lines streaming."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines the underlying body type."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Provides main-crate streaming body support."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "body",
+    "streaming",
+    "json"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:11:29.698Z"
+}

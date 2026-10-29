@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f3aa9b0721",
+  "title": "axum-extra streaming and encoded formats",
+  "summary": "JSON Lines and Protocol Buffers support.\n\nAgent mapper reason: These optional components serialize structured data for HTTP transfer, with JSON Lines also supporting streamed records.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Implements JSON Lines streaming support."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Implements Protocol Buffers support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines format and streaming dependencies."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Provides body adapters."
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Defines response conversion contracts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "serialization",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:11:29.627Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

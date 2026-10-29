@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_575b24f3a1",
+  "title": "Extra bodies, serialization, and middleware",
+  "summary": "Optional body adapters, JSON Lines, protobuf, erased JSON, and middleware utilities.\n\nAgent mapper reason: These bounded optional utilities extend body and response processing and share crate feature configuration.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Extra crate exports"
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Body exports"
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Async reader body adapter"
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either-type composition"
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "JSON Lines streaming"
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protobuf body handling"
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Extra response exports"
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Type-erased JSON response"
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Extra middleware"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Optional feature configuration"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extra",
+    "serialization",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:26:54.302Z",
+  "updatedAt": "2026-10-29T07:26:54.302Z"
+}

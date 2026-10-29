@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9c04f3eae5",
+  "title": "Extra typed and resource routing",
+  "summary": "Provides typed paths and resource-oriented route composition.\n\nAgent mapper reason: Both APIs construct routes on top of the core router and must preserve route and URI semantics.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Organizes extra routing APIs."
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Implements typed routing helpers."
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Implements resource-oriented route registration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Derives typed path implementations."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Provides underlying router behavior."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines feature gates."
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "command": null
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "typed-path",
+    "resources"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

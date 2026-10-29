@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_09c3ea8a55",
+  "title": "axum handlers, middleware and error handling",
+  "summary": "Handler trait and blanket impls, handler services, IntoServiceStateInExtension, from_fn/map_request/map_response middleware, from_extractor, and error handling for fallible services.\n\nAgent mapper reason: Handlers, middleware and error adapters are all services wrapping the router and are reviewed together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait and implementations for async functions."
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler future types."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Handler-to-Service adapter."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Stores state in extensions for service conversion."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware module surface."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "from_fn middleware constructor."
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Middleware built from extractors."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Request-mapping middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Response-mapping middleware."
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "HandleError adapter converting service errors to responses."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service extension methods such as handle_error and layer helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler documentation."
+    },
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware documentation."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error handling documentation."
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Explains debug_handler usage with these traits."
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Documents layering semantics."
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Documents layering semantics on routers."
+    },
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "Macro that checks Handler bounds."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "middleware",
+    "error-handling",
+    "services"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:22:16.693Z"
+}

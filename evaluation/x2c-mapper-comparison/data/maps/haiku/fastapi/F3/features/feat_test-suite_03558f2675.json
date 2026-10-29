@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_03558f2675",
+  "title": "Core tests: security schemes (API key, HTTP, OAuth2, OpenID Connect)",
+  "summary": "Tests covering security scheme classes, their OpenAPI output, optional variants, and description/realm options.\n\nAgent mapper reason: Security scheme tests form one matrix (location x optional x description) and assert auth behavior and OpenAPI shape.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "OAuth2 password flow"
+    },
+    {
+      "path": "tests/test_security_oauth2_authorization_code_bearer.py",
+      "reason": "OAuth2 auth code bearer"
+    },
+    {
+      "path": "tests/test_security_oauth2_optional.py",
+      "reason": "Optional OAuth2"
+    },
+    {
+      "path": "tests/test_security_openid_connect.py",
+      "reason": "OpenID Connect"
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "API key in header"
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "reason": "API key in query"
+    },
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "reason": "API key in cookie"
+    },
+    {
+      "path": "tests/test_security_http_basic_realm.py",
+      "reason": "HTTP basic realm"
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "HTTP bearer"
+    },
+    {
+      "path": "tests/test_security_http_digest.py",
+      "reason": "HTTP digest"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/security/first-steps.md",
+      "reason": "Security tutorial"
+    },
+    {
+      "path": "docs/en/docs/tutorial/security/oauth2-jwt.md",
+      "reason": "JWT tutorial"
+    },
+    {
+      "path": "docs/en/docs/advanced/security/oauth2-scopes.md",
+      "reason": "Scopes docs"
+    },
+    {
+      "path": "docs/en/docs/advanced/security/http-basic-auth.md",
+      "reason": "Basic auth docs"
+    },
+    {
+      "path": "tests/test_security_oauth2.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_oauth2.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_http_bearer.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tests",
+    "security",
+    "auth",
+    "openapi"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:06.331Z",
+  "updatedAt": "2026-10-29T01:18:06.331Z"
+}

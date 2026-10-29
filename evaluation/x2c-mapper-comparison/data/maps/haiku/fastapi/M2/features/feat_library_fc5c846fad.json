@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fc5c846fad",
+  "title": "Response serialization and encoding",
+  "summary": "Converts Python return values and Pydantic models into JSON-compatible data and HTTP response objects.\n\nAgent mapper reason: Encoding and response classes are one output path from handler return value to HTTP body.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/encoders.py",
+      "symbol": "jsonable_encoder",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/encoders.py",
+      "reason": "jsonable_encoder and type-to-JSON conversion."
+    },
+    {
+      "path": "fastapi/responses.py",
+      "reason": "Response class re-exports and JSON response helpers."
+    },
+    {
+      "path": "fastapi/types.py",
+      "reason": "Shared type aliases used by serialization."
+    },
+    {
+      "path": "fastapi/utils.py",
+      "reason": "Helpers for response model and schema handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Calls serialization during response construction."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "Encoder behavior."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Response serialization end-to-end."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "response_model handling."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass serialization."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "include and exclude filtering."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom encoder behavior."
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "serialization",
+    "responses",
+    "pydantic"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:09:49.659Z",
+  "updatedAt": "2026-10-29T07:09:49.659Z"
+}

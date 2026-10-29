@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f92bc252fb",
+  "title": "axum-macros shared parsing and expansion support",
+  "summary": "Provides common parsing and code-generation support for Axum procedural macros.\n\nAgent mapper reason: These files form shared infrastructure used by multiple derives and attributes.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Parses shared macro attributes."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Registers and exports procedural macros."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Provides shared position-aware parsing or expansion support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Declares procedural macro dependencies."
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Documents macro usage."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "procedural-macros",
+    "parsing"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_be72d1f9c5",
+  "title": "Macro infrastructure and test attribute",
+  "summary": "Wires procedural macro entrypoints, shared attribute parsing, source positioning, and the internal test attribute.\n\nAgent mapper reason: These files provide shared infrastructure and entrypoints for the macro crate.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Public procedural macro entrypoints and UI harness."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Position-aware parsing support."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Internal framework test attribute."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Macro crate dependencies."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Macro crate toolchain selection."
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Framework test support."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "procedural-macros",
+    "test-support"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:41:26.742Z",
+  "updatedAt": "2026-10-29T07:43:05.416Z"
+}

@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d2a3a7e62c",
+  "title": "Multipart extraction",
+  "summary": "Extracts multipart form fields and streams uploaded content.\n\nAgent mapper reason: Multipart parsing and field streaming form a distinct request-body boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart extractor and field handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Request body size limit contract."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart usage example."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "multipart",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

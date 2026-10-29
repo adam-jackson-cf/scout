@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_0999a99ac7",
+  "title": "Example: parse body by content type",
+  "summary": "Demonstrates selecting body parsing based on the request content type.\n\nAgent mapper reason: The example demonstrates request body dispatch based on client-provided media type.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Implements content-type-specific parsing."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/parse-body-based-on-content-type/Cargo.toml",
+      "reason": "Declares parsing dependencies."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines request body behavior."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Implements JSON body parsing."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "content-type",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

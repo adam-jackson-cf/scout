@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_673e7afbdf",
+  "title": "axum-extra extractor utilities",
+  "summary": "Cached extraction, form and multipart parsing, query extraction, and rejection adaptation.\n\nAgent mapper reason: These are opt-in request extraction features that parse or adapt request data and rejection behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Caches extracted values within a request."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Provides an extra form extractor."
+    },
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Exports extra extractor APIs."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Parses multipart requests."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Provides extra query extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Adapts extractor rejection types."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares optional parsing dependencies and features."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Documents extra extractors."
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Fixture asset available to extra crate tests."
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Fixture asset available to extra crate tests."
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Fixture asset available to extra crate tests."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "extractors",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

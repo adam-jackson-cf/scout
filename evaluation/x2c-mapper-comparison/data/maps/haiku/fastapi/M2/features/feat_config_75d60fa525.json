@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_75d60fa525",
+  "title": "Documentation site config and data",
+  "summary": "MkDocs configuration for the English site and translations, plus YAML data files for sponsors, people and external links.\n\nAgent mapper reason: Site configuration and the data files it reads are one unit used only by the docs build.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Navigation, plugins and theme settings for the English docs site."
+    },
+    {
+      "path": "docs/en/data/external_links.yml",
+      "reason": "Links rendered into docs pages."
+    },
+    {
+      "path": "docs/en/data/sponsors.yml",
+      "reason": "Sponsor data rendered on the site."
+    },
+    {
+      "path": "docs/en/data/sponsors_badge.yml",
+      "reason": "Sponsor badge data."
+    },
+    {
+      "path": "docs/en/data/github_sponsors.yml",
+      "reason": "GitHub sponsor data."
+    },
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Contributor data rendered on the site."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Theme override template for the English site."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/de/mkdocs.yml",
+      "reason": "Sample translation config; the other language configs follow the same shape."
+    },
+    {
+      "path": "docs/az/mkdocs.yml",
+      "reason": "Sample translation config for another language."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Build that consumes these configs."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "mkdocs",
+    "data",
+    "config"
+  ],
+  "trustBoundaries": [
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:08:55.373Z",
+  "updatedAt": "2026-10-29T07:09:49.812Z"
+}

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_947fefcc7b",
+  "title": "State, extensions, and connection metadata",
+  "summary": "Supplies application state, request extensions, and connection information to handlers.\n\nAgent mapper reason: These files carry contextual data through services into request handlers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Application state extraction."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Connection metadata extraction."
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Request extension layer and extractor."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Substate conversion contract."
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Router state semantics."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Connection metadata setup."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "state",
+    "connection-info"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:29:26.547Z",
+  "updatedAt": "2026-10-29T07:32:52.939Z"
+}

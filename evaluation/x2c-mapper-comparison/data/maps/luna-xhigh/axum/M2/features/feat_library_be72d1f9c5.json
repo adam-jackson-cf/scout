@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_be72d1f9c5",
+  "title": "axum-macros shared procedural macro support",
+  "summary": "Proc-macro crate exports, shared attribute parsing, source position support, and test attribute support.\n\nAgent mapper reason: These files provide shared procedural-macro entry and parsing infrastructure used by feature-specific derives and attributes.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Provides shared attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Implements the crate's Axum test attribute support."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Declares and exports procedural macros."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Provides source-position-aware parsing support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Defines proc-macro dependencies."
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Documents the macro crate."
+    },
+    {
+      "path": "axum-macros/CHANGELOG.md",
+      "reason": "Records macro crate changes."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Pins the toolchain for this package."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "procedural-macros"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:08:04.674Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

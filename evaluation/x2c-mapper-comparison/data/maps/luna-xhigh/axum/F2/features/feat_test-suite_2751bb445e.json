@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_2751bb445e",
+  "title": "Axum benchmark suite",
+  "summary": "Measures framework performance through benchmark targets.\n\nAgent mapper reason: Benchmark changes should be reviewed with the package configuration and the APIs whose performance they measure.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/benches/benches.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Defines the Axum benchmark cases."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares benchmark target configuration."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Routing is among the framework behaviors benchmarks may exercise."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "benchmark",
+    "performance"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

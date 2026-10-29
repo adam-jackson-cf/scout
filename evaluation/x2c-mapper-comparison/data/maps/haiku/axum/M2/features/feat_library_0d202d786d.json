@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0d202d786d",
+  "title": "axum extractors and request data formats",
+  "summary": "Built-in extractors for path, query, forms, JSON, multipart, websockets, host, and typed headers.\n\nAgent mapper reason: Extractors parse untrusted request data and share the path, query, and body handling logic.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extractor module root"
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Peer address extraction"
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Host header extraction"
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Matched route path extraction"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart upload extraction"
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Path parameter deserializer"
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extractor"
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query string extractor"
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form body extractor"
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query extractor"
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Extractor rejection types"
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Request parts extractors"
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "State extractor"
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "WebSocket upgrade extractor"
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON extractor and response"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extractor and response"
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Typed header extractor"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extractor guide"
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Client used by extractor tests"
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "user-input",
+    "serialization",
+    "network"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:11:19.210Z",
+  "updatedAt": "2026-10-29T07:22:16.693Z"
+}

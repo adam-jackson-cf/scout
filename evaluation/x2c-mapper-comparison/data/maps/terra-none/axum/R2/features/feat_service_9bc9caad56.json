@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_9bc9caad56",
+  "title": "Static assets, templates, and WASM examples",
+  "summary": "Demonstrates serving static assets, rendering templates, and using a router in WebAssembly.\n\nAgent mapper reason: These examples cover delivering or executing frontend-facing assets and templates.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Static file server."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Static page."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Static client script."
+    },
+    {
+      "path": "examples/templates/src/main.rs",
+      "reason": "Template rendering server."
+    },
+    {
+      "path": "examples/templates/templates/hello.html",
+      "reason": "Rendered template."
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "WASM router example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/templates/Cargo.toml",
+      "reason": "Template integration dependencies."
+    },
+    {
+      "path": "examples/simple-router-wasm/Cargo.toml",
+      "reason": "WASM target dependencies."
+    },
+    {
+      "path": "examples/templates/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/templates/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "static-files",
+    "templates",
+    "wasm"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:41:26.742Z",
+  "updatedAt": "2026-10-29T07:43:05.796Z"
+}

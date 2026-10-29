@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_db398b9b94",
+  "title": "Example: server-sent events",
+  "summary": "Demonstrates streaming events to a browser client.\n\nAgent mapper reason: The server stream and browser consumer implement one end-to-end event flow.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Implements the server-side event stream."
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "Provides the browser UI."
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "Consumes the event stream in the browser."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sse/Cargo.toml",
+      "reason": "Defines example dependencies."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Implements the SSE response type."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "sse",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:08:04.674Z"
+}

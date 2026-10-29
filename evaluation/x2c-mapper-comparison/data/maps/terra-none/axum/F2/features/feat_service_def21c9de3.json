@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_def21c9de3",
+  "title": "TLS and low-level server examples",
+  "summary": "Demonstrates TLS using rustls and OpenSSL, low-level Hyper integration, and alternate listener setups.\n\nAgent mapper reason: These examples show how transport setup and server lifecycle wrap the framework service.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "Demonstrates rustls server setup."
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Demonstrates low-level rustls integration."
+    },
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "Demonstrates low-level OpenSSL integration."
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "Demonstrates Hyper integration."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Demonstrates multiple listeners."
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Demonstrates Unix-domain socket serving."
+    },
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Demonstrates server shutdown coordination."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "reason": "Defines TLS dependencies."
+    },
+    {
+      "path": "examples/low-level-openssl/Cargo.toml",
+      "reason": "Defines OpenSSL dependencies."
+    },
+    {
+      "path": "examples/low-level-rustls/Cargo.toml",
+      "reason": "Defines rustls dependencies."
+    },
+    {
+      "path": "examples/tls-rustls/self_signed_certs/cert.pem",
+      "reason": "Provides an example certificate."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "tls",
+    "listeners",
+    "server"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "secrets",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

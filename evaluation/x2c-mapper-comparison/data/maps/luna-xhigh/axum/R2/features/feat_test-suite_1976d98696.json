@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_1976d98696",
+  "title": "axum test client and helpers",
+  "summary": "Internal helpers for exercising Axum services in tests.\n\nAgent mapper reason: These helpers form shared test infrastructure for exercising the library's HTTP behavior.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Defines internal test helper exports."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Provides an in-process HTTP test client."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines development and test dependencies."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "Shows how routing tests use helper infrastructure."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "testing",
+    "http-client"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:02:22.984Z",
+  "updatedAt": "2026-10-29T08:05:21.079Z"
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_91d9845a77",
+  "title": "Extra handler and middleware composition",
+  "summary": "Adds alternative handler composition, either types, and middleware helpers.\n\nAgent mapper reason: These utilities compose framework handlers and services and share extra-crate wiring.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Extra handler exports."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Alternative handler composition."
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either-type composition."
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Additional middleware helpers."
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Extra crate public API and feature wiring."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Base handler contract."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Extra crate overview."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Feature configuration."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "middleware",
+    "composition"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:41:26.742Z",
+  "updatedAt": "2026-10-29T07:47:01.920Z"
+}

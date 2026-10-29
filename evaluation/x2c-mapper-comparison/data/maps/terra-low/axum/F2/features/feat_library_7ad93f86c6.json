@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_7ad93f86c6",
+  "title": "Handlers and service adapters",
+  "summary": "Handler invocation, handler futures, service conversion, and error adaptation.\n\nAgent mapper reason: These adapters connect handler execution and errors to the service layer used by routing.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait and invocation"
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler future implementation"
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Handler service adapter"
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "State-bearing service adapter"
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Service error conversion"
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service extension helpers"
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Boxed service support"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler contract"
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Error handling behavior"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "services",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:26:54.302Z",
+  "updatedAt": "2026-10-29T07:26:54.302Z"
+}

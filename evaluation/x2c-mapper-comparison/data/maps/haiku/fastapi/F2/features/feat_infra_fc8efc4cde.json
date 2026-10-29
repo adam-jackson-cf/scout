@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_fc8efc4cde",
+  "title": "Main test and coverage CI workflows",
+  "summary": "GitHub workflows that run the test matrix and upload coverage results.\n\nAgent mapper reason: Test execution and the coverage upload it feeds belong in one review.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Main CI test matrix and lint/type checks."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Coverage reporting that follows the test run."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Lint hooks mirrored in CI."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Hatch environments and tool configuration used by CI."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "tests",
+    "coverage"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:16:38.944Z",
+  "updatedAt": "2026-10-29T01:16:38.944Z"
+}

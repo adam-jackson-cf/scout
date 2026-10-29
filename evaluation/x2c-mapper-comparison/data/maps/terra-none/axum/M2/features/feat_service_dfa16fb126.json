@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_dfa16fb126",
+  "title": "Static files, templates, and server-sent events examples",
+  "summary": "Browser-facing examples for static assets, rendered templates, and event streams.\n\nAgent mapper reason: Each example combines server responses with browser-facing assets or templates.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Serves static files."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Provides the static page."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Provides browser behavior."
+    },
+    {
+      "path": "examples/static-file-server/Cargo.toml",
+      "reason": "Defines static server dependencies."
+    },
+    {
+      "path": "examples/templates/src/main.rs",
+      "reason": "Renders templates."
+    },
+    {
+      "path": "examples/templates/templates/hello.html",
+      "reason": "Provides the rendered template."
+    },
+    {
+      "path": "examples/templates/Cargo.toml",
+      "reason": "Defines template dependencies."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Serves event streams."
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "Provides the event-stream page."
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "Consumes events in the browser."
+    },
+    {
+      "path": "examples/sse/Cargo.toml",
+      "reason": "Defines SSE example dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Implements the event response API."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "browser",
+    "static-files",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:47:01.861Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_740b66ac77",
+  "title": "Axum routing and method dispatch",
+  "summary": "Router construction, route registration, method filters, fallback, nesting, merging, and URL parameters.\n\nAgent mapper reason: Routing files implement a single request dispatch pipeline, and the listed tests exercise fallback, method behavior, nesting, merging, and error handling.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "symbol": "Router",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Implements routing-related future behavior."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Converts routers into make-service forms."
+    },
+    {
+      "path": "axum/src/routing/method_filter.rs",
+      "reason": "Defines HTTP method filters."
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Implements method-specific route handlers."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Defines the router API and composition."
+    },
+    {
+      "path": "axum/src/routing/not_found.rs",
+      "reason": "Implements not-found behavior."
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Defines route handling."
+    },
+    {
+      "path": "axum/src/routing/strip_prefix.rs",
+      "reason": "Handles path-prefix stripping."
+    },
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Manages captured route parameters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/fallback.md",
+      "reason": "Documents fallback behavior."
+    },
+    {
+      "path": "axum/src/docs/routing/merge.md",
+      "reason": "Documents router merging."
+    },
+    {
+      "path": "axum/src/docs/routing/nest.md",
+      "reason": "Documents nested routers."
+    },
+    {
+      "path": "axum/src/docs/routing/route.md",
+      "reason": "Documents route registration."
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Documents stateful router composition."
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Documents router-wide layers."
+    },
+    {
+      "path": "axum/src/docs/routing/route_layer.md",
+      "reason": "Documents route-specific layers."
+    },
+    {
+      "path": "axum/src/docs/routing/route_service.md",
+      "reason": "Documents service-backed routes."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents serving routers with connection metadata."
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "routing",
+    "http"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T07:51:17.230Z"
+}

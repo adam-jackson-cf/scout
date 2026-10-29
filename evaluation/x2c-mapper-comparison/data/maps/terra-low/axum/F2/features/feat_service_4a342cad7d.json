@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_4a342cad7d",
+  "title": "Forms, query, and file handling examples",
+  "summary": "Examples for forms, multipart uploads, query parameters, and streaming data to files.\n\nAgent mapper reason: These examples process user-supplied request fields and streams.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/form/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Form handling"
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart handling"
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Query parsing"
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Stream-to-file handling"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/form/Cargo.toml",
+      "reason": "Form example dependencies"
+    },
+    {
+      "path": "examples/multipart-form/Cargo.toml",
+      "reason": "Multipart example dependencies"
+    },
+    {
+      "path": "examples/stream-to-file/Cargo.toml",
+      "reason": "File streaming dependencies"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "input",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "filesystem",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:26:54.302Z",
+  "updatedAt": "2026-10-29T07:26:54.302Z"
+}

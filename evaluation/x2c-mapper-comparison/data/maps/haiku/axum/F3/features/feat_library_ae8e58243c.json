@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ae8e58243c",
+  "title": "axum extractors",
+  "summary": "Built-in extractors for path, query, raw query/form, host, matched path, connect info, state, websocket upgrades, multipart, and request parts.\n\nAgent mapper reason: Each extractor parses untrusted request input; grouped to review parsing and rejection behavior consistently.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extractor module exports"
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extractor"
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Path deserializer for captured segments"
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query string extractor"
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query extractor"
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form body extractor"
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Host header extractor"
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "MatchedPath extractor"
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "ConnectInfo extractor for peer address"
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "State extractor"
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Request-part extractors"
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Rejection types for these extractors"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart extractor"
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "WebSocket upgrade extractor"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Docs describing extractor usage and ordering"
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Core traits these extractors implement"
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "Records extractor behavior changes"
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_via.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/Cargo.toml",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_via.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "path",
+    "query",
+    "websocket",
+    "untrusted-input"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:14:23.770Z",
+  "updatedAt": "2026-10-29T07:14:23.770Z"
+}

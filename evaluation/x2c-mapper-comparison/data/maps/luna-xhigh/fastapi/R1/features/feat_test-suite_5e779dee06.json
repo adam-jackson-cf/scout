@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_5e779dee06",
+  "title": "Response classes, status codes, and additional responses",
+  "summary": "Response class selection, status handling, custom responses, and declared additional responses.\n\nAgent mapper reason: Response class selection and status semantics jointly determine the HTTP response shape, headers, and body.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_additional_properties.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_additional_properties.py",
+      "reason": "Covers additional response schema properties."
+    },
+    {
+      "path": "tests/test_additional_response_extra.py",
+      "reason": "Covers extra fields in additional response declarations."
+    },
+    {
+      "path": "tests/test_additional_responses_bad.py",
+      "reason": "Covers invalid additional response declarations."
+    },
+    {
+      "path": "tests/test_additional_responses_custom_model_in_callback.py",
+      "reason": "Covers custom models in callback responses."
+    },
+    {
+      "path": "tests/test_additional_responses_custom_validationerror.py",
+      "reason": "Covers custom validation errors in additional responses."
+    },
+    {
+      "path": "tests/test_additional_responses_default_validationerror.py",
+      "reason": "Covers default validation errors in additional responses."
+    },
+    {
+      "path": "tests/test_additional_responses_response_class.py",
+      "reason": "Covers response class handling for additional responses."
+    },
+    {
+      "path": "tests/test_additional_responses_router.py",
+      "reason": "Covers additional response declarations on routers."
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "Covers the application default response class."
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "reason": "Covers router default response classes."
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "Covers an alternate JSON response class."
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "Covers changing a response status code."
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "Covers response classes without a media type."
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "Covers status codes that must not carry a body."
+    },
+    {
+      "path": "tests/test_reponse_set_reponse_code_empty.py",
+      "reason": "Covers setting a status code for an empty response."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-status-code.md",
+      "reason": "Documents response status behavior."
+    },
+    {
+      "path": "docs/en/docs/advanced/additional-responses.md",
+      "reason": "Documents additional response declarations."
+    },
+    {
+      "path": "docs/en/docs/advanced/custom-response.md",
+      "reason": "Documents custom response classes."
+    },
+    {
+      "path": "docs/en/docs/advanced/response-change-status-code.md",
+      "reason": "Documents response status changes."
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_default_response_class.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "status-code",
+    "content-type"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:40:33.988Z"
+}

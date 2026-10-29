@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_c85eb2a0f1",
+  "title": "Proxy, CORS, and deployment-facing request behavior",
+  "summary": "Examples and guidance for proxy headers, CORS, and middleware settings that affect deployed request handling.\n\nAgent mapper reason: Proxy header interpretation and CORS affect the externally visible request boundary and share deployment configuration concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs_src/behind_a_proxy/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/behind_a_proxy/tutorial001.py",
+      "reason": "Demonstrates proxy-aware request behavior."
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial002.py",
+      "reason": "Demonstrates forwarded headers."
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial003.py",
+      "reason": "Demonstrates additional proxy configuration."
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial004.py",
+      "reason": "Demonstrates another proxy deployment pattern."
+    },
+    {
+      "path": "docs_src/cors/tutorial001.py",
+      "reason": "Demonstrates CORS configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/behind-a-proxy.md",
+      "reason": "Documents proxy deployment behavior."
+    },
+    {
+      "path": "docs/en/docs/tutorial/cors.md",
+      "reason": "Documents CORS behavior."
+    },
+    {
+      "path": "docs/en/docs/deployment/https.md",
+      "reason": "Explains deployment-level request security."
+    },
+    {
+      "path": "docs/en/docs/deployment/server-workers.md",
+      "reason": "Documents server worker deployment."
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial002.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial003.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial004.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial001.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial002.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial003.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_behind_a_proxy/test_tutorial004.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proxy",
+    "cors",
+    "deployment"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:40:33.924Z",
+  "updatedAt": "2026-10-29T00:47:09.798Z"
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_be72d1f9c5",
+  "title": "axum-macros shared procedural macro infrastructure",
+  "summary": "Procedural macro exports, attribute parsing helpers, position handling, and macro test support.\n\nAgent mapper reason: These files implement shared parsing and export infrastructure used by multiple independent derives and attributes.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Provides shared attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Provides macro test support."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Defines and exports procedural macros."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Provides shared source-position handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Declares proc-macro dependencies."
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Documents macro usage."
+    },
+    {
+      "path": "axum-macros/CHANGELOG.md",
+      "reason": "Records macro API changes."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "shared-infrastructure"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

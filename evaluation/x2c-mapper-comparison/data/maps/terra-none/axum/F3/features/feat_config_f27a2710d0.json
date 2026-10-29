@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_f27a2710d0",
+  "title": "Workspace and continuous integration configuration",
+  "summary": "Defines workspace membership, crate feature configuration, dependency policy, and CI.\n\nAgent mapper reason: These files jointly determine workspace builds, optional features, and automated verification.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace membership and shared configuration."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Main crate dependency and feature configuration."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core crate dependency and feature configuration."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Extra crate dependency and feature configuration."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Macro crate dependency and feature configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Dependency policy."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Continuous integration workflow."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Workflow patch configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "cargo",
+    "ci",
+    "dependency-policy"
+  ],
+  "trustBoundaries": [
+    "network",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

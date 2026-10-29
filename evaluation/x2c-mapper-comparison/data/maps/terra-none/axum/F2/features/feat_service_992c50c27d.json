@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_992c50c27d",
+  "title": "Middleware, observability, and error examples",
+  "summary": "Demonstrates CORS, tracing, metrics, request logging, and application error handling.\n\nAgent mapper reason: These examples apply cross-cutting HTTP policies and operational behavior.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "Demonstrates CORS middleware."
+    },
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "reason": "Demonstrates tracing integration."
+    },
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Demonstrates request and response inspection."
+    },
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "reason": "Demonstrates metrics collection."
+    },
+    {
+      "path": "examples/anyhow-error-response/src/main.rs",
+      "reason": "Demonstrates error response conversion."
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/src/main.rs",
+      "reason": "Demonstrates errors and injected dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/cors/Cargo.toml",
+      "reason": "Defines CORS example dependencies."
+    },
+    {
+      "path": "examples/prometheus-metrics/Cargo.toml",
+      "reason": "Defines metrics dependencies."
+    },
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Explains middleware integration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "middleware",
+    "observability",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

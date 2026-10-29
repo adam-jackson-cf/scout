@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_6e4a8a029e",
+  "title": "Release and publish workflows",
+  "summary": "Workflows that build and publish the package and generate latest-changes release notes.\n\nAgent mapper reason: Publishing and release-note automation both affect what ships.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Package build and publish workflow with registry credentials."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Automation that updates release notes."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/release-notes.md",
+      "reason": "Release notes updated by the latest-changes flow."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Package version and build backend."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "release",
+    "publish",
+    "ci"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec",
+    "permissions",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:16:38.944Z",
+  "updatedAt": "2026-10-29T01:16:38.944Z"
+}

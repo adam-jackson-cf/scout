@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_bb483c127a",
+  "title": "Docs site sources and mkdocs config",
+  "summary": "Documentation site configuration, translation mkdocs files, site data YAML, and custom JavaScript for the docs site.\n\nAgent mapper reason: Docs site config and data are reviewed together; markdown content is too large to bucket usefully.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "English docs site configuration."
+    },
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Contributor data used by the people action."
+    },
+    {
+      "path": "docs/en/data/sponsors.yml",
+      "reason": "Sponsor data for the docs site."
+    },
+    {
+      "path": "docs/en/data/external_links.yml",
+      "reason": "External link data consumed by the docs build."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Custom docs site JavaScript."
+    },
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Docs chat widget script."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/index.md",
+      "reason": "Docs home page that drives the site layout."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Docs build workflow."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Reads people.yml."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "config",
+    "site"
+  ],
+  "trustBoundaries": [
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:09:49.659Z",
+  "updatedAt": "2026-10-29T07:09:49.659Z"
+}

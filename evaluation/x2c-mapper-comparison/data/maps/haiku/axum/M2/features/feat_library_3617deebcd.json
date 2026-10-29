@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3617deebcd",
+  "title": "axum-extra extractors (cookies, forms, multipart, query)",
+  "summary": "Cookie jars with private and signed variants, cached extractor, form, multipart, query and with_rejection wrappers.\n\nAgent mapper reason: Cookie privacy/signing and form-related extractors share key handling and parsing code.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either extractor/response helper"
+    },
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Cached extractor"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "CookieJar"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "Private (encrypted) cookies"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "Signed cookies"
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Extra form extractor"
+    },
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Extractor exports"
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Extra multipart extractor"
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Extra query extractor"
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "WithRejection wrapper"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Fixture used by file-based tests"
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Fixture"
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Fixture"
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Feature gating for these modules"
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Cookie crypto and multipart feature flags"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "cookies",
+    "crypto",
+    "extractors",
+    "user-input"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:11:19.210Z",
+  "updatedAt": "2026-10-29T07:22:16.654Z"
+}

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ed4ad9b0d1",
+  "title": "Axum handler construction and service adaptation",
+  "summary": "Handler traits, future and service conversion, and state extension integration.\n\nAgent mapper reason: These components define how user handlers become Tower services and how their asynchronous results are driven.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Implements handler future behavior."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Integrates router state into handler services."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines the handler API and handler conversion."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Adapts handlers into services."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines handler dependencies."
+    },
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Documents handler construction."
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Explains handler type diagnostics."
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Documents state flow into handlers."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "handlers",
+    "services"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

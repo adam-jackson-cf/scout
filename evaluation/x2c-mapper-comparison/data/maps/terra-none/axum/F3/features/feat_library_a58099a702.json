@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a58099a702",
+  "title": "Path and request metadata extractors",
+  "summary": "Extracts path parameters, matched paths, host, connection information, and request parts.\n\nAgent mapper reason: These extractors interpret routing and connection metadata from incoming requests.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extractor module exports."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path parameter extraction."
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Path parameter deserialization."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Matched route path extraction."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Host extraction."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Connection metadata extraction."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Request-parts extraction support."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Main crate extraction rejections."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Produces route parameters consumed by path extraction."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extractor usage contract."
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "paths",
+    "request-metadata"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

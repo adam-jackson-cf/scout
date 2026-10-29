@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e514b0baa3",
+  "title": "People management action",
+  "summary": "GitHub action for project people-related automation.\n\nAgent mapper reason: The action implementation and workflow are a bounded automation unit; the inventory does not expose tests.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Implements the people action."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Declares the action interface."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Defines the action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Runs the people action."
+    },
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Contains documentation people data that may be related."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-action",
+    "people"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:47:09.724Z",
+  "updatedAt": "2026-10-29T00:47:09.724Z"
+}

@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_fcbc049022",
+  "title": "Examples: gRPC, WASM, observability and basics",
+  "summary": "Examples for REST+gRPC multiplexing with build.rs, simple-router-wasm, hello-world, readme, Prometheus metrics and tracing/logging.\n\nAgent mapper reason: These examples cover integration points (gRPC, WASM, metrics, logging) and are reviewed as a final bucket of demos.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": "cargo run --manifest-path examples/rest-grpc-multiplex/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "gRPC/REST multiplex server."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "Service multiplexer."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "Protobuf codegen build script."
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "Router compiled for WASM."
+    },
+    {
+      "path": "examples/hello-world/src/main.rs",
+      "reason": "Minimal hello world."
+    },
+    {
+      "path": "examples/readme/src/main.rs",
+      "reason": "Code from the README as an example."
+    },
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "reason": "Prometheus metrics middleware."
+    },
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "reason": "tracing integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "Protobuf schema used by build.rs."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/Cargo.toml",
+      "reason": "Build dependencies."
+    },
+    {
+      "path": "examples/readme/Cargo.toml",
+      "reason": "README example dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "grpc",
+    "wasm",
+    "observability"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:22:16.704Z"
+}

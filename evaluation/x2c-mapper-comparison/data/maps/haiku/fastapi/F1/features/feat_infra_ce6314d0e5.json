@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_ce6314d0e5",
+  "title": "CI and release workflows",
+  "summary": "GitHub Actions workflows for tests, publishing, docs build, smoke tests, latest-changes, label checks, issue management and dependency updates.\n\nAgent mapper reason: Workflows that gate changes and publish releases; reviewed together because they share secrets and permission scopes.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Test CI pipeline"
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Package publishing"
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Docs build"
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Coverage/smoke reporting"
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Release notes automation"
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "PR label automation"
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Issue automation"
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update config"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Lint hooks that CI mirrors"
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Build and test tool configuration referenced by CI"
+    },
+    {
+      "path": "tests/test_multipart_installation.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_multipart_installation.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "release",
+    "workflows"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "permissions",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:14:50.304Z",
+  "updatedAt": "2026-10-29T01:14:50.304Z"
+}

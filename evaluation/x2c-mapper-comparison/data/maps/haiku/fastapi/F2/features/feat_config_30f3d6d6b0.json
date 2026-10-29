@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_30f3d6d6b0",
+  "title": "Docs site configuration and data",
+  "summary": "MkDocs configuration for English docs and the YAML data feeding sponsors, people, and links.\n\nAgent mapper reason: Config and data files consumed together by the docs build.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Navigation, plugins, and theme configuration for English docs."
+    },
+    {
+      "path": "docs/en/data/external_links.yml",
+      "reason": "External links rendered in docs."
+    },
+    {
+      "path": "docs/en/data/github_sponsors.yml",
+      "reason": "Sponsor data."
+    },
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Contributor data."
+    },
+    {
+      "path": "docs/en/data/sponsors.yml",
+      "reason": "Sponsor data."
+    },
+    {
+      "path": "docs/en/data/sponsors_badge.yml",
+      "reason": "Sponsor badge data."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Writes people and sponsor data."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "Page that renders people data."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "config",
+    "data"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:16:38.944Z",
+  "updatedAt": "2026-10-29T01:16:38.944Z"
+}

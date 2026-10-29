@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_7b78b0fe4a",
+  "title": "Documentation preview watcher",
+  "summary": "Checks preview artifacts and produces preview status information.\n\nAgent mapper reason: The watcher has its own action interface, implementation, and container lifecycle.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Defines the watcher action."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Retrieves and evaluates preview artifacts."
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Builds the watcher runtime."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Provides related preview automation context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "documentation-preview"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:54:57.019Z",
+  "updatedAt": "2026-10-29T00:54:57.019Z"
+}

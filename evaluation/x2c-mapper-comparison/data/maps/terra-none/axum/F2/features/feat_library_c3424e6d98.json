@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_c3424e6d98",
+  "title": "Connection, state, extension, and header extraction",
+  "summary": "Provides extractors for connection information, application state, request extensions, request parts, and typed headers.\n\nAgent mapper reason: These request-context extractors connect router-managed state and transport metadata to handlers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Organizes framework extractors."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Provides connection metadata."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Provides request-parts extraction implementations."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Extracts application state."
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Provides extension storage and extraction."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Parses typed request headers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Defines state projection."
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Describes router state."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Describes connection information setup."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "state",
+    "extensions",
+    "headers",
+    "connection"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

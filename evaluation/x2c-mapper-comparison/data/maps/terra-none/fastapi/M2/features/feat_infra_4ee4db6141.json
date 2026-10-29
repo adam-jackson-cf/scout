@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_4ee4db6141",
+  "title": "Package CI and release workflows",
+  "summary": "Python test matrix, release publication, and change automation.\n\nAgent mapper reason: These files govern package verification, dependency updates, and release automation.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Test and coverage matrix."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Package publishing workflow."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Change automation."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update automation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package metadata and dependencies."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow context."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/test.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "release",
+    "dependencies"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "external-api",
+    "secrets",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:57:44.320Z",
+  "updatedAt": "2026-10-29T01:04:20.988Z"
+}

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_b29a50ca2b",
+  "title": "Extra crate configuration",
+  "summary": "Owns the extra crate's feature gates, public modules, and shared test support.\n\nAgent mapper reason: The crate root and manifest determine which optional extensions are exposed.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Public module wiring and test support."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Feature flags and dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Package purpose."
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Fixture available to package tests."
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Fixture available to package tests."
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Fixture available to package tests."
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "features",
+    "crate-api"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:45:07.909Z",
+  "updatedAt": "2026-10-29T07:45:07.909Z"
+}

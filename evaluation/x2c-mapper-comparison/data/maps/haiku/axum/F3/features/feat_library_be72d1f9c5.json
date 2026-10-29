@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_be72d1f9c5",
+  "title": "axum-macros entrypoint and attribute parsing",
+  "summary": "Proc-macro entrypoints, shared attribute parsing, position helpers, and the axum_test macro source.\n\nAgent mapper reason: Shared proc-macro infrastructure used by every derive and attribute macro.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Proc-macro entrypoints for debug_handler, FromRequest, FromRef, TypedPath"
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parsing helpers"
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Position-tracking helper for generated code"
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Test-support macro source; purpose inferred from file name, verify"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Proc-macro crate config"
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Macro usage docs"
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Pinned toolchain for macro crate"
+    },
+    {
+      "path": "axum-macros/CHANGELOG.md",
+      "reason": "Macro change history"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "parsing"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:14:23.770Z",
+  "updatedAt": "2026-10-29T07:14:23.770Z"
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_c5418a50d9",
+  "title": "axum-extra library exports",
+  "summary": "Defines crate-level exports and package test fixtures.\n\nAgent mapper reason: The crate root owns feature exports, while the listed files provide package-level fixtures that can inform behavior reviews.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Defines the crate root and public exports."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines package features and dependencies."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Documents exported APIs."
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Provides a fixture used by package behavior."
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Provides a fixture used by package behavior."
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Provides a fixture used by package behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "api"
+  ],
+  "trustBoundaries": [
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:08:04.674Z"
+}

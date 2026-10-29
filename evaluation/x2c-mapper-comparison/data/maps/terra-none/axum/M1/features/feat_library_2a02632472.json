@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_2a02632472",
+  "title": "Handler and service adaptation",
+  "summary": "Turns async handlers into Tower services and connects router services to server construction.\n\nAgent mapper reason: These adapters bridge extractor-driven handlers, state, service futures, and server-facing service creation.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait and extractor invocation."
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler response future."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Handler-to-service adapter."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "State-in-extension service adaptation."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Make-service adaptation."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Service extension methods."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Type-erased service machinery."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler behavior and usage."
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Handler contract diagnostics."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Router service integration."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "tower",
+    "services"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:43:05.416Z",
+  "updatedAt": "2026-10-29T07:45:07.961Z"
+}

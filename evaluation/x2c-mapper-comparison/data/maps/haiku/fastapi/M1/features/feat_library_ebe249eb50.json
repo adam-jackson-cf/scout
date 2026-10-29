@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ebe249eb50",
+  "title": "x2_newpkg package manifest",
+  "summary": "New package in the repo with only a pyproject.toml manifest. It has no source or test files in the inventory, so the slice covers just the manifest.\n\nAgent mapper reason: The git log shows x2_newpkg was added as a new unowned package with a manifest only, so it gets its own slice rather than being folded into the root.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "x2_newpkg/pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "x2_newpkg/pyproject.toml",
+      "reason": "Only file of the new package; its build metadata and dependencies are the entire review surface."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Root hatch project config that tooling runs from; shows how the subpackage is expected to relate to the root."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "x2",
+    "new-package",
+    "manifest",
+    "unowned"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:08:55.373Z",
+  "updatedAt": "2026-10-29T07:08:55.373Z"
+}

@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_8a6d53b13e",
+  "title": "Examples: auth, sessions and tokens",
+  "summary": "Example apps for cookie sessions, OAuth login flow and JWT auth.\n\nAgent mapper reason: Auth examples handle credentials and tokens and should be reviewed together for secret handling.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/oauth/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": "cargo run --manifest-path examples/oauth/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/oauth/src/main.rs",
+      "reason": "OAuth flow with external provider calls and secrets."
+    },
+    {
+      "path": "examples/jwt/src/main.rs",
+      "reason": "JWT encode/decode and secret handling."
+    },
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Session cookie handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/oauth/Cargo.toml",
+      "reason": "Dependencies for OAuth example."
+    },
+    {
+      "path": "examples/jwt/Cargo.toml",
+      "reason": "Dependencies for JWT example."
+    },
+    {
+      "path": "examples/sessions/Cargo.toml",
+      "reason": "Dependencies for sessions example."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "Cookie extractor used by sessions."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "auth",
+    "secrets",
+    "cookies"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "network",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:22:16.702Z"
+}

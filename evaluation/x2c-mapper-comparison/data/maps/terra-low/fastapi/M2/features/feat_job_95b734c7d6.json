@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_95b734c7d6",
+  "title": "People automation",
+  "summary": "GitHub automation associated with project contributor data.\n\nAgent mapper reason: The action and workflow form one contributor-data automation.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action definition."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Action implementation."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Action container."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "People automation workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "People data associated with documentation."
+    },
+    {
+      "path": "docs/en/docs/fastapi-people.md",
+      "reason": "People documentation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "community"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:07:01.777Z",
+  "updatedAt": "2026-10-29T01:12:59.331Z"
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4bc98c0543",
+  "title": "axum response helpers: SSE and redirects",
+  "summary": "Response module re-exports, Redirect helpers, and Server-Sent Events response type.\n\nAgent mapper reason: Public response helpers with a shared IntoResponse contract.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "symbol": "Sse",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response module exports"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-Sent Events stream response"
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect response helpers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Response docs"
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Core response traits"
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Example usage of Sse"
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/Cargo.toml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "sse",
+    "redirect"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:14:23.770Z",
+  "updatedAt": "2026-10-29T07:14:23.770Z"
+}

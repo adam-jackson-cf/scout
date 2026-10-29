@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1dafeac037",
+  "title": "Cookie extraction and protection",
+  "summary": "Extracts and updates ordinary, signed, and private cookie jars.\n\nAgent mapper reason: The cookie variants share HTTP cookie handling while applying different protections.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "Cookie jar extraction and response handling."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "Private cookie jar."
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "Signed cookie jar."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Cookie feature flags and dependencies."
+    },
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Session-oriented example."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "cookies",
+    "authentication"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "secrets",
+    "auth"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:30:36.636Z"
+}

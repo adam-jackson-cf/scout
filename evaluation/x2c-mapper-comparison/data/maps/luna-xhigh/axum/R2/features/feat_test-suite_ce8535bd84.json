@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_ce8535bd84",
+  "title": "Axum routing behavioral tests",
+  "summary": "Behavioral coverage for routing, fallback, method behavior, merging, nesting, and error handling.\n\nAgent mapper reason: These tests exercise cross-cutting routing contracts and are best reviewed together with route composition changes.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "Tests fallback routing."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "Tests GET and HEAD method behavior."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "Tests error handling through routed services."
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "Tests router merging."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "Collects the routing test module."
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "Tests nested routing."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Implementation under test."
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Provides the error handling path covered by one test."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "routing",
+    "tests"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:02:22.984Z",
+  "updatedAt": "2026-10-29T08:05:21.235Z"
+}

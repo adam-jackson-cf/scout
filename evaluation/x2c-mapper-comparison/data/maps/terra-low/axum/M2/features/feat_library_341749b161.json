@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_341749b161",
+  "title": "Core request extraction contracts",
+  "summary": "Defines request extraction, state references, rejection types, and request body limits shared by axum consumers.\n\nAgent mapper reason: These files define the shared contracts and failure behavior used by request extractors.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extraction traits and module surface."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Default body limit behavior."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "State reference conversion contract."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Core extraction rejection types."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Request parts extraction support."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Tuple extraction composition."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core feature and dependency configuration."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Public framework extraction surface."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extractor usage and ordering intent."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:30:36.636Z",
+  "updatedAt": "2026-10-29T07:32:52.857Z"
+}

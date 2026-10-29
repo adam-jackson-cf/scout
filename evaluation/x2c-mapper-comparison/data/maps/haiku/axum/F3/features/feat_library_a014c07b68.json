@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a014c07b68",
+  "title": "axum-core extractor traits",
+  "summary": "Core FromRequest/FromRequestParts plumbing, request extension traits, default body limit, tuple extractor impls, and rejection types shared by axum and axum-extra.\n\nAgent mapper reason: Extractor traits and their rejections define how untrusted request data enters handlers; grouped to review the contract in one place.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Public extractor trait re-exports and module layout"
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "FromRequestParts implementations for request metadata"
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Tuple FromRequest impls that chain extractors"
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "FromRef state substitution trait"
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Default request body size limit enforcement"
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Rejection types returned by extractors"
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Extension trait module layout"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Request extension helpers for body extraction"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "RequestParts extension helpers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Body type consumed by body extractors"
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Error type wrapped by rejections"
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Macros used to define rejections and impls"
+    },
+    {
+      "path": "axum-core/CHANGELOG.md",
+      "reason": "Records extractor trait behavior changes"
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Describes crate scope"
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Crate manifest and feature flags"
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Main consumer of these traits"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "traits",
+    "core"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:14:23.770Z",
+  "updatedAt": "2026-10-29T07:14:23.770Z"
+}

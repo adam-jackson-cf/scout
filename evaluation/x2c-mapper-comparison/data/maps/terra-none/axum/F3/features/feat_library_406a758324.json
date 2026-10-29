@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_406a758324",
+  "title": "Middleware adapters",
+  "summary": "Builds middleware from async functions, extractors, request mappers, and response mappers.\n\nAgent mapper reason: These adapters implement the common request and response interception layer.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware module interface."
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Extractor-based middleware."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Function-based middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Request mapping middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Response mapping middleware."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware ordering and usage."
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Router layer application."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "services"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

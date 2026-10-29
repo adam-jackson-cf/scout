@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_79c69307cf",
+  "title": "Repository CI, release, and change workflows",
+  "summary": "Repository workflow configuration for tests, publication, release notes, and related automation.\n\nAgent mapper reason: These workflow and project configuration files control repository validation, publication, and maintenance automation.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Defines test workflow execution."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Defines package publication workflow."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Defines latest change reporting."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Defines smoke test reporting or artifacts."
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Defines issue management automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Defines approval labeling automation."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Defines local automated checks."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Project manifest and tool configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Documents contributor workflow expectations."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Documents security reporting expectations."
+    },
+    {
+      "path": "README.md",
+      "reason": "Project overview and contribution entry point."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update automation context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "release",
+    "github-actions",
+    "configuration"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "permissions",
+    "secrets",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:39:03.202Z",
+  "updatedAt": "2026-10-29T00:39:03.202Z"
+}

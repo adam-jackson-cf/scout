@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_8843db8ec4",
+  "title": "Proxy, TLS, and multiplexing examples",
+  "summary": "Demonstrates proxying, TLS listeners, and REST/gRPC multiplexing.\n\nAgent mapper reason: These examples integrate HTTP services with transport or upstream protocols.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "HTTP proxy example."
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Reverse proxy example."
+    },
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "OpenSSL listener example."
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Low-level rustls listener example."
+    },
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "TLS server example."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "Multiplexed server entry point."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "HTTP and gRPC service multiplexing."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "Protocol build setup."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "gRPC service schema."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/Cargo.toml",
+      "reason": "Multiplexing dependencies."
+    },
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "reason": "TLS dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "proxy",
+    "tls",
+    "grpc"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:30:36.636Z",
+  "updatedAt": "2026-10-29T07:31:41.756Z"
+}

@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a014c07b68",
+  "title": "axum-core extraction traits",
+  "summary": "Core FromRequest/FromRequestParts traits, FromRef, tuple extractor impls, default body limit, rejections, and request extension traits.\n\nAgent mapper reason: These files define the shared extraction contract that all axum extractors implement; they change together and are reviewed as one unit.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "DefaultBodyLimit configuration for body size"
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "FromRef state substitution trait"
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extractor trait re-exports and module layout"
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Core extractor rejection types"
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "FromRequestParts implementations for core types"
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Tuple FromRequest/FromRequestParts implementations"
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Extension trait module for request types"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Request body helper extension methods"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "RequestParts helper extension methods"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Crate root and public exports"
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Macros used by extractor impls"
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Crate features and dependencies"
+    },
+    {
+      "path": "axum-core/CHANGELOG.md",
+      "reason": "Documented behaviour changes for extractors"
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Crate scope description"
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "traits",
+    "core"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:16:27.607Z",
+  "updatedAt": "2026-10-29T07:22:16.698Z"
+}

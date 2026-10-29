@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d7cf251e6e",
+  "title": "axum router service adapters",
+  "summary": "Router futures, make-service conversion, and service extension APIs.\n\nAgent mapper reason: These adapters connect routers to the Tower service model and server startup.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Defines the router service future."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Converts routers into make-services."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Provides service extension methods."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Shows router service integration."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents server service conversion."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines Tower and HTTP service dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "tower",
+    "service"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:11:29.704Z"
+}

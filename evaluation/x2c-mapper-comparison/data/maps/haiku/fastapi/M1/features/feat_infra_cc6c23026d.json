@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_cc6c23026d",
+  "title": "GitHub Actions workflows",
+  "summary": "CI, docs build and preview, publishing, smoke-test reporting and repository automation workflows.\n\nAgent mapper reason: All workflow YAML files are CI/CD definitions that share secret and permission handling, so they are reviewed together.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Main CI matrix that runs tests, lint and typecheck."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Release publishing; highest-risk workflow because it handles package upload credentials."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Builds and deploys the documentation site."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Builds docs previews for pull requests from forks and branches."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Publishes coverage reports."
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Automation that acts on issues and discussions."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Automation that changes PR labels."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Automation that updates release notes."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Triggers translation notifications."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Regenerates the people/contributors data."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update policy for the workflows' actions."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Composite action invoked by people.yml."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "github-actions",
+    "release",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "permissions",
+    "external-api",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:45.804Z",
+  "updatedAt": "2026-10-29T07:08:55.373Z"
+}

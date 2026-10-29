@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_deaeed1d70",
+  "title": "Axum request and response body types",
+  "summary": "Body wrappers and streaming primitives used by routes and responses.\n\nAgent mapper reason: These types form the body transport layer used for incoming and outgoing HTTP data.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Exports Axum body types."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Implements streaming response bodies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines body-related dependencies and features."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines the shared body contract."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Uses body types in response construction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "body",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:02:22.984Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

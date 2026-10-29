@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a63ab0ce46",
+  "title": "Dependency injection and parameter resolution",
+  "summary": "Dependency graph solving, parameter classes (Query, Path, Header, Cookie, Body), and parameter validation glue.\n\nAgent mapper reason: Dependency solving and parameter extraction are tightly coupled and share the Dependant model; tests cover caching, overrides and parameter declaration.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "symbol": "solve_dependencies",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "solves dependency trees and extracts request parameters"
+    },
+    {
+      "path": "fastapi/dependencies/models.py",
+      "reason": "Dependant model used by the solver"
+    },
+    {
+      "path": "fastapi/dependencies/__init__.py",
+      "reason": "package marker"
+    },
+    {
+      "path": "fastapi/params.py",
+      "reason": "parameter declaration classes"
+    },
+    {
+      "path": "fastapi/param_functions.py",
+      "reason": "public Query/Path/Header/Cookie/Body factory functions"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/encoders.py",
+      "reason": "jsonable_encoder used when serializing params"
+    },
+    {
+      "path": "fastapi/datastructures.py",
+      "reason": "UploadFile and form data structures"
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependency-injection",
+    "validation",
+    "parameters"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:45.804Z",
+  "updatedAt": "2026-10-29T01:19:29.021Z"
+}

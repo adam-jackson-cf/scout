@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_ce8535bd84",
+  "title": "axum routing test suite",
+  "summary": "Integration-style unit tests for fallback, get-to-head, error handling, merge, and nest behaviour of the router.\n\nAgent mapper reason: These tests exercise the routing slice directly and are reviewed alongside it when they change.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "Test module root"
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "Fallback behaviour tests"
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "HEAD-from-GET tests"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "handle_error tests"
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "Router merge tests"
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "Router nest tests"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "TestClient used by routing tests"
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Test helper exports"
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tests",
+    "routing"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:17:47.257Z",
+  "updatedAt": "2026-10-29T07:17:47.257Z"
+}

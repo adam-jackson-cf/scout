@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_2e82e4bbe7",
+  "title": "Project packaging and developer tooling configuration",
+  "summary": "Package metadata and local pre-commit configuration.\n\nAgent mapper reason: The files define the package and local development checks used across the repository.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package dependencies, metadata, and tooling settings."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local pre-commit hooks."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Ignored local artifacts."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "README.md",
+      "reason": "Project overview."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "CI consumes package configuration."
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/test.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "tooling",
+    "configuration"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:57:44.320Z",
+  "updatedAt": "2026-10-29T01:01:44.241Z"
+}

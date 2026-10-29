@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e588bf7764",
+  "title": "WebSocket and chat examples",
+  "summary": "Demonstrates interactive WebSocket clients, servers, chat, and WebSocket testing.\n\nAgent mapper reason: These examples share the WebSocket connection lifecycle and client-server message flow.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "WebSocket server example."
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "WebSocket client example."
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Browser-side WebSocket behavior."
+    },
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Chat service."
+    },
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "Chat browser interface."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "WebSocket test example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/websockets/Cargo.toml",
+      "reason": "Server and client targets."
+    },
+    {
+      "path": "examples/chat/Cargo.toml",
+      "reason": "Chat dependencies."
+    },
+    {
+      "path": "examples/testing-websockets/Cargo.toml",
+      "reason": "Test example dependencies."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Framework WebSocket implementation."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "websocket",
+    "chat"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:45:07.997Z"
+}

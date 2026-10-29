@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_2437f9600b",
+  "title": "Forms, query strings, JSON, and typed headers",
+  "summary": "Parses and serializes common HTTP request and response representations.\n\nAgent mapper reason: These modules translate common wire representations to and from typed application values.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/form.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extraction and response conversion."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON extraction and response conversion."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Typed query-string extraction."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Raw query access."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form access."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Typed header extraction and response conversion."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Related parse rejection types."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Feature-gated serialization dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "serialization",
+    "forms",
+    "json",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_7f9bc9a67b",
+  "title": "axum-core crate exports and build metadata",
+  "summary": "Connects core modules to the crate API and handles build-time setup.\n\nAgent mapper reason: These files establish the core crate boundary and its shared build-time and macro support.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Performs build-time setup for the crate."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Defines crate-level exports and documentation."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Provides crate-level macros used by core modules."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Declares build dependencies and crate features."
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Documents the crate's role."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "build",
+    "public-api"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

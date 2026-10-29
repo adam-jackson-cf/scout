@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ed4ad9b0d1",
+  "title": "axum handlers and service conversion",
+  "summary": "Handler traits, handler futures, and conversion into services.\n\nAgent mapper reason: These files define the transition from user handlers to Tower services, including state and future constraints.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Defines handler future behavior."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Manages state when converting handlers into services."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines handler traits and APIs."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Adapts handlers into services."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Explains handler contracts."
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Documents handler type constraints."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Describes handler error behavior."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines the extractor contract handlers consume."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "handlers",
+    "services"
+  ],
+  "trustBoundaries": [
+    "concurrency",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:05:21.079Z"
+}

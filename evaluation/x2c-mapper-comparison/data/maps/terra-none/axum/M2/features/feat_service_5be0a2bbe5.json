@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_5be0a2bbe5",
+  "title": "Observability and validation examples",
+  "summary": "Request logging, tracing, Prometheus metrics and input validation examples.\n\nAgent mapper reason: These examples instrument or validate request processing at application boundaries.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Request and response logging example."
+    },
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "reason": "Metrics example."
+    },
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "reason": "Tracing example."
+    },
+    {
+      "path": "examples/validator/src/main.rs",
+      "reason": "Input validation example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/print-request-response/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/prometheus-metrics/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/tracing-aka-logging/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/validator/Cargo.toml",
+      "reason": "Example dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "observability",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:47:01.931Z"
+}

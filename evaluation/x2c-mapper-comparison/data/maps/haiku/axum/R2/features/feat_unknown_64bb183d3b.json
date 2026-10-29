@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_unknown_64bb183d3b",
+  "title": "Example: auth, sessions, and CORS",
+  "summary": "Examples for JWT auth, OAuth flow, cookie-backed sessions, and CORS middleware.\n\nAgent mapper reason: Security-sensitive examples that show credential and session handling; reviewed together for copy-paste safety.",
+  "kind": "unknown",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run -p example-jwt"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "reason": "JWT auth"
+    },
+    {
+      "path": "examples/oauth/src/main.rs",
+      "reason": "OAuth flow"
+    },
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Session handling"
+    },
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "CORS configuration"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/jwt/Cargo.toml",
+      "reason": "Package config"
+    },
+    {
+      "path": "examples/oauth/Cargo.toml",
+      "reason": "Package config"
+    },
+    {
+      "path": "examples/sessions/Cargo.toml",
+      "reason": "Package config"
+    },
+    {
+      "path": "examples/cors/Cargo.toml",
+      "reason": "Package config"
+    },
+    {
+      "path": "examples/jwt/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "auth",
+    "secrets"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:17:47.257Z",
+  "updatedAt": "2026-10-29T07:17:47.257Z"
+}

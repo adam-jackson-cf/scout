@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_f791ac1638",
+  "title": "Core tests: exception handling and parameter validation errors",
+  "summary": "Tests for exception handlers, Starlette exceptions, and request validation error shapes.\n\nAgent mapper reason: Error-path tests verify the same validation and exception surfaces.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "Custom exception handlers"
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "Middleware exception behavior"
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "Starlette HTTPException handling"
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Body validation error output"
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "Query validation error output"
+    },
+    {
+      "path": "tests/test_required_noneable.py",
+      "reason": "Required/optional validation errors"
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "reason": "Invalid path param declarations"
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "reason": "Invalid sequence param declarations"
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "Ambiguous parameter detection"
+    },
+    {
+      "path": "tests/test_enforce_once_required_parameter.py",
+      "reason": "Required parameter enforcement"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/handling-errors.md",
+      "reason": "Documents error handling"
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tests",
+    "errors",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:06.331Z",
+  "updatedAt": "2026-10-29T01:18:06.331Z"
+}

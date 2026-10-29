@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_cd4c109ed0",
+  "title": "Example: sessions",
+  "summary": "Demonstrates session management in an Axum application.\n\nAgent mapper reason: Session parsing and persistence affect identity state across multiple requests.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sessions/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Implements session handling and routes."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sessions/Cargo.toml",
+      "reason": "Declares session dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "sessions",
+    "authentication"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "secrets",
+    "auth",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:57:49.876Z",
+  "updatedAt": "2026-10-29T07:57:49.876Z"
+}

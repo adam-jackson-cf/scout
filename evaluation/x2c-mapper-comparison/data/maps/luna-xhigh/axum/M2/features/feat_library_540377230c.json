@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_540377230c",
+  "title": "x2_newpkg crate exports",
+  "summary": "Declares public modules for the new utility crate.\n\nAgent mapper reason: The crate root determines which utility modules are part of the public package API.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "x2_newpkg/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "x2_newpkg/src/lib.rs",
+      "reason": "Defines the crate root and module exports."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "x2_newpkg/Cargo.toml",
+      "reason": "Defines package identity and dependencies."
+    },
+    {
+      "path": "x2_newpkg/src/currency.rs",
+      "reason": "Implements one exported module."
+    },
+    {
+      "path": "x2_newpkg/src/slugs.rs",
+      "reason": "Implements one exported module."
+    },
+    {
+      "path": "x2_newpkg/src/units.rs",
+      "reason": "Implements one exported module."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "x2_newpkg",
+    "api"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:08:04.674Z",
+  "updatedAt": "2026-10-29T08:11:29.695Z"
+}

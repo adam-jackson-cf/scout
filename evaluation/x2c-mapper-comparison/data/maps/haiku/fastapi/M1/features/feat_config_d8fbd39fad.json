@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_d8fbd39fad",
+  "title": "Root build, lint and type-check config",
+  "summary": "Root hatch project manifest and pre-commit hooks that define the test, lint, format and mypy commands for the repository.\n\nAgent mapper reason: These files only set up tooling and run commands, so they are grouped as a config unit separate from code and CI.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Defines hatch environments, dependencies, and ruff/mypy/pytest configuration used by every other slice."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local hook set that runs lint and format checks before commit."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "CI invocation of the same test, lint and typecheck commands."
+    },
+    {
+      "path": "x2_newpkg/pyproject.toml",
+      "reason": "Second manifest that root tooling may need to account for."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "hatch",
+    "ruff",
+    "mypy",
+    "pytest",
+    "tooling"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:08:55.373Z",
+  "updatedAt": "2026-10-29T07:08:55.373Z"
+}

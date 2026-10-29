@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_unknown_f0d60a1506",
+  "title": "Example: proxies, gRPC multiplexing, versioning, and wasm router",
+  "summary": "Examples for HTTP and reverse proxying, REST+gRPC multiplexing, API versioning, and running the router under wasm.\n\nAgent mapper reason: Proxy and multiplexing examples forward requests across services; grouped by outbound-network concern.",
+  "kind": "unknown",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": "cargo run -p example-reverse-proxy"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "HTTP proxy (outbound network)"
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Reverse proxy (outbound network)"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "REST and gRPC multiplexing"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "Multiplex service"
+    },
+    {
+      "path": "examples/versioning/src/main.rs",
+      "reason": "API versioning"
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "Wasm router target"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "Protobuf schema consumed by build.rs (build.rs not owned)"
+    },
+    {
+      "path": "examples/http-proxy/Cargo.toml",
+      "reason": "Package config"
+    },
+    {
+      "path": "examples/reverse-proxy/Cargo.toml",
+      "reason": "Package config"
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/Cargo.toml",
+      "reason": "Package config"
+    },
+    {
+      "path": "examples/versioning/Cargo.toml",
+      "reason": "Package config"
+    },
+    {
+      "path": "examples/simple-router-wasm/Cargo.toml",
+      "reason": "Package config"
+    },
+    {
+      "path": "examples/versioning/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/versioning/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "proxy",
+    "grpc",
+    "wasm"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:17:47.257Z",
+  "updatedAt": "2026-10-29T07:17:47.257Z"
+}

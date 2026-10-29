@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_de8b7c7b7d",
+  "title": "Custom GitHub Actions (Python containers)",
+  "summary": "Docker-based GitHub Actions implemented in Python: docs preview comments, translation notifications, people page generation, and preview watching.\n\nAgent mapper reason: Each action is a small Python container with its own metadata and Dockerfile; they share GitHub API token handling.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Fetches contributors and sponsors and writes people data"
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Posts translation notifications via GitHub API"
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Comments docs preview links on PRs"
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Polls preview deployments"
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action metadata for people"
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Action metadata for translation notify"
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Action metadata for PR preview comment"
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Action metadata for preview watcher"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Container build for people action"
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Container build for translation notify"
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Container build for preview comment"
+    },
+    {
+      "path": ".github/actions/watch-previews/Dockerfile",
+      "reason": "Container build for preview watcher"
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Invokes people action"
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Invokes translation notify action"
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Triggers preview comment flow"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "github-actions",
+    "python",
+    "network"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "network",
+    "external-api",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:06.331Z",
+  "updatedAt": "2026-10-29T01:18:06.331Z"
+}

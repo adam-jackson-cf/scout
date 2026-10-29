@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_d3ca15d206",
+  "title": "Build, test, and publication configuration",
+  "summary": "Project packaging and automation configuration for checks and releases.\n\nAgent mapper reason: These configurations govern building, checking, and publishing the project.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Project packaging and tool configuration."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Pre-commit checks."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Test automation."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Publication automation."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Documentation build automation."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow context."
+    },
+    {
+      "path": "README.md",
+      "reason": "Project overview."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "packaging",
+    "release"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "process-exec",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:12:59.331Z",
+  "updatedAt": "2026-10-29T01:12:59.331Z"
+}

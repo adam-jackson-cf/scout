@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_b4080826d5",
+  "title": "Core tests: request/response serialization and response models",
+  "summary": "Tests for response_model handling, jsonable_encoder, dataclass and ORM serialization, response status and body variations.\n\nAgent mapper reason: All exercise the path from handler return to serialized response body.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Core response serialization"
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass responses"
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Pydantic response models"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "include/exclude"
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid response_model"
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Sub-type responses"
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Return annotation as model"
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Alias handling"
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "jsonable_encoder"
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom encoders"
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "ORJSON response"
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "Status code override"
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "No-body responses"
+    },
+    {
+      "path": "tests/test_put_no_body.py",
+      "reason": "PUT without body"
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "GET request body"
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "ORM mode reads"
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "Body media types"
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "Form sequence parsing"
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Skip defaults"
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "reason": "Tuple handling"
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "Datastructures"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "response_model docs"
+    },
+    {
+      "path": "docs/en/docs/tutorial/encoder.md",
+      "reason": "Encoder docs"
+    },
+    {
+      "path": "docs/en/docs/advanced/custom-response.md",
+      "reason": "Custom response docs"
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tests",
+    "serialization",
+    "responses"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:06.331Z",
+  "updatedAt": "2026-10-29T01:18:06.331Z"
+}

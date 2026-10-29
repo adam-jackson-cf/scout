@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fd0104f1e0",
+  "title": "Extra body and serialization formats",
+  "summary": "Async-read bodies, newline-delimited JSON, protobuf, and erased JSON responses.\n\nAgent mapper reason: These optional extensions adapt payload streams and serialized representations to axum bodies and responses.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Exports extra body types."
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Adapts async readers into bodies."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Handles newline-delimited JSON."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Handles protobuf payloads."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Exports extra response types."
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Provides type-erased JSON responses."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines optional serialization features."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "serialization",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

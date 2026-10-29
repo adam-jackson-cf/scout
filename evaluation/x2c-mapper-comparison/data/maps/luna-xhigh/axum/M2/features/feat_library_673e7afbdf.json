@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_673e7afbdf",
+  "title": "axum-extra request extractors",
+  "summary": "Cached, form, multipart, query, and rejection-customizing extractor utilities.\n\nAgent mapper reason: These helpers extend core request extraction with caching and alternate parsing or rejection behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Implements cached extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Provides supplemental form extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Exports supplemental extractors."
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Provides supplemental multipart extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Provides supplemental query extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Wraps extractors with customized rejection behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines extractor dependencies and feature gates."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Documents the extension crate."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Defines the core extractor integration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "extractors",
+    "request"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

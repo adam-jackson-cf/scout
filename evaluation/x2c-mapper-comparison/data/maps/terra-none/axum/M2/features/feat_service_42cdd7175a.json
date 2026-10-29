@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_42cdd7175a",
+  "title": "Routing and basic application examples",
+  "summary": "Small examples covering basic routing, fallback, HEAD requests, route organization, API versioning, and WebAssembly.\n\nAgent mapper reason: These small applications demonstrate router construction and route behavior.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/hello-world/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/hello-world/src/main.rs",
+      "reason": "Shows a minimal server."
+    },
+    {
+      "path": "examples/hello-world/Cargo.toml",
+      "reason": "Defines minimal example dependencies."
+    },
+    {
+      "path": "examples/readme/src/main.rs",
+      "reason": "Implements the README example."
+    },
+    {
+      "path": "examples/readme/Cargo.toml",
+      "reason": "Defines README example dependencies."
+    },
+    {
+      "path": "examples/global-404-handler/src/main.rs",
+      "reason": "Demonstrates fallback routing."
+    },
+    {
+      "path": "examples/global-404-handler/Cargo.toml",
+      "reason": "Defines fallback example dependencies."
+    },
+    {
+      "path": "examples/handle-head-request/src/main.rs",
+      "reason": "Demonstrates HEAD handling."
+    },
+    {
+      "path": "examples/handle-head-request/Cargo.toml",
+      "reason": "Defines HEAD example dependencies."
+    },
+    {
+      "path": "examples/routes-and-handlers-close-together/src/main.rs",
+      "reason": "Demonstrates route organization."
+    },
+    {
+      "path": "examples/routes-and-handlers-close-together/Cargo.toml",
+      "reason": "Defines route organization dependencies."
+    },
+    {
+      "path": "examples/versioning/src/main.rs",
+      "reason": "Demonstrates versioned routes."
+    },
+    {
+      "path": "examples/versioning/Cargo.toml",
+      "reason": "Defines versioning dependencies."
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "Demonstrates router use in WebAssembly."
+    },
+    {
+      "path": "examples/simple-router-wasm/Cargo.toml",
+      "reason": "Defines WebAssembly example dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Provides the underlying router."
+    },
+    {
+      "path": "examples/README.md",
+      "reason": "Indexes the examples."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "routing",
+    "basic"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:47:01.861Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

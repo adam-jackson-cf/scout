@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_3d36f466c7",
+  "title": "Forms, query parameters and body selection examples",
+  "summary": "Examples of form submission, multipart input, empty query fields and content-type-based body parsing.\n\nAgent mapper reason: These examples exercise common request input formats and parsing choices.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/form/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Form request example."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart request example."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Content-type-based parser selection."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Empty query value parsing example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/form/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/multipart-form/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/Cargo.toml",
+      "reason": "Example dependencies."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/Cargo.toml",
+      "reason": "Example dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "forms",
+    "parsing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:35:56.660Z"
+}

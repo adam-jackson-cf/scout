@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a014c07b68",
+  "title": "Core request extraction contracts",
+  "summary": "Defines request extraction, request-part utilities, state references, body limits, and extraction rejections.\n\nAgent mapper reason: These files establish the shared extraction contract consumed across the framework.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extraction traits and module wiring"
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Request body limit behavior"
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "State reference conversion"
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Extraction rejection types"
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Request parts extractors"
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Tuple extraction"
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Extension trait wiring"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Request extraction helpers"
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "Request parts helpers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Features and dependencies"
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extraction usage and ordering"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:25:32.591Z"
+}

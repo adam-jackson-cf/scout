@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_df936a5e1e",
+  "title": "Examples: routing, middleware and request-handling demos",
+  "summary": "Small example apps showing routing, CORS, error responses, body consumption, HEAD handling, 404 handlers, request logging and API versioning.\n\nAgent mapper reason: These examples demonstrate the routing and middleware surface and should be reviewed against the axum routing and middleware features.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/routes-and-handlers-close-together/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": "cargo run --manifest-path examples/routes-and-handlers-close-together/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/anyhow-error-response/src/main.rs",
+      "reason": "anyhow error to response conversion."
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Body consumption across extractor and middleware."
+    },
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "CORS middleware example."
+    },
+    {
+      "path": "examples/global-404-handler/src/main.rs",
+      "reason": "Global fallback example."
+    },
+    {
+      "path": "examples/handle-head-request/src/main.rs",
+      "reason": "HEAD request handling example."
+    },
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Request/response logging middleware example."
+    },
+    {
+      "path": "examples/routes-and-handlers-close-together/src/main.rs",
+      "reason": "Routing style example."
+    },
+    {
+      "path": "examples/versioning/src/main.rs",
+      "reason": "API versioning example."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "Handler testing example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Index of example apps."
+    },
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware docs referenced by these examples."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "routing",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:22:16.703Z"
+}

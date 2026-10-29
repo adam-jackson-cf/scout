@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_unknown_ac238a2ff6",
+  "title": "examples: error handling and extractor customization",
+  "summary": "Examples for custom error responses, rejections, body consumption, content-type parsing, validation, forms, multipart, and streaming uploads.\n\nAgent mapper reason: These examples all parse or reject untrusted request input and are reviewed together.",
+  "kind": "unknown",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/anyhow-error-response/src/main.rs",
+      "reason": "anyhow error response example"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/custom_extractor.rs",
+      "reason": "Custom extractor example"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Derived extractor example"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "Extractor error example entrypoint"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "WithRejection example"
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Path rejection example"
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/src/main.rs",
+      "reason": "Error and DI example"
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Body consumption example"
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Content-type parsing example"
+    },
+    {
+      "path": "examples/validator/src/main.rs",
+      "reason": "Validation example"
+    },
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Form example"
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart example"
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Streaming upload example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-extractor-error/README.md",
+      "reason": "Example walkthrough"
+    },
+    {
+      "path": "examples/customize-extractor-error/Cargo.toml",
+      "reason": "Example crate config"
+    },
+    {
+      "path": "examples/form/Cargo.toml",
+      "reason": "Example crate config"
+    },
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "errors",
+    "extractors",
+    "user-input"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "filesystem",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:11:19.210Z",
+  "updatedAt": "2026-10-29T07:22:16.710Z"
+}

@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_d2e5a97f01",
+  "title": "Release and continuous integration workflows",
+  "summary": "Runs project checks and publishes releases.\n\nAgent mapper reason: Package configuration and its CI and publishing workflows define the project delivery contract.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Defines automated project testing."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Defines release publishing."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Automates latest-change processing."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Configures dependency update automation."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Configures local repository checks."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Defines package metadata, dependencies, and project tooling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow context."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/test.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "release",
+    "packaging"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "permissions",
+    "process-exec",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:50:05.534Z",
+  "updatedAt": "2026-10-29T00:57:44.474Z"
+}

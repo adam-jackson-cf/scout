@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_d2cc3d825d",
+  "title": "Repository config, CI, and release metadata",
+  "summary": "Workspace manifest, CI workflow, dependency policy, ignore rules, and issue templates.\n\nAgent mapper reason: Workspace and CI files govern how every slice is built and tested.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": "cargo check --workspace --all-targets"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace definition"
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "CI pipeline"
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Patch config used by CI"
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Dependency policy"
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Ignore rules"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue template config"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CHANGELOG.md",
+      "reason": "Top-level release notes"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contribution workflow"
+    },
+    {
+      "path": "ECOSYSTEM.md",
+      "reason": "Ecosystem list"
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "config",
+    "ci",
+    "release"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:11:19.210Z",
+  "updatedAt": "2026-10-29T07:17:47.525Z"
+}

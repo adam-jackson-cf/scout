@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_71e37dd6ad",
+  "title": "Axum crate integration and test support",
+  "summary": "Public crate exports, internal utilities, build configuration, benchmark, and shared test client.\n\nAgent mapper reason: These shared files connect the main crate's modules and its internal validation infrastructure.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Crate root and exports"
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Internal macros"
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared internal utilities"
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Build-time configuration"
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Shared test helpers"
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Test client"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Framework benchmark"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Crate features and dependencies"
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Public crate overview"
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "crate-integration",
+    "test-support"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:26:54.302Z",
+  "updatedAt": "2026-10-29T07:26:54.302Z"
+}

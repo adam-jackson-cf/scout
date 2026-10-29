@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_71e37dd6ad",
+  "title": "Framework crate wiring and test utilities",
+  "summary": "Owns the framework's public exports, internal macros and utilities, build script, test client, and benchmark.\n\nAgent mapper reason: These shared files wire and support the framework across otherwise separate modules.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Public API and module wiring."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Internal helper macros."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared utility functions."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Crate build configuration."
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Shared test support."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Test client implementation."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Framework performance benchmark."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Framework features, dependencies, and benchmark target."
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Crate overview."
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Framework test attribute implementation."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "public-api",
+    "test-support",
+    "benchmark"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:41:26.742Z",
+  "updatedAt": "2026-10-29T07:43:05.416Z"
+}

@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_unknown_5266acf2d9",
+  "title": "Examples: stateful apps with databases, sessions and auth",
+  "summary": "Examples using Postgres, key-value state, todos, sessions, JWT and OAuth.\n\nAgent mapper reason: Stateful examples share state-management and auth patterns; they show how to combine axum with external services.",
+  "kind": "unknown",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "sqlx example"
+    },
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "reason": "tokio-postgres example"
+    },
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "reason": "Shared state example"
+    },
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "CRUD example"
+    },
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Session example"
+    },
+    {
+      "path": "examples/jwt/src/main.rs",
+      "reason": "JWT auth example"
+    },
+    {
+      "path": "examples/oauth/src/main.rs",
+      "reason": "OAuth example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Examples index"
+    },
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "Database dependencies"
+    },
+    {
+      "path": "examples/jwt/Cargo.toml",
+      "reason": "Auth dependencies"
+    },
+    {
+      "path": "examples/oauth/Cargo.toml",
+      "reason": "OAuth dependencies"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "database",
+    "auth",
+    "sessions"
+  ],
+  "trustBoundaries": [
+    "database",
+    "auth",
+    "secrets",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:22:16.654Z",
+  "updatedAt": "2026-10-29T07:22:16.654Z"
+}

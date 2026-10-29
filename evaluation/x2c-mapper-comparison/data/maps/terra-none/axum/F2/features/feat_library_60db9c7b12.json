@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_60db9c7b12",
+  "title": "Request body formats and rejection handling",
+  "summary": "Handles JSON, forms, multipart bodies, raw forms, and framework extraction rejections.\n\nAgent mapper reason: These components read and decode untrusted request bodies and define their rejection behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": "Json",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Handles JSON request and response values."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Handles URL-encoded form values."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Extracts raw form data."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Parses multipart request bodies."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines framework extraction rejection types."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Controls body consumption limits."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Demonstrates multipart extraction."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Demonstrates format selection."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/json.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/form.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "json",
+    "form",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_242ff2d3d7",
+  "title": "axum-extra extractors",
+  "summary": "Extra extractors: cookies (plain, private, signed), form and query variants, multipart, cached extraction, and WithRejection.\n\nAgent mapper reason: Cookie jars, their crypto, and the extractors that feed them belong to one security-sensitive slice.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Cached extractor wrapper"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/mod.rs",
+      "reason": "CookieJar extractor"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/private.rs",
+      "reason": "Encrypted cookie jar (security-sensitive)"
+    },
+    {
+      "path": "axum-extra/src/extract/cookie/signed.rs",
+      "reason": "Signed cookie jar (security-sensitive)"
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Extra form extractor"
+    },
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Extractor exports"
+    },
+    {
+      "path": "axum-extra/src/extract/multipart.rs",
+      "reason": "Multipart extractor variants"
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Query extractor variants"
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "WithRejection wrapper"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Feature flags for cookie, multipart, and protobuf"
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Fixture for multipart/static tests"
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Fixture for multipart/static tests"
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Fixture for multipart/static tests"
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Crate documentation"
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "cookies",
+    "extractors",
+    "security"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "secrets",
+    "auth"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:17:47.257Z",
+  "updatedAt": "2026-10-29T07:17:47.257Z"
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9d0b751c22",
+  "title": "x2_newpkg (new unowned package)",
+  "summary": "Newly added package with currency, slugs and units modules; added by the most recent commit as an unowned package with a manifest.\n\nAgent mapper reason: Single new package with no tests or owner in the inventory; isolated so it is reviewed on its own.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "low",
+  "entrypoints": [
+    {
+      "path": "x2_newpkg/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "x2_newpkg/src/lib.rs",
+      "reason": "Crate root and module declarations."
+    },
+    {
+      "path": "x2_newpkg/src/currency.rs",
+      "reason": "Currency module."
+    },
+    {
+      "path": "x2_newpkg/src/slugs.rs",
+      "reason": "Slug module."
+    },
+    {
+      "path": "x2_newpkg/src/units.rs",
+      "reason": "Units module."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "x2_newpkg/Cargo.toml",
+      "reason": "Manifest for the new package; ownership is not declared elsewhere."
+    },
+    {
+      "path": "Cargo.toml",
+      "reason": "Confirms whether x2_newpkg is a workspace member."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "new-package",
+    "unowned"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:19:20.641Z"
+}

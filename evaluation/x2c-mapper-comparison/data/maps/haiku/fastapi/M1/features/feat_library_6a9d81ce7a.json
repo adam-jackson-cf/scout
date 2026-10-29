@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6a9d81ce7a",
+  "title": "Middleware, staticfiles, templating and ASGI adapters",
+  "summary": "Built-in ASGI middleware wrappers, WSGI bridge, static file serving, Jinja templating, and the test client.\n\nAgent mapper reason: Thin adapters over Starlette; grouped because they share the ASGI boundary, though test coverage is partial.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/middleware/wsgi.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/middleware/__init__.py",
+      "reason": "middleware package exports"
+    },
+    {
+      "path": "fastapi/middleware/asyncexitstack.py",
+      "reason": "async exit stack middleware"
+    },
+    {
+      "path": "fastapi/middleware/cors.py",
+      "reason": "CORS middleware re-export"
+    },
+    {
+      "path": "fastapi/middleware/gzip.py",
+      "reason": "GZip middleware re-export"
+    },
+    {
+      "path": "fastapi/middleware/httpsredirect.py",
+      "reason": "HTTPS redirect middleware re-export"
+    },
+    {
+      "path": "fastapi/middleware/trustedhost.py",
+      "reason": "trusted host middleware re-export"
+    },
+    {
+      "path": "fastapi/middleware/wsgi.py",
+      "reason": "WSGI bridge"
+    },
+    {
+      "path": "fastapi/staticfiles.py",
+      "reason": "static file mount"
+    },
+    {
+      "path": "fastapi/templating.py",
+      "reason": "Jinja template helper"
+    },
+    {
+      "path": "fastapi/testclient.py",
+      "reason": "test client wrapper"
+    },
+    {
+      "path": "fastapi/logger.py",
+      "reason": "logger"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "middleware exception behavior"
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "exception handling in middleware stack"
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "request injection through ASGI"
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "asgi",
+    "wsgi",
+    "static"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:45.804Z",
+  "updatedAt": "2026-10-29T07:08:55.461Z"
+}

@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_cdcf1275af",
+  "title": "Form, JSON, multipart, and request bodies",
+  "summary": "Implements body-backed extractors and body stream adapters.\n\nAgent mapper reason: These implementations consume or produce HTTP bodies and must coordinate parsing and limits.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": "Json",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON extraction and responses."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extraction and responses."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form body extraction."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart body and field extraction."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body APIs and exports."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Stream-to-body adapter."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Default body limit enforcement."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Extractor error types."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Body format selection example."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/json.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/form.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "json",
+    "forms",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:45:07.975Z"
+}

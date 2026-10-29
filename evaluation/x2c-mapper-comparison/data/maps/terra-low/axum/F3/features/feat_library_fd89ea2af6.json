@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fd89ea2af6",
+  "title": "Core body, errors, and request extensions",
+  "summary": "Provides shared body and error abstractions plus convenience methods for requests and request parts.\n\nAgent mapper reason: These are foundational crate-level abstractions and helpers consumed by extraction and response code.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Core crate exports."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Shared body abstraction."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Shared error abstraction."
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Extension trait exports."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Request extension methods."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "Request-parts extension methods."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Internal core macros."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Core build-time configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core crate configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "body",
+    "request"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:28:16.061Z",
+  "updatedAt": "2026-10-29T07:28:16.061Z"
+}

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_717a199bb5",
+  "title": "Key-value store example",
+  "summary": "Demonstrates a stateful key-value service.\n\nAgent mapper reason: The sample centers on request operations against shared in-memory state.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/key-value-store/Cargo.toml",
+      "reason": "Declares the example package."
+    },
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "reason": "Implements key-value operations and server state."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Provides state extraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "state",
+    "key-value"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:05:21.217Z"
+}

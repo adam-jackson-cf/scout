@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_929250a29b",
+  "title": "Request parsing and middleware examples",
+  "summary": "Demonstrates forms, multipart, validation, CORS, query parsing, logging, and metrics.\n\nAgent mapper reason: These examples cover request processing and cross-cutting HTTP middleware.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/form/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Form example."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart example."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Query parsing example."
+    },
+    {
+      "path": "examples/validator/src/main.rs",
+      "reason": "Input validation example."
+    },
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "CORS middleware example."
+    },
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Request and response inspection example."
+    },
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "reason": "Metrics integration example."
+    },
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "reason": "Tracing integration example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/form/Cargo.toml",
+      "reason": "Form example dependencies."
+    },
+    {
+      "path": "examples/cors/Cargo.toml",
+      "reason": "CORS dependencies."
+    },
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "middleware",
+    "input"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:31:41.701Z",
+  "updatedAt": "2026-10-29T07:32:52.956Z"
+}

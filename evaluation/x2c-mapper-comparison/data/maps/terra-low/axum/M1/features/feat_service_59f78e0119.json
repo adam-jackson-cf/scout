@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_59f78e0119",
+  "title": "Streaming and static content examples",
+  "summary": "Demonstrates server-sent events, file streaming, static files, and templates.\n\nAgent mapper reason: These examples demonstrate serving or streaming content across HTTP and filesystem boundaries.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Server-sent events server."
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "Event client page."
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "Event client script."
+    },
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Static file server."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Static content."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Static client script."
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Streaming upload to file."
+    },
+    {
+      "path": "examples/templates/src/main.rs",
+      "reason": "Template rendering server."
+    },
+    {
+      "path": "examples/templates/templates/hello.html",
+      "reason": "Template source."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sse/Cargo.toml",
+      "reason": "Event example dependencies."
+    },
+    {
+      "path": "examples/static-file-server/Cargo.toml",
+      "reason": "Static server dependencies."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Event response implementation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "streaming",
+    "files"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:31:41.701Z"
+}

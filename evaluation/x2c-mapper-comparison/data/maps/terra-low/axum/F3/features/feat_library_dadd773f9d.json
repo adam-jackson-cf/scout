@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_dadd773f9d",
+  "title": "Structured request bodies",
+  "summary": "Handles JSON, forms, and multipart request extraction and associated response serialization.\n\nAgent mapper reason: These implementations parse structured bodies and are subject to shared extraction and body-limit rules.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON extraction and responses."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extraction and responses."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form extraction."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Request body size limit."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart usage example."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "json",
+    "form",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:28:16.061Z",
+  "updatedAt": "2026-10-29T07:28:16.061Z"
+}

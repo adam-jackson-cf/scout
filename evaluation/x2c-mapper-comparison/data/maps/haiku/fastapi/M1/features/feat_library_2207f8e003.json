@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_2207f8e003",
+  "title": "Exceptions and exception handlers",
+  "summary": "HTTPException, RequestValidationError and WebSocketRequestValidationError types and default exception handlers.\n\nAgent mapper reason: Error types and default handlers form the client-visible error contract and are tested together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/exception_handlers.py",
+      "symbol": "request_validation_exception_handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/exceptions.py",
+      "reason": "Public exception classes"
+    },
+    {
+      "path": "fastapi/exception_handlers.py",
+      "reason": "Default handlers for validation and HTTP errors"
+    },
+    {
+      "path": "fastapi/logger.py",
+      "reason": "Module logger"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "Handler behavior"
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "Starlette exception interop"
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "Validation error shape"
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "Validation error shape"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "errors",
+    "validation",
+    "http"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:19:28.910Z",
+  "updatedAt": "2026-10-29T07:08:55.459Z"
+}

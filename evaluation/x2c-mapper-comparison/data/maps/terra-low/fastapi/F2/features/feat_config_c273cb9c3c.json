@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_c273cb9c3c",
+  "title": "Build, test, and release configuration",
+  "summary": "Project packaging, quality checks, and publishing workflow configuration.\n\nAgent mapper reason: These files govern how the package is checked, built, and published.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package and tool configuration."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local quality hooks."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Continuous test workflow."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Publishing workflow."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow context."
+    },
+    {
+      "path": "README.md",
+      "reason": "Project overview."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "ci",
+    "release"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:07:58.751Z",
+  "updatedAt": "2026-10-29T01:07:58.751Z"
+}

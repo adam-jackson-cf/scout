@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_2e82e4bbe7",
+  "title": "Build, lint, format and type-check configuration",
+  "summary": "Project manifest with hatch environments, ruff, mypy and pytest settings, plus pre-commit hooks.\n\nAgent mapper reason: Single manifest controlling dependencies, lint, type and test commands.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": "hatch run pytest"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package metadata, hatch scripts, lint, type and test config"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Local hook set mirroring CI checks"
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Ignore rules for build and cache output"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "CI consumer of these commands"
+    },
+    {
+      "path": "tests/test_tutorial/__init__.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/__init__.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "config",
+    "tooling",
+    "packaging"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:06.331Z",
+  "updatedAt": "2026-10-29T01:18:06.331Z"
+}

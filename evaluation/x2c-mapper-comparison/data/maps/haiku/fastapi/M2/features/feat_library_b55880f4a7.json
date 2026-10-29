@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b55880f4a7",
+  "title": "Supporting runtime helpers",
+  "summary": "Background tasks, websockets, static files, templating, the test client, logging, and concurrency utilities.\n\nAgent mapper reason: Small wrappers over Starlette runtime features with no strong shared behavior; grouped to keep bounded review units.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/testclient.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/background.py",
+      "reason": "Background task wrapper."
+    },
+    {
+      "path": "fastapi/websockets.py",
+      "reason": "Websocket re-exports."
+    },
+    {
+      "path": "fastapi/staticfiles.py",
+      "reason": "Static files mount re-export."
+    },
+    {
+      "path": "fastapi/templating.py",
+      "reason": "Jinja2 templating re-export."
+    },
+    {
+      "path": "fastapi/testclient.py",
+      "reason": "Test client wrapper."
+    },
+    {
+      "path": "fastapi/logger.py",
+      "reason": "Logger setup."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial001.py",
+      "reason": "Background task tutorial test."
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "Lifecycle events."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Connection injection into handlers."
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_background_tasks/test_tutorial001.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "runtime",
+    "helpers",
+    "websockets"
+  ],
+  "trustBoundaries": [
+    "concurrency",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:09:49.659Z",
+  "updatedAt": "2026-10-29T07:09:49.659Z"
+}

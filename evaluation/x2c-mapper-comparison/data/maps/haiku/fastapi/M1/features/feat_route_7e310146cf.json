@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_route_7e310146cf",
+  "title": "docs_src: bigger applications (routers and dependencies)",
+  "summary": "Multi-module example application with routers, shared dependencies and an internal admin router.\n\nAgent mapper reason: The example's routers and dependencies form one application that its tests exercise.",
+  "kind": "route",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "reason": "App wiring that includes the routers."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/dependencies.py",
+      "reason": "Shared header-token dependency that guards routes."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/items.py",
+      "reason": "Items router with path operations."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/users.py",
+      "reason": "Users router with path operations."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/internal/admin.py",
+      "reason": "Internal admin router guarded by dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs_src/bigger_applications/app_an/main.py",
+      "reason": "Annotated variant that tests cover alongside the base version."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/dependencies.py",
+      "reason": "Annotated variant of the shared dependency."
+    },
+    {
+      "path": "docs/en/docs/tutorial/bigger-applications.md",
+      "reason": "Tutorial prose that explains this example."
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tutorial/test_bigger_applications/test_main_an.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "docs-example",
+    "routers",
+    "dependencies",
+    "auth"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "user-input",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:08:55.373Z",
+  "updatedAt": "2026-10-29T07:08:55.373Z"
+}

@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3c6f175745",
+  "title": "OpenAPI schema generation and docs UI",
+  "summary": "Builds the OpenAPI document from routes and models and serves Swagger UI and ReDoc pages.\n\nAgent mapper reason: Schema generation and docs HTML are one pipeline that turns routes into served documentation.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/openapi/utils.py",
+      "symbol": "get_openapi",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/openapi/__init__.py",
+      "reason": "OpenAPI package exports."
+    },
+    {
+      "path": "fastapi/openapi/constants.py",
+      "reason": "OpenAPI constants."
+    },
+    {
+      "path": "fastapi/openapi/models.py",
+      "reason": "OpenAPI document models."
+    },
+    {
+      "path": "fastapi/openapi/utils.py",
+      "reason": "Schema generation from routes and dependencies."
+    },
+    {
+      "path": "fastapi/openapi/docs.py",
+      "reason": "Swagger UI and ReDoc HTML generation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Route metadata source."
+    },
+    {
+      "path": "tests/test_openapi_servers.py",
+      "reason": "Servers block in OpenAPI output."
+    },
+    {
+      "path": "tests/test_openapi_route_extensions.py",
+      "reason": "Route extension fields."
+    },
+    {
+      "path": "tests/test_custom_schema_fields.py",
+      "reason": "Custom schema fields."
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "reason": "Duplicate model handling."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "Local docs asset serving."
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "Swagger UI OAuth initialization."
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_openapi_servers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_openapi_route_extensions.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "openapi",
+    "docs",
+    "schema"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:45.804Z",
+  "updatedAt": "2026-10-29T07:09:49.659Z"
+}

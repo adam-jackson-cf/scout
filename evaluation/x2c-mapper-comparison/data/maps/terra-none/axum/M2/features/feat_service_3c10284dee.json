@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_3c10284dee",
+  "title": "TLS and low-level server examples",
+  "summary": "TLS, low-level Hyper integration, multiple listeners, Unix sockets, and graceful shutdown.\n\nAgent mapper reason: These examples focus on transport setup and server lifecycle rather than application routing.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "Demonstrates TLS serving."
+    },
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "reason": "Defines TLS example dependencies."
+    },
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "Demonstrates low-level OpenSSL integration."
+    },
+    {
+      "path": "examples/low-level-openssl/Cargo.toml",
+      "reason": "Defines OpenSSL dependencies."
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Demonstrates low-level rustls integration."
+    },
+    {
+      "path": "examples/low-level-rustls/Cargo.toml",
+      "reason": "Defines rustls dependencies."
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "Demonstrates low-level Hyper integration."
+    },
+    {
+      "path": "examples/hyper-1-0/Cargo.toml",
+      "reason": "Defines Hyper integration dependencies."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/src/main.rs",
+      "reason": "Demonstrates multiple listeners."
+    },
+    {
+      "path": "examples/listen-multiple-addrs/Cargo.toml",
+      "reason": "Defines listener dependencies."
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Demonstrates Unix socket serving."
+    },
+    {
+      "path": "examples/unix-domain-socket/Cargo.toml",
+      "reason": "Defines Unix socket dependencies."
+    },
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Demonstrates server shutdown."
+    },
+    {
+      "path": "examples/graceful-shutdown/Cargo.toml",
+      "reason": "Defines shutdown example dependencies."
+    }
+  ],
+  "contextFiles": [],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "server",
+    "tls",
+    "lifecycle"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "secrets",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:47:01.861Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

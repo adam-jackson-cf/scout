@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_61da5d1127",
+  "title": "Exception handling and middleware test suite",
+  "summary": "Tests for exception handlers, HTTP exceptions, custom middleware exception behavior, starlette exception passthrough and connection injection.\n\nAgent mapper reason: Error and exception propagation paths are tested together and share handler plumbing.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "Custom exception handlers"
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "Exceptions raised in middleware"
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "Starlette exception passthrough"
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "Request/connection injection"
+    },
+    {
+      "path": "tests/test_additional_responses_custom_validationerror.py",
+      "reason": "Custom validation error responses"
+    },
+    {
+      "path": "tests/test_additional_responses_default_validationerror.py",
+      "reason": "Default validation error responses"
+    },
+    {
+      "path": "tests/test_starlette_urlconvertors.py",
+      "reason": "Starlette URL convertors"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/handling-errors.md",
+      "reason": "Documented error handling"
+    },
+    {
+      "path": "docs/en/docs/advanced/custom-request-and-route.md",
+      "reason": "Documented request/route customization"
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "exceptions",
+    "middleware",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:14:50.304Z",
+  "updatedAt": "2026-10-29T07:08:55.471Z"
+}

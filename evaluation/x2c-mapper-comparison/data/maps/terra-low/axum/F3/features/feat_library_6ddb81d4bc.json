@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6ddb81d4bc",
+  "title": "Error handling and crate integration",
+  "summary": "Provides error-handling service wrappers and the main crate's shared exports and utilities.\n\nAgent mapper reason: This slice covers cross-cutting error adaptation and the crate-level integration files that support the framework.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Error-handling service adapters."
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Crate public interface."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Internal framework macros."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared internal utilities."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Crate build-time configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Documented error handling."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Feature and dependency configuration."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "errors",
+    "crate-interface"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:28:16.061Z",
+  "updatedAt": "2026-10-29T07:28:16.061Z"
+}

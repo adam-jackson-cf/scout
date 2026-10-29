@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_65c61e83c1",
+  "title": "axum crate root, utilities, test helpers, and benchmarks",
+  "summary": "Crate root exports, shared utilities, test client helpers, and the benchmark harness.\n\nAgent mapper reason: Root and support modules have no single feature owner; grouped so the public surface and test helpers are reviewed together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Crate root and public re-exports"
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Internal utilities"
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Test helper module"
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "In-process test client used by axum tests"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Benchmarks for routing and extraction"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/build.rs",
+      "reason": "Build script for cfg setup; read-only context"
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Feature flags and dev dependencies"
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Crate overview"
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "Public API change history"
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Internal macros used across the crate"
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "root",
+    "tests",
+    "benchmarks"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:14:23.770Z",
+  "updatedAt": "2026-10-29T07:14:23.770Z"
+}

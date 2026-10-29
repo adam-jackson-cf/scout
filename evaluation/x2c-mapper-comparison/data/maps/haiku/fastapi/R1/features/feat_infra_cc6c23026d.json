@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_cc6c23026d",
+  "title": "GitHub Actions workflows and custom actions",
+  "summary": "CI test/lint workflows, docs preview/build/publish workflows, and the custom Python actions for people, translations and preview comments.\n\nAgent mapper reason: Workflows and their custom actions form one CI/release surface; secrets and external API calls are the main risk.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "main CI test workflow"
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "release publish workflow"
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "docs build workflow"
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "docs preview workflow"
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "people update workflow"
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "translation notification workflow"
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "latest changes workflow"
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "coverage smoke workflow"
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "issue automation"
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "approval labeling"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "custom people action"
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "custom translation action"
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "custom PR comment action"
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "custom preview watcher action"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "lint hooks shared with CI"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "infra",
+    "release"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "external-api",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:18:45.804Z",
+  "updatedAt": "2026-10-29T01:18:45.804Z"
+}

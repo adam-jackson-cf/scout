@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e278520e40",
+  "title": "Serialization, encoding and request data structures",
+  "summary": "Pydantic-backed response serialization, jsonable_encoder, custom datastructures such as UploadFile and form/file handling.\n\nAgent mapper reason: Encoding and upload data structures share Pydantic and type plumbing; tests overlap.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/encoders.py",
+      "symbol": "jsonable_encoder",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/encoders.py",
+      "reason": "jsonable_encoder for arbitrary Python objects"
+    },
+    {
+      "path": "fastapi/datastructures.py",
+      "reason": "Defaults, UploadFile and related request data types"
+    },
+    {
+      "path": "fastapi/types.py",
+      "reason": "Shared type aliases"
+    },
+    {
+      "path": "fastapi/utils.py",
+      "reason": "Model/field helper utilities for Pydantic compatibility"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "Encoder behavior"
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "UploadFile and datastructures"
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Response serialization"
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass serialization"
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom encoder hooks"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "serialization",
+    "pydantic",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:19:28.910Z",
+  "updatedAt": "2026-10-29T01:19:28.910Z"
+}

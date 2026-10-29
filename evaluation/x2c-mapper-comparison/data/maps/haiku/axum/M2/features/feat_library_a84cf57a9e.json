@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a84cf57a9e",
+  "title": "axum handlers, middleware and service adapters",
+  "summary": "Handler trait impls, handler futures, Service adapters, from_fn/map_* middleware and ServiceExt.\n\nAgent mapper reason: Handler and middleware layers are tightly coupled through Service and Layer impls.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler response future"
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "State in extension adapter"
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait"
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Handler as Service"
+    },
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "from_extractor middleware"
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "from_fn middleware"
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "map_request middleware"
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "map_response middleware"
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Middleware module surface"
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Boxed handler and route types"
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "ServiceExt helpers"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Documented middleware behaviour"
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Handler type-error guidance"
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Handlers are mounted through Router"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "middleware",
+    "service"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:22:16.654Z",
+  "updatedAt": "2026-10-29T07:22:16.654Z"
+}

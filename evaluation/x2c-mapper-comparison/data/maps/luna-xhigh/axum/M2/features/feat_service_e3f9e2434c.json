@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e3f9e2434c",
+  "title": "Example: HTTP proxy",
+  "summary": "Demonstrates forwarding HTTP traffic through an Axum service.\n\nAgent mapper reason: The proxy forwards traffic across network boundaries and is independently packaged.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/Cargo.toml",
+      "reason": "Defines the example package and dependencies."
+    },
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "Implements proxy request handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Indexes standalone examples."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Provides request routing."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "proxy"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:11:29.627Z"
+}

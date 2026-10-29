@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4dd14ad2b7",
+  "title": "Parameter declarations and request data types",
+  "summary": "Declares Path, Query, Header, Cookie, Body, Form, and File parameter markers and the datastructures used for uploads and request values.\n\nAgent mapper reason: Parameter markers and their datastructures are the user-facing input surface and should be reviewed as a unit.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/param_functions.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/params.py",
+      "reason": "Parameter marker classes and their validation metadata."
+    },
+    {
+      "path": "fastapi/param_functions.py",
+      "reason": "User-facing factory functions for parameter declarations."
+    },
+    {
+      "path": "fastapi/datastructures.py",
+      "reason": "UploadFile, Default, and related request data types."
+    },
+    {
+      "path": "fastapi/requests.py",
+      "reason": "Request re-exports and request helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "Consumes parameter markers during analysis."
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "reason": "Parameter class behavior."
+    },
+    {
+      "path": "tests/test_params_repr.py",
+      "reason": "Parameter repr output."
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "Datastructure behavior."
+    },
+    {
+      "path": "tests/test_query.py",
+      "reason": "Query parameter handling."
+    },
+    {
+      "path": "tests/test_param_include_in_schema.py",
+      "reason": "Parameter schema inclusion."
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_param_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_query.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "parameters",
+    "validation",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:09:49.659Z",
+  "updatedAt": "2026-10-29T07:09:49.659Z"
+}

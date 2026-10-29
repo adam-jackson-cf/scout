@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6b71ddec23",
+  "title": "Body formats and streaming",
+  "summary": "HTTP body utilities and JSON, form, multipart, and server-sent event handling.\n\nAgent mapper reason: These modules consume or produce HTTP payloads and streaming responses.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body exports"
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Streaming body support"
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "JSON extraction and responses"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extraction and responses"
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Raw form extraction"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart extraction"
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent event responses"
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response exports"
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect response construction"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Shared body abstraction"
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "SSE usage"
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Multipart usage"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "serialization",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:29:26.547Z",
+  "updatedAt": "2026-10-29T07:32:52.932Z"
+}

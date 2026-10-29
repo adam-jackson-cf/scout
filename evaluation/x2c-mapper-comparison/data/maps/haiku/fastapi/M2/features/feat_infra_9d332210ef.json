@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_9d332210ef",
+  "title": "CI workflows and GitHub actions",
+  "summary": "GitHub Actions workflows and Docker-based custom actions that test, build, publish, preview docs, and automate maintainer tasks.\n\nAgent mapper reason: Workflows and their Docker actions share tokens and release automation; they are reviewed as the CI boundary.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Test CI workflow."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Release publish workflow."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Docs build workflow."
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Docs preview workflow."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Translation notification workflow."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "People update workflow."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Coverage reporting workflow."
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Issue automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Label automation."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Release notes automation."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Custom action code that writes repo data."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Custom action code that comments on PRs/issues."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Custom action code that posts preview links."
+    },
+    {
+      "path": ".github/actions/watch-previews/app/main.py",
+      "reason": "Custom action code that watches preview deployments."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action metadata for people."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Action metadata."
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Action metadata."
+    },
+    {
+      "path": ".github/actions/watch-previews/action.yml",
+      "reason": "Action metadata."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Dependency update config."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Lint hooks mirrored in CI."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "github-actions",
+    "release"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec",
+    "external-api",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:09:49.659Z",
+  "updatedAt": "2026-10-29T07:09:49.659Z"
+}

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_793444b4bc",
+  "title": "Example: multipart form",
+  "summary": "Demonstrates receiving multipart form data.\n\nAgent mapper reason: The sample handles user-supplied multipart fields and file-like content.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/multipart-form/Cargo.toml",
+      "reason": "Defines the standalone example package."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Implements multipart form handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Defines multipart extraction behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "multipart",
+    "forms"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T07:51:17.230Z"
+}

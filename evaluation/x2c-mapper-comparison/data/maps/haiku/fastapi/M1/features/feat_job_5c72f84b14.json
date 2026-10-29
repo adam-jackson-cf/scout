@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_5c72f84b14",
+  "title": "Translation and people GitHub actions",
+  "summary": "Composite actions that notify translation teams and regenerate the people and sponsor data.\n\nAgent mapper reason: Both are API-calling scripts with the same token and data-write pattern, and they are separate from the PR preview actions.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Script that posts translation notifications using the GitHub API."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Action wiring for the notification script."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Script that fetches contributor and sponsor data from the GitHub API and writes it to the repo."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action wiring for the people script."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Container image for the notification action."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Container image for the people action."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Workflow that triggers notifications."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Workflow that triggers the people update."
+    },
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Output data file the people action writes."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "translations",
+    "people",
+    "external-api"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "external-api",
+    "network",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:08:55.373Z",
+  "updatedAt": "2026-10-29T07:08:55.373Z"
+}

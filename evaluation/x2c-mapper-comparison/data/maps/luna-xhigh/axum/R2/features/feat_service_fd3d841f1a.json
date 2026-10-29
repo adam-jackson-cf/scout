@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_fd3d841f1a",
+  "title": "Tokio PostgreSQL example",
+  "summary": "Demonstrates PostgreSQL access with tokio-postgres.\n\nAgent mapper reason: The application connects HTTP request handling to PostgreSQL operations through tokio-postgres.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/tokio-postgres/Cargo.toml",
+      "reason": "Declares database and runtime dependencies."
+    },
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "reason": "Implements PostgreSQL-backed handlers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Provides shared connection state."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "postgres",
+    "tokio"
+  ],
+  "trustBoundaries": [
+    "database",
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T08:05:21.234Z"
+}

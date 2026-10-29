@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_b75d0dd104",
+  "title": "Static assets, templates, and file streaming examples",
+  "summary": "Demonstrates static file serving, templates, and streaming to a file.\n\nAgent mapper reason: These examples connect HTTP requests and responses to files or rendered assets.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Static file server."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Static page asset."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Static script asset."
+    },
+    {
+      "path": "examples/static-file-server/Cargo.toml",
+      "reason": "Static server configuration."
+    },
+    {
+      "path": "examples/templates/src/main.rs",
+      "reason": "Template rendering server."
+    },
+    {
+      "path": "examples/templates/templates/hello.html",
+      "reason": "Rendered template."
+    },
+    {
+      "path": "examples/templates/Cargo.toml",
+      "reason": "Template example configuration."
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Streaming file example."
+    },
+    {
+      "path": "examples/stream-to-file/Cargo.toml",
+      "reason": "File stream configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Related streaming body adapter."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "filesystem",
+    "templates"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:39:36.826Z",
+  "updatedAt": "2026-10-29T07:39:36.826Z"
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_c87a075077",
+  "title": "Dependency overrides in tests",
+  "summary": "Shows replacing application dependencies during tests.\n\nAgent mapper reason: The variants teach one override mechanism, with dedicated framework regression tests.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/dependency_testing/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/dependency_testing/tutorial001.py",
+      "reason": "Dependency override example."
+    },
+    {
+      "path": "docs_src/dependency_testing/tutorial001_an.py",
+      "reason": "Annotated variant."
+    },
+    {
+      "path": "docs_src/dependency_testing/tutorial001_an_py310.py",
+      "reason": "Python 3.10 annotated variant."
+    },
+    {
+      "path": "docs_src/dependency_testing/tutorial001_an_py39.py",
+      "reason": "Python 3.9 annotated variant."
+    },
+    {
+      "path": "docs_src/dependency_testing/tutorial001_py310.py",
+      "reason": "Python 3.10 variant."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/advanced/testing-dependencies.md",
+      "reason": "Explains test dependency overrides."
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tutorial",
+    "dependency-injection",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "auth"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:54:57.019Z",
+  "updatedAt": "2026-10-29T00:54:57.019Z"
+}

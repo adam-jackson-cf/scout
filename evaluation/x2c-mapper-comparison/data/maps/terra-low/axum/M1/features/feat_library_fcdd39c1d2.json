@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fcdd39c1d2",
+  "title": "Axum crate integration and test support",
+  "summary": "Owns crate exports, common internal utilities, build setup, benchmarks, and test helpers.\n\nAgent mapper reason: These files connect the framework modules and provide shared verification infrastructure.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Public crate interface."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Internal macros."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Shared utilities."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Build configuration."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Crate features and dependencies."
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Test helper interface."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "HTTP test client."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Framework benchmarks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/README.md",
+      "reason": "Crate usage."
+    },
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace configuration."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "crate",
+    "test-support"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:31:41.701Z"
+}

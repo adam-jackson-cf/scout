@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_53e0887f50",
+  "title": "Repository infra, CI, and workspace config",
+  "summary": "Workspace manifest, CI workflow, dependency policy, and patch config for the axum workspace.\n\nAgent mapper reason: Workspace and CI configuration govern how every crate is built, tested, and audited.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "CI pipeline definition"
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Patch configuration for CI"
+    },
+    {
+      "path": "deny.toml",
+      "reason": "cargo-deny dependency policy"
+    },
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace members and shared dependency versions"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor expectations and commands"
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "PR checklist"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "reason": "Workspace-level changelog"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue template configuration"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "config",
+    "workspace"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:16:27.607Z",
+  "updatedAt": "2026-10-29T07:22:16.692Z"
+}

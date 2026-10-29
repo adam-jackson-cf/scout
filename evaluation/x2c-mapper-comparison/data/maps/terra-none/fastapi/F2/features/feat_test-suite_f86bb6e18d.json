@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_f86bb6e18d",
+  "title": "Response serialization and status regression tests",
+  "summary": "Tests response model filtering, encoding, response classes, and status behavior.\n\nAgent mapper reason: These tests cover the transformation from endpoint result to HTTP response.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Custom datetime encoding."
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "Default response class."
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "reason": "Router default response class."
+    },
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "reason": "Submodel filtering."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "JSON-compatible encoding."
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "ORJSON response class."
+    },
+    {
+      "path": "tests/test_reponse_set_reponse_code_empty.py",
+      "reason": "Empty response status behavior."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Response alias behavior."
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "Changed status codes."
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "Responses without media types."
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "Statuses without response bodies."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Return annotations as response models."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Response model filtering."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid response models."
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Response model subtypes."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Model serialization."
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Default value filtering."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Documents response model behavior."
+    },
+    {
+      "path": "docs/en/docs/advanced/custom-response.md",
+      "reason": "Documents response classes."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "serialization",
+    "tests"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:52:33.196Z",
+  "updatedAt": "2026-10-29T00:52:33.196Z"
+}

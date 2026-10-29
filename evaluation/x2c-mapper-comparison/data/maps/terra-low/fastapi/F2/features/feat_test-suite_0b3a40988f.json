@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_0b3a40988f",
+  "title": "Application behavior regression tests",
+  "summary": "Tests for application configuration, middleware, exception handling, and documentation endpoints.\n\nAgent mapper reason: These tests exercise application-level configuration and request handling.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_application.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_application.py",
+      "reason": "Application behavior coverage."
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "Middleware exception behavior."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "Exception handler behavior."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "Local documentation behavior."
+    },
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "reason": "Documentation redirect behavior."
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "reason": "Disabled documentation redirect behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/main.py",
+      "reason": "Shared test application."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Project and test configuration."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "application",
+    "middleware",
+    "documentation"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:07:58.751Z",
+  "updatedAt": "2026-10-29T01:07:58.751Z"
+}

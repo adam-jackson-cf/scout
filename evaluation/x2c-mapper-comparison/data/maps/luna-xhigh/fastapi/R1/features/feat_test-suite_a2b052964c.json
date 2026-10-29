@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_a2b052964c",
+  "title": "Parameter extraction and validation contracts",
+  "summary": "Core tests for query, path, cookie, header, and parameter validation behavior.\n\nAgent mapper reason: Parameter extraction and validation share declaration rules and affect how untrusted HTTP input becomes typed endpoint arguments.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "Covers ambiguous parameter declarations."
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "Covers Annotated-based parameter declarations."
+    },
+    {
+      "path": "tests/test_enforce_once_required_parameter.py",
+      "reason": "Covers required-parameter enforcement."
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "reason": "Covers inferred parameter optionality."
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "reason": "Covers invalid path parameter declarations."
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "reason": "Covers invalid sequence parameter declarations."
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "reason": "Covers parameter class behavior."
+    },
+    {
+      "path": "tests/test_param_include_in_schema.py",
+      "reason": "Covers parameter schema inclusion."
+    },
+    {
+      "path": "tests/test_query.py",
+      "reason": "Covers query parameter behavior."
+    },
+    {
+      "path": "tests/test_path.py",
+      "reason": "Covers path parameter behavior."
+    },
+    {
+      "path": "tests/test_repeated_cookie_headers.py",
+      "reason": "Covers repeated cookie and header values."
+    },
+    {
+      "path": "tests/test_repeated_parameter_alias.py",
+      "reason": "Covers repeated parameter aliases."
+    },
+    {
+      "path": "tests/test_required_noneable.py",
+      "reason": "Covers required and nullable parameter combinations."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/query-params.md",
+      "reason": "Documents query parameter behavior."
+    },
+    {
+      "path": "docs/en/docs/tutorial/path-params.md",
+      "reason": "Documents path parameter behavior."
+    },
+    {
+      "path": "docs/en/docs/tutorial/header-params.md",
+      "reason": "Documents header parameter behavior."
+    },
+    {
+      "path": "docs/en/docs/tutorial/cookie-params.md",
+      "reason": "Documents cookie parameter behavior."
+    },
+    {
+      "path": "tests/test_query.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_query.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "parameters",
+    "validation",
+    "request"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:40:33.989Z"
+}

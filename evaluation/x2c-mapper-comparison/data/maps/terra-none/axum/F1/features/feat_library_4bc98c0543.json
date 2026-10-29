@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4bc98c0543",
+  "title": "Streaming and redirect responses",
+  "summary": "Server-sent event responses and HTTP redirects.\n\nAgent mapper reason: These framework-specific response types produce HTTP headers and streamed or empty bodies.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Response module and integration."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Server-sent event serialization and streaming."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Redirect response creation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Shared response conversion contract."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Server-sent events example."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "sse",
+    "redirects"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:35:56.660Z"
+}

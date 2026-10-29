@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e763b5e58d",
+  "title": "Core bodies, errors, and request extensions",
+  "summary": "Provides foundational body and error types and request extension traits.\n\nAgent mapper reason: These foundational types and extensions support the shared core API.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Core crate exports."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Core body abstraction."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Core error abstraction."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Shared internal macro support."
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/mod.rs",
+      "reason": "Request extension trait module."
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request.rs",
+      "reason": "Request extension methods."
+    },
+    {
+      "path": "axum-core/src/ext_traits_x2moved/request_parts.rs",
+      "reason": "Request-parts extension methods."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Core crate build configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Crate configuration."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extraction contracts used by extension methods."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "body",
+    "extensions"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:32:52.857Z",
+  "updatedAt": "2026-10-29T07:32:52.857Z"
+}

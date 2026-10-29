@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_c942b35ea7",
+  "title": "GitHub Actions: CI and test workflow",
+  "summary": "Repository test workflow and pre-commit quality configuration.\n\nAgent mapper reason: The workflow and hook configuration define how repository changes are checked before integration.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Defines automated test workflow execution."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Defines pre-commit quality hooks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Provides project tool and test configuration."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Documents contributor validation expectations."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/test.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "tests",
+    "quality-gates"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:42:06.971Z"
+}

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_a6a5479946",
+  "title": "Examples: realtime, static assets and templates",
+  "summary": "Example apps for chat, SSE, WebSockets (server and client), WebSocket testing, static file serving and templates.\n\nAgent mapper reason: Realtime and asset-serving examples share WebSocket/SSE and filesystem concerns.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": "cargo run --manifest-path examples/chat/Cargo.toml"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/chat/src/main.rs",
+      "reason": "Chat server with broadcast state."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "SSE example."
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "Client script for SSE example."
+    },
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "WebSocket server example."
+    },
+    {
+      "path": "examples/websockets/src/client.rs",
+      "reason": "WebSocket client example."
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Browser client script."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "WebSocket testing example."
+    },
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Static file serving with filesystem access."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Static asset script."
+    },
+    {
+      "path": "examples/templates/src/main.rs",
+      "reason": "Template rendering example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/chat/chat.html",
+      "reason": "Frontend for chat example."
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "Frontend for SSE example."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Static file server index page."
+    },
+    {
+      "path": "examples/templates/templates/hello.html",
+      "reason": "Template for templates example."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "websocket",
+    "sse",
+    "static-files",
+    "templates"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "concurrency",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:19:20.641Z"
+}

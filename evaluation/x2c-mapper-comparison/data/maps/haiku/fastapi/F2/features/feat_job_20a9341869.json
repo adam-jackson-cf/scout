@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_20a9341869",
+  "title": "People / sponsors refresh action",
+  "summary": "Docker-based action that regenerates the FastAPI people and sponsors data files.\n\nAgent mapper reason: The action writes the data files it is paired with, so they are reviewed together.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Action entrypoint that fetches contributor and sponsor data."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Action metadata."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Container build."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Scheduled workflow that runs the action."
+    },
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Generated data the action writes."
+    },
+    {
+      "path": "docs/en/data/sponsors.yml",
+      "reason": "Sponsor data the action updates."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "community",
+    "data-generation"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "network",
+    "external-api",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:16:38.944Z",
+  "updatedAt": "2026-10-29T01:16:38.944Z"
+}

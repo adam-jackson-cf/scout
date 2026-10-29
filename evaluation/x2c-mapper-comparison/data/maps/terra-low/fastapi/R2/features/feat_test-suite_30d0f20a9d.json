@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_30d0f20a9d",
+  "title": "Response serialization and exception regression suites",
+  "summary": "Tests for response serialization, response models, encoders, and exception handling.\n\nAgent mapper reason: These suites exercise the conversion of application results and errors into HTTP responses.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Response serialization tests."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Dataclass serialization tests."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Response model serialization tests."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "JSON-compatible encoder tests."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Response model filtering tests."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Invalid response model tests."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Response alias behavior tests."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "Exception handler tests."
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "Underlying framework exception tests."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Response model documentation."
+    },
+    {
+      "path": "docs/en/docs/tutorial/handling-errors.md",
+      "reason": "Error handling documentation."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "responses",
+    "serialization",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:11:15.606Z",
+  "updatedAt": "2026-10-29T01:11:15.606Z"
+}

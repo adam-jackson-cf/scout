@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6d7c864799",
+  "title": "axum-extra bodies, responses, and misc adapters",
+  "summary": "Async-read body, JSON lines, protobuf, erased JSON, Either, handler/or combinators, extra middleware, and crate root.\n\nAgent mapper reason: Miscellaneous extra adapters with no shared tests; grouped to bound the review, and they share the feature-gated crate root.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "AsyncReadBody response"
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Body module exports"
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either type"
+    },
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Handler extension traits"
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Handler OR combinator"
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "JSON lines extractor/response (streaming input)"
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Crate root and feature gates"
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Extra middleware helpers"
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Protobuf extractor/response"
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Type-erased JSON response"
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Response exports"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/CHANGELOG.md",
+      "reason": "Recent API changes"
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Static body fixture"
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "json",
+    "protobuf",
+    "responses"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:17:47.257Z",
+  "updatedAt": "2026-10-29T07:22:16.696Z"
+}

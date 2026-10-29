@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_3b77be90ce",
+  "title": "Contributor and people automation",
+  "summary": "GitHub automation for people-related maintenance and approved pull request labeling.\n\nAgent mapper reason: These files automate repository-facing contributor operations and use GitHub permissions and repository data.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/people.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Triggers people automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Labels approved contributions."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Defines the people action."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Implements people automation."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Defines the action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Provides people data used by documentation."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Configures contribution entry points."
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/questions.yml",
+      "reason": "Configures discussion intake."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "contributors",
+    "community"
+  ],
+  "trustBoundaries": [
+    "network",
+    "permissions",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:40:33.924Z",
+  "updatedAt": "2026-10-29T00:42:06.969Z"
+}

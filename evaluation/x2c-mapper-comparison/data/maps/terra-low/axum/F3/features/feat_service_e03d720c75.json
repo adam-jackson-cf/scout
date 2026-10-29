@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e03d720c75",
+  "title": "Observability, error handling, and test examples",
+  "summary": "Demonstrates tracing, metrics, error responses, middleware, and application testing.\n\nAgent mapper reason: These examples demonstrate cross-cutting operational and test patterns around request handling.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/tracing-aka-logging/src/main.rs",
+      "reason": "Tracing example."
+    },
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "reason": "Metrics example."
+    },
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Request and response logging example."
+    },
+    {
+      "path": "examples/anyhow-error-response/src/main.rs",
+      "reason": "Error response example."
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/src/main.rs",
+      "reason": "Error handling and dependency injection example."
+    },
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "CORS middleware example."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "Application testing example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/testing/Cargo.toml",
+      "reason": "Testing dependencies."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Framework error handling documentation."
+    },
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Middleware documentation."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "observability",
+    "errors",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:28:16.061Z",
+  "updatedAt": "2026-10-29T07:28:16.061Z"
+}

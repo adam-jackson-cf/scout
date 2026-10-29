@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_29e8526c39",
+  "title": "Axum path and query extraction",
+  "summary": "Path parameter deserialization and query-string parsing.\n\nAgent mapper reason: These extractors deserialize URL data and depend directly on route parameter capture.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": "Path",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Deserializes captured path parameters."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Defines the Path extractor."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Parses query parameters."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Exposes the raw query string."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents path and query extraction."
+    },
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Provides captured route parameters."
+    },
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Implements typed path declarations."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "routing",
+    "deserialization"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:02:22.984Z",
+  "updatedAt": "2026-10-29T08:02:22.984Z"
+}

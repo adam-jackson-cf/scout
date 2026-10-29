@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_59f78e0119",
+  "title": "Streaming, file, and template examples",
+  "summary": "Demonstrates server-sent events, static assets, uploads, and rendered templates.\n\nAgent mapper reason: These examples exercise streamed content and server-managed files or templates.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Server-sent event server."
+    },
+    {
+      "path": "examples/sse/assets/index.html",
+      "reason": "SSE browser page."
+    },
+    {
+      "path": "examples/sse/assets/script.js",
+      "reason": "SSE browser client."
+    },
+    {
+      "path": "examples/static-file-server/src/main.rs",
+      "reason": "Static file server."
+    },
+    {
+      "path": "examples/static-file-server/assets/index.html",
+      "reason": "Served page."
+    },
+    {
+      "path": "examples/static-file-server/assets/script.js",
+      "reason": "Served script."
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Streaming upload example."
+    },
+    {
+      "path": "examples/templates/src/main.rs",
+      "reason": "Template rendering example."
+    },
+    {
+      "path": "examples/templates/templates/hello.html",
+      "reason": "Rendered template."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sse/Cargo.toml",
+      "reason": "SSE dependencies."
+    },
+    {
+      "path": "examples/static-file-server/Cargo.toml",
+      "reason": "Static file dependencies."
+    },
+    {
+      "path": "examples/stream-to-file/Cargo.toml",
+      "reason": "Streaming dependencies."
+    },
+    {
+      "path": "examples/templates/Cargo.toml",
+      "reason": "Template dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "streaming",
+    "filesystem",
+    "templates"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "filesystem",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:28:16.061Z",
+  "updatedAt": "2026-10-29T07:28:16.061Z"
+}

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_7f1324652f",
+  "title": "Example: stream request body to file",
+  "summary": "Demonstrates writing a streamed request body to a file.\n\nAgent mapper reason: This example streams untrusted network data into filesystem storage.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Implements streamed upload handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/stream-to-file/Cargo.toml",
+      "reason": "Defines runtime dependencies."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Defines streaming body behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "uploads",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "filesystem",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:08:04.674Z"
+}

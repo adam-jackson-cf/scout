@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_ui-flow_5964874384",
+  "title": "Docs site client-side JavaScript",
+  "summary": "Browser scripts shipped with the docs site: a chat widget, site customizations and the Termynal terminal animation.\n\nAgent mapper reason: These are the browser-side docs scripts, which are kept apart from the Python docs examples.",
+  "kind": "ui-flow",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs/en/docs/js/chat.js",
+      "reason": "Chat widget script that handles user input in the browser."
+    },
+    {
+      "path": "docs/en/docs/js/custom.js",
+      "reason": "Site-wide behavior overrides."
+    },
+    {
+      "path": "docs/en/docs/js/termynal.js",
+      "reason": "Animated terminal component used in tutorial pages."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/css/custom.css",
+      "reason": "Styles these scripts depend on."
+    },
+    {
+      "path": "docs/en/docs/css/termynal.css",
+      "reason": "Styles for the terminal component."
+    },
+    {
+      "path": "docs/en/overrides/main.html",
+      "reason": "Template that loads these scripts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "javascript",
+    "browser",
+    "user-input"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:14:50.304Z",
+  "updatedAt": "2026-10-29T07:08:55.373Z"
+}

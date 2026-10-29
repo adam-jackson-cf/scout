@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e2f0ca65e3",
+  "title": "axum-core response, body, and error",
+  "summary": "IntoResponse, IntoResponseParts, header appending, the body type, and the core error type in axum-core.\n\nAgent mapper reason: IntoResponse, the body type, and the error type form the response side of the core crate and change together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Response module root."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "IntoResponse trait and its implementations."
+    },
+    {
+      "path": "axum-core/src/response/into_response_parts.rs",
+      "reason": "IntoResponseParts trait for composing headers and extensions."
+    },
+    {
+      "path": "axum-core/src/response/append_headers.rs",
+      "reason": "AppendHeaders response helper."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Body type shared by requests and responses."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Core boxed error type."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Macros used to implement IntoResponse for tuples."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Crate root and re-exports."
+    },
+    {
+      "path": "axum-core/CHANGELOG.md",
+      "reason": "Documents response behavior changes."
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Describes the crate's purpose."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Crate manifest."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "body",
+    "error"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:12:39.825Z",
+  "updatedAt": "2026-10-29T07:12:39.825Z"
+}

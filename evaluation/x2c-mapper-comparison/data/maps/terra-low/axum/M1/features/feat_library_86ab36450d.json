@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_86ab36450d",
+  "title": "Extra routing, handlers, and middleware",
+  "summary": "Provides resource routing, handler alternatives, and extra middleware utilities.\n\nAgent mapper reason: These optional adapters extend routing and handler composition.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Extra routing exports."
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Resource-oriented routes."
+    },
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Extra handler exports."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Alternative handler composition."
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Extra middleware utilities."
+    },
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Either-type composition."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Underlying router."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Underlying handler contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "handlers",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:30:36.636Z",
+  "updatedAt": "2026-10-29T07:31:41.750Z"
+}

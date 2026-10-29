@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_7bcdaa1e4c",
+  "title": "Workspace and CI configuration",
+  "summary": "Cargo workspace settings, dependency policy, and GitHub workflow configuration.\n\nAgent mapper reason: These files govern workspace-wide development and validation rather than one library package.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Defines the Cargo workspace."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Configures dependency and license checks."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Defines repository CI jobs."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Configures patch workflow behavior."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Configures issue reporting."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "reason": "Defines the bug report template."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "reason": "Defines the feature request template."
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "Defines the pull request template."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Defines repository-level ignored paths."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Documents contribution workflow."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "dependency-policy"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:51:17.230Z",
+  "updatedAt": "2026-10-29T07:51:17.230Z"
+}

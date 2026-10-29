@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_692585d614",
+  "title": "Axum crate API and build setup",
+  "summary": "Defines the main crate surface, crate-level macros, and build-time setup.\n\nAgent mapper reason: These files establish the main crate boundary, exports, and build integration.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/build.rs",
+      "reason": "Performs crate build-time setup."
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Defines and documents the primary public API."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Provides crate-level macros."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares crate dependencies and features."
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Documents the main crate."
+    },
+    {
+      "path": "Cargo.toml",
+      "reason": "Declares workspace configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "public-api",
+    "build"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:53:58.804Z",
+  "updatedAt": "2026-10-29T07:53:58.804Z"
+}

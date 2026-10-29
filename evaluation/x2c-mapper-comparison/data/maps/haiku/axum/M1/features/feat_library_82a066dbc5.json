@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_82a066dbc5",
+  "title": "axum-extra routing, handler composition and middleware",
+  "summary": "Typed paths, resource routing, Or handler composition, and extra middleware helpers.\n\nAgent mapper reason: Routing and handler helpers in axum-extra depend on typed path macros and are reviewed as a unit.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Routing module surface."
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "TypedPath routing support built on axum-macros."
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Resource-style route grouping."
+    },
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Handler extension traits."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Or combinator for handlers."
+    },
+    {
+      "path": "axum-extra/src/middleware.rs",
+      "reason": "Extra middleware helpers."
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Crate root for axum-extra."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Macro that generates TypedPath impls used by typed.rs."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Feature flags and dependency on axum-macros."
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Static asset used by an axum-extra test."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/named_fields_struct.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/typed_path/pass/named_fields_struct.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "typed-path",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:19:20.641Z"
+}

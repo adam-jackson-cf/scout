@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_unknown_09dad52946",
+  "title": "examples: state, auth, and databases",
+  "summary": "Examples for in-memory state, todos, sessions, JWT, OAuth, and Postgres via sqlx and tokio-postgres.\n\nAgent mapper reason: Stateful and auth examples handle secrets and external stores and are reviewed together.",
+  "kind": "unknown",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/key-value-store/src/main.rs",
+      "reason": "Shared state example"
+    },
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "CRUD state example"
+    },
+    {
+      "path": "examples/sessions/src/main.rs",
+      "reason": "Session example"
+    },
+    {
+      "path": "examples/jwt/src/main.rs",
+      "reason": "JWT auth example"
+    },
+    {
+      "path": "examples/oauth/src/main.rs",
+      "reason": "OAuth example"
+    },
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "sqlx database example"
+    },
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "reason": "tokio-postgres database example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/jwt/Cargo.toml",
+      "reason": "JWT dependencies"
+    },
+    {
+      "path": "examples/oauth/Cargo.toml",
+      "reason": "OAuth dependencies"
+    },
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "sqlx dependencies"
+    },
+    {
+      "path": "examples/jwt/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "state",
+    "auth",
+    "database",
+    "secrets"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "secrets",
+    "database",
+    "external-api"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:11:19.210Z",
+  "updatedAt": "2026-10-29T07:17:47.609Z"
+}

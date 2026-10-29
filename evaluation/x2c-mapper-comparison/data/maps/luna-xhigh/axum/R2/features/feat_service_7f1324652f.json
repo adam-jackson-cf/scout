@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_7f1324652f",
+  "title": "Example: stream upload to file",
+  "summary": "Demonstrates streaming request data into a file.\n\nAgent mapper reason: This example crosses the request-stream and filesystem-write boundary.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Implements streaming upload handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/stream-to-file/Cargo.toml",
+      "reason": "Defines body and filesystem dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "streaming",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:05:21.079Z"
+}

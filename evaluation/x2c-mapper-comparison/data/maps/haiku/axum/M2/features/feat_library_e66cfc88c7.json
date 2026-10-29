@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e66cfc88c7",
+  "title": "axum-macros derive and attribute macros",
+  "summary": "Procedural macros for FromRequest, FromRequestParts, FromRef, TypedPath, and debug_handler.\n\nAgent mapper reason: Macro implementations are one codegen unit; their trybuild fixtures are used as tests rather than owned files.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": "debug_handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Attribute parsing helpers"
+    },
+    {
+      "path": "axum-macros/src/axum_test.rs",
+      "reason": "Test macro implementation"
+    },
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "debug_handler implementation"
+    },
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "reason": "FromRef derive"
+    },
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "FromRequest derive"
+    },
+    {
+      "path": "axum-macros/src/from_request/attr.rs",
+      "reason": "FromRequest attribute parsing"
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Proc macro entrypoints"
+    },
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "TypedPath derive"
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Position helper for generated code"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Macro usage docs"
+    },
+    {
+      "path": "axum-macros/CHANGELOG.md",
+      "reason": "Macro behaviour history"
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Proc-macro crate config"
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Toolchain pin for macro tests"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/ready.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/pass/ready.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "derive",
+    "codegen"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:11:19.210Z",
+  "updatedAt": "2026-10-29T07:22:16.701Z"
+}

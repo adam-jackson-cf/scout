@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_7ad93f86c6",
+  "title": "Handlers and service adapters",
+  "summary": "Handler invocation, futures, state-bearing service conversion, and error handling.\n\nAgent mapper reason: The files bridge handlers and services and control how their asynchronous results and errors enter routing.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines and implements handler conversion."
+    },
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Implements handler futures."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Adapts handlers to services."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Adapts state through request extensions."
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Adapts service errors into responses."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Provides service extension methods."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Provides boxed service infrastructure."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Explains handler behavior."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Explains error conversion."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "services",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:47:01.861Z"
+}

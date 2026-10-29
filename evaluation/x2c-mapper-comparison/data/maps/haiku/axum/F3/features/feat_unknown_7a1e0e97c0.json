@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_unknown_7a1e0e97c0",
+  "title": "Examples: TLS, proxies, and low-level servers",
+  "summary": "Examples for HTTP and reverse proxies, low-level OpenSSL and rustls, TLS with rustls, Unix domain sockets, hyper 1.0, graceful shutdown, and wasm-compatible routing.\n\nAgent mapper reason: Networking and TLS examples share socket, certificate, and proxy forwarding concerns.",
+  "kind": "unknown",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/http-proxy/src/main.rs",
+      "reason": "HTTP proxy example"
+    },
+    {
+      "path": "examples/reverse-proxy/src/main.rs",
+      "reason": "Reverse proxy example"
+    },
+    {
+      "path": "examples/low-level-openssl/src/main.rs",
+      "reason": "Low-level OpenSSL server"
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Low-level rustls server"
+    },
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "TLS with rustls"
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Unix socket server"
+    },
+    {
+      "path": "examples/hyper-1-0/src/main.rs",
+      "reason": "hyper 1.0 integration"
+    },
+    {
+      "path": "examples/graceful-shutdown/src/main.rs",
+      "reason": "Graceful shutdown example"
+    },
+    {
+      "path": "examples/simple-router-wasm/src/main.rs",
+      "reason": "Router compiled for wasm targets"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/low-level-openssl/self_signed_certs/cert.pem",
+      "reason": "Test certificate fixture"
+    },
+    {
+      "path": "examples/low-level-openssl/self_signed_certs/key.pem",
+      "reason": "Test key fixture; not a real secret"
+    },
+    {
+      "path": "examples/low-level-rustls/self_signed_certs/cert.pem",
+      "reason": "Test certificate fixture"
+    },
+    {
+      "path": "examples/low-level-rustls/self_signed_certs/key.pem",
+      "reason": "Test key fixture; not a real secret"
+    },
+    {
+      "path": "examples/tls-rustls/self_signed_certs/cert.pem",
+      "reason": "Test certificate fixture"
+    },
+    {
+      "path": "examples/tls-rustls/self_signed_certs/key.pem",
+      "reason": "Test key fixture; not a real secret"
+    },
+    {
+      "path": "examples/http-proxy/Cargo.toml",
+      "reason": "Example manifest"
+    },
+    {
+      "path": "examples/reverse-proxy/Cargo.toml",
+      "reason": "Example manifest"
+    },
+    {
+      "path": "examples/low-level-openssl/Cargo.toml",
+      "reason": "Example manifest"
+    },
+    {
+      "path": "examples/low-level-rustls/Cargo.toml",
+      "reason": "Example manifest"
+    },
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "reason": "Example manifest"
+    },
+    {
+      "path": "examples/unix-domain-socket/Cargo.toml",
+      "reason": "Example manifest"
+    },
+    {
+      "path": "examples/hyper-1-0/Cargo.toml",
+      "reason": "Example manifest"
+    },
+    {
+      "path": "examples/graceful-shutdown/Cargo.toml",
+      "reason": "Example manifest"
+    },
+    {
+      "path": "examples/simple-router-wasm/Cargo.toml",
+      "reason": "Example manifest"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/tls-rustls/Cargo.toml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "tls",
+    "proxy",
+    "networking"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "filesystem",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:14:23.770Z",
+  "updatedAt": "2026-10-29T07:14:23.770Z"
+}

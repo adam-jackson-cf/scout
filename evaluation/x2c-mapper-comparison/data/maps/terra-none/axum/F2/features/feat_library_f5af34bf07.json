@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f5af34bf07",
+  "title": "Streaming bodies, redirects, and server-sent events",
+  "summary": "Provides streaming body adapters and specialized response types for redirects and server-sent events.\n\nAgent mapper reason: These types shape response headers, bodies, and streaming lifetimes.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Exports body utilities."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Adapts streams into bodies."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Organizes response APIs."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Builds redirect responses."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Formats and streams server-sent events."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Defines the response conversion contract."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Demonstrates event streaming."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "streaming",
+    "sse",
+    "redirect"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

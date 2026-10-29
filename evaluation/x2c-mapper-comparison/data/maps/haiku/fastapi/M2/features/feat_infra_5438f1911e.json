@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_5438f1911e",
+  "title": "GitHub Action: comment docs preview in PR",
+  "summary": "Composite GitHub Action that posts a comment with the docs preview link on pull requests.\n\nAgent mapper reason: Single action with its own entrypoint and workflow caller; handles tokens and PR comments.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/app/main.py",
+      "reason": "Action logic"
+    },
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/action.yml",
+      "reason": "Action definition"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/actions/comment-docs-preview-in-pr/Dockerfile",
+      "reason": "Container build for the action"
+    },
+    {
+      "path": ".github/workflows/preview-docs.yml",
+      "reason": "Workflow that invokes the action"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "github-action",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "external-api",
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T01:14:50.304Z",
+  "updatedAt": "2026-10-29T07:09:49.818Z"
+}

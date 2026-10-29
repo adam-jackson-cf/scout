@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0812f3f31b",
+  "title": "Router composition and dispatch",
+  "summary": "Routes requests, composes nested and merged routers, and handles fallback and service conversion.\n\nAgent mapper reason: Router composition and path dispatch share route state, prefix handling, and fallback behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Router API and composition."
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Route service dispatch."
+    },
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Routing futures."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Router-to-make-service conversion."
+    },
+    {
+      "path": "axum/src/routing/not_found.rs",
+      "reason": "Default not-found behavior."
+    },
+    {
+      "path": "axum/src/routing/strip_prefix.rs",
+      "reason": "Nested route prefix handling."
+    },
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Route capture storage."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/nest.md",
+      "reason": "Nested router contract."
+    },
+    {
+      "path": "axum/src/docs/routing/merge.md",
+      "reason": "Router merge contract."
+    },
+    {
+      "path": "axum/src/docs/routing/fallback.md",
+      "reason": "Fallback contract."
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Method-level dispatch used by routes."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "dispatch",
+    "fallback"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:28:16.061Z",
+  "updatedAt": "2026-10-29T07:28:16.061Z"
+}

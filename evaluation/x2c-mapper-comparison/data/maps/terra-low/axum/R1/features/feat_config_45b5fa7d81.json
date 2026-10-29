@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_45b5fa7d81",
+  "title": "Workspace and continuous integration configuration",
+  "summary": "Defines workspace membership, dependency policy, and CI workflows.\n\nAgent mapper reason: These files govern build and review behavior across the workspace.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Workspace configuration"
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Dependency policy"
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "CI workflow"
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "CI patch configuration"
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue template configuration"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Contributor workflow"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci"
+  ],
+  "trustBoundaries": [
+    "network",
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:29:26.691Z"
+}

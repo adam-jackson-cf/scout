@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6db674a93e",
+  "title": "axum handlers and extractors",
+  "summary": "Handler trait and future/service adapters, plus the built-in extractors (path, query, state, matched path, host, connect info, multipart, websocket upgrade, raw form/query, rejections).\n\nAgent mapper reason: Handlers and built-in extractors form the request-decoding boundary and are tightly coupled through FromRequest(Parts).",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Handler future type"
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Handler-to-service state plumbing"
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Handler trait"
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "HandlerService adapter"
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "ConnectInfo extractor"
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Host extractor (untrusted header input)"
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "MatchedPath extractor"
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extractor exports"
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Multipart extractor"
+    },
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Path deserializer"
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Path extractor"
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Query extractor"
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "RawForm extractor"
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "RawQuery extractor"
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Extractor rejections"
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Request-parts extractors"
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "State extractor"
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "WebSocket upgrade extractor"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Handler docs"
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Extractor docs"
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Handler error docs"
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Core FromRequest traits these extractors implement"
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/state_and_body.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/state_and_body.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "extractors",
+    "user-input"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:17:47.257Z",
+  "updatedAt": "2026-10-29T07:19:20.738Z"
+}

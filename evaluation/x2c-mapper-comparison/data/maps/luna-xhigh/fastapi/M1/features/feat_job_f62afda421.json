@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_f62afda421",
+  "title": "GitHub action: people metadata",
+  "summary": "Action and workflow for maintaining repository people metadata.\n\nAgent mapper reason: The action code and workflow are closely tied to the people data file and should be reviewed together when that automation changes.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Implements people metadata automation."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Defines action inputs and execution."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Defines the action runtime image."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Configures the people automation workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/data/people.yml",
+      "reason": "Contains the people data maintained or referenced by this automation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "metadata",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:43:58.083Z"
+}

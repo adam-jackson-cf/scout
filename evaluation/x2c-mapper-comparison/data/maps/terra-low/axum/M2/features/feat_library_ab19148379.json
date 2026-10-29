@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ab19148379",
+  "title": "Request context and state extraction",
+  "summary": "Extracts connection information, host, shared state, extensions, and request parts.\n\nAgent mapper reason: These modules expose request metadata and application context to handlers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Extractor module interface."
+    },
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Connection metadata extraction."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Host extraction."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Request-parts extractors."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Shared application state extraction."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Framework extractor rejections."
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Extension extraction and response integration."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Typed header extraction and response integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Router state contract."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Substate conversion."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Connection information setup."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "state"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:31:41.701Z",
+  "updatedAt": "2026-10-29T07:32:52.942Z"
+}

@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a014c07b68",
+  "title": "Core request extraction contracts",
+  "summary": "Defines request and request-parts extraction, state references, body limits, tuple extraction, and rejection types.\n\nAgent mapper reason: These files define the common extraction interface consumed by the rest of the workspace.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": "FromRequest",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Extraction traits and module entrypoint."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Request body limit behavior."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "State reference conversion contract."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Core extraction failures."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Request-parts extractors."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Composed extractor implementations."
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Request extension trait exports."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Extraction from requests."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "Extraction from request parts."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core crate dependencies and features."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Public extraction behavior."
+    },
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "Derive macro implements these contracts."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "extraction",
+    "body-limit",
+    "state"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:35:56.660Z",
+  "updatedAt": "2026-10-29T07:41:26.742Z"
+}

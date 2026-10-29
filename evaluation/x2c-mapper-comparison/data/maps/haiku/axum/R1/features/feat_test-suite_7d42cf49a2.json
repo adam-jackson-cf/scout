@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_7d42cf49a2",
+  "title": "axum test helpers and benchmarks",
+  "summary": "Internal test client helpers and the benchmark suite.\n\nAgent mapper reason: Helpers and benchmarks support testing and are not part of the public request path.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Test helper module root"
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "In-process test client"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Benchmark suite"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/build.rs",
+      "reason": "Build script, context only"
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Dev dependencies and bench configuration"
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/benches/benches.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tests",
+    "benchmarks",
+    "helpers"
+  ],
+  "trustBoundaries": [],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:11:19.210Z",
+  "updatedAt": "2026-10-29T07:16:27.644Z"
+}

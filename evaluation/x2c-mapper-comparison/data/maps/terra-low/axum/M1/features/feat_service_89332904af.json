@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_89332904af",
+  "title": "Basic routing and error examples",
+  "summary": "Small examples of routing, fallback, HEAD requests, error handling, and handler organization.\n\nAgent mapper reason: These independent small programs demonstrate related routing and error-handling APIs.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/hello-world/src/main.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/hello-world/src/main.rs",
+      "reason": "Minimal server"
+    },
+    {
+      "path": "examples/readme/src/main.rs",
+      "reason": "README example"
+    },
+    {
+      "path": "examples/routes-and-handlers-close-together/src/main.rs",
+      "reason": "Route organization example"
+    },
+    {
+      "path": "examples/global-404-handler/src/main.rs",
+      "reason": "Fallback example"
+    },
+    {
+      "path": "examples/handle-head-request/src/main.rs",
+      "reason": "HEAD handling example"
+    },
+    {
+      "path": "examples/anyhow-error-response/src/main.rs",
+      "reason": "Error response example"
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/src/main.rs",
+      "reason": "Error and dependency injection example"
+    },
+    {
+      "path": "examples/versioning/src/main.rs",
+      "reason": "API versioning example"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/README.md",
+      "reason": "Example index"
+    },
+    {
+      "path": "examples/hello-world/Cargo.toml",
+      "reason": "Example dependencies"
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Router implementation"
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "examples",
+    "routing",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:29:26.547Z",
+  "updatedAt": "2026-10-29T07:31:41.756Z"
+}

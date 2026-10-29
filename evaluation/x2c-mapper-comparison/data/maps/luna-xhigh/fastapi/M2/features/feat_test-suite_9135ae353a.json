@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_9135ae353a",
+  "title": "Response models, filtering, and serialization",
+  "summary": "Response validation, model filtering, aliases, encoders, and serialization behavior.\n\nAgent mapper reason: These tests cover the transformation from endpoint return values to validated and serialized HTTP responses.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "Covers conversion of Python values to JSON-compatible data."
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "Covers custom datetime encoding."
+    },
+    {
+      "path": "tests/test_filter_pydantic_sub_model.py",
+      "reason": "Covers response filtering for nested models."
+    },
+    {
+      "path": "tests/test_read_with_orm_mode.py",
+      "reason": "Covers serialization from ORM-style objects."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Covers response serialization by alias."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "Covers response models declared as return annotations."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Covers response model include and exclude options."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Covers invalid response model declarations."
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "Covers response model subtype behavior."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Covers response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Covers dataclass response serialization."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Covers model response serialization."
+    },
+    {
+      "path": "tests/test_skip_defaults.py",
+      "reason": "Covers omission of default response values."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Documents response model validation and filtering."
+    },
+    {
+      "path": "docs/en/docs/tutorial/encoder.md",
+      "reason": "Documents JSON-compatible encoding."
+    },
+    {
+      "path": "docs/en/docs/tutorial/extra-models.md",
+      "reason": "Documents additional model patterns."
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response-model",
+    "serialization",
+    "encoding"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:47:09.807Z"
+}

@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_845aa1cfd5",
+  "title": "Python package, dependency, and quality configuration",
+  "summary": "Package metadata, supported tooling, and repository-wide formatting and lint configuration.\n\nAgent mapper reason: These files set package, dependency update, and repository configuration that governs development and release behavior.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Defines package metadata, dependencies, and project tool configuration."
+    },
+    {
+      "path": ".gitignore",
+      "reason": "Defines repository files excluded from version control."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Configures automated dependency update requests."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Defines contributor-side quality hooks."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Documents contribution and development conventions."
+    },
+    {
+      "path": "SECURITY.md",
+      "reason": "Documents security reporting expectations."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "pyproject.toml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "python",
+    "hatch",
+    "configuration"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "network",
+    "process-exec"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:32:50.325Z",
+  "updatedAt": "2026-10-29T00:47:09.787Z"
+}

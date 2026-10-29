@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fd0104f1e0",
+  "title": "Extra response formats and streaming bodies",
+  "summary": "Adds asynchronous reader bodies, JSON Lines, protobuf, and erased JSON response support.\n\nAgent mapper reason: These optional types turn streams or structured values into HTTP payloads and vice versa.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Organizes extra body adapters."
+    },
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Adapts asynchronous readers to HTTP bodies."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Handles JSON Lines streams."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Handles protobuf payloads."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Organizes extra response types."
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Provides type-erased JSON responses."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines optional serialization and body features."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Defines the response conversion contract."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "command": null
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "serialization",
+    "streaming",
+    "protobuf"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:37:54.470Z",
+  "updatedAt": "2026-10-29T07:37:54.470Z"
+}

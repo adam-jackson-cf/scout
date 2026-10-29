@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d2ae82be1e",
+  "title": "axum body, JSON, form, and typed header support",
+  "summary": "Body wrappers, StreamBody, Json and Form types, and typed header extraction.\n\nAgent mapper reason: Serialization wrappers for body content share deserialization and size concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": "Json",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Body re-exports and helpers"
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "StreamBody response type"
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Json extractor and response"
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Form extractor and response"
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Typed header extractor and response"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Underlying body type"
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Related raw form extraction"
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Feature flags gating json and form support"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/Cargo.toml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "json",
+    "form",
+    "body",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:14:23.770Z",
+  "updatedAt": "2026-10-29T07:14:23.770Z"
+}

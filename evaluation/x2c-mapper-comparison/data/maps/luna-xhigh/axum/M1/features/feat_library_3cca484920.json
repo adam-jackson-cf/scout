@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3cca484920",
+  "title": "Axum body and streaming",
+  "summary": "Public body utilities, streaming bodies, and boxed response types.\n\nAgent mapper reason: These APIs shape body values and type erasure at the public HTTP boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Declares the public body API."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Implements streaming body behavior."
+    },
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Provides boxed type erasure for compatible response and service values."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines the underlying core body abstraction."
+    },
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Shows public exports."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents response and body usage."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines feature and dependency constraints."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "body",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:05:21.079Z",
+  "updatedAt": "2026-10-29T08:08:04.674Z"
+}

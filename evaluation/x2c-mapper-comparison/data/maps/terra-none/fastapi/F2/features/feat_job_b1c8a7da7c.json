@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_b1c8a7da7c",
+  "title": "Translation notification automation",
+  "summary": "GitHub workflow and action that update translation-related discussions.\n\nAgent mapper reason: The workflow, container action, and GraphQL implementation operate as one notification job.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Action contract."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Discussion query and comment implementation."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Action runtime image."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Workflow invoking translation notifications."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/contributing.md",
+      "reason": "Contributor context for translations."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "translations",
+    "notifications"
+  ],
+  "trustBoundaries": [
+    "external-api",
+    "network",
+    "secrets",
+    "permissions",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:52:33.196Z",
+  "updatedAt": "2026-10-29T00:52:33.196Z"
+}

@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_940a5a5c41",
+  "title": "Core body and package infrastructure",
+  "summary": "Provides core body and error types plus package-level macros and build configuration.\n\nAgent mapper reason: These files define the foundational crate surface and types shared by the other core slices.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Core crate exports."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Core HTTP body implementation."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Core error wrapper."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Shared internal macros."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Core build-time configuration."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Core crate features and dependencies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/README.md",
+      "reason": "Core package purpose."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Consumer of body abstractions."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "body"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:25:32.591Z",
+  "updatedAt": "2026-10-29T07:32:52.938Z"
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3162f6773c",
+  "title": "axum-extra body and serialization adapters",
+  "summary": "Provides async body reading, JSON lines, protobuf, erased JSON responses, and shared response exports.\n\nAgent mapper reason: These adapters extend body reading and response serialization for additional data formats.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Implements async body reading."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Declares body extensions."
+    },
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Implements JSON-lines support."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Implements protobuf integration."
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Implements erased JSON responses."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Declares response extensions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines format and body dependencies."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Documents the extra adapters."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines the base body API."
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Defines response conversion behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "body",
+    "serialization",
+    "protobuf"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T08:08:04.674Z",
+  "updatedAt": "2026-10-29T08:08:04.674Z"
+}

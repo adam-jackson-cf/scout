@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_5ad54bfca1",
+  "title": "Application and router behavior",
+  "summary": "Behavioral coverage for application construction, route registration, inclusion, and path handling.\n\nAgent mapper reason: These tests jointly exercise how FastAPI applications assemble and expose routes. The implementation files are not enumerated in the supplied inventory, so the slice is grounded in the available behavior tests and examples.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_application.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_application.py",
+      "reason": "Covers application-level behavior."
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "Checks route inclusion behavior."
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "reason": "Covers router-level defaults and overrides."
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "reason": "Checks behavior for routers with no operations."
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "reason": "Covers path prefix and template interaction."
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "reason": "Checks route scope behavior."
+    },
+    {
+      "path": "tests/test_operations_signatures.py",
+      "reason": "Covers endpoint signature handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "reason": "Shows router composition in a documented application."
+    },
+    {
+      "path": "docs/en/docs/tutorial/bigger-applications.md",
+      "reason": "Explains the documented application and router structure."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_operations_signatures.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_operations_signatures.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "application",
+    "routing",
+    "routers"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "skipped",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T00:43:58.083Z",
+  "updatedAt": "2026-10-29T00:47:09.805Z"
+}

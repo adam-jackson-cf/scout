@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_60f71d142c",
+  "title": "axum-macros FromRequest and attribute parsing",
+  "summary": "Derive macros for FromRequest and FromRequestParts, attribute parsing, and position helpers.\n\nAgent mapper reason: FromRequest derive and its attribute parser are one unit; generated code is what applications compile against.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Proc-macro entry points."
+    },
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "FromRequest derive implementation."
+    },
+    {
+      "path": "axum-macros/src/from_request/attr.rs",
+      "reason": "Attribute parsing for FromRequest derives."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parsing helpers."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Position tracking helper for generated code."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Macro usage docs."
+    },
+    {
+      "path": "axum-macros/CHANGELOG.md",
+      "reason": "Macro change history."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Proc-macro crate configuration."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Pinned toolchain for macro tests."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Traits generated code implements."
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/container.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_request/pass/container.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "derive",
+    "from-request"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-29T07:19:20.641Z",
+  "updatedAt": "2026-10-29T07:19:20.641Z"
+}
