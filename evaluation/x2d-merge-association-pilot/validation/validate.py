@@ -20,6 +20,7 @@ Environment: X2D_SRC (a fastapi clone containing the pinned revisions; default /
 """
 import hashlib
 import collections
+import copy
 import json
 import math
 import os
@@ -2583,24 +2584,116 @@ def e2e_gates(tmp, e):
     check("E R3-11 k23.json `frozen_pr_counts` (the power structure) counts the verdict's population: core_gate units are excluded (its total = the frozen rounds' scored clusters minus their core_gate units); `frozen_pr_counts_all_units` keeps every scored cluster for the record",
           sum(sum(v.values()) for v in pf.values()) == sum(per[str(r_)]["n"] - per[str(r_)]["core_gate"] for r_ in x2d.FROZEN_ROUNDS) and sum(sum(v.values()) for v in pa.values()) == sum(per[str(r_)]["n"] for r_ in x2d.FROZEN_ROUNDS)
           and all(set(pf[r_]) <= set(pa[r_]) and all(pf[r_][p_] <= pa[r_][p_] for p_ in pf[r_]) for r_ in pf), (pf, pa, {r_: (per[str(r_)]["n"], per[str(r_)]["core_gate"]) for r_ in x2d.FROZEN_ROUNDS}))
-    # R2-05: build_controls refuses below 8 gap positives (trim the eligible P units of the reserve one by one until the control build refuses)
+    # R2-05 / R3-04 / rev 10: P2 sources = P leftovers, then D (hash order); n_p2 = min(12, eligible_P - 20 + eligible_D); refusal below 8; P1 unchanged
     import build_controls as BC
     full_res = json.load(open(os.path.join(S, "prepass", "reserve.json")))
     own0 = F.Ownership(G.catalogue_membership(e.cat(), 0))
-    p_rows = BU.build_reserve_units(SRC, "P", own0, e.data, x2d.round_settings(0, e.data), False, full_res)
+    sett0 = x2d.round_settings(0, e.data)
+    p_rows = BU.build_reserve_units(SRC, "P", own0, e.data, sett0, False, full_res)
+    d_rows = BU.build_reserve_units(SRC, "D", own0, e.data, sett0, False, full_res)
     elig_ids = [r_["cluster_id"] for r_ in p_rows if BC._unique_owner(r_, own0)]
-    refusal, dropped = None, 0
-    for _i in range(len(elig_ids)):
-        dropped += 1
-        trimmed = dict(full_res, clusters_hash_order=[c for c in full_res["clusters_hash_order"] if c["id"] not in set(elig_ids[:dropped])])
+    elig_d_ids = [r_["cluster_id"] for r_ in d_rows if BC._unique_owner(r_, own0)]
+    d_case_ids = {r_["case_id"] for r_ in d_rows}
+    real_p2 = [k_ for k_ in jl(e.path("rounds", "0", "control-key.jsonl")) if k_["kind"] == "p2"]
+    check("E rev 10 the real stub gates-build built n_p2 = min(12, eligible_P - 20 + eligible_D) = %d P2 clones (eligible_P %d, eligible_D %d), all gap positives" % (min(12, len(elig_ids) - 20 + len(elig_d_ids)), len(elig_ids), len(elig_d_ids)),
+          len(real_p2) == min(12, len(elig_ids) - 20 + len(elig_d_ids)) and all(k_.get("gap_positive") for k_ in real_p2), len(real_p2))
+    drop = lambda ids: dict(full_res, clusters_hash_order=[c for c in full_res["clusters_hash_order"] if c["id"] not in set(ids)])
+
+    def p_only(res_):  # the legacy P-only build: no D unit is eligible, the gap-positive floor lifted so that a short P pool still builds
+        orig_uo, orig_min = BC._unique_owner, BC.P2_MIN_GAP_POSITIVES
+        BC._unique_owner = lambda row, own: None if row.get("set") == "D" else orig_uo(row, own)
+        BC.P2_MIN_GAP_POSITIVES = 0
         try:
-            BC.make_controls(SRC, e.data, reserve=trimmed)
-        except SystemExit as ex:
-            refusal = str(ex.code)
+            return BC.make_controls(SRC, e.data, reserve=res_)
+        finally:
+            BC._unique_owner, BC.P2_MIN_GAP_POSITIVES = orig_uo, orig_min
+
+    dump = lambda o: json.dumps(o, sort_keys=True)
+    fill = base = None
+    p_slots = 0
+    for keep in range(min(27, len(elig_ids)), 19, -1):  # P short: 20 + p_slots eligible P units, p_slots < 8
+        trimmed = drop(elig_ids[keep:])
+        try:
+            base = p_only(trimmed)
+        except SystemExit:
+            continue
+        p_slots = keep - 20
+        fill = BC.make_controls(SRC, e.data, reserve=trimmed)
+        break
+
+    def sig(res_, kinds):  # controls by (kind, source cluster id), case ids dropped
+        kmap = {k_["case_id"]: k_ for k_ in res_["control_key"]}
+        return {(u["control_kind"], u["cluster_id"]): (dump({a_: b_ for a_, b_ in u.items() if a_ != "case_id"}), dump({a_: b_ for a_, b_ in kmap[u["case_id"]].items() if a_ != "case_id"}))
+                for u in res_["units"] if u.get("control") and u["control_kind"] in kinds}
+    same_rows = fill is not None and base is not None
+    if same_rows:
+        real_f = {u["case_id"]: dump(u) for u in fill["units"] if not u.get("control")}
+        real_b = {u["case_id"]: dump(u) for u in base["units"] if not u.get("control")}
+        fixed_f, fixed_b = sig(fill, ("p1", "trap", "prose", "planted_new")), sig(base, ("p1", "trap", "prose", "planted_new"))
+        dup_f, dup_b = sig(fill, ("dup",)), sig(base, ("dup",))
+        small, large = (dup_f, dup_b) if len(dup_f) <= len(dup_b) else (dup_b, dup_f)
+        same_rows = (real_f == real_b and fixed_f == fixed_b and len(fixed_f) == 20 + 2 + len(BC.PLANTED) and all(large.get(k_) == v_ for k_, v_ in small.items())
+                     and dump(fill["catalogues"]["catalogue-p1"]) == dump(base["catalogues"]["catalogue-p1"]) and dump(fill["catalogues"]["catalogue-n1"]) == dump(base["catalogues"]["catalogue-n1"])
+                     and dump(fill["contrast_units"]) == dump(base["contrast_units"]) and dump(fill["membership"]) == dump(base["membership"]))
+    n_p1 = sum(1 for k_ in (fill or {"control_key": []})["control_key"] if k_["kind"] == "p1")
+    fk = [k_ for k_ in (fill or {"control_key": []})["control_key"] if k_["kind"] == "p2"]
+    check("E rev 10 P short, D fills (P pool 20 + %d eligible, %d eligible D): 12 clones, all membership gap positives, %d from P leftovers then %d from D in hash order; the D / P / P1 / trap / prose / planted_new rows, the dup rows common to both builds "
+          "(a prefix of the same hash order), catalogue-p1, catalogue-n1, the contrast units and the membership are byte-identical to the P-only build of the same reserve; P1 stays exactly the P-only 20 items"
+          % (p_slots, len(elig_d_ids), p_slots, 12 - p_slots),
+          fill is not None and len(fk) == 12 and all(k_["gap_positive"] for k_ in fk) and fill["p2_donors"]["D"] == 12 - p_slots and fill["p2_donors"]["P_unplaceable"] + fill["p2_donors"]["P_leftover"] == p_slots
+          and [k_["source_case_id"] in d_case_ids for k_ in fk].count(True) == 12 - p_slots and n_p1 == 20 and len(base["p2_source_ids"]) == p_slots and fill["p2_source_ids"][:p_slots] == base["p2_source_ids"]
+          and fill["p2_source_ids"][p_slots:] == [r_["case_id"] for r_ in d_rows if r_["cluster_id"] in set(elig_d_ids)][:12 - p_slots] and same_rows,
+          (None if fill is None else (len(fk), fill["p2_donors"], n_p1, same_rows)))
+    refusal_pd, built8 = None, None
+    if fill is not None:  # P + D short: p_slots + eligible_D = 7 refuses with the P-only text; = 8 builds 8 clones
+        trimmed_p = drop(elig_ids[20 + p_slots:])
+        for tgt in (8, 7):
+            keep_d = tgt - p_slots
+            trimmed = dict(trimmed_p, clusters_hash_order=[c for c in trimmed_p["clusters_hash_order"] if c["id"] not in set(elig_d_ids[keep_d:])])
+            try:
+                res_ = BC.make_controls(SRC, e.data, reserve=trimmed)
+                if tgt == 8:
+                    built8 = res_
+            except SystemExit as ex:
+                if tgt == 7:
+                    refusal_pd = str(ex.code)
+    check("E R2-05 / R3-04 / rev 10 build_controls refuses when eligible P beyond 20 plus eligible D leave fewer than %d P2 clones (7 of 8: %s); 8 clones build exactly at the floor" % (BC.P2_MIN_GAP_POSITIVES, (refusal_pd or "no refusal")[:80]),
+          refusal_pd is not None and "planted-gap gate" in refusal_pd and "council and the user decide" in refusal_pd and refusal_pd.startswith("refusing: ") and built8 is not None
+          and sum(1 for k_ in built8["control_key"] if k_["kind"] == "p2") == 8 and all(k_["gap_positive"] for k_ in built8["control_key"] if k_["kind"] == "p2"), (refusal_pd, None if built8 is None else built8["p2_donors"]))
+    # R10-01 (alpha): on the real stub build every P1 item's gold area is an area of catalogue-p1, which keeps every area of the catalogue
+    cp1_ids = {a_["area_id"] for a_ in json.load(open(e.path("rounds", "0", "catalogue-p1.json")))["areas"]}
+    real_key = jl(e.path("rounds", "0", "control-key.jsonl"))
+    real_p1 = [k_ for k_ in real_key if k_["kind"] == "p1"]
+    check("E R10-01 (alpha) the real stub gates-build: %d P1 items, each gold area_id is an area of catalogue-p1, which has exactly as many areas as the catalogue (%d)" % (len(real_p1), len(e.cat()["areas"])),
+          len(real_p1) >= 20 and all(k_["area_id"] in cp1_ids for k_ in real_p1) and len(cp1_ids) == len(e.cat()["areas"]), (len(real_p1), len(cp1_ids)))
+    # R10-01 (beta): a P unit whose members are the only files of its area is not a P1 item (A would vanish from catalogue-p1); it goes to the P2 source pool as unplaceable
+    real_p1_src = {k_["source_case_id"] for k_ in real_p1}
+    cat_real = e.cat()
+    beta = None
+    cands = [r_ for r_ in p_rows if r_["case_id"] in real_p1_src and BC._unique_owner(r_, own0)]
+    for r_ in cands[:6]:
+        a_id = BC._unique_owner(r_, own0)
+        mod = copy.deepcopy(cat_real)
+        for a_ in mod["areas"]:
+            if a_["area_id"] == a_id:
+                a_["files"] = sorted(r_["members"])
+                a_["sample_files"] = [f_ for f_ in a_.get("sample_files", []) if f_ in a_["files"]]
+        orig_rc = x2d.read_catalogue
+        x2d.read_catalogue = lambda data=None, _m=mod: copy.deepcopy(_m)
+        try:
+            res_b = BC.make_controls(SRC, e.data)
+        except SystemExit:
+            continue
+        finally:
+            x2d.read_catalogue = orig_rc
+        b_p1 = [k_ for k_ in res_b["control_key"] if k_["kind"] == "p1"]
+        b_ids = {a_["area_id"] for a_ in res_b["catalogues"]["catalogue-p1"]["areas"]}
+        beta = (r_["case_id"], len(b_p1))
+        if (r_["case_id"] in res_b["p2_source_ids"] and r_["case_id"] not in {k_["source_case_id"] for k_ in b_p1} and len(b_p1) == 20 and a_id in b_ids
+                and len(b_ids) == len(mod["areas"]) and all(k_["area_id"] in b_ids for k_ in b_p1)):
+            beta = True
             break
-    check("E R2-05 / R3-04 build_controls refuses a P pool that leaves fewer than %d P2 clones / gap positives (%d of %d eligible P units dropped: %s); the real gates-build above built %d P2 clones, all gap positives (n_p2 = min(12, eligible - 20))" % (BC.P2_MIN_GAP_POSITIVES, dropped, len(elig_ids), (refusal or "no refusal")[:90],
-                                                                                                                                                                                             sum(1 for k_ in jl(e.path("rounds", "0", "control-key.jsonl")) if k_["kind"] == "p2")),
-          refusal is not None and "planted-gap gate" in refusal and "council and the user decide" in refusal and all(k_.get("gap_positive") for k_ in jl(e.path("rounds", "0", "control-key.jsonl")) if k_["kind"] == "p2"), refusal)
+    check("E R10-01 (beta) planted: a P unit that is the sole owner-set of its area is not a P1 item, is a P2 source, P1 still has 20 items and catalogue-p1 keeps every area", beta is True, beta)
     units = e.units_of(0) + e.units_of(0, "contrast")
     key = {k["case_id"]: k for k in jl(e.path("rounds", "0", "control-key.jsonl"))}
     base_units = e.units_of(0)

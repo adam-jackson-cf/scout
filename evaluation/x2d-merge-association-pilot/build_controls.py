@@ -17,10 +17,11 @@ Writes (all append-only; refuses when any exists):
 X2D_SKIP_SIGNOFF=1 -> verify_pins(require_signoff=False) (validation).
 
 Construction (deterministic; no model; hash orders only):
-  eligible = P units whose members are all owned by one single area A in the catalogue. n_p2 = min(12, eligible-20) (refusal below 8), P1 = the remaining (>= 20,
-  loud refusal otherwise). P1: the members leave A in catalogue-p1 and re-enter as NEW files (same basenames and text) in a directory whose owned siblings belong to one
+  eligible_P = P units whose members are all owned by one single area A in the catalogue; eligible_D = the same for D units. n_p2 = min(12, eligible_P - 20 + eligible_D) (refusal below 8),
+  P1 = 20 or more eligible placeable P units (loud refusal otherwise). P1: the members leave A in catalogue-p1 and re-enter as NEW files (same basenames and text) in a directory whose owned siblings belong to one
   other area (stratum 1), to two or more other areas (stratum 2) or to no area (stratum 3), cycling; rules (a)-(f) are verified not to resolve the new path.
-  P2 (the planted-gap control, R1-07): clones of eligible P units whose owning area is ablated; gold = gold.derive_ablation(source gold, ablated_area_ids) with the SAME union the catalogue
+  P2 (the planted-gap control, R1-07): clones of eligible units whose owning area is ablated. Sources, in order: unplaceable eligible P units, then placeable eligible P units beyond the 20 of P1, then eligible D units in hash order (rev 10;
+  the D clones are source-dependent: their gold derives from D labels). gold = gold.derive_ablation(source gold, ablated_area_ids) with the SAME union the catalogue
   removes (R2-05; key rows carry `ablated_area_ids` and `gap_positive` = no member owned in catalogue-p2); the gate's denominator is the gap positives; build refuses below P2_MIN_GAP_POSITIVES = 8. There is no separate
   planted_gap control. planted_new: synthetic packages
   (fixed templates). trap: an empty `__init__.py` renamed across directories (#9268 shape). prose: a clone of a P unit whose PR title/body talk about another area.
@@ -31,7 +32,7 @@ Importable: make_controls.
 import argparse, collections, copy, hashlib, json, math, os, sys
 
 P2_MIN_GAP_POSITIVES = 8  # PREREGISTRATION 5: the P2 gate's denominator (clones whose derived gold is none/gap) must be at least this; fewer label-derived gap positives = UNMEASURED (R3-04)
-P2_MAX_CLONES = 12  # clones built: n_p2 = min(12, eligible - 20), refusal below P2_MIN_GAP_POSITIVES (R3-04)
+P2_MAX_CLONES = 12  # clones built: n_p2 = min(12, eligible_P - 20 + eligible_D), refusal below P2_MIN_GAP_POSITIVES (R3-04; D top-up, rev 10)
 
 import x2d
 import frontend as F
@@ -251,7 +252,8 @@ def make_controls(repo, data=None, settings=None, reserve=None):
         return trees[rev]
 
     # ---- allocation of P units (P1 only from units that can be placed; placement is checked against the ownership the final P1 items use)
-    elig = [(r, a) for r in p_rows for a in [_unique_owner(r, own)] if a]
+    elig_p = [(r, a) for r in p_rows for a in [_unique_owner(r, own)] if a]
+    elig_d = [(r, a) for r in d_rows for a in [_unique_owner(r, own)] if a]
 
     def p1_ownership(p1_units):
         rm = {m for r, _ in p1_units for m in r["members"]}
@@ -259,34 +261,41 @@ def make_controls(repo, data=None, settings=None, reserve=None):
         return c1, F.Ownership(G.catalogue_membership(c1, 0))
 
     placeable, unplaceable, removed = [], [], set()
-    for r, a in elig:
-        o = F.Ownership(G.catalogue_membership(_filter_catalogue(cat, removed | set(r["members"])), 0))
+    for r, a in elig_p:
+        c1 = _filter_catalogue(cat, removed | set(r["members"]))
+        if a not in {x["area_id"] for x in c1["areas"]}:  # A would lose its last owned file: Jev could not recover an area that is not in catalogue-p1
+            unplaceable.append((r, a))
+            continue
+        o = F.Ownership(G.catalogue_membership(c1, 0))
         if _p1_target(r, a, o, c0_tree, c0_state, [1, 2, 3][len(placeable) % 3]) is None:
             unplaceable.append((r, a))
         else:
             placeable.append((r, a))
             removed |= set(r["members"])
     if len(placeable) < 20:
-        sys.exit("refusing: only %d P units can be placed for P1 (>= 20 needed; %d eligible, %d unplaceable); the gate cannot be built" % (len(placeable), len(elig), len(unplaceable)))
-    need = min(P2_MAX_CLONES, len(elig) - 20)  # R3-04: up to 12 clones so that the gate (>= 8 label-derived gap positives) has slack; P1 keeps >= 20
+        sys.exit("refusing: only %d P units can be placed for P1 (>= 20 needed; %d eligible, %d unplaceable); the gate cannot be built" % (len(placeable), len(elig_p), len(unplaceable)))
+    p_slots = len(elig_p) - 20  # eligible P units beyond the 20 of P1
+    need = min(P2_MAX_CLONES, p_slots + len(elig_d))  # R3-04 + rev 10: up to 12 clones so that the gate (>= 8 label-derived gap positives) has slack; P1 keeps >= 20; P leftovers first, then D
     if need < P2_MIN_GAP_POSITIVES:
-        sys.exit("refusing: %d eligible P units leave only %d for P2 after the 20 P1 items (>= %d needed): the planted-gap gate cannot be built; stop, report, the council and the user decide (PREREGISTRATION 5)" % (
-            len(elig), max(need, 0), P2_MIN_GAP_POSITIVES))
-    donors = list(unplaceable[:need])
-    spare = max(0, min(need - len(donors), len(placeable) - 20))
+        sys.exit("refusing: %d eligible P units and %d eligible D units leave only %d for P2 after the 20 P1 items (>= %d needed): the planted-gap gate cannot be built; stop, report, the council and the user decide (PREREGISTRATION 5)" % (
+            len(elig_p), len(elig_d), max(need, 0), P2_MIN_GAP_POSITIVES))
+    p_need = min(need, max(p_slots, 0))
+    donors = list(unplaceable[:p_need])
+    spare = max(0, min(p_need - len(donors), len(placeable) - 20))
     moved = placeable[len(placeable) - spare:] if spare else []
     p1 = placeable[: len(placeable) - spare]
-    rest = donors + moved
-    p2 = rest[:need]
+    p2_p = (donors + moved)[:p_need]
+    d_donors = elig_d[: need - len(p2_p)]
+    p2 = p2_p + d_donors
     leftover_unplaceable = unplaceable[len(donors):]
-    used_src = {r["case_id"] for r, _ in elig}
+    used_src = {r["case_id"] for r, _ in elig_p} | {r["case_id"] for r, _ in d_donors}
     items = []  # (kind, row, key_extra)
 
     # ---- P1: the members leave A, re-enter as new files elsewhere; drop items that stop placing under the final removal set until stable
     while True:
         cat_p1, p1_own = p1_ownership(p1)
         placements = [_p1_target(r, a, p1_own, c0_tree, c0_state, [1, 2, 3][i % 3]) for i, (r, a) in enumerate(p1)]
-        bad = [i for i, t in enumerate(placements) if t is None]
+        bad = [i for i, t in enumerate(placements) if t is None or p1[i][1] not in {x["area_id"] for x in cat_p1["areas"]}]
         if not bad:
             break
         for i in reversed(bad):
@@ -375,7 +384,8 @@ def make_controls(repo, data=None, settings=None, reserve=None):
         "p2": {"rows": by("p2"), "catalogue": "catalogue-p2.json", "out": "jev-p/scores.p2.jsonl", "arms": "sem", "flip_all": False},
     }
     return {"units": units, "control_key": key, "contrast_units": contrast, "catalogues": {"catalogue-p1": cat_p1, "catalogue-p2": cat_p2, "catalogue-n1": _n1_catalogue(cat)},
-            "membership": mem, "runs": runs, "p1_unplaceable": len(unplaceable) + len(leftover_unplaceable) - (len(unplaceable) - len(donors)), "eligible": len(elig)}
+            "membership": mem, "runs": runs, "p1_unplaceable": len(unplaceable) + len(leftover_unplaceable) - (len(unplaceable) - len(donors)), "eligible": len(elig_p), "eligible_d": len(elig_d),
+            "p2_donors": {"P_unplaceable": len(donors), "P_leftover": len(moved), "D": len(d_donors)}, "p2_source_ids": [r["case_id"] for r, _ in p2], "ablated_area_ids": ablated}
 
 
 def main(argv=None):
@@ -406,7 +416,8 @@ def main(argv=None):
         manifest.append({"name": name, "units": os.path.abspath(up), "catalogue": os.path.abspath(cpath), "out": run["out"], "arms": run["arms"], "flip_all": run["flip_all"]})
     x2d.write_json_new(os.path.join(jin, "manifest.json"), manifest)
     kinds = collections.Counter(k["kind"] for k in res["control_key"])
-    print(json.dumps({"units": len(res["units"]), "controls": dict(kinds), "p1_unplaceable": res["p1_unplaceable"], "eligible": res["eligible"]}))
+    print(json.dumps({"units": len(res["units"]), "controls": dict(kinds), "p1_unplaceable": res["p1_unplaceable"], "eligible": res["eligible"], "eligible_d": res["eligible_d"], "p2_donors": res["p2_donors"],
+                      "ablated_areas": len(res["ablated_area_ids"])}))
 
 
 if __name__ == "__main__":
