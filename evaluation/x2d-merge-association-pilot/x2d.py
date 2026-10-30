@@ -42,7 +42,7 @@ NEW_AREA_GATE_MIN = 0.80  # round-0 gate bound (planted_new, P2): formerly MINIM
 GO_GUARD_LEVEL = 0.95  # R5-01 h: one-sided level of the PR-cluster-bootstrap lower bound of gain_guess (thresholds.json study.go.guard_level)
 POWER_CHECK_KEYS = ("P3_u0", "P3_u05", "P3_u10", "N3", "N3_PR", "N4a", "N4b", "N4b_cap", "N4b_rho0")  # power.json `checks`, exactly these (R5-01, R5-02)
 POWER_NULL_KEYS = ("N3", "N3_PR", "N4a", "N4b", "N4b_cap", "N4b_rho0")  # a false null check is a stop no critique line clears (R5-02); a false P3 check needs `user_decision: proceed`
-CAPS = {"usd_per_round": 1.0, "usd_total": 10.0, "clawpatch_maps_round_0": 16}
+CAPS = {"usd_per_round": 2.0, "usd_total": 20.0, "clawpatch_maps_round_0": 16}
 CLI_SESSION_CEILING = 500  # hard ceiling of label_x2d.cap_for (R1-05); the session cap is the per-round formula, never a fixed number
 CLAWPATCH_VERSION = "0.7.3"
 DEFAULT_SETTINGS = {  # the refinement menu (PREREGISTRATION 10 (ii), (iii)); a round's settings live in data/rounds/<r>/settings.json
@@ -518,7 +518,7 @@ def score_files(data=None):
 def jev_budget(round_key, out_path, data=None):
     """-> the `-max-cost-usd` for a driver run writing `out_path` in round `round_key` (None for onboarding): the smaller of the per-round and the total
     allowance left after the OTHER score files, plus nothing for this file (the driver adds its own earlier spend itself). The v_7 re-score (files under
-    rounds/<rr>/jev-v7/) is charged to the $10 total only, never to a round's cap, and does not count against the round's own runs (R3-17)."""
+    rounds/<rr>/jev-v7/) is charged to the $20 total only, never to a round's cap, and does not count against the round's own runs (R3-17)."""
     out_path = os.path.abspath(out_path)
     others = [p for p in score_files(data) if os.path.abspath(p) != out_path]
     total_other = sum(spent_in(p) for p in others)

@@ -215,7 +215,7 @@ def thresholds_checks():
     th = json.load(open(os.path.join(S, "thresholds.json")))
     check("P thresholds.json minimums, PR cap, round table, caps and seed equal the x2d constants", th["minimums"]["P_assign"] == x2d.MINIMUMS["P_assign"] == 0.90
           and th["minimums"]["R_assign"] == x2d.MINIMUMS["R_assign"] and th["study"]["pr_cap"] == x2d.PR_CAP == 10 and th["study"]["round_size"]["n_rounds"] == x2d.N_ROUNDS
-          and th["study"]["round_size"]["frozen_rounds"] == x2d.FROZEN_ROUNDS and th["caps"]["usd_per_round"] == x2d.CAPS["usd_per_round"] and th["caps"]["usd_total"] == x2d.CAPS["usd_total"]
+          and th["study"]["round_size"]["frozen_rounds"] == x2d.FROZEN_ROUNDS and th["caps"]["usd_per_round"] == x2d.CAPS["usd_per_round"] == 2.0 and th["caps"]["usd_total"] == x2d.CAPS["usd_total"] == 20.0
           and th["caps"]["clawpatch_maps_round_0"] == x2d.CAPS["clawpatch_maps_round_0"] == 16 and "cli_sessions_round_0" not in th["caps"] and "cli_sessions_per_round" not in th["caps"]
           and "cli_sessions_round_0" not in x2d.CAPS and "cli_sessions_per_round" not in x2d.CAPS
           and "20261029" in th["tuning"]["tool"] and x2d.SEED == 20261029)
@@ -675,7 +675,7 @@ def jev_checks(tmp):
         stub2.stop()
     check("J x2d.jev_budget subtracts the other score files of the round and of the study from the per-round and total caps (a file's own spend is the driver's)",
           jev_budget_test(tmp))
-    check("J R3-17 the v_7 re-score is charged to the $10 total only: a round at its $1 cap still re-scores (budget = the total left, 8.2), a run of the round itself gets 0, and the re-score spend does not reduce another run's per-round allowance",
+    check("J R3-17 the v_7 re-score is charged to the x2d.CAPS total only: a round at its per-round cap still re-scores (budget = the total left, CAPS total - cap - 0.8), a run of the round itself gets 0, and the re-score spend does not reduce another run's per-round allowance",
           jev_budget_v7_test(tmp))
     dump_state_checks(tmp, cat, units, truth)
 
@@ -765,26 +765,33 @@ def jev_budget_test(tmp):
     row = lambda c: {"type": "answer", "cost_known": True, "cost_usd": c}
     wjl(os.path.join(data, "rounds", "3", "jev", "scores.jsonl"), [row(0.30), row(0.10)])
     wjl(os.path.join(data, "rounds", "3", "jev", "scores.contrast.jsonl"), [row(0.20)])
-    wjl(os.path.join(data, "rounds", "4", "jev", "scores.jsonl"), [row(9.00)])
+    wjl(os.path.join(data, "rounds", "4", "jev", "scores.jsonl"), [row(x2d.CAPS["usd_total"] - 1.0)])  # total - 1.0 (9.0 under the rev-11 caps)
     wjl(os.path.join(data, "onboard-jev", "scores.jsonl"), [row(0.05), {"type": "failure", "cost_known": False, "cost_usd": 5}])
     own = os.path.join(data, "rounds", "3", "jev", "scores.jsonl")
-    b_round = x2d.jev_budget(3, own, data)       # per-round: 1.0 - 0.20 ; total: 10 - (0.20 + 9.0 + 0.05) = 0.75 -> 0.75
-    b_other = x2d.jev_budget(5, os.path.join(data, "rounds", "5", "jev", "scores.jsonl"), data)  # total: 10 - 9.0 - 0.60 - 0.05 = 0.35 ; round cap 1.0
-    b_onb = x2d.jev_budget(None, os.path.join(data, "onboard-jev", "scores.jsonl"), data)         # total: 10 - 9.0 - 0.60 = 0.40
-    return abs(b_round - 0.75) < 1e-9 and abs(b_other - 0.35) < 1e-9 and abs(b_onb - 0.40) < 1e-9
+    b_round = x2d.jev_budget(3, own, data)       # per-round: CAPS per round - 0.20 ; total: CAPS total - (0.20 + (CAPS total - 1.0) + 0.05) = 0.75 -> 0.75 (the total binds)
+    b_other = x2d.jev_budget(5, os.path.join(data, "rounds", "5", "jev", "scores.jsonl"), data)  # total: CAPS total - (CAPS total - 1.0) - 0.60 - 0.05 = 0.35 ; round cap CAPS per round
+    b_onb = x2d.jev_budget(None, os.path.join(data, "onboard-jev", "scores.jsonl"), data)         # total: CAPS total - (CAPS total - 1.0) - 0.60 = 0.40
+    pr = os.path.join(tmp, "budget-data-pr")
+    wjl(os.path.join(pr, "rounds", "3", "jev", "scores.jsonl"), [row(x2d.CAPS["usd_per_round"] - 0.5)])
+    wjl(os.path.join(pr, "rounds", "3", "jev", "scores.contrast.jsonl"), [row(0.20)])
+    b_pr = x2d.jev_budget(3, os.path.join(pr, "rounds", "3", "jev", "scores.jsonl"), pr)  # per-round binds: CAPS per round - 0.20; with the own file counted it would be 0.30
+    return (abs(b_round - 0.75) < 1e-9 and abs(b_other - 0.35) < 1e-9 and abs(b_onb - 0.40) < 1e-9
+            and abs(b_pr - (x2d.CAPS["usd_per_round"] - 0.20)) < 1e-9 and b_pr < x2d.CAPS["usd_total"] - 0.20)
 
 
 def jev_budget_v7_test(tmp):
-    """R3-17: files under rounds/<rr>/jev-v7/ are charged to the $10 total only: a round whose own scoring is at its $1 cap still re-scores, and the re-score spend does not count against the round's own runs."""
+    """R3-17: files under rounds/<rr>/jev-v7/ are charged to the x2d.CAPS total only: a round whose own scoring is at its per-round cap still re-scores, and the re-score spend does not count against the round's own runs."""
     data = os.path.join(tmp, "budget-v7-data")
     row = lambda c: {"type": "answer", "cost_known": True, "cost_usd": c}
-    wjl(os.path.join(data, "rounds", "3", "jev", "scores.jsonl"), [row(1.0)])  # the round's own scoring: at the $1 per-round cap
+    wjl(os.path.join(data, "rounds", "3", "jev", "scores.jsonl"), [row(x2d.CAPS["usd_per_round"])])  # the round's own scoring: at the per-round cap
     wjl(os.path.join(data, "rounds", "4", "jev", "scores.jsonl"), [row(0.3)])
     wjl(os.path.join(data, "rounds", "4", x2d.V7_RESCORE_SUB, "scores.jsonl"), [row(0.5)])
-    v7_at_cap = x2d.jev_budget(3, os.path.join(data, "rounds", "3", x2d.V7_RESCORE_SUB, "scores.jsonl"), data)   # total only: 10 - 1.0 - 0.3 - 0.5 = 8.2 (not 0)
-    own_at_cap = x2d.jev_budget(3, os.path.join(data, "rounds", "3", "jev", "scores.contrast.jsonl"), data)    # a new run of round 3 itself: round_other 1.0 -> 0
-    other_run = x2d.jev_budget(4, os.path.join(data, "rounds", "4", "jev", "scores.contrast.jsonl"), data)     # round 4: round_other 0.3 (the v_7 spend 0.5 is excluded) -> 0.7; total 10 - 1.8 = 8.2
-    return abs(v7_at_cap - 8.2) < 1e-9 and own_at_cap == 0.0 and abs(other_run - 0.7) < 1e-9
+    v7_at_cap = x2d.jev_budget(3, os.path.join(data, "rounds", "3", x2d.V7_RESCORE_SUB, "scores.jsonl"), data)   # total only: CAPS total - cap - 0.3 - 0.5 (not 0)
+    own_at_cap = x2d.jev_budget(3, os.path.join(data, "rounds", "3", "jev", "scores.contrast.jsonl"), data)    # a new run of round 3 itself: round_other = the per-round cap -> 0
+    other_run = x2d.jev_budget(4, os.path.join(data, "rounds", "4", "jev", "scores.contrast.jsonl"), data)     # round 4: round_other 0.3 (the v_7 spend 0.5 is excluded) -> cap - 0.3; the total left is far larger
+    caps = x2d.CAPS
+    return (abs(v7_at_cap - (caps["usd_total"] - caps["usd_per_round"] - 0.3 - 0.5)) < 1e-9 and own_at_cap == 0.0
+            and abs(other_run - (caps["usd_per_round"] - 0.3)) < 1e-9 and other_run < caps["usd_total"] - caps["usd_per_round"] - 0.3 - 0.5)
 
 
 # ---------------------------------------------------------------- L labeller harness and reference arm on stub sessions

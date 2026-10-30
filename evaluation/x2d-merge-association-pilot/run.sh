@@ -245,7 +245,7 @@ stage_analysis() {
 
 # rescore-v7 (R2-02): after the round-7 critique (v_7 frozen), re-score rounds 0-7 under round 7's questions, settings and model (sem + fan) for the single round-8 tuning. Round 0: the manifest
 # `main` units restricted to D and P; rounds 1-7: the window units. Each unit's excerpt is RE-RENDERED under round 7's `excerpt_lines` from the same member text at the unit's commit (R3-05:
-# jev-v7/units.jsonl rows carry `excerpt_lines`; the header's input digest covers them; tune checks them). The spend is charged to the $10 total, not to the round caps (R3-17). A round whose file has the `.done` marker is complete and is
+# jev-v7/units.jsonl rows carry `excerpt_lines`; the header's input digest covers them; tune checks them). The spend is charged to the total cap (`x2d.CAPS['usd_total']`, $20 since rev 12), not to the round caps (R3-17). A round whose file has the `.done` marker is complete and is
 # skipped; the stage refuses when all eight are done; a killed run resumes (the driver is resumable, append-only), and tune/stage_units re-check headers and completeness.
 stage_rescore_v7() {
   verify; require_gates; critique_ok 7
