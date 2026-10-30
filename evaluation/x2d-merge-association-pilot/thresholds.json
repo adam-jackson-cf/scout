@@ -1,0 +1,188 @@
+{
+ "schema": 1,
+ "study": "x2d-merge-association-pilot",
+ "file_note": "Study file in the jev-actions thresholds.json shape (`decisions[]` entries use internal/decisions/thresholds field names) plus a `study` block holding the preregistered decision rules. It is NOT Scout's `.scout/decisions/thresholds.json` override (Scout's loader rejects unknown top-level keys); it is never copied there. Tuned values are written per round to data/rounds/<r>/thresholds.json by tune.py, not into this frozen file.",
+ "minimums": {
+  "P_assign": 0.90,
+  "R_assign": 0.80,
+  "provenance": "assumed: council default (design Appendix 19 defaults; X3 rev 2.1 value for P_assign) accepted by the user 2026-10-29 (shape-decision, user decision 6); P_new / R_new are no longer minimums of the verdict (user decision 2026-10-30, R-051; council round 4 R4-13)",
+  "cost_asymmetry": "a silent wrong-area assignment costs more than a spurious new-area suggestion (it mislabels issues and nothing flags it; a pooled new area is visible and mergeable)",
+  "resolved_definitions": "a cluster is resolved when the primary arm's composed output is assigned or none, abstained when it is unresolved for any reason (below_t_cov / below_t_choice, permutation_disagreement, failure); P_assign = assigned-correct / assigned (a wrong assignment on a gold-none positive counts); R_assign here is R_assign_res = assigned-correct / (gold-covered AND resolved), a false none on a covered cluster counting as a resolved wrong answer; R_assign over all gold-covered clusters (abstention = miss) is reported beside it; the 0.80 new-area bound survives only as x2d.NEW_AREA_GATE_MIN, the round-0 planted-new / P2 gate bound, not a verdict condition"
+ },
+ "decisions": [
+  {
+   "question_id": "merge.covered",
+   "version_key": "bound at run time",
+   "gating": true,
+   "threshold": 0.7,
+   "min_precision": 0.80,
+   "min_recall": 0.80,
+   "minimums_provenance": "assumed",
+   "metric": "f_beta",
+   "beta": 1.0,
+   "label_set": {"summary": "none before round 0"},
+   "score_space": "raw",
+   "status": "provisional",
+   "cost_rule": "a false `covered` sends the cluster to a Choice that must then pick some area (a possible silent wrong assignment) so the provisional threshold is 0.7 (jev-actions: 0.7 when a false action costs more); tuned from saved scores of earlier rounds once a label has >= 30 cases",
+   "assumptions": [
+     "tuned on score = 1 - p_true with label 1 = gold none (the P_new / R_new minimums apply to detecting new)",
+     "t_cov provisional 0.7 until >= 30 cases per label (round-0 D and P units count as dev cases)",
+     "never 0.5"
+   ]
+  },
+  {
+   "question_id": "merge.which_area",
+   "version_key": "bound at run time",
+   "gating": true,
+   "threshold": 0.7,
+   "min_precision": 0.90,
+   "min_recall": 0.80,
+   "minimums_provenance": "assumed",
+   "metric": "f_beta",
+   "beta": 0.5,
+   "label_set": {"summary": "none before round 0"},
+   "score_space": "raw",
+   "status": "provisional",
+   "cost_rule": "a silent wrong assignment costs more than an unresolved cluster, so F-beta with beta 0.5 and a provisional 0.7",
+   "assumptions": [
+     "score = top-option probability; label 1 = the top option is in the cluster's acceptable set; precision = correct / assigned, recall = correct / gold-covered (P_assign, R_assign)",
+     "a cluster asked under two permutations is assigned only if both agree; the tuned score is the mean confidence of the two",
+     "never 0.5"
+   ]
+  },
+  {
+   "question_id": "merge.area_covers",
+   "version_key": "bound at run time",
+   "gating": true,
+   "threshold": 0.7,
+   "min_precision": 0.90,
+   "min_recall": 0.80,
+   "minimums_provenance": "assumed",
+   "metric": "f_beta",
+   "beta": 0.5,
+   "label_set": {"summary": "none before round 0"},
+   "score_space": "raw",
+   "status": "provisional",
+   "cost_rule": "as merge.which_area (fan-out arm)",
+   "assumptions": ["label 1 = the area is in the cluster's acceptable set; tuned per (cluster, area) pair"]
+  },
+  {
+   "question_id": "onboard.covered",
+   "version_key": "bound at run time",
+   "gating": true,
+   "threshold": 0.7,
+   "min_precision": 0.80,
+   "min_recall": 0.80,
+   "minimums_provenance": "assumed",
+   "metric": "f_beta",
+   "beta": 1.0,
+   "label_set": {"summary": "none before round 0"},
+   "score_space": "raw",
+   "status": "provisional",
+   "cost_rule": "as merge.covered",
+   "assumptions": ["contested/unowned onboarding files are few; the threshold stays provisional through the pilot and onboarding quality is reported, not gated, apart from the round-0 gates of PREREGISTRATION section 5"]
+  },
+  {
+   "question_id": "onboard.which_file_area",
+   "version_key": "bound at run time",
+   "gating": true,
+   "threshold": 0.7,
+   "min_precision": 0.90,
+   "min_recall": 0.80,
+   "minimums_provenance": "assumed",
+   "metric": "f_beta",
+   "beta": 0.5,
+   "label_set": {"summary": "none before round 0"},
+   "score_space": "raw",
+   "status": "provisional",
+   "cost_rule": "as merge.which_area",
+   "assumptions": ["provisional through the pilot"]
+  },
+  {
+   "question_id": "onboard.same_responsibility",
+   "version_key": "bound at run time",
+   "gating": false,
+   "threshold": null,
+   "min_precision": 0.80,
+   "min_recall": 0.80,
+   "minimums_provenance": "assumed",
+   "metric": "f_beta",
+   "beta": 1.0,
+   "label_set": {"summary": "none"},
+   "score_space": "raw",
+   "status": "provisional",
+   "cost_rule": "report-only duplicate check; no behaviour reads a threshold",
+   "assumptions": ["duplicate flag rule is p_true >= 0.7 in both presentation orders (reported figure, not gating)"]
+  }
+ ],
+ "tuning": {
+  "tool": "tune_threshold.py of the jev-actions skill, run per decision on the saved scores.csv of rounds < r only (and the round-0 D and P units); stratified 5-fold cross-validation, `--seed 20261029`",
+  "below_30_cases_per_label": "provisional threshold 0.7 (cost rule above); no tuning",
+  "30_to_50_cases_per_label": "tune, status provisional, `--repeats 5 --conservative`, reported as noisy",
+  "over_50_cases_per_label": "tune; ready iff > 50 cases per label, every fold tuned, fold thresholds within 0.05, no 0.5 replacement, composed dev minimums met (dev P_assign, dev R_assign_res and the dev unresolved rate <= 0.15; dev P_new / R_new are recorded, not enforced; R1-25, R4-13 (4))",
+  "forbidden": ["0.5 as a tuned threshold", "tuning on the scores of the round being scored", "relaxing a minimum silently (if no threshold meets the minimums, report that)"],
+  "scores_csv_schema": "case_id,label,score,model,question_version,split,stratum,fallback",
+  "split": "round r units are `test` for round r's scoring and `dev` for every later round's tuning; the frozen rounds 8-10 are `test` only and never feed tuning"
+ },
+ "study": {
+  "arms": ["B0", "B1", "B2", "V-sem", "V-sib", "V-title", "fan-out", "reference-claude", "contrast-B2", "contrast-V-sem"],
+  "primary_arm": "V-sem",
+  "comparison_baseline": "B2",
+  "units": "residual clusters (PREREGISTRATION section 3), at most pr_cap scored per PR",
+  "pr_cap": 10,
+  "round_size": {"min_clusters": 20, "min_prs": 6, "n_rounds": 10, "refinement_rounds": [1, 2, 3, 4, 5, 6, 7], "frozen_rounds": [8, 9, 10]},
+  "informative_round": {"min_clusters": 20, "min_prs": 6, "min_kappa": 0.6, "kappa_basis": "joint answer (none / area with acceptable-overlap mapped to one label) over the GO population (the scored non-control units of the round, core-gate units excluded), A vs B labellers before adjudication; kappa over all non-control scored units is reported as kappa_answer_all_units; kappa on `covered`, raw agreement and prevalence are reported and decide nothing (R1-06, R3-10, R4-12)"},
+  "intervals": {"per_round": "Wilson 95 %", "pooled": "PR-cluster bootstrap (B = 10000, seed 20261029): one-sided 90 % for e, 95 % for the guard h (gain_guess); condition b is the one-sided 90 % Wilson lower bound of the pooled P_assign (verdict.json p_assign_bootstrap is reported and decides nothing)", "paired": "exact McNemar on discordant clusters + PR-cluster bootstrap"},
+  "descriptive_rule": "point minimums met in >= 3 of the last 4 informative rounds (reported; decides nothing)",
+  "futility": {
+   "rule": "three consecutive informative rounds in which the pooled paired gain on resolved clusters (gain_res: Jev correct - B2 correct over the clusters where Jev is assigned or none, pooled over the three rounds, PR-cluster bootstrap) has an 80 % upper bound <= +0.02 AND the pooled P_assign has an 80 % upper bound below the P_assign minimum",
+   "no_unresolved_rate_disjunct": "there is no futility disjunct on the unresolved rate u: u is under the refinement menu's direct control (thresholds) and a stop on it would stop what refinement exists to fix; u and gain_all are reported in the futility table (R4-13 (5))",
+   "effect": "stop the refinement rounds; the frozen rounds are not run; verdict NO-GO (futility)",
+   "integrity_pauses": ["leakage", "invalid labels", "cap breach"],
+   "integrity_pause_note": "an integrity pause is not evidence against HD6 and does not count towards futility; cap breach = a round whose wide labels cannot be completed within its session cap, also after a recorded clarification: the round stops, it is reported, the council and the user decide in a new review round (R4-02); a clarify pre-check refusal is recorded in rounds/R/clarify-refused.json and treated like a recorded revision"
+  },
+  "go": {
+   "evaluated": "once, on the pooled frozen rounds 8-10, after all three are scored and labelled; GO population = scored, non-control, no core_gate; resolved = the primary arm's output is assigned or none, abstained = unresolved for any reason; user decision 2026-10-30 (R-051), council round 4 R4-13",
+   "unresolved_rate_max": 0.15,
+   "resolved_min": 50,
+   "guard_level": 0.95,
+   "guard": "one-sided 95 % PR-cluster-bootstrap lower bound of gain_guess > 0 (every GO-population cluster with a B2 outcome; an abstained cluster is scored by Jev's own unthresholded guess; a missing raw answer is wrong); fails -> INCONCLUSIVE",
+   "all_of": [
+    "a. P_assign point >= 0.90 (assigned-correct / assigned)",
+    "b. P_assign one-sided 90 % Wilson lower bound >= 0.80",
+    "c. R_assign_res point >= 0.80 (assigned-correct / (gold-covered AND resolved); a false none on a covered cluster counts)",
+    "d. paired gain on resolved clusters gain_res = (Jev correct - B2 correct) / n_res, the same resolved clusters for both arms (Jev-abstained clusters are excluded from the pair, not scored as wrong for Jev), point >= +0.10",
+    "e. gain_res one-sided 90 % PR-cluster-bootstrap lower bound > 0 (per-PR rows over resolved clusters only)",
+    "f. the resolved clusters where Jev is correct and B2 is not come from >= 3 distinct PRs",
+    "g. unresolved rate u = abstained / GO population <= 0.15 (the cap; a point condition)",
+    "h. abstention guard: the one-sided 95 % PR-cluster-bootstrap lower bound of gain_guess = (sum of guess-correct - sum of B2-correct) / n_all > 0, where an abstained cluster is scored by the primary arm's own unthresholded combined answer (none iff raw_covered is False, else raw_choice; a missing raw answer is wrong) and a resolved cluster by its composed answer (R5-01)",
+    "i. n_res >= 50 resolved paired clusters",
+    "j. perception check passes: V-sem's UNTHRESHOLDED combined answer (none iff not raw_covered, else raw_choice) agrees with the consensus label within 0.10 of labeller-vs-labeller agreement, whatever the primary arm is; the thresholded agreement, the unresolved rate and the primary arm's agreement are reported and decide nothing (the >= 20 units with both questions final of PREREGISTRATION section 8)",
+    "k. shuffled-catalogue null N1 (the Choice follows option text, not position or id; P1 is the path-cue test): on D union P (>= 40 gold-covered units planned) Jev accuracy under permuted titles/summaries and no sample files has a 90 % Wilson upper bound <= max(2/K, 0.20), K the catalogue size (run in round 0, reported again)",
+    "l. every frozen round informative (>= 20 scored clusters, >= 6 PRs, kappa >= 0.6 on the GO population, labels-check not failed)"
+   ],
+   "removed_conditions": "P_new, R_new and 'real gold-none positives >= 10' are no longer conditions of the verdict",
+   "reported_beside_the_verdict": "u with its per-reason split (below_t_cov, below_t_choice, permutation_disagreement, failure) and per round; the abstention table (n abstained; B2 accuracy on Jev-abstained, Jev-resolved and all clusters); gain_guess with its point, 95 % bound, 95 % CI and McNemar; gain_all (every abstention a miss) with its 90 % bound and McNemar; P_new / R_new on real and on planted positives with Wilson 95 % ('n real positives; no veto'); R_assign over all covered clusters (abstention = miss) beside R_assign_res; leave-one-round-out figures",
+   "b2_pairing": "a case enters the resolved pair iff the primary arm's output is assigned or none and B2 has a scored outcome; B2's own unresolved (a B0/B2 tie) stays a measured wrong answer for B2; per-PR pooling rows carry n_res, d_res, a, ac, gc_res, gc, n_all, d_all, d_guess, abst, abst_b2_correct"
+  },
+  "inconclusive": "evaluated after the not-informative test: a frozen round that is not informative (condition l) gives INCONCLUSIVE before any point test; then, with every point condition (a, c, d, g) passing, a bound (b, e), the >= 3-PR spread (f), the abstention guard (h) or n_res >= 50 (i) fails, or perception / N1 is unmeasured; reasons name each failed condition (h: Jev shows no accuracy edge over B2 once its abstentions are answered by its own unthresholded guess; the resolved-cluster gain may be selection)",
+  "no_go": "after the informativeness test: a point condition (a, c, d or g) fails (g, the unresolved-rate cap, is a measured product failure), or perception or N1 was measured and failed, or futility (three consecutive informative refinement rounds). Precedence: not informative -> INCONCLUSIVE; point fails -> NO-GO; measured perception/N1 fail -> NO-GO; all twelve pass -> GO; else INCONCLUSIVE (R1-19, R4-13)",
+  "pre_run_stop": "a P3 power cell below its bar on the live structure, or any frozen round with < 20 clusters or < 6 PRs, is not a verdict cause: the council and the user decide before any spend, and a recorded user_decision: proceed in the round-0 critique lets the pilot run, otherwise it is not run; a NULL power cell (N3, N3_PR, N4a, N4b, N4b_cap, N4b_rho0) above its bar on the live structure is a stop no user_decision clears (the GO rule is unsound there: new council round; power_sim exits 3) (R3-16, R4-08, R4-13 (7), R4-12, R5-02)",
+  "new_area": "P_new / R_new reported with Wilson 95 % on real positives and on planted positives; no veto. Planted figures (verdict.json pooled.planted_new, R5-07) come from the frozen rounds' empty-file rename traps (one per round): R_new = (arm none AND gold not covered) / gold not covered, P_new = (arm none AND gold not covered) / arm none, gold-conditioned, both over traps with gold and an arm row (a trap lacking either is unmeasured); the round-0 planted new concern and the P2 gap gate are in rounds/0/gates.json",
+  "power": {
+   "schema": "x2d-power-v5",
+   "bars": {"P3_u0": 0.80, "P3_u05": 0.75, "P3_u10": 0.60, "N3": 0.10, "N3_PR": 0.10, "N4a": 0.10, "N4b": 0.10, "N4b_cap": 0.10, "N4b_rho0": 0.10},
+   "bars_note": "P3 cells: GO share >= bar (binding); N3, N3_PR, N4a, N4b, N4b_cap, N4b_rho0: GO share <= bar in every cell (binding; N4b_cap = own-error abstention truncated at the cap, p in {0.80, 0.85}, rho 0.5; N4b_rho0 = own-error abstention at rho 0, p in {0.85, 0.88, 0.90}); a P3 cell below its bar needs a user_decision, a null cell above its bar stops the pilot; council rounds 4 R4-13 (6) and 5 R5-01 / R5-02; the drafter does not move a bar",
+   "report_only": ["P3_PR", "P3_rho0", "P3_curve_delta_0.15", "N4c"]
+  },
+  "go_meaning": "licenses a full trial (>= 2 repositories, dev/test by repository), not adoption; a GO leads to a design round (governance acknowledgement, shape-decision user decision 7)"
+ },
+ "caps": {
+  "usd_per_round": 1.0,
+  "usd_total": 10.0,
+  "cli_sessions_note": "the cap of each round is cap_r = ceil(1.25 x (2.2 W_r (1 + C_r) + 4.4 J_r + R_r + 2.2 I_r)) with hard ceiling cli_sessions_ceiling, W_r wide-labelled units (scored + audit + control + contrast-window; round 0: D + P + controls + contrast-D), C_r = 1 when the round has its one recorded guide clarification (its re-label is budgeted, a clarification that would not fit is refused before it is recorded and rounds/R/clarify-refused.json is written, R4-02) else 0, J_r = 20 perception units, R_r = 20 reference sessions, I_r intruder items; the computed cap and used count are written to results.json (PREREGISTRATION 12, R1-05, R3-01); the v_7 re-score spend is charged to the $10 total only (R3-17); a round whose wide labels cannot be completed within its cap is the integrity pause 'cap breach' (not counted towards futility)",
+  "cli_sessions_ceiling": 500,
+  "clawpatch_maps_round_0": 16,
+  "jev_cost_stop": "the X2c -max-cost-usd stop, cumulative over the append-only output; a re-run refuses to start once the file's spend exceeds the cap"
+ }
+}

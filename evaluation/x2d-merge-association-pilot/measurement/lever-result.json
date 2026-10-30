@@ -1,0 +1,588 @@
+{
+ "rev": "1d50bad4555b951d5fa48eb8787fd5c39ed7effb",
+ "include": [
+  "fastapi/**"
+ ],
+ "model": "gpt-6-luna",
+ "effort": "xhigh",
+ "state_dir": "/tmp/x2d-lever/state",
+ "init": {
+  "rc": 0,
+  "seconds": 2.3,
+  "stderr_tail": ""
+ },
+ "config_before": {
+  "include": [
+   "**/*"
+  ],
+  "exclude": [
+   "node_modules/**",
+   "dist/**",
+   "build/**",
+   "target/**",
+   ".build/**",
+   ".git/**",
+   ".clawpatch/**"
+  ]
+ },
+ "map_argv_tail": [
+  "map",
+  "--source",
+  "agent",
+  "--provider",
+  "codex",
+  "--model",
+  "gpt-6-luna",
+  "--reasoning-effort",
+  "xhigh"
+ ],
+ "map": {
+  "rc": 0,
+  "seconds": 148.0,
+  "stderr_events": [
+   "clawpatch map start source=agent existing=0 dryRun=false",
+   "clawpatch map mapper-start mapper=node",
+   "clawpatch map mapper-start mapper=next",
+   "clawpatch map mapper-start mapper=react",
+   "clawpatch map mapper-start mapper=node-routes",
+   "clawpatch map mapper-start mapper=go",
+   "clawpatch map mapper-start mapper=python",
+   "clawpatch map mapper-start mapper=ruby",
+   "clawpatch map mapper-start mapper=elixir",
+   "clawpatch map mapper-start mapper=rust",
+   "clawpatch map mapper-start mapper=dotnet",
+   "clawpatch map mapper-start mapper=c-cpp",
+   "clawpatch map mapper-start mapper=swift",
+   "clawpatch map mapper-start mapper=apple",
+   "clawpatch map mapper-start mapper=gradle",
+   "clawpatch map mapper-start mapper=maven",
+   "clawpatch map mapper-start mapper=laravel",
+   "clawpatch map mapper-start mapper=config",
+   "clawpatch map mapper-done mapper=go seeds=0 elapsed=0s",
+   "clawpatch map mapper-done mapper=elixir seeds=0 elapsed=0s",
+   "clawpatch map mapper-done mapper=rust seeds=0 elapsed=0s",
+   "clawpatch map mapper-done mapper=laravel seeds=0 elapsed=0s",
+   "clawpatch map mapper-done mapper=ruby seeds=0 elapsed=0s",
+   "clawpatch map mapper-done mapper=config seeds=17 elapsed=0s",
+   "clawpatch map mapper-done mapper=c-cpp seeds=0 elapsed=0s",
+   "clawpatch map mapper-done mapper=dotnet seeds=0 elapsed=0s",
+   "clawpatch map mapper-done mapper=swift seeds=0 elapsed=0s",
+   "clawpatch map mapper-done mapper=maven seeds=0 elapsed=0s",
+   "clawpatch map mapper-done mapper=apple seeds=0 elapsed=0s",
+   "clawpatch map mapper-done mapper=gradle seeds=0 elapsed=0s",
+   "clawpatch map mapper-done mapper=node seeds=0 elapsed=0s",
+   "clawpatch map mapper-done mapper=next seeds=0 elapsed=0s",
+   "clawpatch map mapper-done mapper=react seeds=0 elapsed=0s",
+   "clawpatch map mapper-done mapper=node-routes seeds=0 elapsed=0s",
+   "clawpatch map mapper-done mapper=python seeds=185 elapsed=1s",
+   "clawpatch map heuristic-done features=33 new=33 changed=0 stale=0",
+   "clawpatch map inventory-start",
+   "clawpatch map inventory-done files=45 sourceFiles=44 ownedSourceFiles=44 weak=false elapsed=0s",
+   "clawpatch map agent-start provider=codex model=gpt-6-luna",
+   "clawpatch map agent-done features=20 elapsed=147s",
+   "clawpatch map write-start features=53",
+   "clawpatch map done features=53 usedAgent=true elapsed=148s"
+  ],
+  "stderr_tail": "t seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=react seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=node-routes seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=python seeds=185 elapsed=1s\nclawpatch map heuristic-done features=33 new=33 changed=0 stale=0\nclawpatch map inventory-start\nclawpatch map inventory-done files=45 sourceFiles=44 ownedSourceFiles=44 weak=false elapsed=0s\nclawpatch map agent-start provider=codex model=gpt-6-luna\nclawpatch map agent-done features=20 elapsed=147s\nclawpatch map write-start features=53\nclawpatch map done features=53 usedAgent=true elapsed=148s\n",
+  "result_head": {
+   "new": 53,
+   "changed": 0,
+   "stale": 0,
+   "source": "agent",
+   "usedAgent": true,
+   "reason": "heuristic map is meaningful",
+   "next": "clawpatch review --limit 3"
+  }
+ },
+ "features": [
+  {
+   "id": "feat_cli-command_5aa6467b9b",
+   "source": "python-console-script",
+   "title": "Python CLI command fastapi",
+   "files": [
+    "fastapi/cli.py"
+   ]
+  },
+  {
+   "id": "feat_cli-command_a14be49bfa",
+   "source": "agent-mapper",
+   "title": "Command-line interface",
+   "files": [
+    "fastapi/__main__.py",
+    "fastapi/cli.py"
+   ]
+  },
+  {
+   "id": "feat_library_2cbd8cd0ff",
+   "source": "agent-mapper",
+   "title": "Middleware package",
+   "files": [
+    "fastapi/middleware/__init__.py",
+    "fastapi/middleware/cors.py",
+    "fastapi/middleware/gzip.py",
+    "fastapi/middleware/httpsredirect.py",
+    "fastapi/middleware/trustedhost.py",
+    "fastapi/middleware/wsgi.py"
+   ]
+  },
+  {
+   "id": "feat_library_30d7968953",
+   "source": "agent-mapper",
+   "title": "Background tasks and concurrency helpers",
+   "files": [
+    "fastapi/background.py",
+    "fastapi/concurrency.py"
+   ]
+  },
+  {
+   "id": "feat_library_34c0274d0c",
+   "source": "agent-mapper",
+   "title": "Exception types and handlers",
+   "files": [
+    "fastapi/exceptions.py",
+    "fastapi/exception_handlers.py"
+   ]
+  },
+  {
+   "id": "feat_library_3c5f01d54a",
+   "source": "agent-mapper",
+   "title": "Response construction and encoding",
+   "files": [
+    "fastapi/responses.py",
+    "fastapi/encoders.py",
+    "fastapi/datastructures.py"
+   ]
+  },
+  {
+   "id": "feat_library_5ebe5cda6d",
+   "source": "agent-mapper",
+   "title": "Security scheme foundations",
+   "files": [
+    "fastapi/security/__init__.py",
+    "fastapi/security/base.py",
+    "fastapi/security/utils.py"
+   ]
+  },
+  {
+   "id": "feat_library_6030ae29c2",
+   "source": "python-source-group",
+   "title": "Python source fastapi/dependencies",
+   "files": [
+    "fastapi/dependencies/__init__.py",
+    "fastapi/dependencies/models.py",
+    "fastapi/dependencies/utils.py"
+   ]
+  },
+  {
+   "id": "feat_library_66aae84217",
+   "source": "agent-mapper",
+   "title": "OpenAPI schema generation",
+   "files": [
+    "fastapi/openapi/__init__.py",
+    "fastapi/openapi/constants.py",
+    "fastapi/openapi/models.py",
+    "fastapi/openapi/utils.py"
+   ]
+  },
+  {
+   "id": "feat_library_6e72c6039b",
+   "source": "agent-mapper",
+   "title": "WebSocket connection handling",
+   "files": [
+    "fastapi/websockets.py"
+   ]
+  },
+  {
+   "id": "feat_library_6e9c491d56",
+   "source": "agent-mapper",
+   "title": "API key security",
+   "files": [
+    "fastapi/security/api_key.py"
+   ]
+  },
+  {
+   "id": "feat_library_9470feb2d8",
+   "source": "python-source-group",
+   "title": "Python source fastapi/security",
+   "files": [
+    "fastapi/security/__init__.py",
+    "fastapi/security/api_key.py",
+    "fastapi/security/base.py",
+    "fastapi/security/http.py",
+    "fastapi/security/oauth2.py",
+    "fastapi/security/open_id_connect_url.py",
+    "fastapi/security/utils.py"
+   ]
+  },
+  {
+   "id": "feat_library_994717b772",
+   "source": "agent-mapper",
+   "title": "Test client integration",
+   "files": [
+    "fastapi/testclient.py"
+   ]
+  },
+  {
+   "id": "feat_library_a1747d5c5b",
+   "source": "agent-mapper",
+   "title": "HTTP route dispatch",
+   "files": [
+    "fastapi/routing.py",
+    "fastapi/requests.py"
+   ]
+  },
+  {
+   "id": "feat_library_a9fb948d8b",
+   "source": "python-source-group",
+   "title": "Python source fastapi/openapi",
+   "files": [
+    "fastapi/openapi/__init__.py",
+    "fastapi/openapi/constants.py",
+    "fastapi/openapi/docs.py",
+    "fastapi/openapi/models.py",
+    "fastapi/openapi/utils.py"
+   ]
+  },
+  {
+   "id": "feat_library_b030823a4a",
+   "source": "python-source-group",
+   "title": "Python source fastapi#1",
+   "files": [
+    "fastapi/__init__.py",
+    "fastapi/__main__.py",
+    "fastapi/_compat.py",
+    "fastapi/applications.py",
+    "fastapi/background.py",
+    "fastapi/cli.py",
+    "fastapi/concurrency.py",
+    "fastapi/datastructures.py",
+    "fastapi/encoders.py",
+    "fastapi/exception_handlers.py",
+    "fastapi/exceptions.py",
+    "fastapi/logger.py"
+   ]
+  },
+  {
+   "id": "feat_library_b46f4e7066",
+   "source": "agent-mapper",
+   "title": "Static file serving",
+   "files": [
+    "fastapi/staticfiles.py"
+   ]
+  },
+  {
+   "id": "feat_library_b7b35d38fc",
+   "source": "python-source-group",
+   "title": "Python source fastapi/middleware",
+   "files": [
+    "fastapi/middleware/__init__.py",
+    "fastapi/middleware/cors.py",
+    "fastapi/middleware/gzip.py",
+    "fastapi/middleware/httpsredirect.py",
+    "fastapi/middleware/trustedhost.py",
+    "fastapi/middleware/wsgi.py"
+   ]
+  },
+  {
+   "id": "feat_library_b95d12b966",
+   "source": "agent-mapper",
+   "title": "Dependency injection and resolution",
+   "files": [
+    "fastapi/dependencies/__init__.py",
+    "fastapi/dependencies/models.py",
+    "fastapi/dependencies/utils.py"
+   ]
+  },
+  {
+   "id": "feat_library_bc6dc7ab8b",
+   "source": "python-source-group",
+   "title": "Python source fastapi#2",
+   "files": [
+    "fastapi/param_functions.py",
+    "fastapi/params.py",
+    "fastapi/requests.py",
+    "fastapi/responses.py",
+    "fastapi/routing.py",
+    "fastapi/staticfiles.py",
+    "fastapi/templating.py",
+    "fastapi/testclient.py",
+    "fastapi/types.py",
+    "fastapi/utils.py",
+    "fastapi/websockets.py"
+   ]
+  },
+  {
+   "id": "feat_library_c332b1e62f",
+   "source": "agent-mapper",
+   "title": "Public package API and shared compatibility",
+   "files": [
+    "fastapi/__init__.py",
+    "fastapi/_compat.py",
+    "fastapi/types.py",
+    "fastapi/utils.py"
+   ]
+  },
+  {
+   "id": "feat_library_cd72fa5bc7",
+   "source": "agent-mapper",
+   "title": "Template rendering",
+   "files": [
+    "fastapi/templating.py"
+   ]
+  },
+  {
+   "id": "feat_library_f0cee54179",
+   "source": "agent-mapper",
+   "title": "Parameter declarations",
+   "files": [
+    "fastapi/param_functions.py",
+    "fastapi/params.py"
+   ]
+  },
+  {
+   "id": "feat_library_f78b70c02a",
+   "source": "agent-mapper",
+   "title": "OAuth2 and OpenID Connect",
+   "files": [
+    "fastapi/security/oauth2.py",
+    "fastapi/security/open_id_connect_url.py"
+   ]
+  },
+  {
+   "id": "feat_library_f850f8bea5",
+   "source": "agent-mapper",
+   "title": "OpenAPI documentation interface",
+   "files": [
+    "fastapi/openapi/docs.py"
+   ]
+  },
+  {
+   "id": "feat_library_fc75a523b6",
+   "source": "agent-mapper",
+   "title": "HTTP authentication schemes",
+   "files": [
+    "fastapi/security/http.py"
+   ]
+  },
+  {
+   "id": "feat_library_fe1a530a41",
+   "source": "agent-mapper",
+   "title": "FastAPI application facade",
+   "files": [
+    "fastapi/applications.py",
+    "fastapi/logger.py"
+   ]
+  },
+  {
+   "id": "feat_route_0423cc499b",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route GET /users/me",
+   "files": [
+    "fastapi/security/http.py"
+   ]
+  },
+  {
+   "id": "feat_route_08ca20b2cb",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route HEAD /items/",
+   "files": [
+    "fastapi/applications.py"
+   ]
+  },
+  {
+   "id": "feat_route_0be208c1b0",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route GET /items/",
+   "files": [
+    "fastapi/security/api_key.py"
+   ]
+  },
+  {
+   "id": "feat_route_0fdc124a3b",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route GET /items/",
+   "files": [
+    "fastapi/applications.py"
+   ]
+  },
+  {
+   "id": "feat_route_1f5ab205c9",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route OPTIONS /items/",
+   "files": [
+    "fastapi/routing.py"
+   ]
+  },
+  {
+   "id": "feat_route_231db346d1",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route POST /items/",
+   "files": [
+    "fastapi/routing.py"
+   ]
+  },
+  {
+   "id": "feat_route_3c03f21268",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route POST /login",
+   "files": [
+    "fastapi/security/oauth2.py"
+   ]
+  },
+  {
+   "id": "feat_route_4823d12541",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route GET /items/{item_id}",
+   "files": [
+    "fastapi/exceptions.py"
+   ]
+  },
+  {
+   "id": "feat_route_4cd9956db2",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route GET /items/",
+   "files": [
+    "fastapi/routing.py"
+   ]
+  },
+  {
+   "id": "feat_route_4cf7eb01a6",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route GET /users/",
+   "files": [
+    "fastapi/routing.py"
+   ]
+  },
+  {
+   "id": "feat_route_4e7c66c89b",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route OPTIONS /items/",
+   "files": [
+    "fastapi/applications.py"
+   ]
+  },
+  {
+   "id": "feat_route_573fe8bfd6",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route PATCH /items/",
+   "files": [
+    "fastapi/routing.py"
+   ]
+  },
+  {
+   "id": "feat_route_58234fab7f",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route PUT /items/{item_id}",
+   "files": [
+    "fastapi/applications.py"
+   ]
+  },
+  {
+   "id": "feat_route_78ef23da8d",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route POST /files/",
+   "files": [
+    "fastapi/datastructures.py"
+   ]
+  },
+  {
+   "id": "feat_route_7b16409b13",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route GET /items/{item_id}",
+   "files": [
+    "fastapi/param_functions.py"
+   ]
+  },
+  {
+   "id": "feat_route_80eaf17199",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route GET /items/",
+   "files": [
+    "fastapi/param_functions.py"
+   ]
+  },
+  {
+   "id": "feat_route_839d0a8405",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route TRACE /items/{item_id}",
+   "files": [
+    "fastapi/routing.py"
+   ]
+  },
+  {
+   "id": "feat_route_86b4592de1",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route POST /uploadfile/",
+   "files": [
+    "fastapi/datastructures.py"
+   ]
+  },
+  {
+   "id": "feat_route_91f3c10972",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route POST /items/",
+   "files": [
+    "fastapi/applications.py"
+   ]
+  },
+  {
+   "id": "feat_route_920ffb0340",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route PATCH /items/",
+   "files": [
+    "fastapi/applications.py"
+   ]
+  },
+  {
+   "id": "feat_route_a2475999bc",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route GET /users/me/items/",
+   "files": [
+    "fastapi/param_functions.py"
+   ]
+  },
+  {
+   "id": "feat_route_ac4c71a68e",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route PUT /items/{item_id}",
+   "files": [
+    "fastapi/routing.py"
+   ]
+  },
+  {
+   "id": "feat_route_cb5302fb1b",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route DELETE /items/{item_id}",
+   "files": [
+    "fastapi/applications.py"
+   ]
+  },
+  {
+   "id": "feat_route_cd63dba72d",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route DELETE /items/{item_id}",
+   "files": [
+    "fastapi/routing.py"
+   ]
+  },
+  {
+   "id": "feat_route_d31c1a7f12",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route POST /send-notification/{email}",
+   "files": [
+    "fastapi/background.py"
+   ]
+  },
+  {
+   "id": "feat_route_e6d444fe6e",
+   "source": "python-fastapi-route",
+   "title": "FastAPI route HEAD /items/",
+   "files": [
+    "fastapi/routing.py"
+   ]
+  }
+ ],
+ "agent_feature_files_outside_include": [],
+ "agent_feature_files_total": 44,
+ "note": "agent_feature_files_outside_include recomputed from the recorded features after fixing a prefix bug in lever_check.py (the run printed 44 because the prefix was built as \"fastapi//\"); no second map was run."
+}
