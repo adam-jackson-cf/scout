@@ -39,6 +39,22 @@ MINIMUMS = {"P_assign": 0.90, "R_assign": 0.80}  # R_assign = R_assign_res: assi
 UNRESOLVED_RATE_MAX = 0.15  # R4-13 (1) g: abstained / GO population (the cap); tune.composed_dev enforces it on dev
 RESOLVED_MIN = 50  # R4-13 (1) i: resolved paired clusters needed for GO
 NEW_AREA_GATE_MIN = 0.80  # round-0 gate bound (planted_new, P2): formerly MINIMUMS["R_new"]; a round-0 gate, not a verdict condition
+# ---- rev 13 (R-053): the one permitted re-gate of P1 and P2 on fresh items (PREREGISTRATION 5, rev 13). Every bar is an existing bar: P1's Jev recovery 0.60 / baseline 0.20, the R_assign minimum 0.80, the P2 gate
+# bound 0.80 and the GO abstention cap 0.15 (reasoning in PREREGISTRATION 5, rev 13).
+REGATE_SUBDIR = "regate"  # D/rounds/0/regate/ is a self-contained data root (catalogue/, rounds/0/): every re-gate stage runs with X2D_DATA pointing at it; nothing outside it is ever written
+REGATE_GATE_SET = "x2d-regate-v1"  # the gate-set tag of D/rounds/0/regate/gates.json; the rev-12 gates.json carries no tag and is never rewritten
+REGATE_P1_N = 40  # P1 items built (>= 40, PREREGISTRATION 5 rev 13)
+REGATE_P1_STRATA = (1, 1, 1, 2, 3)  # target stratum cycled over the P1 items (24 / 8 / 8 of 40 when every target exists; a target falls back to another kind when none is free): stratum 1 decides the gate, at least half of the items must be stratum 1
+REGATE_P1_STRATUM1_MIN = REGATE_P1_N // 2  # stratum-1 items needed in the build, and eligible (gold contains A) in the analysis; fewer = UNMEASURED
+REGATE_P1_ACC_MIN = MINIMUMS["R_assign"]  # P1: V-sem accuracy on the answered stratum-1 items (assigned in the labellers' acceptable set / resolved): the R_assign minimum (R-051 judges accuracy on answered clusters)
+REGATE_P1_ABSTAIN_MAX = UNRESOLVED_RATE_MAX  # P1 (stratum 1) and P2 (positives): abstained / items <= the GO abstention cap g
+REGATE_BASELINE_MAX = 0.20  # P1: B1 and B2 recovery of an acceptable area over all eligible P1 items (the rev-12 bar, unchanged)
+REGATE_P2_CLONES = 40  # P2 clones built. Sized from the round-0 yield of 4 direct-label positives in 12 clones (1/3). P(X >= 8) = 0.98 (0.82 at 1/4) for independent clones; the clones share 16 ablations, and with yield fully correlated within an area P(X >= 8) ~ 0.88 at 1/3 and ~ 0.71 at 1/4 [INFERENCE]; a shortfall is caught before any Jev request (run.sh regate-jev, analysis_x2d.py --regate-precheck)
+REGATE_P2_AREA_MIN = 2  # an ablated area owns >= 2 fresh candidates left after P1 (its clones share one ablation: the catalogue loses few areas)
+REGATE_P2_PER_AREA = 4  # at most this many clones per ablated area
+REGATE_P2_POSITIVES_MIN = 8  # direct-label positives (a clone whose own blind label on catalogue-p2 is not covered, gap or new) needed for a decision; fewer = UNMEASURED, which does not pass
+REGATE_P2_NONE_MIN = NEW_AREA_GATE_MIN  # P2: V-sem `none` / answered positives
+REGATE_P2_ABSTAIN_MAX = UNRESOLVED_RATE_MAX
 GO_GUARD_LEVEL = 0.95  # R5-01 h: one-sided level of the PR-cluster-bootstrap lower bound of gain_guess (thresholds.json study.go.guard_level)
 POWER_CHECK_KEYS = ("P3_u0", "P3_u05", "P3_u10", "N3", "N3_PR", "N4a", "N4b", "N4b_cap", "N4b_rho0")  # power.json `checks`, exactly these (R5-01, R5-02)
 POWER_NULL_KEYS = ("N3", "N3_PR", "N4a", "N4b", "N4b_cap", "N4b_rho0")  # a false null check is a stop no critique line clears (R5-02); a false P3 check needs `user_decision: proceed`
@@ -224,6 +240,81 @@ def data_path(*parts):
 
 def round_dir(r, data=None):
     return os.path.join(data or DATA, "rounds", str(r))
+
+
+def regate_root(data=None):
+    """D/rounds/0/regate: the one permitted re-gate's own data root (rev 13, R-053). It holds `catalogue/` and `rounds/0/` like a data directory; every re-gate stage runs with X2D_DATA = this
+    directory, so nothing outside it can be written; the study's round-0 files stay as they are."""
+    return os.path.join(round_dir(0, data), REGATE_SUBDIR)
+
+
+def is_regate_root(data=None):
+    parts = os.path.abspath(data or DATA).split(os.sep)
+    return len(parts) >= 4 and parts[-1] == REGATE_SUBDIR and parts[-2] == "0" and parts[-3] == "rounds"
+
+
+def main_data(data=None):
+    """The study data directory: `data` itself, or the one a re-gate root lives in (D/rounds/0/regate -> D)."""
+    d = os.path.abspath(data or DATA)
+    return os.path.dirname(os.path.dirname(os.path.dirname(d))) if is_regate_root(d) else d
+
+
+def gate_problems(data=None):
+    """-> what stops round 1 on the round-0 gates (empty = round 1 may start). Any round-0 gate other than P1 / P2 that FAILed stops the pilot. P1 / P2 are the two gates rev 13 may re-test once, on
+    fresh items: when either FAILed in round 0 (rev 12 bytes), `rounds/0/regate/gates.json` must exist, carry the gate-set tag REGATE_GATE_SET and show PASS for BOTH P1 and P2 (UNMEASURED or FAIL
+    stops the pilot; there is no second re-gate). The rev-12 gates.json is read, never rewritten."""
+    main = main_data(data)
+    gp = os.path.join(round_dir(0, main), "gates.json")
+    if not os.path.isfile(gp) or os.path.getsize(gp) == 0:
+        return ["%s missing: run the gates first" % gp]
+    gates = (json.load(open(gp)).get("gates")) or {}
+    if not gates:
+        return ["%s has no gate records: run the gates first" % gp]
+    failed = sorted(k for k, v in gates.items() if v.get("status") == "FAIL")
+    if not failed:
+        return []
+    if set(failed) - {"P1", "P2"}:
+        return ["round-0 gate(s) failed: " + ", ".join(failed)]
+    rp = os.path.join(regate_root(main), "gates.json")
+    head = "round-0 gate(s) failed: %s (rev 12 bytes); round 1 needs the one permitted re-gate on fresh items to PASS both P1 and P2 (PREREGISTRATION 5, rev 13)" % ", ".join(failed)
+    if not os.path.isfile(rp) or os.path.getsize(rp) == 0:
+        return [head + ": %s does not exist (run.sh regate-build / -label / -jev / -analyse)" % rp]
+    rj = json.load(open(rp))
+    bad = []
+    if rj.get("gate_set") != REGATE_GATE_SET:
+        bad.append("%s carries gate_set %r, not %r" % (rp, rj.get("gate_set"), REGATE_GATE_SET))
+    rg = rj.get("gates") or {}
+    for k in ("P1", "P2"):
+        st = (rg.get(k) or {}).get("status")
+        if st != "PASS":
+            bad.append("re-gate %s is %s: a re-gate that does not PASS stops the pilot (one shot, no further attempt)" % (k, st))
+    return [head + ": " + "; ".join(bad)] if bad else []
+
+
+
+def regate_frozen_problems(data=None):
+    """-> differences between the re-gate root's copy of the frozen Jev side (the round's inputs: guide and v1 questions, settings.json, thresholds.json, the catalogue) and the study's round-0 originals, plus a
+    missing marker or a threshold that is not the round-0 provisional 0.70 (empty = the Jev side is the one round 0 used, byte for byte). Every re-gate stage after the build checks this."""
+    main = main_data(data)
+    root = regate_root(main)
+    rd0, rr = round_dir(0, main), os.path.join(root, "rounds", "0")
+    bad = []
+    if not os.path.isfile(os.path.join(root, "regate.json")):
+        bad.append("%s missing: run.sh regate-build first" % os.path.join(root, "regate.json"))
+    pairs = [(os.path.join(rd0, "settings.json"), os.path.join(rr, "settings.json")), (os.path.join(rd0, "thresholds.json"), os.path.join(rr, "thresholds.json")),
+             (catalogue_path(main), catalogue_path(root))]
+    for a, b in pairs:
+        if not os.path.isfile(a) or not os.path.isfile(b) or sha256_file(a) != sha256_file(b):
+            bad.append("%s differs from %s" % (b, a))
+    da, db = inputs_digest(os.path.join(rd0, "inputs")), inputs_digest(os.path.join(rr, "inputs"))
+    if da is None or da != db:
+        bad.append("%s (inputs digest %s) differs from %s (%s)" % (os.path.join(rr, "inputs"), db, os.path.join(rd0, "inputs"), da))
+    tp = os.path.join(rr, "thresholds.json")
+    if os.path.isfile(tp):
+        for name, dec in (json.load(open(tp)).get("decisions") or {}).items():
+            if dec.get("source") != "provisional-0.7" or dec.get("threshold") != 0.7:
+                bad.append("%s: decision %s is not the round-0 provisional 0.70 threshold" % (tp, name))
+    return bad
 
 
 def primary_arm(data=None):
@@ -520,6 +611,7 @@ def jev_budget(round_key, out_path, data=None):
     allowance left after the OTHER score files, plus nothing for this file (the driver adds its own earlier spend itself). The v_7 re-score (files under
     rounds/<rr>/jev-v7/) is charged to the $20 total only, never to a round's cap, and does not count against the round's own runs (R3-17)."""
     out_path = os.path.abspath(out_path)
+    data = main_data(data)  # rev 13: a re-gate root (D/rounds/0/regate) is charged to the study's own caps: its score files sit under D/rounds/0/, so the round-0 cap ($2) and the $20 total count them
     others = [p for p in score_files(data) if os.path.abspath(p) != out_path]
     total_other = sum(spent_in(p) for p in others)
     cap = CAPS["usd_total"] - total_other

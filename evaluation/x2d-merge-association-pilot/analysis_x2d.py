@@ -1403,6 +1403,193 @@ def gates(data=None, repo=None):
     return out
 
 
+# ------------------------------------------------------------------ the re-gate (rev 13, R-053): P1 and P2 rebuilt on fresh items, gate set x2d.REGATE_GATE_SET
+def _p1_stats(rows):
+    """Descriptive and decisive figures of V-sem over eligible P1 items (gold = the labellers' agreed acceptable set, which contains A): accuracy on the ANSWERED items (resolved = composed output assigned or none;
+    correct = assigned to an acceptable area, a `none` is a resolved wrong answer), the abstention rate over all the items, the all-item recovery (abstention = miss, the rev-12 figure), and the path-following
+    rates: answers naming a sibling area of the target directory that is not acceptable (composed answers over the answered items; the unthresholded permutation-1 choice over all the items)."""
+    n = len(rows)
+    res = [r for r in rows if r["V-sem"]["output"] in RESOLVED]
+    corr = [r for r in res if r["V-sem"]["output"] == "assigned" and r["V-sem"]["area_id"] in r["acceptable"]]
+    pf = lambda r, a: a is not None and a in (set(r["sibling_area_ids"]) - set(r["acceptable"]))
+    return {"n": n, "resolved": len(res), "abstained": n - len(res), "accuracy_answered": _rate(len(corr), len(res)), "abstention_rate": _rate(n - len(res), n), "recovery_all_items": _rate(len(corr), n),
+            "recovery_all_items_A_only": _rate(sum(1 for r in rows if r["V-sem"]["output"] == "assigned" and r["V-sem"]["area_id"] == r["area_id"]), n),
+            "sibling_in_acceptable": sum(1 for r in rows if set(r["sibling_area_ids"]) & set(r["acceptable"])),
+            "none_answers": sum(1 for r in res if r["V-sem"]["output"] == "none"),
+            "path_following_answered": _rate(sum(1 for r in res if r["V-sem"]["output"] == "assigned" and pf(r, r["V-sem"]["area_id"])), len(res)),
+            "path_following_raw_choice": _rate(sum(1 for r in rows if pf(r, r["V-sem"].get("raw_choice"))), n)}
+
+
+def _recovery(rows, name):
+    return _rate(sum(1 for r in rows if r[name]["output"] == "assigned" and r[name]["area_id"] in r["acceptable"]), len(rows))
+
+
+def _regate_denominators(d):
+    """The label-only and construction part of the re-gate gates (R17-02): everything that needs no Jev answer. Reads ONLY units.jsonl, control-key.jsonl, gold.jsonl, arms/B1.jsonl and arms/B2.jsonl of the
+    re-gate root `d` (never arms-p1/, arms-p2/ or jev-p/). -> dict(units, key, gold, b1, b2, p1, p2, items [P1 items without a V-sem field], excluded, base, resolved_by_rules, twins, kept, rows2 [P2 rows without
+    a V-sem answer])."""
+    for p, w in (("units.jsonl", "re-gate units"), ("control-key.jsonl", "re-gate control key"), ("gold.jsonl", "re-gate gold"), ("labels.jsonl", "re-gate labels"), ("arms/B1.jsonl", "B1 arm"), ("arms/B2.jsonl", "B2 arm")):
+        _need(os.path.join(d, p), w)
+    units = {u["case_id"]: u for u in x2d.read_jsonl(os.path.join(d, "units.jsonl"))}
+    key = {k["case_id"]: k for k in x2d.read_jsonl(os.path.join(d, "control-key.jsonl"))}
+    gold = {g["case_id"]: g for g in x2d.read_jsonl(os.path.join(d, "gold.jsonl"))}
+    arm = lambda sub, name: {r["case_id"]: r for r in x2d.read_jsonl(os.path.join(d, sub, name + ".jsonl"))}
+    b1, b2 = arm("arms", "B1"), arm("arms", "B2")
+    p1 = sorted(c for c, k in key.items() if k.get("kind") == "p1")
+    p2 = sorted(c for c, k in key.items() if k.get("kind") == "p2")
+    miss = [c for c in p1 if c not in b1 or c not in b2]
+    if miss:
+        sys.exit("refusing: %d re-gate control(s) lack a B1 / B2 arm row: %s" % (len(miss), ", ".join(miss[:10])))
+    items, excluded = [], {"no_agreed_gold": [], "gold_not_covered": [], "gold_excludes_A": []}
+    for c in p1:
+        k, g = key[c], gold.get(c)
+        A = k["area_id"]
+        acc = sorted((g or {}).get("acceptable") or [])
+        why = None
+        if g is None or not isinstance(g.get("covered"), bool):
+            why = "no_agreed_gold"
+        elif not g["covered"]:
+            why = "gold_not_covered"
+        elif A not in acc:
+            why = "gold_excludes_A"
+        if why:
+            excluded[why].append(c)
+        items.append({"case_id": c, "stratum": (units.get(c) or {}).get("stratum"), "area_id": A, "acceptable": acc, "gold_agreement": (g or {}).get("agreement"), "excluded": why,
+                      "sibling_area_ids": sorted(k.get("sibling_area_ids") or []), "target_dir": k.get("target_dir"), "origin": k.get("origin"), "date": (units.get(c) or {}).get("date"),
+                      "B1": {"output": b1[c].get("output"), "area_id": b1[c].get("area_id")}, "B2": {"output": b2[c].get("output"), "area_id": b2[c].get("area_id")}})
+    elig = [r for r in items if not r["excluded"]]
+    s1 = [r for r in elig if r["stratum"] == 1]
+    base = {name: {"all_eligible": _recovery(elig, name), "stratum1": _recovery(s1, name)} for name in ("B1", "B2")}
+    resolved_by_rules = [c for c in p1 if c not in units]
+    kept, twins, seen = [], [], set()
+    for c in p2:
+        mem = set(units[c]["members"])
+        if mem & seen:  # a path twin of an earlier clone is one item counted twice (R10-02): excluded
+            twins.append(c)
+            continue
+        seen |= mem
+        kept.append(c)
+    rows2 = []
+    for c in kept:
+        g, k = gold.get(c), key[c]
+        direct = None if g is None or not isinstance(g.get("covered"), bool) else ("covered" if g["covered"] else "none")
+        dg = (g or {}).get("derived_gold")
+        rows2.append({"case_id": c, "direct_label": direct, "none_kind": (g or {}).get("none_kind"), "direct_acceptable": sorted((g or {}).get("acceptable") or []), "gold_agreement": (g or {}).get("agreement"),
+                      "derived_gold": None if not dg else ("covered" if dg.get("covered") else "none"), "derived_acceptable": sorted((dg or {}).get("acceptable") or []), "origin": k.get("origin"),
+                      "date": (units.get(c) or {}).get("date"), "ablated_area_id": k.get("ablated_area_id")})
+    return {"units": units, "key": key, "gold": gold, "b1": b1, "b2": b2, "p1": p1, "p2": p2, "items": items, "excluded": excluded, "base": base, "resolved_by_rules": resolved_by_rules,
+            "twins": twins, "kept": kept, "rows2": rows2, "elig": elig, "s1": s1}
+
+
+def regate_label_problems(data=None):
+    """R17-02: the conjuncts of the re-gate gates that need no Jev answer, checked after gold and BEFORE any re-gate Jev request. -> (problems, counts). Problems: eligible stratum-1 P1 items below
+    x2d.REGATE_P1_STRATUM1_MIN; direct-label P2 positives (after twin exclusion) below x2d.REGATE_P2_POSITIVES_MIN; rules-resolved P1 units; B1 or B2 over the eligible items above x2d.REGATE_BASELINE_MAX.
+    Never opens arms-p1/, arms-p2/ or jev-p/."""
+    data = data or x2d.DATA
+    if not x2d.is_regate_root(data):
+        sys.exit("refusing: the re-gate precheck runs inside D/rounds/0/regate (X2D_DATA)")
+    den = _regate_denominators(_rd(0, data))
+    pos = [r for r in den["rows2"] if r["direct_label"] == "none"]
+    counts = {"items_built": len(den["p1"]), "items_eligible": len(den["elig"]), "stratum1_eligible": len(den["s1"]), "direct_label_positives": len(pos), "twins_excluded": len(den["twins"]),
+              "rules_resolved_units": len(den["resolved_by_rules"]), "baseline_all_eligible": {n_: den["base"][n_]["all_eligible"] for n_ in ("B1", "B2")}}
+    problems = []
+    if len(den["s1"]) < x2d.REGATE_P1_STRATUM1_MIN:
+        problems.append("eligible stratum-1 P1 items %d < %d" % (len(den["s1"]), x2d.REGATE_P1_STRATUM1_MIN))
+    if len(pos) < x2d.REGATE_P2_POSITIVES_MIN:
+        problems.append("direct-label P2 positives %d < %d" % (len(pos), x2d.REGATE_P2_POSITIVES_MIN))
+    if den["resolved_by_rules"]:
+        problems.append("rules_resolved_units %d > 0" % len(den["resolved_by_rules"]))
+    for n_ in ("B1", "B2"):
+        v = den["base"][n_]["all_eligible"]["value"]
+        if v is None or v > x2d.REGATE_BASELINE_MAX:
+            problems.append("%s recovery over the eligible items %s > %s" % (n_, v, x2d.REGATE_BASELINE_MAX))
+    return problems, counts
+
+
+def regate_gates(data=None):
+    """The one permitted re-gate of P1 and P2 on fresh items (PREREGISTRATION 5, rev 13), computed in D/rounds/0/regate (X2D_DATA). Gold, bars and exclusions are fixed by the preregistration:
+    P1 gold = the labellers' agreed acceptable set of the item on catalogue-p1, which must contain A (an item whose agreed gold is absent, not covered or does not contain A is reported and excluded);
+    STRATUM 1 decides: PASS iff V-sem's accuracy on the answered stratum-1 items >= x2d.REGATE_P1_ACC_MIN, its abstention rate on them <= x2d.REGATE_P1_ABSTAIN_MAX and B1 and B2 each recover an acceptable area
+    on <= x2d.REGATE_BASELINE_MAX of all eligible items; UNMEASURED below x2d.REGATE_P1_STRATUM1_MIN eligible stratum-1 items. Strata 2-3 and the path-following rates are reported.
+    P2 gold = the clone's OWN agreed label on catalogue-p2 (gap and new alike; the gold the rev-12 derivation would have given is reported beside it, never scored; a path twin of an earlier clone is excluded):
+    over the direct-label positives (own label not covered) PASS iff V-sem's `none` rate on the answered positives >= x2d.REGATE_P2_NONE_MIN and its abstention rate <= x2d.REGATE_P2_ABSTAIN_MAX;
+    UNMEASURED below x2d.REGATE_P2_POSITIVES_MIN positives. Pure; the CLI writes D/rounds/0/regate/gates.json once."""
+    data = data or x2d.DATA
+    if not x2d.is_regate_root(data):
+        sys.exit("refusing: the re-gate is analysed inside D/rounds/0/regate (X2D_DATA)")
+    frozen_bad = x2d.regate_frozen_problems(data)
+    if frozen_bad:
+        sys.exit("refusing: the frozen Jev side of the re-gate differs from round 0: " + "; ".join(frozen_bad))
+    d = _rd(0, data)
+    den = _regate_denominators(d)
+    for p, w in (("arms-p1/V-sem.jsonl", "P1 V-sem arm"), ("jev-p/scores.p1.jsonl", "P1 Jev run"), ("arms-p2/V-sem.jsonl", "P2 V-sem arm"), ("jev-p/scores.p2.jsonl", "P2 Jev run")):
+        _need(os.path.join(d, p), w)
+    key, gold, units = den["key"], den["gold"], den["units"]
+    arm = lambda sub, name: {r["case_id"]: r for r in x2d.read_jsonl(os.path.join(d, sub, name + ".jsonl"))}
+    vs1, vs2 = arm("arms-p1", "V-sem"), arm("arms-p2", "V-sem")
+    p1, p2 = den["p1"], den["p2"]
+    miss = [c for c in p1 if c not in vs1] + [c for c in p2 if c not in vs2]
+    if miss:
+        sys.exit("refusing: %d re-gate control(s) lack a V-sem arm row: %s" % (len(miss), ", ".join(miss[:10])))
+    G_ = collections.OrderedDict()
+    # ---- P1
+    excluded = den["excluded"]
+    items = []
+    for it in den["items"]:
+        v = vs1[it["case_id"]]
+        items.append(dict(it, **{"V-sem": {"output": v.get("output"), "area_id": v.get("area_id"), "confidence": v.get("confidence"), "reason": v.get("unresolved_reason"), "raw_choice": v.get("raw_choice"),
+                                          "raw_covered": v.get("raw_covered")}}))
+    elig = [r for r in items if not r["excluded"]]
+    s1 = [r for r in elig if r["stratum"] == 1]
+    base = den["base"]
+    st1 = _p1_stats(s1)
+    by_stratum = {str(s): _p1_stats([r for r in elig if r["stratum"] == s]) for s in (1, 2, 3)}
+    resolved_by_rules = den["resolved_by_rules"]
+    acc_v, abst_v = st1["accuracy_answered"]["value"], st1["abstention_rate"]["value"]
+    base_ok = all(base[n_]["all_eligible"]["value"] is not None and base[n_]["all_eligible"]["value"] <= x2d.REGATE_BASELINE_MAX for n_ in ("B1", "B2"))
+    ok1 = acc_v is not None and acc_v >= x2d.REGATE_P1_ACC_MIN and abst_v is not None and abst_v <= x2d.REGATE_P1_ABSTAIN_MAX and base_ok and not resolved_by_rules
+    v1 = {"stratum1": st1, "strata": by_stratum, "all_eligible": _p1_stats(elig), "baselines": base, "items_built": len(p1), "items_eligible": len(elig), "stratum1_eligible": len(s1),
+          "excluded": excluded, "rules_resolved_units": len(resolved_by_rules)}
+    bound1 = {"accuracy_answered_stratum1_min": x2d.REGATE_P1_ACC_MIN, "abstention_stratum1_max": x2d.REGATE_P1_ABSTAIN_MAX, "baseline_max": x2d.REGATE_BASELINE_MAX}
+    note1 = ("P1 re-gate: gold = the labellers' agreed acceptable set (contains A); stratum 1 decides: V-sem accuracy on the answered items >= the R_assign minimum, abstention <= the GO cap g, B1 and B2 <= the rev-12 baseline bar "
+             "over all eligible items; strata 2-3 and the path-following rates are reported; UNMEASURED below %d eligible stratum-1 items" % x2d.REGATE_P1_STRATUM1_MIN)
+    if len(s1) < x2d.REGATE_P1_STRATUM1_MIN:
+        G_["P1"] = {"status": "UNMEASURED", "value": v1, "bound": bound1, "n": len(s1), "note": note1}
+    else:
+        G_["P1"] = _gate(ok1, v1, bound1, len(s1), note=note1)
+    # ---- P2
+    twins = den["twins"]
+    rows2 = []
+    for r0 in den["rows2"]:
+        v = vs2[r0["case_id"]]
+        rows2.append(dict(r0, output=v.get("output"), area_id=v.get("area_id"), confidence=v.get("confidence"), reason=v.get("unresolved_reason"), raw_choice=v.get("raw_choice"), raw_covered=v.get("raw_covered")))
+    pos = [r for r in rows2 if r["direct_label"] == "none"]
+    ret = [r for r in rows2 if r["direct_label"] == "covered"]
+    res_pos = [r for r in pos if r["output"] in RESOLVED]
+    none_pos = [r for r in res_pos if r["output"] == "none"]
+    rate_none = _rate(len(none_pos), len(res_pos))
+    abst2 = _rate(len(pos) - len(res_pos), len(pos))
+    res_ret = [r for r in ret if r["output"] in RESOLVED]
+    dvd = collections.Counter("%s|%s" % (r["direct_label"], r["derived_gold"] or "no_source_label") for r in rows2)
+    v2 = {"clones": len(p2), "twins_excluded": twins, "direct_label_positives": len(pos), "positives_by_none_kind": dict(collections.Counter(r["none_kind"] or "unspecified" for r in pos)),
+          "positives_by_origin": dict(collections.Counter(r["origin"] for r in pos)), "positives_by_ablated_area": dict(sorted(collections.Counter(r["ablated_area_id"] for r in pos).items())),
+          "none_rate_answered": rate_none, "none_rate_all_positives": _rate(len(none_pos), len(pos)), "abstention_rate": abst2,
+          "none_answers": len(none_pos), "assigned_on_positives": len(res_pos) - len(none_pos),
+          "retained_covered": {"n": len(ret), "answered": len(res_ret), "assigned_correct": sum(1 for r in res_ret if r["output"] == "assigned" and r["area_id"] in r["direct_acceptable"]),
+                               "none": sum(1 for r in res_ret if r["output"] == "none"), "assigned_wrong": sum(1 for r in res_ret if r["output"] == "assigned" and r["area_id"] not in r["direct_acceptable"]),
+                               "abstained": len(ret) - len(res_ret)},
+          "no_agreed_gold": sum(1 for r in rows2 if r["direct_label"] is None), "derived_vs_direct": dict(sorted(dvd.items()))}
+    bound2 = {"none_rate_answered_min": x2d.REGATE_P2_NONE_MIN, "abstention_max": x2d.REGATE_P2_ABSTAIN_MAX, "positives_min": x2d.REGATE_P2_POSITIVES_MIN}
+    note2 = ("P2 re-gate: gold = the clone's own blind label on catalogue-p2 (gap or new; the rev-12 derived gold is reported in derived_vs_direct, never scored); over the direct-label positives V-sem's `none` rate on the "
+             "answered positives >= the new-area gate bound and abstention <= the GO cap g; UNMEASURED below %d positives (does not pass: one shot)" % x2d.REGATE_P2_POSITIVES_MIN)
+    if len(pos) < x2d.REGATE_P2_POSITIVES_MIN:
+        G_["P2"] = {"status": "UNMEASURED", "value": v2, "bound": bound2, "n": len(pos), "note": note2}
+    else:
+        G_["P2"] = _gate(rate_none["value"] is not None and rate_none["value"] >= x2d.REGATE_P2_NONE_MIN and abst2["value"] <= x2d.REGATE_P2_ABSTAIN_MAX, v2, bound2, len(pos), note=note2)
+    return {"gate_set": x2d.REGATE_GATE_SET, "gates": G_, "bars": {"P1": bound1, "P2": bound2}, "p1_items": items, "p2_items": rows2,
+            "note": "one shot (PREREGISTRATION 5, rev 13): a P1 or P2 that is not PASS stops the pilot; the rev-12 round-0 gates.json is never rewritten"}
+
+
 # ------------------------------------------------------------------ labels check (before Jev scores a round)
 def _check_units(r, data=None):
     """-> (ids of the checked units, ids of the GO population among them): round 0 the D and P units, later rounds the window units; controls never. The GO population excludes core_gate units (R3-10)."""
@@ -1558,6 +1745,8 @@ def main(argv=None):
     ap.add_argument("--round", type=int)
     ap.add_argument("--pack", action="store_true")
     ap.add_argument("--gates", action="store_true")
+    ap.add_argument("--regate-gates", action="store_true", help="rev 13: the re-gate's P1 and P2 on fresh items (run inside D/rounds/0/regate: X2D_DATA); writes regate/gates.json once; exit 1 unless both PASS")
+    ap.add_argument("--regate-precheck", action="store_true", help="rev 13 (R17-02): the label-only and construction conjuncts of the re-gate, before any re-gate Jev request (inside D/rounds/0/regate); prints the counts, exit 1 on any problem; reads no Jev file")
     ap.add_argument("--verdict", action="store_true")
     ap.add_argument("--futility", action="store_true")
     ap.add_argument("--upto", type=int)
@@ -1589,7 +1778,27 @@ def main(argv=None):
             print("round %d already has its one guide clarification (or its pre-check refused it, R4-02): the round proceeds scored and non-informative" % a.labels_check)
             return 0
         return 0 if res["ok"] else 1
+    if a.regate_precheck:
+        problems, counts = regate_label_problems()
+        print("regate precheck: " + json.dumps(counts, sort_keys=True))
+        for pr in problems:
+            print("PROBLEM: " + pr)
+        return 1 if problems else 0
+    if a.regate_gates:
+        p = os.path.join(x2d.DATA, "gates.json")
+        if not x2d.is_regate_root():
+            sys.exit("refusing: --regate-gates runs inside D/rounds/0/regate (X2D_DATA)")
+        x2d.refuse_if_exists(p)
+        res = regate_gates()
+        x2d.write_json_new(p, res)
+        for k, g in res["gates"].items():
+            print("%s %s n=%s bound=%s" % (g["status"], k, g["n"], json.dumps(g["bound"])))
+        bad = [k for k, g in res["gates"].items() if g["status"] != "PASS"]
+        print("REGATE NOT PASSED (the pilot stops): " + ", ".join(bad) if bad else "REGATE PASS")
+        return 1 if bad else 0
     if a.gates:
+        if x2d.is_regate_root():
+            sys.exit("refusing: the round-0 gates do not run inside D/rounds/0/regate")
         p = os.path.join(_rd(0), "gates.json")
         x2d.refuse_if_exists(p)
         res = gates(repo=a.repo)

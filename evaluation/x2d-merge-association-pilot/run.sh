@@ -5,6 +5,8 @@
 #   run.sh onboard                     [model: Jev, infisical-wrapped] code-first consensus, Jev for contested files, freezes data/catalogue/ and its SHA-256
 #   run.sh quality                     [model: labellers] section 4.3 report incl. the intruder audit
 #   run.sh gates                       [model: Jev + labellers] round-0 gates K2-K6, P1, N1, planted items on reserve sets D/P
+#   run.sh regate-build|regate-label|regate-jev|regate-analyse   [model: Jev + labellers] the ONE permitted re-gate of P1 and P2 on fresh items (PREREGISTRATION 5, rev 13; R-053), one stage at a time, the build alone first, all inside
+#                                      D/rounds/0/regate (a self-contained data root; the round-0 files are never written); one shot; regate-jev checks its label-only denominators before any Jev request; round 1 needs its PASS
 #   run.sh power                       [model-free] P3 / N3 / N3-PR / N4a / N4b / N4b-cap / N4b-rho0 on the live frozen-round structure (rounds/0/k23.json) -> data/power.json (after gates; read by the round-0 critique); exit 3 = a null cell above its bar (stop, new council round)
 #   run.sh round R                     [model] R in 1..10: units -> label -> labels-check -> gold -> baselines -> jev -> tune -> analysis (each stage also callable alone, see below)
 #   run.sh units|label|labels-check|gold|baselines|jev|tune|analysis R
@@ -60,10 +62,10 @@ jev_run() {
     ${qsrc:+-questions-src "$qsrc"} ${settings:+-settings "$settings"} ${X2D_JEV_ENDPOINT:+-endpoint "$X2D_JEV_ENDPOINT"} "$@"
 }
 
-# The round-0 gates must have been evaluated and passed before any round (PREREGISTRATION section 5).
+# The round-0 gates must have been evaluated and passed before any round (PREREGISTRATION section 5). Rev 13 (R-053): a round-0 FAIL of P1 and/or P2 alone is lifted only by the one re-gate on fresh items
+# (D/rounds/0/regate/gates.json, gate set x2d-regate-v1) showing PASS for BOTH; a FAIL of any other gate, or a re-gate that is not PASS, stops the pilot (x2d.gate_problems).
 require_gates() {
-  [ -s "$D/rounds/0/gates.json" ] || { echo "refusing: $D/rounds/0/gates.json missing: run the gates first" >&2; exit 1; }
-  pyx "import json; g = json.load(open('$D/rounds/0/gates.json')); bad = [k for k, v in g.get('gates', {}).items() if v.get('status') == 'FAIL']; sys.exit('refusing: round-0 gate(s) failed: ' + ', '.join(bad)) if bad or not g.get('gates') else 0"
+  pyx "bad = x2d.gate_problems(); sys.exit('refusing: ' + '; '.join(bad)) if bad else 0"
 }
 
 # Council critique between rounds (PREREGISTRATION section 10; R1-09, R2-16): round R in 1..10 needs $X2D_REVIEWS_DIR/pilot-round-<R-1>.md (default $S/reviews); x2d.critique_problems lists
@@ -288,8 +290,12 @@ stage_quality_finish() { verify; py "$S/quality.py" --repo "$SRC" --data "$D" --
 
 # gates: build (controls, K2/K3 inputs, round-0 version and provisional thresholds, baselines) -> label (wide labels and gold of D/P/controls and the contrast set; model)
 # -> jev (the manifest-driven round-0 Jev runs, then compose; model) -> analyse (K2-K6, P1, N1, planted items).
+gates_closed() {  # R17-06: after the round-0 gates were analysed, round 0's files are never written again by a legacy stage (the re-gate lives in rounds/0/regate)
+  [ ! -s "$D/rounds/0/gates.json" ] || { echo "refusing: $D/rounds/0/gates.json exists: round 0's gates were analysed and its files are never written again (rev 13; the re-gate lives in rounds/0/regate)" >&2; exit 1; }
+}
 stage_gates_build() {
   verify
+  gates_closed
   py "$S/build_controls.py" --repo "$SRC"
   py "$S/build_units.py" --repo "$SRC" --gates
   py "$S/versioning.py" --round 0
@@ -299,6 +305,7 @@ stage_gates_build() {
 }
 stage_gates_label() {
   verify
+  gates_closed
   require_version 0
   check_label_args "$@"
   py "$S/label_x2d.py" --round 0 "$@"
@@ -314,6 +321,7 @@ runs_of() {  # manifest-driven round-0 Jev runs (written by build_controls.py): 
 }
 stage_gates_jev() {
   verify
+  gates_closed
   require_version 0; require_labels_check 0
   local R0="$D/rounds/0" name units cat out arms flip extra
   runs_of > "$R0/jev-in/.runs"
@@ -330,6 +338,49 @@ stage_gates_jev() {
   done < "$R0/jev-in/.runs"
 }
 stage_gates_analyse() { verify; py "$S/analysis_x2d.py" --gates --repo "$SRC"; }
+
+# ---- the one permitted re-gate of P1 and P2 on fresh items (PREREGISTRATION 5, rev 13; R-053). It lives in $D/rounds/0/regate, a self-contained data root (catalogue/ and rounds/0/ with the frozen Jev side
+# copied byte for byte): every stage after the build runs with D and X2D_DATA re-pointed at it, so nothing outside it can be written. One shot: regate-build refuses when the directory exists, regate-label and
+# regate-jev refuse once regate/gates.json exists, regate-analyse writes it once. Jev spend is charged to the round-0 cap and the $20 total (x2d.jev_budget maps the re-gate root to the study data directory).
+in_regate() { ( D="$D/rounds/0/regate"; export X2D_DATA="$D"; "$@" ); }
+regate_ready() {
+  [ -s "$D/rounds/0/regate/regate.json" ] || { echo "refusing: $D/rounds/0/regate/regate.json missing: run.sh regate-build first" >&2; exit 1; }
+  pyx "bad = x2d.regate_frozen_problems(); sys.exit('refusing: ' + '; '.join(bad)) if bad else 0"
+}
+regate_open() {
+  regate_ready
+  [ ! -e "$D/rounds/0/regate/gates.json" ] || { echo "refusing: $D/rounds/0/regate/gates.json exists: the re-gate was analysed, it is one shot and no further re-gate stage runs" >&2; exit 1; }
+}
+regate_inner_baselines() { py "$S/baselines.py" --repo "$SRC" --round 0; }
+stage_regate_build() {
+  verify
+  [ ! -e "$D/rounds/0/regate" ] || { echo "refusing: $D/rounds/0/regate exists: the re-gate is one shot" >&2; exit 1; }
+  py "$S/build_controls.py" --repo "$SRC" --regate
+  in_regate regate_inner_baselines
+}
+regate_inner_label() {
+  py "$S/label_x2d.py" --round 0 "$@"
+  local g="$D/rounds/0/gold.jsonl"
+  if [ -s "$g" ]; then echo "$g exists (append-only): skipped"; else py "$S/gold.py" --round 0; fi
+}
+stage_regate_label() { verify; regate_open; check_label_args "$@"; in_regate regate_inner_label "$@"; }
+regate_inner_jev() {
+  local R0="$D/rounds/0" name units cat out arms flip extra
+  [ -s "$R0/gold.jsonl" ] || { echo "refusing: $R0/gold.jsonl missing: the re-gate's labels and gold come before its Jev run" >&2; exit 1; }
+  py "$S/analysis_x2d.py" --regate-precheck || { echo "refusing: the re-gate's label-only denominators or construction checks fail (no Jev request was made): stop, report; the council and the user decide (PREREGISTRATION 5)" >&2; exit 1; }
+  runs_of > "$R0/jev-in/.runs"
+  while IFS='|' read -r name units cat out arms flip; do
+    extra=()
+    if [ "$flip" = 1 ]; then extra=(-flip-all); fi
+    jev_run 0 "$units" "$cat" "$R0/$out" "$arms" ${extra[@]+"${extra[@]}"}
+  done < "$R0/jev-in/.runs"
+  while IFS='|' read -r name units cat out arms flip; do
+    py "$S/compose.py" --round 0 --scores "$R0/$out" --units "$units" --arms-dir "arms-$name" --catalogue "$cat"
+  done < "$R0/jev-in/.runs"
+}
+stage_regate_jev() { verify; regate_open; in_regate regate_inner_jev; }
+regate_inner_analyse() { py "$S/analysis_x2d.py" --regate-gates; }
+stage_regate_analyse() { verify; regate_open; in_regate regate_inner_analyse; }
 
 # power (model-free): P3 / N3 / N3-PR / N4 cells on the live frozen-round structure and the real-none proxy (R2-11); read by the council's round-0 critique; exit 3 when a null cell is above its bar (R5-02)
 stage_power() { verify; [ -s "$D/rounds/0/k23.json" ] || { echo "refusing: $D/rounds/0/k23.json missing: run gates first" >&2; exit 1; }; py "$S/power_sim.py" --structure-k23 "$D/rounds/0/k23.json" --out "$D/power.json"; }
@@ -349,6 +400,7 @@ case "$STAGE" in
   quality) stage_quality_build; stage_quality_label; stage_quality_finish ;;
   quality-build|quality-label|quality-finish) "stage_${STAGE//-/_}" "${@:2}" ;;
   gates) stage_gates_build; stage_gates_label; stage_gates_jev; stage_gates_analyse ;;
+  regate-build|regate-label|regate-jev|regate-analyse) "stage_${STAGE//-/_}" "${@:2}" ;;
   gates-build|gates-label|gates-jev|gates-analyse) "stage_${STAGE//-/_}" "${@:2}" ;;
   round) need_round "${2:-}"; for s in units label labels_check gold baselines jev tune analysis; do "stage_$s" "$2"; done ;;
   labels-check) need_round "${2:-}"; stage_labels_check "$2" ;;
@@ -361,5 +413,5 @@ case "$STAGE" in
     verify
     critique_ok 10
     py "$S/analysis_x2d.py" --verdict ;;
-  *) sed -n '2,13p' "$S/run.sh"; exit 2 ;;
+  *) sed -n '2,15p' "$S/run.sh"; exit 2 ;;
 esac

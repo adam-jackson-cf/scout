@@ -101,3 +101,110 @@ GATES FAIL: P1, P2
 `power` (`run.sh power`, log `/tmp/x2d-power.log`), exit 0 (no null cell above its bar): `n4_max 0.054; checks {"P3_u0": true, "P3_u05": true, "P3_u10": true, "N3": true, "N3_PR": true, "N4a": true, "N4b": true, "N4b_cap": true, "N4b_rho0": true}; seconds 34.9`.
 
 **Gate stop.** P1 (V-sem 0.45 < 0.60; B1 and B2 0.05 ≤ 0.20) and P2 (7 label-derived gap positives, below 8; 4 answered `none`, so 3 ≥ 2 misses → FAIL, not UNMEASURED) fail. Under `PREREGISTRATION.md` §5 (`:110`) "Failing a gate stops the pilot before round 1 (the failure is the finding: it is reported, not repaired silently) … a guide or question fix needs a new review round." Round 1 has not started; HD6 stays `preregistered`. The next step is a council memo on the stop and the user's decision.
+
+## Gate-failure disclosure (from the council memo §2; preregistered P1/P2 descriptive disclosures)
+
+#### P1: per item (the preregistered descriptive disclosure)
+
+How to read the columns:
+- **A** is the gold area, the file's owner before the move (`control-key.jsonl` line N = ctl-N).
+- **B** is the area the directory baselines assign (`data/rounds/0/arms/B2.jsonl`; B1 is the same on every item). Stratum 3 means no owned sibling.
+- **Answer** is V-sem's composed output (`arms-p1/V-sem.jsonl:1-20`), and **raw** is its unthresholded permutation-1 choice.
+- **Labelled set** is the agreed acceptable set in `gold.jsonl`.
+
+| Item | Stratum | File moved | A | Answer (conf.) | Raw | B | Labelled set | Category |
+|---|---|---|---|---|---|---|---|---|
+| ctl-1 | 3 | separate-schemas tests | ad8836 | **A** 1.00 | A | (none) | A, e287e9 | hit |
+| ctl-2 | 1 | `tests/test_forms_single_model.py` | 3de70a Parameter declarations | 158cb3 Request form model tutorials 0.91 | 158cb3 | 3e0c34 Advanced middleware | **158cb3**, A, 7d2013 | gold narrower than labels |
+| ctl-3 | 3 | dependency 008c tests | c3534a Dependency injection (tutorial) | unresolved 0.44 | A | (none) | 9a4a0e, A | threshold; probability split with the core area also titled "Dependency injection" |
+| ctl-6 | 2 | playwright `image02.py` → `.github/workflows` | ef2b9b | `none` (p_true .67) | A | tie | A | covered threshold |
+| ctl-8 | 1 | `tests/test_ws_dependencies.py` | 36295a | **A** .91 | A | ade7d5 | A, 9a4a0e | hit |
+| ctl-12 | 2 | `fastapi/cli.py` → `fastapi/security` | 1c4aa7 | **A** 1.00 | A | 637a9b | A | hit |
+| ctl-13 | 1 | form-model test | 158cb3 | **A** .86 | A | 749bd1 | A, 3de70a | hit |
+| ctl-20 | 1 | `docs_src/request_form_models/…` → `docs_src/settings/app01` | 158cb3 | unresolved (the two option orders disagree) | 7d2013 Request forms | 9ce9c5 | A, 3de70a, **7d2013** | near-duplicate areas |
+| ctl-21 | 2 | dependency 008d tests | c3534a | **A** .83 | A | e287e9 | 9a4a0e, A | hit |
+| ctl-23 | 3 | `tests/test_additional_properties_bool.py` | e287e9 | **A** .91 | A | e287e9 (baselines fall back to `tests/`, which A owns) | A | hit; baseline leak |
+| ctl-24 | 1 | recursive response tests → `test_header_params` | 617fde | unresolved (orders disagree) | **B** | ea1d02 Header parameters | A | path pull |
+| ctl-25 | 1 | playwright `image01.py` → `notify-translations` | ef2b9b | `none` (p_true .66) | A | d1459f | A | covered threshold |
+| ctl-26 | 1 | `docs_src/dependencies/tutorial008d*` → `docs_src/templates` | c3534a | unresolved 0.52 | A | 29a30e | 9a4a0e, A | threshold; duplicate "Dependency injection" split |
+| ctl-27 | 2 | `scripts/mkdocs_hooks.py` → `.github` | 30399e | **A** 1.00 | A | tie | A | hit |
+| ctl-31 | 2 | schema-example tests → `tests` | 95b28e | **A** .98 | A | e287e9 | A, e287e9 | hit |
+| ctl-33 | 1 | playwright cookie-models `image01.py` → `.github/actions/people` | f0abaf | unresolved 0.49 | **B** | 342c6b People GitHub Action | A | path pull (real) |
+| ctl-34 | 1 | `docs_src/sql_databases/tutorial002*` | 8a632c | unresolved 0.69 | A | 3d2f5f | A | threshold (0.01 short) |
+| ctl-36 | 3 | header-models test | b58662 | **A** .96 | A | (none) | 3de70a, A | hit |
+| ctl-39 | 1 | `docs_src/header_param_models/tutorial002*` → `bigger_applications/…/internal` | b58662 | unresolved 0.68 | **B** | 2874a6 Bigger applications | 3de70a, A | path pull (real) |
+| ctl-46 | 1 | `tests/test_response_model_data_filter_no_inheritance.py` | 617fde Response model validation | 10c16a Response models .86 | 10c16a | 233f9b | **10c16a**, A | gold narrower than labels |
+
+**Counts.**
+- 9 hits.
+- 0 composed answers equal B. Raw choice equals B on 3 of 20 (ctl-24, 33, 39; Wilson [0.05, 0.36]).
+- Raw choice equals A on 14 of 20, and lies in the labelled set on 17 of 20.
+- By stratum: stratum 1 recovered 2 of 11 ([0.05, 0.48]); strata 2 and 3 recovered 7 of 9 (`units.jsonl` `stratum`).
+- The 20 items come from only 13 PRs, so the effective n is below 20.
+
+**What is construction or measurement:**
+- **Gold narrower than the labels.** Gold is the single owner A (`build_controls.py:316`; scored by `analysis_x2d.py:1355-1357`). The blind labellers' agreed sets are wider on 12 of 20 items and contain A on all 20. Jev's two confident "errors" (ctl-2, ctl-46) are in those sets.
+- **Untuned threshold, abstention counted as a miss.** Five raw-A answers fell under the provisional 0.70 threshold (`data/rounds/0/thresholds.json` `provisional-0.7`; `compose.py:68-90`), and abstention counts as a miss. P1 dates from rev 1 and was never realigned with R-051, which judges accuracy on answered clusters and caps abstention separately (`PREREGISTRATION.md:134-136`).
+- **Near-duplicate areas across scope shards.** There are two areas titled "Dependency injection" (c3534a and 9a4a0e), and "Request forms" sits next to "Request form model tutorials". This is the known scope-shard threat (`:211`); it also affects the main rounds.
+- **Baseline leak on ctl-23.** This did not decide the gate.
+
+**What looks like a real Jev weakness:**
+- ctl-33 and ctl-39: the content plainly names A's topic, yet the raw choice is B.
+- ctl-24: the same pull, but more diffuse.
+- Jev's low confidence in stratum 1.
+
+**Sensitivity (descriptive only, not a re-scoring):**
+- Against the labelled sets, V-sem scores 11 of 20 = 0.55 ([0.34, 0.74]), which still fails. Baselines score 3 of 20 = 0.15, still within the 0.20 bar.
+- Lowering both thresholds to 0.5 would give exactly 12 of 20 on P1 (the experiment-peer's calculation), but it would also send ctl-39 to B. It would also cancel P2's `none` answers on ctl-11, 22 and 44, whose p_true values are .68, .54 and .59 (`data/rounds/0/jev-p/scores.p2.jsonl:9,15,23`). The threshold pulls the two gates in opposite directions, so it must not be moved on the strength of these data.
+
+#### P2: the R10-02 split by source set
+
+Sources are joined `control-key.jsonl` → `units.jsonl` `set` → `gold.jsonl` → `arms-p2/V-sem.jsonl`. Donor categories come from `reviews/round-10-response.md:39-52`. In this table, "derived gold" is what the gate used, and "direct label" is the clone's own blind label on `catalogue-p2` (`data/rounds/0/labels.jsonl`), which the gate discarded.
+
+| Clone | Set | File | Ablated area | Derived gold | Direct label | V-sem | Gate |
+|---|---|---|---|---|---|---|---|
+| ctl-11 | P unplaceable | `pdm_build.py` | c4f3d5 Package build | gap | gap, agreed (:207) | `none` (p_true .68) | hit |
+| ctl-18 | P unplaceable | `scripts/playwright/request_form_models/image01.py` | 26ac01 Playwright example: request forms | gap | **covered** f0abaf, 158cb3, adjudicated; labeller B said gap (:80-83) | unresolved .58, raw 158cb3 | miss |
+| ctl-40 | P unplaceable | the same file (path twin) | 26ac01 | gap | **covered** f0abaf, 158cb3, adjudicated (:22-25) | assigned 158cb3 (.70) | miss |
+| ctl-45 | P unplaceable | `CITATION.cff` | 73232e | gap | none (new), adjudicated (:138) | `none` (p_true .10) | hit |
+| ctl-22 | D | `requirements-tests.txt` | c207aa Test suite and CI | gap | gap, agreed (:210) | `none` (p_true .54) | hit |
+| ctl-35 | D | `tests/test_generic_parameterless_depends.py` | 9a4a0e Dependency injection (core) | gap | **covered** c3534a "Dependency injection" (tutorial), agreed (:286-288) | unresolved .68, raw c3534a | miss |
+| ctl-44 | D | `tests/test_compat.py` | ea7526 Public API and compatibility | gap | none (new), agreed (:122) | `none` (p_true .59) | hit |
+
+| Set | Clones | Gap positives | `none` | Misses | Retained covered (assigned correct) | No agreed gold |
+|---|---|---|---|---|---|---|
+| P (4 unplaceable, 2 leftover) | 6 | 4 | 2 | 2 (one twin pair) | 2: ctl-5, ctl-7 (0) | 0 |
+| D | 6 | 3 | 2 | 1 | 3: ctl-10, ctl-16, ctl-30 (1, ctl-10) | 0 |
+| Total | 12 | 7 | 4 | 3 | 5 (1) | 0 |
+
+Ten areas were ablated, leaving `catalogue-p2` with 104 of 114. Two ablated areas are shared: 26ac01 (ctl-18 and ctl-40, a P/P path twin) and 73232e (ctl-7 and ctl-45).
+
+**What is construction or measurement:**
+- **Derived gold contradicts direct labels.** `derive_ablation` assumes the source's acceptable set (made on the full catalogue) lists every area that would fit once the best one is removed (`gold.py:92-104`). The study's own blind labels contradict this on all 3 misses, and in each case they accept the area Jev picked. This is a label-versus-label fact; Jev is not involved.
+- **Twin double count.** The path twin counts one item twice. Round 11 kept the per-clone count as conservative (`reviews/round-11.md:54`).
+- **A thin denominator by design.** Five of 12 clones keep a second acceptable area (`gold.jsonl:15,25,36,86,89`). The build checks ownership, not labels.
+
+**Inherited D label errors: not observed.** The one D miss (ctl-35) had a correct source label on the full catalogue (`gold.jsonl:27`). Its problem is the derivation, not inheritance.
+
+**Real signals:**
+- On the retained-covered clones, Jev made one confident wrong assignment: ctl-5 → b58662 where the gold is 3de70a (`arms-p2/V-sem.jsonl:1`; `labels.jsonl:180`).
+- Jev's `covered` reading is high (p_true 0.54–0.68) on 3 of the 4 true gaps. Its `none` answers depend on the untuned threshold.
+
+**Sensitivity (descriptive only):**
+- Collapsing the twins gives 6 positives and 2 misses: still FAIL.
+- Using direct-label gold gives 4 positives and 0 misses: UNMEASURED, not PASS.
+
+#### Classification
+
+| Gate | Construction or measurement | Real Jev weakness | Confidence |
+|---|---|---|---|
+| P2 | Derived gold contradicts direct labels on 3 of 3 misses; twin double count; thin denominator built in | Overconfident `covered` reading on gaps; one confident wrong answer on a retained item | moderate to high |
+| P1 | Narrow single-A gold (2–3 items); untuned threshold with abstention scored as a miss (5); near-duplicate areas; baseline leak | Path pull in stratum 1 (ctl-24, 33, 39); low confidence on displaced files | moderate |
+
+Two more confounds:
+- The labellers see more than Jev: 300 lines and 20 files per area, against Jev's 60 lines and 5 sample files (`PREREGISTRATION.md:129`; `questions/merge.covered@v1.json`).
+- Wording is unlikely to be the cause. The question already says "never from their directory" (`questions/merge.which_area@v1.json:7`).
+
+**Council-seen disclosure (rule 3).** In writing `reviews/pilot-round-0-gate-stop-memo.md` the council saw the per-item P1 and P2 Jev answers, their choice and covered probabilities, the P1 labelled sets and the P2 clones' direct labels. No other Jev-versus-label comparison was made. Any rev-13 gate repair is therefore outcome-informed, and RESULTS discloses it.
+
+**User decision (R-053), 2026-10-30:** option (c): repair both gates and re-test once on fresh held-out items, with the Jev side frozen. The rev-12 FAILs stand as recorded and are never re-scored.

@@ -44,7 +44,8 @@ def control_kinds(data=None, r=0):
 
 def build_gold(r, data=None, tag=None, write=True):
     """Write gold(.<tag>).jsonl; returns the rows. Append-only. Round 0, no tag: the gold row of a P2 clone is `derive_ablation(source gold, ablated area)` (the planted-gap
-    gate, R1-07); a P2 clone whose source has no agreed gold gets no row (unmeasured)."""
+    gate, R1-07); a P2 clone whose source has no agreed gold gets no row (unmeasured). Rev 13 (R-053, the re-gate root only): a P2 control-key row with `gold_rule: "direct_label"` keeps the clone's OWN
+    agreed label as its gold (gap and new alike) and carries the derived gold beside it as `derived_gold`."""
     out = _gold_path(r, data, tag)
     x2d.refuse_if_exists(out)
     ck = control_kinds(data, r) if not tag else {}
@@ -69,9 +70,20 @@ def build_gold(r, data=None, tag=None, write=True):
     if r == 0 and not tag:
         by = {g["case_id"]: g for g in rows}
         key = {k["case_id"]: k for k in x2d.read_jsonl(os.path.join(_rd(0, data), "control-key.jsonl")) if k.get("kind") == "p2"}
-        rows = [g for g in rows if g["case_id"] not in key]
+        direct = {cid for cid, k in key.items() if k.get("gold_rule") == "direct_label"}  # rev 13 (R-053): the clone's OWN agreed label on its designated catalogue is its gold
+        rows = [g for g in rows if g["case_id"] not in key or g["case_id"] in direct]
         for cid, k in key.items():
             src = by.get(k.get("source_case_id"))
+            if cid in direct:
+                own = by.get(cid)
+                if own is not None and src is not None:  # reported beside the direct gold, never scored: the gold the rev-12 derivation would have given (derive_ablation of the source's label on the full catalogue)
+                    d = derive_ablation(src, k.get("ablated_area_ids") or [k["ablated_area_id"]])
+                    own["gold_rule"] = "direct_label"
+                    own["derived_gold"] = {"covered": d["covered"], "acceptable": d["acceptable"], "primary": d["primary"], "none_kind": d["none_kind"], "source_case_id": src["case_id"],
+                                           "source_agreement": src["agreement"]}
+                elif own is not None:
+                    own["gold_rule"] = "direct_label"
+                continue
             if src is not None:
                 d = derive_ablation(src, k.get("ablated_area_ids") or [k["ablated_area_id"]])
                 d.update(case_id=cid, control_kind="p2", agreement=src["agreement"], derived_from=src["case_id"])
@@ -314,9 +326,9 @@ def required_gold_ids(r, data=None, tag=None):
     units = x2d.read_jsonl(os.path.join(rd, "units.jsonl"))
     if r >= 1:
         return {u["case_id"] for u in units if u.get("set") == "window"}
-    need = {u["case_id"] for u in units if not u.get("control") and u.get("set") in ("D", "P")}
-    kinds = control_kinds(data, 0)
-    return need | {u["case_id"] for u in units if u.get("control") and kinds.get(u["case_id"]) != "p2"}
+    need = {u["case_id"] for u in units if not u.get("control") and u.get("set") in ("D", "P", "F")}  # F: the fresh source units of the rev-13 re-gate root (labelled on the full catalogue)
+    derived = {k["case_id"] for k in x2d.read_jsonl(os.path.join(rd, "control-key.jsonl")) if k.get("kind") == "p2" and k.get("gold_rule") != "direct_label"}  # a direct-label P2 clone needs its own gold
+    return need | {u["case_id"] for u in units if u.get("control") and u["case_id"] not in derived}
 
 
 def main(argv=None):

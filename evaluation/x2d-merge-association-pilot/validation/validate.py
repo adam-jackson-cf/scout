@@ -13,6 +13,8 @@ Parts (the letter prefixes the check names):
      futility rule, P2 ablation, P3 planted effect, N2 label permutation, N3 and N3-PR planted nulls (power report schema x2d-power-v2).
   R  round machinery: units, baselines, gold, membership, tuning, composition, versioning and the refinement-envelope refusal on synthetic data.
   G  round-0 machinery on synthetic data: controls, P1/N1/K gates.
+  G13 rev 13 (R-053) re-gate of P1 and P2 on fresh items (validation/regate_checks.py): planted effect and planted null of the rebuilt gates, direct-label versus derived P2 gold, the leak fix, fresh-pool exclusions, build refusal on a short
+     supply, one shot, round 1 refusing without a re-gate PASS, the budget charge, the frozen Jev side, an end-to-end re-gate on stubs and the unchanged round-0 bytes.
   E  end to end: round 0, all ten rounds and the verdict through run.sh on stubs (stub Clawpatch, stub Jev endpoint, stub labellers): critique/version enforcement in a temporary X2D_REVIEWS_DIR,
      controls, contrast, labels-check, replayed baselines, sessions, a planted effect, a planted null and a flipped K5 primary arm. Only the named K3 gate is overridden.
 Usage (repo root, toolchain active): .tools/venv/bin/python evaluation/x2d-merge-association-pilot/validation/validate.py
@@ -487,6 +489,7 @@ def consensus_checks(tmp):
 # ---------------------------------------------------------------- J the Jev driver on a stub endpoint
 import stub_jev  # noqa: E402
 import r4_checks  # noqa: E402 (council round-4 fixtures; takes this module as `V`, imports nothing from it)
+import regate_checks  # noqa: E402 (rev-13 re-gate fixtures; takes this module as `V`, imports nothing from it)
 
 
 def jev_fixture(base, n_units=12):
@@ -3799,6 +3802,7 @@ def pre_e2e_checks(tmp, skip):
     r2_misc_checks(tmp)
     r3_checks(tmp, repo, res)
     r4_checks.r4_infra_unit_checks(sys.modules[__name__], tmp, repo, res)
+    regate_checks.unit_checks(sys.modules[__name__], tmp)
 
 
 def main():
@@ -3812,6 +3816,7 @@ def main():
         if e2e_round0(tmp, e):
             g = e2e_gates(tmp, e)
             if g:
+                regate_checks.e2e_regate(sys.modules[__name__], tmp, e)
                 e2e_rounds(tmp, e, g)
     finally:
         if e is not None:
