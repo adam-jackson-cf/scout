@@ -120,3 +120,32 @@ Reproduce (`X2D_DATA=$WT/evaluation/x2d-merge-association-pilot/data/postrun`):
 $WT/.tools/venv/bin/python evaluation/x2d-postrun-tuning/escalate.py $WT/evaluation/x2d-merge-association-pilot --prompt evaluation/x2d-postrun-tuning/terra_prompt_v1.txt --tag v1-r1-5 --rounds 1-5
 $WT/.tools/venv/bin/python evaluation/x2d-postrun-tuning/escalate.py $WT/evaluation/x2d-merge-association-pilot --prompt evaluation/x2d-postrun-tuning/terra_prompt_v1.txt --tag v1-r6-7 --rounds 6-7
 ```
+
+## Rounds 8-10: the one frozen run (development)
+
+Run exactly as `FROZEN-8-10.md` (committed at `c55a40d`, SHA-256 `a699e297…966e`) through `run_partB.sh`; the prompt and every script hash was re-checked equal to the frozen values before starting. No deviations: every step ran once, with no resume, no failure and no guard refusal. Nothing was changed after the results. Descriptive development figures; no pass/fail bar.
+
+- Units (window) / PRs: round 8 21 / 10, round 9 23 / 11, round 10 48 / 20; 92 in total. Labelled cases (incl. audit and controls) 27 / 28 / 55; sessions 59 of cap 210, 60 of 212, 110 of 287 (229 in total). Gold none / covered: round 8 2 / 19, round 9 12 / 11, round 10 1 / 47; 15 / 77 in total.
+- Jev (V-sem, t_choice 0.535, s 0.60): 200 requests, 0 failures; cost 0.026993 + 0.030789 + 0.060049 = 0.117831 USD (budget 0.5).
+- Escalations: 25 of 92 (27.2 per 100; round 8 7, round 9 13, round 10 5 = Jev `none` plus unresolved). Terra correct on 20 of 25; 0 failed or unparsable calls. Reported model `gpt-6.1-terra`, effort `high` on all calls. Latency per call: median 4.3 s, p90 4.9 s, max 5.9 s, total 111.7 s.
+
+Cells: value [Wilson 95 %] (count). `R_assign` counts abstention as a miss. Unresolved = unresolved / clusters. "Covered-none" = gold-covered clusters answered `none`.
+
+| arm | part | P_assign | R_assign_res | R_assign | unresolved | none P | none R | covered-none |
+|---|---|---|---|---|---|---|---|---|
+| Jev-only | 8-10 | 0.955 [0.876, 0.985] (64/67) | 0.955 [0.876, 0.985] (64/67) | 0.831 | 0.109 (10/92) | 0.933 [0.702, 0.988] (14/15) | 0.933 [0.702, 0.988] (14/15) | 1 |
+| Jev+Terra | 8-10 | 0.922 [0.840, 0.964] (71/77) | 0.922 [0.840, 0.964] (71/77) | 0.922 | 0 (0/92) | 0.867 [0.621, 0.963] (13/15) | 0.867 [0.621, 0.963] (13/15) | 2 |
+| B2 | 8-10 | 0.766 [0.649, 0.853] (49/64) | 0.731 [0.615, 0.823] (49/67) | 0.636 | 0.207 (19/92) | 0.333 [0.121, 0.646] (3/9) | 0.200 [0.070, 0.452] (3/15) | 6 |
+| Jev-only | 8 | 1.000 [0.785, 1.000] (14/14) | 1.000 [0.785, 1.000] (14/14) | 0.737 | 0.238 (5/21) | 1.000 [0.342, 1.000] (2/2) | 1.000 [0.342, 1.000] (2/2) | 0 |
+| Jev+Terra | 8 | 1.000 [0.824, 1.000] (18/18) | 0.947 [0.754, 0.991] (18/19) | 0.947 | 0 (0/21) | 0.667 [0.208, 0.939] (2/3) | 1.000 [0.342, 1.000] (2/2) | 1 |
+| B2 | 8 | 0.200 [0.057, 0.510] (2/10) | 0.125 [0.035, 0.360] (2/16) | 0.105 | 0.238 (5/21) | 0.000 [0.000, 0.390] (0/6) | 0.000 [0.000, 0.658] (0/2) | 6 |
+| Jev-only | 9 | 0.800 [0.490, 0.943] (8/10) | 0.800 [0.490, 0.943] (8/10) | 0.727 | 0.043 (1/23) | 0.917 [0.646, 0.985] (11/12) | 0.917 [0.646, 0.985] (11/12) | 1 |
+| Jev+Terra | 9 | 0.750 [0.468, 0.911] (9/12) | 0.818 [0.523, 0.949] (9/11) | 0.818 | 0 (0/23) | 0.909 [0.623, 0.984] (10/11) | 0.833 [0.552, 0.953] (10/12) | 1 |
+| B2 | 9 | 0.300 [0.108, 0.603] (3/10) | 0.429 [0.158, 0.750] (3/7) | 0.273 | 0.435 (10/23) | 1.000 [0.439, 1.000] (3/3) | 0.250 [0.089, 0.532] (3/12) | 0 |
+| Jev-only | 10 | 0.977 [0.879, 0.996] (42/43) | 0.977 [0.879, 0.996] (42/43) | 0.894 | 0.083 (4/48) | 1.000 [0.207, 1.000] (1/1) | 1.000 [0.207, 1.000] (1/1) | 0 |
+| Jev+Terra | 10 | 0.936 [0.828, 0.978] (44/47) | 0.936 [0.828, 0.978] (44/47) | 0.936 | 0 (0/48) | 1.000 [0.207, 1.000] (1/1) | 1.000 [0.207, 1.000] (1/1) | 0 |
+| B2 | 10 | 1.000 [0.920, 1.000] (44/44) | 1.000 [0.920, 1.000] (44/44) | 0.936 | 0.083 (4/48) | n/a (0/0) | 0.000 [0.000, 0.793] (0/1) | 0 |
+
+Reading: Jev+Terra answers everything (unresolved 0) and lifts R_assign (abstention = miss) from 0.831 to 0.922, at P_assign 0.922 against Jev-only's 0.955 (the intervals overlap). B2 is far lower except in round 10, where it matches. Round 9 is gold-none heavy (12 of 23). The 25 escalations contain 5 Terra errors (list in `escalation/frozen-r8-10.errors.txt`); calls, report and error list are in `escalation/frozen-r8-10.*`.
+
+Reproduce: `evaluation/x2d-postrun-tuning/run_partB.sh` (needs the run worktree, the Jev key via Infisical, `claude -p` and `codex exec`).
