@@ -1,0 +1,139 @@
+[
+  {
+    "model": "typesafe/jev-1.14-20261014 @ merge.which_area@3b5c148c397cfeb7379a8aafd675aa53a1947b82340a16e093934fc577873dba",
+    "dev_cases": 137,
+    "dev_positives": 108,
+    "test_cases": 63,
+    "folds": 5,
+    "repeats": 5,
+    "shipped_threshold": 0.535,
+    "fold_thresholds": [
+      0.535,
+      0.535,
+      0.4975,
+      0.535,
+      0.54,
+      0.535,
+      0.4975,
+      0.535,
+      0.54,
+      0.535,
+      0.535,
+      0.54,
+      0.535,
+      0.5,
+      0.535,
+      0.5,
+      0.535,
+      0.535,
+      0.535,
+      0.54,
+      0.535,
+      0.535,
+      0.4975,
+      0.535
+    ],
+    "default_0.5_heldout": {
+      "precision": 0.9035087719298246,
+      "recall": 0.9537037037037037,
+      "f": 0.9131205673758866,
+      "tp": 515,
+      "fp": 55,
+      "fn": 25
+    },
+    "tuned_heldout": {
+      "precision": 0.9003690036900369,
+      "recall": 0.9420849420849421,
+      "f": 0.908413998510797,
+      "tp": 488,
+      "fp": 54,
+      "fn": 30
+    },
+    "tuned_folds": 24,
+    "total_folds": 25,
+    "failed_folds": [
+      {
+        "fold": "repeat 0 fold 0",
+        "reason": "held-out below minimums",
+        "threshold": 0.535
+      },
+      {
+        "fold": "repeat 0 fold 2",
+        "reason": "held-out below minimums",
+        "threshold": 0.4975
+      },
+      {
+        "fold": "repeat 1 fold 0",
+        "reason": "held-out below minimums",
+        "threshold": 0.535
+      },
+      {
+        "fold": "repeat 2 fold 1",
+        "reason": "held-out below minimums",
+        "threshold": 0.54
+      },
+      {
+        "fold": "repeat 3 fold 3",
+        "reason": "held-out below minimums",
+        "threshold": 0.535
+      },
+      {
+        "fold": "repeat 4 fold 1",
+        "reason": "no threshold met minimums on train"
+      },
+      {
+        "fold": "repeat 4 fold 2",
+        "reason": "held-out below minimums",
+        "threshold": 0.535
+      },
+      {
+        "fold": "repeat 4 fold 3",
+        "reason": "held-out below minimums",
+        "threshold": 0.4975
+      }
+    ],
+    "test_at_shipped": {
+      "precision": 0.8222222222222222,
+      "recall": 0.7708333333333334,
+      "f": 0.8114035087719297,
+      "tp": 37,
+      "fp": 8,
+      "fn": 11
+    },
+    "test_at_0.5": {
+      "precision": 0.8043478260869565,
+      "recall": 0.7708333333333334,
+      "f": 0.7974137931034484,
+      "tp": 37,
+      "fp": 9,
+      "fn": 11
+    },
+    "strata_scope": "test",
+    "strata": {
+      "r6": {
+        "precision": 0.8387096774193549,
+        "recall": 0.8666666666666667,
+        "f": 0.8441558441558441,
+        "tp": 26,
+        "fp": 5,
+        "fn": 4,
+        "n": 38
+      },
+      "r7": {
+        "precision": 0.7857142857142857,
+        "recall": 0.6111111111111112,
+        "f": 0.7432432432432432,
+        "tp": 11,
+        "fp": 3,
+        "fn": 7,
+        "n": 25
+      }
+    },
+    "warnings": [
+      "fewer than 50 dev cases per label; treat results as noisy",
+      "only 24 of 25 folds found a qualifying threshold; the shipped threshold is not well supported",
+      "default 0.5 covers all folds; tuned covers qualifying folds only",
+      "test is below the minimums at the shipped threshold"
+    ]
+  }
+]

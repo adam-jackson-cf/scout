@@ -1,0 +1,95 @@
+Minimums: precision 0.9, recall 0.8 (point estimates); metric F-beta with beta 0.5; seed 20261029
+
+## typesafe/jev-1.14-20261014
+
+Warning: only 22 of 25 folds found a qualifying threshold; the shipped threshold is not well supported
+Warning: default 0.5 covers all folds; tuned covers qualifying folds only
+Warning: fold thresholds vary by more than 0.05; grow the label set
+Warning: test is below the minimums at the shipped threshold
+
+- Dev: 301 cases (232 positive), 5 folds × 5 repeats; test: 63 cases
+- Default 0.5, dev held-out: P 0.87 · R 0.95 · F 0.88
+- Tuned, dev held-out (22 of 25 folds): P 0.89 · R 0.82 · F 0.88
+- Shipped threshold: 0.6125
+- Fold thresholds: 0.5775 to 0.6875
+- Test at shipped threshold: P 0.89 · R 0.69 · F 0.84; at 0.5: P 0.80 · R 0.77 · F 0.80
+- repeat 0 fold 0: held-out below minimums
+- repeat 0 fold 1: held-out below minimums
+- repeat 0 fold 2: held-out below minimums
+- repeat 0 fold 3: held-out below minimums
+- repeat 0 fold 4: held-out below minimums
+- repeat 1 fold 0: held-out below minimums
+- repeat 1 fold 1: held-out below minimums
+- repeat 1 fold 2: held-out below minimums
+- repeat 1 fold 3: no threshold met minimums on train
+- repeat 1 fold 4: held-out below minimums
+- … 11 more failed folds
+
+Per stratum at the shipped threshold, test:
+
+| stratum | n | precision | recall |
+| --- | --- | --- | --- |
+| r6 | 38 | 0.89 | 0.83 |
+| r7 | 25 | 0.89 | 0.44 |
+
+Dev errors at the shipped threshold:
+
+| case_id | stratum | label | score | kind |
+| --- | --- | --- | --- | --- |
+| 5:37770c184a450cf6 | r5 | 1 | 0.2800 | false_negative |
+| 0:ctl-15 | regate-p2 | 1 | 0.3000 | false_negative |
+| 0:ctl-62 | regate-p1 | 1 | 0.3800 | false_negative |
+| 1:fd69433ad02165ac | r1 | 1 | 0.3900 | false_negative |
+| 0:ctl-46 | regate-p1 | 1 | 0.3900 | false_negative |
+| 4:9f79e775a8f06458 | r4 | 1 | 0.4100 | false_negative |
+| 0:ctl-66 | regate-p2 | 1 | 0.4200 | false_negative |
+| 0:ctl-3 | r0-p1 | 1 | 0.4400 | false_negative |
+| 0:ctl-54 | regate-p1 | 1 | 0.4400 | false_negative |
+| 3:726b135e312d6f51 | r3 | 1 | 0.4700 | false_negative |
+| 5:15277da191f4e599 | r5 | 1 | 0.4700 | false_negative |
+| 0:ctl-25 | r0-p1 | 1 | 0.4900 | false_negative |
+| 3:86d03cb81339bc9c | r3 | 1 | 0.5000 | false_negative |
+| 5:5a557129f716a975 | r5 | 1 | 0.5050 | false_negative |
+| 0:5eedae70bdf178fc | r0-main | 1 | 0.5050 | false_negative |
+| 0:ctl-43 | r0-main | 1 | 0.5100 | false_negative |
+| 0:ctl-26 | r0-p1 | 1 | 0.5200 | false_negative |
+| 0:ctl-12 | regate-p1 | 1 | 0.5200 | false_negative |
+| 0:ctl-79 | regate-p1 | 1 | 0.5300 | false_negative |
+| 0:ctl-20 | regate-p2 | 1 | 0.5400 | false_negative |
+| 5:59637c0fb6e762d8 | r5 | 1 | 0.5500 | false_negative |
+| 0:ctl-6 | regate-p1 | 1 | 0.5500 | false_negative |
+| 3:cc411189c273ad43 | r3 | 1 | 0.5600 | false_negative |
+| 3:6ffef6cc9aa616cc | r3 | 1 | 0.5600 | false_negative |
+| 3:7c195c0e632a9d49 | r3 | 1 | 0.5600 | false_negative |
+| 2:079bda848afc4b5f | r2 | 1 | 0.5700 | false_negative |
+| 5:8b358d68ce9fd770 | r5 | 1 | 0.5700 | false_negative |
+| 0:ctl-29 | r0-main | 1 | 0.5700 | false_negative |
+| 2:c13b3159860f6a15 | r2 | 1 | 0.5800 | false_negative |
+| 0:ctl-2 | regate-p1 | 1 | 0.5800 | false_negative |
+| 0:ctl-27 | regate-p2 | 1 | 0.5800 | false_negative |
+| 0:ctl-74 | regate-p2 | 1 | 0.5900 | false_negative |
+| 4:d17d77afc679a2b6 | r4 | 1 | 0.6000 | false_negative |
+| 5:7c8e17785e5da8bf | r5 | 1 | 0.6000 | false_negative |
+| 0:ctl-4 | r0-main | 0 | 0.6400 | false_positive |
+| 0:ctl-60 | regate-p1 | 0 | 0.6500 | false_positive |
+| 2:f0d34b6947417202 | r2 | 0 | 0.6600 | false_positive |
+| 0:86c9d72072878d64 | r0-main | 0 | 0.6650 | false_positive |
+| 0:ctl-39 | r0-p1 | 0 | 0.6800 | false_positive |
+| 0:ctl-65 | regate-p1 | 0 | 0.6850 | false_positive |
+| 5:e296023f8ae08cce | r5 | 0 | 0.7100 | false_positive |
+| 0:ctl-21 | regate-p1 | 0 | 0.7200 | false_positive |
+| 1:29fbff1c18e78a2d | r1 | 0 | 0.7400 | false_positive |
+| 5:70567faade3ee3c3 | r5 | 0 | 0.7500 | false_positive |
+| 5:41277f9f59da8a91 | r5 | 0 | 0.7550 | false_positive |
+| 3:bfa44386296913d5 | r3 | 0 | 0.7600 | false_positive |
+| 5:a5192a758647cdfe | r5 | 0 | 0.7900 | false_positive |
+| 0:ctl-64 | regate-p1 | 0 | 0.7900 | false_positive |
+| 5:b7ce1877e1404fed | r5 | 0 | 0.8000 | false_positive |
+| 0:ctl-75 | regate-p1 | 0 | 0.8100 | false_positive |
+| 0:ctl-42 | regate-p2 | 0 | 0.8600 | false_positive |
+| 4:9732247d0fd4f00e | r4 | 0 | 0.8900 | false_positive |
+| 0:052f6bc085f699b1 | r0-main | 0 | 0.9200 | false_positive |
+| 1:eb93008f38f2cd70 | r1 | 0 | 0.9200 | false_positive |
+| 0:ctl-68 | regate-p2 | 0 | 0.9800 | false_positive |
+| 0:ctl-38 | r0-main | 0 | 0.9850 | false_positive |
+
