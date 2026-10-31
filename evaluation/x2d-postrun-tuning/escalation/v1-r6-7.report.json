@@ -1,0 +1,405 @@
+{
+ "tag": "v1-r6-7",
+ "prompt_sha256": "ca24fd764b745dbcb261a1aa6a0d740710809e82a13a8a103e55bbc4d8555e76",
+ "model": "gpt-6.1-terra",
+ "effort": "high",
+ "jev": {
+  "t_choice": 0.535,
+  "s_cov": 0.6
+ },
+ "rounds": [
+  6,
+  7
+ ],
+ "units": 63,
+ "escalations": 23,
+ "escalations_per_100": 36.5,
+ "calls": 23,
+ "attempts": 23,
+ "terra_failures": 0,
+ "reported_models": [
+  "gpt-6.1-terra"
+ ],
+ "reported_efforts": [
+  "high"
+ ],
+ "latency_s": {
+  "n": 23,
+  "median": 6.3,
+  "p90": 8.2,
+  "max": 8.8,
+  "total": 148.0
+ },
+ "arms": {
+  "Jev-only": {
+   "all": {
+    "n": 63,
+    "assigned": 40,
+    "none": 7,
+    "unresolved": 16,
+    "gold_covered": 59,
+    "gold_covered_res": 44,
+    "gold_none": 4,
+    "P_assign": 0.875,
+    "R_assign_res": 0.7954545454545454,
+    "R_assign": 0.5932203389830508,
+    "abstention": 0.25396825396825395,
+    "P_none": 0.14285714285714285,
+    "R_none": 0.25,
+    "assigned_correct": 35,
+    "none_correct": 1,
+    "wilson95": {
+     "P_assign": [
+      0.7388788016114891,
+      0.9454049974905461
+     ],
+     "R_assign_res": [
+      0.6549942193889834,
+      0.8884674692991871
+     ],
+     "unresolved_rate": [
+      0.1628041127332116,
+      0.3734118743660646
+     ],
+     "P_new": [
+      0.025679624344743555,
+      0.5131278292743189
+     ],
+     "R_new": [
+      0.045587260809700575,
+      0.6993581574175981
+     ]
+    },
+    "gold_covered_answered_none": 6
+   },
+   "r6": {
+    "n": 38,
+    "assigned": 30,
+    "none": 0,
+    "unresolved": 8,
+    "gold_covered": 35,
+    "gold_covered_res": 28,
+    "gold_none": 3,
+    "P_assign": 0.8666666666666667,
+    "R_assign_res": 0.9285714285714286,
+    "R_assign": 0.7428571428571429,
+    "abstention": 0.21052631578947367,
+    "P_none": null,
+    "R_none": 0.0,
+    "assigned_correct": 26,
+    "none_correct": 0,
+    "wilson95": {
+     "P_assign": [
+      0.703186733179637,
+      0.9469034451594526
+     ],
+     "R_assign_res": [
+      0.7735463743160095,
+      0.9801879358846942
+     ],
+     "unresolved_rate": [
+      0.1107479184299588,
+      0.363457794753274
+     ],
+     "P_new": [
+      null,
+      null
+     ],
+     "R_new": [
+      4.8683609171202235e-17,
+      0.5614970317550455
+     ]
+    },
+    "gold_covered_answered_none": 0
+   },
+   "r7": {
+    "n": 25,
+    "assigned": 10,
+    "none": 7,
+    "unresolved": 8,
+    "gold_covered": 24,
+    "gold_covered_res": 16,
+    "gold_none": 1,
+    "P_assign": 0.9,
+    "R_assign_res": 0.5625,
+    "R_assign": 0.375,
+    "abstention": 0.32,
+    "P_none": 0.14285714285714285,
+    "R_none": 1.0,
+    "assigned_correct": 9,
+    "none_correct": 1,
+    "wilson95": {
+     "P_assign": [
+      0.5958499732047616,
+      0.9821237869049271
+     ],
+     "R_assign_res": [
+      0.331785563988119,
+      0.7690134759450764
+     ],
+     "unresolved_rate": [
+      0.1720519030690798,
+      0.5158973072689776
+     ],
+     "P_new": [
+      0.025679624344743555,
+      0.5131278292743189
+     ],
+     "R_new": [
+      0.20654931437723742,
+      1.0
+     ]
+    },
+    "gold_covered_answered_none": 6
+   }
+  },
+  "Jev+Terra": {
+   "all": {
+    "n": 63,
+    "assigned": 49,
+    "none": 14,
+    "unresolved": 0,
+    "gold_covered": 59,
+    "gold_covered_res": 59,
+    "gold_none": 4,
+    "P_assign": 0.8979591836734694,
+    "R_assign_res": 0.7457627118644068,
+    "R_assign": 0.7457627118644068,
+    "abstention": 0.0,
+    "P_none": 0.14285714285714285,
+    "R_none": 0.5,
+    "assigned_correct": 44,
+    "none_correct": 2,
+    "wilson95": {
+     "P_assign": [
+      0.7824363845080409,
+      0.9556204532552371
+     ],
+     "R_assign_res": [
+      0.6220385597107273,
+      0.839440224267631
+     ],
+     "unresolved_rate": [
+      3.2700536737149548e-18,
+      0.05747119958885172
+     ],
+     "P_new": [
+      0.04009392127146496,
+      0.3994137949697036
+     ],
+     "R_new": [
+      0.15003898915214947,
+      0.8499610108478506
+     ]
+    },
+    "gold_covered_answered_none": 12
+   },
+   "r6": {
+    "n": 38,
+    "assigned": 37,
+    "none": 1,
+    "unresolved": 0,
+    "gold_covered": 35,
+    "gold_covered_res": 35,
+    "gold_none": 3,
+    "P_assign": 0.8918918918918919,
+    "R_assign_res": 0.9428571428571428,
+    "R_assign": 0.9428571428571428,
+    "abstention": 0.0,
+    "P_none": 1.0,
+    "R_none": 0.3333333333333333,
+    "assigned_correct": 33,
+    "none_correct": 1,
+    "wilson95": {
+     "P_assign": [
+      0.7529146845587398,
+      0.9571481005958853
+     ],
+     "R_assign_res": [
+      0.8139294257983507,
+      0.9841868381428912
+     ],
+     "unresolved_rate": [
+      0.0,
+      0.09180986822558396
+     ],
+     "P_new": [
+      0.20654931437723742,
+      1.0
+     ],
+     "R_new": [
+      0.061491944720396215,
+      0.7923403991979523
+     ]
+    },
+    "gold_covered_answered_none": 0
+   },
+   "r7": {
+    "n": 25,
+    "assigned": 12,
+    "none": 13,
+    "unresolved": 0,
+    "gold_covered": 24,
+    "gold_covered_res": 24,
+    "gold_none": 1,
+    "P_assign": 0.9166666666666666,
+    "R_assign_res": 0.4583333333333333,
+    "R_assign": 0.4583333333333333,
+    "abstention": 0.0,
+    "P_none": 0.07692307692307693,
+    "R_none": 1.0,
+    "assigned_correct": 11,
+    "none_correct": 1,
+    "wilson95": {
+     "P_assign": [
+      0.646120088858883,
+      0.9851349055950828
+     ],
+     "R_assign_res": [
+      0.2789133373121098,
+      0.6492513464108051
+     ],
+     "unresolved_rate": [
+      1.2029374011637166e-17,
+      0.1331922509390485
+     ],
+     "P_new": [
+      0.013710421242556585,
+      0.3331395092109959
+     ],
+     "R_new": [
+      0.20654931437723742,
+      1.0
+     ]
+    },
+    "gold_covered_answered_none": 12
+   }
+  },
+  "B2": {
+   "all": {
+    "n": 63,
+    "assigned": 40,
+    "none": 12,
+    "unresolved": 11,
+    "gold_covered": 59,
+    "gold_covered_res": 49,
+    "gold_none": 4,
+    "P_assign": 0.35,
+    "R_assign_res": 0.2857142857142857,
+    "R_assign": 0.23728813559322035,
+    "abstention": 0.1746031746031746,
+    "P_none": 0.08333333333333333,
+    "R_none": 0.25,
+    "assigned_correct": 14,
+    "none_correct": 1,
+    "wilson95": {
+     "P_assign": [
+      0.2213452887317629,
+      0.5049411916274231
+     ],
+     "R_assign_res": [
+      0.178495944588126,
+      0.42408883507780093
+     ],
+     "unresolved_rate": [
+      0.1003939657946789,
+      0.28621427520758974
+     ],
+     "P_new": [
+      0.014865094404917095,
+      0.35387991114111694
+     ],
+     "R_new": [
+      0.045587260809700575,
+      0.6993581574175981
+     ]
+    },
+    "gold_covered_answered_none": 11
+   },
+   "r6": {
+    "n": 38,
+    "assigned": 25,
+    "none": 3,
+    "unresolved": 10,
+    "gold_covered": 35,
+    "gold_covered_res": 26,
+    "gold_none": 3,
+    "P_assign": 0.36,
+    "R_assign_res": 0.34615384615384615,
+    "R_assign": 0.2571428571428571,
+    "abstention": 0.2631578947368421,
+    "P_none": 0.0,
+    "R_none": 0.0,
+    "assigned_correct": 9,
+    "none_correct": 0,
+    "wilson95": {
+     "P_assign": [
+      0.2024788077445822,
+      0.5548150225183514
+     ],
+     "R_assign_res": [
+      0.19412230322940519,
+      0.5377942881118918
+     ],
+     "unresolved_rate": [
+      0.1497162125479814,
+      0.4200884618746636
+     ],
+     "P_new": [
+      4.8683609171202235e-17,
+      0.5614970317550455
+     ],
+     "R_new": [
+      4.8683609171202235e-17,
+      0.5614970317550455
+     ]
+    },
+    "gold_covered_answered_none": 3
+   },
+   "r7": {
+    "n": 25,
+    "assigned": 15,
+    "none": 9,
+    "unresolved": 1,
+    "gold_covered": 24,
+    "gold_covered_res": 23,
+    "gold_none": 1,
+    "P_assign": 0.3333333333333333,
+    "R_assign_res": 0.21739130434782608,
+    "R_assign": 0.20833333333333334,
+    "abstention": 0.04,
+    "P_none": 0.1111111111111111,
+    "R_none": 1.0,
+    "assigned_correct": 5,
+    "none_correct": 1,
+    "wilson95": {
+     "P_assign": [
+      0.1517632443971473,
+      0.5828645226148023
+     ],
+     "R_assign_res": [
+      0.09663978026586202,
+      0.4190348301626401
+     ],
+     "unresolved_rate": [
+      0.007096233501987266,
+      0.19544063736193734
+     ],
+     "P_new": [
+      0.019890887638544918,
+      0.434999705576656
+     ],
+     "R_new": [
+      0.20654931437723742,
+      1.0
+     ]
+    },
+    "gold_covered_answered_none": 8
+   }
+  }
+ },
+ "escalated_correct": [
+  11,
+  23
+ ]
+}

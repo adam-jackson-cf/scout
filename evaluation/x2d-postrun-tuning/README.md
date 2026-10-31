@@ -92,3 +92,31 @@ Saved scores only (`sweep_window.py`, `window/sweep.json`; same units, gold and 
 | 0.6125 | 0.80-0.99, never | 0.899 / 0.892 | 0.947 / 0.943 | 0.305 / 0.413 | 0 / 0 | n/a | 0 / 0 | 0 / 0 |
 
 Chosen on rounds 1-5 only (max R_assign_res with P_assign >= 0.90 and abstention <= 0.15): t_choice 0.535 with s 0.30 (compose t_cov 0.70), dev P 0.908, R_assign_res 0.718, abstention 0.131. It is the only pair meeting the abstention cap on dev (the next, s 0.40, has dev abstention 0.175, R 0.811). On rounds 6-7 the pair gives P_assign 0.931 (27/29), R_assign_res 0.519 (27/52), abstention 0.127 (8/63), `none` 26 (P 0.115, R 0.750), 23 gold-covered units answered `none`. Reading: removing the spurious `none` answers raises resolved recall sharply, but the cost moves to abstention (the unresolved units were being absorbed by `none`), so the abstention cap and R_assign_res >= 0.80 cannot both hold with this score and these questions. Reproduce: `X2D_DATA=$WT/evaluation/x2d-merge-association-pilot/data/postrun $WT/.tools/venv/bin/python evaluation/x2d-postrun-tuning/sweep_window.py $WT/evaluation/x2d-merge-association-pilot`.
+
+## Escalation to Terra, built on rounds 1-7 (development)
+
+Jev fixed at t_choice 0.535 and covered score threshold s 0.60 (none iff p_true <= 0.40). Every window cluster Jev leaves unresolved or answers `none` goes to `codex exec -m gpt-6.1-terra -c model_reasoning_effort=high` (read-only sandbox, ephemeral, scrubbed env, no config; the CLI reported `model: gpt-6.1-terra`, `reasoning effort: high` on all 54 calls). Terra sees the V-sem `merge.covered` state from `jev -dump-state` (unit excerpt, PR, diff summary, all 114 areas with id, title, summary, sample files) under `terra_prompt_v1.txt` and answers `existing`/`new` JSON. Scoring: `existing` correct iff the area is in the gold acceptable set; `new` correct iff gold is not covered. Files: `escalate.py`, `terra_prompt_v1.txt`, `terra_prompt_v2.txt`, `escalation/` (calls, reports, error lists). Frozen specification for rounds 8-10: `FROZEN-8-10.md`.
+
+Prompt iteration (rounds 1-5 escalated clusters only, 31 clusters): v1 24/31 correct; one revision v2 22/31 (worse), v1 kept. v1 checked once on rounds 6-7: 11/23 correct. Failed Terra calls: 0 of 54. Latency per call: median 5.5 s, p90 7.2 s, max 8.8 s (54 calls, 304 s total, 6 in parallel). Escalations: 31 of 137 (22.6 per 100) in rounds 1-5, 23 of 63 (36.5 per 100) in rounds 6-7, 54 of 200 (27.0 per 100) overall.
+
+Composed results, counts in brackets, Wilson 95 % in square brackets:
+
+| arm | part | P_assign | R_assign_res | unresolved | none P | none R | gold-covered answered none |
+|---|---|---|---|---|---|---|---|
+| Jev-only | rounds 1-5 | 0.915 [0.846, 0.955] (97/106) | 0.915 [0.846, 0.955] (97/106) | 0.182 (25/137) | 0.333 (2/6) | 0.222 (2/9) | 4 |
+| Jev+Terra | rounds 1-5 | 0.899 [0.835, 0.940] (116/129) | 0.906 [0.843, 0.946] (116/128) | 0 (0/137) | 0.625 (5/8) | 0.556 (5/9) | 3 |
+| B2 | rounds 1-5 | 0.487 [0.398, 0.577] (57/117) | 0.475 [0.388, 0.564] (57/120) | 0.073 (10/137) | 0 (0/10) | 0 (0/9) | 10 |
+| Jev-only | rounds 6-7 | 0.875 [0.739, 0.945] (35/40) | 0.795 [0.655, 0.888] (35/44) | 0.254 (16/63) | 0.143 (1/7) | 0.250 (1/4) | 6 |
+| Jev+Terra | rounds 6-7 | 0.898 [0.782, 0.956] (44/49) | 0.746 [0.622, 0.839] (44/59) | 0 (0/63) | 0.143 (2/14) | 0.500 (2/4) | 12 |
+| B2 | rounds 6-7 | 0.350 [0.221, 0.505] (14/40) | 0.286 [0.178, 0.424] (14/49) | 0.175 (11/63) | 0.083 (1/12) | 0.250 (1/4) | 11 |
+| Jev-only | rounds 1-7 | 0.904 [0.845, 0.942] (132/146) | 0.880 [0.818, 0.923] (132/150) | 0.205 (41/200) | 0.231 (3/13) | 0.231 (3/13) | 10 |
+| Jev+Terra | rounds 1-7 | 0.899 [0.846, 0.935] (160/178) | 0.856 [0.798, 0.899] (160/187) | 0 (0/200) | 0.318 (7/22) | 0.538 (7/13) | 15 |
+| B2 | rounds 1-7 | 0.452 [0.376, 0.530] (71/157) | 0.420 [0.348, 0.495] (71/169) | 0.105 (21/200) | 0.045 (1/22) | 0.077 (1/13) | 21 |
+
+Jev+Terra's R_assign_res equals R_assign (nothing abstains). Reading: Terra removes all abstention and raises R_assign (abstention = miss) from 0.706 to 0.856 over rounds 1-7 at about the same P_assign (0.90), but it is weaker on rounds 6-7. Twelve of the 14 `none` answers in rounds 6-7 are gold-covered clusters of one round-7 PR (streaming and server-sent-events tests and examples): Terra reads "no listed area covers streaming responses" while the labellers accept "Custom responses" / "Response classes and status behavior". Whether such a change is a new area or covered is where Terra and the gold differ.
+
+Reproduce (`X2D_DATA=$WT/evaluation/x2d-merge-association-pilot/data/postrun`):
+```
+$WT/.tools/venv/bin/python evaluation/x2d-postrun-tuning/escalate.py $WT/evaluation/x2d-merge-association-pilot --prompt evaluation/x2d-postrun-tuning/terra_prompt_v1.txt --tag v1-r1-5 --rounds 1-5
+$WT/.tools/venv/bin/python evaluation/x2d-postrun-tuning/escalate.py $WT/evaluation/x2d-merge-association-pilot --prompt evaluation/x2d-postrun-tuning/terra_prompt_v1.txt --tag v1-r6-7 --rounds 6-7
+```
