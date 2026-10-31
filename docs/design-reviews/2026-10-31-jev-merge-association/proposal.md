@@ -59,3 +59,15 @@ Limits: one repository (fastapi, Python); labels are agent-made (`agent_reviewed
 6. Wait for the axum replication before council review, or review now as provisional?
 7. Per-push cap and maximum pending areas per run.
 8. Design rule 3 (CLAUDE.md) lets design changes cite only signed-off experiments or inertia-bench studies. R-056/R-057 are development runs without council sign-off, so this draft cites them only to describe the proposal and its limits, and makes X11 the validating experiment. Should adoption wait for X11 (default off until then), or does the user accept the development evidence for a provisional, opt-in launch?
+
+## User decisions (2026-10-31, R-059)
+
+- Q1 new features: create a **pending area** at merge time (Appendix 21 reopened for this case only).
+- Q3 acceptance: a **maintainer accepts** (or merges) each pending area.
+- Q8 adoption: **provisional opt-in now**, lane off by default; X11 upgrades it later.
+- Q5 fallback: **`codex exec` gpt-6.1-terra, effort high, only**.
+- Questions 2, 4, 6 and 7 remain open for the council to settle or return to the user.
+
+## Axum replication (R-058), received after these decisions
+
+Zero-tuning replication on axum: Jev+Terra P_assign 0.622 [0.514, 0.719], recall 0.810, unresolved 0 (fastapi 0.922 / 0.922 / 0). The loss is new features forced into existing areas (23 of 31 errors; axum window 42 % gold-none against fastapi 16 %, catalogue 0–4 years stale). The design must state that precision depends on catalogue freshness.
