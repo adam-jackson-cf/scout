@@ -263,7 +263,7 @@ func writeVersionedDB(t *testing.T, root string, version int, journalMode string
 
 func TestOpenRefusesUnsupportedVersionsWithoutTouchingTheStore(t *testing.T) {
 	for _, mode := range []string{"wal", "delete"} {
-		for _, version := range []int{1, 2, 4, 7, 11, 13, 99} {
+		for _, version := range []int{1, 2, 4, 7, 11, 12, 14, 99} {
 			t.Run(fmt.Sprintf("%s/v%d", mode, version), func(t *testing.T) {
 				root := t.TempDir()
 				path := writeVersionedDB(t, root, version, mode)
@@ -318,7 +318,7 @@ func TestOpenAcceptsCurrentAndV1ReanchorVersions(t *testing.T) {
 }
 
 func TestOpenExistingReadOnlyVersionRules(t *testing.T) {
-	for _, version := range []int{1, 2, 4, 7, 11} {
+	for _, version := range []int{1, 2, 4, 7, 11, 12} {
 		root := t.TempDir()
 		writeVersionedDB(t, root, version, "wal")
 		store, err := OpenExistingReadOnly(root)
@@ -332,7 +332,7 @@ func TestOpenExistingReadOnlyVersionRules(t *testing.T) {
 	}
 
 	root := t.TempDir()
-	writeVersionedDB(t, root, 13, "wal")
+	writeVersionedDB(t, root, 14, "wal")
 	if store, err := OpenExistingReadOnly(root); err == nil {
 		store.Close()
 		t.Fatal("read-only open accepted a newer store")

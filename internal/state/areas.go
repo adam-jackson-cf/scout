@@ -3,7 +3,6 @@ package state
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"sort"
@@ -105,17 +104,9 @@ func (s *Store) exportAreas(ctx context.Context) ([]byte, error) {
 	}
 	lines := make([][]byte, 0, len(list))
 	for _, area := range list {
-		raw, err := json.Marshal(area)
+		line, err := canonicalRecord(area)
 		if err != nil {
 			return nil, fmt.Errorf("encode area: %w", err)
-		}
-		fields := map[string]any{}
-		if err := unmarshalNumbers(raw, &fields); err != nil {
-			return nil, err
-		}
-		line, err := CanonicalLine(fields)
-		if err != nil {
-			return nil, err
 		}
 		lines = append(lines, line)
 	}

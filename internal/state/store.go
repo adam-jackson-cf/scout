@@ -22,7 +22,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-const schemaVersion = 12
+const schemaVersion = 13
 
 var (
 	// ErrStoreLocked means another process already owns the target state directory.
@@ -340,7 +340,7 @@ var schemaBase = []string{
 
 // schemaAddedAfterV1 holds the tables a v1 store lacks that need no backfill.
 // A re-anchored v1 store and a new store both end with them.
-var schemaAddedAfterV1 = slices.Concat(schemaWouldBlock, schemaSignals, schemaAnnotations, schemaIngested, schemaPRMetadata, schemaAreas)
+var schemaAddedAfterV1 = slices.Concat(schemaWouldBlock, schemaSignals, schemaAnnotations, schemaIngested, schemaPRMetadata, schemaAreas, schemaAssociations)
 
 // schemaCurrent creates a new store at schemaVersion.
 var schemaCurrent = slices.Concat(schemaBase, []string{schemaPlanJobs, schemaMigrationAmbiguities}, schemaAddedAfterV1)

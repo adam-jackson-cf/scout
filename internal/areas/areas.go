@@ -11,6 +11,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"sort"
+	"time"
 
 	"scout/internal/domain"
 	"scout/internal/measures"
@@ -45,10 +46,28 @@ type Area struct {
 	FirstSeenSnapshot string   `json:"firstSeenSnapshot"`
 	ClawpatchIDs      []string `json:"clawpatchIds"`
 	RetiredSnapshot   string   `json:"retiredSnapshot,omitempty"`
+	// Status is empty (read as active) or one of the Status constants.
+	Status string `json:"status,omitempty"`
+	// ClusterID and DecisionID are the provenance of a pending area.
+	ClusterID  string `json:"cluster_id,omitempty"`
+	DecisionID string `json:"decision_id,omitempty"`
+	// AcceptedBy and AcceptedAt record a maintainer's acceptance of a pending area.
+	AcceptedBy string     `json:"accepted_by,omitempty"`
+	AcceptedAt *time.Time `json:"accepted_at,omitempty"`
 }
 
-// Active reports whether the area still labels files.
-func (a Area) Active() bool { return a.RetiredSnapshot == "" }
+// Area statuses. An empty status (every record before revision 2.8) is active.
+const (
+	StatusActive     = "active"
+	StatusPending    = "pending"
+	StatusSuperseded = "superseded"
+)
+
+// Active reports whether the area still labels files: not retired, not pending
+// and not superseded.
+func (a Area) Active() bool {
+	return a.RetiredSnapshot == "" && (a.Status == "" || a.Status == StatusActive)
+}
 
 // Config parameterizes Reconcile. MatchJaccard is policy
 // `mapping.areas.match_jaccard`; zero selects DefaultMatchJaccard.
