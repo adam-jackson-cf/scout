@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_63352b1fe1",
+  "title": "axum-extra serialization and response formats",
+  "summary": "JSON response erasure, JSON Lines, and Protocol Buffers support.\n\nAgent mapper reason: These features add wire formats and response variants that share serialization and response-conversion contracts.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Implements JSON Lines support."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Implements Protocol Buffers response and extraction support."
+    },
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Implements erased JSON response support."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Exports extra response types."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares serialization dependencies and features."
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Exports response and serialization modules."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Defines the response conversion contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "serialization",
+    "response"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_49afe8b108",
+  "title": "axum-extra asynchronous body reader",
+  "summary": "Body helpers for asynchronously reading request bodies.\n\nAgent mapper reason: The module and its reader implementation form one focused body-consumption helper.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "symbol": "body",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Implements asynchronous body reading."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Defines and exports the body helper module."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Shows how body helpers are exposed."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares body-related dependencies and features."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Provides the shared body abstraction this helper consumes."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "body",
+    "async"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

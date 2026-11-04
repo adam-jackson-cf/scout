@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9e9ba5abf3",
+  "title": "axum-extra extractors",
+  "summary": "Additional cached, form, query, and rejection-adaptation extractors.\n\nAgent mapper reason: These files extend the main crate's extraction workflow with related alternative extractors and rejection handling.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Implements cached extraction behavior."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Implements the extra form extractor."
+    },
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Defines the extra extractor exports."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Implements the extra query extractor."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Adapts extractor rejection types."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Shows optional dependencies and feature gates."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Provides the base extractor contracts."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "extractors",
+    "forms",
+    "query"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

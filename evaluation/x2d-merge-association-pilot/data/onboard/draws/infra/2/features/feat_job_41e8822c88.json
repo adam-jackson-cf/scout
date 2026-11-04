@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_41e8822c88",
+  "title": "Translation notification GitHub Action",
+  "summary": "Notifies about translation activity through a repository-owned GitHub Action.\n\nAgent mapper reason: The action implementation and workflow form one event-driven automation path with a dedicated runtime and dependency context.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Declares the translation notification action interface."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Defines the action runtime image."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Implements the action behavior."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Connects repository events to the action."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "requirements-github-actions.txt",
+      "reason": "Dependencies for GitHub Action code."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "translations",
+    "notifications"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "auth",
+    "permissions",
+    "external-api",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:07:11.018Z",
+  "updatedAt": "2026-10-30T13:07:11.018Z"
+}

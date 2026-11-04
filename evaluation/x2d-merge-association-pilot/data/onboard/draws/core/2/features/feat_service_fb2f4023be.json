@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_fb2f4023be",
+  "title": "FastAPI application lifecycle and configuration",
+  "summary": "Application construction, defaults, lifecycle, and app-level behavior.\n\nAgent mapper reason: Application setup owns app-wide defaults and lifecycle; its tests cover construction, events, and interaction with middleware and errors.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/applications.py",
+      "symbol": "FastAPI",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "Implements the FastAPI application class and its configuration and lifecycle behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Application routes are registered and exposed through routing."
+    },
+    {
+      "path": "fastapi/openapi/utils.py",
+      "reason": "Application OpenAPI generation delegates to schema utilities."
+    },
+    {
+      "path": "fastapi/exception_handlers.py",
+      "reason": "Application setup uses default exception handlers."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "application",
+    "lifecycle",
+    "configuration"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:44:23.949Z",
+  "updatedAt": "2026-10-30T12:44:23.949Z"
+}

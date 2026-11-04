@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ed4ad9b0d1",
+  "title": "axum handlers",
+  "summary": "Handler traits, futures, service conversion, and state insertion behavior.\n\nAgent mapper reason: The handler trait, future, and service adaptations jointly define how user functions execute within the service stack.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Implements handler future behavior."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Implements state insertion for handler services."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines handler traits and exports."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Implements handler-to-service adaptation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Documents handler expectations."
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Documents handler type constraints."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Defines state extraction consumed by handlers."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "handlers",
+    "services"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

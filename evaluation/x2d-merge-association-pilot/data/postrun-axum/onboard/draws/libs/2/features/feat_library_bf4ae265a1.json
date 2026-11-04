@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_bf4ae265a1",
+  "title": "axum-extra SPA fallback routing",
+  "summary": "Provides single-page application routing support and its static test fixtures.\n\nAgent mapper reason: The SPA fallback implementation and its HTML and JavaScript fixtures represent one static application routing flow.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/spa.rs",
+      "symbol": "SPA fallback",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/spa.rs",
+      "reason": "Implements single-page application fallback behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Exports extra routing utilities."
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Provides an HTML fixture for routing behavior."
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Provides an alternate HTML fixture."
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Provides a JavaScript fixture."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Provides the underlying router behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "spa",
+    "static-assets"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

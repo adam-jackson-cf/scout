@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_8479df4d58",
+  "title": "Documentation build and deployment",
+  "summary": "Builds and deploys documentation through GitHub workflows and supporting scripts.\n\nAgent mapper reason: The workflows, scripts, and MkDocs configuration form the documentation build and deploy path; the requirements files describe its environment.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Defines the documentation build workflow."
+    },
+    {
+      "path": ".github/workflows/deploy-docs.yml",
+      "reason": "Defines the documentation deployment workflow."
+    },
+    {
+      "path": "scripts/docs.py",
+      "reason": "Supports documentation build operations."
+    },
+    {
+      "path": "scripts/deploy_docs_status.py",
+      "reason": "Reports documentation deployment status."
+    },
+    {
+      "path": "scripts/mkdocs_hooks.py",
+      "reason": "Provides hooks used by the documentation build."
+    },
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Configures the MkDocs site."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "requirements-docs.txt",
+      "reason": "Documentation build dependencies."
+    },
+    {
+      "path": "requirements-docs-insiders.txt",
+      "reason": "Additional documentation build dependencies."
+    },
+    {
+      "path": "requirements-docs-tests.txt",
+      "reason": "Documentation validation dependencies."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Project-level build and tool configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "mkdocs",
+    "deployment"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "process-exec",
+    "secrets",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:07:11.018Z",
+  "updatedAt": "2026-10-30T13:07:11.018Z"
+}

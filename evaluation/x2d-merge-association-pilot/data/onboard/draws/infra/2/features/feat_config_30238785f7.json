@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_30238785f7",
+  "title": "Package build and project metadata",
+  "summary": "Defines package metadata, PDM build behavior, and the root requirements file.\n\nAgent mapper reason: These files define how the Python package is configured and built; the inventory does not include the package source tree.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "pyproject.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Declares project and build configuration."
+    },
+    {
+      "path": "pdm_build.py",
+      "reason": "Implements the custom package build hook."
+    },
+    {
+      "path": "requirements.txt",
+      "reason": "Provides the root dependency specification."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "LICENSE",
+      "reason": "Project distribution metadata."
+    },
+    {
+      "path": "CITATION.cff",
+      "reason": "Project citation metadata."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "pdm"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:07:11.018Z",
+  "updatedAt": "2026-10-30T13:07:11.018Z"
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_368f53138b",
+  "title": "axum request metadata extractors",
+  "summary": "Extractors for connection information, host, and matched route path.\n\nAgent mapper reason: These extractors expose request metadata provided by routing or the serving connection.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Extracts connection metadata supplied by the server."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Extracts host information from requests."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Exposes the matched route path."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows extractor exports."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents connection metadata setup."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Shows the service path that supplies connection information."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "request-metadata"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_e8585b99bf",
+  "title": "Issue triage and project routing",
+  "summary": "Routes repository issues and applies automated labeling and project handling.\n\nAgent mapper reason: These workflows share the issue triage path: intake, labeling, and project routing, with templates and label rules providing their configuration.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/add-to-project.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/add-to-project.yml",
+      "reason": "Automates adding relevant items to a project."
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Defines issue management automation."
+    },
+    {
+      "path": ".github/workflows/labeler.yml",
+      "reason": "Runs automated labeling."
+    },
+    {
+      "path": ".github/labeler.yml",
+      "reason": "Configures labeler rules."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Configures issue submission options."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Provides an issue template used by repository contributors."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "issues",
+    "labels",
+    "project-management"
+  ],
+  "trustBoundaries": [
+    "network",
+    "permissions",
+    "auth",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:07:11.018Z",
+  "updatedAt": "2026-10-30T13:07:11.018Z"
+}

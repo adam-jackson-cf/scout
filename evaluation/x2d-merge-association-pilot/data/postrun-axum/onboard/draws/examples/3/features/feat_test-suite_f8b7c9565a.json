@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_f8b7c9565a",
+  "title": "WebSocket testing example",
+  "summary": "Example focused on exercising WebSocket behavior.\n\nAgent mapper reason: The directory name indicates a testing example, but the inventory does not identify dedicated test files; the main source is therefore a likely test target.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/testing-websockets/Cargo.toml",
+      "reason": "Defines the example crate and dependencies."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "Contains the WebSocket testing example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/Cargo.toml",
+      "reason": "Shared examples workspace configuration."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "websocket",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:20:46.880Z",
+  "updatedAt": "2026-10-31T18:20:46.880Z"
+}

@@ -1,0 +1,190 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a205d487de",
+  "title": "TypedPath derive",
+  "summary": "Generates typed route path support, including capture parsing, URI conversion, URL encoding, and rejection customization.\n\nAgent mapper reason: The derive converts user-declared route templates and fields into typed path behavior. Its fixtures cover valid captures and URI generation as well as malformed routes, capture mismatches, and unsupported field types.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "symbol": "TypedPath",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Implements the TypedPath derive and generated route-path behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Registers the public derive macro entrypoint."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Provides shared attribute parsing support."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.stderr",
+      "reason": "Expected diagnostic when a declared capture is missing."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_field.stderr",
+      "reason": "Expected diagnostic when a path capture has no corresponding field."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/not_deserialize.stderr",
+      "reason": "Expected diagnostic when a capture type lacks deserialization support."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/route_not_starting_with_slash.stderr",
+      "reason": "Expected diagnostic for an invalid route string."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/route_not_starting_with_slash_non_empty.stderr",
+      "reason": "Expected diagnostic for an invalid non-empty route string."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/unit_with_capture.stderr",
+      "reason": "Expected diagnostic when a unit struct is used with a capture."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_field.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/not_deserialize.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/route_not_starting_with_slash.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/route_not_starting_with_slash_non_empty.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/unit_with_capture.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/customize_rejection.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/into_uri.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/named_fields_struct.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/option_result.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/tuple_struct.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/unit_struct.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_field.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/not_deserialize.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/route_not_starting_with_slash.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/route_not_starting_with_slash_non_empty.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/unit_with_capture.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/customize_rejection.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/into_uri.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/named_fields_struct.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/option_result.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/tuple_struct.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/unit_struct.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "rust",
+    "proc-macro",
+    "derive",
+    "routing",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:15:16.107Z",
+  "updatedAt": "2026-10-31T18:15:16.107Z"
+}

@@ -1,0 +1,220 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1cf364926d",
+  "title": "Response classes and serialization",
+  "summary": "Response types, JSON-compatible encoding, and endpoint response serialization behavior.\n\nAgent mapper reason: Response construction, JSON encoding, response-model validation, filtering, and serialization are one end-to-end return-value path, tested across response classes and model variants.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/responses.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/responses.py",
+      "reason": "Provides FastAPI response class exports and response behavior."
+    },
+    {
+      "path": "fastapi/encoders.py",
+      "reason": "Converts Python values into JSON-compatible data."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Route dispatch validates and serializes endpoint return values."
+    },
+    {
+      "path": "fastapi/applications.py",
+      "reason": "Applications and routes select default response classes."
+    },
+    {
+      "path": "fastapi/_compat.py",
+      "reason": "Encoding behavior depends on compatibility helpers."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_reponse_set_reponse_code_empty.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_validate_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_validate_response_dataclass.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_validate_response_recursive/test_validate_response_recursive_pv1.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_validate_response_recursive/test_validate_response_recursive_pv2.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_data_filter.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_data_filter_no_inheritance.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_reponse_set_reponse_code_empty.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_validate_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_validate_response_dataclass.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_validate_response_recursive/test_validate_response_recursive_pv1.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_validate_response_recursive/test_validate_response_recursive_pv2.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_data_filter.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_data_filter_no_inheritance.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "serialization",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:44:23.949Z",
+  "updatedAt": "2026-10-30T12:44:23.949Z"
+}

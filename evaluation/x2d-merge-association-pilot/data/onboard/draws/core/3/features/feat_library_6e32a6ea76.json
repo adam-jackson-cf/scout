@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6e32a6ea76",
+  "title": "Response classes",
+  "summary": "Defines response classes and response-specific behavior exposed by FastAPI.\n\nAgent mapper reason: The response module and its tests focus on response classes, media types, status codes, and router defaults.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/responses.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/responses.py",
+      "reason": "Provides response class exports and FastAPI response behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Routes select response classes and construct endpoint responses."
+    },
+    {
+      "path": "fastapi/background.py",
+      "reason": "Responses can carry background tasks."
+    },
+    {
+      "path": "tests/test_default_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_reponse_set_reponse_code_empty.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_default_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_class_no_mediatype.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_code_no_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_change_status_code.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_reponse_set_reponse_code_empty.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "http"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

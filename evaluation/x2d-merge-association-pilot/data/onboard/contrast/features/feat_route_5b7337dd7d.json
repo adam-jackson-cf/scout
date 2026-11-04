@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_route_5b7337dd7d",
+  "title": "FastAPI route GET /model/{name}",
+  "summary": "FastAPI route GET /model/{name} handled by get_model_a in tests/test_filter_pydantic_sub_model/app_pv1.py.",
+  "kind": "route",
+  "source": "python-fastapi-route",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_filter_pydantic_sub_model/app_pv1.py",
+      "symbol": "get_model_a",
+      "route": "GET /model/{name}",
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_filter_pydantic_sub_model/app_pv1.py",
+      "reason": "FastAPI route handler get_model_a"
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "python target runtime metadata"
+    },
+    {
+      "path": "tests/test_filter_pydantic_sub_model/test_filter_pydantic_sub_model_pv1.py",
+      "reason": "associated test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_filter_pydantic_sub_model/test_filter_pydantic_sub_model_pv1.py",
+      "command": "pdm run pytest"
+    }
+  ],
+  "tags": [
+    "python",
+    "fastapi",
+    "route"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:08:25.698Z",
+  "updatedAt": "2026-10-30T13:08:25.698Z"
+}

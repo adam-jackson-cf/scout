@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_d62d1a4491",
+  "title": "Issue management workflow",
+  "summary": "Automates repository issue management through GitHub Actions.\n\nAgent mapper reason: The workflow is a distinct issue automation entrypoint; related intake templates provide context, though the inventory does not reveal its detailed behavior.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "low",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Defines the issue management automation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Provides issue intake configuration that may interact with issue management."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Provides a specialized issue template context."
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/questions.yml",
+      "reason": "Provides adjacent community intake configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github",
+    "issues",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:08:22.650Z",
+  "updatedAt": "2026-10-30T13:08:22.650Z"
+}

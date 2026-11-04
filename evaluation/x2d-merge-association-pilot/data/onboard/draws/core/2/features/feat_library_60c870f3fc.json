@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_60c870f3fc",
+  "title": "Compatibility and shared framework utilities",
+  "summary": "Version compatibility, shared typing contracts, and utility functions used across framework modules.\n\nAgent mapper reason: These cross-cutting helpers and type contracts are reviewed together because changes can affect parameter analysis, routing, and schema behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/_compat.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/_compat.py",
+      "reason": "Centralizes compatibility behavior for supported dependency and Python versions."
+    },
+    {
+      "path": "fastapi/types.py",
+      "reason": "Defines shared type aliases and contracts."
+    },
+    {
+      "path": "fastapi/utils.py",
+      "reason": "Provides utilities used by application, routing, and schema code."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/param_functions.py",
+      "reason": "Parameter helper annotations depend on shared typing and compatibility behavior."
+    },
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Routing consumes shared utilities."
+    },
+    {
+      "path": "fastapi/openapi/utils.py",
+      "reason": "Schema generation consumes shared utilities."
+    },
+    {
+      "path": "tests/test_compat.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_typing_python39.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_compat.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_typing_python39.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_inherited_custom_class.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "compatibility",
+    "typing",
+    "utilities"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:44:23.949Z",
+  "updatedAt": "2026-10-30T12:44:23.949Z"
+}

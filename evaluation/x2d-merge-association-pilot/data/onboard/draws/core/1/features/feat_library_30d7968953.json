@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_30d7968953",
+  "title": "Background tasks and concurrency helpers",
+  "summary": "Provides background task integration and helpers for synchronous work in asynchronous contexts.\n\nAgent mapper reason: Both modules support deferred or synchronous work in request flows, but the inventory contains no directly named tests for this behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/background.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/background.py",
+      "reason": "Defines background task support."
+    },
+    {
+      "path": "fastapi/concurrency.py",
+      "reason": "Provides concurrency helpers used by request and dependency execution."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Route execution connects background tasks to endpoint responses."
+    },
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "Dependency execution uses concurrency helpers."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "background-tasks",
+    "async",
+    "concurrency"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:42:38.051Z",
+  "updatedAt": "2026-10-30T12:42:38.051Z"
+}

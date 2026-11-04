@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_26da1dff43",
+  "title": "Latest changes automation",
+  "summary": "Automates the repository's latest changes workflow.\n\nAgent mapper reason: The workflow is named for a distinct latest changes task, but its behavior cannot be confirmed from the inventory alone.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "low",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Defines the latest changes automation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Provides release workflow context if latest changes are tied to publishing."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "changes"
+  ],
+  "trustBoundaries": [
+    "network",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:04:37.239Z",
+  "updatedAt": "2026-10-30T13:04:37.239Z"
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d54195c89c",
+  "title": "axum form extraction",
+  "summary": "Form decoding and raw form-body access.\n\nAgent mapper reason: The typed form wrapper and raw form extractor share decoding and request-body handling concerns.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/form.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Implements the main form API."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Implements raw form-body extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows extractor exports."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents form parsing behavior."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Defines the shared default body size limit."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "forms"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

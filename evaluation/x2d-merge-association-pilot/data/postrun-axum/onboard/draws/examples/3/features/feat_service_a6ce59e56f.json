@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_a6ce59e56f",
+  "title": "Unix domain socket server",
+  "summary": "Demonstrates serving through a Unix domain socket.\n\nAgent mapper reason: Socket path handling and local listener permissions are part of the example's transport boundary.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/unix-domain-socket/Cargo.toml",
+      "reason": "Defines the example crate and dependencies."
+    },
+    {
+      "path": "examples/unix-domain-socket/src/main.rs",
+      "reason": "Implements Unix socket setup and serving."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/Cargo.toml",
+      "reason": "Shared examples workspace configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "unix-socket",
+    "networking"
+  ],
+  "trustBoundaries": [
+    "network",
+    "filesystem",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:20:46.880Z",
+  "updatedAt": "2026-10-31T18:20:46.880Z"
+}

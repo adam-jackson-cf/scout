@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_15564ca817",
+  "title": "Example: WebSocket application",
+  "summary": "Standalone WebSocket server with a browser-side client.\n\nAgent mapper reason: The server and browser client jointly demonstrate WebSocket upgrades and messages.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/websockets/src/main.rs",
+      "reason": "Implements the WebSocket server."
+    },
+    {
+      "path": "examples/websockets/assets/script.js",
+      "reason": "Implements the browser-side WebSocket client."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/websockets/Cargo.toml",
+      "reason": "Defines the example package."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Defines WebSocket upgrade behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "websocket"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

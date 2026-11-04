@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_4b5af52ea2",
+  "title": "Issue template chooser",
+  "summary": "Configuration for GitHub issue template options and routing.\n\nAgent mapper reason: Chooser behavior is separate from the content of each issue template and should be reviewed with the available options as context.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Configures the issue template chooser."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "reason": "An issue template option managed by this configuration."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "reason": "An issue template option managed by this configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github",
+    "issue-template",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:22:28.523Z",
+  "updatedAt": "2026-10-31T18:22:28.523Z"
+}

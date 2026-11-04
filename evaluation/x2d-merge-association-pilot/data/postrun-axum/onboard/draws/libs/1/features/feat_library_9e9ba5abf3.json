@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9e9ba5abf3",
+  "title": "axum-extra extractor adapters",
+  "summary": "Optional extractors and adapters for cached values, forms, queries, and customized rejection handling.\n\nAgent mapper reason: These files extend Axum's common extraction model with reusable adapters and alternate input formats.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": "extract",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Implements cached extraction behavior."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Implements the extra form extractor."
+    },
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Defines and exports the extra extractor surface."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Implements the extra query extractor."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Adapts an extractor to a caller-selected rejection type."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares optional extractor dependencies and features."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Documents the optional extractor crate."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Provides context for the base extractor model these adapters extend."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines shared extractor contracts used by these adapters."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "extractors",
+    "forms",
+    "queries"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

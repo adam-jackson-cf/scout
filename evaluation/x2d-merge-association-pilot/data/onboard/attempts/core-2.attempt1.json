@@ -1,0 +1,484 @@
+{
+ "schema": "x2d-onboard-draw-v1",
+ "map_id": "core/2",
+ "scope": "core",
+ "draw": 2,
+ "contrast": false,
+ "include": [
+  "fastapi",
+  "tests/__init__.py",
+  "tests/main.py",
+  "tests/test_additional_properties.py",
+  "tests/test_additional_properties_bool.py",
+  "tests/test_additional_response_extra.py",
+  "tests/test_additional_responses_bad.py",
+  "tests/test_additional_responses_custom_model_in_callback.py",
+  "tests/test_additional_responses_custom_validationerror.py",
+  "tests/test_additional_responses_default_validationerror.py",
+  "tests/test_additional_responses_response_class.py",
+  "tests/test_additional_responses_router.py",
+  "tests/test_allow_inf_nan_in_enforcing.py",
+  "tests/test_ambiguous_params.py",
+  "tests/test_annotated.py",
+  "tests/test_application.py",
+  "tests/test_callable_endpoint.py",
+  "tests/test_compat.py",
+  "tests/test_computed_fields.py",
+  "tests/test_custom_middleware_exception.py",
+  "tests/test_custom_route_class.py",
+  "tests/test_custom_schema_fields.py",
+  "tests/test_custom_swagger_ui_redirect.py",
+  "tests/test_datastructures.py",
+  "tests/test_datetime_custom_encoder.py",
+  "tests/test_default_response_class.py",
+  "tests/test_default_response_class_router.py",
+  "tests/test_dependency_cache.py",
+  "tests/test_dependency_class.py",
+  "tests/test_dependency_contextmanager.py",
+  "tests/test_dependency_contextvars.py",
+  "tests/test_dependency_duplicates.py",
+  "tests/test_dependency_normal_exceptions.py",
+  "tests/test_dependency_overrides.py",
+  "tests/test_dependency_security_overrides.py",
+  "tests/test_deprecated_openapi_prefix.py",
+  "tests/test_duplicate_models_openapi.py",
+  "tests/test_empty_router.py",
+  "tests/test_enforce_once_required_parameter.py",
+  "tests/test_exception_handlers.py",
+  "tests/test_extra_routes.py",
+  "tests/test_fastapi_cli.py",
+  "tests/test_filter_pydantic_sub_model",
+  "tests/test_filter_pydantic_sub_model_pv2.py",
+  "tests/test_forms_from_non_typing_sequences.py",
+  "tests/test_forms_single_model.py",
+  "tests/test_forms_single_param.py",
+  "tests/test_generate_unique_id_function.py",
+  "tests/test_generic_parameterless_depends.py",
+  "tests/test_get_request_body.py",
+  "tests/test_http_connection_injection.py",
+  "tests/test_include_route.py",
+  "tests/test_include_router_defaults_overrides.py",
+  "tests/test_infer_param_optionality.py",
+  "tests/test_inherited_custom_class.py",
+  "tests/test_invalid_path_param.py",
+  "tests/test_invalid_sequence_param.py",
+  "tests/test_jsonable_encoder.py",
+  "tests/test_local_docs.py",
+  "tests/test_modules_same_name_body",
+  "tests/test_multi_body_errors.py",
+  "tests/test_multi_query_errors.py",
+  "tests/test_multipart_installation.py",
+  "tests/test_no_swagger_ui_redirect.py",
+  "tests/test_openapi_examples.py",
+  "tests/test_openapi_query_parameter_extension.py",
+  "tests/test_openapi_route_extensions.py",
+  "tests/test_openapi_separate_input_output_schemas.py",
+  "tests/test_openapi_servers.py",
+  "tests/test_operations_signatures.py",
+  "tests/test_orjson_response_class.py",
+  "tests/test_param_class.py",
+  "tests/test_param_in_path_and_dependency.py",
+  "tests/test_param_include_in_schema.py",
+  "tests/test_params_repr.py",
+  "tests/test_path.py",
+  "tests/test_put_no_body.py",
+  "tests/test_query.py",
+  "tests/test_read_with_orm_mode.py",
+  "tests/test_regex_deprecated_body.py",
+  "tests/test_regex_deprecated_params.py",
+  "tests/test_repeated_cookie_headers.py",
+  "tests/test_repeated_dependency_schema.py",
+  "tests/test_repeated_parameter_alias.py",
+  "tests/test_reponse_set_reponse_code_empty.py",
+  "tests/test_request_body_parameters_media_type.py",
+  "tests/test_required_noneable.py",
+  "tests/test_response_by_alias.py",
+  "tests/test_response_change_status_code.py",
+  "tests/test_response_class_no_mediatype.py",
+  "tests/test_response_code_no_body.py",
+  "tests/test_response_model_as_return_annotation.py",
+  "tests/test_response_model_data_filter.py",
+  "tests/test_response_model_data_filter_no_inheritance.py",
+  "tests/test_response_model_include_exclude.py",
+  "tests/test_response_model_invalid.py",
+  "tests/test_response_model_sub_types.py",
+  "tests/test_route_scope.py",
+  "tests/test_router_events.py",
+  "tests/test_router_prefix_with_template.py",
+  "tests/test_router_redirect_slashes.py",
+  "tests/test_schema_extra_examples.py",
+  "tests/test_security_api_key_cookie.py",
+  "tests/test_security_api_key_cookie_description.py",
+  "tests/test_security_api_key_cookie_optional.py",
+  "tests/test_security_api_key_header.py",
+  "tests/test_security_api_key_header_description.py",
+  "tests/test_security_api_key_header_optional.py",
+  "tests/test_security_api_key_query.py",
+  "tests/test_security_api_key_query_description.py",
+  "tests/test_security_api_key_query_optional.py",
+  "tests/test_security_http_base.py",
+  "tests/test_security_http_base_description.py",
+  "tests/test_security_http_base_optional.py",
+  "tests/test_security_http_basic_optional.py",
+  "tests/test_security_http_basic_realm.py",
+  "tests/test_security_http_basic_realm_description.py",
+  "tests/test_security_http_bearer.py",
+  "tests/test_security_http_bearer_description.py",
+  "tests/test_security_http_bearer_optional.py",
+  "tests/test_security_http_digest.py",
+  "tests/test_security_http_digest_description.py",
+  "tests/test_security_http_digest_optional.py",
+  "tests/test_security_oauth2.py",
+  "tests/test_security_oauth2_authorization_code_bearer.py",
+  "tests/test_security_oauth2_authorization_code_bearer_description.py",
+  "tests/test_security_oauth2_optional.py",
+  "tests/test_security_oauth2_optional_description.py",
+  "tests/test_security_oauth2_password_bearer_optional.py",
+  "tests/test_security_oauth2_password_bearer_optional_description.py",
+  "tests/test_security_openid_connect.py",
+  "tests/test_security_openid_connect_description.py",
+  "tests/test_security_openid_connect_optional.py",
+  "tests/test_serialize_response.py",
+  "tests/test_serialize_response_dataclass.py",
+  "tests/test_serialize_response_model.py",
+  "tests/test_skip_defaults.py",
+  "tests/test_starlette_exception.py",
+  "tests/test_starlette_urlconvertors.py",
+  "tests/test_sub_callbacks.py",
+  "tests/test_swagger_ui_init_oauth.py",
+  "tests/test_tuples.py",
+  "tests/test_typing_python39.py",
+  "tests/test_union_body.py",
+  "tests/test_union_inherited_body.py",
+  "tests/test_validate_response.py",
+  "tests/test_validate_response_dataclass.py",
+  "tests/test_validate_response_recursive",
+  "tests/test_webhooks_security.py",
+  "tests/test_ws_dependencies.py",
+  "tests/test_ws_router.py",
+  "tests/utils.py"
+ ],
+ "provider": "codex",
+ "map_model": "gpt-6-luna",
+ "map_reasoning_effort": "xhigh",
+ "map_flags": [
+  "--source",
+  "agent",
+  "--provider",
+  "codex",
+  "--model",
+  "gpt-6-luna",
+  "--reasoning-effort",
+  "xhigh"
+ ],
+ "rev": "1d50bad4555b951d5fa48eb8787fd5c39ed7effb",
+ "tree": "d290ba2c3c64448e8023db7bcf78b7565ef3e892",
+ "attempt": 1,
+ "started_utc": "2026-10-30T12:42:38Z",
+ "rc": 0,
+ "seconds": 105.7,
+ "timed_out": false,
+ "ended_by": null,
+ "model_option": "gpt-6-luna",
+ "progress": [
+  {
+   "event": "start",
+   "fields": {
+    "source": "agent",
+    "existing": "0",
+    "dryRun": "false"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "node"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "next"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "react"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "node-routes"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "go"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "python"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "ruby"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "elixir"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "rust"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "dotnet"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "c-cpp"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "swift"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "apple"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "gradle"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "maven"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "laravel"
+   }
+  },
+  {
+   "event": "mapper-start",
+   "fields": {
+    "mapper": "config"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "go",
+    "seeds": "0",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "elixir",
+    "seeds": "0",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "rust",
+    "seeds": "0",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "laravel",
+    "seeds": "0",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "ruby",
+    "seeds": "0",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "config",
+    "seeds": "17",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "c-cpp",
+    "seeds": "0",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "dotnet",
+    "seeds": "0",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "maven",
+    "seeds": "0",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "swift",
+    "seeds": "0",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "apple",
+    "seeds": "0",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "gradle",
+    "seeds": "0",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "node",
+    "seeds": "0",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "next",
+    "seeds": "0",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "react",
+    "seeds": "0",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "node-routes",
+    "seeds": "0",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "mapper-done",
+   "fields": {
+    "mapper": "python",
+    "seeds": "185",
+    "elapsed": "1s"
+   }
+  },
+  {
+   "event": "heuristic-done",
+   "fields": {
+    "features": "95",
+    "new": "95",
+    "changed": "0",
+    "stale": "0"
+   }
+  },
+  {
+   "event": "inventory-start",
+   "fields": {}
+  },
+  {
+   "event": "inventory-done",
+   "fields": {
+    "files": "207",
+    "sourceFiles": "44",
+    "ownedSourceFiles": "44",
+    "weak": "false",
+    "elapsed": "0s"
+   }
+  },
+  {
+   "event": "agent-start",
+   "fields": {
+    "provider": "codex",
+    "model": "gpt-6-luna"
+   }
+  },
+  {
+   "event": "agent-done",
+   "fields": {
+    "features": "21",
+    "elapsed": "103s"
+   }
+  },
+  {
+   "event": "write-start",
+   "fields": {
+    "features": "116"
+   }
+  },
+  {
+   "event": "done",
+   "fields": {
+    "features": "116",
+    "usedAgent": "true",
+    "elapsed": "104s"
+   }
+  }
+ ],
+ "stderr_tail": "clawpatch map start source=agent existing=0 dryRun=false\nclawpatch map mapper-start mapper=node\nclawpatch map mapper-start mapper=next\nclawpatch map mapper-start mapper=react\nclawpatch map mapper-start mapper=node-routes\nclawpatch map mapper-start mapper=go\nclawpatch map mapper-start mapper=python\nclawpatch map mapper-start mapper=ruby\nclawpatch map mapper-start mapper=elixir\nclawpatch map mapper-start mapper=rust\nclawpatch map mapper-start mapper=dotnet\nclawpatch map mapper-start mapper=c-cpp\nclawpatch map mapper-start mapper=swift\nclawpatch map mapper-start mapper=apple\nclawpatch map mapper-start mapper=gradle\nclawpatch map mapper-start mapper=maven\nclawpatch map mapper-start mapper=laravel\nclawpatch map mapper-start mapper=config\nclawpatch map mapper-done mapper=go seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=elixir seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=rust seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=laravel seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=ruby seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=config seeds=17 elapsed=0s\nclawpatch map mapper-done mapper=c-cpp seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=dotnet seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=maven seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=swift seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=apple seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=gradle seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=node seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=next seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=react seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=node-routes seeds=0 elapsed=0s\nclawpatch map mapper-done mapper=python seeds=185 elapsed=1s\nclawpatch map heuristic-done features=95 new=95 changed=0 stale=0\nclawpatch map inventory-start\nclawpatch map inventory-done files=207 sourceFiles=44 ownedSourceFiles=44 weak=false elapsed=0s\nclawpatch map agent-start provider=codex model=gpt-6-luna\nclawpatch map agent-done features=21 elapsed=103s\nclawpatch map write-start features=116\nclawpatch map done features=116 usedAgent=true elapsed=104s\n",
+ "stdout_tail": "{\n  \"features\": 116,\n  \"new\": 116,\n  \"changed\": 0,\n  \"stale\": 0,\n  \"source\": \"agent\",\n  \"usedAgent\": true,\n  \"reason\": \"heuristic map is meaningful\",\n  \"next\": \"clawpatch review --limit 3\"\n}\n"
+}

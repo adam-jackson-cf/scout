@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_19185629f6",
+  "title": "debug_handler attribute macro",
+  "summary": "Handler diagnostics and compile-time validation for handler functions.\n\nAgent mapper reason: The macro validates handler signatures and improves compiler diagnostics; its pass and fail fixtures specify accepted forms and errors.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "Implements the debug_handler attribute macro."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Registers the attribute macro."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines handler constraints checked by the macro."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Defines macro dependencies."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/argument_not_extractor.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/multiple_extractors.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/infer_state.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/fail/argument_not_extractor.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/multiple_extractors.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/infer_state.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "compile-time-diagnostics",
+    "handler"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ccfd80a83e",
+  "title": "Sync and async concurrency helpers",
+  "summary": "Provides concurrency utilities used by dependency and request processing.\n\nAgent mapper reason: This is a focused shared runtime utility; dependency context-manager and context-variable tests exercise its adjacent behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/concurrency.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/concurrency.py",
+      "reason": "Implements sync and async execution helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "Dependency solving uses concurrency helpers for sync callables and cleanup."
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "concurrency",
+    "async"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

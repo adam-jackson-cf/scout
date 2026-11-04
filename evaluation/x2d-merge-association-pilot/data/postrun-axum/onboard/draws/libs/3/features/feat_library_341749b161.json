@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_341749b161",
+  "title": "axum-core extraction contracts",
+  "summary": "Shared extractor primitives, rejection types, body limits, and tuple support.\n\nAgent mapper reason: These files form the reusable extraction contract consumed by axum and axum-extra extractors.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Defines default request body size limits."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Defines reference-based state extraction support."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines the shared extraction module and exports."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Defines common extractor rejection behavior."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Defines request-parts extraction contracts."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Supports combining multiple extractor results."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Shows the core extraction exports."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows the main crate's use of these shared contracts."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor semantics."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "extractors",
+    "request"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

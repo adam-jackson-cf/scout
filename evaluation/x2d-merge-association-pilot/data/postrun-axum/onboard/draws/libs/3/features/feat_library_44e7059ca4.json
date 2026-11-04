@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_44e7059ca4",
+  "title": "axum JSON extraction and responses",
+  "summary": "JSON request parsing and JSON response conversion.\n\nAgent mapper reason: JSON input and output are implemented as one format-specific API over shared extraction and response contracts.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Implements JSON extraction, rejection, and response behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows extractor exports."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents structured request extraction."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents response conversion."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Defines the response conversion contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "json",
+    "extractors",
+    "response"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

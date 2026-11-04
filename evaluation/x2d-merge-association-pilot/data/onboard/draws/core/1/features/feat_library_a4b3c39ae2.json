@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a4b3c39ae2",
+  "title": "HTTP routing and route registration",
+  "summary": "Implements HTTP route registration, endpoint dispatch, and router composition behavior.\n\nAgent mapper reason: Route registration and request dispatch share a central implementation and are covered by route, router, and path behavior tests.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/routing.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Owns route and router implementations, including endpoint dispatch."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "The application exposes and configures routing behavior."
+    },
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "Route execution resolves endpoint dependencies through this module."
+    },
+    {
+      "path": "fastapi/params.py",
+      "reason": "Route parameter declarations feed route analysis and request handling."
+    },
+    {
+      "path": "tests/test_callable_endpoint.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_extra_routes.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_path.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_router_redirect_slashes.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_starlette_urlconvertors.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_callable_endpoint.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_extra_routes.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_path.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_redirect_slashes.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_starlette_urlconvertors.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routing",
+    "http",
+    "router"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:42:38.051Z",
+  "updatedAt": "2026-10-30T12:42:38.051Z"
+}

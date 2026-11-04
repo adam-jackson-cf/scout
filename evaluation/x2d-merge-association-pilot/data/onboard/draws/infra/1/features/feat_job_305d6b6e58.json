@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_305d6b6e58",
+  "title": "Smokeshow reporting workflow",
+  "summary": "Runs the repository's Smokeshow reporting automation.\n\nAgent mapper reason: The workflow name suggests a distinct reporting integration; the inventory does not expose its detailed behavior.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "low",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Defines the Smokeshow workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Provides CI context for a reporting workflow."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "ci",
+    "reporting"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:04:37.239Z",
+  "updatedAt": "2026-10-30T13:04:37.239Z"
+}

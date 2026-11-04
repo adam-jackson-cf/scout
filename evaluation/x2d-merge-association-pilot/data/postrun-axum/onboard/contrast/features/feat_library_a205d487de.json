@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a205d487de",
+  "title": "Typed path attribute macro",
+  "summary": "Generates typed route-path support and URI conversion behavior.\n\nAgent mapper reason: The macro and typed routing integration share route syntax and URI serialization rules, with compile tests defining valid captures and paths.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Implements typed path parsing and code generation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Registers the macro."
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Provides the typed routing integration."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Defines macro dependencies."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/route_not_starting_with_slash.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/route_not_starting_with_slash.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/wildcards.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum-macros",
+    "typed-routing",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

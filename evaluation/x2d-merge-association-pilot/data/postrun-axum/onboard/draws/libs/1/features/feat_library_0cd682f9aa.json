@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_0cd682f9aa",
+  "title": "axum extensions and typed headers",
+  "summary": "Request extension extraction and typed HTTP header integration.\n\nAgent mapper reason: Both APIs expose typed access to HTTP request metadata attached through extensions or headers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extension.rs",
+      "symbol": "Extension",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Implements extension insertion and extraction support."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Implements typed header extraction and response support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows how extension extraction is integrated with the extractor API."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Provides shared request extension access."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "Provides shared request-parts extension access."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares header-related dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extensions",
+    "headers"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

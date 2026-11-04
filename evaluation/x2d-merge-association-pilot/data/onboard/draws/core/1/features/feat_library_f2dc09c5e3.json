@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f2dc09c5e3",
+  "title": "Shared utilities and logging",
+  "summary": "Provides common framework utilities and logging support.\n\nAgent mapper reason: The modules provide shared support rather than a standalone user flow; tests cover generated identifiers and operation signatures.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/utils.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/utils.py",
+      "reason": "Defines shared framework utilities."
+    },
+    {
+      "path": "fastapi/logger.py",
+      "reason": "Defines FastAPI logging support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "Application behavior consumes shared utilities and logging."
+    },
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Route registration uses shared helpers such as operation identifiers."
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_operations_signatures.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_operations_signatures.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "utilities",
+    "logging",
+    "shared"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:42:38.051Z",
+  "updatedAt": "2026-10-30T12:42:38.051Z"
+}

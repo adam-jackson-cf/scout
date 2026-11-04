@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_cli-command_9d7889d20a",
+  "title": "CLI startup",
+  "summary": "Starts the FastAPI command-line interface and its module entry point.\n\nAgent mapper reason: These files form the CLI startup and command path; the dedicated CLI test suite covers its behavior.",
+  "kind": "cli-command",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/__main__.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/__main__.py",
+      "reason": "Enables module-based CLI startup."
+    },
+    {
+      "path": "fastapi/cli.py",
+      "reason": "Implements CLI commands and options."
+    },
+    {
+      "path": "fastapi/logger.py",
+      "reason": "Provides logging used by the CLI."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "The CLI loads and serves FastAPI applications."
+    },
+    {
+      "path": "tests/test_fastapi_cli.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_fastapi_cli.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "cli",
+    "startup"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "process-exec",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

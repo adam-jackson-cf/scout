@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_2c9c9e0aa1",
+  "title": "Python package build configuration",
+  "summary": "Defines the PDM build hook and package-level configuration context.\n\nAgent mapper reason: These files describe how the Python distribution is configured and built; the inventory does not include package source files.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "pdm_build.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pdm_build.py",
+      "reason": "Implements the project build hook."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Declares package metadata and PDM configuration."
+    },
+    {
+      "path": "requirements.txt",
+      "reason": "Provides a dependency context for the package."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "pdm"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:08:22.650Z",
+  "updatedAt": "2026-10-30T13:08:22.650Z"
+}

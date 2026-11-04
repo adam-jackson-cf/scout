@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_5542d4b7ed",
+  "title": "Background tasks",
+  "summary": "Exposes background task support for work scheduled after a response is sent.\n\nAgent mapper reason: The inventory contains a dedicated background task module but no clearly named direct tests; application and response behavior provide nearby context.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/background.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/background.py",
+      "reason": "Provides FastAPI background task exports and integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/responses.py",
+      "reason": "Response objects carry and execute background tasks."
+    },
+    {
+      "path": "fastapi/applications.py",
+      "reason": "Applications expose background task behavior through route handling."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "background-work"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

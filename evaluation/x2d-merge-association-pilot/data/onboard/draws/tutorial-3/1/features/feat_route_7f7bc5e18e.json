@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_route_7f7bc5e18e",
+  "title": "Server-rendered templates",
+  "summary": "Tutorial app rendering templates and serving its static stylesheet.\n\nAgent mapper reason: The Python app, HTML template, stylesheet, and test together define one rendered page flow.",
+  "kind": "route",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/templates/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/templates/tutorial001.py",
+      "reason": "Template rendering application."
+    },
+    {
+      "path": "docs_src/templates/templates/item.html",
+      "reason": "Rendered HTML template."
+    },
+    {
+      "path": "docs_src/templates/static/styles.css",
+      "reason": "Stylesheet used by the tutorial app."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_tutorial/test_templates/test_tutorial001.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_tutorial/test_templates/test_tutorial001.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "docs-example",
+    "templates",
+    "static-files"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:58:52.119Z",
+  "updatedAt": "2026-10-30T12:58:52.119Z"
+}

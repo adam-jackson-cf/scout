@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_route_5bb057316f",
+  "title": "axum router and route composition",
+  "summary": "Router construction, method routing, route dispatch, nesting support, and route parameter handling.\n\nAgent mapper reason: These files implement route registration, matching, nesting, merging, method dispatch, and associated fallbacks; the listed routing tests exercise those behaviors.",
+  "kind": "route",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "symbol": "Router",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Implements boxed route components used by routing internals."
+    },
+    {
+      "path": "axum/src/routing/method_filter.rs",
+      "reason": "Defines method filters for route selection."
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Implements method-based route construction and dispatch."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Implements the central router and route composition API."
+    },
+    {
+      "path": "axum/src/routing/not_found.rs",
+      "reason": "Implements not-found routing behavior."
+    },
+    {
+      "path": "axum/src/routing/route.rs",
+      "reason": "Implements route representation and dispatch."
+    },
+    {
+      "path": "axum/src/routing/strip_prefix.rs",
+      "reason": "Implements path-prefix handling for nested routing."
+    },
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Implements URL parameter storage for matched routes."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/route.md",
+      "reason": "Documents route construction."
+    },
+    {
+      "path": "axum/src/docs/routing/nest.md",
+      "reason": "Documents nested routes."
+    },
+    {
+      "path": "axum/src/docs/routing/merge.md",
+      "reason": "Documents router merging."
+    },
+    {
+      "path": "axum/src/docs/routing/fallback.md",
+      "reason": "Documents fallback behavior."
+    },
+    {
+      "path": "axum/src/docs/method_routing/fallback.md",
+      "reason": "Documents method-router fallback behavior."
+    },
+    {
+      "path": "axum/src/docs/method_routing/merge.md",
+      "reason": "Documents method-router merging."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "Provides the routing test harness."
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "Covers fallback routing."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "Covers GET and HEAD method behavior."
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "Covers route merging."
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "Covers nested routes."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares router dependencies and package features."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "router",
+    "routes",
+    "methods"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3b2197cd22",
+  "title": "axum-extra routing extensions",
+  "summary": "Resource, single-page application, and typed routing helpers.\n\nAgent mapper reason: The extensions build on the core router and include typed route integration plus SPA fallback and static fixture behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Exports extra routing APIs."
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Implements resource-style routes."
+    },
+    {
+      "path": "axum-extra/src/routing/spa.rs",
+      "reason": "Implements single-page application fallback support."
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Implements typed route integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares routing dependencies and features."
+    },
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Exports extra routing."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Defines the base router API."
+    },
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Generates typed path support used by typed routing."
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Fixture for SPA routing behavior."
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Additional fixture for SPA routing behavior."
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Static asset fixture for SPA behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "routing",
+    "typed-path",
+    "spa"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "filesystem",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

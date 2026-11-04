@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_406a758324",
+  "title": "axum middleware",
+  "summary": "Request, response, and extractor-based middleware adapters.\n\nAgent mapper reason: These adapters implement the main crate's middleware lifecycle and its request and response transformation points.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Builds middleware from an extractor."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Builds middleware from user functions."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Transforms requests in middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Transforms responses in middleware."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Defines middleware exports and shared behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Documents middleware composition."
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Documents router-level layering."
+    },
+    {
+      "path": "axum/src/docs/routing/route_layer.md",
+      "reason": "Documents route-level layering."
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Documents method-router layering."
+    },
+    {
+      "path": "axum/src/docs/method_routing/route_layer.md",
+      "reason": "Documents method-route layering."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "middleware",
+    "request",
+    "response"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "auth",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

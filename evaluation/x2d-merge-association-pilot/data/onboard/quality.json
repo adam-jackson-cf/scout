@@ -1,0 +1,333 @@
+{
+ "area_owned_share_position_gt_500": {
+  "by_inventory_position": {
+   "early": {
+    "area_owned": 29,
+    "files": 48,
+    "share": 0.6041666666666666
+   },
+   "late": {
+    "area_owned": 1196,
+    "files": 1307,
+    "share": 0.9150726855394032
+   }
+  },
+  "by_source_position": {
+   "early": {
+    "area_owned": 464,
+    "files": 476,
+    "share": 0.9747899159663865
+   },
+   "late": {
+    "area_owned": 309,
+    "files": 311,
+    "share": 0.9935691318327974
+   }
+  }
+ },
+ "areas_at_cap": {
+  "areas": 114,
+  "at_or_over_cap": 2,
+  "cap": 60
+ },
+ "c0": "1d50bad4555b951d5fa48eb8787fd5c39ed7effb",
+ "catalogue_sha256": "1220016c26115ccd3e3a521de76ec45e68893f4ab6edf0f4889e8c8ce2c84199",
+ "co_change": {
+  "commits_skipped_gt_30_owned": 8,
+  "commits_total": 2773,
+  "commits_used": 145,
+  "lift": 15.314789599948126,
+  "multi_area_files_counted_once": true,
+  "null_sd": 0.004453752440596244,
+  "p_same_area_null_mean": 0.02252190420560748,
+  "p_same_area_observed": 0.34491822429906543,
+  "p_value_null_ge_observed": 0.004975124378109453,
+  "pairs_weighted": 3424,
+  "perms": 200,
+  "since": "2023-01-01",
+  "status": "measured",
+  "unique_pairs": 2739
+ },
+ "core_gate": {
+  "area_owned": 44,
+  "core_gate": false,
+  "core_source_files": 44,
+  "rule": "core fastapi/ source files area-owned < 50 % -> core units are stratum 3 and the go/no-go excludes them",
+  "share": 1.0
+ },
+ "coverage_by_role": {
+  "config": {
+   "area-owned": 9,
+   "both": 2,
+   "heuristic-owned": 1,
+   "unowned": 1
+  },
+  "core": {
+   "area-owned": 0,
+   "both": 44,
+   "heuristic-owned": 0,
+   "unowned": 1
+  },
+  "docs-config": {
+   "area-owned": 1,
+   "both": 0,
+   "heuristic-owned": 0,
+   "unowned": 27
+  },
+  "example": {
+   "area-owned": 685,
+   "both": 0,
+   "heuristic-owned": 0,
+   "unowned": 2
+  },
+  "infra": {
+   "area-owned": 12,
+   "both": 33,
+   "heuristic-owned": 0,
+   "unowned": 0
+  },
+  "test": {
+   "area-owned": 258,
+   "both": 181,
+   "heuristic-owned": 91,
+   "unowned": 7
+  }
+ },
+ "granularity": {
+  "areas": 114,
+  "exp_H_area_sizes": 64.55937344905527,
+  "files_per_area": {
+   "max": 93,
+   "median": 6.0,
+   "quartiles": [
+    2.0,
+    6.0,
+    12.75
+   ],
+   "singletons": 14
+  }
+ },
+ "intruder_audit": {
+  "items": 40,
+  "status": "items written; labels pending (label_x2d.py --kind intruder, then quality.py --finish)"
+ },
+ "inventory": {
+  "eligible_files": 1355,
+  "files": 2572,
+  "source_files": 811,
+  "test_files": 537
+ },
+ "leaf_directory_entropy": {
+  "H_area_given_leaf_dir_nats": 0.33919267885619864,
+  "H_leaf_dir_given_area_nats": 0.6585552172190862,
+  "files": 1225,
+  "leaf_dirs": 178
+ },
+ "overlap": {
+  "files_in_ge2_areas": 0,
+  "owned_files": 1225,
+  "share": 0.0
+ },
+ "reproducibility": {
+  "median_over_scope_pairs": {
+   "H_x_given_y": 0.0,
+   "H_y_given_x": 0.2256089042451408,
+   "ari": 0.7856359321564026,
+   "jaccard_owned": 0.9562043795620438,
+   "nested_x_in_y": 0.7894736842105263,
+   "nested_y_in_x": 0.9459459459459459
+  },
+  "per_scope": {
+   "core": {
+    "1-2": {
+     "H_x_given_y": 0.14981076663656046,
+     "H_y_given_x": 0.3349338363626879,
+     "ari": 0.6777490121269928,
+     "jaccard_owned": 0.9777777777777777,
+     "n_common_single_owned": 44,
+     "nested_x_in_y": 0.7894736842105263,
+     "nested_y_in_x": 0.7619047619047619
+    },
+    "1-3": {
+     "H_x_given_y": 0.09452007007635599,
+     "H_y_given_x": 0.2976846113550611,
+     "ari": 0.7388414055080722,
+     "jaccard_owned": 1.0,
+     "n_common_single_owned": 44,
+     "nested_x_in_y": 0.7894736842105263,
+     "nested_y_in_x": 0.9130434782608695
+    },
+    "2-3": {
+     "H_x_given_y": 0.1513839818420597,
+     "H_y_given_x": 0.16942545339463733,
+     "ari": 0.8109965635738832,
+     "jaccard_owned": 0.9777777777777777,
+     "n_common_single_owned": 44,
+     "nested_x_in_y": 0.7142857142857143,
+     "nested_y_in_x": 0.8695652173913043
+    }
+   },
+   "infra": {
+    "1-2": {
+     "H_x_given_y": 0.19636969734691956,
+     "H_y_given_x": 0.19658732423719316,
+     "ari": 0.7890709817505039,
+     "jaccard_owned": 0.9444444444444444,
+     "n_common_single_owned": 51,
+     "nested_x_in_y": 0.75,
+     "nested_y_in_x": 0.625
+    },
+    "1-3": {
+     "H_x_given_y": 0.0,
+     "H_y_given_x": 0.3897688299224882,
+     "ari": 0.7395279608760366,
+     "jaccard_owned": 0.9615384615384616,
+     "n_common_single_owned": 50,
+     "nested_x_in_y": 0.6875,
+     "nested_y_in_x": 0.9583333333333334
+    },
+    "2-3": {
+     "H_x_given_y": 0.0,
+     "H_y_given_x": 0.4010709282981866,
+     "ari": 0.7214805825242718,
+     "jaccard_owned": 0.9444444444444444,
+     "n_common_single_owned": 51,
+     "nested_x_in_y": 0.5625,
+     "nested_y_in_x": 1.0
+    }
+   },
+   "tutorial-1": {
+    "1-2": {
+     "H_x_given_y": 0.0,
+     "H_y_given_x": 0.0,
+     "ari": 1.0,
+     "jaccard_owned": 0.932806324110672,
+     "n_common_single_owned": 236,
+     "nested_x_in_y": 1.0,
+     "nested_y_in_x": 0.896551724137931
+    },
+    "1-3": {
+     "H_x_given_y": 0.0,
+     "H_y_given_x": 0.0,
+     "ari": 1.0,
+     "jaccard_owned": 0.932806324110672,
+     "n_common_single_owned": 236,
+     "nested_x_in_y": 1.0,
+     "nested_y_in_x": 0.896551724137931
+    },
+    "2-3": {
+     "H_x_given_y": 0.0,
+     "H_y_given_x": 0.0,
+     "ari": 1.0,
+     "jaccard_owned": 1.0,
+     "n_common_single_owned": 253,
+     "nested_x_in_y": 1.0,
+     "nested_y_in_x": 1.0
+    }
+   },
+   "tutorial-2": {
+    "1-2": {
+     "H_x_given_y": 0.0,
+     "H_y_given_x": 0.0,
+     "ari": 1.0,
+     "jaccard_owned": 0.9924242424242424,
+     "n_common_single_owned": 262,
+     "nested_x_in_y": 0.9523809523809523,
+     "nested_y_in_x": 0.9523809523809523
+    },
+    "1-3": {
+     "H_x_given_y": 0.0,
+     "H_y_given_x": 0.23130512028963857,
+     "ari": 0.7785110939516124,
+     "jaccard_owned": 0.9562043795620438,
+     "n_common_single_owned": 262,
+     "nested_x_in_y": 0.9523809523809523,
+     "nested_y_in_x": 0.9565217391304348
+    },
+    "2-3": {
+     "H_x_given_y": 0.0,
+     "H_y_given_x": 0.2256089042451408,
+     "ari": 0.7856359321564026,
+     "jaccard_owned": 0.9490909090909091,
+     "n_common_single_owned": 261,
+     "nested_x_in_y": 0.9523809523809523,
+     "nested_y_in_x": 0.9565217391304348
+    }
+   },
+   "tutorial-3": {
+    "1-2": {
+     "H_x_given_y": 0.0,
+     "H_y_given_x": 0.0,
+     "ari": 1.0,
+     "jaccard_owned": 0.9190751445086706,
+     "n_common_single_owned": 159,
+     "nested_x_in_y": 1.0,
+     "nested_y_in_x": 0.9090909090909091
+    },
+    "1-3": {
+     "H_x_given_y": 0.0,
+     "H_y_given_x": 0.9339464371891033,
+     "ari": 0.44058280978478814,
+     "jaccard_owned": 0.8914285714285715,
+     "n_common_single_owned": 156,
+     "nested_x_in_y": 0.7,
+     "nested_y_in_x": 0.9459459459459459
+    },
+    "2-3": {
+     "H_x_given_y": 0.0,
+     "H_y_given_x": 0.857033201185295,
+     "ari": 0.47024073447692677,
+     "jaccard_owned": 0.9714285714285714,
+     "n_common_single_owned": 170,
+     "nested_x_in_y": 0.7272727272727273,
+     "nested_y_in_x": 0.9459459459459459
+    }
+   }
+  }
+ },
+ "schema": "x2d-quality-v1",
+ "split_half_consensus_ari": {
+  "consensus_12_vs_3_pooled_ari": null,
+  "consensus_exceeds_single_draw_median": null,
+  "method": "go consensus-only on a temp copy of draws restricted to the chosen ones; ARI over files in a single area of the consensus and in a single feature of the held-out draw",
+  "rotations": [
+   {
+    "draws": [
+     1,
+     2
+    ],
+    "held_out": 3,
+    "reason": "go consensus failed rc=1: scope core: draw 3 is missing (/var/folders/mm/8xs8r41n60bg449p69zmmy3h0000gn/T/x2d-quality-dxtaxyuy/draws/core/3); the quorum needs K=3 draws\nexit status 2\n",
+    "status": "unmeasured"
+   },
+   {
+    "draws": [
+     1,
+     3
+    ],
+    "held_out": 2,
+    "reason": "go consensus failed rc=1: scope core: draw 3 is missing (/var/folders/mm/8xs8r41n60bg449p69zmmy3h0000gn/T/x2d-quality-uf041j55/draws/core/3); the quorum needs K=3 draws\nexit status 2\n",
+    "status": "unmeasured"
+   },
+   {
+    "draws": [
+     2,
+     3
+    ],
+    "held_out": 1,
+    "reason": "go consensus failed rc=1: scope core: draw 3 is missing (/var/folders/mm/8xs8r41n60bg449p69zmmy3h0000gn/T/x2d-quality-3j_3k6jm/draws/core/3); the quorum needs K=3 draws\nexit status 2\n",
+    "status": "unmeasured"
+   }
+  ],
+  "single_draw_median_ari": 0.8362160484004415,
+  "single_draw_pooled_ari_pairs": [
+   0.9955474551003717,
+   0.8232065388637284,
+   0.8362160484004415
+  ]
+ },
+ "unmeasured": {
+  "draws_missing_or_failed": [],
+  "inventory_files_excluded_by_policy_e": 1217
+ }
+}

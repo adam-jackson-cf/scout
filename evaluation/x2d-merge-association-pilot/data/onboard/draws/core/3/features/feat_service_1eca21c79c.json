@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_1eca21c79c",
+  "title": "API key authentication",
+  "summary": "Implements API key authentication from headers, cookies, and query parameters.\n\nAgent mapper reason: The single implementation module covers the three API key transports; dedicated tests cover optionality and schema descriptions for each.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/security/api_key.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/security/api_key.py",
+      "reason": "Defines API key security dependencies for supported request locations."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/security/base.py",
+      "reason": "API key dependencies build on shared security dependency behavior."
+    },
+    {
+      "path": "fastapi/openapi/utils.py",
+      "reason": "API key declarations contribute security schemes to OpenAPI."
+    },
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_description.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_optional.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_header_description.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_header_optional.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_query_description.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_security_api_key_query_optional.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_security_api_key_cookie.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_description.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_cookie_optional.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_header.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_header_description.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_header_optional.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_query.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_query_description.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_security_api_key_query_optional.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "api-key",
+    "auth"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

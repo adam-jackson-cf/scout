@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_de78daba21",
+  "title": "Example: customized path rejection",
+  "summary": "Maps path deserialization failures to custom responses.\n\nAgent mapper reason: This focused example demonstrates user-visible handling of invalid path parameters.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Implements custom path rejection handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-path-rejection/Cargo.toml",
+      "reason": "Defines the example package."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Defines path extraction."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines rejection types."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "path",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

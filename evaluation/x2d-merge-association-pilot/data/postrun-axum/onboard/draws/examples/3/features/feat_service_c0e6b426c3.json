@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_c0e6b426c3",
+  "title": "Prometheus metrics",
+  "summary": "Demonstrates exposing application metrics for Prometheus.\n\nAgent mapper reason: Metric updates and the exposition endpoint form one metrics integration.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/prometheus-metrics/Cargo.toml",
+      "reason": "Defines the example crate and dependencies."
+    },
+    {
+      "path": "examples/prometheus-metrics/src/main.rs",
+      "reason": "Implements metric collection and exposition."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/Cargo.toml",
+      "reason": "Shared examples workspace configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "metrics",
+    "prometheus"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:20:46.880Z",
+  "updatedAt": "2026-10-31T18:20:46.880Z"
+}

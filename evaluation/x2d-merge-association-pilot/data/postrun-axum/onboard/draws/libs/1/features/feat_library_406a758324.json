@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_406a758324",
+  "title": "axum middleware",
+  "summary": "Request and response middleware constructors and extractor-based middleware.\n\nAgent mapper reason: The middleware constructors share the layer model and alter request or response processing around handlers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": "middleware",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Implements middleware constructed from an extractor."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Implements function-based middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Implements request mapping middleware."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Implements response mapping middleware."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Defines and exports middleware APIs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Documents middleware composition and behavior."
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Documents layers applied to method routes."
+    },
+    {
+      "path": "axum/src/docs/method_routing/route_layer.md",
+      "reason": "Documents route-specific layers."
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Documents router layers."
+    },
+    {
+      "path": "axum/src/docs/routing/route_layer.md",
+      "reason": "Documents route layers."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Provides handler contracts used by function middleware."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "middleware",
+    "request",
+    "response"
+  ],
+  "trustBoundaries": [
+    "network",
+    "auth",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b3f98f5d73",
+  "title": "axum-core body and error abstractions",
+  "summary": "Core body type and error behavior shared across the framework.\n\nAgent mapper reason: Body and error types form a compact shared contract used by several higher-level features.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/body.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines the framework's shared body abstraction."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Defines shared error behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Declares body and HTTP dependencies."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Exports these abstractions."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Shows how the main crate builds on the core body type."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "body",
+    "error"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

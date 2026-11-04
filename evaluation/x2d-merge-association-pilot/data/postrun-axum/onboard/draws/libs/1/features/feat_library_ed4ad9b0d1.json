@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ed4ad9b0d1",
+  "title": "axum handler API and service integration",
+  "summary": "Handler trait behavior, handler-to-service conversion, and handler future support.\n\nAgent mapper reason: These files define how handler functions, their futures, state, and service adapters work together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": "Handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Implements handler future support."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Implements state transfer for handler service conversion."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines the handler API and conversion logic."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Implements handlers as services."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Documents handler signatures and behavior."
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Explains handler type requirements."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Provides state types used by handlers."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Routes handlers through the router."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "handlers",
+    "services",
+    "state"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

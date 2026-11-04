@@ -1,0 +1,181 @@
+{
+ "catalogue_sha256": "1220016c26115ccd3e3a521de76ec45e68893f4ab6edf0f4889e8c8ce2c84199",
+ "code_digests": {
+  "go.mod": "7009be395a9f776345c3810af869a955a8ec569f0e9c969e9dd81b61ef710f24",
+  "go.sum": "24d99eff5500559b16cff2acba29f1ceaf3d73110046cbc6906f61cc2a927255",
+  "internal/areas/areas.go": "317564d0eba850d8375663c271070b38f85acd7317a83f3e2df2efe5509323da",
+  "internal/clawpatch/client.go": "98a997837622f69357baf26db7d913538f6ad512843b22ba6854aee8e4163360",
+  "internal/clawpatch/records.go": "942d4efc31fd113ba831d8cd0d5759dc41d79c14f369f2d0632377706cecfe77",
+  "internal/decisions/audit.go": "09ff2df8aece406181052c760a6798adaa0c4e37068aa4d9b724454bcb919cb2",
+  "internal/decisions/client.go": "e56aadef3f245151e489f4a28de11ab953730a139ab4809085f5a95c0e6806ae",
+  "internal/decisions/orderflip/orderflip.go": "a6bc802709504f11b6ca1ed4eb462bf3434ba4e4961f579ba03b97ec2d141079",
+  "internal/decisions/question.go": "832c87601e3ec22d0101bcb4a46160546dfdb56d4c10d7f3038f74eaaf3eee0b",
+  "internal/decisions/rank.go": "605a39bb268b39b132aa2e8b851aa0ab17dd2faf3a10c4a4aced4575f61c36ab",
+  "internal/decisions/run.go": "e696b6fa95b11b108763681462ef8f0002ae3dbcaa6d2c83af5928e15a3284ae",
+  "internal/decisions/thresholds/defaults.json": "5fa8aebee3429d7c40fa933ce01076b886180b9aebdcb16f3156899c2c30b21e",
+  "internal/decisions/thresholds/thresholds.go": "e195068a728ca4cbed14dcfda8893b9958cf5b494fbd55b4d23c86c95db67721",
+  "internal/decisions/triage.go": "8d22dc18b5c0f74a9df3b44f0e81191b7e2d3e9e9009593875b224a70d4b161c",
+  "internal/policy/consent.go": "c8e55ff285e2ba3e5a38e66e09704f2d0ef607f552a773954b1a02c2ce7c3e4d",
+  "scripts/build-clawpatch.sh": "1b3eda9d166759be4dc04761757e93658cb8cb5e1088b1b6832a77639bc6b9b5",
+  "scripts/clawpatch-safe.patch": "dc867503f80cdb336681d72c221ec1dea24006f121b4cae56bf0fb284dae6ce3"
+ },
+ "guide_sha256": "3e036ff81b1bbdd4907744fe7cd0d52c4b6323ccfe85019907036cd9ca7fa980",
+ "guide_version": "x2d-association-v1/guide-3e036ff81b1b",
+ "inputs_sha256": "55a7c69f856a479b56379030928b2f532ea508c98f8310f0890ca8a6bc33e6a9",
+ "model": "typesafe/jev-1.14-20261014",
+ "pr_cap": 10,
+ "prepass_rounds_sha256": "0aad85b0199e747630d0e863b7a5e83b2624684c50c1150ee4e8775fde1d7516",
+ "question_files": {
+  "merge.area_covers@v1.json": "cce59e612b67d76b96d927613c1a780ea64915c38210b7be8fceb5cfaa7e5af0",
+  "merge.covered@v1.json": "f37eea94bb6e2c720cbbb904066dd06c368ecc7581c90063b9f17e5a751058b9",
+  "merge.which_area@v1.json": "cbb7ba7e92432a1e0ffc9bf7d8718a9001ba4227137a6ab60a1e359393eff928",
+  "onboard.covered@v1.json": "ec4d62be051c016ab945738c155401a17f091654e1efff9cfd60ec18314eaa70",
+  "onboard.same_responsibility@v1.json": "31f3b25d3bbf535b026bd6f0a022d39f01e7c519cc22649195d341b75a49a7b1",
+  "onboard.which_file_area@v1.json": "425edf93d08dba42d7f1da755601d5dec27cded8b67593401b7656b24cf12f57"
+ },
+ "question_meta": {
+  "merge.area_covers@v1.json": {
+   "kind": "noul",
+   "model": "typesafe/jev-1.14-20261014",
+   "option_order_rule": {
+    "options": [
+     "true",
+     "false"
+    ],
+    "rule": "fixed"
+   },
+   "state_shape": [
+    "state.area.id",
+    "state.area.sample_files",
+    "state.area.summary",
+    "state.area.title",
+    "state.diff_summary",
+    "state.pr.body",
+    "state.pr.changed_paths",
+    "state.pr.title",
+    "state.unit.change_kind",
+    "state.unit.excerpt",
+    "state.unit.paths",
+    "state.unit.role"
+   ]
+  },
+  "merge.covered@v1.json": {
+   "kind": "noul",
+   "model": "typesafe/jev-1.14-20261014",
+   "option_order_rule": {
+    "options": [
+     "true",
+     "false"
+    ],
+    "rule": "fixed"
+   },
+   "state_shape": [
+    "state.catalogue",
+    "state.diff_summary",
+    "state.pr.body",
+    "state.pr.changed_paths",
+    "state.pr.title",
+    "state.unit.change_kind",
+    "state.unit.excerpt",
+    "state.unit.paths",
+    "state.unit.role"
+   ]
+  },
+  "merge.which_area@v1.json": {
+   "kind": "choice",
+   "model": "typesafe/jev-1.14-20261014",
+   "option_order_rule": {
+    "rule": "permutation:unit_id"
+   },
+   "state_shape": [
+    "state.diff_summary",
+    "state.pr.body",
+    "state.pr.changed_paths",
+    "state.pr.title",
+    "state.unit.change_kind",
+    "state.unit.excerpt",
+    "state.unit.paths",
+    "state.unit.role"
+   ]
+  },
+  "onboard.covered@v1.json": {
+   "kind": "noul",
+   "model": "typesafe/jev-1.14-20261014",
+   "option_order_rule": {
+    "options": [
+     "true",
+     "false"
+    ],
+    "rule": "fixed"
+   },
+   "state_shape": [
+    "state.catalogue",
+    "state.file.excerpt",
+    "state.file.path",
+    "state.file.role",
+    "state.file.sibling_paths"
+   ]
+  },
+  "onboard.same_responsibility@v1.json": {
+   "kind": "noul",
+   "model": "typesafe/jev-1.14-20261014",
+   "option_order_rule": {
+    "options": [
+     "true",
+     "false"
+    ],
+    "rule": "fixed"
+   },
+   "state_shape": [
+    "state.area_a.sample_files",
+    "state.area_a.summary",
+    "state.area_a.title",
+    "state.area_b.sample_files",
+    "state.area_b.summary",
+    "state.area_b.title"
+   ]
+  },
+  "onboard.which_file_area@v1.json": {
+   "kind": "choice",
+   "model": "typesafe/jev-1.14-20261014",
+   "option_order_rule": {
+    "rule": "permutation:unit_id"
+   },
+   "state_shape": [
+    "state.file.excerpt",
+    "state.file.path",
+    "state.file.role",
+    "state.file.sibling_paths"
+   ]
+  }
+ },
+ "question_structure": {
+  "merge.area_covers@v1.json": "49027fc0e1b35759ddab191d3f5831d386ff591d499d2c8d375c8892dcdd0ace",
+  "merge.covered@v1.json": "64e5b74a90389b16b475270a0c7c2ea4876ae01586d27bb14d0d5963e3d24864",
+  "merge.which_area@v1.json": "257d290443c6deb01d336feba6384a429e680fe0913cbc130e81e075aef35e33",
+  "onboard.covered@v1.json": "ace834f3e2ce29a933cf840f653000e2fb204bbf7f7cd70449ef244bbe3d0f5c",
+  "onboard.same_responsibility@v1.json": "e86a282fc34aaf3ccbde841669267537bb344c5be4ae5710d359dfadc8f5e332",
+  "onboard.which_file_area@v1.json": "15303eee98151d77d15821f900f789c90a0c445fdd476eb386cbf6e3b026f80e"
+ },
+ "question_version_keys": null,
+ "round": 7,
+ "settings": {
+  "excerpt_lines": 60,
+  "field_order": [
+   "unit",
+   "pr",
+   "diff_summary",
+   "catalogue"
+  ],
+  "include_pr_title": true,
+  "order_rule": "permutation:unit_id",
+  "sample_files_per_area": 5,
+  "v_sib": true
+ },
+ "state_builder": {
+  "b2.py": "5bb9c12d8cec5ea5cf02959f2ee51f9275d65c746ce51e314552623cd28db14f",
+  "build_units.py": "c052246c828024a25fc6a143d513e111ecbf63b42b8b5912dd37e960a1c3e243",
+  "frontend.py": "dd4a0fdc1e3595eeefb82a8eafab600255b3b0fe95f67e2fb8a07eb5972ea0d8"
+ },
+ "thresholds_sha256": "7142d7ac15abbcd27b75ac8005a7f1bffed0c6a70395c65e8f631bfcd32995eb"
+}

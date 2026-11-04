@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_d3ef8163dc",
+  "title": "Approved issue labeling",
+  "summary": "Labels approved contributions through a script and GitHub Actions workflow.\n\nAgent mapper reason: The script and workflow jointly implement the approved-labeling job.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "scripts/label_approved.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "scripts/label_approved.py",
+      "reason": "Implements the approved-labeling behavior."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Schedules or invokes approved labeling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "requirements-github-actions.txt",
+      "reason": "Provides dependencies for GitHub automation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github",
+    "issue-labeling",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:08:22.650Z",
+  "updatedAt": "2026-10-30T13:08:22.650Z"
+}

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_7e4e700a02",
+  "title": "Continuous integration workflow",
+  "summary": "Repository CI workflow configuration.\n\nAgent mapper reason: The workflow is a distinct automation unit; its configured steps and permissions should be reviewed together.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Defines the repository's CI workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Provides package metadata and targets relevant to Rust CI jobs."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "ci",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "process-exec",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:22:28.523Z",
+  "updatedAt": "2026-10-31T18:22:28.523Z"
+}

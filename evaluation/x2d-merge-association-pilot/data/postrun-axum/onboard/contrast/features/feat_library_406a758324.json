@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_406a758324",
+  "title": "axum middleware",
+  "summary": "Middleware that extracts from requests and transforms requests or responses.\n\nAgent mapper reason: These middleware adapters share request and response transformation contracts and are applied across router scopes.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Builds middleware from an extractor."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Builds middleware from functions."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Transforms incoming requests."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Transforms outgoing responses."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Exports middleware APIs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares middleware and service dependencies."
+    },
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Documents middleware composition."
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Documents method-router layers."
+    },
+    {
+      "path": "axum/src/docs/method_routing/route_layer.md",
+      "reason": "Documents route layers."
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Documents router layers."
+    },
+    {
+      "path": "axum/src/docs/routing/route_layer.md",
+      "reason": "Documents route-specific layers."
+    },
+    {
+      "path": "examples/consume-body-in-extractor-or-middleware/src/main.rs",
+      "reason": "Demonstrates body consumption in middleware."
+    },
+    {
+      "path": "examples/cors/src/main.rs",
+      "reason": "Demonstrates CORS middleware."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "middleware",
+    "request",
+    "response"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_4b95b0671e",
+  "title": "Cargo workspace and package membership",
+  "summary": "The root manifest declares a workspace containing axum, axum-core, axum-extra, and axum-macros.\n\nAgent mapper reason: This is the only inventoried Rust manifest. The member crate files are absent from the inventory, so they cannot be split into source-level review slices.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Defines the workspace and its package membership."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Runs workspace-wide checks and tests."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Configures a local crate patch used when testing."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "cargo",
+    "workspace",
+    "package-membership"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:23:24.807Z",
+  "updatedAt": "2026-10-31T18:23:24.807Z"
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_7bb1002947",
+  "title": "axum service utilities and testing helpers",
+  "summary": "Service extensions, boxed service support, test client, and internal utilities.\n\nAgent mapper reason: These support utilities provide service ergonomics and test infrastructure used by other framework features.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Provides boxed service and handler support."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Adds convenience methods to services."
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Exports internal testing helpers."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Implements the internal test client."
+    },
+    {
+      "path": "axum/src/util.rs",
+      "reason": "Provides shared internal utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares service and test dependencies."
+    },
+    {
+      "path": "examples/testing/src/main.rs",
+      "reason": "Demonstrates testing an Axum application."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "Demonstrates WebSocket testing."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "service",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

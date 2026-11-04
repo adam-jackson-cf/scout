@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_49afe8b108",
+  "title": "axum-extra body utilities",
+  "summary": "Asynchronous reading helpers for request or response bodies.\n\nAgent mapper reason: The module files jointly expose and implement the crate's body-reading helper.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Implements asynchronous body reading support."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Defines and exports body utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Shows optional dependencies and feature gates."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines the underlying body abstraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "body",
+    "async"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

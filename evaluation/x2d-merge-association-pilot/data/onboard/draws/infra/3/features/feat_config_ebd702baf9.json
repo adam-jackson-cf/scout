@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_ebd702baf9",
+  "title": "Community intake templates",
+  "summary": "Configures repository discussion, issue, and funding entrypoints.\n\nAgent mapper reason: These files configure external contribution and support entrypoints; they do not implement the downstream application.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Configures issue template selection and intake."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Defines a specialized issue template."
+    },
+    {
+      "path": ".github/DISCUSSION_TEMPLATE/questions.yml",
+      "reason": "Defines a discussion template."
+    },
+    {
+      "path": ".github/FUNDING.yml",
+      "reason": "Configures repository funding links."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Provides context for issue handling after intake."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github",
+    "community",
+    "configuration"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:08:22.650Z",
+  "updatedAt": "2026-10-30T13:08:22.650Z"
+}

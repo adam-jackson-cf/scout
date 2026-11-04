@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_deaeed1d70",
+  "title": "axum body streaming",
+  "summary": "HTTP body API and streaming body support.\n\nAgent mapper reason: The body API and streaming constructor share the same HTTP payload lifecycle.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "symbol": "Body",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines and exports the main crate body API."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Implements streaming body construction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Shows crate-level body exports."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines the shared body abstraction."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Shows how bodies are used in responses."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "body",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

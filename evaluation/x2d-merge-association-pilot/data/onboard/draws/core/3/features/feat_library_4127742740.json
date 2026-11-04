@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4127742740",
+  "title": "Exception handling",
+  "summary": "Defines FastAPI exceptions and default handlers for framework and request validation errors.\n\nAgent mapper reason: Exception types and their response handlers define one error boundary tested across framework, dependency, and Starlette errors.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/exception_handlers.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/exception_handlers.py",
+      "reason": "Implements default exception-to-response handling."
+    },
+    {
+      "path": "fastapi/exceptions.py",
+      "reason": "Defines framework and validation exceptions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "Applications register exception handlers."
+    },
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Request parsing and endpoint execution raise handled exceptions."
+    },
+    {
+      "path": "tests/test_exception_handlers.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_exception_handlers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_starlette_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "exceptions",
+    "http-errors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

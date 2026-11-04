@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a205d487de",
+  "title": "TypedPath derive macro",
+  "summary": "Generates typed route-path extraction and URI conversion behavior from route declarations and captured fields.\n\nAgent mapper reason: The derive implementation and fixtures jointly exercise route declarations, captured-field matching, URI generation, encoding, and compile-time diagnostics.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "symbol": "TypedPath",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Implements the TypedPath derive macro."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Derive macro export wiring."
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Documents the public macro API."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.stderr",
+      "reason": "Expected diagnostic for a route capture without a matching field."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/route_not_starting_with_slash.stderr",
+      "reason": "Expected diagnostic for an invalid route declaration."
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/named_fields_struct.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/into_uri.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/route_not_starting_with_slash.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/typed_path/pass/named_fields_struct.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/into_uri.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/pass/url_encoding.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/missing_capture.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/typed_path/fail/route_not_starting_with_slash.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "rust",
+    "proc-macro",
+    "derive",
+    "typed-routing",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:16:17.255Z",
+  "updatedAt": "2026-10-31T18:16:17.255Z"
+}

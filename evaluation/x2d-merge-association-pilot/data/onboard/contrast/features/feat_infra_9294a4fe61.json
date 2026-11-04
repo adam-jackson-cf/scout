@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_9294a4fe61",
+  "title": "Repository CI and quality checks",
+  "summary": "Automated test workflow and local pre-commit checks.\n\nAgent mapper reason: These files determine how tests and quality checks run locally and in CI.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Defines the CI test workflow."
+    },
+    {
+      "path": ".github/workflows/test-redistribute.yml",
+      "reason": "Defines test redistribution behavior."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Defines local pre-commit checks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Contains project tooling and test configuration."
+    },
+    {
+      "path": "requirements-tests.txt",
+      "reason": "Declares test dependencies."
+    },
+    {
+      "path": "requirements.txt",
+      "reason": "Declares project runtime dependencies."
+    },
+    {
+      "path": "tests/test_compat.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_compat.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "quality",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:10:26.524Z",
+  "updatedAt": "2026-10-30T13:10:26.524Z"
+}

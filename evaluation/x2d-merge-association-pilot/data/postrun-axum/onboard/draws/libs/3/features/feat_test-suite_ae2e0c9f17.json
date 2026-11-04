@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_ae2e0c9f17",
+  "title": "axum routing test harness and regressions",
+  "summary": "Shared test client and routing regression tests for fallback, method behavior, errors, merge, and nesting.\n\nAgent mapper reason: The test client and routing tests form a single executable suite that verifies cross-cutting router behavior.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "Tests fallback behavior."
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "Tests GET and HEAD method behavior."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "Tests error handling through routes."
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "Tests router merging."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "Defines shared routing test setup and module registration."
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "Tests nested routing."
+    },
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Defines test helper exports."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Implements the test client."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Implementation under test."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares test dependencies."
+    },
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/fallback.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/get_to_head.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/merge.rs",
+      "command": null
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "tests",
+    "routing",
+    "regression"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

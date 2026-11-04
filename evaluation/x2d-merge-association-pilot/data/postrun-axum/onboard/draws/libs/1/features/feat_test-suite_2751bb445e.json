@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_2751bb445e",
+  "title": "axum performance benchmarks",
+  "summary": "Benchmark harness for representative Axum request and routing workloads.\n\nAgent mapper reason: The benchmark harness is an independently reviewable performance test target.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/benches/benches.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Defines the crate's benchmark workloads."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares benchmark targets and dependencies."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Provides router behavior measured by the benchmark harness."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "benchmarks",
+    "performance"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

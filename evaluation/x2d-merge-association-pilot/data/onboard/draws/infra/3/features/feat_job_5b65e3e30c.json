@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_5b65e3e30c",
+  "title": "Project board automation",
+  "summary": "Adds repository activity to a GitHub project through a workflow.\n\nAgent mapper reason: The workflow is a self-contained project integration job.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/add-to-project.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/add-to-project.yml",
+      "reason": "Defines project board automation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Issue intake configuration may affect the items processed by the workflow."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github",
+    "projects",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:08:22.650Z",
+  "updatedAt": "2026-10-30T13:08:22.650Z"
+}

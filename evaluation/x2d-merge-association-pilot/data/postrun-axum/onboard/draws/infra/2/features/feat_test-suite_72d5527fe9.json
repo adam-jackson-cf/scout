@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_72d5527fe9",
+  "title": "CI checks and test matrix",
+  "summary": "The GitHub Actions workflow runs lint and formatting checks, documentation builds, feature checks, tests across Rust toolchains, dependency policy checks, and target-specific checks.\n\nAgent mapper reason: The workflow is the only inventoried file that defines executable checks and test invocations. Treat its jobs as one review slice because their shared toolchain, workspace, and target configuration is centralized there.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Defines the repository's CI jobs, commands, toolchains, and target matrix."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Identifies the workspace packages checked by CI."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Provides policy consumed by the cargo-deny job."
+    },
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Documents a local crate patch intended for tests."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "testing",
+    "toolchains",
+    "cross-compilation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "process-exec",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:23:24.807Z",
+  "updatedAt": "2026-10-31T18:23:24.807Z"
+}

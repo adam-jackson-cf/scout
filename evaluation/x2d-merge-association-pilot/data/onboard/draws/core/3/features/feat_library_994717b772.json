@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_994717b772",
+  "title": "Test client integration",
+  "summary": "Exposes the test client used to exercise FastAPI applications.\n\nAgent mapper reason: The test client is a distinct testing integration; shared test helpers and application tests give context for its use.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/testclient.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/testclient.py",
+      "reason": "Provides FastAPI's test client integration and exports."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "The client targets FastAPI application instances."
+    },
+    {
+      "path": "tests/main.py",
+      "reason": "Provides shared test application support."
+    },
+    {
+      "path": "tests/utils.py",
+      "reason": "Provides shared test utilities."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_fastapi_cli.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_fastapi_cli.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "test-client",
+    "testing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

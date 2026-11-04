@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f2d07eef0f",
+  "title": "axum-extra JSON response erasure",
+  "summary": "Response helpers for returning JSON without exposing the concrete response type.\n\nAgent mapper reason: The response module and erased JSON implementation form one focused response feature.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "symbol": "response",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Implements the erased JSON response type."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Defines and exports the extra response API."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Shows the public response exports."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares response and JSON dependencies or features."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Provides the base response conversion model."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "responses",
+    "json"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

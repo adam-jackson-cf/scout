@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_100a06edab",
+  "title": "axum crate API and build metadata",
+  "summary": "Public exports, crate macros, build-time metadata, and typed header support.\n\nAgent mapper reason: These files define the crate's public surface and build identity, which contextualize changes across its modules.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/lib.rs",
+      "reason": "Defines the public crate API and module exports."
+    },
+    {
+      "path": "axum/src/macros.rs",
+      "reason": "Defines shared public and internal macros."
+    },
+    {
+      "path": "axum/src/typed_header.rs",
+      "reason": "Provides typed header integration."
+    },
+    {
+      "path": "axum/build.rs",
+      "reason": "Supplies build-time crate metadata."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Defines package features, dependencies, and targets."
+    },
+    {
+      "path": "axum/README.md",
+      "reason": "Documents the main crate."
+    },
+    {
+      "path": "axum/CHANGELOG.md",
+      "reason": "Records main crate compatibility changes."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Provides performance benchmark context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "public-api",
+    "build"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_65bb84d6c5",
+  "title": "Request and connection objects",
+  "summary": "Exposes request-related objects and supports request or connection injection into endpoints and dependencies.\n\nAgent mapper reason: The request export module is reviewed with injection behavior because request and connection objects enter endpoints through dependency resolution.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/requests.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/requests.py",
+      "reason": "Provides FastAPI request-related object exports."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "Dependency analysis injects request and connection objects."
+    },
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Request objects are passed through HTTP route dispatch."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "request",
+    "connection",
+    "injection"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

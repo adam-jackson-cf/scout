@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_route_1c5012a680",
+  "title": "Interactive API documentation",
+  "summary": "Swagger UI and documentation route generation and configuration.\n\nAgent mapper reason: The documentation renderer is a bounded user-facing surface distinct from schema construction, with tests for local assets, redirects, and UI OAuth configuration.",
+  "kind": "route",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/openapi/docs.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/openapi/docs.py",
+      "reason": "Builds the Swagger UI and ReDoc documentation responses and their configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "The application configures and mounts documentation routes."
+    },
+    {
+      "path": "fastapi/openapi/constants.py",
+      "reason": "Documentation helpers use OpenAPI-related constants."
+    },
+    {
+      "path": "fastapi/openapi/utils.py",
+      "reason": "Documentation pages link to generated OpenAPI schemas."
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_local_docs.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_swagger_ui_init_oauth.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "openapi",
+    "docs",
+    "swagger-ui"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:44:23.949Z",
+  "updatedAt": "2026-10-30T12:44:23.949Z"
+}

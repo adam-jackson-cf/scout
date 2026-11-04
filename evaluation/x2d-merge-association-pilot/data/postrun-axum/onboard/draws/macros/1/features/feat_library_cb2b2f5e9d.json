@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_cb2b2f5e9d",
+  "title": "Shared procedural macro helpers",
+  "summary": "Provides attribute parsing and position-aware iteration utilities used by macro implementations.\n\nAgent mapper reason: These helpers are bounded cross-cutting implementation support. Review them with their macro consumers when changing parsing or positional expansion behavior; their exact consumer relationships are inferred from the inventory.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute-parsing support for procedural macro expansion."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Shared position-aware iteration support for expansion logic."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "Potential consumer of shared attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "Uses shared expansion support alongside request-specific attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/typed_path.rs",
+      "reason": "Potential consumer of shared expansion support."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "shared-library",
+    "macro-helpers"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:13:46.614Z",
+  "updatedAt": "2026-10-31T18:13:46.614Z"
+}

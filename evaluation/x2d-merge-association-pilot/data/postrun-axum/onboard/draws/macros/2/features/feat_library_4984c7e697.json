@@ -1,0 +1,275 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4984c7e697",
+  "title": "FromRequest and FromRequestParts derives",
+  "summary": "Generates request extractor implementations for structs and enums, including parts-only extraction, state inference, via types, and rejection overrides.\n\nAgent mapper reason: The two derives share expansion and attribute semantics, with `_parts` variants exercising the parts-only contract. The pass and fail fixtures cover struct and enum shapes, state inference, via types, rejection overrides, and invalid combinations.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "symbol": "FromRequest",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "Implements request extractor derive expansion."
+    },
+    {
+      "path": "axum-macros/src/from_request/attr.rs",
+      "reason": "Parses container and field attributes that configure generated extractors."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Registers the public derive macro entrypoints."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Provides shared parsing support used by macro implementations."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/double_via_attr.stderr",
+      "reason": "Expected diagnostic for duplicate via attributes."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/enum_from_request_ident_in_variant.stderr",
+      "reason": "Expected diagnostic for an invalid enum variant attribute."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/enum_from_request_on_variant.stderr",
+      "reason": "Expected diagnostic for placing a container attribute on a variant."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/enum_no_via.stderr",
+      "reason": "Expected diagnostic for an enum missing a required via type."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic.stderr",
+      "reason": "Expected diagnostic for an unsupported generic derive case."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic_without_via.stderr",
+      "reason": "Expected diagnostic for a generic extractor without a via type."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic_without_via_rejection.stderr",
+      "reason": "Expected diagnostic for generic rejection configuration without a via type."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/not_enum_or_struct.stderr",
+      "reason": "Expected diagnostic for applying the derive to an unsupported item."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/override_rejection_on_enum_without_via.stderr",
+      "reason": "Expected diagnostic for an invalid enum rejection override."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.stderr",
+      "reason": "Expected diagnostic when a parts extractor attempts to consume the body."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/state_infer_multiple_different_types.stderr",
+      "reason": "Expected diagnostic for conflicting inferred state types."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/unknown_attr_container.stderr",
+      "reason": "Expected diagnostic for an unknown container attribute."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/unknown_attr_field.stderr",
+      "reason": "Expected diagnostic for an unknown field attribute."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/via_on_container_and_field.stderr",
+      "reason": "Expected diagnostic for conflicting via attribute locations."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/double_via_attr.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/enum_from_request_ident_in_variant.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/enum_from_request_on_variant.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/enum_no_via.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic_without_via.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic_without_via_rejection.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/not_enum_or_struct.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/override_rejection_on_enum_without_via.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/state_infer_multiple_different_types.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/unknown_attr_container.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/unknown_attr_field.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/via_on_container_and_field.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/container.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/container_parts.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/empty_named.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/empty_named_parts.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/empty_tuple.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/empty_tuple_parts.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_request/fail/double_via_attr.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/enum_from_request_ident_in_variant.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/enum_from_request_on_variant.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/enum_no_via.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic_without_via.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/generic_without_via_rejection.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/not_enum_or_struct.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/override_rejection_on_enum_without_via.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/state_infer_multiple_different_types.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/unknown_attr_container.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/unknown_attr_field.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/via_on_container_and_field.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/container.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/container_parts.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/empty_named.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/empty_named_parts.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/empty_tuple.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/empty_tuple_parts.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "rust",
+    "proc-macro",
+    "derive",
+    "extractors",
+    "request",
+    "state",
+    "rejection"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:15:16.107Z",
+  "updatedAt": "2026-10-31T18:15:16.107Z"
+}

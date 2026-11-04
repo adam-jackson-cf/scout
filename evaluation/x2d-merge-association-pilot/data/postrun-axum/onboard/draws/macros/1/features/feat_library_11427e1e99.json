@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_11427e1e99",
+  "title": "FromRequest and FromRequestParts derive macros",
+  "summary": "Generates request extraction implementations for structs and enums, including state, rejection, and via-type attributes.\n\nAgent mapper reason: The main expansion and attribute parser jointly determine extraction behavior for incoming requests. Pass/fail fixtures cover structs, parts-only extraction, inferred state, and invalid attribute or body-extraction combinations.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "Implements request and request-parts extraction code generation."
+    },
+    {
+      "path": "axum-macros/src/from_request/attr.rs",
+      "reason": "Parses and validates attributes specific to request extraction derives."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/tests/from_request/fail/via_on_container_and_field.stderr",
+      "reason": "Captures the expected diagnostic for conflicting via attributes."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.stderr",
+      "reason": "Captures the expected diagnostic when a parts extractor attempts to consume the body."
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/container_parts.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/via_on_container_and_field.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_request/pass/named.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/container_parts.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/via_on_container_and_field.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "derive-macro",
+    "request-extraction",
+    "state",
+    "rejection"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:13:46.614Z",
+  "updatedAt": "2026-10-31T18:13:46.614Z"
+}

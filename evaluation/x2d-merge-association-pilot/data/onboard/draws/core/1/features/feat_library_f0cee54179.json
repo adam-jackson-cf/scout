@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f0cee54179",
+  "title": "Parameter declarations and request input extraction",
+  "summary": "Defines parameter helpers and metadata for path, query, header, cookie, form, and body inputs.\n\nAgent mapper reason: The declaration helpers and metadata classes jointly define the parameter API; tests exercise how declarations map to incoming request data.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/param_functions.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/param_functions.py",
+      "reason": "Provides the public parameter declaration helpers."
+    },
+    {
+      "path": "fastapi/params.py",
+      "reason": "Defines parameter metadata classes used during request analysis."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "Inspects parameter declarations and extracts request values."
+    },
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Routes use extracted parameter values to invoke endpoints."
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_forms_single_model.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_forms_single_param.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_query.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_forms_single_model.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_forms_single_param.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_query.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "parameters",
+    "request-validation",
+    "forms"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:42:38.051Z",
+  "updatedAt": "2026-10-30T12:42:38.051Z"
+}

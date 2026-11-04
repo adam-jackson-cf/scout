@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_c5418a50d9",
+  "title": "axum-extra crate surface",
+  "summary": "Crate root and feature-level exports for the optional Axum extensions package.\n\nAgent mapper reason: The crate root centralizes the public surface and feature-gated availability of the extra modules.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "symbol": "axum_extra",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Defines crate-level exports and feature-gated modules."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Defines package metadata and feature gates."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Documents the package's purpose and public usage."
+    },
+    {
+      "path": "axum-extra/CHANGELOG.md",
+      "reason": "Records changes to the extension crate's public surface."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "public-api",
+    "features"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

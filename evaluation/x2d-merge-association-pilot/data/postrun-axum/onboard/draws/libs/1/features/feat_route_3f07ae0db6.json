@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_route_3f07ae0db6",
+  "title": "axum-extra single-page app routing",
+  "summary": "SPA fallback routing and its static HTML and JavaScript fixtures.\n\nAgent mapper reason: The SPA router and its fixtures define a bounded static-asset fallback flow.",
+  "kind": "route",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/spa.rs",
+      "symbol": "SpaRouter",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/spa.rs",
+      "reason": "Implements single-page application routing behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Shows how SPA routing is integrated with extra routing exports."
+    },
+    {
+      "path": "axum-extra/test_files/index.html",
+      "reason": "Static HTML fixture for SPA behavior."
+    },
+    {
+      "path": "axum-extra/test_files/index_2.html",
+      "reason": "Additional static HTML fixture for SPA behavior."
+    },
+    {
+      "path": "axum-extra/test_files/script.js",
+      "reason": "Static JavaScript fixture for SPA behavior."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares routing dependencies or features."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "spa",
+    "routing",
+    "static-files"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

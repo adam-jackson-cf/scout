@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_92c6d9f403",
+  "title": "axum state extraction",
+  "summary": "Application state access and state conversion for handlers and extractors.\n\nAgent mapper reason: State extraction is a distinct API contract linking router state types to handler inputs.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "symbol": "State",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Implements state extraction and related state typing."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Documents state binding to routers."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows state extractor exports."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Provides shared state projection support."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Shows how handler state types are used."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "state",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

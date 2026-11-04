@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_cli-command_a14be49bfa",
+  "title": "FastAPI CLI",
+  "summary": "Provides the module and command-line entrypoints for FastAPI CLI operations.\n\nAgent mapper reason: The module entrypoint and CLI implementation form one user-facing command surface, with a dedicated test file.",
+  "kind": "cli-command",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/__main__.py",
+      "symbol": null,
+      "route": null,
+      "command": "fastapi"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/__main__.py",
+      "reason": "Routes module execution into the CLI."
+    },
+    {
+      "path": "fastapi/cli.py",
+      "reason": "Implements CLI behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "tests/test_fastapi_cli.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_fastapi_cli.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "cli",
+    "startup"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:42:38.051Z",
+  "updatedAt": "2026-10-30T12:42:38.051Z"
+}

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_52fb6b2087",
+  "title": "axum request metadata and state extractors",
+  "summary": "Extractors for connection information, host, matched route, shared state, and request parts.\n\nAgent mapper reason: These extractors expose request and connection context or application state to handlers through the common extraction API.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/connect_info.rs",
+      "reason": "Extracts connection metadata supplied by the server."
+    },
+    {
+      "path": "axum/src/extract/host.rs",
+      "reason": "Extracts host information from a request."
+    },
+    {
+      "path": "axum/src/extract/matched_path.rs",
+      "reason": "Exposes the matched route path."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Provides application state extraction."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Provides extraction from request parts."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports the extractor API."
+    },
+    {
+      "path": "axum/src/extension.rs",
+      "reason": "Extracts values stored in request extensions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares extractor and server dependencies."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor behavior."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents connection metadata setup."
+    },
+    {
+      "path": "axum/src/docs/routing/with_state.md",
+      "reason": "Documents state propagation."
+    },
+    {
+      "path": "examples/error-handling-and-dependency-injection/src/main.rs",
+      "reason": "Demonstrates dependency injection and state."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractor",
+    "state",
+    "request-metadata"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

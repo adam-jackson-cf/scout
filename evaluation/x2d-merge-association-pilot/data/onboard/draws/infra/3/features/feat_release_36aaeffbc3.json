@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_36aaeffbc3",
+  "title": "Release publishing workflow",
+  "summary": "Publishes project releases through GitHub Actions.\n\nAgent mapper reason: The publishing workflow is the release entrypoint and depends on the package build configuration.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Defines the release publishing process."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Provides package metadata used in release builds."
+    },
+    {
+      "path": "pdm_build.py",
+      "reason": "Provides the build hook used to create distributions."
+    },
+    {
+      "path": "requirements.txt",
+      "reason": "Provides package dependency context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "release",
+    "publishing",
+    "pdm"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:08:22.650Z",
+  "updatedAt": "2026-10-30T13:08:22.650Z"
+}

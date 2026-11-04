@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4984c7e697",
+  "title": "FromRequest derive macro",
+  "summary": "Generates request extractor implementations for structs and enums, including parts extraction, state handling, and rejection customization.\n\nAgent mapper reason: The derive implementation and its fixtures cover parsing, generated extractor behavior, and invalid attribute or type diagnostics as one feature.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "symbol": "FromRequest",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "Implements generated FromRequest and parts-extraction behavior."
+    },
+    {
+      "path": "axum-macros/src/from_request/attr.rs",
+      "reason": "Parses attributes specific to FromRequest derives."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parsing context."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Shared parsing or diagnostic-position context."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Derive macro export wiring."
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Documents the crate's macro API."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/unknown_attr_field.stderr",
+      "reason": "Expected diagnostic for an unsupported field attribute."
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.stderr",
+      "reason": "Expected diagnostic for an invalid parts-extraction body."
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/container.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named_parts.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/tuple_via.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/override_rejection.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/unknown_attr_field.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_request/pass/container.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/named_parts.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/state_infer.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/tuple_via.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/pass/override_rejection.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/unknown_attr_field.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_request/fail/parts_extracting_body.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "rust",
+    "proc-macro",
+    "derive",
+    "request-extraction",
+    "compile-time-validation"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:16:17.255Z",
+  "updatedAt": "2026-10-31T18:16:17.255Z"
+}

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_73fbc5ebe6",
+  "title": "axum-extra JSON Lines",
+  "summary": "Supports JSON Lines data streams.\n\nAgent mapper reason: JSON Lines has record framing and streaming behavior distinct from ordinary JSON payloads.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "symbol": "JsonLines",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Implements JSON Lines request or response handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Exports the extra crate API."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Provides the shared body abstraction."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares serialization dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "jsonl",
+    "serialization",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

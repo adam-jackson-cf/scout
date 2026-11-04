@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_f62afda421",
+  "title": "People management GitHub Action",
+  "summary": "Implements repository people-management automation and its workflow trigger.\n\nAgent mapper reason: The action definition, runtime, application, and workflow comprise a single event-driven automation feature.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/actions/people/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Declares the people action interface."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Defines the action runtime image."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Implements the action behavior."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Connects repository events to the action."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "requirements-github-actions.txt",
+      "reason": "Dependencies for GitHub Action code."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "repository-automation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "auth",
+    "permissions",
+    "external-api",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:07:11.018Z",
+  "updatedAt": "2026-10-30T13:07:11.018Z"
+}

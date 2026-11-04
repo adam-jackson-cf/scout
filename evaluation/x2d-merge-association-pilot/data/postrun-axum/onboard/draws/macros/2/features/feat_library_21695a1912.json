@@ -1,0 +1,269 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_21695a1912",
+  "title": "debug_handler attribute macro",
+  "summary": "Validates handler function signatures and emits diagnostics for unsupported handler shapes and extractor configurations.\n\nAgent mapper reason: The implementation and positional helper govern one attribute macro's checks on user-defined handler signatures. Its pass and fail fixtures jointly specify supported handler forms and diagnostic behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "symbol": "debug_handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "Implements handler signature checks and diagnostic generation."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Provides positional argument handling used when inspecting handler parameters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Registers the public attribute macro entrypoint."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared support for parsing macro attributes."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/argument_not_extractor.stderr",
+      "reason": "Expected compiler diagnostic for an invalid extractor argument."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/doesnt_implement_from_request_parts.stderr",
+      "reason": "Expected diagnostic for an extractor missing the required trait."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/duplicate_args.stderr",
+      "reason": "Expected diagnostic for duplicate macro arguments."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/extract_self_mut.stderr",
+      "reason": "Expected diagnostic for an unsupported mutable self extractor."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/extract_self_ref.stderr",
+      "reason": "Expected diagnostic for an unsupported borrowed self extractor."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/generics.stderr",
+      "reason": "Expected diagnostic for unsupported generic handler parameters."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/invalid_attrs.stderr",
+      "reason": "Expected diagnostic for invalid macro attributes."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/multiple_paths.stderr",
+      "reason": "Expected diagnostic for conflicting path attributes."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_a_function.stderr",
+      "reason": "Expected diagnostic when the macro is applied to a non-function."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_async.stderr",
+      "reason": "Expected diagnostic when the handler is not async."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.stderr",
+      "reason": "Expected diagnostic for a handler future that is not Send."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/too_many_extractors.stderr",
+      "reason": "Expected diagnostic for too many body-consuming extractors."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/wrong_return_type.stderr",
+      "reason": "Expected diagnostic for an unsupported handler return type."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/argument_not_extractor.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/doesnt_implement_from_request_parts.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/duplicate_args.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/extract_self_mut.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/extract_self_ref.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/generics.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/invalid_attrs.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/multiple_paths.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_a_function.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_async.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/too_many_extractors.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/wrong_return_type.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/associated_fn_without_self.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/different_request_body_type.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/impl_future.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/impl_into_response.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/infer_state.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/multiple_extractors.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/mut_extractor.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/fail/argument_not_extractor.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/doesnt_implement_from_request_parts.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/duplicate_args.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/extract_self_mut.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/extract_self_ref.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/generics.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/invalid_attrs.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/multiple_paths.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_a_function.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_async.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/not_send.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/too_many_extractors.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/wrong_return_type.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/associated_fn_without_self.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/different_request_body_type.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/impl_future.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/impl_into_response.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/infer_state.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/multiple_extractors.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/mut_extractor.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "rust",
+    "proc-macro",
+    "handler",
+    "diagnostics",
+    "extractors"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:15:16.107Z",
+  "updatedAt": "2026-10-31T18:15:16.107Z"
+}

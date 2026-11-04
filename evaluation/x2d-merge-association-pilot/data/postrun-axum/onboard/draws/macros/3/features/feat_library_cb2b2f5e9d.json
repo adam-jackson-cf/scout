@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_cb2b2f5e9d",
+  "title": "Shared macro parsing helpers",
+  "summary": "Common attribute parsing and source-position helpers used by macro implementations.\n\nAgent mapper reason: These internal helpers span macro features and are best reviewed together when parsing or diagnostic behavior changes; confidence is medium because the inventory does not show their call sites.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Provides shared parsing support for macro attributes."
+    },
+    {
+      "path": "axum-macros/src/with_position.rs",
+      "reason": "Provides shared parsing or diagnostic-position support for macro input."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Shows how the helper modules are wired into the crate."
+    },
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "A macro implementation that may depend on shared attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/from_request.rs",
+      "reason": "A macro implementation that uses attribute parsing."
+    },
+    {
+      "path": "axum-macros/src/from_request/attr.rs",
+      "reason": "FromRequest-specific attribute parsing adjacent to the shared helpers."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "rust",
+    "proc-macro",
+    "parsing",
+    "diagnostics"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:16:17.255Z",
+  "updatedAt": "2026-10-31T18:16:17.255Z"
+}

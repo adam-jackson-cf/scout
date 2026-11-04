@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_08c29c4d71",
+  "title": "Axum build configuration",
+  "summary": "Build-time configuration for the main axum package.\n\nAgent mapper reason: The build script and package manifest jointly determine build-time behavior.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/build.rs",
+      "symbol": "build script",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/build.rs",
+      "reason": "Runs package build-time configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares build dependencies and package settings."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "build",
+    "cargo"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

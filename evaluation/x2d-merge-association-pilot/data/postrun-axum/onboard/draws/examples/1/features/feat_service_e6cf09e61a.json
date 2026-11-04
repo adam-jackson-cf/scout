@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_e6cf09e61a",
+  "title": "REST and gRPC multiplexing",
+  "summary": "Example multiplexing REST and gRPC traffic on a service.\n\nAgent mapper reason: The entrypoint, multiplexer, build configuration, and protocol schema jointly define this cross-protocol service.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/src/main.rs",
+      "reason": "Wires the service endpoints and multiplexing behavior."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/src/multiplex_service.rs",
+      "reason": "Implements the protocol multiplexing service."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/build.rs",
+      "reason": "Configures build-time processing for the gRPC definitions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/rest-grpc-multiplex/Cargo.toml",
+      "reason": "Defines the example crate and its dependencies."
+    },
+    {
+      "path": "examples/rest-grpc-multiplex/proto/helloworld.proto",
+      "reason": "Defines the gRPC service schema."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "grpc",
+    "rest",
+    "multiplexing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:17:43.772Z",
+  "updatedAt": "2026-10-31T18:17:43.772Z"
+}

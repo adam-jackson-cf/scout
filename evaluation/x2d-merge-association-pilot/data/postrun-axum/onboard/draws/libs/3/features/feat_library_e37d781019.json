@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e37d781019",
+  "title": "axum-extra Protobuf",
+  "summary": "Protobuf request or response support.\n\nAgent mapper reason: Protobuf introduces a separate serialized input/output format and can be reviewed as a focused boundary.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Implements Protobuf conversion and HTTP integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Shows public exports."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Shows serialization dependencies and feature gates."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Defines response conversion contracts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "protobuf",
+    "serialization"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

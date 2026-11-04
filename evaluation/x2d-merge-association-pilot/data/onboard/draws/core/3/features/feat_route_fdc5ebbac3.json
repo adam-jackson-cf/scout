@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_route_fdc5ebbac3",
+  "title": "WebSocket routing",
+  "summary": "Exposes WebSocket endpoint support and coordinates WebSocket route behavior.\n\nAgent mapper reason: WebSocket exports, route handling, and dependency injection form a distinct connection lifecycle with dedicated router and dependency tests.",
+  "kind": "route",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/websockets.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/websockets.py",
+      "reason": "Provides FastAPI WebSocket exports and route-facing helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "WebSocket routes are implemented alongside HTTP routing."
+    },
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "WebSocket endpoint dependencies use the shared dependency solver."
+    },
+    {
+      "path": "tests/test_ws_router.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_ws_dependencies.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_ws_router.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_ws_dependencies.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "websocket",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

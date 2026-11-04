@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_1312b55e7f",
+  "title": "Custom extractor errors",
+  "summary": "Demonstrates multiple patterns for customizing extractor rejection responses.\n\nAgent mapper reason: The modules are coordinated variants of one extractor-error example, with main wiring the patterns together.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "Composes and exposes the extractor-error examples."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/custom_extractor.rs",
+      "reason": "Implements a custom extractor and its rejection behavior."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Demonstrates rejection customization with FromRequest derivation."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Demonstrates the WithRejection pattern."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-extractor-error/Cargo.toml",
+      "reason": "Declares the package and dependencies."
+    },
+    {
+      "path": "examples/customize-extractor-error/README.md",
+      "reason": "Documents the alternative approaches shown by the package."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "extractor",
+    "rejection",
+    "error-handling"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:19:10.259Z",
+  "updatedAt": "2026-10-31T18:19:10.259Z"
+}

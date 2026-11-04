@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_65dd0f971e",
+  "title": "Tokio PostgreSQL integration",
+  "summary": "Example service using Tokio PostgreSQL connectivity.\n\nAgent mapper reason: The example isolates a PostgreSQL integration using the Tokio PostgreSQL client.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/tokio-postgres/src/main.rs",
+      "reason": "Implements the PostgreSQL-backed service."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/tokio-postgres/Cargo.toml",
+      "reason": "Defines the example crate and database dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "postgresql",
+    "tokio",
+    "database"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "database",
+    "secrets",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:17:43.772Z",
+  "updatedAt": "2026-10-31T18:17:43.772Z"
+}

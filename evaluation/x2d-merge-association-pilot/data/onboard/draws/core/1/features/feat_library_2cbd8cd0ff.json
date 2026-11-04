@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_2cbd8cd0ff",
+  "title": "HTTP middleware",
+  "summary": "Provides middleware for CORS, compression, HTTPS redirects, trusted hosts, and WSGI integration.\n\nAgent mapper reason: These modules adapt independent middleware behaviors into FastAPI’s application integration surface.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/middleware/__init__.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/middleware/__init__.py",
+      "reason": "Defines middleware package exports."
+    },
+    {
+      "path": "fastapi/middleware/cors.py",
+      "reason": "Provides CORS middleware integration."
+    },
+    {
+      "path": "fastapi/middleware/gzip.py",
+      "reason": "Provides GZip middleware integration."
+    },
+    {
+      "path": "fastapi/middleware/httpsredirect.py",
+      "reason": "Provides HTTPS redirect middleware integration."
+    },
+    {
+      "path": "fastapi/middleware/trustedhost.py",
+      "reason": "Provides trusted-host middleware integration."
+    },
+    {
+      "path": "fastapi/middleware/wsgi.py",
+      "reason": "Provides WSGI middleware integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "Applications configure middleware in the request handling stack."
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "http",
+    "integration"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:42:38.051Z",
+  "updatedAt": "2026-10-30T12:42:38.051Z"
+}

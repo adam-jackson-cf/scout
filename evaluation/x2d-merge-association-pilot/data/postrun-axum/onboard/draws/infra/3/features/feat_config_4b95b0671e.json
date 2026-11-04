@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_4b95b0671e",
+  "title": "Rust package manifest",
+  "summary": "Defines the visible Cargo package or workspace configuration.\n\nAgent mapper reason: The manifest is the only inventoried package definition. No Rust source files are present in the inventory, so this slice covers configuration rather than library behavior.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "low",
+  "entrypoints": [
+    {
+      "path": "Cargo.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "The only inventoried Cargo manifest; package structure and settings belong to this slice."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".gitignore",
+      "reason": "May reflect files produced by the configured Rust project."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "May consume Cargo package settings."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "rust",
+    "cargo",
+    "manifest"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:24:15.226Z",
+  "updatedAt": "2026-10-31T18:24:15.226Z"
+}

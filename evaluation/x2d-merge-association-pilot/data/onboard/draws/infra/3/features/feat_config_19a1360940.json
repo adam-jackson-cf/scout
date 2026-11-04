@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_19a1360940",
+  "title": "Issue labeler configuration",
+  "summary": "Configures automated issue or pull request labeling.\n\nAgent mapper reason: The workflow and label mapping jointly determine automated label behavior.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/labeler.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/labeler.yml",
+      "reason": "Defines when automated labeling runs."
+    },
+    {
+      "path": ".github/labeler.yml",
+      "reason": "Maps repository paths or metadata to labels."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Provides adjacent labeling automation context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github",
+    "labels",
+    "configuration"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:08:22.650Z",
+  "updatedAt": "2026-10-30T13:08:22.650Z"
+}

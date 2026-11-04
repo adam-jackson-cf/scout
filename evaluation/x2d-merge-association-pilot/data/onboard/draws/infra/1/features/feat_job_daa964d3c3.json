@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_daa964d3c3",
+  "title": "Documentation build",
+  "summary": "Builds documentation with MkDocs and its hooks.\n\nAgent mapper reason: The workflow, scripts, site configuration, and documentation dependency sets form the documentation build path.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Runs the documentation build workflow."
+    },
+    {
+      "path": "scripts/docs.py",
+      "reason": "Provides documentation build scripting."
+    },
+    {
+      "path": "scripts/mkdocs_hooks.py",
+      "reason": "Provides hooks used by the documentation build."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Configures the English documentation site."
+    },
+    {
+      "path": "docs/language_names.yml",
+      "reason": "Provides language names for documentation tooling."
+    },
+    {
+      "path": "requirements-docs.txt",
+      "reason": "Lists documentation build dependencies."
+    },
+    {
+      "path": "requirements-docs-insiders.txt",
+      "reason": "Lists additional documentation dependencies."
+    },
+    {
+      "path": "requirements-docs-tests.txt",
+      "reason": "Lists dependencies for documentation checks."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "mkdocs",
+    "ci"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:04:37.239Z",
+  "updatedAt": "2026-10-30T13:04:37.239Z"
+}

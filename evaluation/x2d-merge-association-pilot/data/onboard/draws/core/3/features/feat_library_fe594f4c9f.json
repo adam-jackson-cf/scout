@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fe594f4c9f",
+  "title": "JSON-compatible encoding",
+  "summary": "Converts Python values and supported data types into JSON-compatible representations.\n\nAgent mapper reason: The encoder is a focused shared library with direct tests for conversion behavior and custom encoders.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/encoders.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/encoders.py",
+      "reason": "Implements JSON-compatible encoding for application data."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Response serialization may use JSON-compatible encoding."
+    },
+    {
+      "path": "fastapi/responses.py",
+      "reason": "Encoded data is used when constructing JSON responses."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_tuples.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "encoding",
+    "serialization",
+    "json"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

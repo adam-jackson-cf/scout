@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_edfee8f377",
+  "title": "axum-core HTTP primitives",
+  "summary": "Shared body, error, and request extension traits used by the core and main crates.\n\nAgent mapper reason: These files define shared HTTP and request extension primitives used across axum-core.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/body.rs",
+      "symbol": "Body",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines the shared HTTP body type."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Defines common error behavior for core APIs."
+    },
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Declares the request extension traits."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Implements request extension methods."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "Implements extension methods for request parts."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Exports the core primitives."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Declares the package and dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "http",
+    "request"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

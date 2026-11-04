@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_87a47878d0",
+  "title": "Static files and templates",
+  "summary": "Integrates static-file serving and template rendering with FastAPI applications.\n\nAgent mapper reason: Both modules connect FastAPI applications to filesystem-backed web content; the inventory lists no dedicated tests for these integrations.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/staticfiles.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/staticfiles.py",
+      "reason": "Provides the static-file integration surface."
+    },
+    {
+      "path": "fastapi/templating.py",
+      "reason": "Provides template rendering integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "These integrations are mounted or configured through an application."
+    },
+    {
+      "path": "fastapi/requests.py",
+      "reason": "Template rendering uses request context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "static-files",
+    "templates",
+    "integration"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:42:38.051Z",
+  "updatedAt": "2026-10-30T12:42:38.051Z"
+}

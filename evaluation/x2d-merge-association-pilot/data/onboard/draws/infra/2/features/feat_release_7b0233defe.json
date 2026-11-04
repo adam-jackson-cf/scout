@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_7b0233defe",
+  "title": "Package publication and smoke checks",
+  "summary": "Publishes package releases and runs the associated smoke test workflow.\n\nAgent mapper reason: Publication and post-run smoke reporting are grouped as release-facing workflows, with the package build files providing context.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Defines package publication automation."
+    },
+    {
+      "path": ".github/workflows/smokeshow.yml",
+      "reason": "Defines a related smoke test reporting workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Package and build configuration."
+    },
+    {
+      "path": "pdm_build.py",
+      "reason": "Custom package build behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "release",
+    "publishing",
+    "ci"
+  ],
+  "trustBoundaries": [
+    "network",
+    "secrets",
+    "permissions",
+    "external-api",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:07:11.018Z",
+  "updatedAt": "2026-10-30T13:07:11.018Z"
+}

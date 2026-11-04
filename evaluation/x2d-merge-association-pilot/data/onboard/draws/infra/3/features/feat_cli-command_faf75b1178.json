@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_cli-command_faf75b1178",
+  "title": "Translation maintenance tooling",
+  "summary": "Provides the repository translation script and its dependency context.\n\nAgent mapper reason: The translation script and its dedicated dependency list form a focused maintenance tool; the inventory does not expose its exact command interface.",
+  "kind": "cli-command",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "scripts/translate.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "scripts/translate.py",
+      "reason": "Implements translation maintenance tooling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "requirements-translations.txt",
+      "reason": "Lists translation tooling dependencies."
+    },
+    {
+      "path": "docs/language_names.yml",
+      "reason": "Provides documentation language naming context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "translations",
+    "maintenance"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:08:22.650Z",
+  "updatedAt": "2026-10-30T13:08:22.650Z"
+}

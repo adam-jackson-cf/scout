@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f479bee4a8",
+  "title": "axum-extra erased JSON responses",
+  "summary": "Type-erased JSON response support.\n\nAgent mapper reason: The response module and erased JSON implementation define one focused response extension.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/response/erased_json.rs",
+      "reason": "Implements type-erased JSON response behavior."
+    },
+    {
+      "path": "axum-extra/src/response/mod.rs",
+      "reason": "Defines extra response exports."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Shows serialization dependencies and feature gates."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Defines the response conversion contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "json",
+    "response"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

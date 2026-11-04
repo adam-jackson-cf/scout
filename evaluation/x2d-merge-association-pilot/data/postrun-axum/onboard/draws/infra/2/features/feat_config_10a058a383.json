@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_10a058a383",
+  "title": "Repository ignore rules",
+  "summary": "The root ignore file configures which repository files are excluded from Git.\n\nAgent mapper reason: The ignore rules are a repository-wide configuration concern, but the inventory does not include their contents, so the slice's specific scope is uncertain.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "low",
+  "entrypoints": [
+    {
+      "path": ".gitignore",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".gitignore",
+      "reason": "Contains repository-wide ignore rules."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Provides context for the Rust workspace whose generated or local files may be ignored."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "git",
+    "repository-config"
+  ],
+  "trustBoundaries": [
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:23:24.807Z",
+  "updatedAt": "2026-10-31T18:23:24.807Z"
+}

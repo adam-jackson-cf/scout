@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_44e7059ca4",
+  "title": "Axum JSON request and response handling",
+  "summary": "Deserializes JSON requests and serializes JSON responses.\n\nAgent mapper reason: The module owns both JSON request decoding and JSON response encoding, so those directions should be reviewed together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": "Json",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Implements JSON extraction, response conversion, and related errors."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Provides the extractor API exports."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines shared rejection behavior."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Provides the response conversion contract."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares JSON serialization dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "json",
+    "extractors",
+    "response"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

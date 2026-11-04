@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d2a3a7e62c",
+  "title": "Axum multipart extraction",
+  "summary": "Parses multipart request bodies and exposes uploaded fields to handlers.\n\nAgent mapper reason: Multipart parsing consumes untrusted request body data and has distinct field and size handling.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "symbol": "Multipart",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Implements multipart form extraction and field access."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports the multipart extractor."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Provides extraction rejection behavior."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Defines shared default body limit behavior."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares multipart parsing dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "multipart",
+    "uploads"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

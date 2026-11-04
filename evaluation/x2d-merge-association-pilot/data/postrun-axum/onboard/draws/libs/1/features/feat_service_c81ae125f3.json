@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_c81ae125f3",
+  "title": "axum service conversion",
+  "summary": "Adapters that turn routers and services into make-services suitable for serving connections.\n\nAgent mapper reason: The future, make-service conversion, and service extension APIs bridge router dispatch to the server's service contract.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "symbol": "IntoMakeService",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/future.rs",
+      "reason": "Implements the future used by routing service adapters."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Implements conversion of routers into make-services."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Defines service extension methods."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Provides the router converted by these adapters."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents serving connections with connection metadata."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares service-trait dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "service",
+    "server-adapter"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

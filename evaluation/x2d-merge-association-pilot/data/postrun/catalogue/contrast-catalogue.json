@@ -1,0 +1,701 @@
+{
+ "schema": "x2d-catalogue-v1",
+ "c0": "1d50bad4555b951d5fa48eb8787fd5c39ed7effb",
+ "scopes": [
+  "contrast"
+ ],
+ "tau": 0,
+ "areas": [
+  {
+   "area_id": "0a978a8eefdc",
+   "scope": "contrast",
+   "title": "GitHub project automation and actions",
+   "summary": "Issue, labeling, contributor, translation notification, and project-board automation.\n\nAgent mapper reason: These workflows and actions coordinate GitHub-side maintenance tasks and should be reviewed with their matching action definitions and label rules.",
+   "sample_files": [
+    ".github/actions/notify-translations/action.yml",
+    ".github/actions/notify-translations/app/main.py",
+    ".github/actions/people/action.yml",
+    ".github/actions/people/app/main.py",
+    ".github/workflows/add-to-project.yml",
+    ".github/workflows/issue-manager.yml",
+    ".github/workflows/label-approved.yml",
+    ".github/workflows/labeler.yml"
+   ],
+   "files": [
+    ".github/actions/notify-translations/action.yml",
+    ".github/actions/notify-translations/app/main.py",
+    ".github/actions/people/action.yml",
+    ".github/actions/people/app/main.py",
+    ".github/workflows/add-to-project.yml",
+    ".github/workflows/issue-manager.yml",
+    ".github/workflows/label-approved.yml",
+    ".github/workflows/labeler.yml",
+    ".github/workflows/latest-changes.yml",
+    ".github/workflows/notify-translations.yml",
+    ".github/workflows/people.yml"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_infra_cc71dd165a"
+   ]
+  },
+  {
+   "area_id": "0eeaf3164e3f",
+   "scope": "contrast",
+   "title": "Middleware and application lifecycle",
+   "summary": "Middleware composition, application events, and background task execution.\n\nAgent mapper reason: These features run around or after request handling and share application lifecycle semantics; the tests cover middleware exception propagation and router events.",
+   "sample_files": [
+    "docs_src/advanced_middleware/tutorial001.py",
+    "docs_src/advanced_middleware/tutorial002.py",
+    "docs_src/advanced_middleware/tutorial003.py",
+    "docs_src/background_tasks/tutorial001.py",
+    "docs_src/background_tasks/tutorial002.py",
+    "docs_src/events/tutorial001.py",
+    "docs_src/events/tutorial002.py",
+    "docs_src/events/tutorial003.py"
+   ],
+   "files": [
+    "docs_src/advanced_middleware/tutorial001.py",
+    "docs_src/advanced_middleware/tutorial002.py",
+    "docs_src/advanced_middleware/tutorial003.py",
+    "docs_src/background_tasks/tutorial001.py",
+    "docs_src/background_tasks/tutorial002.py",
+    "docs_src/events/tutorial001.py",
+    "docs_src/events/tutorial002.py",
+    "docs_src/events/tutorial003.py",
+    "docs_src/middleware/tutorial001.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_library_6fcfa3af53"
+   ]
+  },
+  {
+   "area_id": "1e35d29030b9",
+   "scope": "contrast",
+   "title": "Error handling and exception responses",
+   "summary": "Exception handlers, validation failures, and documented error response behavior.\n\nAgent mapper reason: The tutorial and tests describe conversion of application and validation failures into HTTP responses.",
+   "sample_files": [
+    "docs_src/handling_errors/tutorial001.py",
+    "docs_src/handling_errors/tutorial002.py",
+    "docs_src/handling_errors/tutorial003.py",
+    "docs_src/handling_errors/tutorial004.py",
+    "docs_src/handling_errors/tutorial005.py",
+    "docs_src/handling_errors/tutorial006.py"
+   ],
+   "files": [
+    "docs_src/handling_errors/tutorial001.py",
+    "docs_src/handling_errors/tutorial002.py",
+    "docs_src/handling_errors/tutorial003.py",
+    "docs_src/handling_errors/tutorial004.py",
+    "docs_src/handling_errors/tutorial005.py",
+    "docs_src/handling_errors/tutorial006.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_library_c1036b26c6"
+   ]
+  },
+  {
+   "area_id": "1fbdba85f1b5",
+   "scope": "contrast",
+   "title": "Package build and release metadata",
+   "summary": "Python package build configuration and release-facing project metadata.\n\nAgent mapper reason: The build script, package metadata, and publishing workflow govern how the project is assembled and distributed.",
+   "sample_files": [
+    "CITATION.cff",
+    "pdm_build.py",
+    "pyproject.toml"
+   ],
+   "files": [
+    "CITATION.cff",
+    "pdm_build.py",
+    "pyproject.toml"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_release_a89c5e7962"
+   ]
+  },
+  {
+   "area_id": "229a13415338",
+   "scope": "contrast",
+   "title": "Endpoint setup and first routes",
+   "summary": "Examples for creating a FastAPI app and declaring basic path operations.\n\nAgent mapper reason: These examples and their documentation form the introductory endpoint-declaration flow; application tests provide supporting behavioral context.",
+   "sample_files": [
+    "docs_src/first_steps/tutorial001.py",
+    "docs_src/first_steps/tutorial002.py",
+    "docs_src/first_steps/tutorial003.py"
+   ],
+   "files": [
+    "docs_src/first_steps/tutorial001.py",
+    "docs_src/first_steps/tutorial002.py",
+    "docs_src/first_steps/tutorial003.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_library_cebed40d13"
+   ]
+  },
+  {
+   "area_id": "26cbb8641b7e",
+   "scope": "contrast",
+   "title": "Nested body models and updates",
+   "summary": "Nested request models and partial model update patterns.\n\nAgent mapper reason: Nested models define request schema shape, while update examples apply those models to partial input; they share the same body validation intent.",
+   "sample_files": [
+    "docs_src/body_nested_models/tutorial001.py",
+    "docs_src/body_nested_models/tutorial002.py",
+    "docs_src/body_nested_models/tutorial003.py",
+    "docs_src/body_nested_models/tutorial004.py",
+    "docs_src/body_nested_models/tutorial005.py",
+    "docs_src/body_nested_models/tutorial006.py",
+    "docs_src/body_nested_models/tutorial007.py",
+    "docs_src/body_nested_models/tutorial008.py"
+   ],
+   "files": [
+    "docs_src/body_nested_models/tutorial001.py",
+    "docs_src/body_nested_models/tutorial001_py310.py",
+    "docs_src/body_nested_models/tutorial002.py",
+    "docs_src/body_nested_models/tutorial002_py310.py",
+    "docs_src/body_nested_models/tutorial002_py39.py",
+    "docs_src/body_nested_models/tutorial003.py",
+    "docs_src/body_nested_models/tutorial003_py310.py",
+    "docs_src/body_nested_models/tutorial003_py39.py",
+    "docs_src/body_nested_models/tutorial004.py",
+    "docs_src/body_nested_models/tutorial004_py310.py",
+    "docs_src/body_nested_models/tutorial004_py39.py",
+    "docs_src/body_nested_models/tutorial005.py",
+    "docs_src/body_nested_models/tutorial005_py310.py",
+    "docs_src/body_nested_models/tutorial005_py39.py",
+    "docs_src/body_nested_models/tutorial006.py",
+    "docs_src/body_nested_models/tutorial006_py310.py",
+    "docs_src/body_nested_models/tutorial006_py39.py",
+    "docs_src/body_nested_models/tutorial007.py",
+    "docs_src/body_nested_models/tutorial007_py310.py",
+    "docs_src/body_nested_models/tutorial007_py39.py",
+    "docs_src/body_nested_models/tutorial008.py",
+    "docs_src/body_nested_models/tutorial008_py39.py",
+    "docs_src/body_nested_models/tutorial009.py",
+    "docs_src/body_nested_models/tutorial009_py39.py",
+    "docs_src/body_updates/tutorial001.py",
+    "docs_src/body_updates/tutorial001_py310.py",
+    "docs_src/body_updates/tutorial001_py39.py",
+    "docs_src/body_updates/tutorial002.py",
+    "docs_src/body_updates/tutorial002_py310.py",
+    "docs_src/body_updates/tutorial002_py39.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_library_adf108d76a"
+   ]
+  },
+  {
+   "area_id": "3295c0669990",
+   "scope": "contrast",
+   "title": "Documentation site and localization configuration",
+   "summary": "MkDocs configuration, documentation assets, and translated site configuration.\n\nAgent mapper reason: These configs and assets jointly control documentation build variants, localization, and site rendering.",
+   "sample_files": [
+    "docs/de/mkdocs.yml",
+    "docs/en/docs/css/custom.css",
+    "docs/en/docs/css/termynal.css",
+    "docs/en/docs/js/custom.js",
+    "docs/en/docs/js/termynal.js",
+    "docs/en/mkdocs.insiders.yml",
+    "docs/en/mkdocs.maybe-insiders.yml",
+    "docs/en/mkdocs.no-insiders.yml"
+   ],
+   "files": [
+    "docs/de/mkdocs.yml",
+    "docs/en/docs/css/custom.css",
+    "docs/en/docs/css/termynal.css",
+    "docs/en/docs/js/custom.js",
+    "docs/en/docs/js/termynal.js",
+    "docs/en/mkdocs.insiders.yml",
+    "docs/en/mkdocs.maybe-insiders.yml",
+    "docs/en/mkdocs.no-insiders.yml",
+    "docs/en/mkdocs.yml",
+    "docs/fr/mkdocs.yml",
+    "docs/ja/mkdocs.yml",
+    "docs/language_names.yml",
+    "docs/zh-hant/mkdocs.yml",
+    "docs/zh/mkdocs.yml"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_config_7ca623a39f"
+   ]
+  },
+  {
+   "area_id": "38e437904d5e",
+   "scope": "contrast",
+   "title": "Repository CI and quality checks",
+   "summary": "Automated test workflow and local pre-commit checks.\n\nAgent mapper reason: These files determine how tests and quality checks run locally and in CI.",
+   "sample_files": [
+    ".pre-commit-config.yaml",
+    ".github/workflows/test-redistribute.yml",
+    ".github/workflows/test.yml"
+   ],
+   "files": [
+    ".github/workflows/test-redistribute.yml",
+    ".github/workflows/test.yml",
+    ".pre-commit-config.yaml"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_infra_9294a4fe61"
+   ]
+  },
+  {
+   "area_id": "3b886c437e77",
+   "scope": "contrast",
+   "title": "Routers, larger applications, and proxy deployment",
+   "summary": "Composing routers and apps, including proxy-aware request handling examples.\n\nAgent mapper reason: Router composition and proxy handling both affect how incoming paths map to application operations; the tutorial app and router tests provide focused intent.",
+   "sample_files": [
+    "docs_src/behind_a_proxy/tutorial001.py",
+    "docs_src/behind_a_proxy/tutorial002.py",
+    "docs_src/behind_a_proxy/tutorial003.py",
+    "docs_src/behind_a_proxy/tutorial004.py",
+    "docs_src/bigger_applications/app/dependencies.py",
+    "docs_src/bigger_applications/app/internal/admin.py",
+    "docs_src/bigger_applications/app/main.py",
+    "docs_src/bigger_applications/app/routers/items.py"
+   ],
+   "files": [
+    "docs_src/behind_a_proxy/tutorial001.py",
+    "docs_src/behind_a_proxy/tutorial002.py",
+    "docs_src/behind_a_proxy/tutorial003.py",
+    "docs_src/behind_a_proxy/tutorial004.py",
+    "docs_src/bigger_applications/app/dependencies.py",
+    "docs_src/bigger_applications/app/internal/admin.py",
+    "docs_src/bigger_applications/app/main.py",
+    "docs_src/bigger_applications/app/routers/items.py",
+    "docs_src/bigger_applications/app/routers/users.py",
+    "docs_src/bigger_applications/app_an/main.py",
+    "docs_src/bigger_applications/app_an_py39/main.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_library_6fafc00cea"
+   ]
+  },
+  {
+   "area_id": "59644488d266",
+   "scope": "contrast",
+   "title": "Authentication and security schemes",
+   "summary": "API key, HTTP, OAuth2, and OpenID Connect security helpers and their optional forms.\n\nAgent mapper reason: These helpers parse credentials and emit authentication scheme metadata; optional variants test how missing credentials are represented.",
+   "sample_files": [
+    "tests/test_security_api_key_cookie.py",
+    "tests/test_security_api_key_header.py",
+    "tests/test_security_api_key_query.py",
+    "tests/test_security_http_base.py",
+    "tests/test_security_http_basic_realm.py",
+    "tests/test_security_http_bearer.py",
+    "tests/test_security_http_digest.py",
+    "tests/test_security_oauth2.py"
+   ],
+   "files": [
+    "tests/test_security_api_key_cookie.py",
+    "tests/test_security_api_key_header.py",
+    "tests/test_security_api_key_query.py",
+    "tests/test_security_http_base.py",
+    "tests/test_security_http_basic_realm.py",
+    "tests/test_security_http_bearer.py",
+    "tests/test_security_http_digest.py",
+    "tests/test_security_oauth2.py",
+    "tests/test_security_oauth2_authorization_code_bearer.py",
+    "tests/test_security_openid_connect.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_library_f4e585d4d1"
+   ]
+  },
+  {
+   "area_id": "5fe2cf63bfe7",
+   "scope": "contrast",
+   "title": "Response models and serialization",
+   "summary": "Response model validation, output filtering, aliases, and JSON-compatible encoding.\n\nAgent mapper reason: Response filtering and encoding determine which application data crosses the HTTP boundary and how it is represented.",
+   "sample_files": [
+    "tests/test_jsonable_encoder.py",
+    "tests/test_response_by_alias.py",
+    "tests/test_response_model_data_filter.py",
+    "tests/test_response_model_data_filter_no_inheritance.py",
+    "tests/test_response_model_include_exclude.py",
+    "tests/test_response_model_invalid.py",
+    "tests/test_serialize_response.py",
+    "tests/test_serialize_response_dataclass.py"
+   ],
+   "files": [
+    "tests/test_jsonable_encoder.py",
+    "tests/test_response_by_alias.py",
+    "tests/test_response_model_data_filter.py",
+    "tests/test_response_model_data_filter_no_inheritance.py",
+    "tests/test_response_model_include_exclude.py",
+    "tests/test_response_model_invalid.py",
+    "tests/test_serialize_response.py",
+    "tests/test_serialize_response_dataclass.py",
+    "tests/test_serialize_response_model.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_library_def9505cd7"
+   ]
+  },
+  {
+   "area_id": "6beee6b8f79c",
+   "scope": "contrast",
+   "title": "Header, cookie, and parameter models",
+   "summary": "Extracting request metadata from headers and cookies, including model-based declarations.\n\nAgent mapper reason: Headers and cookies are request-scoped inputs with parallel extraction and model grouping patterns, so their examples and repeated-value tests are best reviewed together.",
+   "sample_files": [
+    "docs_src/cookie_param_models/tutorial001.py",
+    "docs_src/cookie_param_models/tutorial002.py",
+    "docs_src/cookie_params/tutorial001.py",
+    "docs_src/header_param_models/tutorial001.py",
+    "docs_src/header_param_models/tutorial002.py",
+    "docs_src/header_params/tutorial001.py",
+    "docs_src/header_params/tutorial002.py",
+    "docs_src/header_params/tutorial003.py"
+   ],
+   "files": [
+    "docs_src/cookie_param_models/tutorial001.py",
+    "docs_src/cookie_param_models/tutorial002.py",
+    "docs_src/cookie_params/tutorial001.py",
+    "docs_src/cookie_params/tutorial001_an.py",
+    "docs_src/cookie_params/tutorial001_an_py310.py",
+    "docs_src/cookie_params/tutorial001_an_py39.py",
+    "docs_src/cookie_params/tutorial001_py310.py",
+    "docs_src/header_param_models/tutorial001.py",
+    "docs_src/header_param_models/tutorial002.py",
+    "docs_src/header_params/tutorial001.py",
+    "docs_src/header_params/tutorial001_an.py",
+    "docs_src/header_params/tutorial001_an_py310.py",
+    "docs_src/header_params/tutorial001_an_py39.py",
+    "docs_src/header_params/tutorial001_py310.py",
+    "docs_src/header_params/tutorial002.py",
+    "docs_src/header_params/tutorial002_an.py",
+    "docs_src/header_params/tutorial002_an_py310.py",
+    "docs_src/header_params/tutorial002_an_py39.py",
+    "docs_src/header_params/tutorial002_py310.py",
+    "docs_src/header_params/tutorial003.py",
+    "docs_src/header_params/tutorial003_an.py",
+    "docs_src/header_params/tutorial003_an_py310.py",
+    "docs_src/header_params/tutorial003_an_py39.py",
+    "docs_src/header_params/tutorial003_py310.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_library_66c8db48eb"
+   ]
+  },
+  {
+   "area_id": "6f2d593cecbc",
+   "scope": "contrast",
+   "title": "FastAPI CLI",
+   "summary": "Command-line interface behavior and its user-facing documentation.\n\nAgent mapper reason: The inventory exposes the CLI tests and usage guide but not its implementation entrypoint, so this slice is anchored to those artifacts.",
+   "sample_files": [
+    "tests/test_fastapi_cli.py"
+   ],
+   "files": [
+    "tests/test_fastapi_cli.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_cli-command_c20eabba73"
+   ]
+  },
+  {
+   "area_id": "8ed4c970f9ce",
+   "scope": "contrast",
+   "title": "Advanced integrations and extension examples",
+   "summary": "GraphQL, generated-client guidance, callbacks, webhooks, and custom request or route examples.\n\nAgent mapper reason: These are distinct extension and integration examples connected by their effect on request dispatch or generated API schemas; confidence is medium because the inventory does not expose implementation modules.",
+   "sample_files": [
+    "docs_src/custom_request_and_route/tutorial001.py",
+    "docs_src/custom_request_and_route/tutorial002.py",
+    "docs_src/custom_request_and_route/tutorial003.py",
+    "docs_src/generate_clients/tutorial001.py",
+    "docs_src/generate_clients/tutorial002.py",
+    "docs_src/generate_clients/tutorial003.py",
+    "docs_src/generate_clients/tutorial004.js",
+    "docs_src/graphql/tutorial001.py"
+   ],
+   "files": [
+    "docs_src/custom_request_and_route/tutorial001.py",
+    "docs_src/custom_request_and_route/tutorial002.py",
+    "docs_src/custom_request_and_route/tutorial003.py",
+    "docs_src/generate_clients/tutorial001.py",
+    "docs_src/generate_clients/tutorial002.py",
+    "docs_src/generate_clients/tutorial003.py",
+    "docs_src/generate_clients/tutorial004.js",
+    "docs_src/generate_clients/tutorial004.py",
+    "docs_src/graphql/tutorial001.py",
+    "docs_src/openapi_callbacks/tutorial001.py",
+    "docs_src/openapi_webhooks/tutorial001.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_library_316eff4a2b"
+   ]
+  },
+  {
+   "area_id": "9b6cec4d03ef",
+   "scope": "contrast",
+   "title": "Dependency injection and overrides",
+   "summary": "Dependency declaration, sub-dependencies, scopes, caching, and test overrides.\n\nAgent mapper reason: Dependency resolution, lifecycle, caching, and overrides are one connected execution model; tutorial and focused tests explain its intended behavior.",
+   "sample_files": [
+    "docs_src/dependencies/tutorial001.py",
+    "docs_src/dependencies/tutorial002.py",
+    "docs_src/dependencies/tutorial003.py",
+    "docs_src/dependencies/tutorial004.py",
+    "docs_src/dependencies/tutorial005.py",
+    "docs_src/dependencies/tutorial006.py",
+    "docs_src/dependencies/tutorial007.py",
+    "docs_src/dependencies/tutorial008.py"
+   ],
+   "files": [
+    "docs_src/dependencies/tutorial001.py",
+    "docs_src/dependencies/tutorial002.py",
+    "docs_src/dependencies/tutorial003.py",
+    "docs_src/dependencies/tutorial004.py",
+    "docs_src/dependencies/tutorial005.py",
+    "docs_src/dependencies/tutorial006.py",
+    "docs_src/dependencies/tutorial007.py",
+    "docs_src/dependencies/tutorial008.py",
+    "docs_src/dependencies/tutorial008b.py",
+    "docs_src/dependencies/tutorial008c.py",
+    "docs_src/dependencies/tutorial008d.py",
+    "docs_src/dependencies/tutorial009.py",
+    "docs_src/dependencies/tutorial010.py",
+    "docs_src/dependencies/tutorial011.py",
+    "docs_src/dependencies/tutorial012.py",
+    "docs_src/dependency_testing/tutorial001.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_library_754a0bc539"
+   ]
+  },
+  {
+   "area_id": "ae7df7b6b2cd",
+   "scope": "contrast",
+   "title": "Request bodies and body fields",
+   "summary": "Request body parsing, body metadata, and combining multiple body parameters.\n\nAgent mapper reason: The examples share the request-body parsing and validation contract, including how multiple fields map into a request schema.",
+   "sample_files": [
+    "docs_src/body/tutorial001.py",
+    "docs_src/body/tutorial002.py",
+    "docs_src/body/tutorial003.py",
+    "docs_src/body/tutorial004.py",
+    "docs_src/body_fields/tutorial001.py",
+    "docs_src/body_multiple_params/tutorial001.py",
+    "docs_src/body_multiple_params/tutorial002.py",
+    "docs_src/body_multiple_params/tutorial003.py"
+   ],
+   "files": [
+    "docs_src/body/tutorial001.py",
+    "docs_src/body/tutorial001_py310.py",
+    "docs_src/body/tutorial002.py",
+    "docs_src/body/tutorial002_py310.py",
+    "docs_src/body/tutorial003.py",
+    "docs_src/body/tutorial003_py310.py",
+    "docs_src/body/tutorial004.py",
+    "docs_src/body/tutorial004_py310.py",
+    "docs_src/body_fields/tutorial001.py",
+    "docs_src/body_fields/tutorial001_an.py",
+    "docs_src/body_fields/tutorial001_an_py310.py",
+    "docs_src/body_fields/tutorial001_an_py39.py",
+    "docs_src/body_fields/tutorial001_py310.py",
+    "docs_src/body_multiple_params/tutorial001.py",
+    "docs_src/body_multiple_params/tutorial001_an.py",
+    "docs_src/body_multiple_params/tutorial001_an_py310.py",
+    "docs_src/body_multiple_params/tutorial001_an_py39.py",
+    "docs_src/body_multiple_params/tutorial001_py310.py",
+    "docs_src/body_multiple_params/tutorial002.py",
+    "docs_src/body_multiple_params/tutorial002_py310.py",
+    "docs_src/body_multiple_params/tutorial003.py",
+    "docs_src/body_multiple_params/tutorial003_an.py",
+    "docs_src/body_multiple_params/tutorial003_an_py310.py",
+    "docs_src/body_multiple_params/tutorial003_an_py39.py",
+    "docs_src/body_multiple_params/tutorial003_py310.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_library_78899afdb3"
+   ]
+  },
+  {
+   "area_id": "c7f14df12249",
+   "scope": "contrast",
+   "title": "Documentation build and deployment workflows",
+   "summary": "CI workflows that build, deploy, and publish project documentation.\n\nAgent mapper reason: These workflows and requirements define the CI path from documentation source to published site and release artifacts.",
+   "sample_files": [
+    ".github/workflows/build-docs.yml",
+    ".github/workflows/deploy-docs.yml",
+    ".github/workflows/publish.yml"
+   ],
+   "files": [
+    ".github/workflows/build-docs.yml",
+    ".github/workflows/deploy-docs.yml",
+    ".github/workflows/publish.yml"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_infra_0d1c0ad700"
+   ]
+  },
+  {
+   "area_id": "c8b8008d36f7",
+   "scope": "contrast",
+   "title": "Response declarations and status codes",
+   "summary": "Response classes, status handling, headers, cookies, and additional response declarations.\n\nAgent mapper reason: The examples and tests cover how response objects and declared response metadata affect status, media type, and documented outcomes.",
+   "sample_files": [
+    "docs_src/additional_responses/tutorial001.py",
+    "docs_src/additional_responses/tutorial002.py",
+    "docs_src/additional_responses/tutorial003.py",
+    "docs_src/additional_responses/tutorial004.py",
+    "docs_src/additional_status_codes/tutorial001.py",
+    "docs_src/custom_response/tutorial001.py",
+    "docs_src/custom_response/tutorial002.py",
+    "docs_src/custom_response/tutorial003.py"
+   ],
+   "files": [
+    "docs_src/additional_responses/tutorial001.py",
+    "docs_src/additional_responses/tutorial002.py",
+    "docs_src/additional_responses/tutorial003.py",
+    "docs_src/additional_responses/tutorial004.py",
+    "docs_src/additional_status_codes/tutorial001.py",
+    "docs_src/custom_response/tutorial001.py",
+    "docs_src/custom_response/tutorial002.py",
+    "docs_src/custom_response/tutorial003.py",
+    "docs_src/custom_response/tutorial004.py",
+    "docs_src/custom_response/tutorial005.py",
+    "docs_src/custom_response/tutorial006.py",
+    "docs_src/custom_response/tutorial006b.py",
+    "docs_src/custom_response/tutorial006c.py",
+    "docs_src/custom_response/tutorial007.py",
+    "docs_src/custom_response/tutorial008.py",
+    "docs_src/custom_response/tutorial009.py",
+    "docs_src/custom_response/tutorial009b.py",
+    "docs_src/custom_response/tutorial009c.py",
+    "docs_src/custom_response/tutorial010.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_library_402463e991"
+   ]
+  },
+  {
+   "area_id": "d17751289fcc",
+   "scope": "contrast",
+   "title": "OpenAPI generation and documentation UI",
+   "summary": "OpenAPI customization, schema extensions, Swagger UI behavior, and local documentation routes.\n\nAgent mapper reason: Schema construction and its interactive UI share route registration and security metadata, with focused tests for generated documents and UI routes.",
+   "sample_files": [
+    "docs_src/conditional_openapi/tutorial001.py",
+    "docs_src/configure_swagger_ui/tutorial001.py",
+    "docs_src/configure_swagger_ui/tutorial002.py",
+    "docs_src/configure_swagger_ui/tutorial003.py",
+    "docs_src/custom_docs_ui/tutorial001.py",
+    "docs_src/custom_docs_ui/tutorial002.py",
+    "docs_src/extending_openapi/tutorial001.py"
+   ],
+   "files": [
+    "docs_src/conditional_openapi/tutorial001.py",
+    "docs_src/configure_swagger_ui/tutorial001.py",
+    "docs_src/configure_swagger_ui/tutorial002.py",
+    "docs_src/configure_swagger_ui/tutorial003.py",
+    "docs_src/custom_docs_ui/tutorial001.py",
+    "docs_src/custom_docs_ui/tutorial002.py",
+    "docs_src/extending_openapi/tutorial001.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_library_5834a89b77"
+   ]
+  },
+  {
+   "area_id": "dd5922062021",
+   "scope": "contrast",
+   "title": "Query parameters and string validation",
+   "summary": "Query parameter defaults, typing, and string constraints.\n\nAgent mapper reason: These examples cover query input parsing and its string constraints, with focused tests for query behavior and errors.",
+   "sample_files": [
+    "docs_src/query_params/tutorial001.py",
+    "docs_src/query_params/tutorial002.py",
+    "docs_src/query_params/tutorial003.py",
+    "docs_src/query_params/tutorial004.py",
+    "docs_src/query_params/tutorial005.py",
+    "docs_src/query_params/tutorial006.py",
+    "docs_src/query_params/tutorial006b.py",
+    "docs_src/query_params_str_validations/tutorial001.py"
+   ],
+   "files": [
+    "docs_src/query_params/tutorial001.py",
+    "docs_src/query_params/tutorial002.py",
+    "docs_src/query_params/tutorial002_py310.py",
+    "docs_src/query_params/tutorial003.py",
+    "docs_src/query_params/tutorial003_py310.py",
+    "docs_src/query_params/tutorial004.py",
+    "docs_src/query_params/tutorial004_py310.py",
+    "docs_src/query_params/tutorial005.py",
+    "docs_src/query_params/tutorial006.py",
+    "docs_src/query_params/tutorial006_py310.py",
+    "docs_src/query_params/tutorial006b.py",
+    "docs_src/query_params_str_validations/tutorial001.py",
+    "docs_src/query_params_str_validations/tutorial001_py310.py",
+    "docs_src/query_params_str_validations/tutorial002.py",
+    "docs_src/query_params_str_validations/tutorial002_an.py",
+    "docs_src/query_params_str_validations/tutorial002_an_py310.py",
+    "docs_src/query_params_str_validations/tutorial002_py310.py",
+    "docs_src/query_params_str_validations/tutorial003.py",
+    "docs_src/query_params_str_validations/tutorial003_an.py",
+    "docs_src/query_params_str_validations/tutorial003_an_py310.py",
+    "docs_src/query_params_str_validations/tutorial003_an_py39.py",
+    "docs_src/query_params_str_validations/tutorial003_py310.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_library_426468a06e"
+   ]
+  },
+  {
+   "area_id": "e172b37fb274",
+   "scope": "contrast",
+   "title": "Application testing and async tests",
+   "summary": "Testing FastAPI apps with test clients and asynchronous test functions.\n\nAgent mapper reason: The example apps and tests establish the intended synchronous and asynchronous testing workflows.",
+   "sample_files": [
+    "docs_src/app_testing/main.py",
+    "docs_src/app_testing/test_main.py",
+    "docs_src/app_testing/tutorial001.py",
+    "docs_src/app_testing/tutorial002.py",
+    "docs_src/app_testing/tutorial003.py",
+    "docs_src/async_tests/main.py",
+    "docs_src/async_tests/test_main.py"
+   ],
+   "files": [
+    "docs_src/app_testing/main.py",
+    "docs_src/app_testing/test_main.py",
+    "docs_src/app_testing/tutorial001.py",
+    "docs_src/app_testing/tutorial002.py",
+    "docs_src/app_testing/tutorial003.py",
+    "docs_src/async_tests/main.py",
+    "docs_src/async_tests/test_main.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_test-suite_4ab647586b"
+   ]
+  },
+  {
+   "area_id": "f8b4d523ee8f",
+   "scope": "contrast",
+   "title": "Path parameters and validation",
+   "summary": "Path parameter parsing, type conversion, and numeric constraints.\n\nAgent mapper reason: Path extraction and constraints share the same request-input contract and are documented and tested together.",
+   "sample_files": [
+    "docs_src/path_params/tutorial001.py",
+    "docs_src/path_params/tutorial002.py",
+    "docs_src/path_params/tutorial003.py",
+    "docs_src/path_params/tutorial003b.py",
+    "docs_src/path_params/tutorial004.py",
+    "docs_src/path_params/tutorial005.py",
+    "docs_src/path_params_numeric_validations/tutorial001.py",
+    "docs_src/path_params_numeric_validations/tutorial002.py"
+   ],
+   "files": [
+    "docs_src/path_params/tutorial001.py",
+    "docs_src/path_params/tutorial002.py",
+    "docs_src/path_params/tutorial003.py",
+    "docs_src/path_params/tutorial003b.py",
+    "docs_src/path_params/tutorial004.py",
+    "docs_src/path_params/tutorial005.py",
+    "docs_src/path_params_numeric_validations/tutorial001.py",
+    "docs_src/path_params_numeric_validations/tutorial002.py",
+    "docs_src/path_params_numeric_validations/tutorial003.py",
+    "docs_src/path_params_numeric_validations/tutorial004.py",
+    "docs_src/path_params_numeric_validations/tutorial005.py",
+    "docs_src/path_params_numeric_validations/tutorial006.py"
+   ],
+   "clawpatch_ids": [
+    "contrast/feat_library_b960aa0e91"
+   ]
+  }
+ ],
+ "contested": [],
+ "unowned": [],
+ "jev_assigned": [],
+ "heuristic_only": []
+}

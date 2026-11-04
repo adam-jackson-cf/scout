@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_65bb84d6c5",
+  "title": "HTTP request abstraction",
+  "summary": "Provides FastAPI’s request-facing abstraction and connection access.\n\nAgent mapper reason: The request wrapper is a bounded interface whose behavior is exercised through request injection and route scope tests.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/requests.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/requests.py",
+      "reason": "Defines the FastAPI request abstraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "Request objects are injected through dependency resolution."
+    },
+    {
+      "path": "fastapi/routing.py",
+      "reason": "HTTP routes construct and use request objects."
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_route_scope.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "request",
+    "http"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:42:38.051Z",
+  "updatedAt": "2026-10-30T12:42:38.051Z"
+}

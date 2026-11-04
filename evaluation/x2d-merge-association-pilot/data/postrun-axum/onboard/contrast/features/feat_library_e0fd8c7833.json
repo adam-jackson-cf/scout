@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e0fd8c7833",
+  "title": "axum handler adaptation and error handling",
+  "summary": "Handler traits, future adaptation, service conversion, and handler error propagation.\n\nAgent mapper reason: Handler adaptation and error handling define how user functions become services and how their failures reach responses.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/handler/future.rs",
+      "reason": "Adapts handler futures."
+    },
+    {
+      "path": "axum/src/handler/into_service_state_in_extension.rs",
+      "reason": "Carries handler state into service extensions."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Defines handler traits and exports."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Adapts handlers into services."
+    },
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Provides service error handling support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares service and async dependencies."
+    },
+    {
+      "path": "axum/src/docs/handlers_intro.md",
+      "reason": "Documents handler requirements."
+    },
+    {
+      "path": "axum/src/docs/debugging_handler_type_errors.md",
+      "reason": "Explains handler type diagnostics."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Documents error propagation."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "Exercises route-level error handling."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "handler",
+    "service",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

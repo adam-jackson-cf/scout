@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_43d56e2c09",
+  "title": "Package build and publishing",
+  "summary": "Builds and publishes the Python package.\n\nAgent mapper reason: The build helper, package manifest, and publish workflow jointly define how the package is built and released.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Defines the package publishing workflow."
+    },
+    {
+      "path": "pdm_build.py",
+      "reason": "Provides the project-specific PDM build logic."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Defines package metadata and build configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "requirements.txt",
+      "reason": "Lists the base package dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "release",
+    "pdm"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "secrets",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:04:37.239Z",
+  "updatedAt": "2026-10-30T13:04:37.239Z"
+}

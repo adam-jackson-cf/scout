@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_e6fd9074c3",
+  "title": "Patch workflow configuration",
+  "summary": "Isolates the TOML file located in the GitHub workflows directory for review as automation configuration.\n\nAgent mapper reason: The path suggests a relationship to workflow automation, but the inventory does not reveal its schema or consumer. Keep this as a separate, low-confidence review slice.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "low",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/patch.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "The inventoried patch-related configuration file."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Nearby workflow configuration may clarify how this file is used."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github",
+    "patch",
+    "workflow-config"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:24:15.226Z",
+  "updatedAt": "2026-10-31T18:24:15.226Z"
+}

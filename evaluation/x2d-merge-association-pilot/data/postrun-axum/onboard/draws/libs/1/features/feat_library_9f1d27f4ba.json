@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9f1d27f4ba",
+  "title": "axum response types",
+  "summary": "General response exports, redirects, and server-sent events.\n\nAgent mapper reason: These modules form the main response API and its redirect and event-stream response types.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": "response",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Defines and exports the main response API."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Implements redirect responses."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Implements server-sent event responses."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents response conversion and response types."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Provides streaming body construction used by event responses."
+    },
+    {
+      "path": "axum-core/src/response/mod.rs",
+      "reason": "Defines shared response conversion traits."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "responses",
+    "redirect",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_c6f107d211",
+  "title": "axum request extractors: path and query",
+  "summary": "Path, query, raw query, and form parsing for request inputs.\n\nAgent mapper reason: These extractors deserialize user-controlled URL and form inputs and share rejection and serialization behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Deserializes captured path parameters."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Defines path extraction and its rejection behavior."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Deserializes query parameters."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Exposes the raw query string."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Exposes or parses raw form data."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Provides form body extraction and response support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares parsing and serialization dependencies."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines extraction rejection types."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extraction order and request input behavior."
+    },
+    {
+      "path": "examples/customize-path-rejection/src/main.rs",
+      "reason": "Demonstrates customizing path rejection responses."
+    },
+    {
+      "path": "examples/query-params-with-empty-strings/src/main.rs",
+      "reason": "Demonstrates query parsing with empty values."
+    },
+    {
+      "path": "examples/form/src/main.rs",
+      "reason": "Demonstrates form extraction."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractor",
+    "path",
+    "query",
+    "form"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

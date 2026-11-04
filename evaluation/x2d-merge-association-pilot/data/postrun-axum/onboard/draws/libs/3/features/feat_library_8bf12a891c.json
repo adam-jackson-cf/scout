@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8bf12a891c",
+  "title": "axum error handling",
+  "summary": "Error-to-response handling support.\n\nAgent mapper reason: The error handling module and its routing regression case cover conversion of service failures into HTTP responses.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Implements error handling and conversion APIs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Documents error handling behavior."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "Exercises error handling through routing."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "errors",
+    "responses"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

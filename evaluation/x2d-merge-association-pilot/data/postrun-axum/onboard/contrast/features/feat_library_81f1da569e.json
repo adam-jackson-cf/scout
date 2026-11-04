@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_81f1da569e",
+  "title": "axum response types and streaming",
+  "summary": "Response utilities, redirects, server-sent events, and streaming bodies.\n\nAgent mapper reason: Response helpers and streaming bodies share output semantics and asynchronous body handling.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Exports response helpers and types."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Implements redirect responses."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Implements server-sent events."
+    },
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines the main crate body API."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Implements streaming response bodies."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares response and streaming dependencies."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents response conversion and body behavior."
+    },
+    {
+      "path": "examples/sse/src/main.rs",
+      "reason": "Demonstrates server-sent events."
+    },
+    {
+      "path": "examples/stream-to-file/src/main.rs",
+      "reason": "Demonstrates streaming request data to a file."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "response",
+    "streaming",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

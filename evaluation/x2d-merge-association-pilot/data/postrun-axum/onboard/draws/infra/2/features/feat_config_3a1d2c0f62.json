@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_3a1d2c0f62",
+  "title": "Cargo dependency policy",
+  "summary": "The cargo-deny configuration sets advisory, license, duplicate-version, and source policies for dependencies.\n\nAgent mapper reason: Dependency policy is a distinct configuration concern, and the CI workflow shows where the policy is enforced.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "deny.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "deny.toml",
+      "reason": "Defines dependency advisory, license, ban, and source rules."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Runs cargo-deny against the axum manifest."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "advisories",
+    "licenses",
+    "policy"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:23:24.807Z",
+  "updatedAt": "2026-10-31T18:23:24.807Z"
+}

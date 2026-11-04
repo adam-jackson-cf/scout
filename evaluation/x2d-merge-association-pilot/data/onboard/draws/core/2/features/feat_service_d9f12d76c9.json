@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d9f12d76c9",
+  "title": "HTTP routing and router composition",
+  "summary": "Route registration, request dispatch, path handling, and router inclusion.\n\nAgent mapper reason: These route and router behaviors share one implementation module and are exercised by focused tests for inclusion, path matching, defaults, and dispatch.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/routing.py",
+      "symbol": "APIRouter",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Implements HTTP route declarations, router composition, endpoint dispatch, and route-level request and response behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "The application exposes and configures routers."
+    },
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "Route dispatch resolves endpoint dependencies."
+    },
+    {
+      "path": "fastapi/openapi/utils.py",
+      "reason": "Route metadata is used to build the OpenAPI schema."
+    },
+    {
+      "path": "fastapi/websockets.py",
+      "reason": "Shares routing concepts while implementing WebSocket routes separately."
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_path.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_router_redirect_slashes.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_extra_routes.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_starlette_urlconvertors.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_sub_callbacks.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_include_route.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_empty_router.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_route_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_path.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_invalid_path_param.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_redirect_slashes.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_extra_routes.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_default_response_class_router.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_generate_unique_id_function.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_starlette_urlconvertors.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_sub_callbacks.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "http",
+    "routing",
+    "router"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:44:23.949Z",
+  "updatedAt": "2026-10-30T12:44:23.949Z"
+}

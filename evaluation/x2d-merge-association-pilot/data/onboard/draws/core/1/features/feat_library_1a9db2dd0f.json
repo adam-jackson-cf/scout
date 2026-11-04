@@ -1,0 +1,140 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1a9db2dd0f",
+  "title": "Dependency injection",
+  "summary": "Models dependency graphs and resolves dependencies, including overrides, caching, and context-managed dependencies.\n\nAgent mapper reason: The package models and resolves dependency graphs, while the listed tests cover graph construction, execution, overrides, caching, and security integration.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/dependencies/__init__.py",
+      "reason": "Defines the dependency package interface."
+    },
+    {
+      "path": "fastapi/dependencies/models.py",
+      "reason": "Defines dependency graph and parameter models."
+    },
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "Analyzes and solves dependency graphs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/params.py",
+      "reason": "Depends and related parameter declarations provide inputs to dependency analysis."
+    },
+    {
+      "path": "fastapi/security/base.py",
+      "reason": "Security dependencies integrate with dependency resolution."
+    },
+    {
+      "path": "tests/test_dependency_cache.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_generic_parameterless_depends.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_repeated_dependency_schema.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_cache.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextvars.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_duplicates.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_normal_exceptions.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_generic_parameterless_depends.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_http_connection_injection.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_repeated_dependency_schema.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "dependency-injection",
+    "caching",
+    "overrides"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "auth"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:42:38.051Z",
+  "updatedAt": "2026-10-30T12:42:38.051Z"
+}

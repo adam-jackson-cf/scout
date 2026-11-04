@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_7c9123e499",
+  "title": "Static file serving",
+  "summary": "Exposes static file serving integration.\n\nAgent mapper reason: The module is a discrete filesystem-facing integration; no directly matching test file appears in the supplied inventory.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/staticfiles.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/staticfiles.py",
+      "reason": "Provides FastAPI's static file serving export."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "Static file applications are mounted on the ASGI application."
+    },
+    {
+      "path": "fastapi/requests.py",
+      "reason": "Static file requests pass through the request handling stack."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "static-files",
+    "filesystem"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

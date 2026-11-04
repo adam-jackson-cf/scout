@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_344ea263cb",
+  "title": "Workspace CI and repository policy",
+  "summary": "Workspace-level build, formatting, dependency policy, contribution, and release context.\n\nAgent mapper reason: These files govern repository-wide validation and contribution policy, so changes should be reviewed together.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Defines the repository's CI workflow."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Configures dependency and license policy."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Configures issue reporting."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/bug_report.md",
+      "reason": "Defines the bug report template."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/feature_request.md",
+      "reason": "Defines the feature request template."
+    },
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "reason": "Defines pull request expectations."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Defines workspace membership and shared Cargo configuration."
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "reason": "Documents contribution workflow."
+    },
+    {
+      "path": "CHANGELOG.md",
+      "reason": "Records workspace-level changes."
+    },
+    {
+      "path": "ECOSYSTEM.md",
+      "reason": "Documents related ecosystem projects."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "workspace",
+    "ci",
+    "policy"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

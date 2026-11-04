@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_24e3d1bb14",
+  "title": "Example: WebSocket testing",
+  "summary": "Exercises WebSocket behavior in an application test setup.\n\nAgent mapper reason: This package focuses on exercising WebSocket interactions through test code.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "Implements the WebSocket test example."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/testing-websockets/Cargo.toml",
+      "reason": "Defines the example package."
+    },
+    {
+      "path": "axum/src/extract/ws.rs",
+      "reason": "Defines the protocol behavior under test."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Provides framework test-client context."
+    },
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "examples/testing-websockets/src/main.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "test-suite",
+    "websocket"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

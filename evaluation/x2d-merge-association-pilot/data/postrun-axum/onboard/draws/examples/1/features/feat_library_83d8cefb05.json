@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_83d8cefb05",
+  "title": "Custom extractor errors",
+  "summary": "Examples of several approaches to customizing extractor rejection behavior.\n\nAgent mapper reason: The entrypoint coordinates three related extractor-error techniques, so their implementations and README belong in one slice.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/customize-extractor-error/src/main.rs",
+      "reason": "Wires together the extractor error demonstrations."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/custom_extractor.rs",
+      "reason": "Implements a custom extractor and its error handling."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/derive_from_request.rs",
+      "reason": "Demonstrates rejection customization with a derived extractor."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Demonstrates rejection conversion using the with-rejection approach."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/customize-extractor-error/Cargo.toml",
+      "reason": "Defines the example crate and its dependencies."
+    },
+    {
+      "path": "examples/customize-extractor-error/README.md",
+      "reason": "Explains the approaches demonstrated by the source files."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "extractor",
+    "rejection",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:17:43.772Z",
+  "updatedAt": "2026-10-31T18:17:43.772Z"
+}

@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_d029516294",
+  "title": "Approved-label automation",
+  "summary": "Applies approved labels through a workflow and its supporting script.\n\nAgent mapper reason: The workflow and script jointly implement a focused label operation, separate from general issue triage.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Defines when approved-label automation runs."
+    },
+    {
+      "path": "scripts/label_approved.py",
+      "reason": "Implements the approval label behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/labeler.yml",
+      "reason": "Provides related repository label configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "labels",
+    "approval"
+  ],
+  "trustBoundaries": [
+    "network",
+    "auth",
+    "permissions",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:07:11.018Z",
+  "updatedAt": "2026-10-30T13:07:11.018Z"
+}

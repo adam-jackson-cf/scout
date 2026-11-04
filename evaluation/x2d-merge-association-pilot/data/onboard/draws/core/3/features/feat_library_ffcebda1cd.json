@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ffcebda1cd",
+  "title": "Data structures",
+  "summary": "Defines FastAPI data structures used to represent request and response values.\n\nAgent mapper reason: A dedicated data structure module and matching test file form a bounded shared-library slice.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/datastructures.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/datastructures.py",
+      "reason": "Provides FastAPI data structure exports and behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/requests.py",
+      "reason": "Request handling consumes request-related data structures."
+    },
+    {
+      "path": "fastapi/responses.py",
+      "reason": "Response behavior can consume shared data structures."
+    },
+    {
+      "path": "tests/test_datastructures.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_datastructures.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "data-structures",
+    "shared-library"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

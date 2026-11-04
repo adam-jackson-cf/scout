@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6fcfa3af53",
+  "title": "Middleware and application lifecycle",
+  "summary": "Middleware composition, application events, and background task execution.\n\nAgent mapper reason: These features run around or after request handling and share application lifecycle semantics; the tests cover middleware exception propagation and router events.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/middleware/tutorial001.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/middleware/tutorial001.py",
+      "reason": "Introduces middleware configuration."
+    },
+    {
+      "path": "docs_src/advanced_middleware/tutorial001.py",
+      "reason": "Demonstrates advanced middleware behavior."
+    },
+    {
+      "path": "docs_src/advanced_middleware/tutorial002.py",
+      "reason": "Continues advanced middleware examples."
+    },
+    {
+      "path": "docs_src/advanced_middleware/tutorial003.py",
+      "reason": "Shows additional middleware patterns."
+    },
+    {
+      "path": "docs_src/events/tutorial001.py",
+      "reason": "Introduces application lifecycle events."
+    },
+    {
+      "path": "docs_src/events/tutorial002.py",
+      "reason": "Continues lifecycle examples."
+    },
+    {
+      "path": "docs_src/events/tutorial003.py",
+      "reason": "Demonstrates another lifecycle pattern."
+    },
+    {
+      "path": "docs_src/background_tasks/tutorial001.py",
+      "reason": "Introduces background tasks."
+    },
+    {
+      "path": "docs_src/background_tasks/tutorial002.py",
+      "reason": "Demonstrates additional background task behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/middleware.md",
+      "reason": "Documents middleware usage."
+    },
+    {
+      "path": "docs/en/docs/advanced/middleware.md",
+      "reason": "Documents advanced middleware patterns."
+    },
+    {
+      "path": "docs/en/docs/advanced/events.md",
+      "reason": "Documents lifecycle events."
+    },
+    {
+      "path": "docs/en/docs/tutorial/background-tasks.md",
+      "reason": "Documents background task usage."
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_events.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "lifecycle",
+    "background-tasks"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:10:26.524Z",
+  "updatedAt": "2026-10-30T13:10:26.524Z"
+}

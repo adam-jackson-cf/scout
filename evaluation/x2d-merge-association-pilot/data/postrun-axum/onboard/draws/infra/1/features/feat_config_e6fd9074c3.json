@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_e6fd9074c3",
+  "title": "Patch review configuration",
+  "summary": "Configuration file associated with patch review; its precise consumer is unclear from the inventory.\n\nAgent mapper reason: Keep this file as its own bounded slice because its patch-related role may be independent of CI; confirm its consumer before assigning broader behavior.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "low",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/patch.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "The path and filename indicate patch-related configuration, but the inventory does not reveal its format's consumer."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Nearby workflow configuration may clarify how this file is used."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "patch",
+    "github",
+    "config"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:22:28.523Z",
+  "updatedAt": "2026-10-31T18:22:28.523Z"
+}

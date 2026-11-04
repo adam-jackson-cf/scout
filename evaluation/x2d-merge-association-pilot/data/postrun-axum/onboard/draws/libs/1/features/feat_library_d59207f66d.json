@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_d59207f66d",
+  "title": "axum-core request extension traits",
+  "summary": "Convenience traits for accessing extensions on requests and request parts.\n\nAgent mapper reason: The three files form one small API for extension access across request representations.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "symbol": "ext_traits",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/ext_traits/mod.rs",
+      "reason": "Defines the extension-trait module surface."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request.rs",
+      "reason": "Implements extension access for complete requests."
+    },
+    {
+      "path": "axum-core/src/ext_traits/request_parts.rs",
+      "reason": "Implements extension access for request parts."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Shows the public exports for these traits."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Shares request-parts concepts with the extension helpers."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "extensions",
+    "requests"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

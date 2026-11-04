@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_7138744ea3",
+  "title": "Issue triage and labeling",
+  "summary": "Automates issue management, approval labels, and issue labeling.\n\nAgent mapper reason: The issue management and labeling workflows share issue events and repository label policy; the script implements one of these flows.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Defines issue management automation."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Runs approval labeling automation."
+    },
+    {
+      "path": ".github/workflows/labeler.yml",
+      "reason": "Runs repository issue labeling automation."
+    },
+    {
+      "path": ".github/labeler.yml",
+      "reason": "Configures label matching rules."
+    },
+    {
+      "path": "scripts/label_approved.py",
+      "reason": "Implements approval label handling."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/ISSUE_TEMPLATE/config.yml",
+      "reason": "Configures issue template behavior."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Provides a privileged issue template relevant to issue handling."
+    },
+    {
+      "path": "requirements-github-actions.txt",
+      "reason": "Lists dependencies used by GitHub Actions."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "issue-triage",
+    "labels"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "external-api",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:04:37.239Z",
+  "updatedAt": "2026-10-30T13:04:37.239Z"
+}

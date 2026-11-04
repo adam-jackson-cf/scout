@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f88ddc7e34",
+  "title": "debug_handler attribute macro",
+  "summary": "Generates handler checks and diagnostics for extractor arguments, state, and response types.\n\nAgent mapper reason: The implementation and compile-pass/compile-fail fixtures define one macro contract: accepted handler shapes and the diagnostics for invalid ones.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "Implements the debug_handler macro expansion and compile-time checks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/tests/debug_handler/pass/multiple_extractors.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/infer_state.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/argument_not_extractor.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/argument_not_extractor.stderr",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/pass/multiple_extractors.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/infer_state.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/argument_not_extractor.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/argument_not_extractor.stderr",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "attribute-macro",
+    "handler",
+    "diagnostics"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:13:46.614Z",
+  "updatedAt": "2026-10-31T18:13:46.614Z"
+}

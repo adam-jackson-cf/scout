@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_2cbd8cd0ff",
+  "title": "ASGI middleware",
+  "summary": "Provides middleware adapters for CORS, compression, HTTPS redirects, trusted hosts, and WSGI applications.\n\nAgent mapper reason: These modules form FastAPI's middleware integration layer; the provided inventory has limited middleware-specific tests, so application and middleware exception tests serve as nearby behavioral context.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/middleware/__init__.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/middleware/__init__.py",
+      "reason": "Defines the middleware package interface."
+    },
+    {
+      "path": "fastapi/middleware/cors.py",
+      "reason": "Provides CORS middleware integration."
+    },
+    {
+      "path": "fastapi/middleware/gzip.py",
+      "reason": "Provides gzip middleware integration."
+    },
+    {
+      "path": "fastapi/middleware/httpsredirect.py",
+      "reason": "Provides HTTPS redirect middleware integration."
+    },
+    {
+      "path": "fastapi/middleware/trustedhost.py",
+      "reason": "Provides trusted-host middleware integration."
+    },
+    {
+      "path": "fastapi/middleware/wsgi.py",
+      "reason": "Provides WSGI application middleware integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "Middleware is installed around the ASGI application."
+    },
+    {
+      "path": "fastapi/exception_handlers.py",
+      "reason": "Middleware and exception handling interact in request processing."
+    },
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_custom_middleware_exception.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "asgi"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

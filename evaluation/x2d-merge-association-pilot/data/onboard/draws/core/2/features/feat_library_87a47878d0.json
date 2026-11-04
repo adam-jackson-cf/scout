@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_87a47878d0",
+  "title": "Static files and templating integrations",
+  "summary": "Static file serving and template response helpers.\n\nAgent mapper reason: Both modules adapt common ASGI integrations to FastAPI applications; no directly named tests for these modules appear in the supplied inventory.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/staticfiles.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/staticfiles.py",
+      "reason": "Provides FastAPI's static file integration."
+    },
+    {
+      "path": "fastapi/templating.py",
+      "reason": "Provides template rendering integration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "Applications mount static files and use template response helpers."
+    },
+    {
+      "path": "fastapi/responses.py",
+      "reason": "Template integration returns HTTP responses."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "static-files",
+    "templating",
+    "integration"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:44:23.949Z",
+  "updatedAt": "2026-10-30T12:44:23.949Z"
+}

@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_5d7b3ffca4",
+  "title": "Procedural macro crate facade",
+  "summary": "Registers and exposes the axum-macros procedural macro API.\n\nAgent mapper reason: This is the public boundary that connects consumers to the macro implementations; review it with changes to macro registration or exports.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Defines the crate-level macro exports and module wiring."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Declares the crate and its compile-time dependencies."
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Documents the public macro crate."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "rust",
+    "proc-macro",
+    "api"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:16:17.255Z",
+  "updatedAt": "2026-10-31T18:16:17.255Z"
+}

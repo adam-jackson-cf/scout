@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_df9f01e7a1",
+  "title": "Axum macros crate surface and build configuration",
+  "summary": "Registers the procedural macros and defines the crate package and toolchain contract.\n\nAgent mapper reason: These files establish how the macro implementations are exposed, built, and documented; review them together when the crate surface or package contract changes.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Central procedural macro registration and module surface."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Defines the crate package and build dependencies."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Sets the package toolchain."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Documents the public macro API and intended usage."
+    },
+    {
+      "path": "axum-macros/CHANGELOG.md",
+      "reason": "Records package-level changes and compatibility context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "proc-macro",
+    "package"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:13:46.614Z",
+  "updatedAt": "2026-10-31T18:13:46.614Z"
+}

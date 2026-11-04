@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_2751bb445e",
+  "title": "Axum benchmarks",
+  "summary": "Benchmarks axum behavior and performance-sensitive paths.\n\nAgent mapper reason: The benchmark target should be reviewed with its package configuration when performance behavior changes.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum/benches/benches.rs",
+      "symbol": "benchmark suite",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "Defines package benchmarks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares benchmark dependencies and targets."
+    },
+    {
+      "path": "axum/benches/benches.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/benches/benches.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "benchmarks",
+    "performance"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_cc71dd165a",
+  "title": "GitHub project automation and actions",
+  "summary": "Issue, labeling, contributor, translation notification, and project-board automation.\n\nAgent mapper reason: These workflows and actions coordinate GitHub-side maintenance tasks and should be reviewed with their matching action definitions and label rules.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/add-to-project.yml",
+      "reason": "Automates project board updates."
+    },
+    {
+      "path": ".github/workflows/issue-manager.yml",
+      "reason": "Automates issue management."
+    },
+    {
+      "path": ".github/workflows/label-approved.yml",
+      "reason": "Applies labels to approved changes."
+    },
+    {
+      "path": ".github/workflows/labeler.yml",
+      "reason": "Automates labeling."
+    },
+    {
+      "path": ".github/workflows/latest-changes.yml",
+      "reason": "Automates latest change tracking."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Triggers translation notifications."
+    },
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Runs contributor-related automation."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Declares the translation notification action."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Implements the translation notification action."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Declares the people action."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Implements the people action."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/labeler.yml",
+      "reason": "Provides label matching rules."
+    },
+    {
+      "path": ".github/dependabot.yml",
+      "reason": "Configures dependency update automation."
+    },
+    {
+      "path": ".github/ISSUE_TEMPLATE/privileged.yml",
+      "reason": "Provides issue template context for automation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "automation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:10:26.524Z",
+  "updatedAt": "2026-10-30T13:10:26.524Z"
+}

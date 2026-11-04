@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9f1d27f4ba",
+  "title": "axum response types",
+  "summary": "Redirect and Server-Sent Events response helpers.\n\nAgent mapper reason: These files define specialized HTTP response types over the shared response conversion API.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Defines response exports and shared response behavior."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Implements redirect responses."
+    },
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Implements Server-Sent Events responses."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents response construction."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Defines the underlying response conversion contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "response",
+    "redirect",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

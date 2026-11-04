@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_9e430b54bc",
+  "title": "Documentation deployment and status",
+  "summary": "Deploys the documentation site and reports deployment status.\n\nAgent mapper reason: The deployment workflow and its status script concern the publication and reporting phase of the documentation lifecycle.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/deploy-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/deploy-docs.yml",
+      "reason": "Defines documentation deployment automation."
+    },
+    {
+      "path": "scripts/deploy_docs_status.py",
+      "reason": "Reports documentation deployment status."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Build output is the input to deployment."
+    },
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Provides site configuration relevant to deployment."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "docs",
+    "deployment",
+    "ci"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:04:37.239Z",
+  "updatedAt": "2026-10-30T13:04:37.239Z"
+}

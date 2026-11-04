@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_c6f107d211",
+  "title": "Axum path, query, and form extraction",
+  "summary": "Parses route parameters, query strings, and form encoded request data.\n\nAgent mapper reason: These extractors all deserialize request path or encoded form data into application values.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": "Path",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Deserializes route parameters."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Defines path parameter extraction."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Defines query string extraction."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Exposes raw form request data."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Exposes raw query string data."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Defines form encoded extraction and response behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Exports these extractors and their shared contracts."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Provides common extraction failure types."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extraction order and behavior."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares serialization and parsing dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "forms",
+    "deserialization"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

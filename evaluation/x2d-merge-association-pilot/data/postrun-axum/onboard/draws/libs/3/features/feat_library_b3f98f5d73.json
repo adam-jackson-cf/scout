@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b3f98f5d73",
+  "title": "axum-core body and error primitives",
+  "summary": "Core HTTP body and error types used by higher-level axum APIs.\n\nAgent mapper reason: Bodies and errors are foundational request and response contracts shared across the workspace.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/body.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines foundational body abstractions."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Defines core error behavior and conversions."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Shows how the primitives are exposed."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Shows the primary crate dependency on axum-core."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "http",
+    "body",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

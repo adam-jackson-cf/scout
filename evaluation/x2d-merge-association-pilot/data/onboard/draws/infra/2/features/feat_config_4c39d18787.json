@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_4c39d18787",
+  "title": "Lint and formatting checks",
+  "summary": "Provides local lint and formatting commands and pre-commit configuration.\n\nAgent mapper reason: These files configure and invoke the same local code quality checks; the project configuration supplies their tool settings.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "scripts/lint.sh",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Configures repository pre-commit checks."
+    },
+    {
+      "path": "scripts/lint.sh",
+      "reason": "Runs the repository lint command."
+    },
+    {
+      "path": "scripts/format.sh",
+      "reason": "Runs the repository formatting check."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Defines lint and formatter settings."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "lint",
+    "format",
+    "pre-commit"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:07:11.018Z",
+  "updatedAt": "2026-10-30T13:07:11.018Z"
+}

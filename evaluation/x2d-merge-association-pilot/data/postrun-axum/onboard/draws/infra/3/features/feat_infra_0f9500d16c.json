@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_0f9500d16c",
+  "title": "GitHub CI workflow",
+  "summary": "Automates repository checks through the inventoried GitHub Actions workflow.\n\nAgent mapper reason: This is the only inventoried CI workflow. Review it as automation configuration; its exact jobs and commands are not available from the inventory.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Defines the visible CI workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "The workflow may use the repository's Cargo package configuration."
+    },
+    {
+      "path": "deny.toml",
+      "reason": "Relevant if CI invokes dependency or license policy checks."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "ci"
+  ],
+  "trustBoundaries": [
+    "network",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:24:15.226Z",
+  "updatedAt": "2026-10-31T18:24:15.226Z"
+}

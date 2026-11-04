@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_3a1d2c0f62",
+  "title": "Dependency and license policy",
+  "summary": "Captures the repository's dependency-policy configuration.\n\nAgent mapper reason: Policy configuration should be reviewed alongside the package manifest and any CI use, while remaining bounded to the policy file.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "deny.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "deny.toml",
+      "reason": "Contains the inventoried dependency and license policy configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Declares the Rust package and dependencies to which policy may apply."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "May run checks based on this policy."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "license-policy",
+    "cargo"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:24:15.226Z",
+  "updatedAt": "2026-10-31T18:24:15.226Z"
+}

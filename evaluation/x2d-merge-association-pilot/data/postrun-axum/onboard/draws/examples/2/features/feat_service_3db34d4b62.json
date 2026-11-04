@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_3db34d4b62",
+  "title": "SQLx PostgreSQL integration",
+  "summary": "Demonstrates PostgreSQL access with SQLx.\n\nAgent mapper reason: The database access and HTTP behavior are combined in one independently packaged integration example.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "Implements the database-backed example service."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "Declares the package and database dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "postgresql",
+    "sqlx"
+  ],
+  "trustBoundaries": [
+    "network",
+    "database",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:19:10.259Z",
+  "updatedAt": "2026-10-31T18:19:10.259Z"
+}

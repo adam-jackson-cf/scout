@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_3a1d2c0f62",
+  "title": "Dependency policy configuration",
+  "summary": "Configuration for dependency review and policy enforcement.\n\nAgent mapper reason: Dependency policy has distinct review concerns from package metadata and CI orchestration, while Cargo.toml provides relevant dependency context.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "deny.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "deny.toml",
+      "reason": "Holds dependency policy configuration."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Declares package dependencies that dependency policy may evaluate."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "dependencies",
+    "policy",
+    "cargo"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:22:28.523Z",
+  "updatedAt": "2026-10-31T18:22:28.523Z"
+}

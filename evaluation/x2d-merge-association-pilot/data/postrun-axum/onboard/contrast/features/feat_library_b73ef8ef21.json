@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b73ef8ef21",
+  "title": "axum request body extractors: JSON and multipart",
+  "summary": "JSON and multipart request body parsing with associated rejection handling.\n\nAgent mapper reason: Both features consume request bodies and depend on consistent body limits, parsing, and rejection semantics.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/json.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Implements JSON body extraction and JSON responses."
+    },
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Implements multipart form body extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares JSON, multipart, and body dependencies."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines body extraction rejection behavior."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Provides the shared body limit behavior."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents body extractor behavior."
+    },
+    {
+      "path": "examples/multipart-form/src/main.rs",
+      "reason": "Demonstrates multipart handling."
+    },
+    {
+      "path": "examples/parse-body-based-on-content-type/src/main.rs",
+      "reason": "Demonstrates selecting body parsing by content type."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractor",
+    "body",
+    "json",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

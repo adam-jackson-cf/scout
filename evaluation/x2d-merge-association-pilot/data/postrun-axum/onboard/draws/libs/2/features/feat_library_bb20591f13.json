@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_bb20591f13",
+  "title": "axum-extra alternative handlers",
+  "summary": "Provides Either values and handler composition for alternative handler implementations.\n\nAgent mapper reason: The Either type and Or handler API work together to combine alternative handlers.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "symbol": "Or",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/either.rs",
+      "reason": "Defines the Either value used to represent alternatives."
+    },
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Declares and exports handler extensions."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Implements alternative handler composition."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Provides the base handler contract."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares the package and dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "handlers",
+    "composition"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

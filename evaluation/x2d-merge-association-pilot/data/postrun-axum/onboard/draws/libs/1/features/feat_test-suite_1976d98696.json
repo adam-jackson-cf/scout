@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_1976d98696",
+  "title": "axum test client helpers",
+  "summary": "In-crate utilities for constructing and exercising requests against Axum services.\n\nAgent mapper reason: The helper module and client support in-process tests of HTTP request and response behavior.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "symbol": "test_helpers",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Defines the internal test-helper module."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Implements the test client used to exercise services."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "Shows the routing test harness that can consume the helpers."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares test-only dependencies and targets."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "tests",
+    "test-client"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

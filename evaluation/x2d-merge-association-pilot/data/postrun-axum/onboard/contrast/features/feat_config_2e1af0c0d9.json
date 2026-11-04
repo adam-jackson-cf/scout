@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_2e1af0c0d9",
+  "title": "Example: TLS certificates",
+  "summary": "Provides self-signed certificate inputs for the TLS examples.\n\nAgent mapper reason: These example-only certificate and key files are shared setup inputs for the two TLS demonstrations.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/tls-rustls/self_signed_certs/cert.pem",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/tls-rustls/self_signed_certs/cert.pem",
+      "reason": "Example TLS certificate input."
+    },
+    {
+      "path": "examples/tls-rustls/self_signed_certs/key.pem",
+      "reason": "Example TLS private-key input."
+    },
+    {
+      "path": "examples/low-level-rustls/self_signed_certs/cert.pem",
+      "reason": "Example low-level TLS certificate input."
+    },
+    {
+      "path": "examples/low-level-rustls/self_signed_certs/key.pem",
+      "reason": "Example low-level TLS private-key input."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/tls-rustls/src/main.rs",
+      "reason": "Consumes the high-level TLS inputs."
+    },
+    {
+      "path": "examples/low-level-rustls/src/main.rs",
+      "reason": "Consumes the low-level TLS inputs."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "tls",
+    "certificates"
+  ],
+  "trustBoundaries": [
+    "secrets",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

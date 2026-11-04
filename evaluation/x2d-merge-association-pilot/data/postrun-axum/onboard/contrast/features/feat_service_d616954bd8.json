@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_d616954bd8",
+  "title": "Example: JWT authentication",
+  "summary": "Demonstrates token-based authentication in Axum handlers.\n\nAgent mapper reason: Token parsing and authorization are security-sensitive and form a cohesive authentication flow.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/jwt/src/main.rs",
+      "reason": "Implements token validation and authenticated routes."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/jwt/Cargo.toml",
+      "reason": "Defines the example package and token dependencies."
+    },
+    {
+      "path": "axum/src/extract/state.rs",
+      "reason": "Provides state access for authentication configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "jwt",
+    "authentication"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "secrets",
+    "auth",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

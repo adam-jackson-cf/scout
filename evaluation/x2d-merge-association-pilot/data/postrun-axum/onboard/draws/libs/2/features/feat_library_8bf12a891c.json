@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8bf12a891c",
+  "title": "Axum error handling",
+  "summary": "Converts service errors into HTTP responses and documents error handling behavior.\n\nAgent mapper reason: The adapter and its routing test cover how service failures become user-visible HTTP responses.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "symbol": "HandleError",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Implements service error handling adapters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Documents the error handling model."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "Exercises error handling through routing."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Router integration determines error handling composition."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "errors",
+    "service",
+    "response"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

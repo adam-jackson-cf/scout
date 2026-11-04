@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_job_a8d76cf784",
+  "title": "Translation workflow",
+  "summary": "Handles translation tooling and translation notifications.\n\nAgent mapper reason: The translation script and notification action are the inventory's translation-specific tools and automation.",
+  "kind": "job",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "scripts/translate.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "scripts/translate.py",
+      "reason": "Provides the repository translation script."
+    },
+    {
+      "path": ".github/workflows/notify-translations.yml",
+      "reason": "Triggers translation notification automation."
+    },
+    {
+      "path": ".github/actions/notify-translations/action.yml",
+      "reason": "Defines the reusable translation notification action."
+    },
+    {
+      "path": ".github/actions/notify-translations/app/main.py",
+      "reason": "Implements the translation notification action."
+    },
+    {
+      "path": ".github/actions/notify-translations/Dockerfile",
+      "reason": "Defines the action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "requirements-translations.txt",
+      "reason": "Lists translation tooling dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "translations",
+    "github-actions"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "permissions",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:04:37.239Z",
+  "updatedAt": "2026-10-30T13:04:37.239Z"
+}

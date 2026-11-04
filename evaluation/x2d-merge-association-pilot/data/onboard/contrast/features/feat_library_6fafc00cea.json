@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6fafc00cea",
+  "title": "Routers, larger applications, and proxy deployment",
+  "summary": "Composing routers and apps, including proxy-aware request handling examples.\n\nAgent mapper reason: Router composition and proxy handling both affect how incoming paths map to application operations; the tutorial app and router tests provide focused intent.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "docs_src/bigger_applications/app/main.py",
+      "reason": "Assembles the larger tutorial app."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/dependencies.py",
+      "reason": "Defines dependencies shared by tutorial routes."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/items.py",
+      "reason": "Defines the items router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/routers/users.py",
+      "reason": "Defines the users router."
+    },
+    {
+      "path": "docs_src/bigger_applications/app/internal/admin.py",
+      "reason": "Shows an internal router in the app."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an/main.py",
+      "reason": "Shows the Annotated syntax variant."
+    },
+    {
+      "path": "docs_src/bigger_applications/app_an_py39/main.py",
+      "reason": "Shows the Python 3.9 Annotated variant."
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial001.py",
+      "reason": "Introduces proxy deployment behavior."
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial002.py",
+      "reason": "Continues proxy configuration examples."
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial003.py",
+      "reason": "Shows additional proxy behavior."
+    },
+    {
+      "path": "docs_src/behind_a_proxy/tutorial004.py",
+      "reason": "Completes the listed proxy examples."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/bigger-applications.md",
+      "reason": "Documents router composition."
+    },
+    {
+      "path": "docs/en/docs/advanced/behind-a-proxy.md",
+      "reason": "Documents proxy-related request handling."
+    },
+    {
+      "path": "tests/test_include_route.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_router_redirect_slashes.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_include_route.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_include_router_defaults_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_prefix_with_template.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_router_redirect_slashes.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "routers",
+    "proxy",
+    "application-composition"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:10:26.524Z",
+  "updatedAt": "2026-10-30T13:10:26.524Z"
+}

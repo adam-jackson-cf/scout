@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_73fbc5ebe6",
+  "title": "axum-extra JSON Lines",
+  "summary": "JSON Lines response or streaming support.\n\nAgent mapper reason: JSON Lines has a distinct wire format and streaming contract that merits a focused review.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Implements JSON Lines encoding and API behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Shows public exports."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Shows serialization dependencies and feature gates."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Defines response conversion contracts."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "json",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

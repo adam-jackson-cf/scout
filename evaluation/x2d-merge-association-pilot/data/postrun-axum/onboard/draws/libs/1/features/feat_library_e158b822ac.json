@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_e158b822ac",
+  "title": "axum-extra resource and typed routing",
+  "summary": "Routing helpers for resource-style routes and typed paths.\n\nAgent mapper reason: These files add route construction helpers on top of Axum's core router.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "symbol": "routing",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/routing/mod.rs",
+      "reason": "Defines and exports extra routing helpers."
+    },
+    {
+      "path": "axum-extra/src/routing/resource.rs",
+      "reason": "Implements resource-oriented routing."
+    },
+    {
+      "path": "axum-extra/src/routing/typed.rs",
+      "reason": "Implements typed routing and path support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Shows crate-level routing exports."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares routing dependencies or features."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Provides the router API these helpers extend."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "routing",
+    "typed-routes"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_b3f98f5d73",
+  "title": "axum-core body and error primitives",
+  "summary": "Core body abstraction and error type shared by the higher-level Axum crates.\n\nAgent mapper reason: Body and error primitives establish shared contracts used across the workspace.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/body.rs",
+      "symbol": "Body",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines the core HTTP body abstraction."
+    },
+    {
+      "path": "axum-core/src/error.rs",
+      "reason": "Defines the shared error wrapper."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Declares the crate and its dependencies."
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Documents the crate's role and public usage."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "body",
+    "errors"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

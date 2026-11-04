@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9e9ba5abf3",
+  "title": "axum-extra extractors",
+  "summary": "Provides cached, form, query, and custom rejection extraction utilities.\n\nAgent mapper reason: These files extend axum extraction with convenience behavior while using shared extractor contracts.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": "extra extractor API",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Implements cached extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Provides extra form extraction behavior."
+    },
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Declares and exports extra extractors."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Provides extra query extraction behavior."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Allows extractors to use a selected rejection type."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Provides the shared extractor contracts."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Provides main crate rejection conventions."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares the package and dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "extractors",
+    "forms",
+    "query"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

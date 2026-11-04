@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_399e96b3ef",
+  "title": "Axum server-sent events",
+  "summary": "Creates streaming Server-Sent Events responses.\n\nAgent mapper reason: SSE has event framing and long-lived stream behavior that merits a focused review slice.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "symbol": "Sse",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/sse.rs",
+      "reason": "Implements Server-Sent Events response streaming."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Exports response types."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Provides related streaming body behavior."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents response behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "streaming",
+    "sse"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

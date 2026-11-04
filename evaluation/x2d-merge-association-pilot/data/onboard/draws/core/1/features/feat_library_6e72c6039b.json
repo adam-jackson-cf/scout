@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6e72c6039b",
+  "title": "WebSocket routing and dependencies",
+  "summary": "Implements WebSocket endpoint support and its dependency resolution behavior.\n\nAgent mapper reason: WebSocket connection handling and dependency injection are a distinct user-facing flow with dedicated router and dependency tests.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/websockets.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/websockets.py",
+      "reason": "Defines FastAPI’s WebSocket abstraction and related exports."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "WebSocket routes share route and dependency machinery."
+    },
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "WebSocket endpoint parameters are resolved through dependency logic."
+    },
+    {
+      "path": "tests/test_ws_dependencies.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_ws_router.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_ws_dependencies.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_ws_router.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "websocket",
+    "routing",
+    "dependencies"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "auth"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:42:38.051Z",
+  "updatedAt": "2026-10-30T12:42:38.051Z"
+}

@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_cd72fa5bc7",
+  "title": "Template rendering",
+  "summary": "Exposes template rendering integration for application responses.\n\nAgent mapper reason: Templating is a discrete integration module; the supplied test inventory has no directly matching template test.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/templating.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/templating.py",
+      "reason": "Provides FastAPI's templating integration export."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/requests.py",
+      "reason": "Template rendering uses request context."
+    },
+    {
+      "path": "fastapi/responses.py",
+      "reason": "Rendered templates are returned through response behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "templates",
+    "rendering"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

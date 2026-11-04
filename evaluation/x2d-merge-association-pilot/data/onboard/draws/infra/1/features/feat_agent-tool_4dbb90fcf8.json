@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_agent-tool_4dbb90fcf8",
+  "title": "People GitHub Action",
+  "summary": "Implements the repository's people automation action.\n\nAgent mapper reason: The action implementation, runtime definition, and invoking workflow form a self-contained automation unit.",
+  "kind": "agent-tool",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/people.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/people.yml",
+      "reason": "Invokes the people automation."
+    },
+    {
+      "path": ".github/actions/people/action.yml",
+      "reason": "Defines the reusable people action."
+    },
+    {
+      "path": ".github/actions/people/app/main.py",
+      "reason": "Implements the action behavior."
+    },
+    {
+      "path": ".github/actions/people/Dockerfile",
+      "reason": "Defines the action runtime image."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "requirements-github-actions.txt",
+      "reason": "Lists dependencies used by GitHub Actions."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "github-actions",
+    "repository-automation"
+  ],
+  "trustBoundaries": [
+    "network",
+    "external-api",
+    "secrets",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:04:37.239Z",
+  "updatedAt": "2026-10-30T13:04:37.239Z"
+}

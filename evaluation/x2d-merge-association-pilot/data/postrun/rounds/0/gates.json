@@ -1,0 +1,108 @@
+{
+ "core_gate": {
+  "core_share_owned": 1.0,
+  "enabled": false
+ },
+ "fan_out_primary": false,
+ "gates": {
+  "K2": {
+   "bound": 0.9,
+   "n": null,
+   "note": "stops when share >= 0.9",
+   "status": "PASS",
+   "value": 0.5848484848484848
+  },
+  "K3": {
+   "bound": 0.4,
+   "n": null,
+   "note": "stops when share > 0.4",
+   "status": "PASS",
+   "value": 0.051515151515151514
+  },
+  "K4": {
+   "bound": 0.6,
+   "n": 20,
+   "note": "needs >= 20 D units with both labeller sessions parsed; decides on kappa of the joint answer only (kappa_covered reported with raw agreement and prevalence)",
+   "status": "PASS",
+   "value": {
+    "kappa_answer": 1.0,
+    "kappa_covered": 1.0,
+    "prevalence_covered": 1.0,
+    "raw_agreement_answer": 1.0,
+    "raw_agreement_covered": 1.0
+   }
+  },
+  "K5": {
+   "bound": 0.15,
+   "n": 50,
+   "note": "flip rate within 0.15",
+   "status": "PASS",
+   "value": 0.04
+  },
+  "K6_N1": {
+   "bound": 0.2,
+   "n": 50,
+   "note": "N1: the Choice follows option text, not position or id (P1 is the path-cue test). Jev accuracy on the shuffled catalogue over gold-covered D+P units (manifest n1.units); one-sided 90 % Wilson upper bound <= max(2/K, 0.20)",
+   "status": "PASS",
+   "value": {
+    "B2_unaffected": true,
+    "K": 114,
+    "jev_accuracy": 0.0,
+    "units_without_arm_row": 0,
+    "wilson_ub90": 0.03180284473263897
+   }
+  },
+  "P1": {
+   "bound": {
+    "baseline_max": 0.2,
+    "jev_min": 0.6
+   },
+   "n": 20,
+   "note": "a P1 control missing from units.jsonl (rules (a)-(f) resolved it) fails the gate",
+   "rules_resolved_units": 0,
+   "status": "FAIL",
+   "value": {
+    "B1": 0.05,
+    "B2": 0.05,
+    "V-sem": 0.45
+   }
+  },
+  "P2": {
+   "bound": 0.8,
+   "n": 7,
+   "note": "planted-gap gate: V-sem none rate over the gap positives (P2 clones whose derived gold is none / gap; >= 8) >= the new-area gate minimum; every none must score as none_correct_gap; clones whose derived gold stays covered are reported in retained_covered (correct = the retained acceptable area), not in the denominator; below 8 label-derived gap positives the gate is FAIL when at least 2 gap positives were not answered none (no denominator of 8 could reach the minimum) or a none is not none_correct_gap, else UNMEASURED (counts reported either way; the round-0 critique rules on it, R3-04, R4-04); when UNMEASURED RESULTS states \"R_new on catalogue gaps has no planted test\"",
+   "status": "FAIL",
+   "value": {
+    "gap_positives": 7,
+    "no_agreed_gold": 0,
+    "none_correct_gap": 4,
+    "none_correct_gap_rate": 0.5714285714285714,
+    "none_rate": 0.5714285714285714,
+    "p2_clones": 12,
+    "retained_covered": {
+     "assigned_correct": 1,
+     "n": 5
+    }
+   }
+  },
+  "planted_new": {
+   "bound": 0.8,
+   "n": 3,
+   "note": "planted item -> none (gold none_kind new from the control key); bound = the round-0 new-area gate minimum (x2d.NEW_AREA_GATE_MIN; a round-0 gate, not a verdict condition)",
+   "status": "PASS",
+   "value": {
+    "none_rate": 1.0,
+    "reported_as": "none_correct_new",
+    "reported_as_n": 3
+   }
+  },
+  "real_none_proxy": {
+   "bound": null,
+   "n": 98,
+   "note": "frozen-round stratum-3 clusters whose parent directory exists in the C0 tree (K3) plus new_dir clusters, excluding core_gate: an indicator of the real gold-none positives available in rounds 8-10 (stratum 3 != gold none); descriptive only: P_new / R_new are reported with intervals and never veto the verdict (R4-13)",
+   "status": "INFO",
+   "value": 39
+  }
+ },
+ "pr_note": "K5 FAIL is recorded as PASS with fan_out_primary (documented switch)"
+}

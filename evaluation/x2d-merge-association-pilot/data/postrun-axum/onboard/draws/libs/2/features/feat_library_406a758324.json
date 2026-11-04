@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_406a758324",
+  "title": "Axum middleware",
+  "summary": "Transforms requests and responses and builds middleware from extractors or functions.\n\nAgent mapper reason: The modules form the request and response transformation pipeline used around handlers and routes.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "symbol": "middleware API",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/middleware/from_extractor.rs",
+      "reason": "Builds middleware from an extractor."
+    },
+    {
+      "path": "axum/src/middleware/from_fn.rs",
+      "reason": "Builds middleware from functions."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Transforms incoming requests."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Transforms outgoing responses."
+    },
+    {
+      "path": "axum/src/middleware/mod.rs",
+      "reason": "Defines and exports middleware APIs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/middleware.md",
+      "reason": "Documents middleware composition and behavior."
+    },
+    {
+      "path": "axum/src/docs/method_routing/layer.md",
+      "reason": "Documents method router layers."
+    },
+    {
+      "path": "axum/src/docs/method_routing/route_layer.md",
+      "reason": "Documents route-specific layers."
+    },
+    {
+      "path": "axum/src/docs/routing/layer.md",
+      "reason": "Documents router layers."
+    },
+    {
+      "path": "axum/src/docs/routing/route_layer.md",
+      "reason": "Documents route-specific layers."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "middleware",
+    "request",
+    "response"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

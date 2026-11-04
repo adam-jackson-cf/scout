@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_341749b161",
+  "title": "axum-core extractor contracts",
+  "summary": "Common extractor traits, tuple support, state references, body limits, and rejection types.\n\nAgent mapper reason: These modules establish the reusable contracts and shared behavior that concrete extractors build on.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": "FromRequest",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Defines default request body limits."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Provides reference-based state extraction."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines and exports shared extraction contracts."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Defines shared extractor rejection behavior."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Defines extraction from request parts."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Supports extracting tuples of values."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Exports the extraction API."
+    },
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Request body limits apply to the shared body type."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Declares the package and dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "core",
+    "extractors",
+    "request"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_56ceb798e0",
+  "title": "Axum test client helpers",
+  "summary": "Provides test support for building and exercising axum services.\n\nAgent mapper reason: These helpers provide a distinct in-process testing interface for application services.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "symbol": "TestClient",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/test_helpers/mod.rs",
+      "reason": "Declares and exports test helper APIs."
+    },
+    {
+      "path": "axum/src/test_helpers/test_client.rs",
+      "reason": "Implements the in-process test client."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Test helpers exercise handler services."
+    },
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Test helpers exercise routers."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares package and test dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "testing",
+    "helpers",
+    "service"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

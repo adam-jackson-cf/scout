@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_212a4da11f",
+  "title": "axum form, JSON, and multipart extraction",
+  "summary": "Body-based extractors for URL-encoded forms, JSON, and multipart requests.\n\nAgent mapper reason: These extractors consume request bodies and translate their contents into typed values, with shared limits and rejection behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/form.rs",
+      "symbol": "Form",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/multipart.rs",
+      "reason": "Implements multipart request extraction."
+    },
+    {
+      "path": "axum/src/extract/raw_form.rs",
+      "reason": "Implements raw form body extraction."
+    },
+    {
+      "path": "axum/src/form.rs",
+      "reason": "Implements URL-encoded form extraction."
+    },
+    {
+      "path": "axum/src/json.rs",
+      "reason": "Implements JSON request and response conversion."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows extractor exports and shared behavior."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines common rejection response conventions."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents body extractor behavior and ordering."
+    },
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents JSON response behavior."
+    },
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Provides the shared default body limit."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "forms",
+    "json",
+    "multipart"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

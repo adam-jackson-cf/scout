@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6f856a5ff5",
+  "title": "axum-core crate surface and macros",
+  "summary": "Core crate exports and macros that support its public API.\n\nAgent mapper reason: The crate root and its macros govern the public-facing surface and shared compile-time support.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "symbol": "axum_core",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Defines the crate-level module and export surface."
+    },
+    {
+      "path": "axum-core/src/macros.rs",
+      "reason": "Implements macros used by the core crate API."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Declares crate metadata and features."
+    },
+    {
+      "path": "axum-core/build.rs",
+      "reason": "Build-time configuration may affect the compiled crate surface."
+    },
+    {
+      "path": "axum-core/CHANGELOG.md",
+      "reason": "Records public API changes."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "public-api",
+    "macros"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

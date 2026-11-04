@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_f51c1464e1",
+  "title": "Test and coverage workflow",
+  "summary": "Runs the repository test workflow and its local test and coverage helpers.\n\nAgent mapper reason: The CI workflows and local scripts coordinate test execution and coverage, with test requirements and project configuration providing their dependencies and settings.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Defines the primary CI test workflow."
+    },
+    {
+      "path": ".github/workflows/test-redistribute.yml",
+      "reason": "Defines a related test redistribution workflow."
+    },
+    {
+      "path": "scripts/test.sh",
+      "reason": "Provides a local test runner."
+    },
+    {
+      "path": "scripts/test-cov-html.sh",
+      "reason": "Provides a local coverage report helper."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "requirements-tests.txt",
+      "reason": "Test dependency specification."
+    },
+    {
+      "path": "requirements-docs-tests.txt",
+      "reason": "Documentation test dependency specification."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Project test and tool configuration."
+    },
+    {
+      "path": "scripts/test.sh",
+      "reason": "nearby test"
+    },
+    {
+      "path": "scripts/test-cov-html.sh",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "scripts/test.sh",
+      "command": null
+    },
+    {
+      "path": "scripts/test-cov-html.sh",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "pytest",
+    "coverage"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:07:11.018Z",
+  "updatedAt": "2026-10-30T13:07:11.018Z"
+}

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_deaeed1d70",
+  "title": "axum body handling",
+  "summary": "Main crate body abstractions and streaming response bodies.\n\nAgent mapper reason: The module surface and stream implementation share the main crate's body lifecycle and streaming behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines and exports body APIs."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Implements stream-backed body behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Defines foundational body contracts."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Shows body-related dependencies and features."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "body",
+    "streaming"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

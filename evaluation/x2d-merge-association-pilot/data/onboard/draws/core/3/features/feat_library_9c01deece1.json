@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9c01deece1",
+  "title": "Security foundations",
+  "summary": "Provides shared security dependency bases and package-level security exports.\n\nAgent mapper reason: These files supply common security dependency behavior and exports used by the individual authentication schemes.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/security/base.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/security/__init__.py",
+      "reason": "Exports the public security dependency API."
+    },
+    {
+      "path": "fastapi/security/base.py",
+      "reason": "Defines the shared security dependency base."
+    },
+    {
+      "path": "fastapi/security/utils.py",
+      "reason": "Provides shared security scope and challenge helpers."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "Security dependencies are analyzed and evaluated through dependency resolution."
+    },
+    {
+      "path": "fastapi/openapi/utils.py",
+      "reason": "Security dependencies are translated into OpenAPI schemes."
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_webhooks_security.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_webhooks_security.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "shared-library"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_10a058a383",
+  "title": "Repository ignore rules",
+  "summary": "Git ignore configuration for repository-local files.\n\nAgent mapper reason: Ignore rules affect repository file visibility and should be reviewed as a small, independent configuration slice.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".gitignore",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".gitignore",
+      "reason": "Defines which repository paths Git ignores."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Package and build conventions may help explain ignored Rust-related paths."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "git",
+    "repository-config"
+  ],
+  "trustBoundaries": [
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:22:28.523Z",
+  "updatedAt": "2026-10-31T18:22:28.523Z"
+}

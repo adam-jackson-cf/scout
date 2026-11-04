@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_341749b161",
+  "title": "axum-core extractor contracts",
+  "summary": "Shared extractor traits, rejection behavior, body limits, state conversion, and tuple extraction support.\n\nAgent mapper reason: These files implement the shared extraction lifecycle and its limits, conversions, and failure behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": "extract",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Implements the default request body limit policy."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Implements state projection for extractors."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines and exports shared extractor contracts."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Defines common extractor rejection types and response behavior."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Provides extraction from request parts."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Implements tuple-based composition of extractors."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Shows how extractor APIs are exposed from the crate."
+    },
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Declares extractor-related dependencies and feature configuration."
+    },
+    {
+      "path": "axum-core/README.md",
+      "reason": "Provides crate-level intent and usage context."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "extractors",
+    "request"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

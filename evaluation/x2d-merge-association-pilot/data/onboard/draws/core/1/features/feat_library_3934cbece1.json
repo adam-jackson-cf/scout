@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3934cbece1",
+  "title": "Public package API and compatibility",
+  "summary": "Defines the package’s exported API, typing support, and compatibility helpers.\n\nAgent mapper reason: These files establish the package-level contract and shared typing or compatibility behavior; changes can affect many other slices.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/__init__.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/__init__.py",
+      "reason": "Defines the public package exports."
+    },
+    {
+      "path": "fastapi/_compat.py",
+      "reason": "Centralizes compatibility behavior used across the package."
+    },
+    {
+      "path": "fastapi/types.py",
+      "reason": "Defines shared public and internal type aliases."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/py.typed",
+      "reason": "Marks the package as providing type information."
+    },
+    {
+      "path": "tests/test_compat.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_typing_python39.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_compat.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_typing_python39.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "public-api",
+    "typing",
+    "compatibility"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:42:38.051Z",
+  "updatedAt": "2026-10-30T12:42:38.051Z"
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_ca0abe6328",
+  "title": "Proc macro exports and shared attribute parsing",
+  "summary": "Crate-level proc macro declarations and shared parsing support used across derive and attribute macros.\n\nAgent mapper reason: These files define the crate-wide macro API and shared parsing layer, so changes here can affect multiple macro features and should be reviewed together.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Declares and exports the crate's procedural macro entrypoints."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared attribute parsing utilities used by macro implementations."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Defines the proc macro crate and its dependencies."
+    },
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Documents the crate's public macro surface."
+    },
+    {
+      "path": "axum-macros/CHANGELOG.md",
+      "reason": "Records changes to the macro crate's behavior."
+    },
+    {
+      "path": "axum-macros/rust-toolchain",
+      "reason": "Pins the toolchain used to build the crate."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "rust",
+    "proc-macro",
+    "shared-infrastructure",
+    "attribute-parsing"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:15:16.107Z",
+  "updatedAt": "2026-10-31T18:15:16.107Z"
+}

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_infra_0d1c0ad700",
+  "title": "Documentation build and deployment workflows",
+  "summary": "CI workflows that build, deploy, and publish project documentation.\n\nAgent mapper reason: These workflows and requirements define the CI path from documentation source to published site and release artifacts.",
+  "kind": "infra",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Builds documentation in CI."
+    },
+    {
+      "path": ".github/workflows/deploy-docs.yml",
+      "reason": "Deploys documentation."
+    },
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Publishes project artifacts, including release documentation steps."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Build configuration consumed by the documentation workflow."
+    },
+    {
+      "path": "requirements-docs.txt",
+      "reason": "Base documentation build dependencies."
+    },
+    {
+      "path": "requirements-docs-tests.txt",
+      "reason": "Documentation test dependencies."
+    },
+    {
+      "path": "requirements-docs-insiders.txt",
+      "reason": "Insiders documentation dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "ci",
+    "documentation",
+    "release"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "filesystem",
+    "external-api"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:10:26.524Z",
+  "updatedAt": "2026-10-30T13:10:26.524Z"
+}

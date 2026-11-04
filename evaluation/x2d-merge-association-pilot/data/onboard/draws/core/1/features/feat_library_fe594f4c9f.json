@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_fe594f4c9f",
+  "title": "Response model validation and encoding",
+  "summary": "Encodes Python values for JSON-compatible responses and supports response model validation and filtering through route execution.\n\nAgent mapper reason: The encoder is the primary owned component, while response model validation and filtering live in routing; this slice groups their shared output contract and focused tests.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/encoders.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/encoders.py",
+      "reason": "Converts Python values into JSON-compatible data."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Response model validation, filtering, and serialization are integrated into route handling."
+    },
+    {
+      "path": "fastapi/_compat.py",
+      "reason": "Compatibility helpers affect model validation and serialization behavior."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_validate_response.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_validate_response_dataclass.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_validate_response_recursive/test_validate_response_recursive_pv1.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_validate_response_recursive/test_validate_response_recursive_pv2.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_data_filter.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_data_filter_no_inheritance.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_validate_response.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_validate_response_dataclass.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_validate_response_recursive/test_validate_response_recursive_pv1.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_validate_response_recursive/test_validate_response_recursive_pv2.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_data_filter.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_data_filter_no_inheritance.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "serialization",
+    "response-model",
+    "validation"
+  ],
+  "trustBoundaries": [
+    "serialization",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:42:38.051Z",
+  "updatedAt": "2026-10-30T12:42:38.051Z"
+}

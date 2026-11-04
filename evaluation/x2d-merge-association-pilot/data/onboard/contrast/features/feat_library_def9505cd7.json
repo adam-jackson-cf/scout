@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_def9505cd7",
+  "title": "Response models and serialization",
+  "summary": "Response model validation, output filtering, aliases, and JSON-compatible encoding.\n\nAgent mapper reason: Response filtering and encoding determine which application data crosses the HTTP boundary and how it is represented.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_serialize_response.py",
+      "reason": "Tests response serialization behavior."
+    },
+    {
+      "path": "tests/test_serialize_response_model.py",
+      "reason": "Tests serialization through response models."
+    },
+    {
+      "path": "tests/test_serialize_response_dataclass.py",
+      "reason": "Tests dataclass response serialization."
+    },
+    {
+      "path": "tests/test_response_model_data_filter.py",
+      "reason": "Tests filtering output through a response model."
+    },
+    {
+      "path": "tests/test_response_model_data_filter_no_inheritance.py",
+      "reason": "Tests filtering without model inheritance."
+    },
+    {
+      "path": "tests/test_response_model_include_exclude.py",
+      "reason": "Tests include and exclude rules."
+    },
+    {
+      "path": "tests/test_response_model_invalid.py",
+      "reason": "Tests invalid response model results."
+    },
+    {
+      "path": "tests/test_response_by_alias.py",
+      "reason": "Tests alias behavior in responses."
+    },
+    {
+      "path": "tests/test_jsonable_encoder.py",
+      "reason": "Tests conversion to JSON-compatible values."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/tutorial/response-model.md",
+      "reason": "Explains response model purpose and output filtering."
+    },
+    {
+      "path": "docs/en/docs/tutorial/encoder.md",
+      "reason": "Documents JSON-compatible encoding."
+    },
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_response_model_as_return_annotation.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_response_model_sub_types.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_datetime_custom_encoder.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_orjson_response_class.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "serialization",
+    "response-model"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:10:26.524Z",
+  "updatedAt": "2026-10-30T13:10:26.524Z"
+}

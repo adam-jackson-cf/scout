@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_29e8526c39",
+  "title": "axum path and query extraction",
+  "summary": "Path deserialization and query-string extraction, including raw query access.\n\nAgent mapper reason: Path and query extraction share URL-derived input and deserialization behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": "Path",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Implements path parameter deserialization."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Defines the Path extractor API."
+    },
+    {
+      "path": "axum/src/extract/query.rs",
+      "reason": "Implements structured query extraction."
+    },
+    {
+      "path": "axum/src/extract/raw_query.rs",
+      "reason": "Implements raw query-string extraction."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows extractor exports and common request integration."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents path and query extraction."
+    },
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Provides the route parameters consumed by path extraction."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares deserialization dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "path",
+    "query"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

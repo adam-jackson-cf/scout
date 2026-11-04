@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_379ebf9c74",
+  "title": "Example: HTTP and protocol edge cases",
+  "summary": "Demonstrates explicit method handling and request or response inspection.\n\nAgent mapper reason: Both examples focus on HTTP protocol behavior at the request and response boundary.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "examples/handle-head-request/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/handle-head-request/src/main.rs",
+      "reason": "Implements HEAD request handling."
+    },
+    {
+      "path": "examples/print-request-response/src/main.rs",
+      "reason": "Implements request and response inspection."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/handle-head-request/Cargo.toml",
+      "reason": "Defines the HEAD example package."
+    },
+    {
+      "path": "examples/print-request-response/Cargo.toml",
+      "reason": "Defines the request/response example package."
+    },
+    {
+      "path": "axum/src/routing/method_routing.rs",
+      "reason": "Defines HTTP method routing."
+    },
+    {
+      "path": "axum/src/middleware/map_request.rs",
+      "reason": "Defines request transformation."
+    },
+    {
+      "path": "axum/src/middleware/map_response.rs",
+      "reason": "Defines response transformation."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "http",
+    "middleware"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

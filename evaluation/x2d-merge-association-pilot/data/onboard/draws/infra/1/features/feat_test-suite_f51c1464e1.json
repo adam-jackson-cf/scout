@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_f51c1464e1",
+  "title": "Test suite and CI",
+  "summary": "Runs the project test command and coverage reporting in CI.\n\nAgent mapper reason: These scripts and workflows define the test execution and coverage reporting path; the inventory does not include the underlying test files.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/test.yml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Defines the main test workflow."
+    },
+    {
+      "path": ".github/workflows/test-redistribute.yml",
+      "reason": "Defines a related test redistribution workflow."
+    },
+    {
+      "path": "scripts/test.sh",
+      "reason": "Provides a test-running script."
+    },
+    {
+      "path": "scripts/test-cov-html.sh",
+      "reason": "Provides a coverage HTML reporting script."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "requirements-tests.txt",
+      "reason": "Lists test dependencies."
+    },
+    {
+      "path": "requirements-github-actions.txt",
+      "reason": "Lists dependencies used by GitHub Actions."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Provides project and test configuration."
+    },
+    {
+      "path": "scripts/test.sh",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "scripts/test.sh",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "tests",
+    "ci",
+    "coverage"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "filesystem",
+    "permissions"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:04:37.239Z",
+  "updatedAt": "2026-10-30T13:04:37.239Z"
+}

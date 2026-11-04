@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_75030da9ef",
+  "title": "Todos application",
+  "summary": "Example application for managing todo items over HTTP.\n\nAgent mapper reason: The application and its todo routes make one coherent, bounded service feature.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/todos/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/todos/src/main.rs",
+      "reason": "Implements the todo application and its routes."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/todos/Cargo.toml",
+      "reason": "Defines the example crate and its dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "todos",
+    "crud"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:17:43.772Z",
+  "updatedAt": "2026-10-31T18:17:43.772Z"
+}

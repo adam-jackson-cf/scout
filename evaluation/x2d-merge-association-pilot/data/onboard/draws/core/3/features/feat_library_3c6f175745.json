@@ -1,0 +1,232 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_3c6f175745",
+  "title": "OpenAPI generation and interactive documentation",
+  "summary": "Builds OpenAPI schemas and serves the associated documentation pages and OAuth initialization.\n\nAgent mapper reason: Schema generation and documentation responses consume the same route and security metadata; the listed tests exercise generated schemas and docs behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/openapi/utils.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/openapi/__init__.py",
+      "reason": "Defines the OpenAPI package interface."
+    },
+    {
+      "path": "fastapi/openapi/constants.py",
+      "reason": "Holds OpenAPI-related constants."
+    },
+    {
+      "path": "fastapi/openapi/docs.py",
+      "reason": "Builds interactive API documentation responses."
+    },
+    {
+      "path": "fastapi/openapi/models.py",
+      "reason": "Defines OpenAPI schema models."
+    },
+    {
+      "path": "fastapi/openapi/utils.py",
+      "reason": "Generates the OpenAPI document from application routes."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/applications.py",
+      "reason": "Applications expose generated OpenAPI and documentation routes."
+    },
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Route metadata supplies operations and schemas."
+    },
+    {
+      "path": "fastapi/security/oauth2.py",
+      "reason": "Security declarations contribute authentication schemes to the schema."
+    },
+    {
+      "path": "tests/test_additional_properties.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_additional_properties_bool.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_additional_response_extra.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_additional_responses_bad.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_additional_responses_custom_model_in_callback.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_additional_responses_custom_validationerror.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_additional_responses_default_validationerror.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_additional_responses_response_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_additional_responses_router.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_schema_fields.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_deprecated_openapi_prefix.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_openapi_examples.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_openapi_query_parameter_extension.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_openapi_route_extensions.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_openapi_separate_input_output_schemas.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_openapi_servers.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_additional_properties.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_additional_properties_bool.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_additional_response_extra.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_additional_responses_bad.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_additional_responses_custom_model_in_callback.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_additional_responses_custom_validationerror.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_additional_responses_default_validationerror.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_additional_responses_response_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_additional_responses_router.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_schema_fields.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_custom_swagger_ui_redirect.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_deprecated_openapi_prefix.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_duplicate_models_openapi.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_local_docs.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_no_swagger_ui_redirect.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_openapi_examples.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_openapi_query_parameter_extension.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_openapi_route_extensions.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_openapi_separate_input_output_schemas.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_openapi_servers.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "openapi",
+    "schema",
+    "docs"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

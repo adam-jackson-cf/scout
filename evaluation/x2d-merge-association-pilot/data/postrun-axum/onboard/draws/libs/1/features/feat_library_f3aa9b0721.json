@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f3aa9b0721",
+  "title": "axum-extra JSON Lines and Protobuf",
+  "summary": "Optional serialization helpers for JSON Lines and Protocol Buffers.\n\nAgent mapper reason: Both modules adapt serialized streaming or structured payload formats to Axum's HTTP interfaces.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "symbol": "JsonLines",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/json_lines.rs",
+      "reason": "Implements JSON Lines support."
+    },
+    {
+      "path": "axum-extra/src/protobuf.rs",
+      "reason": "Implements Protocol Buffers support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Shows public exports for the serialization helpers."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares serialization dependencies and feature gates."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Provides shared response conversion behavior."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "serialization",
+    "json-lines",
+    "protobuf"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

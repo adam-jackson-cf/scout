@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_6bde761a51",
+  "title": "axum-extra extraction helpers",
+  "summary": "Additional body, form, query, cache, and rejection-aware extraction utilities.\n\nAgent mapper reason: These utilities extend the base extractor API with related parsing, body access, caching, and rejection customization.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/body/async_read_body.rs",
+      "reason": "Adapts body streams to asynchronous reading."
+    },
+    {
+      "path": "axum-extra/src/body/mod.rs",
+      "reason": "Exports extra body helpers."
+    },
+    {
+      "path": "axum-extra/src/extract/cached.rs",
+      "reason": "Implements cached extraction."
+    },
+    {
+      "path": "axum-extra/src/extract/form.rs",
+      "reason": "Provides extra form extraction support."
+    },
+    {
+      "path": "axum-extra/src/extract/mod.rs",
+      "reason": "Exports additional extractors."
+    },
+    {
+      "path": "axum-extra/src/extract/query.rs",
+      "reason": "Provides additional query extraction support."
+    },
+    {
+      "path": "axum-extra/src/extract/with_rejection.rs",
+      "reason": "Wraps extractors with customized rejection behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares optional dependencies and feature gates."
+    },
+    {
+      "path": "axum-extra/README.md",
+      "reason": "Documents extra crate features."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Defines the base extraction API these helpers extend."
+    },
+    {
+      "path": "examples/customize-extractor-error/src/with_rejection.rs",
+      "reason": "Demonstrates rejection customization."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "extractor",
+    "body"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_1ee0aab7b0",
+  "title": "Public package API",
+  "summary": "Top-level exports that define the package's public import surface and typing marker.\n\nAgent mapper reason: These files define the package boundary for consumers; application and compatibility tests exercise representative public imports.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/__init__.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/__init__.py",
+      "reason": "Defines the names exposed from the fastapi package."
+    },
+    {
+      "path": "fastapi/py.typed",
+      "reason": "Marks the package as providing inline typing information."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/types.py",
+      "reason": "Provides shared types that may be exported by the package."
+    },
+    {
+      "path": "fastapi/applications.py",
+      "reason": "Contains the primary application class exposed by the package."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_compat.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_compat.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "public-api",
+    "typing"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:44:23.949Z",
+  "updatedAt": "2026-10-30T12:44:23.949Z"
+}

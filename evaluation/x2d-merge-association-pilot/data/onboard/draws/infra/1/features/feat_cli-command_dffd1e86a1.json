@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_cli-command_dffd1e86a1",
+  "title": "Lint and format commands",
+  "summary": "Provides repository lint and formatting scripts and pre-commit configuration.\n\nAgent mapper reason: The two scripts and pre-commit configuration cover the repository's local lint and formatting workflow.",
+  "kind": "cli-command",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "scripts/lint.sh",
+      "symbol": null,
+      "route": null,
+      "command": "pdm run ruff check ."
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "scripts/lint.sh",
+      "reason": "Runs the repository lint command."
+    },
+    {
+      "path": "scripts/format.sh",
+      "reason": "Runs the repository formatting check."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Configures pre-commit checks."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Provides tool configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "developer-tools",
+    "lint",
+    "format"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:04:37.239Z",
+  "updatedAt": "2026-10-30T13:04:37.239Z"
+}

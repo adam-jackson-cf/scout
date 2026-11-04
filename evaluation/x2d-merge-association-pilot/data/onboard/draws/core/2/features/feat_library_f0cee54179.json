@@ -1,0 +1,220 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f0cee54179",
+  "title": "Request parameter declarations and validation",
+  "summary": "Parameter helpers and metadata for path, query, header, cookie, body, and form inputs.\n\nAgent mapper reason: The helper functions and metadata classes form the declaration layer for HTTP inputs; the listed tests cover parameter sources, optionality, validation, and body parsing.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/param_functions.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/param_functions.py",
+      "reason": "Provides public helper functions for declaring endpoint parameters."
+    },
+    {
+      "path": "fastapi/params.py",
+      "reason": "Defines parameter metadata classes consumed during request parsing and schema generation."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "Parameter metadata is interpreted during dependency and endpoint analysis."
+    },
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Routes parse the declared parameters from incoming requests."
+    },
+    {
+      "path": "fastapi/openapi/utils.py",
+      "reason": "Parameter declarations contribute to generated schemas."
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_forms_single_model.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_forms_single_param.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_query.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_param_include_in_schema.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_params_repr.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_required_noneable.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_repeated_cookie_headers.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_repeated_parameter_alias.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_regex_deprecated_body.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_annotated.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_ambiguous_params.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_forms_from_non_typing_sequences.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_forms_single_model.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_forms_single_param.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_query.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_param_class.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_param_in_path_and_dependency.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_param_include_in_schema.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_params_repr.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_get_request_body.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_request_body_parameters_media_type.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_invalid_sequence_param.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_infer_param_optionality.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_required_noneable.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_repeated_cookie_headers.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_repeated_parameter_alias.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_body_errors.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_multi_query_errors.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_regex_deprecated_body.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "parameters",
+    "validation",
+    "request-input"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:44:23.949Z",
+  "updatedAt": "2026-10-30T12:44:23.949Z"
+}

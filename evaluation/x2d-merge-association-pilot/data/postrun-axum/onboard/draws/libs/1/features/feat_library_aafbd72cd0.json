@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_aafbd72cd0",
+  "title": "axum request extractor API",
+  "summary": "Shared extractor dispatch, request-parts access, and rejection behavior for the main Axum crate.\n\nAgent mapper reason: These files establish the main crate's extractor integration and common failure behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "symbol": "extract",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Defines the main crate's extractor module and exports."
+    },
+    {
+      "path": "axum/src/extract/rejection.rs",
+      "reason": "Defines built-in rejection types and HTTP responses."
+    },
+    {
+      "path": "axum/src/extract/request_parts.rs",
+      "reason": "Implements request-parts extraction support."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor ordering and behavior."
+    },
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Explains rejection and error handling behavior."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Defines the shared extractor trait contracts."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares extractor dependencies and features."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "rejections",
+    "requests"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

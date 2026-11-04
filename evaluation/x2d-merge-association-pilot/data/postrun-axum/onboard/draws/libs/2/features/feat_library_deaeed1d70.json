@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_deaeed1d70",
+  "title": "Axum request body streaming",
+  "summary": "Defines the main crate's body type and streaming body support.\n\nAgent mapper reason: Both modules implement the main crate's body handling, including streamed response data.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "symbol": "Body",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/body/mod.rs",
+      "reason": "Defines and exports the main crate body API."
+    },
+    {
+      "path": "axum/src/body/stream_body.rs",
+      "reason": "Implements response bodies backed by streams."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/src/body.rs",
+      "reason": "Provides the shared core body interface."
+    },
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Responses may carry these bodies."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares the package and dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "body",
+    "streaming",
+    "http"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

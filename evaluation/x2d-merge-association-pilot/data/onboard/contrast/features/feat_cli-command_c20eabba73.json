@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_cli-command_c20eabba73",
+  "title": "FastAPI CLI",
+  "summary": "Command-line interface behavior and its user-facing documentation.\n\nAgent mapper reason: The inventory exposes the CLI tests and usage guide but not its implementation entrypoint, so this slice is anchored to those artifacts.",
+  "kind": "cli-command",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "docs/en/docs/fastapi-cli.md",
+      "symbol": null,
+      "route": null,
+      "command": "fastapi"
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "tests/test_fastapi_cli.py",
+      "reason": "Tests the CLI behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/en/docs/fastapi-cli.md",
+      "reason": "Documents CLI commands and usage."
+    },
+    {
+      "path": "tests/test_fastapi_cli.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_fastapi_cli.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "cli"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:10:26.524Z",
+  "updatedAt": "2026-10-30T13:10:26.524Z"
+}

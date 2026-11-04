@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_19185629f6",
+  "title": "debug_handler attribute macro",
+  "summary": "Validates handler signatures and extractor, state, and response constraints at compile time.\n\nAgent mapper reason: The implementation and compile-pass/fail fixtures cover one coherent handler-validation behavior, including user-authored signatures and diagnostics.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "symbol": "debug_handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/debug_handler.rs",
+      "reason": "Implements the debug_handler attribute macro."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/README.md",
+      "reason": "Documents the macro's user-facing purpose."
+    },
+    {
+      "path": "axum-macros/src/attr_parsing.rs",
+      "reason": "Shared parsing dependency context."
+    },
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Macro export wiring."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/argument_not_extractor.stderr",
+      "reason": "Expected diagnostic for an invalid extractor argument."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/duplicate_args.stderr",
+      "reason": "Expected diagnostic for duplicate arguments."
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/multiple_extractors.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/infer_state.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/argument_not_extractor.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/duplicate_args.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/debug_handler/pass/multiple_extractors.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/pass/infer_state.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/argument_not_extractor.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/debug_handler/fail/duplicate_args.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "rust",
+    "proc-macro",
+    "handler",
+    "compile-time-validation"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:16:17.255Z",
+  "updatedAt": "2026-10-31T18:16:17.255Z"
+}

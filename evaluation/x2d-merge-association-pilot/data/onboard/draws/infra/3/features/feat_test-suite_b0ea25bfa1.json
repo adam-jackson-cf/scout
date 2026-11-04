@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_test-suite_b0ea25bfa1",
+  "title": "Automated test execution and CI",
+  "summary": "Connects the local test scripts to GitHub Actions test workflows.\n\nAgent mapper reason: The local runners, CI workflows, and test dependencies form one test execution slice. The inventory reports no individual test files.",
+  "kind": "test-suite",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "scripts/test.sh",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "scripts/test.sh",
+      "reason": "Provides the local test execution entrypoint."
+    },
+    {
+      "path": "scripts/test-cov-html.sh",
+      "reason": "Produces a coverage HTML report for test runs."
+    },
+    {
+      "path": ".github/workflows/test.yml",
+      "reason": "Defines the automated test workflow."
+    },
+    {
+      "path": ".github/workflows/test-redistribute.yml",
+      "reason": "Defines a test-related redistribution workflow."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "requirements-tests.txt",
+      "reason": "Lists test environment dependencies."
+    },
+    {
+      "path": "requirements-github-actions.txt",
+      "reason": "Provides dependencies for GitHub Actions jobs."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Declares the pytest command and test configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "testing",
+    "ci",
+    "coverage"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:08:22.650Z",
+  "updatedAt": "2026-10-30T13:08:22.650Z"
+}

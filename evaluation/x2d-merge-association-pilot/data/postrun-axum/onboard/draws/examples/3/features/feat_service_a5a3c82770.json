@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_a5a3c82770",
+  "title": "SQLx with PostgreSQL",
+  "summary": "Demonstrates database access through SQLx and PostgreSQL.\n\nAgent mapper reason: The database integration and HTTP handlers form one example, with database credentials and queries at its trust boundary.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "Defines the example crate and database dependencies."
+    },
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "Implements the HTTP and SQLx database behavior."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/Cargo.toml",
+      "reason": "Shared examples workspace configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "postgres",
+    "sqlx",
+    "database"
+  ],
+  "trustBoundaries": [
+    "network",
+    "user-input",
+    "database",
+    "secrets",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:20:46.880Z",
+  "updatedAt": "2026-10-31T18:20:46.880Z"
+}

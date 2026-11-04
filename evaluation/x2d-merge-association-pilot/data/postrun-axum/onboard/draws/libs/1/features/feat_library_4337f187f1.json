@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_4337f187f1",
+  "title": "axum-extra handler composition",
+  "summary": "Handler combinators that allow alternative handlers to be combined.\n\nAgent mapper reason: The module and its alternative-handler combinator form a single handler-composition feature.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "symbol": "handler",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-extra/src/handler/mod.rs",
+      "reason": "Defines the extra handler module surface."
+    },
+    {
+      "path": "axum-extra/src/handler/or.rs",
+      "reason": "Implements alternative-handler composition."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-extra/src/lib.rs",
+      "reason": "Shows crate-level handler exports."
+    },
+    {
+      "path": "axum-extra/Cargo.toml",
+      "reason": "Declares handler-related dependencies."
+    },
+    {
+      "path": "axum/src/handler/mod.rs",
+      "reason": "Provides the base handler contract."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-extra",
+    "handlers",
+    "composition"
+  ],
+  "trustBoundaries": [
+    "network"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

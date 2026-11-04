@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_30d7968953",
+  "title": "Background tasks and concurrency helpers",
+  "summary": "Background task support and synchronous/asynchronous execution utilities.\n\nAgent mapper reason: These modules support work scheduled around request completion and sync/async execution; the inventory has no dedicated background-task test file, so application and dependency lifecycle tests provide adjacent coverage.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "fastapi/background.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/background.py",
+      "reason": "Provides background task abstractions for response handling."
+    },
+    {
+      "path": "fastapi/concurrency.py",
+      "reason": "Provides concurrency helpers used by framework execution paths."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/routing.py",
+      "reason": "Routes and responses attach background tasks to request handling."
+    },
+    {
+      "path": "fastapi/responses.py",
+      "reason": "Response objects can carry background tasks."
+    },
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "Dependency cleanup and execution may use concurrency helpers."
+    },
+    {
+      "path": "tests/test_application.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_application.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_dependency_contextmanager.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "background-tasks",
+    "concurrency",
+    "async"
+  ],
+  "trustBoundaries": [
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:44:23.949Z",
+  "updatedAt": "2026-10-30T12:44:23.949Z"
+}

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_release_a89c5e7962",
+  "title": "Package build and release metadata",
+  "summary": "Python package build configuration and release-facing project metadata.\n\nAgent mapper reason: The build script, package metadata, and publishing workflow govern how the project is assembled and distributed.",
+  "kind": "release",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "pdm_build.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "pdm_build.py",
+      "reason": "Defines custom package build behavior."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Defines package metadata and build configuration."
+    },
+    {
+      "path": "CITATION.cff",
+      "reason": "Provides citation metadata for releases and users."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": ".github/workflows/publish.yml",
+      "reason": "Consumes package build configuration during publishing."
+    },
+    {
+      "path": "LICENSE",
+      "reason": "Defines distribution licensing terms."
+    },
+    {
+      "path": "README.md",
+      "reason": "Provides package-facing description and usage."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "packaging",
+    "release"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:10:26.524Z",
+  "updatedAt": "2026-10-30T13:10:26.524Z"
+}

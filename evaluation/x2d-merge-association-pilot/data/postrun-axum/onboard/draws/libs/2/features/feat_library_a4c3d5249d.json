@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_a4c3d5249d",
+  "title": "Axum standard responses and redirects",
+  "summary": "Defines response exports and redirect response behavior.\n\nAgent mapper reason: These files define the main response API and a common response implementation.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "symbol": "response API",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/response/mod.rs",
+      "reason": "Declares and exports response types."
+    },
+    {
+      "path": "axum/src/response/redirect.rs",
+      "reason": "Implements redirect responses."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/response.md",
+      "reason": "Documents response construction."
+    },
+    {
+      "path": "axum-core/src/response/into_response.rs",
+      "reason": "Provides the shared response conversion contract."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares the package and dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "response",
+    "redirect",
+    "http"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

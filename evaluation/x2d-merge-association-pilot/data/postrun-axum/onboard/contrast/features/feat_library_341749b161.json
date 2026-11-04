@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_341749b161",
+  "title": "axum-core extraction primitives",
+  "summary": "Request-part extraction traits, tuple composition, body limits, state references, and rejection types.\n\nAgent mapper reason: These files implement the common extraction contract and rejection rules on which the main crate's extractors depend.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-core/src/extract/default_body_limit.rs",
+      "reason": "Defines the default request body limit behavior."
+    },
+    {
+      "path": "axum-core/src/extract/from_ref.rs",
+      "reason": "Defines state-reference extraction support."
+    },
+    {
+      "path": "axum-core/src/extract/mod.rs",
+      "reason": "Exports core extraction traits and types."
+    },
+    {
+      "path": "axum-core/src/extract/rejection.rs",
+      "reason": "Defines shared extraction rejection behavior."
+    },
+    {
+      "path": "axum-core/src/extract/request_parts.rs",
+      "reason": "Defines extraction from request parts."
+    },
+    {
+      "path": "axum-core/src/extract/tuple.rs",
+      "reason": "Composes multiple extractors as tuples."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-core/Cargo.toml",
+      "reason": "Declares feature and dependency constraints."
+    },
+    {
+      "path": "axum/src/extract/mod.rs",
+      "reason": "Shows the main crate's higher-level extraction API."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents extractor ordering and usage."
+    },
+    {
+      "path": "axum-core/src/lib.rs",
+      "reason": "Exports the extraction module."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum-core",
+    "extractor",
+    "request"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}

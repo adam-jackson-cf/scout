@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_e6fd9074c3",
+  "title": "Local crate patch for tests",
+  "summary": "The patch configuration redirects the crates.io axum dependency to the repository's local axum crate.\n\nAgent mapper reason: This file controls dependency resolution for tests and can be reviewed separately from the broader workspace manifest and CI job definitions.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": ".github/workflows/patch.toml",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": ".github/workflows/patch.toml",
+      "reason": "Declares the local axum path override for dependency resolution."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "Cargo.toml",
+      "reason": "Defines the workspace containing the local crate."
+    },
+    {
+      "path": ".github/workflows/CI.yml",
+      "reason": "Provides context for the repository's test workflow."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "cargo",
+    "dependency-resolution",
+    "testing"
+  ],
+  "trustBoundaries": [],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:23:24.807Z",
+  "updatedAt": "2026-10-31T18:23:24.807Z"
+}

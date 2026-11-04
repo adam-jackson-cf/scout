@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_9c01deece1",
+  "title": "Security dependency primitives",
+  "summary": "Shared security base classes, exports, and helper functions used by authentication schemes.\n\nAgent mapper reason: These shared files define the reusable security dependency contract; scheme-specific behavior is reviewed in separate slices.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/security/base.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/security/__init__.py",
+      "reason": "Defines the security package exports."
+    },
+    {
+      "path": "fastapi/security/base.py",
+      "reason": "Provides shared security dependency base classes."
+    },
+    {
+      "path": "fastapi/security/utils.py",
+      "reason": "Provides shared helpers for security schemes."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/dependencies/utils.py",
+      "reason": "Security schemes are evaluated by dependency resolution."
+    },
+    {
+      "path": "fastapi/openapi/utils.py",
+      "reason": "Security definitions are incorporated into generated OpenAPI documents."
+    },
+    {
+      "path": "fastapi/security/api_key.py",
+      "reason": "API key schemes build on shared security primitives."
+    },
+    {
+      "path": "fastapi/security/http.py",
+      "reason": "HTTP authentication schemes build on shared security primitives."
+    },
+    {
+      "path": "fastapi/security/oauth2.py",
+      "reason": "OAuth2 schemes build on shared security primitives."
+    },
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_dependency_security_overrides.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "security",
+    "shared-primitives"
+  ],
+  "trustBoundaries": [
+    "auth",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:44:23.949Z",
+  "updatedAt": "2026-10-30T12:44:23.949Z"
+}

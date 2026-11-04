@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_bbba8072db",
+  "title": "axum path extraction",
+  "summary": "Path parameter parsing and deserialization.\n\nAgent mapper reason: Path parsing depends on the router's parameter representation and defines how untrusted URL values become typed application values.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/extract/path/de.rs",
+      "reason": "Implements path parameter deserialization."
+    },
+    {
+      "path": "axum/src/extract/path/mod.rs",
+      "reason": "Defines path extraction APIs."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/url_params.rs",
+      "reason": "Provides route parameters consumed by path extraction."
+    },
+    {
+      "path": "axum/src/docs/extract.md",
+      "reason": "Documents path extraction behavior."
+    },
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "reason": "Exercises route path behavior across nesting."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/nest.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "extractors",
+    "path",
+    "deserialization"
+  ],
+  "trustBoundaries": [
+    "user-input",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

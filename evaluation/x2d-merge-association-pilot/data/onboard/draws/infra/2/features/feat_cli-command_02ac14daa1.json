@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_cli-command_02ac14daa1",
+  "title": "Translation maintenance",
+  "summary": "Supports translation maintenance and language-name configuration.\n\nAgent mapper reason: The script, language-name configuration, and translation dependencies support documentation localization as a distinct workflow.",
+  "kind": "cli-command",
+  "source": "agent-mapper",
+  "confidence": "medium",
+  "entrypoints": [
+    {
+      "path": "scripts/translate.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "scripts/translate.py",
+      "reason": "Implements the translation maintenance script."
+    },
+    {
+      "path": "docs/language_names.yml",
+      "reason": "Defines language names used by documentation localization."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "requirements-translations.txt",
+      "reason": "Translation tooling dependencies."
+    },
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Documentation site configuration that consumes localized content."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "translations",
+    "localization",
+    "docs"
+  ],
+  "trustBoundaries": [
+    "filesystem",
+    "network",
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:07:11.018Z",
+  "updatedAt": "2026-10-30T13:07:11.018Z"
+}

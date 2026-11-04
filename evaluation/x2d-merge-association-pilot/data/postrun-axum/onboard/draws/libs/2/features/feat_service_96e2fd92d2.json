@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_96e2fd92d2",
+  "title": "Axum service construction adapters",
+  "summary": "Adapts routers and services for use by HTTP server integrations.\n\nAgent mapper reason: These adapters connect axum's router and service abstractions to server-facing service contracts.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "symbol": "IntoMakeService",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Converts routers into make-service values."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Provides extension methods for services."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "The adapters commonly wrap routers."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Defines handler-to-service conversion."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents make-service integration with connection information."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Declares the package and dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "service",
+    "integration",
+    "routing"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:11:13.052Z",
+  "updatedAt": "2026-10-31T18:11:13.052Z"
+}

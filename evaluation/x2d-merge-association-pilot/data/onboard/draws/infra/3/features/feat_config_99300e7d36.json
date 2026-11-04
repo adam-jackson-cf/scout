@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_99300e7d36",
+  "title": "Documentation site build and tooling",
+  "summary": "Configures MkDocs and provides scripts and hooks for building the documentation site.\n\nAgent mapper reason: The MkDocs configuration, build helpers, workflow, and dependency lists jointly determine how the documentation site is built.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "scripts/docs.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "scripts/docs.py",
+      "reason": "Provides documentation build tooling."
+    },
+    {
+      "path": "scripts/mkdocs_hooks.py",
+      "reason": "Implements hooks used during documentation builds."
+    },
+    {
+      "path": "docs/en/mkdocs.yml",
+      "reason": "Configures the English MkDocs site."
+    },
+    {
+      "path": ".github/workflows/build-docs.yml",
+      "reason": "Runs the documentation build in CI."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "docs/language_names.yml",
+      "reason": "Supplies language labels used by documentation tooling."
+    },
+    {
+      "path": "requirements-docs.txt",
+      "reason": "Lists documentation build dependencies."
+    },
+    {
+      "path": "requirements-docs-insiders.txt",
+      "reason": "Lists additional documentation dependencies."
+    },
+    {
+      "path": "requirements-docs-tests.txt",
+      "reason": "Provides documentation test dependencies."
+    },
+    {
+      "path": "pyproject.toml",
+      "reason": "Provides project-level tool configuration."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "documentation",
+    "mkdocs",
+    "ci"
+  ],
+  "trustBoundaries": [
+    "process-exec",
+    "filesystem"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:08:22.650Z",
+  "updatedAt": "2026-10-30T13:08:22.650Z"
+}

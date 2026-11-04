@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_bab9b8a888",
+  "title": "FromRef state conversion derive",
+  "summary": "Generates state conversion implementations for types used to extract application state.\n\nAgent mapper reason: The implementation and two pass cases cover the FromRef derive as a focused state-conversion feature, including its skip behavior.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "symbol": "FromRef",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum-macros/src/from_ref.rs",
+      "reason": "Implements the FromRef derive macro."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum-macros/src/lib.rs",
+      "reason": "Registers the public derive macro entrypoint."
+    },
+    {
+      "path": "axum-macros/Cargo.toml",
+      "reason": "Defines the crate and dependencies used to generate implementations."
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "reason": "nearby test"
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/skip.rs",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum-macros/tests/from_ref/pass/basic.rs",
+      "command": null
+    },
+    {
+      "path": "axum-macros/tests/from_ref/pass/skip.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "rust",
+    "proc-macro",
+    "derive",
+    "state"
+  ],
+  "trustBoundaries": [
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:15:16.107Z",
+  "updatedAt": "2026-10-31T18:15:16.107Z"
+}

@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_c332b1e62f",
+  "title": "Public package API and compatibility",
+  "summary": "Defines package-level exports, compatibility helpers, shared types, and typing support.\n\nAgent mapper reason: These files establish the package surface and shared compatibility contract; compatibility and typing tests provide focused coverage.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "fastapi/__init__.py",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "fastapi/__init__.py",
+      "reason": "Defines the top-level public API exports."
+    },
+    {
+      "path": "fastapi/_compat.py",
+      "reason": "Centralizes compatibility behavior for supported dependency and Python versions."
+    },
+    {
+      "path": "fastapi/types.py",
+      "reason": "Defines shared public and internal type aliases."
+    },
+    {
+      "path": "fastapi/utils.py",
+      "reason": "Provides shared framework utilities."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "fastapi/py.typed",
+      "reason": "Marks the package as typed for consumers; it is a typing marker rather than implementation source."
+    },
+    {
+      "path": "fastapi/applications.py",
+      "reason": "Application classes are part of the top-level public API."
+    },
+    {
+      "path": "fastapi/params.py",
+      "reason": "Parameter declarations are part of the top-level public API."
+    },
+    {
+      "path": "tests/test_compat.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_typing_python39.py",
+      "reason": "nearby test"
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "reason": "nearby test"
+    }
+  ],
+  "tests": [
+    {
+      "path": "tests/test_compat.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_typing_python39.py",
+      "command": null
+    },
+    {
+      "path": "tests/test_annotated.py",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "public-api",
+    "compatibility",
+    "typing"
+  ],
+  "trustBoundaries": [
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T12:45:53.209Z",
+  "updatedAt": "2026-10-30T12:45:53.209Z"
+}

@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_f88ca35cae",
+  "title": "axum service integration",
+  "summary": "Adapters that expose routers and services to Tower and server entrypoints.\n\nAgent mapper reason: These adapters define the boundary between axum routers and external service execution.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/service_ext.rs",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/boxed.rs",
+      "reason": "Implements boxed service support."
+    },
+    {
+      "path": "axum/src/routing/into_make_service.rs",
+      "reason": "Adapts routers into make-service types."
+    },
+    {
+      "path": "axum/src/service_ext.rs",
+      "reason": "Provides service extension methods."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/routing/mod.rs",
+      "reason": "Defines the router being adapted."
+    },
+    {
+      "path": "axum/src/docs/routing/into_make_service_with_connect_info.md",
+      "reason": "Documents server-facing service adaptation."
+    },
+    {
+      "path": "axum/Cargo.toml",
+      "reason": "Shows Tower and service dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "services",
+    "tower"
+  ],
+  "trustBoundaries": [
+    "network",
+    "concurrency"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:12:49.714Z",
+  "updatedAt": "2026-10-31T18:12:49.714Z"
+}

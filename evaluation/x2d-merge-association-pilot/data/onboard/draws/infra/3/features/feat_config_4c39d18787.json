@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_config_4c39d18787",
+  "title": "Developer lint and formatting tools",
+  "summary": "Provides local linting and formatting entrypoints and pre-commit configuration.\n\nAgent mapper reason: The scripts and hook configuration are a bounded developer-quality workflow; pyproject.toml provides their tool settings.",
+  "kind": "config",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "scripts/lint.sh",
+      "symbol": null,
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "scripts/lint.sh",
+      "reason": "Runs the repository lint workflow."
+    },
+    {
+      "path": "scripts/format.sh",
+      "reason": "Runs the repository formatting workflow."
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "reason": "Configures checks run by pre-commit."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "pyproject.toml",
+      "reason": "Declares Ruff and type-checking settings and project commands."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "developer-tools",
+    "lint",
+    "format"
+  ],
+  "trustBoundaries": [
+    "process-exec"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-30T13:08:22.650Z",
+  "updatedAt": "2026-10-30T13:08:22.650Z"
+}

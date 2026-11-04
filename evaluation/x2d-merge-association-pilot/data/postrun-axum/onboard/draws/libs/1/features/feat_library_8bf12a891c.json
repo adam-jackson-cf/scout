@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_library_8bf12a891c",
+  "title": "axum error handling",
+  "summary": "Error-to-response handling support for fallible handlers and services.\n\nAgent mapper reason: This adapter feature maps service or handler errors into HTTP response behavior; the routed error test covers the integration.",
+  "kind": "library",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "symbol": "error_handling",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "axum/src/error_handling/mod.rs",
+      "reason": "Implements error-handling adapters."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "axum/src/docs/error_handling.md",
+      "reason": "Documents error and rejection handling."
+    },
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "reason": "Exercises error handling through a routed service."
+    },
+    {
+      "path": "axum/src/routing/tests/mod.rs",
+      "reason": "Provides the test harness containing the error-handling test."
+    },
+    {
+      "path": "axum/src/handler/service.rs",
+      "reason": "Provides service conversion used by handlers."
+    }
+  ],
+  "tests": [
+    {
+      "path": "axum/src/routing/tests/handle_error.rs",
+      "command": null
+    }
+  ],
+  "tags": [
+    "agent-mapped",
+    "axum",
+    "errors",
+    "services"
+  ],
+  "trustBoundaries": [
+    "network",
+    "serialization"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:09:15.621Z",
+  "updatedAt": "2026-10-31T18:09:15.621Z"
+}

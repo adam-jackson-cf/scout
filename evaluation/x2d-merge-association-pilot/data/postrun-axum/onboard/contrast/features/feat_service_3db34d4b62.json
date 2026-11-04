@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "featureId": "feat_service_3db34d4b62",
+  "title": "Example: SQLx with Postgres",
+  "summary": "Connects an Axum application to PostgreSQL through SQLx.\n\nAgent mapper reason: The example is a bounded database integration with connection and query handling.",
+  "kind": "service",
+  "source": "agent-mapper",
+  "confidence": "high",
+  "entrypoints": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "symbol": "main",
+      "route": null,
+      "command": null
+    }
+  ],
+  "ownedFiles": [
+    {
+      "path": "examples/sqlx-postgres/src/main.rs",
+      "reason": "Implements PostgreSQL-backed routes using SQLx."
+    }
+  ],
+  "contextFiles": [
+    {
+      "path": "examples/sqlx-postgres/Cargo.toml",
+      "reason": "Defines SQLx and PostgreSQL dependencies."
+    }
+  ],
+  "tests": [],
+  "tags": [
+    "agent-mapped",
+    "example",
+    "postgres",
+    "database"
+  ],
+  "trustBoundaries": [
+    "database",
+    "secrets",
+    "user-input"
+  ],
+  "status": "pending",
+  "lock": null,
+  "findingIds": [],
+  "patchAttemptIds": [],
+  "analysisHistory": [],
+  "createdAt": "2026-10-31T18:26:44.356Z",
+  "updatedAt": "2026-10-31T18:26:44.356Z"
+}
