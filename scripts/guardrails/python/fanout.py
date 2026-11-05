@@ -376,6 +376,7 @@ def analyse_fanout(
     source_roots: tuple[SourceRoot, ...],
     root_packages: set[str],
     limits: FanoutLimits,
+    selected: set[str] | None = None,
 ) -> list[FanoutResult]:
     files = collect_python_files(repo_root, source_roots=source_roots)
     known_modules = {python_file.module for python_file in files if python_file.module}
@@ -387,6 +388,8 @@ def analyse_fanout(
     known_modules.update(root_packages)
     results: list[FanoutResult] = []
     for python_file in files:
+        if selected is not None and python_file.relpath not in selected:
+            continue
         source = python_file.path.read_text(encoding="utf-8")
         dependencies = architectural_dependencies(
             imported_modules(

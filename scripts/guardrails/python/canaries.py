@@ -1,4 +1,4 @@
-"""Exercise real Python checkers against isolated rule inputs."""
+"""Exercise real Python checkers, preserving their actionable diagnostics."""
 
 from __future__ import annotations
 
@@ -13,22 +13,38 @@ import scalability
 from check import ROOT, ast_errors, decode_source, diagnostic, lint_source, run_tool
 
 
-def fixture_findings(fixture: dict[str, Any]) -> list[str]:
+def fixture_findings(fixture: dict[str, Any]) -> list[tuple[str, str]]:
     kind = fixture["kind"]
     if kind == "ruff-config":
-        return policy.ruff_errors(fixture["config"])
+        return [
+            (rule, "restore the approved Ruff setting " + rule.rsplit(".", 1)[-1])
+            for rule in policy.ruff_errors(fixture["config"])
+        ]
     if kind == "mypy-config":
         config = configparser.ConfigParser()
         config.read_string(fixture["config"])
-        return policy.mypy_errors(config)
+        return [
+            (rule, "restore the approved mypy setting " + rule.rsplit(".", 1)[-1])
+            for rule in policy.mypy_errors(config)
+        ]
     if kind == "coverage":
-        return policy.coverage_errors(fixture["maintained"], fixture["checked"])
+        missing = sorted(set(fixture["maintained"]) - set(fixture["checked"]))
+        return [
+            (
+                rule,
+                "add maintained files to the explicit mypy invocation: "
+                + ", ".join(missing),
+            )
+            for rule in policy.coverage_errors(
+                fixture["maintained"], fixture["checked"]
+            )
+        ]
     return boundary_findings(fixture)
 
 
-def boundary_findings(fixture: dict[str, Any]) -> list[str]:
+def boundary_findings(fixture: dict[str, Any]) -> list[tuple[str, str]]:
     if fixture["kind"] == "encoding":
-        return [rule for rule, _fix in decode_source(bytes.fromhex(fixture["hex"]))[1]]
+        return decode_source(bytes.fromhex(fixture["hex"]))[1]
     if fixture["kind"] == "ownership":
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -37,14 +53,16 @@ def boundary_findings(fixture: dict[str, Any]) -> list[str]:
                 (root / "CODEOWNERS").write_text(
                     "/scripts/guardrails/analyzers/ @scout-maintainers\n"
                 )
-            return [d.code for d in scalability.ownership_diagnostics(root)]
+            return [
+                (d.code, d.message) for d in scalability.ownership_diagnostics(root)
+            ]
     return source_findings(fixture)
 
 
-def source_findings(fixture: dict[str, Any]) -> list[str]:
+def source_findings(fixture: dict[str, Any]) -> list[tuple[str, str]]:
     source, relpath = fixture["source"], fixture["path"]
     if fixture["kind"] == "ruff":
-        return [rule for rule, _fix in lint_source(source, relpath)]
+        return lint_source(source, relpath)
     if fixture["kind"] == "mypy":
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "canary.py"
@@ -60,21 +78,17 @@ def source_findings(fixture: dict[str, Any]) -> list[str]:
                 if fixture["rule"] == "MYPY.warn_unused_ignores"
                 else "[no-untyped-def]"
             )
-            return (
-                [fixture["rule"]]
-                if result.returncode == 1 and code in result.stdout
-                else []
-            )
-    return [rule for rule, _fix in ast_errors(source, relpath)]
+            return [
+                (fixture["rule"], "repair typing: " + line.split("error: ", 1)[-1])
+                for line in result.stdout.splitlines()
+                if result.returncode == 1 and code in line and "error: " in line
+            ]
+    return ast_errors(source, relpath)
 
 
 def check_fixture(path: Path) -> int:
     fixture: dict[str, Any] = json.loads(path.read_text())
     findings = fixture_findings(fixture)
-    for rule in findings:
-        diagnostic(
-            fixture.get("path", str(path)),
-            rule,
-            "repair the violating Python contract input",
-        )
+    for rule, fix in findings:
+        diagnostic(fixture.get("path", str(path)), rule, fix)
     return int(bool(findings))

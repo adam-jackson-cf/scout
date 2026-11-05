@@ -234,7 +234,7 @@ func TestInstallScriptsInstallFromVerifiedRelease(t *testing.T) {
 		}
 	}
 	tool := read("ci-toolchain.sh")
-	for _, want := range []string{`$(dirname "$0")/..`, `bash "$src/scripts/bootstrap-tools.sh"`, "bubblewrap", "SCOUT_TOOLS_DIR=", "GITHUB_PATH"} {
+	for _, want := range []string{`$(dirname "$0")/..`, `bash "$src/scripts/bootstrap-tools.sh"`, "SCOUT_TOOLS_DIR=", "GITHUB_PATH"} {
 		if !strings.Contains(tool, want) {
 			t.Errorf("ci-toolchain.sh missing %q", want)
 		}
@@ -242,6 +242,25 @@ func TestInstallScriptsInstallFromVerifiedRelease(t *testing.T) {
 	for _, banned := range []string{"GITHUB_WORKSPACE", "go build", "git clone"} {
 		if strings.Contains(tool, banned) {
 			t.Errorf("ci-toolchain.sh must not reference %q", banned)
+		}
+	}
+	for _, step := range []struct {
+		name    string
+		script  string
+		command string
+	}{
+		{"ci-toolchain.sh", tool, `bash "$src/scripts/ci-sandbox.sh"`},
+		{"ci-sandbox.sh", read("ci-sandbox.sh"), "sudo apt-get install -y bubblewrap"},
+	} {
+		found := false
+		for _, line := range strings.Split(step.script, "\n") {
+			if strings.TrimSpace(line) == step.command {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("%s must execute %q", step.name, step.command)
 		}
 	}
 }

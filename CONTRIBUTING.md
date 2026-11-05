@@ -44,12 +44,21 @@ file patterns are basename prefixes, so `bootstrap-tools.sh` protects
 `scripts/bootstrap-tools.sh` and `scout-design.md` protects `docs/scout-design.md`.
 Sensitive changes require owner merge even with `agentMerge` set to `allowed`;
 that setting never grants permission to perform Git writes.
-The pre-commit hook materializes staged index blobs into a disposable directory,
-so partially staged files are checked as committed, not as edited. Secret scanning
-uses the original staged index. Deleted files do not become formatter inputs.
-The pre-push hook forwards Git's stdin ref updates to the declared fast argv;
-each pushed commit not on `origin/main` is checked in an isolated snapshot,
-including non-HEAD refs. Deletions need no source checks.
+The pre-commit hook transfers the staged index in bulk into an independent shared
+clone, so partially staged files are checked as committed, not as edited. Its
+cheap tier checks affected maintained files only, never `.tools`, `.git`, or
+`third_party`. Secret scanning uses the original staged index, including Git's
+alternate index. Deleted files do not become formatter inputs.
+The pre-push hook forwards Git's ref updates and push remote to the fast runner;
+each pushed commit not on the configured base (normally `origin/main`) is checked,
+including non-HEAD refs. Every snapshot has its own Git directory, index, refs and
+config, and checker/test subprocesses receive no inherited `GIT_*` variables.
+The installed runner checks each checkout without changing the pusher's refs,
+config, staged/working-tree state or stash. Deletions need no source checks.
+If the configured base is absent, the runner queries the push remote's advertised
+default HEAD and uses it only when that commit already exists locally. It never
+fetches or repairs refs/config automatically: fetch the advertised default branch
+and retry when the diagnostic requests it.
 
 Fast tests have provisional owner-approved limits of 159 seconds wall time and
 46 seconds per case, based on five recorded baseline runs. Speed failures require

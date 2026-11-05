@@ -27,6 +27,11 @@ def main() -> int:
     environment = dict(os.environ)
     if field == "fastGate":
         environment["SCOUT_PUSH_RANGES"] = sys.stdin.read()
+        environment["SCOUT_PUSH_REMOTE"] = (
+            sys.argv[2] if len(sys.argv) > 2 else "origin"
+        )
+        if len(sys.argv) > 3:
+            environment["SCOUT_PUSH_REMOTE_URL"] = sys.argv[3]
     return subprocess.run(argv, cwd=root, env=environment, check=False).returncode
 
 
