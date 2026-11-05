@@ -42,6 +42,7 @@ SCRIPT_NAME_ALLOWLIST = {
     "canary.py",
     "merge-ledger.py",
     "infrastructure.py",
+    "output-canary.py",
 }
 SEAM_SUBPROCESS_WRAPPERS = {
     "scripts/guardrails/python/check.py": {"run_tool"},

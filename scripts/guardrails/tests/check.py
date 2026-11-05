@@ -137,12 +137,20 @@ def cases(rows: list[dict[str, Any]]) -> dict[str, Any]:
     return result
 
 
+def is_test_path(path: str) -> bool:
+    return path.endswith("_test.go") and Path(path).parts[0] in ("cmd", "internal")
+
+
 def growth_errors(
     current: list[dict[str, Any]],
     previous: list[dict[str, Any]],
     mapping: dict[str, Any],
     changed: set[str],
 ) -> list[str]:
+    # Inspector output is shared with non-test policy checks. Only colocated Go
+    # test files can introduce test identities, including helper-only test files.
+    current = [row for row in current if is_test_path(row["Path"])]
+    previous = [row for row in previous if is_test_path(row["Path"])]
     errors = []
     old, new = cases(previous), cases(current)
     fingerprints: dict[str, list[str]] = {}
@@ -257,6 +265,47 @@ def static_checks(base: str, executable: Path, policy: dict[str, Any]) -> list[s
     )
 
 
+def failure_lines(events: list[dict[str, Any]]) -> list[str]:
+    failures = {
+        (event.get("Package"), event.get("Test"))
+        for event in events
+        if event.get("Action") == "fail" and event.get("Test")
+    }
+    lines = [f"FAILED {package}/{test}" for package, test in sorted(failures)]
+    for event in events:
+        if (event.get("Package"), event.get("Test")) in failures:
+            lines.extend(
+                line
+                for line in event.get("Output", "").splitlines()
+                if not line.startswith(("=== RUN", "=== PAUSE", "=== CONT"))
+            )
+        elif not event.get("Test"):
+            lines.extend(
+                line
+                for line in event.get("Output", "").splitlines()
+                if line.startswith("FAIL")
+            )
+    lines.extend(
+        f"FAIL {event['Package']}"
+        for event in events
+        if event.get("Action") == "fail" and not event.get("Test")
+    )
+    return list(dict.fromkeys(lines))
+
+
+def report_failure(result: subprocess.CompletedProcess[str]) -> None:
+    with tempfile.NamedTemporaryFile(
+        mode="w", prefix="scout-go-test-", suffix=".jsonl", delete=False
+    ) as artifact:
+        artifact.write(result.stdout)
+        path = Path(artifact.name).resolve()
+    if result.stderr:
+        Path(str(path) + ".stderr").write_text(result.stderr)
+    events = [json.loads(line) for line in result.stdout.splitlines()]
+    print("\n".join(failure_lines(events)))
+    print(f"go test JSON: {path}")
+
+
 def execute(packages: list[str], tier: str, policy: dict[str, Any]) -> list[str]:
     errors = []
     with tempfile.TemporaryDirectory(prefix="scout-coverage-") as tmp:
@@ -284,8 +333,7 @@ def execute(packages: list[str], tier: str, policy: dict[str, Any]) -> list[str]
                     "durationMs": event.get("Elapsed", float("nan")) * 1000,
                 })
         if failed:
-            sys.stdout.write(result.stdout)
-            sys.stderr.write(result.stderr)
+            report_failure(result)
             return [
                 error(
                     tier,
@@ -312,7 +360,8 @@ def main() -> bool:
     policy = json.loads(Path(".omp/test-tiers.json").read_text())
     with tempfile.TemporaryDirectory(prefix="scout-test-inspect-") as tmp:
         executable = Path(tmp) / "inspect"
-        run(["go", "build", "-o", str(executable), "scripts/guardrails/inspect.go"])
+        inspector = Path(__file__).resolve().parents[1] / "inspect.go"
+        run(["go", "build", "-o", str(executable), str(inspector)])
         errors = static_checks(args.base, executable, policy)
     if not errors:
         for tier in ["fast", "seam"] if args.mode == "full" else ["fast"]:

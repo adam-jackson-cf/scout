@@ -342,6 +342,18 @@ def push_gate(base: str) -> None:
     if heads:
         resolved = resolve_base(base)
         for revision in pushed_commits(resolved, heads):
+            configured = run(
+                ["git", "cat-file", "-e", f"{revision}:.omp/gate.json"],
+                check=False,
+                capture_output=True,
+                env=dict(os.environ),
+            )
+            if configured.returncode:
+                print(
+                    f"{revision}: GATE.pre-push: commit predates the repository gate; not gated",
+                    flush=True,
+                )
+                continue
             snapshot_gate("fast", revision, [], resolved)
 
 
@@ -431,7 +443,7 @@ def main() -> bool:
         if mode in ("full", "fast"):
             run([
                 sys.executable,
-                "scripts/guardrails/tests/check.py",
+                str(Path(__file__).resolve().parent / "tests/check.py"),
                 mode,
                 "--base",
                 policy["base"],
@@ -439,6 +451,10 @@ def main() -> bool:
         if mode == "full":
             run(["go", "build", "./..."])
             run(["go", "vet", "./..."])
+            run([
+                sys.executable,
+                str(Path(__file__).resolve().parent / "tests/output-canary.py"),
+            ])
             run([sys.executable, "scripts/guardrails/merge-ledger.py", "--check"])
             run([
                 sys.executable,
