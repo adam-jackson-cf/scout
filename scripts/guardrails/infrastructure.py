@@ -105,8 +105,36 @@ def parity(root: Path) -> None:
             )
 
 
+def gate_schema(config: dict[str, Any]) -> None:
+    rule = "RUNNER.local-ci-parity"
+    if type(config.get("schemaVersion")) is not int or config["schemaVersion"] != 1:
+        fail(".omp/gate.json", rule, "set schemaVersion to integer 1")
+    timeout = config.get("pathCheckTimeoutMs")
+    if type(timeout) is not int or timeout <= 0:
+        fail(
+            ".omp/gate.json",
+            rule,
+            "set a positive integer pathCheckTimeoutMs with measured headroom",
+        )
+    for field in ("testGlobs", "sensitive"):
+        values = config.get(field)
+        if (
+            not isinstance(values, list)
+            or not values
+            or not all(isinstance(value, str) and value for value in values)
+        ):
+            fail(
+                ".omp/gate.json",
+                rule,
+                f"populate {field} with nonempty string patterns",
+            )
+    if config.get("agentMerge") not in {"allowed", "disabled"}:
+        fail(".omp/gate.json", rule, "set agentMerge to allowed or disabled")
+
+
 def runner(root: Path) -> None:
     config = json.loads((root / ".omp/gate.json").read_text())
+    gate_schema(config)
     for field, mode in {
         "gate": "full",
         "commitGate": "commit",

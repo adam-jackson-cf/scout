@@ -94,15 +94,29 @@ def check_row(row: dict[str, Any], policy: dict[str, Any]) -> None:
     fanout(row)
 
 
+def relative_path(name: str) -> str | None:
+    path = Path(name)
+    if ".." not in path.parts and ".codegraph" not in path.parts:
+        if not path.is_absolute():
+            return name
+        try:
+            relative = path.resolve().relative_to(ROOT.resolve())
+            if ".codegraph" not in relative.parts:
+                return relative.as_posix()
+        except ValueError:
+            pass
+    error(name, "STRUCT.folder-placement", "use an owned path within this repository")
+    return None
+
+
 def path_check(files: list[str], policy: dict[str, Any]) -> None:
     gofiles = []
     for name in files:
-        p = Path(name)
-        if p.is_absolute() or ".." in p.parts or ".codegraph" in p.parts:
-            error(
-                name, "STRUCT.folder-placement", "use an owned repository-relative path"
-            )
+        relative = relative_path(name)
+        if relative is None:
             continue
+        name = relative
+        p = Path(name)
         if name.startswith("evaluation/"):
             continue
         if not any(re.fullmatch(pattern, name) for pattern in policy["owned_paths"]):

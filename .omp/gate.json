@@ -1,4 +1,5 @@
 {
+  "schemaVersion": 1,
   "gate": [
     "bash",
     "scripts/gate.sh",
@@ -18,5 +19,43 @@
     "bash",
     "scripts/gate.sh",
     "path"
-  ]
+  ],
+  "pathCheckTimeoutMs": 10000,
+  "testGlobs": [
+    "**/*_test.go",
+    "scripts/guardrails/**/fixtures/**",
+    "scripts/guardrails/**/canary.py",
+    "scripts/guardrails/**/canaries.py",
+    "scripts/guardrails/hook-check.py"
+  ],
+  "sensitive": [
+    ".github/",
+    ".omp/",
+    ".githooks/",
+    ".scout/",
+    ".agents/",
+    "scripts/guardrails/",
+    "toolchain/",
+    "bootstrap-tools.sh",
+    "gate.sh",
+    "build-clawpatch.sh",
+    "scout-design.md",
+    "docs/design-reviews/",
+    "evaluation/",
+    "third_party/",
+    "SCOUT_REBUILD_REQUIREMENTS.md",
+    "research-ledger.md",
+    "hypothesis-ledger.md",
+    "CLAUDE.md",
+    ".gitleaksignore",
+    ".gitmodules",
+    "AGENTS.md",
+    "ruff.toml",
+    "mypy.ini",
+    ".prettierrc",
+    ".prettierignore",
+    "go.mod",
+    "go.sum"
+  ],
+  "agentMerge": "allowed"
 }
