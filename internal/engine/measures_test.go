@@ -16,7 +16,7 @@ import (
 
 func gitRun(t *testing.T, dir string, args ...string) {
 	t.Helper()
-	command := exec.Command("git", append([]string{"-c", "user.name=Dev", "-c", "user.email=dev@example.com"}, args...)...)
+	command := exec.CommandContext(boundedTestContext(t), "git", append([]string{"-c", "user.name=Dev", "-c", "user.email=dev@example.com"}, args...)...)
 	command.Dir = dir
 	if out, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("git %s: %v\n%s", strings.Join(args, " "), err, out)

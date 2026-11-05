@@ -29,7 +29,7 @@ func requireDeltaTools(t *testing.T) {
 
 func deltaGit(t *testing.T, root string, args ...string) string {
 	t.Helper()
-	command := exec.Command("git", append([]string{"-C", root, "-c", "user.name=t", "-c", "user.email=t@example.com", "-c", "commit.gpgsign=false"}, args...)...)
+	command := exec.CommandContext(boundedTestContext(t), "git", append([]string{"-C", root, "-c", "user.name=t", "-c", "user.email=t@example.com", "-c", "commit.gpgsign=false"}, args...)...)
 	out, err := command.CombinedOutput()
 	if err != nil {
 		t.Fatalf("git %v: %v\n%s", args, err, out)

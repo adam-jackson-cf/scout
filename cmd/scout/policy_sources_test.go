@@ -13,7 +13,7 @@ func gitRepo(t *testing.T) string {
 	t.Helper()
 	root := t.TempDir()
 	for _, args := range [][]string{{"init", "-q"}, {"config", "user.email", "t@example.test"}, {"config", "user.name", "t"}} {
-		if out, err := exec.Command("git", append([]string{"-C", root}, args...)...).CombinedOutput(); err != nil {
+		if out, err := exec.CommandContext(boundedTestContext(t), "git", append([]string{"-C", root}, args...)...).CombinedOutput(); err != nil {
 			t.Fatalf("git %v: %v: %s", args, err, out)
 		}
 	}
@@ -23,7 +23,7 @@ func gitRepo(t *testing.T) string {
 func commitAll(t *testing.T, root string) {
 	t.Helper()
 	for _, args := range [][]string{{"add", "-A"}, {"commit", "-q", "--allow-empty", "-m", "c"}} {
-		if out, err := exec.Command("git", append([]string{"-C", root}, args...)...).CombinedOutput(); err != nil {
+		if out, err := exec.CommandContext(boundedTestContext(t), "git", append([]string{"-C", root}, args...)...).CombinedOutput(); err != nil {
 			t.Fatalf("git %v: %v: %s", args, err, out)
 		}
 	}

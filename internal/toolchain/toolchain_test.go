@@ -70,7 +70,7 @@ func TestClawpatchPinMatchesManifestAndSubmodule(t *testing.T) {
 	if clawpatch.Version != manifest(t)["CLAWPATCH_VERSION"] {
 		t.Errorf("clawpatch.Version %s != CLAWPATCH_VERSION", clawpatch.Version)
 	}
-	output, err := exec.Command("git", "-C", repoRoot, "ls-files", "-s", "third_party/clawpatch").Output()
+	output, err := exec.CommandContext(boundedTestContext(t), "git", "-C", repoRoot, "ls-files", "-s", "third_party/clawpatch").Output()
 	if err != nil || len(output) == 0 {
 		t.Fatalf("the third_party/clawpatch submodule gitlink cannot be read from a git checkout (the pin check cannot be skipped): %v", err)
 	}

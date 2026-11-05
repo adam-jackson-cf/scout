@@ -30,7 +30,7 @@ func newFixture(t *testing.T) *fixture {
 
 func (f *fixture) git(env []string, args ...string) string {
 	f.t.Helper()
-	cmd := exec.Command("git", append([]string{"-C", f.dir, "-c", "commit.gpgsign=false"}, args...)...)
+	cmd := exec.CommandContext(boundedTestContext(f.t), "git", append([]string{"-C", f.dir, "-c", "commit.gpgsign=false"}, args...)...)
 	cmd.Env = append(os.Environ(), "GIT_CONFIG_GLOBAL=/dev/null", "GIT_CONFIG_SYSTEM=/dev/null")
 	cmd.Env = append(cmd.Env, env...)
 	out, err := cmd.CombinedOutput()
