@@ -5,7 +5,7 @@
 **A discovery-only CI guardian for a single repository: it finds evidence-backed issues and measures code structure over time, and blocks a pull request only for checks you have switched on.**
 
 ![Status](https://img.shields.io/badge/status-pre--release-orange.svg?style=flat-square)
-![Go](https://img.shields.io/badge/go-1.25.6-00ADD8.svg?style=flat-square)
+![Go](https://img.shields.io/badge/go-1.26.10-00ADD8.svg?style=flat-square)
 ![Primary CLI](https://img.shields.io/badge/cli-scout-blue.svg?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey.svg?style=flat-square)
 
@@ -42,7 +42,7 @@ scout issues                        # list issues in the ledger
 scout diff --base main --summary scout-summary.md   # what this branch introduced
 ```
 
-`assess` and `diff` print a JSON result with `gate`, `health`, `would_block` and `ranking`, and exit `0` clean, `1` gated, `2` incomplete or `3` unavailable. Under the default `report` profile, findings never fail the run. A branch that adds an unscoped `# noqa` gets a summary listing `guardrails.SUPPRESS.added.unscoped` as *introduced*, under "Would block if activated", plus a lane-health table. `scout serve` starts a read-only web view on `127.0.0.1:8347`.
+`assess` and `diff` print a JSON result with `gate`, `health`, `would_block` and `ranking`, and exit `0` clean, `1` gated, `2` incomplete or `3` unavailable. Under the default `report` profile, findings never fail the run. A branch that adds an unscoped `# noqa` gets a summary listing `guardrails.SUPPRESS.added.unscoped` as _introduced_, under "Would block if activated", plus a lane-health table. `scout serve` starts a read-only web view on `127.0.0.1:8347`.
 
 ## What Scout Does
 
