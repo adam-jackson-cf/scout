@@ -110,7 +110,7 @@ func gitRepo(t *testing.T, files map[string]string) string {
 		}
 	}
 	for _, args := range [][]string{{"init", "-q"}, {"add", "-A"}, {"-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "init"}} {
-		command := exec.Command("git", append([]string{"-C", root}, args...)...)
+		command := exec.CommandContext(boundedTestContext(t), "git", append([]string{"-C", root}, args...)...)
 		if output, err := command.CombinedOutput(); err != nil {
 			t.Fatalf("git %v: %v\n%s", args, err, output)
 		}

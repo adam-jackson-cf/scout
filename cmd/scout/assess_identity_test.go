@@ -32,7 +32,7 @@ func pinnedClawpatch(t *testing.T) string {
 
 func gitIn(t *testing.T, root string, args ...string) {
 	t.Helper()
-	command := exec.Command("git", append([]string{"-C", root, "-c", "user.email=t@t", "-c", "user.name=t"}, args...)...)
+	command := exec.CommandContext(boundedTestContext(t), "git", append([]string{"-C", root, "-c", "user.email=t@t", "-c", "user.name=t"}, args...)...)
 	if output, err := command.CombinedOutput(); err != nil {
 		t.Fatalf("git %v: %v\n%s", args, err, output)
 	}
@@ -53,7 +53,7 @@ const perfFn = "def build(items):\n    out = []\n    for i in items:\n        if
 // blocked), yet a later rename keeps the issue ID and a numeric C901 change
 // records evidence_drift with the accepted disposition intact.
 func TestAssessKeepsIdentityAcrossRenameAfterPartialRun(t *testing.T) {
-	out, err := exec.Command("ruff", "--version").Output()
+	out, err := exec.CommandContext(boundedTestContext(t), "ruff", "--version").Output()
 	if err != nil || !strings.Contains(string(out), "0.15.8") {
 		t.Skip("ruff 0.15.8 is not installed")
 	}

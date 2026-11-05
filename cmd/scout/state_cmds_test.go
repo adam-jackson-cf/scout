@@ -13,7 +13,7 @@ import (
 
 func gitRun(t *testing.T, dir string, args ...string) string {
 	t.Helper()
-	command := exec.Command("git", args...)
+	command := exec.CommandContext(boundedTestContext(t), "git", args...)
 	command.Dir = dir
 	out, err := command.CombinedOutput()
 	if err != nil {

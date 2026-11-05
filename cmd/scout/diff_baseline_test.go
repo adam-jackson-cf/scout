@@ -22,12 +22,12 @@ func TestDiffUsesPublishedBaselineUnlessDigestsDiffer(t *testing.T) {
 	t.Setenv("SCOUT_CLAWPATCH_BINARY", pinnedClawpatch(t))
 	work := t.TempDir()
 	origin := filepath.Join(work, "origin.git")
-	if out, err := exec.Command("git", "init", "-q", "--bare", "-b", "main", origin).CombinedOutput(); err != nil {
+	if out, err := exec.CommandContext(boundedTestContext(t), "git", "init", "-q", "--bare", "-b", "main", origin).CombinedOutput(); err != nil {
 		t.Fatalf("%v\n%s", err, out)
 	}
 	clone := func(name string) string {
 		dir := filepath.Join(work, name)
-		if out, err := exec.Command("git", "clone", "-q", origin, dir).CombinedOutput(); err != nil {
+		if out, err := exec.CommandContext(boundedTestContext(t), "git", "clone", "-q", origin, dir).CombinedOutput(); err != nil {
 			t.Fatalf("%v\n%s", err, out)
 		}
 		return dir

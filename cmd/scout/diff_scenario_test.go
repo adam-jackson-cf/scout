@@ -277,7 +277,7 @@ func TestDiffGateScenario(t *testing.T) {
 
 func gitRev(t *testing.T, root, ref string) string {
 	t.Helper()
-	out, err := exec.Command("git", "-C", root, "rev-parse", ref).Output()
+	out, err := exec.CommandContext(boundedTestContext(t), "git", "-C", root, "rev-parse", ref).Output()
 	if err != nil {
 		t.Fatal(err)
 	}

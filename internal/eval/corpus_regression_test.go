@@ -154,7 +154,7 @@ func TestBundledRulesStillDetectCorpusMechanisms(t *testing.T) {
 		args = append(args, "--config", filepath.Join(rules, rule))
 	}
 	args = append(args, ".")
-	cmd := exec.Command(semgrep, args...)
+	cmd := exec.CommandContext(boundedTestContext(t), semgrep, args...)
 	cmd.Dir = dir
 	var stdout bytes.Buffer
 	cmd.Stdout = &stdout
