@@ -547,7 +547,9 @@ func (r *Runner) verifyVersion(ctx context.Context, root, state, rulesRoot, bina
 	if r.verifiedBinary == binary {
 		return nil
 	}
-	check, cancel := context.WithTimeout(ctx, min(r.spec.Timeout, 10*time.Second))
+	// Startup is scanner work too: use its declared budget rather than a
+	// shorter probe-only deadline that rejects cold or contended executables.
+	check, cancel := context.WithTimeout(ctx, r.spec.Timeout)
 	defer cancel()
 	if err := sandbox.VerifyVersion(check, r.request(root, state, rulesRoot, binary, r.spec.Binary.VersionArgs), r.spec.Binary.Version); err != nil {
 		return err
