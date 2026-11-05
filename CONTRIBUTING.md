@@ -30,6 +30,11 @@ bash scripts/gate.sh path internal/domain/types.go
 
 `.omp/gate.json` owns the four argv arrays. CI's required `gate` job executes the
 exact full argv, without modifying sources. Failures propagate to the caller.
+CI reads the Go pin from `toolchain/versions.env` before setup-go and runs
+`bash scripts/ci-sandbox.sh --strict` before bootstrap. The shared script installs
+Linux bubblewrap and handles the Ubuntu user-namespace restriction; an unusable
+sandbox blocks the gate immediately. Guardian provisioning calls the same script
+without `--strict`, preserving its warning-only behavior when the probe fails.
 Full/fast subchecks discover their maintained scope without forwarding the full
 repository inventory as process arguments. Commit snapshots receive their changed
 paths over NUL-separated stdin; `pathCheck` retains its explicit changed-path argv.
