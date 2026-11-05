@@ -1,142 +1,272 @@
 #!/usr/bin/env python3
-"""Regenerates internal/association/testdata/parity-<repo>.json.gz for the association parity test (about 2 minutes).
+"""Regenerate the deterministic association fixtures from frozen pilot inputs.
 
-Read-only over the recorded X2d pilot inputs; writes only the two output files. Standard library only.
-
-    python3 internal/association/testdata/gen/gen_parity.py \
-        [--x2d     /Users/adamjackson/Projects/inflight/scout-x2d/evaluation/x2d-merge-association-pilot] \
-        [--scout   .]     # this repository: axum pilot front end under evaluation/x2d-postrun-tuning/axum/pilot
-        [--fastapi /tmp/scout-x2c-smoke/_src/fastapi] [--axum /tmp/scout-x2c-smoke/_src/axum]
-
-Sources: fastapi window rounds 1-10 (<x2d>/data/postrun, <x2d>/prepass/rounds.json, <x2d>/frontend.py) and axum rounds 1-5
-(<x2d>/data/postrun-axum, the axum pilot under --scout). The axum clone is the one in evaluation/x2d-postrun-tuning/axum/FROZEN-AXUM.md.
-
-Per round: the round-start membership restricted to the paths that matter (touched paths plus owned variant siblings of added
-paths); per first-parent commit that exercises a rule: the raw changes, the parent-tree siblings of added paths, and
-  pilot     the recorded pilot front end (owned_classify + clusters + cap), asserted equal to the recorded units.jsonl ids;
-  expected  the same front end with the two rules Scout does not port neutralised (cross-scope rename: scope() constant;
-            translation: _LANG_DIR never matches) = the design's Scout result;
-  affected  the rules for which pilot and expected differ ([] = parity case).
-Commits that only modify owned files, delete files or touch nothing are not stored (counted in commits_total).
+Reads recorded X2d inputs and fixture clones; never changes frozen study modules.
+Use --out to choose the output directory (which must already exist).
 """
-import argparse, collections, gzip, hashlib, importlib.util, json, os, re
+
+from __future__ import annotations
+
+import argparse
+import collections
+import gzip
+import hashlib
+import importlib.util
+import json
+import os
+import re
+from collections.abc import Iterable
+from dataclasses import dataclass
+from typing import Any
 
 PR_CAP = 10
 NEVER = re.compile(r"(?!)")
 
 
-def load(name, path):
+def load(name: str, path: str) -> Any:
     spec = importlib.util.spec_from_file_location(name, path)
-    m = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(m)
-    return m
+    if spec is None or spec.loader is None:
+        raise ImportError(path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
-def cap_key(cid):
+def cap_key(cid: str) -> str:
     return hashlib.sha256(("x2d-cap\0" + cid).encode()).hexdigest()
 
 
-def run_front(F, entries, state, own, blobs, commit, neutralise=()):
-    """Pilot front end for one commit with the named rules neutralised ("scope", "lang") -> comparable dict."""
-    saved = (F.scope, F._LANG_DIR)
+@dataclass
+class FrontInput:
+    entries: Any
+    state: Any
+    own: Any
+    blobs: Any
+    commit: str
+
+
+def run_front(front: Any, inputs: FrontInput, neutralise: tuple[str, ...] = ()) -> Any:
+    """Run one pilot commit, restoring every temporarily neutralised rule."""
+    saved = (front.scope, front._LANG_DIR)
     if "scope" in neutralise:
-        F.scope = lambda p: "x"
+        front.scope = lambda p: "x"
     if "lang" in neutralise:
-        F._LANG_DIR = NEVER
+        front._LANG_DIR = NEVER
     try:
-        resolved = []
-        counts, residual = F.owned_classify(entries, state, own, resolved)
-        live, inert = F.clusters(residual, blobs)
+        resolved: list[Any] = []
+        counts, residual = front.owned_classify(
+            inputs.entries, inputs.state, inputs.own, resolved
+        )
+        live, inert = front.clusters(residual, inputs.blobs)
     finally:
-        F.scope, F._LANG_DIR = saved
+        front.scope, front._LANG_DIR = saved
     info = {p: d for p, _k, d in residual}
-    for c in live:
-        c["id"] = F.cluster_id(commit, c)
+    for cluster in live:
+        cluster["id"] = front.cluster_id(inputs.commit, cluster)
     order = sorted(live, key=lambda c: cap_key(c["id"]))
     counts = dict(counts, inert_clusters=len(inert), residual_clusters=len(live))
     return {
         "counts": {k: v for k, v in sorted(counts.items()) if v},
-        "clusters": [{"id": c["id"], "dir": c["dir"], "stem": c["stem"], "files": c["files"], "kinds": c["kinds"],
-                      "heuristic": [f for f in c["files"] if "heuristic_only" in info[f]]} for c in live],
-        "inert": [{"dir": c["dir"], "stem": c["stem"], "files": c["files"]} for c in inert],
+        "clusters": [
+            dict(c, heuristic=[f for f in c["files"] if "heuristic_only" in info[f]])
+            for c in (
+                {k: c[k] for k in ("id", "dir", "stem", "files", "kinds")} for c in live
+            )
+        ],
+        "inert": [{k: c[k] for k in ("dir", "stem", "files")} for c in inert],
         "decided": [c["id"] for c in order[:PR_CAP]],
         "capped": [c["id"] for c in order[PR_CAP:]],
-        "resolved": sorted(({"path": x["path"], "rule": x["rule"], "owners": x["owners"], "old": x["old"], "pool": x["pool"]} for x in resolved), key=lambda x: x["path"]),
+        "resolved": sorted(
+            (
+                {k: x[k] for k in ("path", "rule", "owners", "old", "pool")}
+                for x in resolved
+            ),
+            key=lambda x: x["path"],
+        ),
     }
 
 
-def build_repo(name, F, repo, data, rounds_info, rounds):
-    out = {"repo": name, "rounds": []}
-    for r in rounds:
-        info = next(x for x in rounds_info["rounds"] if x["round"] == r)
-        rd = os.path.join(data, "rounds", str(r))
-        membership = json.load(open(os.path.join(rd, "membership.json")))
-        own = F.Ownership(membership)
-        recorded, capped_rec = collections.defaultdict(list), collections.defaultdict(list)
-        for line in open(os.path.join(rd, "units.jsonl")):
-            u = json.loads(line)
-            if u.get("set") == "window" and not u.get("control"):
-                recorded[u["commit"]].append(u["cluster_id"])
-        for line in open(os.path.join(rd, "capped.jsonl")):
+@dataclass
+class RepoInput:
+    name: str
+    front: Any
+    repo: str
+    data: str
+    rounds_info: Any
+    rounds: Iterable[int]
+
+
+def read_json(path: str) -> Any:
+    with open(path) as stream:
+        return json.load(stream)
+
+
+def recorded_clusters(directory: str) -> tuple[Any, Any]:
+    recorded: Any = collections.defaultdict(list)
+    capped: Any = collections.defaultdict(list)
+    with open(os.path.join(directory, "units.jsonl")) as stream:
+        for line in stream:
+            unit = json.loads(line)
+            if unit.get("set") == "window" and not unit.get("control"):
+                recorded[unit["commit"]].append(unit["cluster_id"])
+    with open(os.path.join(directory, "capped.jsonl")) as stream:
+        for line in stream:
             if line.strip():
                 row = json.loads(line)
-                capped_rec[row["pr"]].append(row["cluster_id"])
-        state = F.TreeState(F.tree_paths(repo, info["after_commit"]))
-        commits, touched, added_paths, total = [], set(), [], 0
-        for sha, parent, date, subject in F.first_parent_commits(repo, info["after_commit"], info["through_commit"]):
-            total += 1
-            entries = F.diff_entries(repo, parent, sha)
-            blobs = {e[3]: e[4] for e in entries if e[0] in "ARC"}
-            pilot = run_front(F, entries, state, own, blobs, sha)
-            expected = run_front(F, entries, state, own, blobs, sha, ("scope", "lang"))
-            assert sorted(recorded.get(sha, [])) == sorted(pilot["decided"]), (name, r, sha, "recorded units differ from the pilot run")
-            pr = str(F.pr_number(subject) or sha[:8])
-            assert sorted(capped_rec.get(pr, [])) == sorted(pilot["capped"]), (name, r, sha, "recorded capped differ from the pilot run")
-            affected = [rule for rule, n in (("cross_scope_rename", ("scope",)), ("translation", ("lang",)))
-                        if run_front(F, entries, state, own, blobs, sha, n) != pilot]
-            if pilot != expected and not affected:
-                affected = ["cross_scope_rename+translation"]
-            interesting = affected or pilot != expected or expected["clusters"] or expected["inert"] or expected["resolved"] \
-                or set(expected["counts"]) - {"modified_owned", "deleted"}
-            if interesting:
-                added = [e[3] for e in entries if e[0] in "AC"]
-                commits.append({"sha": sha, "parent": parent,
-                                "entries": [[e[0], e[2], e[3], 1 if e[4] == F.EMPTY_BLOB else 0] for e in entries],
-                                "tree": sorted({f for p in added for f in own._by_sib.get(F.sibling_key(p), []) if f != p and f in state.paths}),
-                                "pilot": pilot, "expected": expected, "affected": affected})
-                for e in entries:
-                    touched.update((e[2], e[3]))
-                added_paths += added
-            state.apply(entries)
-        keep = set(touched)
-        for p in added_paths:
-            keep.update(own._by_sib.get(F.sibling_key(p), []))
-        heur, pool = set(membership.get("heuristic_only", [])), set(membership.get("pool", []))
-        out["rounds"].append({"round": r, "commits_total": total, "commits": commits,
-                              "owners": {f: sorted(own._owners[f]) for f in sorted(keep) if f in own._owners},
-                              "heuristic_only": sorted(touched & heur), "pool": sorted(touched & pool)})
-    return out
+                capped[row["pr"]].append(row["cluster_id"])
+    return recorded, capped
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--x2d", default="/Users/adamjackson/Projects/inflight/scout-x2d/evaluation/x2d-merge-association-pilot")
-    ap.add_argument("--scout", default=".")
-    ap.add_argument("--fastapi", default="/tmp/scout-x2c-smoke/_src/fastapi")
-    ap.add_argument("--axum", default="/tmp/scout-x2c-smoke/_src/axum")
-    ap.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
-    a = ap.parse_args()
-    axum_pilot = os.path.join(a.scout, "evaluation/x2d-postrun-tuning/axum/pilot")
-    jobs = [
-        ("fastapi", load("frontend_fastapi", os.path.join(a.x2d, "frontend.py")), a.fastapi, os.path.join(a.x2d, "data/postrun"), os.path.join(a.x2d, "prepass/rounds.json"), range(1, 11)),
-        ("axum", load("frontend_axum", os.path.join(axum_pilot, "frontend.py")), a.axum, os.path.join(a.x2d, "data/postrun-axum"), os.path.join(axum_pilot, "prepass/rounds.json"), range(1, 6)),
+def commit_case(front: Any, inputs: FrontInput, parent: str) -> Any:
+    pilot = run_front(front, inputs)
+    expected = run_front(front, inputs, ("scope", "lang"))
+    affected = [
+        rule
+        for rule, names in (
+            ("cross_scope_rename", ("scope",)),
+            ("translation", ("lang",)),
+        )
+        if run_front(front, inputs, names) != pilot
     ]
-    for name, F, repo, data, rj, rounds in jobs:
-        res = build_repo(name, F, repo, data, json.load(open(rj)), rounds)
-        path = os.path.join(a.out, "parity-%s.json.gz" % name)
-        with gzip.GzipFile(path, "wb", mtime=0) as f:
-            f.write(json.dumps(res, sort_keys=True, separators=(",", ":")).encode())
-        print(name, "commits stored", sum(len(r["commits"]) for r in res["rounds"]), "of", sum(r["commits_total"] for r in res["rounds"]), "bytes", os.path.getsize(path))
+    if pilot != expected and not affected:
+        affected = ["cross_scope_rename+translation"]
+    added = [e[3] for e in inputs.entries if e[0] in "AC"]
+    return {
+        "sha": inputs.commit,
+        "parent": parent,
+        "entries": [
+            [e[0], e[2], e[3], 1 if e[4] == front.EMPTY_BLOB else 0]
+            for e in inputs.entries
+        ],
+        "tree": sorted({
+            f
+            for p in added
+            for f in inputs.own._by_sib.get(front.sibling_key(p), [])
+            if f != p and f in inputs.state.paths
+        }),
+        "pilot": pilot,
+        "expected": expected,
+        "affected": affected,
+    }
+
+
+def interesting(case: Any) -> bool:
+    expected = case["expected"]
+    return bool(
+        case["affected"]
+        or case["pilot"] != expected
+        or expected["clusters"]
+        or expected["inert"]
+        or expected["resolved"]
+        or set(expected["counts"]) - {"modified_owned", "deleted"}
+    )
+
+
+def build_round(job: RepoInput, round_number: int) -> Any:
+    front = job.front
+    info = next(x for x in job.rounds_info["rounds"] if x["round"] == round_number)
+    directory = os.path.join(job.data, "rounds", str(round_number))
+    membership = read_json(os.path.join(directory, "membership.json"))
+    own = front.Ownership(membership)
+    recorded, capped = recorded_clusters(directory)
+    state = front.TreeState(front.tree_paths(job.repo, info["after_commit"]))
+    commits: list[Any] = []
+    touched: set[str] = set()
+    added_paths: list[str] = []
+    total = 0
+    for sha, parent, _date, subject in front.first_parent_commits(
+        job.repo, info["after_commit"], info["through_commit"]
+    ):
+        total += 1
+        entries = front.diff_entries(job.repo, parent, sha)
+        case = commit_case(
+            front,
+            FrontInput(
+                entries, state, own, {e[3]: e[4] for e in entries if e[0] in "ARC"}, sha
+            ),
+            parent,
+        )
+        assert sorted(recorded.get(sha, [])) == sorted(case["pilot"]["decided"]), (
+            job.name,
+            round_number,
+            sha,
+            "recorded units differ from the pilot run",
+        )
+        assert sorted(
+            capped.get(str(front.pr_number(subject) or sha[:8]), [])
+        ) == sorted(case["pilot"]["capped"]), (
+            job.name,
+            round_number,
+            sha,
+            "recorded capped differ from the pilot run",
+        )
+        if interesting(case):
+            commits.append(case)
+            for entry in entries:
+                touched.update((entry[2], entry[3]))
+            added_paths += [e[3] for e in entries if e[0] in "AC"]
+        state.apply(entries)
+    keep = set(touched)
+    for path in added_paths:
+        keep.update(own._by_sib.get(front.sibling_key(path), []))
+    return {
+        "round": round_number,
+        "commits_total": total,
+        "commits": commits,
+        "owners": {f: sorted(own._owners[f]) for f in sorted(keep) if f in own._owners},
+        "heuristic_only": sorted(touched & set(membership.get("heuristic_only", []))),
+        "pool": sorted(touched & set(membership.get("pool", []))),
+    }
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--x2d", default="evaluation/x2d-merge-association-pilot")
+    parser.add_argument("--scout", default=".")
+    parser.add_argument("--fastapi", default="/tmp/scout-x2c-smoke/_src/fastapi")
+    parser.add_argument("--axum", default="/tmp/scout-x2c-smoke/_src/axum")
+    parser.add_argument(
+        "--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+    )
+    args = parser.parse_args()
+    axum_pilot = os.path.join(args.scout, "evaluation/x2d-postrun-tuning/axum/pilot")
+    jobs = [
+        RepoInput(
+            "fastapi",
+            load("frontend_fastapi", os.path.join(args.x2d, "frontend.py")),
+            args.fastapi,
+            os.path.join(args.x2d, "data/postrun"),
+            read_json(os.path.join(args.x2d, "prepass/rounds.json")),
+            range(1, 11),
+        ),
+        RepoInput(
+            "axum",
+            load("frontend_axum", os.path.join(axum_pilot, "frontend.py")),
+            args.axum,
+            os.path.join(args.x2d, "data/postrun-axum"),
+            read_json(os.path.join(axum_pilot, "prepass/rounds.json")),
+            range(1, 6),
+        ),
+    ]
+    for job in jobs:
+        result = {
+            "repo": job.name,
+            "rounds": [build_round(job, number) for number in job.rounds],
+        }
+        path = os.path.join(args.out, f"parity-{job.name}.json.gz")
+        with gzip.GzipFile(path, "wb", mtime=0) as stream:
+            stream.write(
+                json.dumps(result, sort_keys=True, separators=(",", ":")).encode()
+            )
+        print(
+            job.name,
+            "commits stored",
+            sum(len(r["commits"]) for r in result["rounds"]),
+            "of",
+            sum(r["commits_total"] for r in result["rounds"]),
+            "bytes",
+            os.path.getsize(path),
+        )
 
 
 if __name__ == "__main__":
