@@ -1,0 +1,125 @@
+{
+  "kind": "ruff-config",
+  "config": {
+    "line-length": 88,
+    "target-version": "invalid",
+    "fix": false,
+    "output-format": "full",
+    "respect-gitignore": true,
+    "preview": true,
+    "exclude": [
+      "evaluation",
+      ".tools",
+      "scripts/guardrails/fixtures",
+      "scripts/guardrails/vendor",
+      ".agent",
+      ".agents",
+      ".build",
+      ".enaible",
+      ".git",
+      ".tox",
+      ".venv",
+      "venv",
+      "__pycache__",
+      "*.egg-info",
+      "build",
+      "dist",
+      "docs/reference",
+      "migrations",
+      "node_modules",
+      ".pytest_cache",
+      ".mypy_cache",
+      ".ruff_cache",
+      "tools/enaible/.venv",
+      "tests/fixtures/"
+    ],
+    "lint": {
+      "select": [
+        "E",
+        "W",
+        "F",
+        "I",
+        "B",
+        "C4",
+        "C901",
+        "UP",
+        "SIM",
+        "PT",
+        "PGH",
+        "A",
+        "D",
+        "N",
+        "PLR0904",
+        "PLR0911",
+        "PLR0912",
+        "PLR0913",
+        "PLR0914",
+        "PLR0915",
+        "PLR0917"
+      ],
+      "ignore": [
+        "E501",
+        "D100",
+        "D101",
+        "D102",
+        "D103",
+        "D104",
+        "D105",
+        "D107",
+        "B006",
+        "B008",
+        "A005"
+      ],
+      "per-file-ignores": {
+        "__init__.py": [
+          "F401",
+          "F403",
+          "D104"
+        ],
+        "test_*.py": [
+          "D",
+          "S101",
+          "PLR2004"
+        ],
+        "**/tests/**": [
+          "D",
+          "S101",
+          "PLR2004"
+        ],
+        "conftest.py": [
+          "D"
+        ],
+        "setup.py": [
+          "D"
+        ]
+      },
+      "isort": {
+        "known-first-party": [],
+        "force-single-line": false,
+        "combine-as-imports": true,
+        "split-on-trailing-comma": true
+      },
+      "mccabe": {
+        "max-complexity": 10
+      },
+      "pylint": {
+        "max-args": 5,
+        "max-branches": 12,
+        "max-locals": 15,
+        "max-positional-args": 5,
+        "max-public-methods": 20,
+        "max-returns": 6,
+        "max-statements": 50
+      },
+      "pydocstyle": {
+        "convention": "numpy"
+      }
+    },
+    "format": {
+      "quote-style": "double",
+      "indent-style": "space",
+      "line-ending": "auto",
+      "docstring-code-format": true
+    }
+  }
+}

@@ -1,0 +1,630 @@
+{
+  "rows": [
+    {
+      "id": "STRUCT.dependency-direction",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "target_layer_dependency_allowlist_required": true,
+        "reject_unmapped_or_forbidden_dependency_edges": true,
+        "diagnostic_names_file_edge_and_fix": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/STRUCT.dependency-direction.positive.json",
+        "violating": "scripts/guardrails/fixtures/STRUCT.dependency-direction.negative.json",
+        "diagnostic": "STRUCT.dependency-direction"
+      }
+    },
+    {
+      "id": "STRUCT.folder-placement",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "target_path_ownership_map_required": true,
+        "reject_unmapped_or_misplaced_files": true,
+        "diagnostic_names_file_and_destination": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/STRUCT.folder-placement.positive.json",
+        "violating": "scripts/guardrails/fixtures/STRUCT.folder-placement.negative.json",
+        "diagnostic": "STRUCT.folder-placement"
+      }
+    },
+    {
+      "id": "NAME.conventions",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "target_path_and_symbol_naming_patterns_required": true,
+        "reject_nonmatching_names": true,
+        "diagnostic_names_file_and_correct_name": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/NAME.conventions.positive.json",
+        "violating": "scripts/guardrails/fixtures/NAME.conventions.negative.json",
+        "diagnostic": "NAME.conventions"
+      }
+    },
+    {
+      "id": "TEST.placement",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "target_test_to_owner_and_tier_map_required": true,
+        "reject_unmapped_or_misplaced_tests": true,
+        "diagnostic_names_file_and_destination": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/TEST.placement.positive.json",
+        "violating": "scripts/guardrails/fixtures/TEST.placement.negative.json",
+        "diagnostic": "TEST.placement"
+      }
+    },
+    {
+      "id": "GATE.local-ci-parity",
+      "activation_evidence": "canary.activation_canary sources generated activate in an activated parent, a child without the function, and repeatedly in that child; PATH must stay identical and path smoke must pass",
+      "coverage_evidence": "full gate runs check-only exact ledger synchronization then vendored upstream validator/catalog; ledger_canary proves fresh/stale aggregate behavior",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "configuration": ".omp/gate.json",
+        "authoritative_command_field": "gate",
+        "ci_executes_gate_argv_or_parallel_jobs_whose_union_equals_gate": true,
+        "parallel_jobs_must_use_the_gate_runner_with_tier_selectors_only": true,
+        "required_status_check_name": "gate",
+        "parallel_gate_aggregate_depends_on_every_tier_job": true,
+        "parallel_gate_aggregate_always_runs": true,
+        "parallel_gate_aggregate_fails_on_failed_cancelled_or_skipped_tiers": true,
+        "check_only": true,
+        "nonzero_exit_propagates": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py",
+        "scripts/guardrails/merge-ledger.py",
+        "scripts/guardrails/vendor/validate_rule_coverage.py",
+        "scripts/guardrails/vendor/enaible-rules.json"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/GATE.local-ci-parity.positive.json",
+        "violating": "scripts/guardrails/fixtures/GATE.local-ci-parity.negative.json",
+        "diagnostic": "GATE.local-ci-parity"
+      }
+    },
+    {
+      "id": "GATE.pre-commit",
+      "evidence_kind": "git_hook",
+      "status": "implemented",
+      "contract": {
+        "configuration": ".omp/gate.json",
+        "required_command_field": "commitGate",
+        "scope": "staged_or_affected_files_only",
+        "hook_manager": "any_tracked_manager_or_native_hook",
+        "installed_pre_commit_hook_executes_exact_commit_gate_argv": true,
+        "nonzero_exit_blocks_commit": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py",
+        "scripts/guardrails/hook.py",
+        ".githooks/pre-commit"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/GATE.pre-commit.positive.json",
+        "violating": "scripts/guardrails/fixtures/GATE.pre-commit.negative.json",
+        "diagnostic": "GATE.pre-commit"
+      },
+      "hook_install_check": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/hook-check.py",
+          "pre-commit"
+        ],
+        "diagnostic": "GATE.pre-commit"
+      }
+    },
+    {
+      "id": "GATE.pre-push",
+      "evidence_kind": "git_hook",
+      "status": "implemented",
+      "contract": {
+        "configuration": ".omp/gate.json",
+        "required_command_field": "fastGate",
+        "scope": "commits_being_pushed_relative_to_default_branch",
+        "hook_manager": "any_tracked_manager_or_native_hook",
+        "installed_pre_push_hook_executes_exact_fast_gate_argv": true,
+        "nonzero_exit_blocks_push": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py",
+        "scripts/guardrails/hook.py",
+        ".githooks/pre-push"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/GATE.pre-push.positive.json",
+        "violating": "scripts/guardrails/fixtures/GATE.pre-push.negative.json",
+        "diagnostic": "GATE.pre-push"
+      },
+      "hook_install_check": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/hook-check.py",
+          "pre-push"
+        ],
+        "diagnostic": "GATE.pre-push"
+      }
+    },
+    {
+      "id": "GATE.path-check",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "configuration": ".omp/gate.json",
+        "required_command_field": "pathCheck",
+        "changed_paths_appended_as_arguments": true,
+        "success_exit_code": 0,
+        "violation_exit_nonzero": true,
+        "diagnostic": "one_error_per_line_naming_file_and_fix",
+        "checks": [
+          "structure",
+          "naming",
+          "test_placement"
+        ]
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/GATE.path-check.positive.json",
+        "violating": "scripts/guardrails/fixtures/GATE.path-check.negative.json",
+        "diagnostic": "GATE.path-check"
+      }
+    },
+    {
+      "id": "GIT.required-checks",
+      "evidence_kind": "host_query",
+      "status": "blocked",
+      "contract": {
+        "protected_branch": "resolved_default_branch",
+        "required_status_check": "gate",
+        "merge_blocked_until_required_checks_pass": true,
+        "auto_merge_enabled_where_supported": true,
+        "rebase_merge_enabled_where_supported": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/GIT.required-checks.positive.json",
+        "violating": "scripts/guardrails/fixtures/GIT.required-checks.negative.json",
+        "diagnostic": "GIT.required-checks"
+      },
+      "reason": "Offline checker and behavioral fixtures implemented; recorded GitHub main unprotected, auto-merge disabled. Main agent applies/readbacks host protection after first green CI; no false fixture-as-host claim.",
+      "host_query": {
+        "path": ".omp/evidence/protection.json",
+        "contains": [
+          "Branch not protected"
+        ]
+      }
+    },
+    {
+      "id": "FANOUT.general",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "count": "distinct_non_stdlib_architectural_imports",
+        "max_non_stdlib_dependencies": 10
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py",
+        "scripts/guardrails/python/fanout.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/FANOUT.general.positive.json",
+        "violating": "scripts/guardrails/fixtures/FANOUT.general.negative.json",
+        "diagnostic": "FANOUT.general"
+      }
+    },
+    {
+      "id": "FANOUT.large-module",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "nloc_over": 800,
+        "count": "distinct_non_stdlib_architectural_imports",
+        "max_non_stdlib_dependencies": 3
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py",
+        "scripts/guardrails/python/fanout.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/FANOUT.large-module.positive.json",
+        "violating": "scripts/guardrails/fixtures/FANOUT.large-module.negative.json",
+        "diagnostic": "FANOUT.large-module"
+      }
+    },
+    {
+      "id": "PARITY.dependency-inventory",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "declared_analyzer_dependencies_match_install": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PARITY.dependency-inventory.positive.json",
+        "violating": "scripts/guardrails/fixtures/PARITY.dependency-inventory.negative.json",
+        "diagnostic": "PARITY.dependency-inventory"
+      }
+    },
+    {
+      "id": "PARITY.install-guidance",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {},
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PARITY.install-guidance.positive.json",
+        "violating": "scripts/guardrails/fixtures/PARITY.install-guidance.negative.json",
+        "diagnostic": "PARITY.install-guidance"
+      }
+    },
+    {
+      "id": "PARITY.lock-version",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "tracked_lockfile": true,
+        "version_sync": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PARITY.lock-version.positive.json",
+        "violating": "scripts/guardrails/fixtures/PARITY.lock-version.negative.json",
+        "diagnostic": "PARITY.lock-version"
+      }
+    },
+    {
+      "id": "PRETTIER.version",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "version": "3.6.2",
+        "tracked_markdown_yaml": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PRETTIER.version.positive.json",
+        "violating": "scripts/guardrails/fixtures/PRETTIER.version.negative.json",
+        "diagnostic": "PRETTIER.version"
+      },
+      "configuration": {
+        "path": "toolchain/versions.env",
+        "contains": [
+          "PRETTIER_VERSION=3.6.2"
+        ]
+      },
+      "exclusions": {
+        "evaluation/**": "signed-off frozen experiments",
+        "third_party/**": "upstream-owned vendored code",
+        "**/.codegraph/**": "protected graph data",
+        "docs/scout-design.md": "governed design",
+        "docs/design-reviews/**": "governed council records",
+        "docs/archive/**": "historical design records preserved byte-for-byte",
+        "internal/analyzers/rules/**": "scanner rule byte digests feed provenance; format-only changes alter evidence identity",
+        "scripts/guardrails/vendor/**": "byte-for-byte upstream validator/catalog snapshot; hashes and source paths recorded in vendor/README.md",
+        "SCOUT_REBUILD_REQUIREMENTS.md": "governed requirements",
+        "docs/research-ledger.md": "governed append-only ledger",
+        "docs/hypothesis-ledger.md": "governed hypothesis ledger",
+        "CLAUDE.md": "authoritative project instructions",
+        "AGENTS.md": "authoritative project instructions",
+        "HANDOFF.md": "transient migration document edited on another branch",
+        "internal/**/testdata/**": "golden fixture Markdown"
+      }
+    },
+    {
+      "id": "RUNNER.local-ci-parity",
+      "activation_evidence": "canary.activation_canary sources generated activate in an activated parent, a child without the function, and repeatedly in that child; PATH must stay identical and path smoke must pass",
+      "coverage_evidence": "full gate runs check-only exact ledger synchronization then vendored upstream validator/catalog; ledger_canary proves fresh/stale aggregate behavior",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "check_only_ci": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py",
+        "scripts/guardrails/merge-ledger.py",
+        "scripts/guardrails/vendor/validate_rule_coverage.py",
+        "scripts/guardrails/vendor/enaible-rules.json"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUNNER.local-ci-parity.positive.json",
+        "violating": "scripts/guardrails/fixtures/RUNNER.local-ci-parity.negative.json",
+        "diagnostic": "RUNNER.local-ci-parity"
+      }
+    },
+    {
+      "id": "SEAM.evidence",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "registry_manifest_artifact_report_runtime_freshness": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/SEAM.evidence.positive.json",
+        "violating": "scripts/guardrails/fixtures/SEAM.evidence.negative.json",
+        "diagnostic": "SEAM.evidence"
+      }
+    },
+    {
+      "id": "SECURITY.dependency-audit",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {},
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/SECURITY.dependency-audit.positive.json",
+        "violating": "scripts/guardrails/fixtures/SECURITY.dependency-audit.negative.json",
+        "diagnostic": "SECURITY.dependency-audit"
+      }
+    },
+    {
+      "id": "SKILL.metadata",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "name_matches_directory": true,
+        "use_when_prefix_case_insensitive": true,
+        "global_boolean_for_shared": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/SKILL.metadata.positive.json",
+        "violating": "scripts/guardrails/fixtures/SKILL.metadata.negative.json",
+        "diagnostic": "SKILL.metadata"
+      }
+    },
+    {
+      "id": "TEST.failure-propagation",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "negative_case_required": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/gate.py",
+        "scripts/guardrails/infrastructure.py"
+      ],
+      "local_runner": "scripts/gate.sh",
+      "local_marker": "scripts/guardrails/gate.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/TEST.failure-propagation.positive.json",
+        "violating": "scripts/guardrails/fixtures/TEST.failure-propagation.negative.json",
+        "diagnostic": "TEST.failure-propagation"
+      }
+    }
+  ]
+}

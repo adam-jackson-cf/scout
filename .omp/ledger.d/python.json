@@ -1,0 +1,3798 @@
+{
+  "rows": [
+    {
+      "id": "MYPY.SETTING.exclude",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/MYPY.SETTING.exclude/passing.json",
+        "violating": "scripts/guardrails/fixtures/MYPY.SETTING.exclude/violating.json",
+        "diagnostic": "MYPY.SETTING.exclude"
+      },
+      "configuration": {
+        "path": "mypy.ini",
+        "contains": [
+          "exclude = (^evaluation/|^\\.tools/|^scripts/guardrails/fixtures/|^scripts/guardrails/vendor/)"
+        ]
+      },
+      "adaptation": "Maintained generator and all scripts/guardrails Python explicitly enumerated; frozen evaluation excluded; only lizard untyped third-party override.",
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance.",
+      "deviation": " Excludes scripts/guardrails/vendor/**: immutable byte-identical upstream validator/catalog snapshots, not maintained Scout Python."
+    },
+    {
+      "id": "MYPY.SETTING.mypy_path",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/MYPY.SETTING.mypy_path/passing.json",
+        "violating": "scripts/guardrails/fixtures/MYPY.SETTING.mypy_path/violating.json",
+        "diagnostic": "MYPY.SETTING.mypy_path"
+      },
+      "configuration": {
+        "path": "mypy.ini",
+        "contains": [
+          "mypy_path = scripts/guardrails/python:scripts/guardrails"
+        ]
+      },
+      "adaptation": "Maintained generator and all scripts/guardrails Python explicitly enumerated; frozen evaluation excluded; only lizard untyped third-party override.",
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "MYPY.SETTING.python_version",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/MYPY.SETTING.python_version/passing.json",
+        "violating": "scripts/guardrails/fixtures/MYPY.SETTING.python_version/violating.json",
+        "diagnostic": "MYPY.SETTING.python_version"
+      },
+      "configuration": {
+        "path": "mypy.ini",
+        "contains": [
+          "python_version = 3.11"
+        ]
+      },
+      "deviation": "Adapted Python 3.12 reference to repository-pinned Python 3.11.11 (py311 / 3.11).",
+      "adaptation": "Maintained generator and all scripts/guardrails Python explicitly enumerated; frozen evaluation excluded; only lizard untyped third-party override.",
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "MYPY.SETTING.show_error_codes",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/MYPY.SETTING.show_error_codes/passing.json",
+        "violating": "scripts/guardrails/fixtures/MYPY.SETTING.show_error_codes/violating.json",
+        "diagnostic": "MYPY.SETTING.show_error_codes"
+      },
+      "configuration": {
+        "path": "mypy.ini",
+        "contains": [
+          "show_error_codes = True"
+        ]
+      },
+      "adaptation": "Maintained generator and all scripts/guardrails Python explicitly enumerated; frozen evaluation excluded; only lizard untyped third-party override.",
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "MYPY.follow_imports",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/MYPY.follow_imports/passing.json",
+        "violating": "scripts/guardrails/fixtures/MYPY.follow_imports/violating.json",
+        "diagnostic": "MYPY.follow_imports"
+      },
+      "configuration": {
+        "path": "mypy.ini",
+        "contains": [
+          "follow_imports = skip"
+        ]
+      },
+      "adaptation": "Maintained generator and all scripts/guardrails Python explicitly enumerated; frozen evaluation excluded; only lizard untyped third-party override.",
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "MYPY.module-overrides",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/MYPY.module-overrides/passing.json",
+        "violating": "scripts/guardrails/fixtures/MYPY.module-overrides/violating.json",
+        "diagnostic": "MYPY.module-overrides"
+      },
+      "configuration": {
+        "path": "mypy.ini",
+        "contains": [
+          "[mypy-lizard]",
+          "ignore_missing_imports = True"
+        ]
+      },
+      "adaptation": "Maintained generator and all scripts/guardrails Python explicitly enumerated; frozen evaluation excluded; only lizard untyped third-party override.",
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "MYPY.package-coverage",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/MYPY.package-coverage/passing.json",
+        "violating": "scripts/guardrails/fixtures/MYPY.package-coverage/violating.json",
+        "diagnostic": "MYPY.package-coverage"
+      },
+      "configuration": {
+        "path": "mypy.ini",
+        "contains": [
+          "follow_imports = skip",
+          "exclude = (^evaluation/|^\\.tools/|^scripts/guardrails/fixtures/|^scripts/guardrails/vendor/)"
+        ]
+      },
+      "adaptation": "Maintained generator and all scripts/guardrails Python explicitly enumerated; frozen evaluation excluded; only lizard untyped third-party override.",
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "MYPY.strict",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/MYPY.strict/passing.json",
+        "violating": "scripts/guardrails/fixtures/MYPY.strict/violating.json",
+        "diagnostic": "MYPY.strict"
+      },
+      "configuration": {
+        "path": "mypy.ini",
+        "contains": [
+          "strict = True"
+        ]
+      },
+      "adaptation": "Maintained generator and all scripts/guardrails Python explicitly enumerated; frozen evaluation excluded; only lizard untyped third-party override.",
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "MYPY.warn_unused_ignores",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/MYPY.warn_unused_ignores/passing.json",
+        "violating": "scripts/guardrails/fixtures/MYPY.warn_unused_ignores/violating.json",
+        "diagnostic": "MYPY.warn_unused_ignores"
+      },
+      "configuration": {
+        "path": "mypy.ini",
+        "contains": [
+          "warn_unused_ignores = True"
+        ]
+      },
+      "adaptation": "Maintained generator and all scripts/guardrails Python explicitly enumerated; frozen evaluation excluded; only lizard untyped third-party override.",
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ100",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ100/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ100/violating.json",
+        "diagnostic": "PYQ100"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance.",
+      "deviation": " Excludes scripts/guardrails/vendor/**: immutable byte-identical upstream validator/catalog snapshots, not maintained Scout Python."
+    },
+    {
+      "id": "PYQ101",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ101/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ101/violating.json",
+        "diagnostic": "PYQ101"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ102",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ102/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ102/violating.json",
+        "diagnostic": "PYQ102"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ103",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ103/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ103/violating.json",
+        "diagnostic": "PYQ103"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ104",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ104/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ104/violating.json",
+        "diagnostic": "PYQ104"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ105",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ105/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ105/violating.json",
+        "diagnostic": "PYQ105"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ106",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ106/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ106/violating.json",
+        "diagnostic": "PYQ106"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ107",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ107/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ107/violating.json",
+        "diagnostic": "PYQ107"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ200",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ200/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ200/violating.json",
+        "diagnostic": "PYQ200"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ202",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ202/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ202/violating.json",
+        "diagnostic": "PYQ202"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ203",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ203/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ203/violating.json",
+        "diagnostic": "PYQ203"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ210",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ210/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ210/violating.json",
+        "diagnostic": "PYQ210"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ211",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ211/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ211/violating.json",
+        "diagnostic": "PYQ211"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ220",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ220/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ220/violating.json",
+        "diagnostic": "PYQ220"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ221",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ221/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ221/violating.json",
+        "diagnostic": "PYQ221"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ230",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ230/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ230/violating.json",
+        "diagnostic": "PYQ230"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ231",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ231/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ231/violating.json",
+        "diagnostic": "PYQ231"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYQ299",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYQ299/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYQ299/violating.json",
+        "diagnostic": "PYQ299"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYS000",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYS000/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYS000/violating.json",
+        "diagnostic": "PYS000"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYS250",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYS250/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYS250/violating.json",
+        "diagnostic": "PYS250"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYS251",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYS251/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYS251/violating.json",
+        "diagnostic": "PYS251"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYS252",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYS252/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYS252/violating.json",
+        "diagnostic": "PYS252"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "PYS253",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/PYS253/passing.json",
+        "violating": "scripts/guardrails/fixtures/PYS253/violating.json",
+        "diagnostic": "PYS253"
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.FORMAT.docstring-code-format",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.FORMAT.docstring-code-format/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.FORMAT.docstring-code-format/violating.json",
+        "diagnostic": "RUFF.FORMAT.docstring-code-format"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "docstring-code-format = true"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.FORMAT.indent-style",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.FORMAT.indent-style/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.FORMAT.indent-style/violating.json",
+        "diagnostic": "RUFF.FORMAT.indent-style"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "indent-style = \"space\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.FORMAT.line-ending",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.FORMAT.line-ending/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.FORMAT.line-ending/violating.json",
+        "diagnostic": "RUFF.FORMAT.line-ending"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "line-ending = \"auto\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.FORMAT.quote-style",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.FORMAT.quote-style/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.FORMAT.quote-style/violating.json",
+        "diagnostic": "RUFF.FORMAT.quote-style"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "quote-style = \"double\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.IGNORES",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.IGNORES/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.IGNORES/violating.json",
+        "diagnostic": "RUFF.IGNORES"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "ignore = [",
+          "[lint.per-file-ignores]"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.ISORT.combine-as-imports",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.ISORT.combine-as-imports/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.ISORT.combine-as-imports/violating.json",
+        "diagnostic": "RUFF.ISORT.combine-as-imports"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "combine-as-imports = true"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.ISORT.force-single-line",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.ISORT.force-single-line/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.ISORT.force-single-line/violating.json",
+        "diagnostic": "RUFF.ISORT.force-single-line"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "force-single-line = false"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.ISORT.known-first-party",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.ISORT.known-first-party/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.ISORT.known-first-party/violating.json",
+        "diagnostic": "RUFF.ISORT.known-first-party"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "known-first-party = ["
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.ISORT.split-on-trailing-comma",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.ISORT.split-on-trailing-comma/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.ISORT.split-on-trailing-comma/violating.json",
+        "diagnostic": "RUFF.ISORT.split-on-trailing-comma"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "split-on-trailing-comma = true"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.LIMIT.max-args",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.LIMIT.max-args/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.LIMIT.max-args/violating.json",
+        "diagnostic": "RUFF.LIMIT.max-args"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "max-args = 5"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.LIMIT.max-branches",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.LIMIT.max-branches/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.LIMIT.max-branches/violating.json",
+        "diagnostic": "RUFF.LIMIT.max-branches"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "max-branches = 12"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.LIMIT.max-locals",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.LIMIT.max-locals/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.LIMIT.max-locals/violating.json",
+        "diagnostic": "RUFF.LIMIT.max-locals"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "max-locals = 15"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.LIMIT.max-positional-args",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.LIMIT.max-positional-args/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.LIMIT.max-positional-args/violating.json",
+        "diagnostic": "RUFF.LIMIT.max-positional-args"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "max-positional-args = 5"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.LIMIT.max-public-methods",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.LIMIT.max-public-methods/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.LIMIT.max-public-methods/violating.json",
+        "diagnostic": "RUFF.LIMIT.max-public-methods"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "max-public-methods = 20"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.LIMIT.max-returns",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.LIMIT.max-returns/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.LIMIT.max-returns/violating.json",
+        "diagnostic": "RUFF.LIMIT.max-returns"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "max-returns = 6"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.LIMIT.max-statements",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.LIMIT.max-statements/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.LIMIT.max-statements/violating.json",
+        "diagnostic": "RUFF.LIMIT.max-statements"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "max-statements = 50"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.PYDOCSTYLE.convention",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.PYDOCSTYLE.convention/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.PYDOCSTYLE.convention/violating.json",
+        "diagnostic": "RUFF.PYDOCSTYLE.convention"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "convention = \"numpy\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.ROOT.exclude",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.ROOT.exclude/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.ROOT.exclude/violating.json",
+        "diagnostic": "RUFF.ROOT.exclude"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "exclude = ["
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "deviation": "Adds frozen evaluation, pinned .tools environments and JSON canary fixture trees to the reference exclusions. Excludes scripts/guardrails/vendor/**: immutable byte-identical upstream validator/catalog snapshots, not maintained Scout Python.",
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.ROOT.fix",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.ROOT.fix/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.ROOT.fix/violating.json",
+        "diagnostic": "RUFF.ROOT.fix"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "fix = false"
+        ]
+      },
+      "deviation": "Approved check-only runner: fix=false; mutation requires explicit developer Ruff invocation.",
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.ROOT.output-format",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.ROOT.output-format/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.ROOT.output-format/violating.json",
+        "diagnostic": "RUFF.ROOT.output-format"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "output-format = \"full\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.ROOT.preview",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.ROOT.preview/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.ROOT.preview/violating.json",
+        "diagnostic": "RUFF.ROOT.preview"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "preview = true"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.ROOT.respect-gitignore",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.ROOT.respect-gitignore/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.ROOT.respect-gitignore/violating.json",
+        "diagnostic": "RUFF.ROOT.respect-gitignore"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "respect-gitignore = true"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.A",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.A/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.A/violating.json",
+        "diagnostic": "RUFF.SELECT.A"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"A\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.B",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.B/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.B/violating.json",
+        "diagnostic": "RUFF.SELECT.B"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"B\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.C4",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.C4/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.C4/violating.json",
+        "diagnostic": "RUFF.SELECT.C4"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"C4\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.C901",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.C901/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.C901/violating.json",
+        "diagnostic": "RUFF.SELECT.C901"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"C901\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.D",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.D/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.D/violating.json",
+        "diagnostic": "RUFF.SELECT.D"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"D\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.E",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.E/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.E/violating.json",
+        "diagnostic": "RUFF.SELECT.E"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"E\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.F",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.F/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.F/violating.json",
+        "diagnostic": "RUFF.SELECT.F"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"F\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.I",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.I/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.I/violating.json",
+        "diagnostic": "RUFF.SELECT.I"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"I\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.N",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.N/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.N/violating.json",
+        "diagnostic": "RUFF.SELECT.N"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"N\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.PGH",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.PGH/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.PGH/violating.json",
+        "diagnostic": "RUFF.SELECT.PGH"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"PGH\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.PLR0904",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.PLR0904/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.PLR0904/violating.json",
+        "diagnostic": "RUFF.SELECT.PLR0904"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"PLR0904\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.PLR0911",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.PLR0911/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.PLR0911/violating.json",
+        "diagnostic": "RUFF.SELECT.PLR0911"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"PLR0911\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.PLR0912",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.PLR0912/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.PLR0912/violating.json",
+        "diagnostic": "RUFF.SELECT.PLR0912"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"PLR0912\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.PLR0913",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.PLR0913/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.PLR0913/violating.json",
+        "diagnostic": "RUFF.SELECT.PLR0913"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"PLR0913\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.PLR0914",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.PLR0914/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.PLR0914/violating.json",
+        "diagnostic": "RUFF.SELECT.PLR0914"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"PLR0914\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.PLR0915",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.PLR0915/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.PLR0915/violating.json",
+        "diagnostic": "RUFF.SELECT.PLR0915"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"PLR0915\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.PLR0917",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.PLR0917/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.PLR0917/violating.json",
+        "diagnostic": "RUFF.SELECT.PLR0917"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"PLR0917\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.PT",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.PT/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.PT/violating.json",
+        "diagnostic": "RUFF.SELECT.PT"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"PT\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.SIM",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.SIM/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.SIM/violating.json",
+        "diagnostic": "RUFF.SELECT.SIM"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"SIM\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.UP",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.UP/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.UP/violating.json",
+        "diagnostic": "RUFF.SELECT.UP"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"UP\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SELECT.W",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SELECT.W/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SELECT.W/violating.json",
+        "diagnostic": "RUFF.SELECT.W"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "\"W\""
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SETTING.line-length",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SETTING.line-length/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SETTING.line-length/violating.json",
+        "diagnostic": "RUFF.SETTING.line-length"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "line-length = 88"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SETTING.mccabe.max-complexity",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SETTING.mccabe.max-complexity/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SETTING.mccabe.max-complexity/violating.json",
+        "diagnostic": "RUFF.SETTING.mccabe.max-complexity"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "max-complexity = 10"
+        ]
+      },
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    },
+    {
+      "id": "RUFF.SETTING.target-version",
+      "status": "implemented",
+      "evidence_kind": "local_ci",
+      "implementation_paths": [
+        "scripts/guardrails/python/check.py",
+        "scripts/guardrails/python/policy.py",
+        "scripts/guardrails/python/quality.py",
+        "scripts/guardrails/python/scalability.py"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "python/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": ".omp/gate.json",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/python/check.py",
+          "fixture",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/RUFF.SETTING.target-version/passing.json",
+        "violating": "scripts/guardrails/fixtures/RUFF.SETTING.target-version/violating.json",
+        "diagnostic": "RUFF.SETTING.target-version"
+      },
+      "configuration": {
+        "path": "ruff.toml",
+        "contains": [
+          "target-version = \"py311\""
+        ]
+      },
+      "deviation": "Adapted Python 3.12 reference to repository-pinned Python 3.11.11 (py311 / 3.11).",
+      "scope": {
+        "maintained": [
+          "internal/association/testdata/gen/gen_parity.py",
+          "scripts/guardrails/**/*.py"
+        ],
+        "excluded": [
+          "evaluation/**",
+          "scripts/guardrails/fixtures/**",
+          ".tools/**",
+          "**/.codegraph/**",
+          "scripts/guardrails/vendor/**"
+        ]
+      },
+      "execution_modes": [
+        "full",
+        "commit (affected files)"
+      ],
+      "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance."
+    }
+  ]
+}

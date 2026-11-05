@@ -1,0 +1,26 @@
+name: Repository gate
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  gate:
+    name: gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - uses: actions/setup-go@v6
+        with:
+          go-version: '1.26.10'
+      - run: scripts/bootstrap-tools.sh
+      - name: Run exact declared gate argv
+        shell: bash
+        run: |
+          source .tools/activate
+          .tools/venv/bin/python -c 'import json,subprocess,sys; sys.exit(subprocess.run(json.load(open(".omp/gate.json"))["gate"]).returncode)'

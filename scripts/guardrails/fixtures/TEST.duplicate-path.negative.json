@@ -1,0 +1,16 @@
+{
+  "rule": "TEST.duplicate-path",
+  "previous": "package example\nimport \"testing\"\nfunc TestFirst(t *testing.T) {client:=makeClient(); result:=client.Decide(1); if result!=1 {t.Fatal(result)}}",
+  "current": "package example\nimport \"testing\"\nfunc TestSecond(t *testing.T) {collaborator:=makeClient(); actual:=collaborator.Decide(1); if actual!=1 {t.Fatal(actual)}}",
+  "changed": [
+    "internal/example/decision.go"
+  ],
+  "mapping": {
+    "internal/example/example_test.go/TestSecond": {
+      "source": [
+        "internal/example/decision.go"
+      ],
+      "behavior": "different expected decision"
+    }
+  }
+}

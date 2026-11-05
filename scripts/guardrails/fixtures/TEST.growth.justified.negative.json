@@ -1,0 +1,9 @@
+{
+  "rule": "TEST.growth.justified",
+  "previous": "package example\nimport \"testing\"\nfunc TestRows(t *testing.T) { rows:=[]struct{name string; want int}{{\"first\",1}}; for _,r:=range rows {t.Run(r.name,func(t *testing.T){if decide()!=r.want {t.Fatal(r.want)}})} }",
+  "current": "package example\nimport \"testing\"\nfunc TestRows(t *testing.T) { rows:=[]struct{name string; want int}{{\"first\",1},{\"second\",2}}; for _,r:=range rows {t.Run(r.name,func(t *testing.T){if decide()!=r.want {t.Fatal(r.want)}})} }",
+  "changed": [
+    "internal/example/decision.go"
+  ],
+  "mapping": {}
+}
