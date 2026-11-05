@@ -15,6 +15,12 @@ go build ./... && go vet ./... && go test -count=1 ./...   # was green at handof
 shasum -a 256 docs/scout-design.md     # must print d1fb127446be290f75d4de5416ebf40b214552f18eedc1d1a335819f314f9b75
 ```
 
+`scripts/bootstrap-tools.sh` does not install Go. It needs a system `go` on `PATH` and stops with "Go is required" if none
+is found. It then uses `GOTOOLCHAIN=go$GO_VERSION` (`toolchain/versions.env`, now 1.26.10) to fetch the pinned Go.
+One way that does not change global config: `mise install go@1.26.10`, then put `$(mise where go@1.26.10)/bin` on `PATH`.
+
+Install the repository gate hooks once per clone: `git config core.hooksPath .githooks` (see `CONTRIBUTING.md`).
+
 Accounts and tools the work needs (none are stored in the repo):
 1. `claude` and `codex` CLIs logged in with their subscriptions. The fallback lane and post-run scripts use
    `codex exec -m gpt-6.1-terra` (effort high); labelling uses both CLIs.
@@ -24,7 +30,8 @@ Accounts and tools the work needs (none are stored in the repo):
    `gitleaks git --pre-commit --staged --no-banner --redact .` (`.gitleaksignore` lists the reviewed public-example hits).
 4. The council agent set-up (lead Opus 5.5 high, challenger GPT-6 Astra high, peer Opus 5.5 high) lives in
    `~/.omp/agent/config.yml` on the old machine, outside this repo. Copy it over if the same omp set-up is used.
-5. Do not copy `.codegraph/` or `.scout/` (local, ignored). Scout's published state is on the `origin/scout/state` branch.
+5. Do not copy `.codegraph/` or the ignored contents of `.scout/` (`state.db` and other local state; `.gitignore` has `.scout/*`).
+   `.scout/policy.yaml` is tracked and arrives with the clone. Scout's published state is on the `origin/scout/state` branch.
 
 Fixture clones (used by replay generators and study scripts; the old `/tmp` copies are gone, re-clone):
 ```sh
@@ -61,8 +68,10 @@ Phase 3, `association` lane (plan §Phase 3 lists the files):
 - Register `merge.covered@v1` and `merge.which_area@v1` in `internal/decisions` with the pilot's frozen question text and GUIDE criteria.
 - Add `mapping.association.*` policy keys in `internal/policy/mapping.go`; push-only optional lane in `internal/engine/lanes.go`, `requires: decision-egress`.
 - Wire `association.Run` into `scout assess`. Carry these Phase 2 departures:
-  1. implement `Ownership.SiblingFiles` (Phase 2 only defined it);
-  2. `AreaOwners` must include association-derived owners, not just map owners;
+  1. add a store-backed implementation of `association.Ownership` (`internal/association/residual.go`) with all four
+     methods: `AreaOwners`, `PendingAreas`, `HeuristicOnly`, `SiblingFiles`. Phase 2 has only the `overlay` wrapper in
+     `orchestrate.go`, which delegates to a base, and the test fixture `fixtureOwnership` in `parity_test.go`;
+  2. its `AreaOwners` must include association-derived owners, not just map owners;
   3. the `association.Decider` callback is called once per merge;
   4. map the lane's results to `domain.Association`.
 - Acceptance: a replay test reproducing the fastapi rounds 8–10 Jev-only outcomes, **64/67 correct and 10/92 unresolved**
@@ -77,12 +86,17 @@ Known limit, stated in the design: the fastapi result (P_assign 0.922) did not r
 ## 4. Study data now in the repo
 
 The X2d pilot and post-run data (`evaluation/x2d-merge-association-pilot/data/`, 97 MB, previously untracked in the
-`scout-x2d` worktree) is committed on `main`, so replay fixtures can be regenerated without the old worktree:
+`scout-x2d` worktree) is committed on `main`, so replay fixtures can be regenerated without the old worktree.
+`gen_parity.py` defaults `--x2d` to that in-repo path (run it from the repository root) and `--fastapi`/`--axum` to the
+`/tmp/scout-x2c-smoke/_src` clones, so make the §1 fixture clones first or pass other clone paths:
 ```sh
-python3 internal/association/testdata/gen/gen_parity.py --x2d evaluation/x2d-merge-association-pilot --scout .
+python3 internal/association/testdata/gen/gen_parity.py \
+    --fastapi /tmp/scout-x2c-smoke/_src/fastapi --axum /tmp/scout-x2c-smoke/_src/axum
 ```
-Post-run study scripts in `evaluation/x2d-postrun-tuning/` default to the old worktree path
-`/Users/adamjackson/Projects/inflight/scout-x2d`. To re-run them, recreate that worktree and give it the data:
+Post-run study scripts in `evaluation/x2d-postrun-tuning/` (`run_window.sh`, `run_jev.sh`, `run_partB.sh`) are frozen
+(their digests are in `FROZEN-8-10.md`), so their old-machine defaults stay: `X2D_WORKTREE` defaults to
+`/Users/adamjackson/Projects/inflight/scout-x2d` and `X2D_SRC` (fastapi only) to `/tmp/scout-x2c-smoke/_src/fastapi`.
+Override both with the environment variables. To re-run them, recreate that worktree and give it the data:
 ```sh
 git worktree add --detach ../scout-x2d 8c7148c
 cp -R evaluation/x2d-merge-association-pilot/data ../scout-x2d/evaluation/x2d-merge-association-pilot/
