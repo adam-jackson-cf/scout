@@ -106,7 +106,7 @@ def _generic_name_diagnostics(relpath: str) -> list[Diagnostic]:
                     "PYQ103",
                     relpath,
                     1,
-                    f"generic catch-all directory name '{part}' is not allowed",
+                    f"rename catch-all directory '{part}' to its specific owned capability",
                 )
             )
     stem = Path(relpath).stem
@@ -116,7 +116,7 @@ def _generic_name_diagnostics(relpath: str) -> list[Diagnostic]:
                 "PYQ104",
                 relpath,
                 1,
-                f"generic catch-all module name '{stem}' is not allowed",
+                f"rename catch-all module '{stem}.py' to its specific owned capability",
             )
         )
     return diagnostics
@@ -130,7 +130,7 @@ def _root_diagnostics(relpath: str) -> list[Diagnostic]:
             "PYQ100",
             relpath,
             1,
-            "Python file is outside canonical maintained roots",
+            "move Python source under internal/association/testdata/gen/, scripts/guardrails/, .agents/skills/ or tests/",
         )
     ]
 
@@ -148,7 +148,7 @@ def _test_group_diagnostics(relpath: str) -> list[Diagnostic]:
                 "PYQ102",
                 relpath,
                 1,
-                "test file must live under a canonical test grouping",
+                "move the test under tests/unit/, tests/integration/, tests/seams/, tests/support/ or tests/fixtures/",
             )
         ]
     group = parts[1]
@@ -159,7 +159,7 @@ def _test_group_diagnostics(relpath: str) -> list[Diagnostic]:
             "PYQ102",
             relpath,
             1,
-            f"test path group '{group}' is not a canonical test grouping",
+            f"move noncanonical test group '{group}' under tests/unit/, tests/integration/, tests/seams/, tests/support/ or tests/fixtures/",
         )
     ]
 
@@ -261,7 +261,7 @@ def structure_diagnostics_for_relpath(relpath: str) -> list[Diagnostic]:
                     "PYQ101",
                     normalized,
                     1,
-                    f"script module '{path.name}' is not in the script name allowlist",
+                    f"rename script '{path.name}' to an approved kebab-case command name and declare it in SCRIPT_NAME_ALLOWLIST",
                 )
             )
         return diagnostics + _generic_name_diagnostics(normalized)
@@ -409,7 +409,7 @@ def _class_shape_diagnostics(
                 "PYQ200",
                 relpath,
                 class_node.lineno,
-                f"class '{class_node.name}' has {line_count} lines > {CLASS_MAX_LINES}",
+                f"split class '{class_node.name}': {line_count} lines exceeds {CLASS_MAX_LINES}",
             )
         )
     attributes = _self_attributes(class_node)
@@ -419,7 +419,7 @@ def _class_shape_diagnostics(
                 "PYQ203",
                 relpath,
                 class_node.lineno,
-                f"class '{class_node.name}' assigns {len(attributes)} instance attributes > {CLASS_MAX_INSTANCE_ATTRIBUTES}",
+                f"split responsibilities in class '{class_node.name}': {len(attributes)} instance attributes exceeds {CLASS_MAX_INSTANCE_ATTRIBUTES}",
             )
         )
     return diagnostics
@@ -441,7 +441,7 @@ def _constructor_diagnostics(
                     "PYQ202",
                     relpath,
                     method.lineno,
-                    f"constructor for '{class_node.name}' has {arg_count} parameters > {CLASS_MAX_INIT_ARGS}",
+                    f"group constructor inputs for '{class_node.name}': {arg_count} parameters exceeds {CLASS_MAX_INIT_ARGS}",
                 )
             )
     return diagnostics
@@ -502,7 +502,7 @@ def _subprocess_boundary_diagnostics(tree: ast.AST, relpath: str) -> list[Diagno
                     "PYQ220",
                     relpath,
                     node.lineno,
-                    f"subprocess.{node.func.attr} must be isolated in an approved seam wrapper",
+                    f"move subprocess.{node.func.attr} from '{owner or '<module>'}' into an approved function in SEAM_SUBPROCESS_WRAPPERS",
                 )
             )
     return diagnostics
@@ -521,7 +521,7 @@ def _dynamic_import_boundary_diagnostics(
                     "PYQ221",
                     relpath,
                     node.lineno,
-                    "dynamic importlib.import_module calls must stay in adapter modules",
+                    "move importlib.import_module into an adapter declared in ADAPTER_IMPORT_ALLOWLIST",
                 )
             )
     return diagnostics
@@ -541,7 +541,7 @@ def _contract_boundary_diagnostics(tree: ast.AST, relpath: str) -> list[Diagnost
                     "PYQ230",
                     relpath,
                     node.lineno,
-                    "contract dataclass fields must use named Callable aliases",
+                    "replace the inline Callable field annotation with a named callable type alias",
                 )
             )
         if "Any" in annotation_names:
@@ -550,7 +550,7 @@ def _contract_boundary_diagnostics(tree: ast.AST, relpath: str) -> list[Diagnost
                     "PYQ231",
                     relpath,
                     node.lineno,
-                    "contract dataclass fields must not use Any collaborator boundaries",
+                    "replace the Any collaborator annotation with a concrete protocol or named type",
                 )
             )
     return diagnostics

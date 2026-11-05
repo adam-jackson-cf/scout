@@ -1,6 +1,14 @@
 {
   "schemaVersion": 1,
   "cases": {
+    "cmd/scout/guardian_workflow_test.go/TestInstallScriptsInstallFromVerifiedRelease/table/ci-toolchain.sh": {
+      "source": ["scripts/ci-toolchain.sh"],
+      "behavior": "The CI toolchain installer invokes the shared sandbox installer as an executable command, not merely a comment."
+    },
+    "cmd/scout/guardian_workflow_test.go/TestInstallScriptsInstallFromVerifiedRelease/table/ci-sandbox.sh": {
+      "source": ["scripts/ci-sandbox.sh"],
+      "behavior": "The shared CI sandbox installer executes sudo apt-get install -y bubblewrap as an exact trimmed command line."
+    },
 "internal/analyzers/runner_test.go/TestScannerVersionHonorsDeclaredBudget": {"source": ["internal/analyzers/runner.go"], "behavior": "Scanner version probing honors declared and caller budgets and caches only verified executables."},
 "internal/analyzers/runner_test.go/TestScannerVersionHonorsDeclaredBudget/table/slow startup within budget": {"source": ["internal/analyzers/runner.go"], "behavior": "Accept pinned version after 11-second startup within declared 30-second scanner budget."},
 "internal/analyzers/runner_test.go/TestScannerVersionHonorsDeclaredBudget/table/scanner budget exhausted": {"source": ["internal/analyzers/runner.go"], "behavior": "Reject version invocation exceeding declared scanner budget."},

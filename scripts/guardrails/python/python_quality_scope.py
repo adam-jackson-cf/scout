@@ -162,6 +162,8 @@ def discover_maintained_python_files(repo_root: Path) -> list[Path]:
     """Discover maintained Python files under the repository root."""
     return [
         path
-        for path in discover_unexcluded_python_files(repo_root)
+        for path in discover_unexcluded_python_files(
+            repo_root, [repo_root / root for root in MAINTAINED_ROOTS]
+        )
         if is_maintained_python_relpath(repo_relative_path(repo_root, path))
     ]

@@ -264,9 +264,8 @@ def main() -> int:
         from canaries import check_fixture
 
         return check_fixture(Path(args.paths[0]))
-    discovered = discover_maintained_python_files(ROOT)
     paths = (
-        discovered
+        discover_maintained_python_files(ROOT)
         if args.mode == "full"
         else [
             path
@@ -277,6 +276,9 @@ def main() -> int:
         ]
     )
     failures = check_files(paths, typecheck=args.mode == "full")
+    if not paths:
+        return failures
+    selected = {p.relative_to(ROOT).as_posix() for p in paths}
     roots = fanout._normalise_source_roots(
         ROOT, ["scripts/guardrails", "internal/association/testdata/gen"]
     )
@@ -285,8 +287,8 @@ def main() -> int:
         source_roots=roots,
         root_packages={"scripts", "internal"},
         limits=fanout.FanoutLimits(10, 800, 3),
+        selected=selected,
     )
-    selected = {p.relative_to(ROOT).as_posix() for p in paths}
     for result in results:
         if result.relpath in selected and result.reasons:
             diagnostic(
