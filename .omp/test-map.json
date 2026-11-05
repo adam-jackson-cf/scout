@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "cases": {
+"internal/analyzers/runner_test.go/TestScannerVersionHonorsDeclaredBudget": {"source": ["internal/analyzers/runner.go"], "behavior": "Scanner version probing honors declared and caller budgets and caches only verified executables."},
+"internal/analyzers/runner_test.go/TestScannerVersionHonorsDeclaredBudget/table/slow startup within budget": {"source": ["internal/analyzers/runner.go"], "behavior": "Accept pinned version after 11-second startup within declared 30-second scanner budget."},
+"internal/analyzers/runner_test.go/TestScannerVersionHonorsDeclaredBudget/table/scanner budget exhausted": {"source": ["internal/analyzers/runner.go"], "behavior": "Reject version invocation exceeding declared scanner budget."},
+"internal/analyzers/runner_test.go/TestScannerVersionHonorsDeclaredBudget/table/caller budget exhausted": {"source": ["internal/analyzers/runner.go"], "behavior": "Enforce caller deadline despite longer scanner budget."},
+"internal/analyzers/runner_test.go/TestScannerVersionHonorsDeclaredBudget/table/wrong version": {"source": ["internal/analyzers/runner.go"], "behavior": "Reject executable reporting an incorrect pinned version."},
+    "internal/history/subprocess_test.go": {
+      "source": [
+        "scripts/guardrails/inspect.go"
+      ],
+      "behavior": "Bound each test subprocess to a 30-second context cancelled at test cleanup."
+    },
+    "internal/eval/subprocess_test.go": {
+      "source": [
+        "scripts/guardrails/inspect.go"
+      ],
+      "behavior": "Bound each test subprocess to a 30-second context cancelled at test cleanup."
+    },
+    "internal/toolchain/subprocess_test.go": {
+      "source": [
+        "scripts/guardrails/inspect.go"
+      ],
+      "behavior": "Bound each test subprocess to a 30-second context cancelled at test cleanup."
+    },
+    "internal/decisions/thresholds/subprocess_test.go": {
+      "source": [
+        "scripts/guardrails/inspect.go"
+      ],
+      "behavior": "Bound each test subprocess to a 30-second context cancelled at test cleanup."
+    },
+    "internal/baseline/subprocess_test.go": {
+      "source": [
+        "scripts/guardrails/inspect.go"
+      ],
+      "behavior": "Bound each test subprocess to a 30-second context cancelled at test cleanup."
+    },
+    "cmd/scout/subprocess_test.go": {
+      "source": [
+        "scripts/guardrails/inspect.go"
+      ],
+      "behavior": "Bound each test subprocess to a 30-second context cancelled at test cleanup."
+    },
+    "internal/inventory/subprocess_test.go": {
+      "source": [
+        "scripts/guardrails/inspect.go"
+      ],
+      "behavior": "Bound each test subprocess to a 30-second context cancelled at test cleanup."
+    },
+    "internal/engine/subprocess_test.go": {
+      "source": [
+        "scripts/guardrails/inspect.go"
+      ],
+      "behavior": "Bound each test subprocess to a 30-second context cancelled at test cleanup."
+    },
+    "internal/policy/subprocess_test.go": {
+      "source": [
+        "scripts/guardrails/inspect.go"
+      ],
+      "behavior": "Bound each test subprocess to a 30-second context cancelled at test cleanup."
+    },
+    "internal/association/subprocess_test.go": {
+      "source": [
+        "scripts/guardrails/inspect.go"
+      ],
+      "behavior": "Bound each test subprocess to a 30-second context cancelled at test cleanup."
+    }
+  }
+}

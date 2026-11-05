@@ -1,0 +1,227 @@
+{
+  "rows": [
+    {
+      "id": "TEST.growth.justified",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "scope": "new_test_files_and_cases_relative_to_base_ref",
+        "changed_behavior_mapping_required": true,
+        "mapping_must_reference_changed_source_and_behavior": true,
+        "unmapped_test_is_failure": true,
+        "diagnostic_names_test_and_map_or_remove_fix": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/tests/check.py",
+        "scripts/guardrails/inspect.go",
+        ".omp/test-tiers.json",
+        ".omp/test-map.json"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "scripts/guardrails/tests/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/tests/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/TEST.growth.justified.positive.json",
+        "violating": "scripts/guardrails/fixtures/TEST.growth.justified.negative.json",
+        "diagnostic": "TEST.growth.justified"
+      },
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+    },
+    {
+      "id": "TEST.duplicate-path",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "scope": "new_test_cases_relative_to_base_ref",
+        "fingerprint": [
+          "normalized_call_path",
+          "normalized_assertion"
+        ],
+        "compare_with": "existing_and_other_new_test_cases",
+        "duplicate_fingerprint_is_failure": true,
+        "diagnostic_names_both_tests_and_merge_or_remove_fix": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/tests/check.py",
+        "scripts/guardrails/inspect.go",
+        ".omp/test-tiers.json",
+        ".omp/test-map.json"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "scripts/guardrails/tests/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/tests/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/TEST.duplicate-path.positive.json",
+        "violating": "scripts/guardrails/fixtures/TEST.duplicate-path.negative.json",
+        "diagnostic": "TEST.duplicate-path"
+      },
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+    },
+    {
+      "id": "TEST.tiers",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {},
+      "implementation_paths": [
+        "scripts/guardrails/tests/check.py",
+        "scripts/guardrails/inspect.go",
+        ".omp/test-tiers.json",
+        ".omp/test-map.json"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "scripts/guardrails/tests/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/tests/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/TEST.tiers.positive.json",
+        "violating": "scripts/guardrails/fixtures/TEST.tiers.negative.json",
+        "diagnostic": "TEST.tiers"
+      },
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+    },
+    {
+      "id": "TEST.coverage-minimum",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "threshold_percent": 85,
+        "owned_slice_required": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/tests/check.py",
+        "scripts/guardrails/inspect.go",
+        ".omp/test-tiers.json",
+        ".omp/test-map.json"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "scripts/guardrails/tests/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/tests/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/TEST.coverage-minimum.positive.json",
+        "violating": "scripts/guardrails/fixtures/TEST.coverage-minimum.negative.json",
+        "diagnostic": "TEST.coverage-minimum"
+      },
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+    },
+    {
+      "id": "TEST.subprocess-timeouts",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {},
+      "implementation_paths": [
+        "scripts/guardrails/tests/check.py",
+        "scripts/guardrails/inspect.go",
+        ".omp/test-tiers.json",
+        ".omp/test-map.json"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "scripts/guardrails/tests/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/tests/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/TEST.subprocess-timeouts.positive.json",
+        "violating": "scripts/guardrails/fixtures/TEST.subprocess-timeouts.negative.json",
+        "diagnostic": "TEST.subprocess-timeouts"
+      },
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+    },
+    {
+      "id": "TEST.budget.fast-tier-time",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "input": "test_runner_json_report",
+        "measurement": "fast_tier_wall_clock_seconds",
+        "limit_source": "target_owned_limit_set_from_recorded_baseline_runs",
+        "baseline_runs_min": 5,
+        "limit_reported_provisional_until_repo_measure_run": true,
+        "limit_increase_requires_owner_approval": true,
+        "missing_or_invalid_measurement_is_failure": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/tests/check.py",
+        "scripts/guardrails/inspect.go",
+        ".omp/test-tiers.json",
+        ".omp/test-map.json"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "scripts/guardrails/tests/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/tests/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/TEST.budget.fast-tier-time.positive.json",
+        "violating": "scripts/guardrails/fixtures/TEST.budget.fast-tier-time.negative.json",
+        "diagnostic": "TEST.budget.fast-tier-time"
+      },
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+    },
+    {
+      "id": "TEST.budget.per-test-time",
+      "evidence_kind": "local_ci",
+      "status": "implemented",
+      "contract": {
+        "input": "test_runner_json_report",
+        "scope": "fast_tier_test_cases",
+        "limit_source": "target_owned_limit_set_from_recorded_baseline_runs",
+        "baseline_runs_min": 5,
+        "limit_increase_requires_owner_approval": true,
+        "missing_or_invalid_measurement_is_failure": true,
+        "diagnostic_names_test_and_speedup_fix_never_tier_move": true
+      },
+      "implementation_paths": [
+        "scripts/guardrails/tests/check.py",
+        "scripts/guardrails/inspect.go",
+        ".omp/test-tiers.json",
+        ".omp/test-map.json"
+      ],
+      "local_runner": "scripts/guardrails/gate.py",
+      "local_marker": "scripts/guardrails/tests/check.py",
+      "ci_runner": ".github/workflows/gate.yml",
+      "ci_marker": "[\"gate\"]",
+      "canary": {
+        "command": [
+          ".tools/venv/bin/python",
+          "scripts/guardrails/tests/canary.py",
+          "{fixture}"
+        ],
+        "passing": "scripts/guardrails/fixtures/TEST.budget.per-test-time.positive.json",
+        "violating": "scripts/guardrails/fixtures/TEST.budget.per-test-time.negative.json",
+        "diagnostic": "TEST.budget.per-test-time"
+      },
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+    }
+  ]
+}

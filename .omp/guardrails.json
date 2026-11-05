@@ -1,0 +1,180 @@
+{
+  "base": "origin/main",
+  "scope": "whole-repo; frozen studies excluded",
+  "owned_paths": [
+    "[^/\\\\\\x00]+",
+    "cmd/scout/[^/\\\\\\x00]+",
+    "internal/analyzers/[^/\\\\\\x00]+",
+    "internal/areas/[^/\\\\\\x00]+",
+    "internal/artifacts/[^/\\\\\\x00]+",
+    "internal/association/[^/\\\\\\x00]+",
+    "internal/baseline/[^/\\\\\\x00]+",
+    "internal/clawpatch/[^/\\\\\\x00]+",
+    "internal/contextual/[^/\\\\\\x00]+",
+    "internal/decisions/[^/\\\\\\x00]+",
+    "internal/decisions/orderflip/[^/\\\\\\x00]+",
+    "internal/decisions/thresholds/[^/\\\\\\x00]+",
+    "internal/domain/[^/\\\\\\x00]+",
+    "internal/engine/[^/\\\\\\x00]+",
+    "internal/eval/[^/\\\\\\x00]+",
+    "internal/guardrails/[^/\\\\\\x00]+",
+    "internal/history/[^/\\\\\\x00]+",
+    "internal/importgraph/[^/\\\\\\x00]+",
+    "internal/inventory/[^/\\\\\\x00]+",
+    "internal/issues/[^/\\\\\\x00]+",
+    "internal/measures/[^/\\\\\\x00]+",
+    "internal/modelcli/[^/\\\\\\x00]+",
+    "internal/policy/[^/\\\\\\x00]+",
+    "internal/prmeta/[^/\\\\\\x00]+",
+    "internal/redact/[^/\\\\\\x00]+",
+    "internal/sandbox/[^/\\\\\\x00]+",
+    "internal/state/[^/\\\\\\x00]+",
+    "internal/state/statetest/[^/\\\\\\x00]+",
+    "internal/toolchain/[^/\\\\\\x00]+",
+    "internal/web/[^/\\\\\\x00]+",
+    "(?:docs|evaluation|scripts|toolchain|third_party|\\.github|\\.agents|\\.claude|\\.omp|\\.githooks)/[^\\\\\\x00]+",
+    "\\.scout/[^/]+",
+    "internal/analyzers/rules/(?:performance|security)/[^/]+",
+    "internal/association/testdata/[^/]+",
+    "internal/association/testdata/gen/[^/]+"
+  ],
+  "dependencies": {
+    "cmd/scout": [
+      "internal/areas",
+      "internal/artifacts",
+      "internal/baseline",
+      "internal/clawpatch",
+      "internal/contextual",
+      "internal/domain",
+      "internal/engine",
+      "internal/guardrails",
+      "internal/inventory",
+      "internal/issues",
+      "internal/policy",
+      "internal/prmeta",
+      "internal/state",
+      "internal/web"
+    ],
+    "internal/analyzers": [
+      "internal/domain",
+      "internal/redact",
+      "internal/sandbox"
+    ],
+    "internal/areas": [
+      "internal/domain",
+      "internal/measures"
+    ],
+    "internal/artifacts": [
+      "internal/domain"
+    ],
+    "internal/association": [],
+    "internal/baseline": [
+      "internal/domain",
+      "internal/state"
+    ],
+    "internal/clawpatch": [
+      "internal/domain",
+      "internal/modelcli"
+    ],
+    "internal/contextual": [
+      "internal/domain",
+      "internal/modelcli"
+    ],
+    "internal/decisions": [
+      "internal/domain",
+      "internal/policy"
+    ],
+    "internal/decisions/orderflip": [
+      "internal/decisions"
+    ],
+    "internal/decisions/thresholds": [],
+    "internal/domain": [],
+    "internal/engine": [
+      "internal/analyzers",
+      "internal/artifacts",
+      "internal/clawpatch",
+      "internal/contextual",
+      "internal/decisions",
+      "internal/decisions/thresholds",
+      "internal/domain",
+      "internal/guardrails",
+      "internal/history",
+      "internal/inventory",
+      "internal/issues",
+      "internal/measures",
+      "internal/modelcli",
+      "internal/policy",
+      "internal/prmeta",
+      "internal/sandbox",
+      "internal/state",
+      "internal/state/statetest"
+    ],
+    "internal/eval": [],
+    "internal/guardrails": [],
+    "internal/history": [
+      "internal/domain"
+    ],
+    "internal/importgraph": [
+      "internal/domain"
+    ],
+    "internal/inventory": [
+      "internal/domain"
+    ],
+    "internal/issues": [
+      "internal/analyzers",
+      "internal/domain",
+      "internal/redact",
+      "internal/state",
+      "internal/state/statetest"
+    ],
+    "internal/measures": [
+      "internal/domain",
+      "internal/importgraph",
+      "internal/sandbox"
+    ],
+    "internal/modelcli": [],
+    "internal/policy": [],
+    "internal/prmeta": [
+      "internal/domain",
+      "internal/history"
+    ],
+    "internal/redact": [],
+    "internal/sandbox": [],
+    "internal/state": [
+      "internal/areas",
+      "internal/domain",
+      "internal/redact"
+    ],
+    "internal/state/statetest": [
+      "internal/domain",
+      "internal/state"
+    ],
+    "internal/toolchain": [
+      "internal/analyzers",
+      "internal/clawpatch"
+    ],
+    "internal/web": [
+      "internal/clawpatch",
+      "internal/domain",
+      "internal/state"
+    ]
+  },
+  "budget": {
+    "wallMs": 159000,
+    "perTestMs": 46000,
+    "status": "provisional; owner approved 2026-11-05; includes failed cold run, no silent exclusion",
+    "baselineRuns": [
+      "baseline-1.jsonl",
+      "baseline-2.jsonl",
+      "baseline-3.jsonl",
+      "baseline-4.jsonl",
+      "baseline-5.jsonl"
+    ],
+    "multiplier": 1.5,
+    "increaseRequiresOwnerApproval": true
+  },
+  "testGrowth": {},
+  "frozen": [
+    "evaluation/"
+  ]
+}
