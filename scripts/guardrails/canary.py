@@ -187,6 +187,38 @@ def ledger_canary(root: Path, fixture: dict[str, Any], infra: ModuleType) -> Non
         )
 
 
+def sandbox_canary(root: Path, fixture: dict[str, Any], infra: ModuleType) -> None:
+    binaries = root / "sandbox-bin"
+    binaries.mkdir()
+    executables = {
+        "uname": "#!/usr/bin/env bash\nprintf 'Linux\\n'\n",
+        "sudo": "#!/usr/bin/env bash\nexit 0\n",
+        "bwrap": f"#!/usr/bin/env bash\nexit {int(fixture['bad'])}\n",
+    }
+    for name, text in executables.items():
+        path = binaries / name
+        path.write_text(text)
+        path.chmod(0o755)
+    argv = [
+        "env",
+        f"PATH={binaries}:{os.environ['PATH']}",
+        "bash",
+        str(SOURCE / "scripts/ci-sandbox.sh"),
+    ]
+    guardian = command(argv, root)
+    strict = command([*argv, "--strict"], root)
+    if guardian.returncode or strict.returncode != int(fixture["bad"]):
+        raise RuntimeError(
+            "sandbox must preserve guardian warnings while strict mode rejects unusable isolation"
+        )
+    if strict.returncode:
+        infra.fail(
+            "scripts/ci-sandbox.sh",
+            fixture["rule"],
+            "require usable bubblewrap before repository tests",
+        )
+
+
 def configuration_canary(
     root: Path, fixture: dict[str, Any], infra: ModuleType
 ) -> None:
@@ -222,13 +254,18 @@ def configuration_canary(
         )
         if bad:
             path.write_text(
-                path.read_text().replace('"gate"', '"notGate"')
+                path
+                .read_text()
+                .replace('"gate"', '"notGate"')
+                .replace("env.GO_VERSION", "env.UNPINNED_GO_VERSION")
+                .replace("ci-sandbox.sh --strict", "ci-sandbox.sh")
                 if rule.startswith("GATE.")
                 else "{}"
             )
         infra.runner(root)
         activation_canary(rule, infra)
         ledger_canary(root, fixture, infra)
+        sandbox_canary(root, fixture, infra)
     elif rule == "PRETTIER.version":
         path = root / "sample.md"
         path.write_text("# Title\n\ntext\n" if not bad else "# Title\n\n-   text\n")

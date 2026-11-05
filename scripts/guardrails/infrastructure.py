@@ -132,6 +132,27 @@ def gate_schema(config: dict[str, Any]) -> None:
         fail(".omp/gate.json", rule, "set agentMerge to allowed or disabled")
 
 
+def ci_prerequisites(workflow: str) -> None:
+    pin = "source toolchain/versions.env"
+    setup = "go-version: ${{ env.GO_VERSION }}"
+    sandbox = "bash scripts/ci-sandbox.sh --strict"
+    bootstrap = "scripts/bootstrap-tools.sh"
+    if not all(token in workflow for token in (pin, setup, sandbox, bootstrap)):
+        fail(
+            ".github/workflows/gate.yml",
+            "GATE.local-ci-parity",
+            "read the Go pin from versions.env and require ci-sandbox.sh --strict before bootstrap",
+        )
+    elif workflow.index(pin) > workflow.index(setup) or workflow.index(
+        sandbox
+    ) > workflow.index(bootstrap):
+        fail(
+            ".github/workflows/gate.yml",
+            "GATE.local-ci-parity",
+            "load the Go pin before setup-go and require the scanner sandbox before bootstrap",
+        )
+
+
 def runner(root: Path) -> None:
     config = json.loads((root / ".omp/gate.json").read_text())
     gate_schema(config)
@@ -148,6 +169,7 @@ def runner(root: Path) -> None:
                 f"use authoritative gate.sh {mode} argv for {field}",
             )
     workflow = (root / ".github/workflows/gate.yml").read_text()
+    ci_prerequisites(workflow)
     if (
         'json.load(open(".omp/gate.json"))["gate"]' not in workflow
         or "name: gate" not in workflow
