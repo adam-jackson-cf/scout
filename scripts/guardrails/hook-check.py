@@ -83,6 +83,22 @@ def default_branch(gate: ModuleType, root: Path, base: str) -> None:
             os.environ["SCOUT_PUSH_REMOTE_URL"] = previous
 
 
+def pre_gate_commit(gate: ModuleType, root: Path, base: str) -> None:
+    git(root, "commit", "-qm", "commit predating repository gate")
+    revision = git(root, "rev-parse", "HEAD")
+    previous = os.environ.get("SCOUT_PUSH_RANGES")
+    os.environ["SCOUT_PUSH_RANGES"] = (
+        f"refs/heads/pre-gate {revision} refs/heads/pre-gate {'0' * 40}"
+    )
+    try:
+        gate.push_gate(base)
+    finally:
+        if previous is None:
+            os.environ.pop("SCOUT_PUSH_RANGES", None)
+        else:
+            os.environ["SCOUT_PUSH_RANGES"] = previous
+
+
 def snapshots() -> None:
     gate = load_gate()
     with tempfile.TemporaryDirectory(prefix="scout-hook-snapshots-") as tmp:
@@ -118,6 +134,7 @@ def snapshots() -> None:
             )
             assert state(root) == before
             default_branch(gate, root, base)
+            pre_gate_commit(gate, root, base)
         finally:
             os.chdir(old)
             if previous_index is None:
@@ -174,6 +191,9 @@ def commit_file(repo: Path, name: str, text: str, message: str) -> str:
 
 def failed_test(output: str, name: str) -> bool:
     for line in output.splitlines():
+        if line.startswith("go test JSON: "):
+            output += "\n" + Path(line.removeprefix("go test JSON: ")).read_text()
+    for line in output.splitlines():
         try:
             event = json.loads(line)
         except json.JSONDecodeError:
@@ -215,12 +235,12 @@ def check_push(
 
 
 def push_commits(repo: Path, base: str) -> str:
-    name = "README.md"
+    name = "scripts/ci-sandbox.sh"
     clean = commit_file(
         repo,
         name,
-        (repo / name).read_text() + "\nClean hook-push canary.\n",
-        "clean pushed commit",
+        (repo / name).read_text() + "\n# Clean script-only hook-push canary.\n",
+        "change only a non-test script",
     )
     git(repo, "branch", "clean-push", clean)
     git(repo, "checkout", "--quiet", "--detach", base)

@@ -55,6 +55,11 @@ including non-HEAD refs. Every snapshot has its own Git directory, index, refs a
 config, and checker/test subprocesses receive no inherited `GIT_*` variables.
 The installed runner checks each checkout without changing the pusher's refs,
 config, staged/working-tree state or stash. Deletions need no source checks.
+Commits predating `.omp/gate.json` are explicitly reported and skipped; every
+configured commit uses the installed test checker against its own source and
+configuration, comparing growth against the same default-branch base.
+Failed tests print concise failure blocks and a `go test JSON:` path to the full
+temporary JSON log.
 If the configured base is absent, the runner queries the push remote's advertised
 default HEAD and uses it only when that commit already exists locally. It never
 fetches or repairs refs/config automatically: fetch the advertised default branch
