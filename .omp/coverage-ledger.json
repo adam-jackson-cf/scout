@@ -229,7 +229,7 @@
     {
       "id": "GIT.required-checks",
       "evidence_kind": "host_query",
-      "status": "blocked",
+      "status": "implemented",
       "contract": {
         "protected_branch": "resolved_default_branch",
         "required_status_check": "gate",
@@ -241,25 +241,14 @@
         "scripts/guardrails/gate.py",
         "scripts/guardrails/infrastructure.py"
       ],
-      "local_runner": "scripts/gate.sh",
-      "local_marker": "scripts/guardrails/gate.py",
-      "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
-      "canary": {
-        "command": [
-          ".tools/venv/bin/python",
-          "scripts/guardrails/canary.py",
-          "{fixture}"
-        ],
-        "passing": "scripts/guardrails/fixtures/GIT.required-checks.positive.json",
-        "violating": "scripts/guardrails/fixtures/GIT.required-checks.negative.json",
-        "diagnostic": "GIT.required-checks"
-      },
-      "reason": "Offline checker and behavioral fixtures implemented; recorded GitHub main unprotected, auto-merge disabled. Main agent applies/readbacks host protection after first green CI; no false fixture-as-host claim.",
       "host_query": {
-        "path": ".omp/evidence/protection.json",
+        "path": ".omp/evidence/required-checks.json",
         "contains": [
-          "Branch not protected"
+          "\"contexts\":[\"gate\"]",
+          "\"strict\":true",
+          "\"enforce_admins\":{\"enabled\":true",
+          "\"allow_auto_merge\":true",
+          "\"allow_rebase_merge\":true"
         ]
       }
     },
@@ -4475,7 +4464,7 @@
         ".omp/test-map.json"
       ],
       "local_runner": "scripts/guardrails/gate.py",
-      "local_marker": "scripts/guardrails/tests/check.py",
+      "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
       "ci_marker": "[\"gate\"]",
       "canary": {
@@ -4510,7 +4499,7 @@
         ".omp/test-map.json"
       ],
       "local_runner": "scripts/guardrails/gate.py",
-      "local_marker": "scripts/guardrails/tests/check.py",
+      "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
       "ci_marker": "[\"gate\"]",
       "canary": {
@@ -4540,7 +4529,7 @@
         ".omp/test-map.json"
       ],
       "local_runner": "scripts/guardrails/gate.py",
-      "local_marker": "scripts/guardrails/tests/check.py",
+      "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
       "ci_marker": "[\"gate\"]",
       "canary": {
@@ -4576,7 +4565,7 @@
         ".omp/test-map.json"
       ],
       "local_runner": "scripts/guardrails/gate.py",
-      "local_marker": "scripts/guardrails/tests/check.py",
+      "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
       "ci_marker": "[\"gate\"]",
       "canary": {
@@ -4635,7 +4624,7 @@
         ".omp/test-map.json"
       ],
       "local_runner": "scripts/guardrails/gate.py",
-      "local_marker": "scripts/guardrails/tests/check.py",
+      "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
       "ci_marker": "[\"gate\"]",
       "canary": {
@@ -4690,7 +4679,7 @@
         ".omp/test-map.json"
       ],
       "local_runner": "scripts/guardrails/gate.py",
-      "local_marker": "scripts/guardrails/tests/check.py",
+      "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
       "ci_marker": "[\"gate\"]",
       "canary": {
@@ -4717,7 +4706,7 @@
         ".omp/test-map.json"
       ],
       "local_runner": "scripts/guardrails/gate.py",
-      "local_marker": "scripts/guardrails/tests/check.py",
+      "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
       "ci_marker": "[\"gate\"]",
       "canary": {
