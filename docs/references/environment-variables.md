@@ -17,7 +17,7 @@ Use this lexicon to see which environment variables Scout and its toolchain read
   Source: `scripts/bootstrap-tools.sh`; `cmd/scout/main.go` `common`
 
 - `GOTOOLCHAIN`
-  Purpose: pins Go to the version in `toolchain/versions.env` (`go1.25.6`).
+  Purpose: pins Go to the version in `toolchain/versions.env` (`go1.26.10`).
   Source: `scripts/bootstrap-tools.sh`
 
 - `SCOUT_TOOLS_ACTIVE`, `SCOUT_TOOLS_DIR`
