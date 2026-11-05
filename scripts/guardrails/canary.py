@@ -63,7 +63,7 @@ def hooks(root: Path, rule: str, bad: bool) -> bool:
             "import os;assert len(os.environ['SCOUT_PUSH_RANGES'].split())==4;" + script
         )
     (repo / ".omp/gate.json").write_text(
-        json.dumps({field: [sys.executable, "-c", script]})
+        json.dumps({"schemaVersion": 1, field: [sys.executable, "-c", script]})
     )
     (repo / "a").write_text("test")
     git(repo, "add", ".")
@@ -115,6 +115,9 @@ def path_canary(root: Path, fixture: dict[str, Any], gate: ModuleType) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text)
     os.chdir(root)
+    gate.__dict__["ROOT"] = root
+    if rule == "GATE.path-check" and not bad:
+        name = str(path)
     gate.path_check([name], policy)
     if rule == "GATE.path-check":
         gate.__dict__["ERRORS"] = [
