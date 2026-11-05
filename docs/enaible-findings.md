@@ -157,11 +157,11 @@ This would connect installation success to the task the user actually wants to p
 
 ## Recommended implementation order
 
-| Order | Improvement | Dependency | Initial proof |
-| --- | --- | --- | --- |
-| 1 | K2: persistent findings and workflow continuity | Durable issue identity linked to immutable evidence | Resume one finding through authorized action and verified resolution |
-| Alongside 1 | K4: behavioral evaluation | Reviewed expected outcomes for the selected journey | Installed skill makes supported judgments and respects authorization boundaries |
-| 2 | K3: baseline comparison and selective execution | K2 identities and evidence contracts | Compare two runs reliably before adding caching |
-| Independent | K5: workflow-specific readiness | Existing dependency and eligibility information | Readiness predicts successful execution of one selected workflow |
+| Order       | Improvement                                     | Dependency                                          | Initial proof                                                                   |
+| ----------- | ----------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------- |
+| 1           | K2: persistent findings and workflow continuity | Durable issue identity linked to immutable evidence | Resume one finding through authorized action and verified resolution            |
+| Alongside 1 | K4: behavioral evaluation                       | Reviewed expected outcomes for the selected journey | Installed skill makes supported judgments and respects authorization boundaries |
+| 2           | K3: baseline comparison and selective execution | K2 identities and evidence contracts                | Compare two runs reliably before adding caching                                 |
+| Independent | K5: workflow-specific readiness                 | Existing dependency and eligibility information     | Readiness predicts successful execution of one selected workflow                |
 
 Start with K2 and a small K4 evaluation suite, then build K3 on the resulting identities and evidence contracts. K5 can proceed independently. This order establishes reliable continuity before adding automation that depends on it.

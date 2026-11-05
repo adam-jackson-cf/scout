@@ -6,11 +6,11 @@ Use this guide to run Scout in GitHub Actions: pull-request checks, default-bran
 
 Scout ships two reusable workflows. Each workflow declares its own permission ceiling, so the pull-request lane never holds write access or secrets:
 
-| Piece | Runs on | Does | Permissions | Evidence source |
-| --- | --- | --- | --- | --- |
-| `.github/workflows/scout-guardian.yml` | `pull_request` | `scout diff` against the PR base, reading the `scout/state` baseline; writes the Markdown summary to the job summary. | `contents: read`; no secrets | workflow header and job `pull-request` |
-| `.github/workflows/scout-guardian-trusted.yml` | push, schedule or dispatch on the default branch only | `state restore` → `map` (onboarding or manual) → `assess --fetch-pr-metadata` → `state publish --trusted` on exit 0 or 1 → uploads evidence artifacts for 90 days. | `contents: write`, `pull-requests: read`; optional `OPENROUTER_API_KEY` secret | job `trusted` |
-| `.github/workflows/release.yml` | tag `v*` | Builds `scout-{linux,darwin}-{amd64,arm64}` and the Clawpatch bundle, writes `.sha256` files, and verifies them before creating the release. | `contents: write` | `release.yml` |
+| Piece                                          | Runs on                                               | Does                                                                                                                                                               | Permissions                                                                    | Evidence source                        |
+| ---------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | -------------------------------------- |
+| `.github/workflows/scout-guardian.yml`         | `pull_request`                                        | `scout diff` against the PR base, reading the `scout/state` baseline; writes the Markdown summary to the job summary.                                              | `contents: read`; no secrets                                                   | workflow header and job `pull-request` |
+| `.github/workflows/scout-guardian-trusted.yml` | push, schedule or dispatch on the default branch only | `state restore` → `map` (onboarding or manual) → `assess --fetch-pr-metadata` → `state publish --trusted` on exit 0 or 1 → uploads evidence artifacts for 90 days. | `contents: write`, `pull-requests: read`; optional `OPENROUTER_API_KEY` secret | job `trusted`                          |
+| `.github/workflows/release.yml`                | tag `v*`                                              | Builds `scout-{linux,darwin}-{amd64,arm64}` and the Clawpatch bundle, writes `.sha256` files, and verifies them before creating the release.                       | `contents: write`                                                              | `release.yml`                          |
 
 Every lane downloads the Scout binary and the Clawpatch bundle from a release by tag and checks their sha256 sums. Nothing is built from the PR checkout.
 
@@ -65,20 +65,21 @@ Every lane downloads the Scout binary and the Clawpatch bundle from a release by
    ```
 
    Another repository references the workflows as `<owner>/<repo>/.github/workflows/<file>@<ref>` instead of `./.github/workflows/<file>`; releases are then fetched from `<owner>/<repo>` unless `release-repo` says otherwise.
+
 2. Merge to the default branch. The first trusted run finds no `scout/state` branch, runs a full assessment, and publishes the first baseline.
 3. Open a pull request. The PR lane compares against the baseline. If the baseline is missing or its digests don't match, it rescans the base and reports `comparison: recomputed`.
 4. Under the `report` profile, collect `would_block` evidence during the shadow window. Then activate checks under `blocking.checks` and switch to `profile: guardian`.
 
 ## Inputs
 
-| Input | Workflow | Default | Effect |
-| --- | --- | --- | --- |
-| `scout-version` | both | required | Release tag at or after `v0.1.6`, for example `v0.1.6`. |
-| `release-repo` | both | empty → the repository hosting the workflow (`job.workflow_repository`) | `owner/name` that publishes releases. |
-| `fail-on-incomplete` | both | `false` | Fail the job on exit 2 or 3 instead of a neutral warning. |
-| `full` | trusted | `false` | Force `assess --full`. |
-| `refresh-map` | trusted | `false` | Run `scout map --refresh` before assessing. |
-| `authorize-egress` | trusted | `false` | Pass `--allow-egress` to `map` and `assess`. |
+| Input                | Workflow | Default                                                                 | Effect                                                    |
+| -------------------- | -------- | ----------------------------------------------------------------------- | --------------------------------------------------------- |
+| `scout-version`      | both     | required                                                                | Release tag at or after `v0.1.6`, for example `v0.1.6`.   |
+| `release-repo`       | both     | empty → the repository hosting the workflow (`job.workflow_repository`) | `owner/name` that publishes releases.                     |
+| `fail-on-incomplete` | both     | `false`                                                                 | Fail the job on exit 2 or 3 instead of a neutral warning. |
+| `full`               | trusted  | `false`                                                                 | Force `assess --full`.                                    |
+| `refresh-map`        | trusted  | `false`                                                                 | Run `scout map --refresh` before assessing.               |
+| `authorize-egress`   | trusted  | `false`                                                                 | Pass `--allow-egress` to `map` and `assess`.              |
 
 ## What To Check
 
