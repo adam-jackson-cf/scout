@@ -455,6 +455,14 @@ def main() -> bool:
                 sys.executable,
                 str(Path(__file__).resolve().parent / "tests/output-canary.py"),
             ])
+            # Real-push hook proof; too slow for the validator's 60 s
+            # hook_install_check budget, so the full gate runs it here.
+            run([
+                sys.executable,
+                str(Path(__file__).resolve().parent / "hook-check.py"),
+                "pre-push",
+                "--real-pushes",
+            ])
             run([sys.executable, "scripts/guardrails/merge-ledger.py", "--check"])
             run([
                 sys.executable,

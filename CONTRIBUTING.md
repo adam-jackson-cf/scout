@@ -60,6 +60,11 @@ configured commit uses the installed test checker against its own source and
 configuration, comparing growth against the same default-branch base.
 Failed tests print concise failure blocks and a `go test JSON:` path to the full
 temporary JSON log.
+The ledger's hook installation checks (`hook-check.py pre-commit|pre-push`) prove
+wiring, canaries and snapshot isolation in seconds, within the coverage validator's
+fixed 60 s limit. The slower real-push proof (`hook-check.py pre-push --real-pushes`:
+a clean push passes, a broken non-HEAD push is blocked naming the failing test, and
+the pusher repository is unchanged) runs as its own step in full mode.
 If the configured base is absent, the runner queries the push remote's advertised
 default HEAD and uses it only when that commit already exists locally. It never
 fetches or repairs refs/config automatically: fetch the advertised default branch
