@@ -21,7 +21,6 @@ GOVERNED = {
     "docs/hypothesis-ledger.md",
     "CLAUDE.md",
     "AGENTS.md",
-    "HANDOFF.md",
 }
 
 
