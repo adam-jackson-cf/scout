@@ -39,13 +39,16 @@ def git(root: Path, *args: str) -> None:
 
 
 def hooks(root: Path, rule: str, bad: bool) -> bool:
-    hook = rule.removeprefix("GATE.")
+    if rule != "GATE.pre-commit":
+        raise ValueError("use GATE.pre-commit")
+    hook = "pre-commit"
     repo = root / "repo"
     repo.mkdir()
     git(repo, "init", "-q")
     for key, value in [
         ("user.name", "Canary"),
         ("user.email", "canary@example.invalid"),
+        ("commit.gpgsign", "false"),
         ("core.hooksPath", ".githooks"),
     ]:
         git(repo, "config", key, value)
@@ -56,23 +59,28 @@ def hooks(root: Path, rule: str, bad: bool) -> bool:
         SOURCE / "scripts/guardrails/hook.py", repo / "scripts/guardrails/hook.py"
     )
     shutil.copy2(SOURCE / ".githooks" / hook, repo / ".githooks" / hook)
-    field = "commitGate" if hook == "pre-commit" else "fastGate"
-    script = "import sys;sys.exit(" + str(int(bad)) + ")"
-    if hook == "pre-push":
-        script = (
-            "import os;assert len(os.environ['SCOUT_PUSH_RANGES'].split())==4;" + script
-        )
+    expected = ["space argument", ";not-shell", "--literal"]
+    status = 23 if bad else 0
+    script = (
+        "import json,pathlib,sys;"
+        "pathlib.Path('received.json').write_text(json.dumps(sys.argv[1:]));"
+        f"sys.exit({status})"
+    )
     (repo / ".omp/gate.json").write_text(
-        json.dumps({"schemaVersion": 1, field: [sys.executable, "-c", script]})
+        json.dumps({
+            "schemaVersion": 2,
+            "checks": {"commit": [sys.executable, "-c", script, *expected]},
+        })
     )
     (repo / "a").write_text("test")
     git(repo, "add", ".")
     result = command(["git", "commit", "-qm", "canary"], repo)
-    if hook == "pre-push":
-        if result.returncode:
-            raise RuntimeError(result.stderr)
-        git(root, "init", "--bare", "-q", str(root / "remote"))
-        result = command(["git", "push", str(root / "remote"), "HEAD:main"], repo)
+    received = json.loads((repo / "received.json").read_text())
+    if received != expected:
+        raise AssertionError("pre-commit must preserve checks.commit argv")
+    direct = command(["bash", ".githooks/pre-commit"], repo)
+    if direct.returncode != status:
+        raise AssertionError("pre-commit must propagate checks.commit status")
     if result.returncode:
         print(f"fixture: {rule}: repair failing declared gate before operation")
     return result.returncode != 0
@@ -256,7 +264,7 @@ def configuration_canary(
             path.write_text(
                 path
                 .read_text()
-                .replace('"gate"', '"notGate"')
+                .replace('["checks"]["ci"]', '["checks"]["missing"]')
                 .replace("env.GO_VERSION", "env.UNPINNED_GO_VERSION")
                 .replace("ci-sandbox.sh --strict", "ci-sandbox.sh")
                 if rule.startswith("GATE.")
@@ -274,14 +282,12 @@ def configuration_canary(
 
 
 def metadata_canary(root: Path, fixture: dict[str, Any], infra: ModuleType) -> None:
-    path = root / ".agents/skills/sample/SKILL.md"
-    path.parent.mkdir(parents=True)
-    path.write_text(
-        '---\nname: "'
-        + ("wrong" if fixture["bad"] else "sample")
-        + '"\ndescription: "USE WHEN testing metadata"\n---\n'
+    infra.skill_metadata(
+        fixture["metadata"],
+        fixture["directory"],
+        fixture["target"],
+        str(root / ".agents/skills" / fixture["directory"] / "SKILL.md"),
     )
-    infra.skills(root)
 
 
 def evidence_canary(root: Path, fixture: dict[str, Any], infra: ModuleType) -> None:
@@ -317,13 +323,44 @@ def security_canary(root: Path, bad: bool, infra: ModuleType) -> None:
     infra.audit(["govulncheck", "-scan=module"])
 
 
+def gate_fixture_invalid(fixture: dict[str, Any], infra: ModuleType) -> bool:
+    rule = fixture["rule"]
+    if (
+        rule not in {"GATE.pre-commit", "GATE.local-ci-parity"}
+        or "config" not in fixture
+    ):
+        return False
+    infra.gate_contract(
+        fixture["config"],
+        fixture["ci_argv"],
+        fixture["hook_installed"],
+        rule,
+    )
+    for line in infra.ERRORS:
+        print(line)
+    return bool(infra.ERRORS)
+
+
+def failure_canary(fixture: dict[str, Any], gate: ModuleType) -> None:
+    try:
+        gate.run([
+            sys.executable,
+            "-c",
+            f"import sys; sys.exit({int(fixture['bad'])})",
+        ])
+    except subprocess.CalledProcessError:
+        gate.error("fixture", fixture["rule"], "repair failed prerequisite")
+
+
 def main() -> bool:
     fixture = json.loads(Path(sys.argv[1]).read_text())
     rule = fixture["rule"]
     gate, infra = load("gate"), load("infrastructure")
+    if gate_fixture_invalid(fixture, infra):
+        return True
     with tempfile.TemporaryDirectory(prefix="scout-canary-") as temp:
         root = Path(temp)
-        if rule.startswith("GATE.pre-"):
+        if rule == "GATE.pre-commit":
             return hooks(root, rule, fixture["bad"])
         if rule.startswith(("PARITY.", "RUNNER.")) or rule in {
             "GATE.local-ci-parity",
@@ -348,14 +385,7 @@ def main() -> bool:
         elif rule == "SECURITY.dependency-audit":
             security_canary(root, fixture["bad"], infra)
         elif rule == "TEST.failure-propagation":
-            try:
-                gate.run([
-                    sys.executable,
-                    "-c",
-                    f"import sys; sys.exit({int(fixture['bad'])})",
-                ])
-            except subprocess.CalledProcessError:
-                gate.error("fixture", rule, "repair failed prerequisite")
+            failure_canary(fixture, gate)
         else:
             path_canary(root, fixture, gate)
         messages = gate.ERRORS + infra.ERRORS

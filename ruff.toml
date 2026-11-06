@@ -9,30 +9,15 @@ output-format = "full"
 respect-gitignore = true
 preview = true
 
-# Exclude common directories
+# Exclude only generated/dependency trees and justified non-maintained inputs.
 exclude = [
-    "evaluation", ".tools", "scripts/guardrails/fixtures",
-    "scripts/guardrails/vendor",
-    ".agent",
-    ".agents",
-    ".build",
-    ".enaible",
-    ".git",
-    ".tox",
-    ".venv",
-    "venv",
-    "__pycache__",
-    "*.egg-info",
-    "build",
-    "dist",
-    "docs/reference",
-    "migrations",
-    "node_modules",
-    ".pytest_cache",
-    ".mypy_cache",
-    ".ruff_cache",
-    "tools/enaible/.venv",
-    "tests/fixtures/",
+    ".build", ".git", ".tox", ".venv", "venv", "__pycache__",
+    "*.egg-info", "build", "dist", "node_modules", ".pytest_cache",
+    ".mypy_cache", ".ruff_cache",
+    "evaluation", # Frozen signed-off studies; never run as maintained checks.
+    ".tools", # Pinned generated tool environments.
+    "scripts/guardrails/fixtures", # Checker input data and frozen proofs.
+    "scripts/guardrails/vendor", # Byte-preserved upstream source.
 ]
 
 [lint]
@@ -85,7 +70,7 @@ ignore = [
 "setup.py" = ["D"]                        # Allow missing docstrings in setup
 
 [lint.isort]
-known-first-party = []
+known-first-party = ["internal", "scripts", "canaries", "fanout", "policy", "python_quality_scope", "quality", "scalability"]
 force-single-line = false
 combine-as-imports = true
 split-on-trailing-comma = true

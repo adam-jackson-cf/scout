@@ -10,6 +10,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
+import policy
 from python_quality_scope import (
     EXCLUSION_RULES,
     MAINTAINED_ROOTS,
@@ -27,7 +28,7 @@ CLASS_MAX_INSTANCE_ATTRIBUTES = 12
 GENERIC_NAME_ALLOWLIST: set[str] = set()
 GENERIC_NAME_PARTS = {"common", "helpers", "misc", "stuff", "temp"}
 ALLOWED_ROOT_FILES = {"tests/__init__.py", "tests/conftest.py"}
-ALLOWED_TEST_GROUPS = {"fixtures", "integration", "seams", "support", "unit"}
+ALLOWED_TEST_GROUPS: dict[str, str] = policy.target_policy()["canonical_test_groups"]
 SCRIPT_NAME_ALLOWLIST = {
     "check.py",
     "quality.py",
@@ -136,7 +137,15 @@ def _root_diagnostics(relpath: str) -> list[Diagnostic]:
     ]
 
 
-def _test_group_diagnostics(relpath: str) -> list[Diagnostic]:
+def _test_group_diagnostics(
+    relpath: str, groups: dict[str, str] | None = None
+) -> list[Diagnostic]:
+    groups = ALLOWED_TEST_GROUPS if groups is None else groups
+    destinations = ", ".join(
+        f"tests/{group}/"
+        for group, tier in groups.items()
+        if tier in {"T1", "T2", "support", "data"}
+    )
     if not relpath.startswith("tests/"):
         return []
     if relpath in ALLOWED_ROOT_FILES:
@@ -149,18 +158,18 @@ def _test_group_diagnostics(relpath: str) -> list[Diagnostic]:
                 "PYQ102",
                 relpath,
                 1,
-                "move the test under tests/unit/, tests/integration/, tests/seams/, tests/support/ or tests/fixtures/",
+                f"move the test under a mapped canonical group: {destinations}",
             )
         ]
     group = parts[1]
-    if group in ALLOWED_TEST_GROUPS:
+    if group in groups and groups[group] in {"T1", "T2", "support", "data"}:
         return []
     return [
         Diagnostic(
             "PYQ102",
             relpath,
             1,
-            f"move noncanonical test group '{group}' under tests/unit/, tests/integration/, tests/seams/, tests/support/ or tests/fixtures/",
+            f"move noncanonical test group '{group}' under a mapped canonical group: {destinations}",
         )
     ]
 
@@ -243,7 +252,9 @@ def _skill_name_diagnostics(relpath: str) -> list[Diagnostic]:
     ]
 
 
-def structure_diagnostics_for_relpath(relpath: str) -> list[Diagnostic]:
+def structure_diagnostics_for_relpath(
+    relpath: str, groups: dict[str, str] | None = None
+) -> list[Diagnostic]:
     """Return deterministic structure diagnostics for a Python relpath."""
     normalized = relpath.removeprefix("./")
     exclusion = exclusion_for_relpath(normalized)
@@ -267,7 +278,7 @@ def structure_diagnostics_for_relpath(relpath: str) -> list[Diagnostic]:
             )
         return diagnostics + _generic_name_diagnostics(normalized)
 
-    diagnostics.extend(_test_group_diagnostics(normalized))
+    diagnostics.extend(_test_group_diagnostics(normalized, groups))
     diagnostics.extend(_package_dir_diagnostics(normalized))
     diagnostics.extend(_skill_name_diagnostics(normalized))
     diagnostics.extend(_module_name_diagnostics(normalized))

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import fnmatch
+import json
 import os
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -16,38 +18,18 @@ class ExclusionRule:
     rationale: str
 
 
-EXCLUSION_RULES: tuple[ExclusionRule, ...] = (
-    ExclusionRule(".build/", "rendered generated output"),
-    ExclusionRule(".agent/", "agent-owned local state"),
-    ExclusionRule("evaluation/", "frozen signed-off research"),
-    ExclusionRule(".tools/", "pinned tool environments"),
-    ExclusionRule("scripts/guardrails/fixtures/", "behavioral canary data"),
+_SETTINGS = json.loads(Path(__file__).with_name("settings.json").read_text())
+EXCLUSION_RULES: tuple[ExclusionRule, ...] = tuple(
+    ExclusionRule(pattern + "/", rationale)
+    for pattern, rationale in _SETTINGS["target"]["exclusion_rationales"].items()
+) + tuple(
     ExclusionRule(
-        "scripts/guardrails/vendor/", "byte-identical upstream guardrail snapshots"
-    ),
-    ExclusionRule(".enaible/", "workflow artifacts and cache output"),
-    ExclusionRule(".git/", "git metadata"),
-    ExclusionRule(".mypy_cache/", "tool cache"),
-    ExclusionRule(".pytest_cache/", "tool cache"),
-    ExclusionRule(".ruff_cache/", "tool cache"),
-    ExclusionRule(".tox/", "tool environment"),
-    ExclusionRule(".venv/", "virtual environment"),
-    ExclusionRule("__pycache__/", "Python bytecode cache"),
-    ExclusionRule("build/", "build output"),
-    ExclusionRule("dist/", "distribution output"),
-    ExclusionRule("docs/reference/", "reference documentation"),
-    ExclusionRule("node_modules/", "vendored dependency tree"),
-    ExclusionRule("tests/fixtures/", "fixture-data paths"),
-    ExclusionRule("tools/enaible/.venv/", "virtual environment"),
-    ExclusionRule("venv/", "virtual environment"),
+        pattern + "/", "generated output, dependency environment or tool cache"
+    )
+    for pattern in _SETTINGS["ruff_default_exclusions"]
 )
 
-MAINTAINED_ROOTS: tuple[str, ...] = (
-    "internal/association/testdata/gen/",
-    "scripts/guardrails/",
-    ".agents/skills/",
-    "tests/",
-)
+MAINTAINED_ROOTS: tuple[str, ...] = tuple(_SETTINGS["target"]["maintained_roots"])
 
 
 def repo_relative_path(repo_root: Path, path: Path) -> str:
@@ -68,10 +50,10 @@ def exclusion_for_relpath(relpath: str) -> ExclusionRule | None:
     normalized = relpath.removeprefix("./")
     for rule in EXCLUSION_RULES:
         pattern = rule.pattern.rstrip("/")
-        if path_matches_prefix(normalized, pattern):
+        if path_matches_prefix(normalized, pattern) or any(
+            fnmatch.fnmatchcase(part, pattern) for part in Path(normalized).parts
+        ):
             return rule
-    if "/__pycache__/" in f"/{normalized}/":
-        return ExclusionRule("__pycache__/", "Python bytecode cache")
     return None
 
 
@@ -84,15 +66,6 @@ def is_maintained_python_relpath(relpath: str) -> bool:
     """Return whether a repository-relative Python path is maintained source."""
     normalized = relpath.removeprefix("./")
     if not normalized.endswith(".py"):
-        return False
-    if (
-        normalized.startswith("shared/skills/")
-        and "/scripts/" in normalized
-        and "/.build/" not in normalized
-        and not is_excluded_relpath(normalized)
-    ):
-        return True
-    if normalized.startswith("shared/skills/"):
         return False
     if is_excluded_relpath(normalized):
         return False

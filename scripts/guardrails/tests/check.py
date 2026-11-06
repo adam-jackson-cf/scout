@@ -29,7 +29,7 @@ def tier_errors(packages: list[str], policy: dict[str, Any]) -> list[str]:
         error(
             p,
             "TEST.tiers",
-            "declare fast/seam and owning gate path in .omp/test-tiers.json",
+            "declare fast/seam and owning commit/CI path in .omp/test-tiers.json",
         )
         for p in packages
         if p not in policy["packages"]
@@ -351,12 +351,22 @@ def execute(packages: list[str], tier: str, policy: dict[str, Any]) -> list[str]
     return errors
 
 
+def affected_package(package: str, paths: list[str]) -> bool:
+    """A package owns its source subtree; module-wide inputs affect every seam."""
+    return any(
+        path in {"go.mod", "go.sum", ".omp/test-tiers.json", "toolchain/versions.env"}
+        or path == package
+        or path.startswith(package + "/")
+        for path in paths
+    )
+
+
 def main() -> bool:
     parser = argparse.ArgumentParser()
-    parser.add_argument("mode", choices=["full", "fast"])
+    parser.add_argument("mode", choices=["full", "commit"])
     parser.add_argument("--base", default="origin/main")
     parser.add_argument("paths", nargs="*")
-    args = parser.parse_args()
+    args = parser.parse_intermixed_args()
     policy = json.loads(Path(".omp/test-tiers.json").read_text())
     with tempfile.TemporaryDirectory(prefix="scout-test-inspect-") as tmp:
         executable = Path(tmp) / "inspect"
@@ -364,11 +374,16 @@ def main() -> bool:
         run(["go", "build", "-o", str(executable), str(inspector)])
         errors = static_checks(args.base, executable, policy)
     if not errors:
-        for tier in ["fast", "seam"] if args.mode == "full" else ["fast"]:
+        for tier in ["fast", "seam"]:
             packages = [
                 name
                 for name, entry in policy["packages"].items()
                 if entry["tier"] == tier
+                and (
+                    args.mode == "full"
+                    or tier == "fast"
+                    or affected_package(name, args.paths)
+                )
             ]
             if packages:
                 errors += execute(packages, tier, policy)

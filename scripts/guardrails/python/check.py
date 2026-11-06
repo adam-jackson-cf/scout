@@ -128,7 +128,9 @@ def suppression_errors(source: str) -> list[tuple[str, str]]:
     return findings
 
 
-def ast_errors(source: str, relpath: str) -> list[tuple[str, str]]:
+def ast_errors(
+    source: str, relpath: str, groups: dict[str, str] | None = None
+) -> list[tuple[str, str]]:
     import ast
 
     try:
@@ -139,7 +141,8 @@ def ast_errors(source: str, relpath: str) -> list[tuple[str, str]]:
             ("PYQ299", f"repair syntax: {exc}"),
         ]
     findings = [
-        (d.code, d.message) for d in quality.structure_diagnostics_for_relpath(relpath)
+        (d.code, d.message)
+        for d in quality.structure_diagnostics_for_relpath(relpath, groups)
     ]
     findings.extend(
         (d.code, d.message)
@@ -243,7 +246,8 @@ def check_tools(paths: list[Path], *, typecheck: bool) -> int:
         "--explicit-package-bases",
         *names,
     ]
-    coverage = policy.coverage_errors(names, typing_argv[4:])
+    relative_names = [path.relative_to(ROOT).as_posix() for path in paths]
+    coverage = policy.coverage_errors(relative_names, relative_names)
     for rule in coverage:
         diagnostic(
             "maintained Python",

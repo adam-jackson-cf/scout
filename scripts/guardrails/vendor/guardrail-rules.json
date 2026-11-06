@@ -116,17 +116,20 @@
       "evidence_kind": "local_ci",
       "contract": {
         "configuration": ".omp/gate.json",
-        "authoritative_command_field": "gate",
-        "ci_executes_gate_argv_or_parallel_jobs_whose_union_equals_gate": true,
-        "parallel_jobs_must_use_the_gate_runner_with_tier_selectors_only": true,
+        "schema_version": 2,
+        "authoritative_command_field": "checks.ci",
+        "ci_host_field": "ciHost",
+        "ci_executes_checks_ci_argv_or_parallel_jobs_whose_union_equals_it": true,
+        "parallel_jobs_must_use_the_checks_ci_runner_with_tier_selectors_only": true,
         "required_status_check_name": "gate",
         "parallel_gate_aggregate_depends_on_every_tier_job": true,
         "parallel_gate_aggregate_always_runs": true,
         "parallel_gate_aggregate_fails_on_failed_cancelled_or_skipped_tiers": true,
+        "scope": "full_t1_and_t2_suite_on_every_push_and_pull_request",
         "check_only": true,
         "nonzero_exit_propagates": true
       },
-      "summary": "Make local full verification and CI execute exactly the declared gate."
+      "summary": "Make CI execute exactly the declared checks.ci: the full T1 and T2 suite."
     },
     {
       "id": "GATE.pre-commit",
@@ -135,28 +138,14 @@
       "evidence_kind": "git_hook",
       "contract": {
         "configuration": ".omp/gate.json",
-        "required_command_field": "commitGate",
-        "scope": "staged_or_affected_files_only",
+        "required_command_field": "checks.commit",
+        "scope": "static_checks_all_t1_and_t2_seams_for_affected_code",
         "hook_manager": "any_tracked_manager_or_native_hook",
-        "installed_pre_commit_hook_executes_exact_commit_gate_argv": true,
+        "installed_pre_commit_hook_executes_exact_checks_commit_argv": true,
+        "hook_installed_in_every_clone": true,
         "nonzero_exit_blocks_commit": true
       },
-      "summary": "Run the declared cheap affected-file gate before every commit and propagate failure."
-    },
-    {
-      "id": "GATE.pre-push",
-      "kind": "process",
-      "applicability": "always",
-      "evidence_kind": "git_hook",
-      "contract": {
-        "configuration": ".omp/gate.json",
-        "required_command_field": "fastGate",
-        "scope": "commits_being_pushed_relative_to_default_branch",
-        "hook_manager": "any_tracked_manager_or_native_hook",
-        "installed_pre_push_hook_executes_exact_fast_gate_argv": true,
-        "nonzero_exit_blocks_push": true
-      },
-      "summary": "Run the declared fast gate before every push and propagate failure."
+      "summary": "Run checks.commit before every commit through an installed hook and propagate failure."
     },
     {
       "id": "GATE.path-check",
@@ -214,7 +203,8 @@
       "kind": "tool",
       "applicability": "conditional",
       "contract": {
-        "value": "(^tests/fixtures/test_codebase/|^docs/|^images/|^systems/claude-code/)"
+        "target_exclusions_with_non_maintained_path_rationales_required": true,
+        "maintained_source_must_not_be_excluded": true
       },
       "summary": "Preserve or deliberately adapt mypy setting exclude."
     },
@@ -223,7 +213,8 @@
       "kind": "tool",
       "applicability": "conditional",
       "contract": {
-        "value": "shared:tools/enaible/src"
+        "target_maintained_source_roots_required": true,
+        "all_maintained_import_roots_must_be_covered": true
       },
       "summary": "Preserve or deliberately adapt mypy setting mypy_path."
     },
@@ -232,7 +223,7 @@
       "kind": "tool",
       "applicability": "conditional",
       "contract": {
-        "value": "3.12"
+        "target_supported_python_version_required": true
       },
       "summary": "Preserve or deliberately adapt mypy setting python_version."
     },
@@ -259,20 +250,9 @@
       "kind": "tool",
       "applicability": "conditional",
       "contract": {
-        "value": {
-          "mypy-typer": {
-            "ignore_missing_imports": "True"
-          },
-          "mypy-yaml": {
-            "ignore_missing_imports": "True"
-          },
-          "mypy-enaible.commands.*": {
-            "disallow_untyped_decorators": "False"
-          },
-          "mypy-enaible.app": {
-            "disallow_untyped_decorators": "False"
-          }
-        }
+        "target_named_module_overrides_required": true,
+        "each_override_requires_missing_stub_or_decorator_evidence": true,
+        "unscoped_exceptions_forbidden": true
       },
       "summary": "Scope missing-import and decorator exceptions to named modules."
     },
@@ -281,15 +261,9 @@
       "kind": "tool",
       "applicability": "conditional",
       "contract": {
-        "packages": [
-          "core.base",
-          "core.config",
-          "core.utils",
-          "core.cli",
-          "analyzers",
-          "context",
-          "enaible"
-        ]
+        "target_maintained_package_inventory_required": true,
+        "all_maintained_packages_must_be_checked": true,
+        "package_list_drift_is_failure": true
       },
       "summary": "Type-check every maintained package and fail on package-list drift."
     },
@@ -371,13 +345,7 @@
       "kind": "bespoke",
       "applicability": "conditional",
       "contract": {
-        "canonical_test_groups": [
-          "fixtures",
-          "integration",
-          "seams",
-          "support",
-          "unit"
-        ],
+        "target_canonical_test_groups_required": true,
         "target_must_map_groups": true
       },
       "summary": "Canonical test directory groups"
@@ -654,7 +622,7 @@
       "kind": "tool",
       "applicability": "conditional",
       "contract": {
-        "value": []
+        "target_maintained_first_party_package_names_required": true
       },
       "summary": "Enforce the known-first-party import-order behavior or equivalent."
     },
@@ -745,10 +713,7 @@
       "applicability": "conditional",
       "contract": {
         "value": [
-          ".agent",
-          ".agents",
           ".build",
-          ".enaible",
           ".git",
           ".tox",
           ".venv",
@@ -757,15 +722,13 @@
           "*.egg-info",
           "build",
           "dist",
-          "docs/reference",
-          "migrations",
           "node_modules",
           ".pytest_cache",
           ".mypy_cache",
-          ".ruff_cache",
-          "tools/enaible/.venv",
-          "tests/fixtures/"
-        ]
+          ".ruff_cache"
+        ],
+        "target_additional_exclusions_with_non_maintained_path_rationales_required": true,
+        "maintained_source_must_not_be_excluded": true
       },
       "summary": "Preserve or deliberately adapt Ruff root setting exclude."
     },
@@ -1017,7 +980,7 @@
       "kind": "tool",
       "applicability": "conditional",
       "contract": {
-        "value": "py312"
+        "target_supported_python_version_required": true
       },
       "summary": "Preserve the target-version setting or target-language equivalent."
     },
@@ -1053,7 +1016,8 @@
       "contract": {
         "name_matches_directory": true,
         "use_when_prefix_case_insensitive": true,
-        "global_boolean_for_shared": true
+        "target_metadata_schema_required": true,
+        "shared_skill_scope_metadata_must_match_target_schema": true
       },
       "summary": "Validate agent skill metadata and linked support files when skills exist."
     },

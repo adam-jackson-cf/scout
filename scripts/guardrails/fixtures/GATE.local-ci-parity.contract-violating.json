@@ -1,0 +1,38 @@
+{
+  "rule": "GATE.local-ci-parity",
+  "bad": false,
+  "config": {
+    "schemaVersion": 2,
+    "checks": {
+      "commit": [
+        "python",
+        "check.py",
+        "commit"
+      ],
+      "ci": [
+        "python",
+        "check.py",
+        "full"
+      ]
+    },
+    "ciHost": "github",
+    "pathCheck": [
+      "python",
+      "check.py",
+      "path"
+    ],
+    "pathCheckTimeoutMs": 10000,
+    "testGlobs": [
+      "**/*_test.go"
+    ],
+    "sensitive": [
+      ".omp/"
+    ],
+    "agentMerge": "allowed"
+  },
+  "ci_argv": [
+    "python",
+    "different.py"
+  ],
+  "hook_installed": true
+}

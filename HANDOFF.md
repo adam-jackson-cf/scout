@@ -19,7 +19,10 @@ shasum -a 256 docs/scout-design.md     # must print d1fb127446be290f75d4de5416eb
 is found. It then uses `GOTOOLCHAIN=go$GO_VERSION` (`toolchain/versions.env`, now 1.26.10) to fetch the pinned Go.
 One way that does not change global config: `mise install go@1.26.10`, then put `$(mise where go@1.26.10)/bin` on `PATH`.
 
-Install the repository gate hooks once per clone: `git config core.hooksPath .githooks` (see `CONTRIBUTING.md`).
+Install the repository pre-commit hook once per clone: `git config core.hooksPath .githooks`
+(see `CONTRIBUTING.md`). Schema-v2 `.omp/gate.json` owns `checks.commit` and
+`checks.ci`; run the complete check-only suite with `bash scripts/gate.sh ci`.
+No pre-push hook is installed.
 
 Accounts and tools the work needs (none are stored in the repo):
 1. `claude` and `codex` CLIs logged in with their subscriptions. The fallback lane and post-run scripts use

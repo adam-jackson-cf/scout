@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail when a target omits or cannot prove an Enaible guardrail rule."""
+"""Fail when a target omits or cannot prove the bundled guardrail rules."""
 
 from __future__ import annotations
 

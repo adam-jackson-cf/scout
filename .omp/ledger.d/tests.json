@@ -20,7 +20,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -31,7 +31,7 @@
         "violating": "scripts/guardrails/fixtures/TEST.growth.justified.negative.json",
         "diagnostic": "TEST.growth.justified"
       },
-      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Commit and CI share static checks and every T1 package; commit selects affected seam packages and CI runs every T2 package."
     },
     {
       "id": "TEST.duplicate-path",
@@ -56,7 +56,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -67,7 +67,7 @@
         "violating": "scripts/guardrails/fixtures/TEST.duplicate-path.negative.json",
         "diagnostic": "TEST.duplicate-path"
       },
-      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Commit and CI share static checks and every T1 package; commit selects affected seam packages and CI runs every T2 package."
     },
     {
       "id": "TEST.tiers",
@@ -83,7 +83,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -94,7 +94,7 @@
         "violating": "scripts/guardrails/fixtures/TEST.tiers.negative.json",
         "diagnostic": "TEST.tiers"
       },
-      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Commit and CI share static checks and every T1 package; commit selects affected seam packages and CI runs every T2 package."
     },
     {
       "id": "TEST.coverage-minimum",
@@ -113,7 +113,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -124,7 +124,7 @@
         "violating": "scripts/guardrails/fixtures/TEST.coverage-minimum.negative.json",
         "diagnostic": "TEST.coverage-minimum"
       },
-      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Commit and CI share static checks and every T1 package; commit selects affected seam packages and CI runs every T2 package."
     },
     {
       "id": "TEST.subprocess-timeouts",
@@ -140,7 +140,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -151,7 +151,7 @@
         "violating": "scripts/guardrails/fixtures/TEST.subprocess-timeouts.negative.json",
         "diagnostic": "TEST.subprocess-timeouts"
       },
-      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Commit and CI share static checks and every T1 package; commit selects affected seam packages and CI runs every T2 package."
     },
     {
       "id": "TEST.budget.fast-tier-time",
@@ -175,7 +175,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -186,7 +186,7 @@
         "violating": "scripts/guardrails/fixtures/TEST.budget.fast-tier-time.negative.json",
         "diagnostic": "TEST.budget.fast-tier-time"
       },
-      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Commit and CI share static checks and every T1 package; commit selects affected seam packages and CI runs every T2 package."
     },
     {
       "id": "TEST.budget.per-test-time",
@@ -210,7 +210,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -221,7 +221,7 @@
         "violating": "scripts/guardrails/fixtures/TEST.budget.per-test-time.negative.json",
         "diagnostic": "TEST.budget.per-test-time"
       },
-      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Commit and CI share static checks and every T1 package; commit selects affected seam packages and CI runs every T2 package."
     }
   ]
 }
