@@ -76,4 +76,4 @@ Scout runs on pull requests, default-branch pushes, nightly runs and locally. It
 - [docs/references/policy-file.md](docs/references/policy-file.md): the keys in `.scout/policy.yaml` and what `scout init` writes.
 - [docs/references/ci-integration.md](docs/references/ci-integration.md): wiring the reusable guardian workflows into a repository.
 - [docs/references/environment-variables.md](docs/references/environment-variables.md): the environment variables that Scout and its toolchain read.
-- `docs/scout-design.md`: the authoritative design (revision 2.2). `docs/STATUS.md`: current state and remaining work. `AGENTS.md`: project rules, including council sign-off for any design change or experiment.
+- `docs/scout-design.md`: the authoritative design (revision 2.8). `docs/STATUS.md`: current state; `docs/plans/2026-11-06-remaining-work.md`: remaining work. `AGENTS.md`: project rules, including council sign-off for any design change or experiment.
