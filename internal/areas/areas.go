@@ -41,6 +41,7 @@ func IsAgent(feature domain.Feature) bool { return feature.Source == AgentSource
 type Area struct {
 	ScoutAreaID       string   `json:"scoutAreaId"`
 	Title             string   `json:"title"`
+	Summary           string   `json:"summary,omitempty"`
 	FileSet           []string `json:"fileSet"`
 	Origin            string   `json:"origin"`
 	FirstSeenSnapshot string   `json:"firstSeenSnapshot"`
@@ -105,9 +106,9 @@ type Report struct {
 // Reconcile folds agent features into prev. Only agent-mapper features that
 // own at least one file participate. Pairs with file-set
 // Jaccard ≥ the threshold match one-to-one, best first (ties by area ID, then
-// feature ID). A matched area takes the feature's file set, title and Clawpatch
-// ID; an unmatched feature becomes a new area; an unmatched active area whose
-// every file is heuristic-owned retires. prev is not modified.
+// feature ID). A matched area takes the feature's file set, title, summary and
+// Clawpatch ID; an unmatched feature becomes a new area; an unmatched active
+// area whose every file is heuristic-owned retires. prev is not modified.
 func Reconcile(prev []Area, agentFeatures []domain.Feature, heuristicOwned func(path string) bool, cfg Config) ([]Area, Report) {
 	threshold := cfg.threshold()
 	next := make([]Area, len(prev))
@@ -168,6 +169,7 @@ func Reconcile(prev []Area, agentFeatures []domain.Feature, heuristicOwned func(
 		area := &next[c.area]
 		area.FileSet = feature.files
 		area.ClawpatchIDs = []string{feature.feature.FeatureID}
+		area.Summary = feature.feature.Summary
 		area.Origin = OriginAgent
 		if feature.feature.Title != "" {
 			area.Title = feature.feature.Title
@@ -199,6 +201,7 @@ func Reconcile(prev []Area, agentFeatures []domain.Feature, heuristicOwned func(
 		area := Area{
 			ScoutAreaID:       mintID(cfg.Snapshot, feature.feature.FeatureID, feature.files, used),
 			Title:             feature.feature.Title,
+			Summary:           feature.feature.Summary,
 			FileSet:           feature.files,
 			Origin:            OriginAgent,
 			FirstSeenSnapshot: cfg.Snapshot,

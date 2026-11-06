@@ -487,6 +487,17 @@ func Summary(gate domain.Gate, ranking Ranking, issues []domain.AttributedIssue,
 	add("| lane | mode | required | status |")
 	add("|---|---|---|---|")
 	for _, h := range health {
+		if h.Lane == LaneAssociation {
+			status := string(h.Status)
+			switch h.Status {
+			case domain.LaneRan:
+				status = fmt.Sprintf("ran (%d)", h.Units)
+			case domain.LaneSkipped:
+				status = "skipped (" + oneLine(h.Reason) + ")"
+			}
+			add("| %s | %s | %t | %s |", h.Lane, h.Mode, h.Required, status)
+			continue
+		}
 		reason := ""
 		if h.Reason != "" {
 			reason = " — " + oneLine(h.Reason)

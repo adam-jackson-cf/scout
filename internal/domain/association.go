@@ -30,6 +30,7 @@ const (
 	AssociationReasonNoneUnsent    = "none_unsent"
 	AssociationReasonPendingCap    = "pending_cap"
 	AssociationReasonPermutationNo = "permutation_disagreement"
+	AssociationReasonBelowTChoice  = "below_t_choice"
 )
 
 // Inherited rules (InheritedRule on an inherited record).
@@ -69,6 +70,7 @@ type Association struct {
 	PromptDigest    string `json:"prompt_digest,omitempty"`
 	InputsDigest    string `json:"inputs_digest,omitempty"`
 	CatalogueDigest string `json:"catalogue_digest,omitempty"`
+	DecisionDigest  string `json:"decision_digest,omitempty"`
 	RawAnswer       string `json:"raw_answer,omitempty"`
 	Retries         int    `json:"retries,omitempty"`
 	LatencyMillis   int64  `json:"latency_ms,omitempty"`
