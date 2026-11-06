@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"scout/internal/analyzers"
+	"scout/internal/association"
 	"scout/internal/clawpatch"
 	"scout/internal/contextual"
 	"scout/internal/domain"
@@ -488,6 +489,21 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 			}
 		}
 	}
+	associationOptions := association.LaneOptions{}
+	if options.Association != nil {
+		associationOptions = *options.Association
+	}
+	associationOptions.RunID = run.RunID
+	trigger := options.Trigger
+	if trigger == "" {
+		trigger = domain.TriggerPush
+	}
+	associationHealth, associationErr := RunAssociationLane(ctx, store, root, trigger, associationOptions)
+	if associationErr != nil {
+		associationHealth.Status = domain.LaneFailed
+		associationHealth.Reason = associationErr.Error()
+	}
+	inlineHealth = append(inlineHealth, associationHealth)
 	result.Lanes = LaneHealthOf(options.Trigger, result.Run, inlineHealth)
 	return result, nil
 }

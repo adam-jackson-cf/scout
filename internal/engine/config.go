@@ -3,6 +3,7 @@ package engine
 
 import (
 	"scout/internal/analyzers"
+	"scout/internal/association"
 	"scout/internal/clawpatch"
 	"scout/internal/contextual"
 	"scout/internal/domain"
@@ -36,6 +37,9 @@ type Options struct {
 	// Measures, when set, runs the measures signal lane (REQ-62) after the
 	// scanner jobs and records its signals; it never creates observations.
 	Measures *MeasuresOptions
+	// Association labels merge residuals after the assessment is finalized.
+	// Nil keeps the optional lane disabled and still reports its health.
+	Association *association.LaneOptions
 }
 
 type Result struct {

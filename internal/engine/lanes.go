@@ -31,6 +31,7 @@ const (
 	LaneMeasures        = "measures"
 	LaneHistory         = "history"
 	LaneDelta           = "delta"
+	LaneAssociation     = "association"
 )
 
 // lanes is the registry in priority order. Contextual and clawpatch-review are
@@ -47,6 +48,7 @@ var lanes = []Lane{
 	{ID: LaneClawpatchReview, Triggers: []domain.LaneTrigger{domain.TriggerNightly}, Mode: domain.ModeReport, Requires: domain.RequiresModelCLI},
 	{ID: LaneMeasures, Triggers: allTriggers, Mode: domain.ModeSignal, Requires: domain.RequiresTool},
 	{ID: LaneHistory, Triggers: []domain.LaneTrigger{domain.TriggerPush, domain.TriggerNightly}, Mode: domain.ModeSignal, Requires: domain.RequiresNone},
+	{ID: LaneAssociation, Triggers: []domain.LaneTrigger{domain.TriggerPush}, Mode: domain.ModeSignal, Requires: domain.RequiresDecisionEgress},
 }
 
 // DefaultFamilies lists the scanner families assessed when none are selected.
@@ -117,6 +119,8 @@ func inlineLaneHealth(lane InlineLane, result InlineResult, err error) domain.La
 // belong to no lane (canonical mapping gaps).
 func laneOfCoverage(key domain.CoverageKey) (string, bool) {
 	switch {
+	case key.Family == domain.FamilyClawpatch && key.Category == LaneAssociation:
+		return LaneAssociation, true
 	case key.Family == domain.FamilyClawpatch && key.Category == "review":
 		return LaneClawpatchReview, true
 	case key.Family == domain.FamilyClawpatch:

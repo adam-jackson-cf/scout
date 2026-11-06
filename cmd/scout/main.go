@@ -207,11 +207,13 @@ func scopeOptions(kind string, paths []string, from, to string, families []strin
 func assess(ctx context.Context, args []string) int {
 	set := flag.NewFlagSet("assess", flag.ContinueOnError)
 	flags := common(set)
-	var full, authorized bool
+	var full, authorized, fork, noEgress bool
 	var kind, from, to string
 	var paths, excludes, families stringsFlag
 	set.BoolVar(&full, "full", false, "force full rescan")
 	set.BoolVar(&authorized, "allow-egress", false, "authorize source egress for providers")
+	set.BoolVar(&fork, "fork", false, "fork run: association never calls Jev")
+	set.BoolVar(&noEgress, "no-egress", false, "forbid association Jev calls even when consented")
 	set.StringVar(&kind, "scope", "repository", "repository|subpath|staged|commit_range|paths")
 	set.StringVar(&from, "from", "", "commit-range start")
 	set.StringVar(&to, "to", "", "commit-range end")
@@ -239,6 +241,14 @@ func assess(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
+	pol, err := headPolicy(flags.root)
+	if err != nil {
+		return emit(flags, "unavailable", exitUnavailable, nil, err)
+	}
+	associationOpts, trigger, err := associationOptions(pol, from, to, fork, noEgress)
+	if err != nil {
+		return emit(flags, "unavailable", exitUnavailable, nil, err)
+	}
 	measureOpts := &engine.MeasuresOptions{History: scope.Kind == domain.ScopeRepository}
 	if prMetadata != "" && fetchPRs {
 		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("--pr-metadata and --fetch-pr-metadata are mutually exclusive"))
@@ -249,14 +259,10 @@ func assess(ctx context.Context, args []string) int {
 	for _, path := range artifactPaths {
 		measureOpts.Artifacts = append(measureOpts.Artifacts, artifacts.Spec{Path: path, Revision: artifactRevision, Producer: artifactProducer})
 	}
-	result, err := engine.Assess(ctx, cfg, engine.Options{Scope: scope, ForceFull: full, Exclusions: excludes, Trigger: domain.TriggerPush, Measures: measureOpts})
+	result, err := engine.Assess(ctx, cfg, engine.Options{Scope: scope, ForceFull: full, Exclusions: excludes, Trigger: trigger, Measures: measureOpts, Association: &associationOpts})
 	if err != nil {
 		unavailable := engine.UnavailableReport(err)
 		return emit(flags, unavailable.Gate.Status, unavailable.Gate.ExitCode, unavailable, err)
-	}
-	pol, err := headPolicy(flags.root)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
 	verdict := assessGate(pol, result)
 	ranking, health, err := rankAssessment(ctx, flags, pol, result, verdict)
