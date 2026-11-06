@@ -242,7 +242,7 @@ func (s *Store) withRead(ctx context.Context, fn func(*sql.DB) error) error {
 }
 
 // reanchorSourceVersion is the one older schema a store may carry and still be
-// migrated: the Scout v1 implementation's last schema (design §3.3).
+// migrated: the Scout v1 implementation's last schema (REQ-10).
 const reanchorSourceVersion = 3
 
 func (s *Store) migrate(ctx context.Context) error {
@@ -289,7 +289,7 @@ func execAll(ctx context.Context, tx *sql.Tx, statements []string) error {
 
 // unsupportedVersionError names the remedy for a store this build cannot open:
 // a newer store needs a newer Scout, any other version is re-baselined from the
-// state export, which is the durable baseline (design §7.2).
+// state export, which is the durable baseline (REQ-26).
 func unsupportedVersionError(version int) error {
 	if version > schemaVersion {
 		return fmt.Errorf("state schema version %d is newer than supported version %d", version, schemaVersion)

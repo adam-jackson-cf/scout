@@ -1,5 +1,5 @@
 // Package artifacts ingests CI-produced coverage (LCOV, Cobertura XML) and
-// test-result (JUnit XML) files with provenance (design §8.2, §8.7).
+// test-result (JUnit XML) files with provenance (REQ-43, REQ-62, REQ-107).
 //
 // Coverage is only usable for a snapshot when the artifact's stated revision
 // matches the snapshot's commit; an artifact with no stated revision, a

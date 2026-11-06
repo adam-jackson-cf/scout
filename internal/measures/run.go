@@ -41,7 +41,7 @@ type Result struct {
 }
 
 // FileCC is the sum of a file's function CC, the file-level complexity used by
-// hotspot (design §8.3).
+// hotspot (REQ-113).
 func (m FileMeasure) FileCC() int {
 	total := 0
 	for _, fn := range m.Functions {

@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// ExportMappingRefresh is the exported mapping-refresh record (design §4).
+// ExportMappingRefresh is the exported mapping-refresh record (REQ-51).
 const ExportMappingRefresh = ExportDir + "/mapping-refresh.json"
 
 const metadataMappingRefresh = "mapping_refresh"

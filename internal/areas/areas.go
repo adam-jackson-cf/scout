@@ -1,4 +1,4 @@
-// Package areas keeps Scout's area labels over Clawpatch output (design §4).
+// Package areas keeps Scout's area labels over Clawpatch output (REQ-53).
 //
 // An area is a stable label for a set of files. Agent mapping yields features
 // whose Clawpatch IDs churn between runs (CP07 §5: agent-ID Jaccard 0.06–0.16),

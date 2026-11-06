@@ -13,7 +13,7 @@ import (
 )
 
 // IssueMatch is one correlator decision that a run's observations belong to an
-// existing durable issue (design §3.3). The issue ID never changes.
+// existing durable issue (REQ-5, REQ-6). The issue ID never changes.
 type IssueMatch struct {
 	IssueID        string
 	ObservationIDs []string

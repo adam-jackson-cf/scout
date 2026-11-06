@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// LaneTrigger names when a lane runs (design §5.1).
+// LaneTrigger names when a lane runs (REQ-16).
 type LaneTrigger string
 
 const (
@@ -57,7 +57,7 @@ type LaneHealth struct {
 	Reason   string       `json:"reason,omitempty"`
 }
 
-// Attribution classifies a head issue against a same-policy base (design §7.3).
+// Attribution classifies a head issue against a same-policy base (REQ-20).
 type Attribution string
 
 const (

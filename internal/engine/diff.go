@@ -295,7 +295,7 @@ func deltaAttributed(pol policy.Policy, list []domain.Issue) []domain.Attributed
 // BaseGaps maps a scanner family to why the base side did not inspect it
 // (lane blocked or failed, or imported baseline lane not fully inspected).
 // A head finding in such a family is absent from base for the wrong reason, so
-// it is never `introduced` (design §7.3).
+// it is never `introduced` (REQ-27).
 type BaseGaps map[domain.Family]string
 
 // gapsOfLanes derives the base gaps of a paired recompute from its lane

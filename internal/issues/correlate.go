@@ -1,6 +1,6 @@
 // Package issues correlates immutable observations with durable issues.
 //
-// Identity follows design §3.3: an issue has a durable opaque ID minted once;
+// Identity follows REQ-5: an issue has a durable opaque ID minted once;
 // matching uses the anchor set {rename-followed path, qualified symbol, rule
 // key, normalized mechanism, normalized evidence fingerprint}. Line and byte
 // ranges are locators on observations and never take part in matching.
@@ -78,7 +78,7 @@ type candidate struct {
 	held bool
 }
 
-// Correlate links observations from run to durable issues (design §3.3), then
+// Correlate links observations from run to durable issues (REQ-6), then
 // resolves issues whose file was successfully re-checked without finding them.
 // It never changes a human disposition.
 func Correlate(ctx context.Context, store *state.Store, run domain.Run, observations []domain.Observation, opts ...Option) ([]domain.Issue, error) {

@@ -36,6 +36,7 @@ States: `proposed` → `preregistered` → `under-test` → `supported` | `not-s
 
 ## History
 
+- 2026-11-06 — All IDs: no state change. Paths `docs/design-reviews/<folder>/…` in earlier lines now resolve to `docs/adrs/<folder>/…`; folder names are unchanged (R-062).
 - 2026-10-31 — HD8: proposed. Development evidence: fastapi frozen rounds 8–10 Jev+Terra P_assign 0.922 (R-057); axum zero-tuning replication 0.622 (R-058, R-060). Tested by X11 (R-059).
 - 2026-10-30 — HD7: still proposed; evidence wording corrected (X2d RESULTS review, R1-14): the onboarding duplicate check runs only on the 261 same-scope area pairs whose titles share a token (of 1,268 same-scope pairs), and never on cross-scope pairs (R-054).
 - 2026-10-30 — HD6: preregistered → inconclusive (X2d PREREGISTRATION rev 13 §5 one-shot rule and §14 map, round-18 reading). Reason: "round-0 gates P1 and P2 failed and the one permitted re-gate did not pass (re-gate P1 FAIL, P2 PASS); HD6 never under test". Re-gate P1, stratum 1: accuracy on answered items 14/20 = 0.70 [0.48, 0.85] (bar 0.80), abstention 15/35 = 0.43 [0.28, 0.59] (cap 0.15), path-following on answered items 1/20, baselines 0/38 (all eligible; 0/35 in stratum 1); P2: `none` on answered positives 9/11 = 0.82 [0.52, 0.95], abstention 1/12. Record: `evaluation/x2d-merge-association-pilot/reviews/pilot-round-0.md`; `regate/gates.json` SHA-256 `081be905…2e7c`. HD6b stays `proposed`. (R-053)

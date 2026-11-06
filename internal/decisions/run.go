@@ -17,7 +17,7 @@ import (
 )
 
 // LaneID is the decisions lane's id in lane health. The lane is optional
-// (design §7.3): its health never changes the exit code.
+// (REQ-93): its health never changes the exit code.
 const LaneID = "decisions"
 
 // Config is the decisions consent and pin, as read from `.scout/policy.yaml`.
@@ -75,7 +75,7 @@ func (e Eligibility) Skip() (reason string, ok bool) {
 	return "", true
 }
 
-// Families of units, in the order the cap consumes them (design §6): triage
+// Families of units, in the order the cap consumes them (REQ-91): triage
 // first, then rubric functions, commit units, unowned-file units.
 type Family int
 
@@ -276,14 +276,14 @@ func ask(ctx context.Context, in RunInput, unit Unit, at time.Time) (result Unit
 	return UnitResult{Unit: unit, Status: UnitAnnotated, Annotations: annotations}, reply, replied
 }
 
-// Ranking disclosures of an annotated finding (design §6). A stale threshold
+// Ranking disclosures of an annotated finding (REQ-90, REQ-97). A stale threshold
 // adds its note; nothing else changes the text.
 const (
 	JevDisclosure      = "jev (unvalidated, X1 pending)"
 	JevStaleDisclosure = "jev (unvalidated, X1 pending; thresholds stale)"
 )
 
-// Disclosure is the per-finding ranking text of design §6.
+// Disclosure is the per-finding ranking text of REQ-92 and REQ-97.
 func (o Outcome) Disclosure(result UnitResult) (mode domain.RankingMode, text string) {
 	switch result.Status {
 	case UnitAnnotated:

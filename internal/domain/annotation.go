@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// Annotation is one decision-model answer about one unit (design §6). It is
+// Annotation is one decision-model answer about one unit (REQ-28, REQ-30). It is
 // advisory: it can change a ranking, never an issue state or the gate.
 type Annotation struct {
 	AnnotationID string `json:"annotationId"`
@@ -63,7 +63,7 @@ const (
 )
 
 // RankingRecord is the ranking disclosure stored for one finding on one run,
-// with the baseline and rank-formula versions design §6 requires on every one.
+// with the baseline and rank-formula versions REQ-89 requires on every one.
 type RankingRecord struct {
 	RunID   string      `json:"runId"`
 	IssueID string      `json:"issueId"`
@@ -80,7 +80,7 @@ type RankingRecord struct {
 	CreatedAt          time.Time `json:"createdAt"`
 }
 
-// AuditDraw is one interim audit-sample draw (design §6, "Audit"): the stored
+// AuditDraw is one interim audit-sample draw (REQ-94): the stored
 // inclusion probability is the realised one, made under SamplerVersion.
 type AuditDraw struct {
 	RunID                string    `json:"runId"`

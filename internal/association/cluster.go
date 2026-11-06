@@ -1,5 +1,5 @@
 // Package association is the deterministic front end of merge-time area
-// association (design §4, revision 2.8): for each first-parent merge of a push
+// association (REQ-141, REQ-144): for each first-parent merge of a push
 // it finds the residual files and groups them into clusters. It calls no model
 // and does not touch state; ownership comes in through the Ownership interface
 // and results are pure values. The rules port the measured pilot front end

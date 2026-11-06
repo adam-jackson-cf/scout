@@ -1,4 +1,4 @@
-// Package history computes the §8.3 exposure and interest measures from git
+// Package history computes the REQ-112–REQ-121 exposure and interest measures from git
 // data. Everything here is a pure function of the commit list (and optional PR
 // metadata / per-file complexity) except Load and the rework blame step, which
 // shell out to git with a fixed argument vector.

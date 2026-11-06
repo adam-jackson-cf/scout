@@ -1,5 +1,5 @@
 // Package prmeta ingests merged-PR metadata for the PR-level measures of
-// design §8.3 (pr_effort, batch_size, the active-hours part of dispersion).
+// REQ-117, REQ-122 and REQ-118 (pr_effort, batch_size, the active-hours part of dispersion).
 //
 // Two sources produce the same document: a JSON file supplied with
 // --pr-metadata, and an opt-in GitHub GraphQL fetch (see Fetch). Both yield

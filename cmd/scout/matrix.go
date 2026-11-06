@@ -8,7 +8,7 @@ import (
 	"scout/internal/engine"
 )
 
-// readinessMatrix prints design §5.3 for this repository: the Markdown table in
+// readinessMatrix prints REQ-18 for this repository: the Markdown table in
 // text mode, the structured matrix under --json. It never fails a repository
 // for a missing optional capability.
 func readinessMatrix(ctx context.Context, flags *commonFlags, cfg engine.Config) int {

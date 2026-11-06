@@ -299,7 +299,7 @@ func readiness(ctx context.Context, args []string) int {
 	set.Var(&families, "family", "family")
 	set.Var(&excludes, "exclude", "excluded path")
 	set.BoolVar(&full, "full", false, "evaluate a forced full rescan")
-	set.BoolVar(&matrix, "matrix", false, "print the capability matrix (design §5.3) for this repository and exit")
+	set.BoolVar(&matrix, "matrix", false, "print the capability matrix (REQ-18) for this repository and exit")
 	set.BoolVar(&authorized, "allow-egress", false, "authorize selected provider calls")
 	if !parse(set, args, flags) {
 		return exitUnavailable

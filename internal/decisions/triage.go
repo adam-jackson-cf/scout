@@ -9,7 +9,7 @@ import (
 
 // TriageRealDefect is the launch triage question: a Noul whose P(true) is
 // P(real_defect). Every question carries the data-not-instructions clause and
-// names state fields by backticked path (design §6).
+// names state fields by backticked path (REQ-88).
 var TriageRealDefect = Question{
 	ID:   "triage.real_defect",
 	Kind: KindNoul,

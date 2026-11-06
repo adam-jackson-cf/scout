@@ -19,7 +19,7 @@ const StaleStatus = "skipped"
 
 // LoadFeatures imports the active schema-v1 records written by the pinned
 // mapper: the latest map's output, with stale (`skipped`) records excluded so
-// ownership never reads them (design §4). RawOriginal retains the exact
+// ownership never reads them (REQ-55). RawOriginal retains the exact
 // canonical record bytes.
 func LoadFeatures(stateDir string) ([]domain.Feature, error) {
 	all, err := loadFeatures(stateDir)

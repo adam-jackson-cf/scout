@@ -8,7 +8,7 @@ import (
 	"scout/internal/modelcli"
 )
 
-// Lane is one registered analysis lane (design §5.1).
+// Lane is one registered analysis lane (REQ-16).
 type Lane struct {
 	ID       string
 	Family   domain.Family // coverage family the lane owns; empty for inline lanes

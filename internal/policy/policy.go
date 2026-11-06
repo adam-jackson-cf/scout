@@ -18,14 +18,14 @@
 //	  checks: [ ...same entries... ]
 //	maintainers: [alice, "@bob"]
 //	history: {bots: [dependabot[bot]]}
-//	decisions:                   # consent for Jev (OpenRouter) ranking, design §6
+//	decisions:                   # consent for Jev (OpenRouter) ranking, REQ-97
 //	  enabled: true
 //	  provider: jev
 //	  model: <pinned Jev model id; aliases and undated lines such as jev-latest or typesafe/jev-1.14 are rejected>
 //	  max_per_run: 2000
 //	  max_cost_usd: 0.5          # billed-cost cap per run (USD)
 //	  egress_acknowledged: true  # required when enabled
-//	model_cli:                   # opt-in for the model-CLI lanes (§6, lane 9)
+//	model_cli:                   # opt-in for the model-CLI lanes (REQ-63)
 //	  provider: claude           # claude | codex
 //	  lanes: [contextual, clawpatch-review]
 //
@@ -63,7 +63,7 @@ const (
 	ActiveProvisional Status = "active_provisional"
 )
 
-// Default shadow window (design §7.3).
+// Default shadow window (REQ-22).
 const (
 	DefaultMinDays   = 14
 	DefaultMinPRRuns = 5
@@ -327,7 +327,7 @@ const (
 	strictnessPrefix = "guardrails.CONFIG.strictness-lowered."
 )
 
-// ValidateEligibleID reports why id is not on the AL table-1 list; nil means
+// ValidateEligibleID reports why id is not on the eligible list (REQ-70–REQ-76); nil means
 // eligible. There are no wildcards: parameterised families take one exact
 // segment, and generic-api-key is excluded.
 func ValidateEligibleID(id string) error {
@@ -396,7 +396,7 @@ type ShadowStats struct {
 	UnknownAttribution, TotalRuns int
 }
 
-// ShadowReady implements design §7.3. A reason is always returned. A ready
+// ShadowReady implements REQ-22. A reason is always returned. A ready
 // result for a rare security check with zero events starts with "provisional:";
 // the activation must then carry provisional: true.
 func (p Policy) ShadowReady(s ShadowStats) (bool, string) {

@@ -17,7 +17,7 @@ import (
 
 // DefaultEndpoint is OpenRouter's alpha decisions route. Its contract, model
 // slugs and error codes are undocumented by TypeSafe [INFERENCE on stability,
-// design R14]: any non-success is a failed unit.
+// REQ-87, REQ-92]: any non-success is a failed unit.
 const DefaultEndpoint = "https://openrouter.ai/api/alpha/decisions"
 
 // FailureKind classifies why a unit has no annotation.

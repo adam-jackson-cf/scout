@@ -155,7 +155,7 @@ func wouldBlockChecks(t *testing.T, root string) map[string]int {
 	return counts
 }
 
-// Design §11 Phase 2, PR A / PR B and version bump on a real git fixture.
+// REQ-179, PR A / PR B and version bump on a real git fixture.
 func TestDiffGateScenario(t *testing.T) {
 	for _, tool := range []string{"ruff", "gitleaks", "semgrep"} {
 		if _, err := exec.LookPath(tool); err != nil {

@@ -19,7 +19,7 @@ import (
 
 // mapCmd is `scout map`: the Clawpatch agent map runs only at onboarding (the
 // `--event` check, attempted until one map has completed) and on manual
-// `--refresh` (design §4).
+// `--refresh` (REQ-13).
 func mapCmd(ctx context.Context, args []string) int {
 	set := flag.NewFlagSet("map", flag.ContinueOnError)
 	flags := common(set)

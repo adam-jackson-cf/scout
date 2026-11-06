@@ -17,13 +17,13 @@ import (
 	"scout/internal/sandbox"
 )
 
-// Pinned scanner versions (design §8.2). A different version is `unmeasured`:
+// Pinned scanner versions (REQ-103, REQ-105). A different version is `unmeasured`:
 // CC and clone detection change between releases, so a series must not mix them.
 const (
 	LizardVersion = "1.21.7"
 	JscpdVersion  = "4.0.8"
 
-	// jscpd parameters of design §8.2.
+	// jscpd parameters of REQ-105.
 	jscpdMinTokens = 50
 	jscpdMinLines  = 5
 	jscpdMaxLines  = 10000

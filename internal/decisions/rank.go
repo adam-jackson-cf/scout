@@ -12,7 +12,7 @@ import (
 // Formula is the named rank formula composed in code over Jev outputs only,
 // used ordinally. Changing a weight changes its version and re-ranks stored
 // answers with no model call. A term mixing a rule weight with a Jev
-// probability would need the reliability check of design §6 first, so none
+// probability would need the reliability check of REQ-96 first, so none
 // exists here.
 type Formula struct {
 	ID        string
@@ -66,7 +66,7 @@ func (f Formula) Score(answers map[string]float64) (float64, bool) {
 	return score, true
 }
 
-// BaselineVersion identifies the deterministic ranking baseline (design §6):
+// BaselineVersion identifies the deterministic ranking baseline (REQ-89):
 // its formula id, the rule-weight table digest and the path-role classifier
 // version. The engine owns the formula, so it fills this in.
 type BaselineVersion struct {

@@ -14,8 +14,8 @@ import (
 	"scout/internal/policy"
 )
 
-// initCmd records onboarding consent in .scout/policy.yaml (design §6 "Launch
-// default and fallback", §7.4 first adoption). Interactive unless --yes. It
+// initCmd records onboarding consent in .scout/policy.yaml (REQ-97, REQ-27).
+// Interactive unless --yes. It
 // touches only profile, decisions and model_cli, so re-running is idempotent
 // and never rewrites activated `blocking` entries.
 func initCmd(_ context.Context, args []string) int {

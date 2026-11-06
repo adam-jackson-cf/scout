@@ -12,7 +12,7 @@ import (
 	"scout/internal/domain"
 )
 
-// schemaAnnotations adds the decision-model tables (design §6): annotations (advisory
+// schemaAnnotations adds the decision-model tables (REQ-28, REQ-89, REQ-94, REQ-100): annotations (advisory
 // answers), ranking records (disclosure plus baseline and rank-formula
 // versions for every finding), audit draws (stored inclusion probability and
 // sampler version) and the view context of every human disposition.

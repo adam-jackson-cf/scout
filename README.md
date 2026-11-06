@@ -46,7 +46,7 @@ scout diff --base main --summary scout-summary.md   # what this branch introduce
 
 ## What Scout Does
 
-Scout runs on pull requests, default-branch pushes, nightly runs and locally. It records what it finds in a durable ledger that you can triage. It does not fix code. It only blocks a pull request when the pull request itself introduced or re-introduced a finding from an allow-listed check that the repository has activated (`docs/scout-design.md` §1).
+Scout runs on pull requests, default-branch pushes, nightly runs and locally. It records what it finds in a durable ledger that you can triage. It does not fix code. It only blocks a pull request when the pull request itself introduced or re-introduced a finding from an allow-listed check that the repository has activated (REQ-1, REQ-4, REQ-20, REQ-21).
 
 - `cmd/scout`: the CLI (`init`, `assess`, `diff`, `issues`, `triage`, `signals`, `state`, `serve`, …).
 - `internal/engine`: runs the lanes, compares base and head, applies the gate and profiles.
@@ -76,4 +76,4 @@ Scout runs on pull requests, default-branch pushes, nightly runs and locally. It
 - [docs/references/policy-file.md](docs/references/policy-file.md): the keys in `.scout/policy.yaml` and what `scout init` writes.
 - [docs/references/ci-integration.md](docs/references/ci-integration.md): wiring the reusable guardian workflows into a repository.
 - [docs/references/environment-variables.md](docs/references/environment-variables.md): the environment variables that Scout and its toolchain read.
-- `docs/scout-design.md`: the authoritative design (revision 2.8). `docs/STATUS.md`: current state; `docs/plans/2026-11-06-remaining-work.md`: remaining work. `AGENTS.md`: project rules, including council sign-off for any design change or experiment.
+- `docs/scout-design.html`: the governed design (ADR-009); `docs/adrs/README.md`: the decision index. `docs/STATUS.md`: current state; `docs/plans/2026-11-06-remaining-work.md`: remaining work. `AGENTS.md`: project rules, including council sign-off for any design change or experiment.

@@ -1,4 +1,4 @@
-// Package decisions is the typed-decision adapter (design §6): typed questions
+// Package decisions is the typed-decision adapter (REQ-29): typed questions
 // asked of Jev through OpenRouter's alpha/decisions route, resolved-model
 // pinning, failure semantics, the call cap, the ordinal rank formula over the
 // stored answers and the interim audit sampler. It only produces advisory
@@ -106,7 +106,7 @@ func sameSet(options []string, criteria map[string]string) bool {
 	return true
 }
 
-// versionPayload is the canonical JSON the version key hashes (design §6).
+// versionPayload is the canonical JSON the version key hashes (REQ-29).
 // Field order is fixed by the struct; maps are marshalled with sorted keys.
 type versionPayload struct {
 	Kind            Kind              `json:"kind"`

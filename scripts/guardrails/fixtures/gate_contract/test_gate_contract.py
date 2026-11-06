@@ -28,11 +28,11 @@ SENSITIVE = [
     "bootstrap-tools.sh",
     "gate.sh",
     "build-clawpatch.sh",
-    "scout-design.md",
-    "docs/design-reviews/",
+    "scout-design.html",
+    "docs/adrs/",
+    "jev-adapter-audit.md",
     "evaluation/",
     "third_party/",
-    "SCOUT_REBUILD_REQUIREMENTS.md",
     "research-ledger.md",
     "hypothesis-ledger.md",
     "CLAUDE.md",
@@ -120,7 +120,7 @@ class GateConfigurationProof(unittest.TestCase):
             name
             for name in files
             if name
-            and not name.startswith(("docs/archive/", "docs/design-reviews/"))
+            and not name.startswith("docs/adrs/")
             and (ROOT / name).is_file()
             and obsolete.search((ROOT / name).read_text(errors="replace"))
         ]

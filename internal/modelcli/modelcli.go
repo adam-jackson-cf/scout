@@ -1,6 +1,6 @@
 // Package modelcli finds the logged-in model CLIs (`claude`, `codex`) that
 // Scout's reasoning-LLM lanes run through, and builds the credential-free
-// environment those subprocesses receive (design rev 2.2 §4, §6; REQ-31).
+// environment those subprocesses receive (REQ-31).
 package modelcli
 
 import (

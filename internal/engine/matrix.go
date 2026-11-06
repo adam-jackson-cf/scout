@@ -14,7 +14,7 @@ import (
 	"scout/internal/modelcli"
 )
 
-// MatrixLanguages are the §5.3 columns, in order.
+// MatrixLanguages are the REQ-18 capability-matrix columns, in order.
 var MatrixLanguages = []string{"Go", "Python", "TS/JS", "Rust", "Java", "C#"}
 
 var matrixExtensions = map[string]string{
@@ -38,13 +38,13 @@ type MatrixCell struct {
 	Detail string `json:"detail,omitempty"`
 }
 
-// MatrixRow is one §5.3 capability row.
+// MatrixRow is one REQ-18 capability row.
 type MatrixRow struct {
 	Capability string                `json:"capability"`
 	Cells      map[string]MatrixCell `json:"cells"`
 }
 
-// Matrix is the §5.3 capability matrix evaluated for one repository.
+// Matrix is the REQ-18 capability matrix evaluated for one repository.
 type Matrix struct {
 	Languages []string `json:"languages"`
 	// InRepo lists the languages detected in this repository.
@@ -57,7 +57,7 @@ type Matrix struct {
 // assess time; the matrix reports only that a producer's output exists).
 var coverageArtifactNames = []string{"lcov.info", "coverage/lcov.info", "coverage.xml", "cobertura.xml", "coverage/cobertura-coverage.xml", "coverage/coverage.xml"}
 
-// CapabilityMatrix evaluates design §5.3 for the repository at root: which
+// CapabilityMatrix evaluates REQ-18 for the repository at root: which
 // rows this machine and repository can deliver today. It runs nothing and
 // calls no model; it only looks for files and executables.
 func CapabilityMatrix(ctx context.Context, config Config, root string) (Matrix, error) {

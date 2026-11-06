@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scout design</title>
+<style>
+  :root {
+    --bg: #0f1115; --panel: #161a21; --panel2: #1c212a; --line: #2a313c;
+    --fg: #e6e8eb; --muted: #9aa3ae; --dim: #6b7480;
+    --det: #4fb3a9; --jev: #a78bfa; --llm: #e0a458; --human: #e07a5f;
+    --gate: #7bc96f; --store: #8b949e; --warn: #f2c94c; --block: #ef6b6b;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.5 var(--sans); }
+  header { padding: 28px 32px 6px; max-width: 1180px; }
+  h1 { margin: 0 0 6px; font-size: 22px; letter-spacing: -.01em; }
+  h2 { font-size: 16px; margin: 0 0 4px; }
+  h3 { font-size: 14px; margin: 18px 0 6px; }
+  .sub { color: var(--muted); max-width: 900px; margin: 0; }
+  .meta { color: var(--dim); font: 12px var(--mono); margin-top: 8px; }
+  code, .mono { font-family: var(--mono); font-size: 12.5px; }
+  a { color: var(--det); }
+
+  .tabradio { position: absolute; opacity: 0; pointer-events: none; }
+  .tabs { display: flex; gap: 6px; padding: 14px 32px 0; border-bottom: 1px solid var(--line); }
+  .tabs label { padding: 8px 16px; border: 1px solid var(--line); border-bottom: 0; border-radius: 8px 8px 0 0;
+                color: var(--muted); background: var(--panel); cursor: pointer; font-weight: 600; font-size: 13px; }
+  .tabs label:hover { color: var(--fg); }
+  #t-ov:checked ~ .tabs label[for="t-ov"],
+  #t-req:checked ~ .tabs label[for="t-req"],
+  #t-adr:checked ~ .tabs label[for="t-adr"] { background: var(--panel2); color: var(--fg); border-top: 3px solid var(--det); padding-top: 6px; }
+  .pane { display: none; padding: 22px 32px 56px; max-width: 1180px; }
+  #t-ov:checked ~ #ov, #t-req:checked ~ #req, #t-adr:checked ~ #adr { display: block; }
+
+  .block { margin-bottom: 34px; }
+  .lede { color: var(--muted); margin: 2px 0 12px; max-width: 860px; }
+  .fig { width: 100%; overflow-x: auto; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 12px 0; }
+  .fig svg { display: block; min-width: 940px; width: 100%; height: auto; }
+  svg text { font-family: var(--sans); fill: var(--fg); }
+  svg .t-sm { font-size: 11.5px; fill: var(--muted); }
+  svg .t-xs { font-size: 10.5px; fill: var(--dim); }
+  svg .t-hd { font-size: 13px; font-weight: 600; }
+  svg .t-mono { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+  .legend i { display: inline-block; width: 18px; height: 3px; margin-right: 6px; vertical-align: middle; }
+
+  pre { background: var(--panel); border-left: 3px solid var(--gate); padding: 12px 16px; margin: 0;
+        font: 12.5px/1.6 var(--mono); color: var(--fg); overflow-x: auto; }
+  pre .c { color: var(--dim); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; }
+  td.id { font: 600 12px var(--mono); white-space: nowrap; color: var(--muted); }
+  .st { font: 600 11px var(--mono); padding: 1px 6px; border-radius: 4px; border: 1px solid var(--c); color: var(--c); white-space: nowrap; }
+  .st.acc { --c: #7f9f86; } .st.sup { --c: var(--dim); } .st.prov { --c: #b3a473; }
+  .note { color: var(--muted); font-size: 12.5px; margin-top: 10px; max-width: 860px; }
+  .draft { border: 1px dashed var(--warn); color: var(--warn); padding: 6px 12px; border-radius: 6px; font-size: 12px; margin: 0 0 18px; display: inline-block; }
+  .grp td { background: var(--panel2); color: var(--det); font: 600 11.5px var(--mono); letter-spacing: .04em; text-transform: uppercase; padding: 6px 10px; }
+
+  /* Zoomed-out first: tinted panels pull attention; detail sits behind (i) */
+  .hero { background: linear-gradient(90deg, rgba(79,179,169,.14), rgba(79,179,169,.03)); border-left: 4px solid var(--det);
+          border-radius: 8px; padding: 16px 20px; margin: 4px 0 6px; }
+  .hero .big { font-size: 18px; font-weight: 600; letter-spacing: -.01em; }
+  .rules { display: flex; flex-wrap: wrap; gap: 6px 22px; margin-top: 10px; font-size: 13px; color: var(--muted); }
+  .rules b { color: var(--fg); font-weight: 600; }
+  .block { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px 18px; }
+  .head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .head h2 { margin: 0; }
+  .head .say { color: var(--muted); font-size: 13.5px; }
+  .fig { border: 0; padding: 4px 0 0; }
+  .callout { background: rgba(123,201,111,.08); border-left: 3px solid var(--gate); border-radius: 6px; padding: 10px 14px; margin-top: 12px; font-size: 13px; }
+  .i { display: inline-grid; place-items: center; width: 17px; height: 17px; border-radius: 50%; padding: 0; margin-left: 4px;
+       border: 1px solid var(--dim); background: transparent; color: var(--muted); font: italic 600 11px Georgia, serif; cursor: pointer; vertical-align: 1px; }
+  .i:hover, .i:focus-visible { border-color: var(--det); color: var(--det); outline: none; }
+  [popover] { max-width: min(560px, 92vw); background: var(--panel2); color: var(--fg); border: 1px solid var(--line);
+              border-top: 3px solid var(--det); border-radius: 8px; padding: 14px 18px; font-size: 13px; line-height: 1.55; }
+  [popover]::backdrop { background: rgba(0,0,0,.45); }
+  [popover] h4 { margin: 0 0 6px; font-size: 13px; color: var(--det); }
+  [popover] ul { margin: 6px 0 0; padding-left: 18px; }
+  [popover] p { margin: 0 0 6px; }
+  td .i { margin-left: 6px; }
+
+  /* Visible concise lists: the overlay format, kept in the page */
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px 28px; margin-top: 12px; }
+  .list h4 { margin: 0 0 6px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .list ul { margin: 0; padding-left: 18px; font-size: 13px; }
+  .list li { margin: 3px 0; }
+  .list li::marker { color: var(--c, var(--dim)); }
+  .list b { font-weight: 600; }
+  .tint { background: var(--panel2); border-radius: 8px; padding: 12px 16px; }
+  .who li { --c: var(--k); }
+  .k-det { --k: var(--det); } .k-jev { --k: var(--jev); } .k-llm { --k: var(--llm); } .k-hum { --k: var(--human); }
+  .who li b { color: var(--k); }
+
+  /* Parts matrix: rows = layers, columns = who decides.
+     Each entry = what it does (plain) + the code that does it (mono, column colour). Human entries have no code. */
+  .matrix { table-layout: fixed; }
+  .matrix th, .matrix td { padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  .matrix thead th { border-top: 3px solid var(--k); text-transform: none; letter-spacing: 0; font-size: 13px; color: var(--k); }
+  .matrix thead th small { display: block; color: var(--muted); font-weight: 400; font-size: 11.5px; }
+  .matrix thead th:first-child { border-top-color: transparent; }
+  .matrix td.c-det { --k: var(--det); background: rgba(79,179,169,.05); } .matrix td.c-jev { --k: var(--jev); background: rgba(167,139,250,.06); }
+  .matrix td.c-llm { --k: var(--llm); background: rgba(224,164,88,.06); } .matrix td.c-hum { --k: var(--human); background: rgba(224,122,95,.06); }
+  .matrix th[scope=row] { color: var(--fg); font-size: 13px; text-transform: none; letter-spacing: 0; }
+  .matrix th[scope=row] small { display: block; color: var(--dim); font-weight: 400; font-size: 11.5px; margin-top: 2px; }
+  .matrix ul { margin: 0; padding-left: 16px; font-size: 13px; line-height: 1.4; }
+  .matrix li { margin: 0 0 5px; }
+  .matrix li:last-child { margin-bottom: 0; }
+  .matrix li::marker { color: var(--k); }
+  .none { color: var(--dim); }
+
+
+  /* ADR cards: boxed, neutral gradients, one muted accent; status reads from the badge, not the paint */
+  .adr { background: linear-gradient(160deg, rgba(255,255,255,.03), rgba(255,255,255,0) 60%), var(--panel2);
+         border: 1px solid var(--line); border-left: 3px solid var(--c); border-radius: 10px;
+         padding: 24px 28px 20px; margin: 0 0 32px; }
+  .adr:last-of-type { margin-bottom: 4px; }
+  .adr.s-acc { --c: #4f7a6c; } .adr.s-prov { --c: #8a7a4c; } .adr.s-sup { --c: var(--line); opacity: .7; }
+  .adr header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 0; max-width: none; }
+  .adr .aid { font: 600 13px var(--mono); color: var(--fg); }
+  .adr .adate { font: 12px var(--mono); color: var(--dim); }
+  .adr .rel { font-size: 12.5px; color: var(--muted); }
+  .adr h3 { margin: 12px 0 14px; font-size: 17px; line-height: 1.4; letter-spacing: -.005em; }
+  .adr .dec { margin: 0 0 22px; padding-left: 20px; font-size: 14px; line-height: 1.55; max-width: 860px; }
+  .adr .dec li { margin: 6px 0; }
+  .callouts { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .co { border-radius: 8px; padding: 14px 18px; border-left: 2px solid var(--k);
+        background: linear-gradient(90deg, rgba(255,255,255,.035), rgba(255,255,255,.008) 70%), var(--bg); }
+  .co h4 { margin: 0 0 8px; font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--t); }
+  .co ul { margin: 0; padding-left: 16px; font-size: 13px; line-height: 1.5; color: var(--fg); }
+  .co li { margin: 4px 0; }
+  .co li::marker { color: var(--dim); }
+  .co-ev { --k: #3f6660; --t: #79b3aa; } .co-ch { --k: #5a5180; --t: #a89bd8; } .co-gate { --k: #7a6a3e; --t: #cdb36f; margin-top: 16px; }
+  .adr details { margin-top: 20px; border-top: 1px solid var(--line); padding-top: 14px; }
+  .adr summary { cursor: pointer; font-size: 13px; color: var(--muted); list-style: none; }
+  .adr summary::-webkit-details-marker { display: none; }
+  .adr summary::before { content: "▸"; display: inline-block; width: 16px; color: var(--dim); transition: transform .15s; }
+  .adr details[open] summary::before { transform: rotate(90deg); }
+  .adr summary:hover { color: var(--fg); }
+  .adr details ul { margin: 10px 0 0; padding-left: 20px; font-size: 13.5px; line-height: 1.55; max-width: 860px; }
+  .adr details li { margin: 5px 0; }
+  .adr footer { margin-top: 18px; font-size: 12px; color: var(--dim); }
+  .adr footer code { font-size: 12px; color: var(--muted); }
+
+  @media (max-width: 900px) {
+    header, .pane { padding-left: 14px; padding-right: 14px; }
+    .callouts { grid-template-columns: 1fr; }
+    .tabs { padding-left: 14px; padding-right: 14px; }
+    table, thead, tbody, tr, th, td { display: block; }
+    thead { display: none; }
+    tr { border-bottom: 1px solid var(--line); padding: 8px 0; }
+    td { border: 0; padding: 3px 0; }
+  }
+</style>
+</head>
+<body>
+<input class="tabradio" type="radio" name="tab" id="t-ov" checked aria-label="Overview">
+<input class="tabradio" type="radio" name="tab" id="t-req" aria-label="Requirements">
+<input class="tabradio" type="radio" name="tab" id="t-adr" aria-label="Decisions">
+
+<header>
+  <h1>Scout design</h1>
+  <div class="hero">
+    <div class="big">A discovery-only CI guardian for one repository.</div>
+    <div class="cols">
+      <div class="list" style="--c:var(--det)"><h4>Does</h4><ul>
+        <li>Runs on pull requests, default-branch pushes, nightly and locally.</li>
+        <li>Records evidence-backed issues and code-health measurements in a durable ledger.</li>
+        <li>Blocks a PR only for issues it introduced, in checks the repository activated.</li>
+        <li>Puts code quality first; security, performance and architecture follow.</li>
+      </ul></div>
+      <div class="list" style="--c:var(--block)"><h4>Does not</h4><ul>
+        <li>Fix code or run an approval workflow.</li>
+        <li>Run the target's tests. It reads CI artifacts whose provenance matches.</li>
+        <li>Produce an inertia score for gating, severity or forecasts.</li>
+        <li>Claim that agents degrade an adopter's code.</li>
+      </ul></div>
+    </div>
+  </div>
+  <div class="meta">Governed design (AGENTS.md design rules). Appendix A is the normative requirement set; the Overview explains it and Appendix B summarises decisions. Where they differ, Appendix A prevails.</div>
+</header>
+
+<div class="tabs">
+  <label for="t-ov">Overview</label>
+  <label for="t-req">Appendix A · Requirements</label>
+  <label for="t-adr">Appendix B · Decisions (ADR)</label>
+</div>
+
+<!-- ============================ OVERVIEW ============================ -->
+<div class="pane" id="ov">
+
+  <div class="block">
+    <div class="head"><h2>1 · Run flow</h2><span class="say">One pipeline. The trigger picks the lanes. Only trusted default-branch runs (push, nightly or dispatch) write the baseline.</span></div>
+    <div class="fig">
+      <svg viewBox="0 0 1180 470" role="img" aria-label="Scout run flow">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--dim)"/>
+          </marker>
+          <marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--gate)"/>
+          </marker>
+        </defs>
+
+        <!-- triggers -->
+        <text x="10" y="22" class="t-xs">TRIGGER</text>
+        <g>
+          <line x1="10" y1="48" x2="120" y2="48" stroke="var(--line)"/>
+          <text x="10" y="42" class="t-hd">pull request</text>
+          <text x="10" y="64" class="t-sm">differential vs base</text>
+          <line x1="10" y1="98" x2="120" y2="98" stroke="var(--line)"/>
+          <text x="10" y="92" class="t-hd">push · default</text>
+          <text x="10" y="114" class="t-sm">publishes baseline</text>
+          <line x1="10" y1="148" x2="120" y2="148" stroke="var(--line)"/>
+          <text x="10" y="142" class="t-hd">nightly</text>
+          <text x="10" y="164" class="t-sm">full · trends · opt-in LLM</text>
+          <line x1="10" y1="198" x2="120" y2="198" stroke="var(--line)"/>
+          <text x="10" y="192" class="t-hd">local</text>
+          <text x="10" y="214" class="t-sm">assess · diff --base</text>
+        </g>
+        <path d="M122,48 C150,48 150,125 175,125" fill="none" stroke="var(--dim)"/>
+        <path d="M122,98 C150,98 150,125 175,125" fill="none" stroke="var(--dim)"/>
+        <path d="M122,148 C150,148 150,125 175,125" fill="none" stroke="var(--dim)"/>
+        <path d="M122,198 C150,198 150,125 175,125" fill="none" stroke="var(--dim)" marker-end="url(#ar)"/>
+
+        <!-- pipeline spine -->
+        <line x1="180" y1="125" x2="1165" y2="125" stroke="var(--line)" stroke-width="2"/>
+
+        <!-- stage 1 inventory -->
+        <circle cx="200" cy="125" r="7" fill="var(--det)"/>
+        <text x="190" y="100" class="t-hd">Inventory</text>
+        <text x="190" y="150" class="t-sm">files · scope · plan</text>
+        <text x="190" y="165" class="t-sm">reuse unchanged work</text>
+
+        <!-- stage 2 map -->
+        <circle cx="340" cy="125" r="7" fill="var(--det)"/>
+        <text x="330" y="100" class="t-hd">Map</text>
+        <text x="330" y="150" class="t-sm">Clawpatch heuristic</text>
+        <text x="330" y="165" class="t-sm">features (canonical)</text>
+        <text x="330" y="180" class="t-sm">+ Scout areas (labels)</text>
+
+        <!-- stage 3 lanes -->
+        <circle cx="490" cy="125" r="7" fill="var(--det)"/>
+        <text x="480" y="100" class="t-hd">Lanes</text>
+        <text x="480" y="150" class="t-sm">scanners → findings</text>
+        <text x="480" y="165" class="t-sm">measures → signals</text>
+        <text x="480" y="180" class="t-sm">health per lane</text>
+        <text x="480" y="197" class="t-sm" style="fill:var(--llm)">+ contextual · clawpatch-review</text>
+        <text x="480" y="211" class="t-sm" style="fill:var(--llm)">(nightly, opt-in)</text>
+
+        <!-- stage 4 identity -->
+        <circle cx="640" cy="125" r="7" fill="var(--det)"/>
+        <text x="630" y="100" class="t-hd">Identity</text>
+        <text x="630" y="150" class="t-sm">anchor ladder →</text>
+        <text x="630" y="165" class="t-sm">durable issue IDs</text>
+        <text x="630" y="180" class="t-sm">never line or feature</text>
+
+        <!-- stage 5 judgment -->
+        <circle cx="790" cy="125" r="7" fill="var(--jev)"/>
+        <text x="780" y="100" class="t-hd">Rank</text>
+        <text x="780" y="150" class="t-sm">Jev P(real defect)</text>
+        <text x="780" y="165" class="t-sm">else deterministic</text>
+        <text x="780" y="180" class="t-sm">advisory only</text>
+
+        <!-- stage 6 gate -->
+        <circle cx="940" cy="125" r="9" fill="none" stroke="var(--gate)" stroke-width="3"/>
+        <text x="930" y="100" class="t-hd" style="fill:var(--gate)">Gate</text>
+        <text x="930" y="150" class="t-sm">attribution vs base</text>
+        <text x="930" y="165" class="t-sm">activated checks only</text>
+        <text x="930" y="180" class="t-sm">exit 0 · 1 · 2 · 3</text>
+        <line x1="950" y1="125" x2="1165" y2="125" stroke="var(--gate)" stroke-width="2" marker-end="url(#arg)"/>
+        <text x="1030" y="116" class="t-xs">summary · JSON · SARIF</text>
+
+        <!-- opt-in side branches -->
+        <path d="M322,188 L322,262" stroke="var(--llm)" stroke-dasharray="4 3" fill="none"/>
+        <text x="332" y="226" class="t-sm" style="fill:var(--llm)">agent map: onboarding</text>
+        <text x="332" y="240" class="t-sm" style="fill:var(--llm)">+ manual only</text>
+        <text x="332" y="258" class="t-sm" style="fill:var(--jev)">association (push, opt-in):</text>
+        <text x="332" y="272" class="t-sm" style="fill:var(--jev)">unowned files → areas</text>
+
+        <!-- ledger band -->
+        <rect x="180" y="300" width="985" height="54" rx="6" fill="var(--panel)" stroke="var(--store)"/>
+        <text x="196" y="322" class="t-hd">Ledger · .scout/state.sqlite</text>
+        <text x="196" y="342" class="t-sm">issues · dispositions · signals · coverage · areas · associations · would_block</text>
+        <path d="M640,190 L640,298" stroke="var(--store)" fill="none" marker-end="url(#ar)"/>
+        <path d="M540,220 L540,298" stroke="var(--store)" fill="none" marker-end="url(#ar)"/>
+        <text x="548" y="262" class="t-xs">signals</text>
+        <text x="648" y="262" class="t-xs">issues</text>
+        <path d="M940,298 L940,192" stroke="var(--store)" fill="none" marker-end="url(#ar)"/>
+        <text x="948" y="250" class="t-xs">base issues</text>
+
+        <!-- humans -->
+        <path d="M800,354 L800,402" stroke="var(--human)" fill="none" marker-start="url(#ar)"/>
+        <text x="740" y="420" class="t-hd" style="fill:var(--human)">Maintainers</text>
+        <text x="740" y="438" class="t-sm">triage · policy · activate checks</text>
+        <text x="740" y="453" class="t-sm">accept pending areas</text>
+
+        <!-- baseline -->
+        <rect x="180" y="400" width="300" height="54" rx="6" fill="none" stroke="var(--store)" stroke-dasharray="5 3"/>
+        <text x="196" y="422" class="t-hd">scout/state branch</text>
+        <text x="196" y="442" class="t-sm">state/v1/*.jsonl · published baseline</text>
+        <path d="M220,356 L220,398" stroke="var(--gate)" fill="none" marker-end="url(#arg)"/>
+        <text x="228" y="382" class="t-xs">trusted default-branch CAS</text>
+        <path d="M460,398 L460,356" stroke="var(--dim)" fill="none" marker-end="url(#ar)"/>
+        <text x="468" y="382" class="t-xs">PR restores, read-only</text>
+      </svg>
+    </div>
+    <div class="legend">
+      <span><i style="background:var(--det)"></i>deterministic code</span>
+      <span><i style="background:var(--jev)"></i>Jev typed decision (advisory)</span>
+      <span><i style="background:var(--llm)"></i>reasoning LLM via claude -p / codex exec (opt-in)</span>
+      <span><i style="background:var(--human)"></i>humans</span>
+      <span><i style="background:var(--gate)"></i>gate and trusted write</span>
+    </div>
+    <div class="cols tint">
+      <div class="list"><h4>Triggers</h4><ul>
+        <li><b>Pull request:</b> differential against the base; read-only, no secrets.</li>
+        <li><b>Push to default:</b> publishes <code>scout/state</code>; runs the onboarding agent map until one completes.</li>
+        <li><b>Nightly:</b> full run, trend rules, opt-in LLM lanes; runs the onboarding agent map until one completes.</li>
+        <li><b>Local:</b> <code>scout assess</code>, <code>scout diff --base &lt;ref&gt;</code>.</li>
+      </ul></div>
+      <div class="list"><h4>State</h4><ul>
+        <li>The SQLite ledger is the source of truth.</li>
+        <li><code>scout/state</code> is its published copy, written with compare-and-swap.</li>
+        <li>PR runs restore it and never write it.</li>
+      </ul></div>
+    </div>
+  </div>
+
+  <div class="block">
+    <div class="head"><h2>2 · Who decides what</h2><span class="say">Layer by layer. Only deterministic code can block a PR; Jev and LLMs advise; humans own policy and outcomes.</span></div>
+    <table class="matrix">
+      <colgroup><col style="width:14%"><col style="width:26%"><col style="width:19%"><col style="width:19%"><col style="width:22%"></colgroup>
+      <thead><tr>
+        <th></th>
+        <th class="k-det">Deterministic code<small>decides, may gate</small></th>
+        <th class="k-jev">Jev<small>advises: ranks, labels</small></th>
+        <th class="k-llm">Reasoning LLM<small>advises: opt-in only</small></th>
+        <th class="k-hum">Humans<small>own</small></th>
+      </tr></thead>
+      <tbody>
+        <tr><th scope="row">Setup<small>what may run</small></th>
+          <td class="c-det"><ul><li>Which lanes run for this trigger</li><li>PR runs stay read-only, with no secrets</li></ul></td>
+          <td class="c-jev none">—</td><td class="c-llm none">—</td>
+          <td class="c-hum"><ul><li>Profile: report or guardian</li><li>Consent for Jev and model CLIs to see code</li></ul></td></tr>
+        <tr><th scope="row">Evidence<small>what is found</small></th>
+          <td class="c-det"><ul><li>Whether a rule matched</li><li>Measurement values</li><li>The canonical feature map</li></ul></td>
+          <td class="c-jev"><ul><li>Which area an unowned file belongs to (a label only)</li></ul></td>
+          <td class="c-llm"><ul><li>Extra candidate issues, report-only</li><li>Area proposals at onboarding and on manual refresh</li><li>Pending areas from the merge-time fallback (opt-in)</li></ul></td>
+          <td class="c-hum"><ul><li>When to refresh the agent map</li></ul></td></tr>
+        <tr><th scope="row">Issues<small>what findings mean</small></th>
+          <td class="c-det"><ul><li>Same issue or a new one</li><li>Severity, from the rule</li></ul></td>
+          <td class="c-jev"><ul><li>Triage order: how likely a real defect</li></ul></td>
+          <td class="c-llm"><ul><li>A second opinion, when a maintainer asks</li></ul></td>
+          <td class="c-hum"><ul><li>Disposition: accepted, false positive, won't fix</li><li>Overrides</li></ul></td></tr>
+        <tr><th scope="row">Gate<small>what blocks</small></th>
+          <td class="c-det"><ul><li>Whether the PR introduced the issue</li><li>Whether the PR is blocked, and the exit code</li></ul></td>
+          <td class="c-jev none">never</td><td class="c-llm none">never</td>
+          <td class="c-hum"><ul><li>Which checks are activated</li></ul></td></tr>
+        <tr><th scope="row">State<small>what is kept</small></th>
+          <td class="c-det"><ul><li>What is published to the baseline, from trusted default-branch runs only (push, nightly or dispatch)</li></ul></td>
+          <td class="c-jev none">—</td><td class="c-llm none">—</td>
+          <td class="c-hum"><ul><li>Accepting or merging pending areas</li></ul></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="block">
+    <div class="head"><h2>3 · Gate decision</h2><span class="say">A PR goes red only when a finding passes all four checks. Everything else is reported.</span></div>
+    <div class="fig">
+      <svg viewBox="0 0 1100 250" role="img" aria-label="Gate decision for one finding">
+        <defs>
+          <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--dim)"/></marker>
+          <marker id="arb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--block)"/></marker>
+        </defs>
+        <line x1="40" y1="80" x2="960" y2="80" stroke="var(--line)" stroke-width="2"/>
+        <line x1="860" y1="80" x2="958" y2="80" stroke="var(--block)" stroke-width="2" marker-end="url(#arb)"/>
+
+        <circle cx="40" cy="80" r="7" fill="var(--det)"/>
+        <text x="22" y="52" class="t-hd">A finding</text>
+        <text x="22" y="110" class="t-sm">on the PR's head</text>
+
+        <g>
+          <circle cx="230" cy="80" r="8" fill="var(--panel)" stroke="var(--det)" stroke-width="2"/>
+          <text x="214" y="44" class="t-hd">New in this PR?</text>
+          <text x="214" y="60" class="t-xs">introduced or regressed</text>
+          <text x="140" y="74" class="t-xs" style="fill:var(--gate)">yes →</text>
+          <path d="M230,90 L230,168" stroke="var(--dim)" fill="none" marker-end="url(#ar2)"/>
+          <text x="238" y="130" class="t-xs">no</text>
+          <text x="214" y="190" class="t-hd" style="fill:var(--muted)">Reported</text>
+          <text x="214" y="207" class="t-sm">pre-existing debt</text>
+          <text x="214" y="221" class="t-sm">never blocks</text>
+        </g>
+        <g>
+          <circle cx="430" cy="80" r="8" fill="var(--panel)" stroke="var(--det)" stroke-width="2"/>
+          <text x="414" y="44" class="t-hd">Allow-listed check?</text>
+          <text x="414" y="60" class="t-xs">mechanism-certified, short list</text>
+          <text x="330" y="74" class="t-xs" style="fill:var(--gate)">yes →</text>
+          <path d="M430,90 L430,168" stroke="var(--dim)" fill="none" marker-end="url(#ar2)"/>
+          <text x="438" y="130" class="t-xs">no</text>
+          <text x="414" y="190" class="t-hd" style="fill:var(--muted)">Reported</text>
+          <text x="414" y="207" class="t-sm">the check can never</text>
+          <text x="414" y="221" class="t-sm">block</text>
+        </g>
+        <g>
+          <circle cx="630" cy="80" r="8" fill="var(--panel)" stroke="var(--human)" stroke-width="2"/>
+          <text x="614" y="44" class="t-hd">Activated here?</text>
+          <text x="614" y="60" class="t-xs">by a maintainer, in policy.yaml</text>
+          <text x="530" y="74" class="t-xs" style="fill:var(--gate)">yes →</text>
+          <path d="M630,90 L630,168" stroke="var(--warn)" fill="none" marker-end="url(#ar2)"/>
+          <text x="638" y="130" class="t-xs">no</text>
+          <text x="614" y="190" class="t-hd" style="fill:var(--warn)">Would block</text>
+          <text x="614" y="207" class="t-sm">shadow record; builds</text>
+          <text x="614" y="221" class="t-sm">evidence to activate</text>
+        </g>
+        <g>
+          <circle cx="830" cy="80" r="8" fill="var(--panel)" stroke="var(--human)" stroke-width="2"/>
+          <text x="814" y="44" class="t-hd">Guardian profile?</text>
+          <text x="814" y="60" class="t-xs">repo opted into blocking</text>
+          <text x="730" y="74" class="t-xs" style="fill:var(--gate)">yes →</text>
+          <path d="M830,90 L830,168" stroke="var(--warn)" fill="none" marker-end="url(#ar2)"/>
+          <text x="838" y="130" class="t-xs">no</text>
+          <text x="814" y="190" class="t-hd" style="fill:var(--warn)">Would block</text>
+          <text x="814" y="207" class="t-sm">report profile</text>
+          <text x="814" y="221" class="t-sm">never fails CI</text>
+        </g>
+
+        <circle cx="980" cy="80" r="12" fill="none" stroke="var(--block)" stroke-width="3"/>
+        <text x="958" y="44" class="t-hd" style="fill:var(--block)">PR blocked</text>
+        <text x="958" y="60" class="t-xs">exit 1</text>
+      </svg>
+    </div>
+    <div class="cols tint">
+      <div class="list"><h4>Exit codes</h4><ul>
+        <li><b>0</b> clean · <b>1</b> blocked (above)</li>
+        <li><b>2</b> incomplete: a required lane did not finish</li>
+        <li><b>3</b> unavailable: bad input, a refused operation, or a required tool missing</li>
+      </ul></div>
+      <div class="list"><h4>Colours</h4><ul>
+        <li><span style="color:var(--det)">●</span> code decides · <span style="color:var(--human)">●</span> a human decided earlier</li>
+        <li><span style="color:var(--warn)">●</span> recorded, not enforced · <span style="color:var(--block)">●</span> enforced</li>
+      </ul></div>
+    </div>
+    <div class="callout"><b>Activation:</b> every repository starts in <code>report</code>. A check can activate after at least 14 days and at least 5 PR runs with a comparable base, with zero unwarranted would-blocks and <code>unknown</code> attribution in at most 10% of all PR runs in the window (a run counts once if it is <code>comparison: none</code> or has a base-gap <code>unknown</code> finding). A maintainer activates it with a PR to <code>policy.yaml</code>.<button class="i" popovertarget="p-attr" aria-label="Why comparable base matters">i</button></div>
+    <div id="p-attr" popover><h4>What counts as a comparable base</h4><p>A base is comparable when it was evaluated under identical tool, rule and policy digests: a published baseline that records lane health, or a paired merge-base rescan under head's digests.</p><p>With no comparable base at all, the whole run is <code>unknown</code> and nothing is classified as introduced. With a comparable base whose scanner did not inspect a finding's family, that finding is <code>unknown</code> instead of introduced; <code>guardrails.*</code> findings are exempt from this per-family rule. Either way, a tool upgrade or a policy change cannot look like a new defect.</p><p>Exit-code precedence is 3 &gt; 2 &gt; 1 &gt; 0.</p></div>
+  </div>
+
+  <div class="block">
+    <div class="head"><h2>4 · What the ledger records</h2><span class="say">Three record types plus association labels. Only an issue can block a PR.</span></div>
+    <div class="fig">
+      <svg viewBox="0 0 1100 320" role="img" aria-label="Ledger records and what each can affect">
+        <defs>
+          <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--dim)"/></marker>
+          <marker id="ar3b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--block)"/></marker>
+          <marker id="ar3w" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--warn)"/></marker>
+        </defs>
+        <text x="20" y="20" class="t-xs">RECORD</text>
+        <text x="830" y="20" class="t-xs">WHAT IT CAN AFFECT</text>
+
+        <!-- records: Issue, Signal, Association, Coverage (ordered so no connector crosses) -->
+        <circle cx="26" cy="56" r="6" fill="var(--block)"/>
+        <text x="42" y="61" class="t-hd">Issue</text>
+        <text x="42" y="79" class="t-sm">a concrete defect; its ID survives moves and renames</text>
+
+        <circle cx="26" cy="146" r="6" fill="var(--dim)"/>
+        <text x="42" y="151" class="t-hd">Signal</text>
+        <text x="42" y="169" class="t-sm">a code-health measurement over time; unmeasured ≠ 0</text>
+
+        <circle cx="26" cy="216" r="6" fill="var(--dim)"/>
+        <text x="42" y="221" class="t-hd">Association</text>
+        <text x="42" y="239" class="t-sm">a label row, not a record type: area for unowned files</text>
+
+        <circle cx="26" cy="286" r="6" fill="var(--warn)"/>
+        <text x="42" y="291" class="t-hd">Coverage</text>
+        <text x="42" y="309" class="t-sm">what each lane checked, skipped or blocked, and why</text>
+
+        <!-- promotion: signal becomes an issue only via a named rule -->
+        <path d="M26,138 L26,66" stroke="var(--det)" stroke-dasharray="4 3" fill="none" marker-end="url(#ar3)"/>
+        <text x="42" y="113" class="t-xs" style="fill:var(--det)">↑ a signal becomes an issue only via a named, versioned rule</text>
+
+        <!-- targets -->
+        <circle cx="842" cy="56" r="10" fill="none" stroke="var(--block)" stroke-width="3"/>
+        <text x="862" y="53" class="t-hd" style="fill:var(--block)">Blocks the PR</text>
+        <text x="862" y="70" class="t-xs">exit 1</text>
+        <circle cx="842" cy="181" r="9" fill="none" stroke="var(--dim)" stroke-width="2"/>
+        <text x="862" y="178" class="t-hd" style="fill:var(--muted)">Reported only</text>
+        <text x="862" y="195" class="t-xs">summary, ledger, trends</text>
+        <circle cx="842" cy="286" r="9" fill="none" stroke="var(--warn)" stroke-width="2.5"/>
+        <text x="862" y="283" class="t-hd" style="fill:var(--warn)">Marks the run incomplete</text>
+        <text x="862" y="300" class="t-xs">exit 2</text>
+
+        <!-- connectors -->
+        <path d="M420,56 L828,56" stroke="var(--block)" stroke-width="2" fill="none" marker-end="url(#ar3b)"/>
+        <text x="470" y="48" class="t-xs" style="fill:var(--block)">only when every gate condition above holds (guardian profile)</text>
+        <path d="M420,64 C640,64 640,177 828,177" stroke="var(--dim)" fill="none" marker-end="url(#ar3)"/>
+        <text x="440" y="84" class="t-xs">otherwise</text>
+        <path d="M420,146 C640,146 660,181 828,181" stroke="var(--dim)" fill="none" marker-end="url(#ar3)"/>
+        <path d="M420,216 C640,216 660,185 828,185" stroke="var(--dim)" fill="none" marker-end="url(#ar3)"/>
+        <path d="M420,286 L828,286" stroke="var(--warn)" stroke-width="2" fill="none" marker-end="url(#ar3w)"/>
+        <text x="540" y="278" class="t-xs" style="fill:var(--warn)">if a required lane did not finish</text>
+      </svg>
+    </div>
+    <div class="callout" style="border-left-color:var(--det);background:rgba(79,179,169,.08)">Issue IDs never use line numbers or feature IDs, so shifting code or remapping features cannot create a fake “new” issue.<button class="i" popovertarget="p-issue" aria-label="How issue identity works">i</button></div>
+    <div id="p-issue" popover><h4>How issue identity works</h4><p>An ID (<code>issue:&lt;family&gt;:&lt;ulid&gt;</code>) is minted once. Each new finding is matched to an existing issue by its anchor set: the rename-followed path, qualified symbol, rule key, normalised mechanism and evidence fingerprint.</p><ul><li>Rule, path, symbol and fingerprint all match → same issue.</li><li>Only the fingerprint changed → same issue, flagged <code>evidence_drift</code>; the disposition is kept.</li><li>No symbol, and exactly one candidate in the file → same issue.</li><li>Renamed path → retry the steps above on the old path.</li><li>Two or more candidates → both stay open with <code>ambiguous_with</code>; they are never merged.</li></ul><p style="margin-top:6px">Line numbers and feature IDs are kept out of identity, so a PR that shifts code or a mapper change cannot create fake <code>introduced</code> issues.</p></div>
+  </div>
+</div>
+
+<!-- ============================ REQUIREMENTS ============================ -->
+<div class="pane" id="req">
+  <div class="block">
+  <div class="head"><h2>Requirements</h2><span class="say">Testable statements, grouped by area.</span></div>
+  <div class="list tint" style="margin-bottom:14px"><ul>
+    <li>REQ IDs are never reused.</li>
+    <li>A changed requirement keeps its ID and cites the ADR that changed it.</li>
+    <li>A removed requirement stays listed as <span class="st sup">withdrawn</span>, with its ADR.</li>
+  </ul></div>
+<table>
+  <thead><tr><th>ID</th><th>Requirement</th><th>ADR</th></tr></thead>
+  <tbody>
+    <tr class="grp"><td colspan="3">Product &amp; scope</td></tr>
+    <tr><td class="id">REQ-1</td><td>Scout is a discovery-only CI guardian for one repository, running on pull requests, default-branch pushes, nightly and locally to persist evidence-backed issues and descriptive measurements in a triageable ledger.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-2</td><td>Code quality is the primary analyzer family; architecture, security and performance are lower-priority families. Tier 1 is Go, Python and TypeScript; CC/NLOC/duplication cover all seven baseline languages, with tools provisioned only for the detected stack.</td><td class="id">ADR-000, ADR-003</td></tr>
+    <tr><td class="id">REQ-4</td><td>Scout provides no remediation, approval workflow, execution of the target's tests, estate-level dashboard or Enaible/seven-language parity guarantee. No inertia score may gate, set severity, forecast or headline, and Scout makes no claim that agents degrade an adopter's repository.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-42</td><td>Scout is a product and future inertia-bench subject, not a research lab: H*/HA*/HQ* inertia studies belong in inertia-bench; Scout runs product experiments X1–X6, X9–X11 under its experiment rules.</td><td class="id">ADR-002, ADR-008, ADR-009</td></tr>
+    <tr><td class="id">REQ-43</td><td>Never read, write or delete <code>.codegraph</code>; remain read-only on assessed code. CI artifacts may be read only when producer and revision provenance match.</td><td class="id">ADR-002</td></tr>
+    <tr class="grp"><td colspan="3">Ledger &amp; identity</td></tr>
+    <tr><td class="id">REQ-5</td><td>Mint durable opaque <code>issue:&lt;family&gt;:&lt;ulid&gt;</code> IDs once, anchored by rename-followed path, qualified symbol when available, rule key, normalized mechanism and normalized evidence fingerprint. Line/byte locators and Clawpatch feature/agent/area IDs never enter identity.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-6</td><td>Match rule+path+symbol+fingerprint, then changed fingerprint as <code>evidence_drift</code>, then (without a symbol) exactly one candidate in the file; apply the same ladder through inventory renames, else mint a new issue. At least two candidates stay open with <code>ambiguous_with</code>, never auto-merged; distinct occurrences stay distinct, and a resolved issue reappearing is <code>regressed</code>.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-7</td><td>Dispositions are audited and survive evidence drift; sanitize evidence before persistence, logging, model requests and export. Secrets match by secret digest so moved secrets remain <code>pre-existing</code>.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-8</td><td>Persist Signal, Issue and Coverage records; signals are append-only and never gate. Signal-to-Issue promotion requires a named, versioned <code>delta</code> (this PR moved a unit across a stated threshold; report-only), <code>trend</code> (informational, nightly) or <code>policy</code> (repository-declared boundary; may block once activated per the allow-list) rule with a <code>claim</code>; aggregates never determine severity.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-9</td><td>Coverage records status <code>inspected/reused/skipped/blocked/incomplete</code>, reasons, reused-from run and inspected ranges keyed by <code>(file or feature, family, category)</code>. A skipped or incomplete unit is never clean and never closes an issue. Coverage gates only as “required lane incomplete” (exit 2).</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-11</td><td>Record resolution only after a relevant successful re-check; absence from a partial or skipped run is not resolution.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-44</td><td>Key signals by <code>(metric_id@version, scope_kind, scope_anchor, snapshot, window)</code>, with scope kinds function/file/feature/directory/repo, and keep secondary feature/area labels re-derived each run. Issues carry mechanism, rule, source anchors, rule-defined severity, audited dispositions, advisory annotations, attribution and <code>would_block</code>.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-45</td><td>Before any check can activate, issue hashes must exclude feature IDs, evidence identity must exclude line positions and quoted text, and dispositions must survive evidence drift.</td><td class="id">ADR-000</td></tr>
+    <tr class="grp"><td colspan="3">Mapping &amp; areas</td></tr>
+    <tr><td class="id">REQ-12</td><td>Use Clawpatch 0.7.3 heuristic output as the canonical feature vocabulary; agent mapper IDs never enter issue identity.</td><td class="id">ADR-000, ADR-004</td></tr>
+    <tr><td class="id">REQ-13</td><td>Use both mappers at onboarding, attempting the agent map on default-branch pushes and nightly runs until one completes and is reconciled with <code>LastAgentRefreshAt</code> recorded; afterwards only a maintainer's <code>scout map --refresh</code> or trusted <code>refresh-map</code> dispatch reruns it. Never run an agent map on PRs, merge-trigger, staleness or other automatic post-onboarding events; optional merge association may label files or propose pending areas but never starts an agent map. Remove <code>mapping.refresh.debounce</code> and reject policies that still set it.</td><td class="id">ADR-000, ADR-006, ADR-008</td></tr>
+    <tr><td class="id">REQ-14</td><td>Run the heuristic map offline; unowned files are a mapping-coverage gap but still receive every file-level lane and a directory measurement scope.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-15</td><td>Never run <code>clawpatch fix</code> or invoke the registry verifier.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-52</td><td>An onboarding/manual agent-map attempt without <code>codex</code> on <code>PATH</code> is <code>skipped (no model CLI)</code> before the egress check; with CLI but without <code>--allow-egress</code> it is <code>blocked</code>. The trusted workflow supplies that flag only with caller <code>authorize-egress</code>; skipped, blocked or incomplete attempts do not reconcile/relabel or record <code>LastAgentRefreshAt</code>, leaving onboarding open.</td><td class="id">ADR-005, ADR-006, ADR-008</td></tr>
+    <tr><td class="id">REQ-53</td><td>Represent areas as <code>{scout_area_id, title, file_set, origin, first_seen_snapshot, clawpatch_ids}</code> and reconcile agent-mapper features one-to-one by file-set Jaccard ≥ <code>mapping.areas.match_jaccard</code> 0.5 [ASSUMPTION; no study supports 0.5]. Matched areas retain IDs and update file sets/provenance; unmatched agent features create areas, unmatched active areas are kept unless fully heuristic-owned, and areas never constitute a second mapper or issue identity.</td><td class="id">ADR-006, ADR-008</td></tr>
+    <tr><td class="id">REQ-54</td><td>Key measurement scopes to heuristic features, with directory fallback truncated to 2 components below source root, fixed for a map version; agent areas are labels only and never re-key a signal series. Never use E1b’s PR clustering rule as a measurement-scope rule.</td><td class="id">ADR-001, ADR-006, ADR-008</td></tr>
+    <tr><td class="id">REQ-55</td><td>Ownership reads only the latest refresh merged output and excludes Clawpatch records with <code>status: "skipped"</code> from every ownership lookup.</td><td class="id">ADR-000, ADR-003, ADR-006, ADR-008</td></tr>
+    <tr><td class="id">REQ-56</td><td>An agent-map exception or zero-feature result keeps heuristic output and reports exploration incomplete, never refreshed or a failed assessment; area state and identity remain unchanged. Use <code>defaultMapTimeoutMS = "900000"</code> without treating observed timings as a guarantee.</td><td class="id">ADR-000, ADR-004, ADR-005, ADR-006, ADR-008</td></tr>
+    <tr><td class="id">REQ-57</td><td>Pin Clawpatch <code>Version = "0.7.3"</code>, <code>Revision = "734f81bc1514b52a0627edb0c24ebe1a18b36105"</code>, patch <code>scout-review-sanitize-v3</code> sha256 <code>dc867503…e6ce3</code>, and pnpm 11.25.0. Clawpatch 0.8.x requires a separate review.</td><td class="id">ADR-004, ADR-005</td></tr>
+    <tr><td class="id">REQ-58</td><td>Agent mapping invokes <code>map --source agent --provider codex --model gpt-6-luna --reasoning-effort xhigh</code>, with model/effort fixed in code, ignoring configured provider and never falling back to <code>claude</code>. A mapper-model change requires a code change plus a council-signed study on X2b’s protocol before adopting an area default for it.</td><td class="id">ADR-004, ADR-005</td></tr>
+    <tr class="grp"><td colspan="3">Lanes &amp; analyzers</td></tr>
+    <tr><td class="id">REQ-16</td><td>Declare lanes as <code>{family, trigger ∈ {pr, push, nightly}, mode ∈ {blocking-eligible, report, signal}, requires ∈ {none, tool, model-cli, decision-egress}}</code> and report <code>ran/reused/skipped/blocked/failed</code> health. Required lane health drives exit 2/3; findings drive exit 1; a required blocking lane that could not run on head gives exit 2; optional lanes never turn a required lane red.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr><td class="id">REQ-17</td><td>Provide <code>guardrails</code>, <code>measures</code>, <code>history</code>, <code>security</code>, <code>artifacts</code>, <code>rubric</code>, <code>architecture-policy</code>, <code>performance</code> and opt-in <code>contextual</code>/<code>clawpatch-review</code> lanes. Findings require an observable mechanism and evidence location; absent tool output is not proof of safety.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-18</td><td><code>scout readiness --matrix</code> prints measured/detected/reviewed capabilities per language, with matching JSON and exit status. Missing optional tools never block an otherwise ready assessment; model-CLI skips appear in health, summary and matrix without changing exit status.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr><td class="id">REQ-62</td><td>Run guardrails on PR/push base/head diffs using native parsers for <code>.golangci</code>, <code>staticcheck.conf</code>, <code>pyproject</code>/<code>ruff.toml</code>/<code>.flake8</code>/mypy/pyright, <code>eslint</code>/<code>biome</code>/<code>tsconfig*</code>/jest and per-language suppression patterns. Run measures full on push/nightly and changed files on PR, history on push/nightly, and artifacts/security/architecture-policy on PR/push; artifacts ingest LCOV/Cobertura/JUnit plus PR metadata, revision/producer matched, with <code>unmeasured</code> when absent.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr><td class="id">REQ-63</td><td>Run security with pinned Gitleaks 8.30.1 exact rule IDs and Semgrep <code>p/ci</code>, <code>p/secrets</code>, <code>p/&lt;lang&gt;</code>; run performance (Ruff PERF and CSS rule) report-only on push/nightly. <code>contextual</code>/<code>clawpatch-review</code> are nightly opt-in report-only model-CLI lanes.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr><td class="id">REQ-64</td><td>Import graphs/cycles, guardrails and rubric launch for Go, Python and TypeScript; CC/NLOC/duplication, git history and secrets/CI security cover baseline languages; CRAP requires a produced artifact and semantic review is opt-in. Rust/Java import graph/guardrail/rubric support is P3, not launch, and C# has no such capability.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr><td class="id">REQ-65</td><td>TypeScript graphs must handle ESM/CJS, <code>tsconfig</code> <code>paths</code>/<code>baseUrl</code>, and separate type-only edges [ASSUMPTION]; use webpack/nest fixtures and regression. TypeScript checks require the same Track A/B promotion as every other language, with no claimed existing precision evidence.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr><td class="id">REQ-66</td><td>Use corpus-tuned <code>rules/security/semgrep-python-multipart-cve-2024-24762.yaml</code>, <code>semgrep-javascript-current-script-dom-clobbering.yaml</code> and <code>rules/performance/semgrep-css-height-transition.yaml</code> as selfeval regression fixtures; retain <code>semgrep-actions-mutable-ref.yaml</code> and <code>semgrep-python-unsafe-yaml-load.yaml</code>.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr><td class="id">REQ-67</td><td>The rubric lane covers only <code>silent_fallbacks</code>, <code>retry_loops_hiding_failures</code>, <code>error_message_destruction</code>, <code>validation_theater</code>, <code>stub_implementations</code>, <code>scaffold_remnants</code>, <code>lenient_parsing</code>, <code>silent_truncation</code>, <code>auto_correction_without_warning</code>, <code>log_level_hiding</code>, <code>sentinel_values_as_errors</code>, <code>ignoring_return_values</code>, not the 45-pattern cross-product. Evaluate changed functions on PRs and a nightly sample, report-only.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr><td class="id">REQ-68</td><td>Use Semgrep for parser-decidable <code>ignoring_return_values</code>, <code>silent_truncation</code> forms and bare <code>except</code>; otherwise fan one independent Jev Noul per pattern into one request per changed function, with true/false checklists and Go-idiom exclusions. Compose any-pattern in code, use named per-pattern thresholds from X4 labels (never literals), and exclude as <code>unmeasured</code> any pattern unable to reach X4’s preregistered positive count.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr><td class="id">REQ-69</td><td>Measure billed <code>usage</code> per rubric function in Phase 5; ≈ $0.12 per 200-function PR is [ASSUMPTION], not a budget guarantee.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr class="grp"><td colspan="3">Judgment: Jev, LLMs &amp; humans</td></tr>
+    <tr><td class="id">REQ-28</td><td>Deterministic Go owns eligibility, cache keys, identity, gate, measurements, trend flags and redaction; Jev is advisory, default-on at launch, with triage output only in annotations and no <code>issues</code> import of <code>decisions</code>; an attacker can at most lower a rank. Reasoning models provide opt-in discovery/association only, humans own dispositions/policy/activation, and untrusted association input can at most change an association label or propose a pending area, which only a maintainer accepts; association never changes issue state, gate, identity or signal series.</td><td class="id">ADR-000, ADR-008</td></tr>
+    <tr><td class="id">REQ-29</td><td>Use typed <code>noul|choice|score</code> questions with version key <code>question_id@&lt;sha256 of canonical JSON {instructions, criteria, state_shape, kind, option_order_rule, resolved_model_id}&gt;</code>, reject mismatched resolved models, and store rank-formula/baseline versions with every ranking and disposition. Cap calls by <code>policy.decisions.max_per_run</code> (default 2,000 [ASSUMPTION]) and billed cost by <code>policy.decisions.max_cost_usd</code> (default $0.50 [ASSUMPTION]); stop on unreported billed cost and always retain an unranked view.</td><td class="id">ADR-002, ADR-003</td></tr>
+    <tr><td class="id">REQ-30</td><td>Jev never changes issue state or the gate, closes or dismisses issues, or defines identity; <code>P(real_defect)</code> is not calibrated confidence and is used only for ranking unless a preregistered reliability check permits numerical use.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr><td class="id">REQ-86</td><td><code>question_id</code> is code-only and never sent to the model; option ordering is a fixed list or unit-ID-seeded permutation, with realized order in the redacted exact request body stored beside each annotation, not in the version key. Resolved-model changes create new keys and mark prior annotations stale.</td><td class="id">ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-87</td><td>Require a Jev model pin in <code>.scout/policy.yaml</code>, reject <code>jev-latest</code>, <code>jev-preview</code> and undated <code>typesafe/jev-1.14</code> aliases, and compare every reported response model to the pin, discarding and counting mismatches as unit <code>incomplete</code>. Launch pin is <code>typesafe/jev-1.14-20261014</code> via OpenRouter <code>alpha/decisions</code>; <code>scout init --decisions</code> pins new configuration but never overwrites an existing pin, and the route is rechecked at each model bump.</td><td class="id">ADR-000, ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-88</td><td>Bound and redact state with the contextual sanitizer without describing it as an injection defence; compute path role/test/fixture/generated status in code and supply them as facts in state. Questions include a data-not-instructions clause, reference backticked state paths and fan independent narrow questions into one request per unit.</td><td class="id">ADR-000, ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-89</td><td>Launch ranking is a named formula over Jev outputs only; weight changes re-rank stored answers without model calls. Persist rank formula ID, weights and constituent question versions, plus baseline formula ID, rule-weight-table digest and path-role-classifier version, with every ranking and disposition; how Jev-quality statistics are keyed to them is fixed by X1’s preregistration.</td><td class="id">ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-90</td><td>Any threshold, band, label summary or audit statistic for another question version is stale and disclosed <code>thresholds stale</code>; if a threshold gates behaviour, fall back to deterministic ranking until remeasured or maintainer acceptance of <code>provisional</code>. Ordinal launch ranking continues with disclosure because no ranking threshold gates behaviour; association uses its separate provisional policy-threshold rules, which gate label routing, not ranking or the gate.</td><td class="id">ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-91</td><td>Choose triage calls in deterministic-baseline order with issue-ID ties (<code>changed-in-PR</code> = 1 outside PR runs; both part of the baseline formula ID), then the other question families (rubric functions; commit and unowned-file units once X5/X3 admit them) in stable unit-key order: changed-file path/function-start, commit hash or file path. Count unreached units in lane health as <code>n/N</code>, and measure billed usage in Phase 5 to set the final bound covering triage and rubric.</td><td class="id">ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-92</td><td>Network errors, timeouts, HTTP 4xx/5xx, schema-invalid answers, exhausted 429/529 exponential backoff honoring <code>retry-after</code>, <code>max_tokens_exceeded</code>/422 (non-retryable), missing key, fork and egress off each leave a failed unit with no annotation and disclose <code>ranking: deterministic (reason)</code> per affected finding, never a pass or low score; any other non-success response is likewise a failed unit. Caps disclose <code>ranking: partial (n/N)</code>.</td><td class="id">ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-93</td><td>The optional decisions lane never affects exit status: all annotated is <code>ran</code>, partial annotations are <code>ran</code> with per-finding disclosures, forbidden calls are <code>skipped (reason)</code>, and every attempted call failing is <code>failed</code>. Always store the deterministic <code>rule weight × changed-in-PR × path role</code> baseline for every finding.</td><td class="id">ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-94</td><td>Nightly audits independently draw each unit at its stored inclusion probability under a stored sampler version and present items blind to annotation, stratum and rank; audit-derived metrics use inverse-inclusion weights. Interim 5 % total audits spread over top, bottom and unannotated units, their unit/strata/fractions/floor are [ASSUMPTION] until X1 signs off (which may discard interim draws), rank cuts remain unset and Jev-quality lines remain <code>insufficient</code>.</td><td class="id">ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-95</td><td>Launch has no confidence band or Jev-routed second opinion; high severity is a deterministic rule attribute and maintainers request second opinions. Bands require preregistered measurement of both stages on the same labelled cases including <code>claude -p</code> cost and latency.</td><td class="id">ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-96</td><td>After X1’s preregistration is signed off, display a high/normal/low rank bucket cut by rank position within the run, never the probability number, using cut points and audit floor independent of P. Displaying P as a percent/likelihood, hybrid ranking of P with rule weights, or any P threshold needs a preregistered reliability check first; store probabilities in full.</td><td class="id">ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-97</td><td><code>scout init</code> stores decisions enablement/provider/egress acknowledgement in <code>.scout/policy.yaml</code>, with separate consent per model-CLI lane; Jev runs only if enabled, keyed and allowed egress for the trigger. Launch is <code>provisional</code>; disclose every ranking as <code>ranking: jev (unvalidated, X1 pending)</code> until X1 reports, or deterministic reason on fork/key/egress absence.</td><td class="id">ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-98</td><td>Per-decision tuning minimums default to 0.8/0.8, raised to 0.9 on the costlier side (<code>triage.real_defect</code>: recall [ASSUMPTION]), status <code>provisional</code>, until user costs/minimums are set; they gate nothing while ranking is ordinal. Defaults substitute only for precision/recall point minimums (X3/X10/X5 points), not X1 gain or X4/X5 lower bounds, and each preregistration confirms/replaces carried rev-2.1 values and names the costlier side (X10 recall n/a).</td><td class="id">ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-99</td><td>Follow Jev adapter practices recorded Met/Fixed in <code>docs/jev-adapter-audit.md</code>; its Design-level rows 5, 35 and 38 remain open rather than silently treated as implemented, and its backlog B-1–B-4 records the follow-ups. B-3 runs the row-30 flip-rate harness on the first Choice that gates anything. Run and record the row-30 <code>orderflip</code> harness on <code>merge.which_area</code> before any release enables association; its 20 % second permutation is not a substitute, and each Choice stores order and reports a two-order flip rate on its own labelled set.</td><td class="id">ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-100</td><td>Keep human dispositions separate from evaluation labels, recording audit/non-audit view and annotation visibility for every disposition. For Jev labels, freeze a one-page version-keyed guide with synthetic examples before labelling; use blind independent no-tools/no-shared-context <code>claude -p</code> and <code>codex exec</code> sessions plus a third reason-recording adjudicator on disagreements, never showing answer/rank/score/stratum/prior verdict.</td><td class="id">ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-101</td><td>There is no per-case user review. Append labels, never edit: session rows are provenance <code>agent</code> inputs, not labels, adjudications are <code>agent_reviewed</code>, never <code>human</code>; the 52 user-confirmed <code>evaluation/jev-triage-labels-v1/</code> cases retain <code>human</code>. A human label overrides agent_reviewed for the same question/unit; within provenance use the latest adjudication under the current guide, while product dispositions and shadow-window triage remain human.</td><td class="id">ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-102</td><td>No Jev-versus-label comparison, threshold, band or default change occurs outside a council-signed preregistration, which fixes estimator, labels, volumes, precision/recall minima, false-action/miss costs, written policy and escalation loss. X6/X9 hand-check/<code>would_block</code> labels follow their own preregistrations.</td><td class="id">ADR-002, ADR-003, ADR-008</td></tr>
+    <tr class="grp"><td colspan="3">CI guardian &amp; gate</td></tr>
+    <tr><td class="id">REQ-19</td><td>Every adopted check has positive, clean-negative, boundary, redaction and attribution fixtures (line move, file rename, version bump, config migration, tool upgrade, new file). Keep the <code>evaluation/reference-v1.json</code> regression: 9 true findings detected and 13 false positives not flagged.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-20</td><td>Compare head to a base evaluated with identical tool/rule/policy digests; only <code>introduced</code> or <code>regressed</code> issues from activated eligible checks can block. <code>pre-existing</code> never blocks, and <code>unknown</code> reports with a banner and cannot enter the gate or <code>would_block</code>.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-21</td><td>Replace the <code>--fail-on</code> gate with profiles and attribution. Adoption defaults to <code>report</code>, which never fails on findings; under <code>report</code>, exits 2 and 3 are surfaced as a neutral check, not a failure. <code>guardian</code> gates only checks explicitly activated per repository. The eligible allow-list is not active by default and accepts no wildcards.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-22</td><td>Activate each check only through a maintainer PR to base policy after at least 14 days AND at least 5 comparable-base PR runs, both configurable; during the window, maintainers triage every persisted <code>would_block</code> event <code>warranted|not warranted|undecided</code>, with zero <code>not warranted</code> and <code>unknown</code> in at most 10 % of PR runs [ASSUMPTION]. Parser/rule version bumps return that repo's check to shadow; at least 3 confirmed-unwarranted blocks in the trailing 20 blocks auto-demote it to report for that repo and record it [ASSUMPTION], while rare secrets/action-ref checks with zero events at window end may activate <code>provisional: true</code> on Track A alone; for them, first-baseline <code>pre-existing</code> counts in non-generated paths are the fire-rate proxy.</td><td class="id">ADR-000, ADR-003</td></tr>
+    <tr><td class="id">REQ-23</td><td>Only maintainers (policy-declared team / <code>CODEOWNERS</code>) may override via native justified suppression, <code>scout:allow &lt;id&gt; reason=… ref=…</code> or <code>scout-override</code>. Store <code>disposition: accepted{actor, pr, reason}</code>, never delete findings, and trigger review rather than automatically labelling an override a false positive.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-24</td><td>Return <code>0 clean / 1 gated / 2 incomplete / 3 unavailable</code> with precedence 3 &gt; 2 &gt; 1 &gt; 0. Always emit JSON <code>gate</code>, <code>health</code>, <code>would_block</code>, <code>ranking</code> in <code>scout-assessment.json</code>, a ≤ 60-line Markdown summary and optional SARIF.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-70</td><td>Eligible <code>security.ci-mutable-action-ref</code> detects new remote <code>uses: owner/repo[/path]@ref</code> with non-40-hex ref only in <code>.github/workflows/*.y*ml</code>; local <code>./</code> and <code>docker://</code> do not match. Match identity by <code>(workflow, owner/repo)</code>, not ref, so version bumps stay pre-existing; <code>trusted_owners: [actions, github]</code> makes these owners report-only [ASSUMPTION].</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-71</td><td>Only exact structured Gitleaks IDs from the pinned <code>gitleaks_rule_ids.go</code> are eligible as <code>security.secrets.&lt;rule&gt;</code> (including <code>aws-access-token</code>, <code>github-pat</code>, <code>github-fine-grained-pat</code>, <code>github-app-token</code>, <code>private-key</code>, exact <code>slack-*</code>/<code>stripe-*</code> IDs and <code>gcp-api-key</code>); never accept wildcard IDs, and <code>generic-api-key</code> stays report-only. Do not path-exempt fixture/revoked keys; use <code>--redact=100</code>, <code>--ignore-gitleaks-allow --gitleaks-ignore-path /dev/null</code>, secret-digest matching and Scout-side overrides.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-72</td><td><code>guardrails.CONFIG.ignores-added.&lt;tool&gt;</code> is eligible only for effective ignore-set growth of a tool enabled in base: Go <code>.golangci.y*ml</code> <code>linters.disable</code>, <code>issues.exclude-rules</code>/<code>exclude-dirs</code>/<code>exclude-files</code> and <code>staticcheck.conf</code> <code>checks</code> gains of <code>-SAxxxx</code>; Python <code>pyproject [tool.ruff(.lint)] ignore/extend-ignore/per-file-ignores/exclude</code>, <code>ruff.toml</code>, <code>.flake8</code>/<code>setup.cfg</code> <code>ignore</code>, <code>[tool.mypy] ignore_errors=true</code> and <code>[[tool.mypy.overrides]]</code> growth. TypeScript includes <code>.eslintrc.{json,yaml,cjs}</code>/<code>eslint.config.*</code> rules to <code>off</code>/<code>0</code>, <code>ignorePatterns</code>/<code>ignores</code>/<code>.eslintignore</code> growth, <code>biome.json</code> rules off and <code>tsconfig*.json</code> <code>exclude</code> growth.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-73</td><td>For config checks, a same-PR tool-version-key change is <code>unknown</code> and report-only; new config without a base is report-only, and non-statically-parsable JS configs are <code>unknown</code>. Effective inherited settings must be resolved through <code>extends</code>/inheritance or reported <code>unknown</code>; a textual <code>strict:false</code> alone is insufficient.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-74</td><td><code>guardrails.CONFIG.strictness-lowered.&lt;tool&gt;</code> permits only named effective transitions: Go <code>linters.enable</code> removal/<code>enable-all</code> false; mypy <code>strict</code>/<code>disallow_untyped_defs</code>/<code>check_untyped_defs</code> true→false, pyright <code>typeCheckingMode</code> strict→standard/basic, coverage <code>fail_under</code> decrease. TypeScript includes effective <code>strict</code>/<code>strictNullChecks</code>/<code>noImplicitAny</code>/<code>noUncheckedIndexedAccess</code> true→false, eslint <code>error</code>→<code>warn</code> and jest <code>coverageThreshold</code> decrease; replacement validators use the justified escape.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-75</td><td><code>guardrails.SUPPRESS.added.unscoped</code> is eligible only for file-level/rule-less suppression in non-test, non-generated code: Go bare <code>//nolint</code> or <code>//nolint:all</code>; Python bare <code># noqa</code>, <code># type: ignore</code>, <code># pylint: disable=all</code>, <code>@no_type_check</code>, <code># mypy: ignore-errors</code>; TypeScript <code>// @ts-nocheck</code>, bare <code>/* eslint-disable */</code>, bare <code>// @ts-ignore</code>. Moves/unchanged suppression are pre-existing, generated/vendored paths are report-only, and scoped forms remain report-only.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-76</td><td><code>guardrails.TESTQ.focused-test-added</code> detects committed <code>.only</code>/<code>fit</code>/<code>fdescribe</code>/<code>test.only</code>/<code>describe.only</code> in jest/vitest/mocha/playwright test files. Go/Python have no corresponding construct, and intentional uses require a Scout override.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-77</td><td>Accept native justified escapes <code>//nolint:rule // reason</code>, <code># noqa: CODE  # reason</code>, <code># type: ignore[code]  # reason</code>, <code>// eslint-disable-next-line rule -- reason</code>, <code>// @ts-expect-error reason</code>, <code>// biome-ignore lint/x: reason</code>; secrets/config/workflow escape remains Scout-side. Escapes never delete the finding or bypass maintainer authority.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-78</td><td>Activation policy records <code>blocking: [{id, version, activated_at, evidence: {would_block, warranted, window_days, pr_runs, dossier_digest}}]</code> and uses <code>policy.blocking.shadow.min_days</code> / <code>min_pr_runs</code>. Recomputed paired-base runs count as comparable-base PR runs, and the <code>unknown</code> bound counts each PR run once if <code>comparison: none</code> or any base-gap unknown exists.</td><td class="id">ADR-000, ADR-003</td></tr>
+    <tr><td class="id">REQ-79</td><td>Keep inertia deltas, CC/NLOC, clones, rework, score thresholds, rubric/Jev-ranked/contextual/clawpatch-review findings, hollow tests <code>TESTQ.{constant,literal,no}-assert</code>, <code>delegating</code>, <code>skipped</code>, and changed-line coverage report-only. Changed-line coverage requires producer/revision match and otherwise is <code>unmeasured</code>.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-80</td><td>Import cycles stay report-only unless repository policy declares cycle prohibition and <code>architecture-policy</code> completes per-repository activation; declared layers/max CC likewise require policy and activation. Exclude and count type-only edges (including Python <code>TYPE_CHECKING</code> / TypeScript <code>import type</code>) rather than blocking naive cycles.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-81</td><td>Keep <code>GATE.coverage-pragma-added</code> (<code># pragma: no cover</code>, <code>/* istanbul|c8|v8 ignore */</code>, coverage <code>exclude_lines</code> growth) report-only at launch; per-repo promotion requires an existing <code>fail_under</code>/<code>coverageThreshold</code> gate and an unjustified pragma [ASSUMPTION]. Go has no coverage pragma.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-82</td><td>Keep <code>GATE.ci-step-neutered</code> (<code>continue-on-error: true</code> on existing jobs, appended <code>|| true</code>, <code>if: false</code>) report-only, including legitimate experimental matrix patterns. Other security checks (<code>security.ci-pull_request_target-checkout</code>, <code>ci-script-injection</code>, <code>unsafe-yaml-load</code>, other <code>p/ci</code>/<code>p/&lt;lang&gt;</code>) require Track A fixtures plus Track B before promotion.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-83</td><td>Keep scoped suppressions, scoped <code>//nolint:rule</code>, <code>@ts-expect-error</code>, <code>.gitleaksignore</code> edits, test-file deletion, Ruff PERF/performance and tech/EOL checks report-only.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-84</td><td>Track A grants global eligibility only after all fixture classes pass, no known systematic negative class remains and a versioned evidence dossier exists; Track B grants per-repo activation and retention. Track gate-disable events and record auto-demotion; corpus double-labelled precision is audit/demotion evidence, never a launch prerequisite, and must state its lower-bound target and computed required sample size rather than a fixed 50.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-85</td><td>Gap-to-rule promotion keeps FXL’s FCR-shaped record and fixture evidence, without approval machinery; adopted checks require attribution fixtures as well as positive/negative/boundary/redaction fixtures. Native justified overrides feed retention review, never automatic false-positive labels.</td><td class="id">ADR-000</td></tr>
+    <tr class="grp"><td colspan="3">Baseline &amp; state</td></tr>
+    <tr><td class="id">REQ-3</td><td>CI/nightly runs are differential and restore a baseline from <code>scout/state</code>; persistent/local runs use resumable SQLite WAL over the same state.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-10</td><td>Create new stores directly at <code>user_version</code> 13; migrate only the Scout v1 store at <code>user_version</code> 3 by re-anchoring issues, retaining <code>legacy_id</code>, dropping approval fields, recording reasons in <code>issue_migration_ambiguities</code> and linking indistinguishable occurrences by <code>ambiguous_with</code>. Refuse versions 1, 2 and 4–12 with a re-baseline error, reading the version on a read-only connection before any lock, journal-mode change or migration.</td><td class="id">ADR-007, ADR-008</td></tr>
+    <tr><td class="id">REQ-26</td><td>Use protected <code>scout/state</code> as the durable baseline, publishing deterministic JSONL export/import with expected-parent compare-and-swap and retry from trusted default-branch runs only. Never commit SQLite/WAL or rely solely on cache/artifacts. JSONL history is squash-safe [ASSUMPTION]. S3 is deferred to an optional adapter until the branch backend is proven.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-27</td><td>Adoption is <code>scout init</code> → consent → full default-branch run → baseline; PR runs fetch the tip and resolve merge-base coverage. Absent baseline, mismatched digests/revision or no configured remote cause a paired merge-base recompute with <code>comparison: recomputed</code> and a reason banner (<code>no baseline published</code> before a baseline is published); the recompute takes its lane health from the base scan. No comparable base gives whole-run <code>unknown</code> (<code>comparison: none</code>) with banner <code>no baseline available (reason); nothing is classified introduced</code>; an otherwise-introduced non-<code>guardrails.*</code> finding becomes <code>unknown</code> when its base family was blocked/failed or manifest-<code>uninspected</code>, without changing <code>pre-existing</code>/<code>regressed</code> attribution. Such findings are excluded from <code>would_block</code> and the gate, with one gate reason per uninspected family.</td><td class="id">ADR-000, ADR-003, ADR-007</td></tr>
+    <tr><td class="id">REQ-46</td><td>The re-baseline refusal names the remedy: remove <code>.scout/state.sqlite*</code>, then <code>scout state restore --remote origin</code> or <code>scout import --from &lt;export directory&gt;</code>; disclose loss of unpublished local state and that v1 versions 1/2 have no export. Before refusing an unsupported schema, do not write the database, create <code>writer.lock</code> or <code>artifacts/</code>, or change journal mode; SQLite read-only WAL side files may still be created.</td><td class="id">ADR-007, ADR-008</td></tr>
+    <tr><td class="id">REQ-47</td><td>Create <code>issue_migration_ambiguities</code> in every store; new and v1-reanchored stores must have identical ordered column definitions, indexes (including uniqueness, origin, partial status, column ordering/collation), foreign keys and <code>sqlite_schema</code> object types/names, though stored CREATE text may differ. Build migration fixtures from v1 DDL (<code>schemaV1</code>, <code>inventory_snapshots</code>, <code>schemaV3</code> at <code>41ea1eb</code>), never by rewinding a current store version.</td><td class="id">ADR-007, ADR-008</td></tr>
+    <tr><td class="id">REQ-48</td><td>Export deterministic <code>state/v1/{issues.jsonl, dispositions.jsonl, signals/&lt;metric&gt;.jsonl, areas.jsonl, associations.jsonl, would_block.jsonl, coverage-summary.json, manifest.json}</code> with one record per line; bulky evidence stays in workflow artifacts. Import an absent <code>associations.jsonl</code> as no association records and mark it <code>absent</code> in the manifest like <code>areas.jsonl</code>.</td><td class="id">ADR-007, ADR-008</td></tr>
+    <tr><td class="id">REQ-49</td><td>A comparable published baseline must match head tool/policy digests and merge-base revision and carry non-null <code>uninspected: [{family, reason}]</code>; refuse absent/null <code>uninspected</code> before digest/revision comparison as <code>unavailable</code>, exit 3, with re-baseline guidance. An empty list means every family was inspected.</td><td class="id">ADR-000, ADR-003, ADR-007, ADR-008</td></tr>
+    <tr><td class="id">REQ-50</td><td><code>state restore</code> imports comparison revision/digests only together with recorded lane health; <code>Store.Import</code> replaces <code>export_base</code> when the manifest carries <code>uninspected</code>, otherwise deletes it in the import transaction. Export uses the latest finalized run, else valid imported metadata, else empty revision/digests and <code>uninspected: []</code>; the next trusted publish ending 0/1 writes measured health.</td><td class="id">ADR-007, ADR-008</td></tr>
+    <tr><td class="id">REQ-51</td><td>PR/fork state access is read-only; concurrent trusted publishes must converge via expected-parent compare-and-swap/retry. <code>scout import</code> must reproduce the exported ledger byte-identically, and restore/export must preserve pending areas, association rows, refresh-guard window and flag; a completed manual map resets the guard generation.</td><td class="id">ADR-007, ADR-008</td></tr>
+    <tr class="grp"><td colspan="3">Measures &amp; inertia signals</td></tr>
+    <tr><td class="id">REQ-33</td><td>Store per-scope versioned <code>metric@version</code> signals with numerator, denominator, population digest, exclusions, tool/config digests and missingness (<code>unmeasured</code> ≠ 0, <code>insufficient</code> ≠ good). Every panel is <code>claim: descriptive</code> with principal, exposure and interest presented side by side; report levels, deltas and trend direction. These measures never gate, set severity, forecast or compute a composite.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-34</td><td>Only flag an adverse trend after at least 3 consecutive comparable windows beyond a practical delta on a stable population; interest with <code>n &lt; 20</code> changes is <code>insufficient</code> [ASSUMPTION]. The watch list is descriptive without a composite, and annotated intervention windows are excluded from trend flags.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-35</td><td>Only a preregistered council-signed pooled test may upgrade a metric to <code>predictive</code> for a named outcome: ≥ 5 % relative MSE reduction, CI lower bound &gt; 0, consistency across ≥ all-but-one repositories with ≥ 10 units, multiplicity-controlled; the qualifying study may be signed off under Scout's experiment rules or inertia-bench's rules. Scout never upgrades claims itself, and repeated dashboard significance never upgrades a claim. Causal claims need a controlled-continuation or within-scope event-study design signed off the same way; gate use is a further separate decision. Principal series are structure to watch, not cost.</td><td class="id">ADR-000, ADR-001, ADR-002, ADR-003</td></tr>
+    <tr><td class="id">REQ-103</td><td>Measure <code>scout.cc@1</code>: per function CC, NLOC; scope <code>n_high_cc</code> = #functions CC &gt; 10, <code>cc_p90</code>, <code>cc_max</code>. Use lizard (pinned); availability: Phase 3.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-104</td><td>Measure <code>scout.complex_burden@1</code>: B = Σ_{f: CC_f&gt;10} CC_f·√NLOC_f ÷ Σ_f CC_f·√NLOC_f, higher = worse (E1 <code>erosion</code> = 1 − B). Use lizard; availability: Phase 3.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-105</td><td>Measure <code>scout.dup_pct@1</code>: duplicated eligible source-line positions ÷ eligible source-line positions, one tokenizer population, no cap; clone groups kept with cross-scope flag. Use jscpd 4.0.8 (min-tokens 50, min-lines 5, <code>--max-lines 10000 --max-size 500kb</code>); availability: Phase 3.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-106</td><td>Measure <code>scout.cycle_mass@1</code>: internal import edges on a directed cycle ÷ internal import edges; <code>cross_boundary_cycles</code> separate; <code>unresolved_imports</code> reported; type-only edges excluded and counted. Use import graph (Go, Python, TS); availability: Phase 3 tier 1; <code>unmeasured</code> elsewhere.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-107</td><td>Measure <code>scout.crap@1</code>: per function CRAP = CC² × (1 − cov)³ + CC, cov ∈ [0,1]; scope <code>crap_load</code> = Σ_{CRAP&gt;30} CRAP; <code>uncovered_cc_mass</code> = Σ CC_f·(1−cov_f) ÷ Σ CC_f. Use lizard + revision-matched LCOV/Cobertura; availability: Phase 3 when the artifact exists; else <code>unmeasured</code>, never 0.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-108</td><td>Measure <code>scout.propagation_cost@1</code>: mean fraction of scope nodes reachable via imports (MacCormack 2006); Decoupling Level deferred. Use import graph; availability: Phase 5.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-109</td><td>Measure <code>scout.cognitive_cc@1</code>: SonarSource nesting-weighted complexity. Use gocognit / complexipy / eslint-sonarjs [ASSUMPTION: adapters]; availability: later, not in launch set.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-110</td><td>Measure <code>scout.stale_reference_rate@1</code>: backticked identifiers/paths in <code>AGENTS.md</code>, <code>CLAUDE.md</code>, <code>README*</code>, docstrings resolving to no file/symbol ÷ references checked. Use regex + inventory + lizard symbols; availability: Phase 5, <code>exploratory</code>, deterministic (source: <code>docs/inertia-research.md</code> §5 at commit <code>9a3d19f5</code>).</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-111</td><td>Measure <code>scout.burden_density@1</code>: Σ_f hi_f ÷ Σ_f NLOC_f, hi_f = Σ_{fn: CC&gt;10} CC·√NLOC_fn, over the scope's eligible files ≥ 10 NLOC — the same ratio as E1b's per-PR <code>Q</code> (prereg §3.1), computed on the scope population under REQ-125 eligibility, so values are not interchangeable with E1b's. Use lizard; availability: Phase 3.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-112</td><td>Measure <code>scout.changes@1</code> (exposure): changes; distinct authors. Use git; availability: Phase 3.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-113</td><td>Measure <code>scout.hotspot@1</code>: Σ_files (Σ_f CC_f) · log1p(changes to file) ÷ scope NLOC. Use lizard + git; availability: Phase 3.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-114</td><td>Measure <code>scout.churn_per_change@1</code> (I1): p50, p90 of added + removed lines in scope files per change. Use git; availability: Phase 3.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-115</td><td>Measure <code>scout.amplification@1</code> (I2): p50 eligible files touched repo-wide per change touching the scope; p50 scopes touched. Use git; availability: Phase 3.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-116</td><td>Measure <code>scout.follow_up_rate@1</code> (I3): changes followed ≤ 7 d by a change touching ≥ 1 same file ÷ changes with a complete 7-day observation. Use git; availability: Phase 3.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-117</td><td>Measure <code>scout.pr_effort@1</code> (I4): p50 and p90 of author active hours (git-hours sessions on the author timestamps of the PR's own commits, from the PR commit list: gaps ≤ 4 h add the gap, a longer gap starts a session, 0.5 h credit per session; single-commit PRs sit at the 0.5 h floor and are counted separately — E1b prereg §3.3; G3b ρ 0.46 with churn); commits/PR; review submissions + comments/PR; created→merged hours as queue time, reported separately and never as effort (E1b's effort construct excludes review and queue waiting, prereg §3.3); <code>unmeasured</code> &lt; 5 linked PRs. Use PR commit list, <code>pull_request</code> payload + API (<code>pull-requests: read</code>); availability: Phase 3 in CI; <code>unmeasured</code> locally (squash merges remove PR commits from local history).</td><td class="id">ADR-000, ADR-001, ADR-003</td></tr>
+    <tr><td class="id">REQ-118</td><td>Measure <code>scout.dispersion@1</code> (I5): p90 ÷ p50 of churn (git, always) and of PR active hours (<code>unmeasured</code> whenever I4 is), when p50 &gt; 0. Use git, PR; availability: Phase 3.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-119</td><td>Measure <code>scout.change_coupling@1</code>: changes touching scope and ≥ 1 other scope ÷ changes touching scope; pairwise support and P(b|a) for top pairs; <code>unexplained</code> subset = pairs with no import edge (tier 1 only). Use git (+ import graph); availability: Phase 3; <code>unexplained</code> Phase 5.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-120</td><td>Measure <code>scout.ownership@1</code>: top author's changes ÷ scope changes; author count; minor contributors &lt; 5 %; pseudonymised keys, never exported as names. Use git; availability: Phase 3.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-121</td><td>Measure <code>scout.rework@1</code>: removed lines with blame origin inside the window ÷ removed lines. Use git blame; availability: Phase 3.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-122</td><td>Measure <code>scout.batch_size@1</code>: lines and files per PR (p50, p90). Use PR metadata; availability: Phase 3.</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-123</td><td>Measure <code>scout.moved_vs_pasted@1</code>: per change: added blocks ≥ 5 lines matching a removed block in the same change = <code>moved</code>, matching base-tree lines = <code>pasted</code>, else <code>new</code>; window shares. Use git diff + jscpd on hunks; availability: Phase 5, <code>exploratory</code> (X9).</td><td class="id">ADR-000, ADR-001</td></tr>
+    <tr><td class="id">REQ-124</td><td>Measure <code>scout.fix_touches@1</code> (H3 proxy): <code>fix</code>-classified changes touching scope ÷ changes. Use Jev Noul <code>is_fix</code> with a tuned threshold (X5), binary rather than 5-class argmax; enable only after X5; availability: after X5; regex precision 0.52 (E1) is disqualifying; E1b-v2's G4 (<code>evaluation/change-cost-v2/validation-gates.json</code>) has <code>fix→fix</code> 24 of 30 pipeline-<code>fix</code> rows (precision 0.80, Wilson 95 % [0.63, 0.91], derived here) on PR-level state: a prior, not evidence for commit-level input.</td><td class="id">ADR-000, ADR-001, ADR-002</td></tr>
+    <tr><td class="id">REQ-125</td><td>Principal populations are production source by <code>evaluation/inertia-v1/exclusions.json</code> extension/exclusion rules, NLOC ≥ 10, excluding generated/vendored path roles; store the population digest. Compute deltas only for consecutive identical-population digests, report changed membership as <code>population_delta</code> rather than degradation, and PR deltas only on changed files, report-only with <code>claim: descriptive</code>.</td><td class="id">ADR-000, ADR-001, ADR-003</td></tr>
+    <tr><td class="id">REQ-126</td><td>Use calendar-aligned fixed non-overlapping windows of W = 90 days [ASSUMPTION] and store a trailing 365-day view. A commit change is non-merge, non-bot, at most 50 files and at least one eligible scope file; bot means literal author suffix <code>[bot]</code> or exact author-name/email match in default-empty <code>history.bots</code>, never substring matching.</td><td class="id">ADR-000, ADR-001, ADR-003</td></tr>
+    <tr><td class="id">REQ-127</td><td>PR measures use merged non-bot PRs with ≤ 50 changed files and ≤ 100 commits and at least one eligible scope file from <code>PullRequest.files</code>; bots are API type <code>Bot</code> or exact <code>common.BOT_LOGINS</code>. Count/exclude bots. Mark <code>linkage: incomplete</code>, count and exclude a PR that exceeds either cap (50 files, 100 commits) or whose file or commit list is shorter than its totals or has commits absent; record <code>bot_reason</code> as <code>app_suffix</code>/<code>configured</code> for commits or <code>api_bot_type</code>/<code>login_list</code> for PRs.</td><td class="id">ADR-000, ADR-001, ADR-003</td></tr>
+    <tr><td class="id">REQ-128</td><td>Trend practical-delta defaults are <code>complex_burden</code> +0.05, <code>dup_pct</code> +2 pts, <code>cycle_mass</code> +0.05 and <code>n_high_cc</code> +20 % [ASSUMPTION], also applying adverse-trend rules to interest metrics. The watch list requires an adverse principal trend AND top-quartile exposure; panels show change count, population digest, missingness and a link to the claim-upgrade rule.</td><td class="id">ADR-000, ADR-001, ADR-003</td></tr>
+    <tr><td class="id">REQ-129</td><td><code>scout annotate --window … intervention: refactor|migration|…</code> persists an intervention event and excludes that window from trend flags. Exploratory measures are tagged and excluded from trend flags; <code>change_coupling.unexplained</code> remains Phase 5 exploratory until a validated dependency check exists.</td><td class="id">ADR-000, ADR-001, ADR-003</td></tr>
+    <tr><td class="id">REQ-130</td><td>Compute PR author active hours from the PR’s own author-timestamped commit list: gaps ≤ 4 h add the gap, longer gaps start a session, and each session gets 0.5 h credit; count single-commit-floor PRs separately. Reproduce E1b <code>build_panel.active_hours</code> for every joined nest/webpack panel PR within 1e-9 h; created-to-merged queue hours remain separate, not effort.</td><td class="id">ADR-000, ADR-001, ADR-003</td></tr>
+    <tr><td class="id">REQ-131</td><td>If trusted <code>pull-requests: read</code> metadata is unavailable, report <code>pr_effort</code>, <code>batch_size</code> and active-hours dispersion <code>unmeasured</code>, never 0; PR effort is unmeasured locally after squash merges and with fewer than 5 linked PRs.</td><td class="id">ADR-000, ADR-001, ADR-003</td></tr>
+    <tr class="grp"><td colspan="3">Merge-time association</td></tr>
+    <tr><td class="id">REQ-139</td><td><code>mapping.association.enabled</code> defaults false; enabling the lane is the maintainer's acceptance of <code>provisional</code>. Association is a provisional opt-in push-only signal lane for default-branch first-parent merges, never PR/fork runs, requiring <code>decision-egress</code>. Fallback is a separate optional <code>model-cli</code> signal lane operating only on association clusters from the same run; without its own consent Jev still runs but fallback does not.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-140</td><td>With association disabled, no Jev key, absent decision-egress acknowledgement or trigger egress forbidden, skip both lanes with reason and no model call, leaving directory scopes. Fallback consent at <code>scout init</code> names codex/OpenAI and file excerpts, PR title/body and catalogue content; Clawpatch <code>authorize-egress</code> is not applicable.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-141</td><td>For each first-parent merge, classify added/moved/modified files using owner-aware measured residual rules: active areas and existing association assignments are owners; pending areas are pools, not owners. Drop deleted files, markdown/media (<code>excluded_reason</code>) and inert clusters consisting only of empty files; do not apply the measured repository-specific cross-scope rename or translation exclusion rules, whose absence is unmeasured.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-142</td><td>Modified owned files are not decided; modified files with neither owner nor heuristic ownership are counted coverage gaps, not decided; any heuristic-only file is decided whether added, moved or modified (rule (f)). Renames inherit the old owner unless empty, and added variant siblings with the same normalized directory/stem/extension inherit their owned sibling; all remaining added/moved files are residual.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-143</td><td>Record inherited rename/variant assignments per file with outcome <code>inherited</code>, rule, old path/sibling and area IDs, no pending area or Jev/fallback fields and no model call; these become owners and enter neither guard rates nor call/per-merge caps. Pending-only renames replace the old path in pending membership without an association or decision, even if heuristic-owned; if the old path has an owner, inherit it and remove the old path from pending membership.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-144</td><td>Cluster residuals by normalized parent directory and variant stem; decide at most 10 hash-sampled clusters per merge and list the rest <code>unresolved (pr_cap)</code>. Catalogue sizes below 2 or above 255 active areas produce <code>skipped (catalogue size)</code>.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-145</td><td>Provide Jev/fallback bounded state containing unit paths, change kind, role, first 60 lines of each member, PR title/body/changed paths from <code>--fetch-pr-metadata</code>, diff summary and all active area IDs/titles/summaries with at most 5 sample files each. Absent PR metadata uses empty <code>pr</code> fields and records <code>pr_metadata: absent</code> as an unmeasured condition.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-146</td><td>Ask Jev <code>merge.covered</code> then whole-catalogue permuted <code>merge.which_area</code>, assigning only at <code>t_choice</code> 0.535 and when covered does not call <code>none</code> (<code>none</code> iff P(true) ≤ 0.40, covered score threshold 0.60). Ask a second permutation only for the measured 20 % hash subset, treating disagreement or low confidence as unresolved; disclose all records <code>thresholds provisional</code>.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-147</td><td>Send ordinary unresolved/none clusters to <code>codex exec -m gpt-6.1-terra -c model_reasoning_effort=high</code> only, read-only/ephemeral with scrubbed environment, no tools, a data-not-instructions prompt and recorded digest; pin prompt <code>terra_prompt_v1</code>. Accept only <code>existing</code> with a valid area ID or <code>new</code> with title/summary, never guessing area from a folder.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-148</td><td>Jev call failure/model mismatch/call or cost cap leaves <code>unresolved (jev_failure)</code> or <code>unresolved (jev_cap)</code>, counted/listed and never escalated. Later runs decide only their own push clusters, not retries of prior unresolved clusters.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-149</td><td>Absent codex/consent yields fallback <code>skipped (no model CLI)</code> / <code>skipped (no consent)</code> with unresolved/none clusters unowned, counted/listed; never look for claude or consult policy provider. After one retry, Terra error, timeout, any executed command, wrong reported model/effort, unparsable answer or unknown area ID yields <code>unresolved (terra_failure)</code>.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-150</td><td>Policy <code>mapping.association.fallback.{model, effort, timeout, max_per_run}</code> pins model/effort and defaults <code>max_per_run</code> to 40 fallback calls per push [ASSUMPTION]; excess clusters are counted <code>unresolved (fallback_cap)</code>. <code>mapping.association.max_pending_per_run</code> defaults to 10 new pending areas [ASSUMPTION]; further valid new answers remain unowned and counted.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-151</td><td>Existing assignments live in association records and derive file labels without writing an area’s <code>FileSet</code>, so reconciliation/Jaccard sees only agent-map file sets. New answers create areas with <code>status: pending</code> and cluster/decision provenance in the areas payload and <code>areas.jsonl</code>; <code>Area.Active()</code> is false, no deterministic lookup treats them as owners and no model catalogue includes them.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-152</td><td>Pending areas remain labels only and <code>Reconcile</code> neither matches nor retires them; summarize their files for maintainers, including multiple pending areas for a single concern. Only a maintainer accepts or merges one; acceptance activates origin <code>association</code> with <code>accepted_by</code>/<code>accepted_at</code>, retained even through matches. From then on <code>Reconcile</code> matches it like any area, updating file set, title, Clawpatch ids and origin; reconciliation never retires a maintainer-accepted area, even unmatched.</td><td class="id">ADR-000, ADR-008</td></tr>
+    <tr><td class="id">REQ-153</td><td>After a completed agent map, supersede/list pending areas or association records only when all their files that exist at the mapped revision are in active area FileSets; never automatically accept or delete pending areas. Heuristic ownership alone supersedes neither, and only a maintainer accept/merge changes pending-area status.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-154</td><td>Log every decided cluster per run and inherited file in <code>associations</code>: run ID, decision time, recorded <code>LastAgentRefreshAt</code> (null pre-onboarding), merge commit, cluster key/files, Jev scores/composed outcome, escalation reason, CLI name/version, reported model/effort, prompt/input/catalogue digests, raw answer, retries, latency, outcome, fallback skipped status/reason and <code>stale</code>. Store Jev request bodies redacted; both optional lane healths are <code>ran</code> with counts or <code>failed</code> only if every attempted call fails, never changing exit status.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-155</td><td>A change to threshold, question text, prompt digest, Jev pin or fallback model makes prior association records stale but retains their labels, discloses staleness and never automatically redecides. A catalogue-only option/version change does not make records stale or stop the provisional lane; policy thresholds are not version-keyed tuned operating points.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-156</td><td>Compute refresh guard state solely from exported association rows and <code>LastAgentRefreshAt</code>, using only rows from the current generation in decision-time order, never commit timestamps. The first exceeding window sets <code>catalogue-stale</code> until <code>LastAgentRefreshAt</code> changes; a catalogue change alone is not a reset.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-157</td><td>Over the trailing <code>mapping.association.guard.window_merges</code> merges producing residual clusters, compute the fallback rate as clusters Jev left unresolved/none ÷ residual clusters, counted whether or not the fallback ran, and the pending-new rate as valid new answers before the pending cap ÷ residual clusters. Pending-new uses only merges decided in runs with fallback not skipped and every unresolved/none cluster answered; omit merges with any fallback-cap/Terra failure or skipped fallback even if no escalation was needed.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-158</td><td>Jev-failure/Jev-cap/PR-cap clusters enter neither guard rate; fallback-cap/Terra-failure/no-CLI/no-consent clusters count only in the fallback rate. The fallback rate is evaluated over the whole window once it holds at least <code>min_clusters</code> residual clusters. The pending-new rate is <code>unmeasured</code> while its eligible merges hold fewer than <code>min_clusters</code> residual clusters or no fallback-answered cluster. Exceeding either limit recommends manual <code>scout map --refresh</code> in summary/readiness and flags every association output without dropping assignments or automatically refreshing.</td><td class="id">ADR-008</td></tr>
+    <tr><td class="id">REQ-159</td><td>Guard defaults <code>mapping.association.guard.{window_merges, min_clusters, fallback_rate_max, pending_new_rate_max}</code> are 20, 20, 0.40, 0.20 [ASSUMPTION], unvalidated and potentially firing on healthy catalogues. The lane remains opt-in/off-by-default until X11’s signed-off default decision; disclose mixed development evidence (fastapi P_assign 0.922, axum 0.622) and unmeasured closed-loop error accumulation/duplicate pending areas rather than claiming generalization.</td><td class="id">ADR-008</td></tr>
+    <tr class="grp"><td colspan="3">Study export &amp; subject interface</td></tr>
+    <tr><td class="id">REQ-36</td><td><code>scout export --study</code> requires separate Scout-owned opt-in and exports repository-pseudonymous scope aggregates plus a sanitized change table, never source, messages, emails or reviewer identities. Inertia-bench owns pooled studies, and Scout's dogfood ledger is the first pooled dataset.</td><td class="id">ADR-002, ADR-003</td></tr>
+    <tr><td class="id">REQ-37</td><td>Provide <code>scout subject capabilities</code> and <code>scout subject measure</code> after Phase 3 measures, over read-only snapshots, offline and without models, deterministic byte-identical output and one result per requested (unit, measure) with explicit missingness. Adopt principles only: exact <code>ib-subject-*/1</code> schemas and missingness mapping require a separate council round after inertia-bench design sign-off, before Phase 3b can complete.</td><td class="id">ADR-002, ADR-009</td></tr>
+    <tr><td class="id">REQ-132</td><td>On each default-branch run, store snapshot revision/time, window bounds, scope ID, population digest, map version/split-merge lineage, every principal/interest value and numerator/denominator/tool/config digests, import-resolution coverage, artifact revision/producer, missingness and right-censoring in SQLite and <code>signals/inertia.jsonl</code> in <code>scout/state</code>. Keep deduplicated sanitized change/PR keys with scope, churn, files/scopes touched, timestamps, workflow type, bot flag/reason, linkage completeness, optional task category and human/agent provenance only if supplied by the repository.</td><td class="id">ADR-001, ADR-002, ADR-003</td></tr>
+    <tr><td class="id">REQ-133</td><td>Study exports validate against <code>docs/evidence/study-export.md</code>, state retention/withdrawal, and contain no paths outside scope IDs; public state branches carry a notice that git history impedes erasure. Flag overlapping scopes so a change never multiplies pooled observations; ownership is coarse pseudonymous aggregates, never personnel ranking.</td><td class="id">ADR-002, ADR-003</td></tr>
+    <tr><td class="id">REQ-134</td><td>Do not offer per-repository re-estimation of E1b tests; adding their absent start-snapshot predictors/controls requires a separate design decision. Subject measurements never change a metric claim.</td><td class="id">ADR-001, ADR-002, ADR-003</td></tr>
+    <tr><td class="id">REQ-135</td><td>The initial subject interface supports snapshot-only principal scalar measures identified by <code>metric@version</code>, no history/PR capabilities, no network/models, opaque IDs and no arm/outcome labels. Use temporary working state removed on exit, never write the snapshot, sort output without timestamps/run IDs, and return unmeasured for unavailable tools/inputs; CRAP is <code>not_applicable</code> without an artifact channel, with exact IDs/missingness mapping deferred to the schema round.</td><td class="id">ADR-002, ADR-003</td></tr>
+    <tr class="grp"><td colspan="3">Scorecard &amp; experiments</td></tr>
+    <tr><td class="id">REQ-41</td><td>Report every scorecard line as <code>count/attempts</code> with <code>unmeasured</code> counts, Wilson 95 % intervals for unweighted binomial lines and preregistration-named design-based 95 % intervals (stratified or clustered bootstrap) for weighted/paired estimators; never report a single solve rate.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr><td class="id">REQ-136</td><td>Scorecard lines include actionable yield per lane/rule (<code>accepted</code> or resolved-by-change ÷ dispositioned, open separate), follow-through (confirmed resolved within 30/90 days ÷ mature confirmed), and independent random clean <code>(file, lane)</code> audits reporting per-lane false assurance, never repository-wide FN claims.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr><td class="id">REQ-137</td><td>Report cost-of-use unwarranted blocks, gate-disable events, overrides, duplicate/reopened issues per 100, time-to-disposition, runtime/spend per PR and agent-refresh value. Report maintainer <code>useful|not useful</code> trend/watch-list attention value with <code>undecided</code> separate, not validity; change-success is experimental/descriptive only after X5.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr><td class="id">REQ-138</td><td>Withhold Jev-quality AUROC/routing-precision vs deterministic baseline until X1 preregistration (which defines the line's inputs, repositories and period), using audit-view blind dispositions only and inverse-inclusion weights, otherwise <code>insufficient</code>. These lines never set thresholds, bands or defaults.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr><td class="id">REQ-169</td><td>X1. Jev vs deterministic ranking on triage retrieval. Question: does Jev's rank retrieve true defects better than the deterministic baseline at a fixed review budget? Primitive: narrow Noul questions composed in code (REQ-88–REQ-99). Labels: REQ-100/REQ-101 protocol on probability-sampled audit units. Estimator, split unit, population, sampling strata and draws, audit floor, <code>k</code>, interval, treatment of capped and failed units, versioning of verdicts and test-set reuse, and sample size are fixed by its council-signed preregistration (council experiment rules). Jev stays default-on iff held-out recall@k gain ≥ 10 points with the interval's lower bound &gt; 0, and no critical true issue lies below the audit floor; else default = deterministic baseline, <code>--rank jev</code> opt-in (route-only is not reopened). The 10-point gain is a rev 2.1 value, pending the user's minimums; the preregistration confirms or replaces it</td><td class="id">ADR-000, ADR-002, ADR-003</td></tr>
+    <tr><td class="id">REQ-170</td><td>X2. Do areas stabilise agent output? E3 protocol with Scout’s area reconciliation, fastapi/axum, 3 fresh + 2 same-state + 2 mutations. Adopt the Jaccard threshold yielding survival ≥ 0.8 and ≤ 5 % spurious merges; else refresh only at onboarding + manual. X2b. Is there a Jaccard threshold meeting X2's criteria (survival ≥ 0.8, ≤ 5 % spurious merges) for the REQ-58 mapper (<code>gpt-6-luna</code>, <code>xhigh</code>)? X2's protocol, codex arm only, same repositories and revisions, map schedule (F1–F3, R1–R2, M1–M2), grid and label guide. X2’s rule; X2b decides and X2 is a reported cross-check on another model. The applied else branch is agent map at onboarding and manually only; <code>mapping.areas.match_jaccard</code> stays 0.5 as an assumption. A new mapper default requires a new council-signed study on X2b’s protocol.</td><td class="id">ADR-000, ADR-002, ADR-003, ADR-005, ADR-006</td></tr>
+    <tr><td class="id">REQ-171</td><td>X3. Jev assigns unowned files to features? Primitive: code retrieves top-K candidate features per file (path proximity, import edges) or supplies the full list when ≤ 255 features; a Choice over them with a permutation option-order rule (REQ-88–REQ-99); <code>none</code> decided by a companion Noul ("does any listed feature own this file?") read before the Choice, with no <code>none</code> option. Labels: unowned files (rev 2.1: 200 labels), REQ-100/REQ-101 protocol. Estimator, split, threshold tuning, candidate-coverage and recall reporting, interval and sample size are fixed by its council-signed preregistration. Reconciliation aid iff precision ≥ 0.9 (files assigned the correct feature ÷ files assigned any feature). Rev 2.1 value, pending the user's minimums; the preregistration confirms or replaces it (rev 2.8: files added or moved by a default-branch merge are decided by the REQ-139–REQ-159 merge-time association lane, validated by X11; X3 covers the other unowned files and its rule is unchanged). The preregistration confirms or replaces the carried rev-2.1 label volume; REQ-98 governs point-minimum defaults.</td><td class="id">ADR-000, ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-172</td><td>X4. Rubric-lane precision per pattern. Primitive: one Noul per pattern (REQ-67/REQ-68). Labels: REQ-100/REQ-101 protocol, double-labelled. Estimator, split, enrichment and non-hit sampling for recall, threshold tuning, interval, positive counts and the <code>unmeasured</code> rule for patterns that cannot reach them are fixed by its council-signed preregistration. Keep a pattern iff precision lower bound ≥ 0.6 and the preregistered recall minimum is met; never blocking. The 0.6 bound is a rev 2.1 value, pending the user's minimums; the preregistration confirms or replaces it</td><td class="id">ADR-000, ADR-002, ADR-003</td></tr>
+    <tr><td class="id">REQ-173</td><td>X5. Jev commit classifier vs regex. Primitive: Noul <code>is_fix</code> (binary, tuned threshold), not a 5-class argmax. Labels: blind-labelled commits across 7 repos, REQ-100/REQ-101 protocol (rev 2.1: 200 labels). Commit state shape, split, sampling, interval, sample size and error reporting by path role and repository are fixed by its council-signed preregistration. Enable <code>fix_touches</code>/change-success iff precision ≥ 0.85, recall ≥ 0.8 (LBs ≥ 0.75/0.7); rev 2.1 values, pending the user's minimums; the preregistration confirms or replaces them. The preregistration confirms or replaces the carried rev-2.1 label volume; REQ-98 governs point-minimum defaults.</td><td class="id">ADR-000, ADR-002, ADR-003</td></tr>
+    <tr><td class="id">REQ-174</td><td>X6. Guardrail unwarranted-block rate (track-B dry run). Replay last 200 merged PRs of 3 adopter repos, three languages; double-label <code>would_block</code>. Feeds AL dossiers and shadow defaults; activation stays per repo. X9. Exploratory-measure attribution validity. Hand-check 200 <code>moved/pasted/new</code> labels and 200 <code>stale_reference</code> hits on the corpus. <code>exploratory</code> → <code>descriptive</code> iff label precision Wilson LB ≥ 0.9; else keep or drop.</td><td class="id">ADR-000, ADR-002, ADR-003</td></tr>
+    <tr><td class="id">REQ-175</td><td>X10. Competing-implementation detection. Primitive: one Noul over a pair ("same concern, different implementation?"), each pair judged in both presentation orders and averaged. Labels: double-labelled pairs (rev 2.1: 200 labels), REQ-100/REQ-101 protocol. Candidate-pair population, strata, split, threshold tuning, interval and sample size are fixed by its council-signed preregistration. Ship as exploratory iff precision ≥ 0.8; else research note. Rev 2.1 value, pending the user's minimums; the preregistration confirms or replaces it. No recall is measured, so the result can license <code>exploratory</code> only and never a prevalence claim. The preregistration confirms or replaces the carried rev-2.1 label volume; REQ-98 governs point-minimum defaults.</td><td class="id">ADR-000, ADR-002, ADR-003</td></tr>
+    <tr><td class="id">REQ-176</td><td>X11 (HD8). Does merge-time association (Jev at policy thresholds + reasoning-model fallback, REQ-139–REQ-159) assign merged clusters correctly, flag genuinely new concerns, and does the refresh guard fire when the catalogue is stale? Upgrades the provisional opt-in lane (REQ-139–REQ-159) to a signed-off default decision. Planned, not yet preregistered: council-signed preregistration before any run (council experiment rules); fresh clusters from at least three repositories, including one chosen by a model-free proxy fixed before labelling (e.g. the share of residual clusters in directories no area owns) expected to give a high gold-<code>none</code> share; the gold-<code>none</code> share, split into <code>gap</code> and <code>new</code>, is reported afterwards; and one non-Python, non-Rust repository, with catalogues of different ages; labels follow the agent protocol (REQ-100/REQ-101); arms Jev + fallback, Jev-only, directory baseline; thresholds, prompt and guard parameters frozen before data (the carried REQ-146 policy thresholds and REQ-159 guard defaults as starting points); report P_assign and recall (abstention as a miss) and new-area precision and recall per repository and per stratum of gold-<code>none</code> share, fallback failures, escalation rate, cost and latency, each with Wilson 95 % and <code>unmeasured</code> counts; for the guard, whether it fires before precision falls and how often it fires falsely, on replays of merge sequences. Replay merge sequences closed-loop, as the product runs (own prior assignments, pending areas kept out of the catalogue, a preregistered maintainer-action policy, no gold membership updates); report duplicate pending areas per real new concern; report the share of wrong assignments on clusters Jev assigned without escalation; test whether P_assign recovers after the recommended <code>scout map --refresh</code>; score clusters against catalogues mapped at two or more commits; record each labelling session's reported model and use labellers other than <code>gpt-6.1-terra</code>, or report agreement by labeller model; count clusters beyond the per-merge cap as <code>unmeasured</code>.</td><td class="id">ADR-000, ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-177</td><td>X11 decision rule. Set by the preregistration. Starting reference only: P_assign and recall each ≥ 0.80 with lower bounds reported in every repository, including the high gold-<code>none</code> one, new-area results descriptive, guard recall and false-fire rate reported; else the lane stays opt-in or is removed (no merge-time association: residual files keep a directory scope); a Jev-only variant stays only if it meets the same bar. HD6 and HD6b state is unchanged by this row; HD8 (proposed) is tested here</td><td class="id">ADR-000, ADR-002, ADR-003, ADR-008</td></tr>
+    <tr class="grp"><td colspan="3">Security &amp; model use</td></tr>
+    <tr><td class="id">REQ-25</td><td>Install the binary, Clawpatch bundle and scanners from a pinned release tag's scripts into <code>$RUNNER_TEMP</code>, never build or execute anything from the PR checkout, and read policy from the base branch. PR/fork jobs have only <code>contents: read</code> and no secrets; trusted default-branch jobs alone publish state and receive <code>contents: write</code> (repository-level; used by Scout only to publish <code>scout/state</code>), <code>pull-requests: read</code> and the Jev secret.</td><td class="id">ADR-000, ADR-002, ADR-003, ADR-007</td></tr>
+    <tr><td class="id">REQ-31</td><td>OpenRouter is only for TypeSafe Jev; other model calls use subscription-login <code>claude -p</code> / <code>codex exec</code> with Anthropic/OpenAI models and no provider API-key environment. Mapping is <code>codex</code> / <code>gpt-6-luna</code> / <code>xhigh</code> only, association fallback is <code>codex</code> / <code>gpt-6.1-terra</code> / <code>high</code> only, and other opted-in model-CLI lanes run policy <code>model_cli.provider</code> with no <code>CLAWPATCH_PROVIDER</code> reads.</td><td class="id">ADR-002, ADR-005, ADR-007, ADR-008</td></tr>
+    <tr><td class="id">REQ-32</td><td>The Jev key <code>OPENROUTER_API_KEY</code> comes only from Infisical injected into the local command or a GitHub Actions secret on trusted CI, never fork PRs; never print, export or commit it. Model CLIs use their own subscription login and require no Scout-managed Anthropic/OpenAI secret.</td><td class="id">ADR-002</td></tr>
+    <tr><td class="id">REQ-59</td><td><code>clawpatch-review</code> permits only explicit <code>codex</code> or <code>claude</code> provider, rejecting empty/other providers; Claude uses <code>CLAWPATCH_CLAUDE_AUTH_CONTEXT=host</code>, Claude Code ≥ 2.1.169, including <code>USER</code> and <code>LOGNAME</code> in the patched host context. Neither Clawpatch path receives <code>CLAWPATCH_*_API_KEY</code> or provider API-key environment.</td><td class="id">ADR-002, ADR-004, ADR-007</td></tr>
+    <tr><td class="id">REQ-60</td><td>Use one <code>modelcli.Detect</code> order, <code>claude</code> then <code>codex</code>, when policy has no provider, with local <code>SCOUT_MODEL_CLI</code> override; configured opted-in lanes always run their policy provider. Readiness reports availability/reason but not CLI name, the capability matrix names it and the plan model fingerprint records it; mapper and association fallback are codex-only exceptions.</td><td class="id">ADR-002, ADR-004, ADR-005, ADR-007, ADR-008</td></tr>
+    <tr><td class="id">REQ-61</td><td>Replace vendor-neutral HTTP contextual model use and <code>SCOUT_PROVIDER_*</code>/<code>SCOUT_PROVIDER_TOKEN</code> settings with a subprocess model-CLI adapter; remove AWS/OIDC, Anthropic/OpenAI API-key and <code>CLAWPATCH_PROVIDER</code> workflow settings. No logged-in CLI means <code>skipped (no model CLI)</code> without affecting deterministic lanes, heuristic mapping or Jev.</td><td class="id">ADR-000, ADR-002, ADR-004, ADR-007</td></tr>
+    <tr class="grp"><td colspan="3">Operations &amp; performance</td></tr>
+    <tr><td class="id">REQ-38</td><td>Per-job commits must not decode plans or rewrite run payloads and must have time/allocations flat in job count while preserving atomicity, duplicate-commit rejection and interruption-resume equivalence. <code>scout assess</code> on fastapi <code>d666ccb</code>, heuristic map, egress off, must finish in &lt; 10 min on the development Mac.</td><td class="id">ADR-002</td></tr>
+    <tr><td class="id">REQ-39</td><td>The CLI is authoritative/scriptable with <code>--json</code> and stable exit codes, exposing <code>init</code>, <code>diff</code>, <code>map --refresh</code>, <code>export/import [--study]</code>, <code>signals</code>, <code>trends</code>, <code>annotate</code>, <code>selfeval</code>, <code>readiness --matrix</code>, and (after Phase 3) <code>subject capabilities|measure</code>; remove <code>approve</code>. Any optional web UI is read-only over the same state and binds locally by default.</td><td class="id">ADR-000, ADR-002</td></tr>
+    <tr><td class="id">REQ-40</td><td>Build as a Go module with subprocess adapters and SQLite, Node ≥ 22 only for the pinned Clawpatch bundle, and checksummed macOS/Linux binaries; never auto-install into the analyzed repository. Each Clawpatch upgrade requires compatibility review and reduced E3, with patch verification by <code>build-clawpatch.sh</code>.</td><td class="id">ADR-000</td></tr>
+    <tr><td class="id">REQ-160</td><td>Provide <code>pull_request</code>, default-branch <code>push</code> (full or incremental; publishes baseline), nightly <code>schedule</code> and <code>workflow_dispatch</code> inputs <code>full</code>, <code>refresh-map</code>, <code>authorize-egress</code>; local equivalents are <code>scout assess</code> and <code>scout diff --base &lt;ref&gt;</code>. Nightly is full with trend rules and optional logged-in model lanes; PR runs are differential.</td><td class="id">ADR-000, ADR-002, ADR-003, ADR-007</td></tr>
+    <tr><td class="id">REQ-161</td><td>Split reusable workflows into <code>scout-guardian.yml</code> (read-only PR) and <code>scout-guardian-trusted.yml</code> (trusted publish/metadata/egress); protect <code>scout/state</code> by branch ruleset. The trusted job alone gets GITHUB_TOKEN for <code>--fetch-pr-metadata</code>; reports summarize introduced/regressed, would-block, pre-existing counts, lane health and signal deltas.</td><td class="id">ADR-000, ADR-003, ADR-007</td></tr>
+    <tr><td class="id">REQ-162</td><td>Remove the composite <code>.github/actions/scout</code>; both workflows shallow-clone <code>release-repo</code> at <code>scout-version</code> outside the workspace and run only that tag’s <code>scripts/install-release.sh</code> and <code>scripts/ci-toolchain.sh</code>, sharing one owner for install/provisioning. Keep only clone input validation, clone, script-existence guard and tag-keyed cache in workflows; provision bubblewrap on Linux and run the tag’s bootstrap into <code>$RUNNER_TEMP</code>.</td><td class="id">ADR-000, ADR-003, ADR-007</td></tr>
+    <tr><td class="id">REQ-163</td><td>Workflow and <code>scout-version</code> must both be at/after the release introducing those scripts; a tag lacking them ends install at exit 3 naming the minimum tag. Scripts SHA256-verify binary/bundle, read <code>SCOUT_VERSION</code>, <code>RELEASE_REPO</code> and toolchain directory from environment, export <code>SCOUT_BIN</code>, <code>CLAWPATCH_BIN</code>, <code>SCOUT_TOOLS_DIR</code> through <code>$GITHUB_ENV</code> and tool bin through <code>$GITHUB_PATH</code>.</td><td class="id">ADR-000, ADR-003, ADR-007</td></tr>
+    <tr><td class="id">REQ-164</td><td>Persist <code>plan_jobs(plan_id, job_id, payload)</code> and plan identity at <code>SavePlan</code>; commits read one job and validate plan/run identity without decoding the snapshot. A Store-private bounded synchronized immutable-plan cache hydrated on restart is an acceptable alternative first step; reconstruct progress from coverage/<code>run_job_commits</code>, preserve initial reused coverage and assemble final run payload once.</td><td class="id">ADR-000, ADR-003, ADR-007</td></tr>
+    <tr><td class="id">REQ-165</td><td>The Phase 1 persistence benchmark in <code>go test ./internal/state</code> commits 5,000 jobs against a 5 MB snapshot plan, asserting per-commit time/allocations flat in J and SQL traces with no <code>plans</code> read or <code>runs</code> payload write; interruption-resume must yield the same finalized run. Never rerun the reported &gt; 1 h fastapi failure merely to reconfirm it.</td><td class="id">ADR-000, ADR-003, ADR-007</td></tr>
+    <tr><td class="id">REQ-166</td><td>Keep inventory/analyzer runners/sanitizers/state/artifact/web/Clawpatch boundaries, but lane execution must not depend on <code>MappingRequired</code>; support paired base/head plan entry. Remove approval types/fields/<code>approve</code>, dead <code>internal/codex/exec.go</code>, the migration ladder/backfill in favor of current-schema plus v1 re-anchor, and rename <code>internal/eval</code> to <code>internal/selfeval</code> without compatibility shims.</td><td class="id">ADR-000, ADR-003, ADR-007</td></tr>
+    <tr><td class="id">REQ-167</td><td>Phase 4. Scenario: fastapi and axum fixtures; onboarding agent map; three default-branch merges in quick succession (new unowned package, new manifest, content-only); a content-only PR; a nightly run; then a manual <code>scout map --refresh</code> (every step runs with <code>codex</code> on <code>PATH</code> and egress authorized, so no absent invocation comes from a <code>skipped</code> or <code>blocked</code> attempt). Acceptance: exactly one agent map at onboarding, none after any of the three merges, on the PR or on the nightly run (the harness counts Clawpatch agent-map invocations), exactly one at the manual refresh; prior issues keep IDs; reconciliation applies the REQ-53 rule (one-to-one match at file-set Jaccard ≥ 0.5, matched IDs kept, unmatched agent features become new areas, unmatched active areas kept or retired per REQ-53) and the Phase 4 scenario reports (measured by the scenario harness and recorded in <code>docs/STATUS.md</code> §1; <code>scout map</code> does not print it) area-ID retention (active areas before the manual refresh whose ID is still active after it ÷ active areas before it; retired areas keep their IDs and are not counted as retained; this ratio counts kept areas and is not X2's survival, which HD5 operationalises as prior areas matched by a next feature) and the distribution of the retained areas' file-set Jaccard, which lies in [0.5, 1] by construction (matched areas are ≥ 0.5 by the REQ-53 rule; kept areas, unmatched active areas that still own files the heuristic map does not, contribute 1.0; the harness does not separate the two because <code>scout map</code> discards the reconciliation report (<code>reconcileAreas</code>, <code>cmd/scout/map.go</code>: <code>next, _ := areas.Reconcile(…)</code>)); X2's protocol separates matched from kept; X2's matched-area survival and spurious-merge thresholds are X2's decision rule (REQ-170) and not a Phase 4 pass criterion; stale Clawpatch records (<code>status: skipped</code>) excluded from ownership; unowned files listed with directory scopes; inertia series keys unchanged by the onboarding and manual agent maps; agent failure leaves heuristic output and marks exploration incomplete.</td><td class="id">ADR-000, ADR-003, ADR-005, ADR-006, ADR-007</td></tr>
+    <tr><td class="id">REQ-168</td><td>Phase 6. Scenario: <code>scout export --study</code> on the dogfood ledger; release ships binary + Clawpatch 0.7.3 bundle + reusable workflows (<code>scout-guardian.yml</code>, <code>scout-guardian-trusted.yml</code>); Scout dogfoods itself in <code>guardian</code> through its own shadow window. Acceptance: export contains no paths outside scope IDs, no messages, no identities, validates against <code>docs/evidence/study-export.md</code>; adopter checklist completes in one PR; unwarranted-block count over the dogfood window reported.</td><td class="id">ADR-000, ADR-002, ADR-003, ADR-007, ADR-009</td></tr>
+    <tr><td class="id">REQ-178</td><td>Phase 1. Scenario: the REQ-165 benchmark and the REQ-38 pinned fastapi assess; on a credential-less fixture run <code>scout assess</code> twice (second after inserting 20 lines above a flagged function, renaming a file with a finding, duplicating a same-rule finding in one file); disposition one issue <code>accepted</code>; resolve one by deleting code; re-introduce it. Acceptance: REQ-165 and REQ-38 criteria; one durable ID across line shift and rename; <code>evidence_drift</code> with disposition intact; two IDs for two occurrences; <code>regressed</code> on re-introduction; heuristic map ran with egress off; <code>go test ./internal/issues ./internal/state</code> green; migration test re-anchors a v1 store (<code>user_version</code> 3) built from the v1 implementation's DDL (<code>schemaV1</code>, <code>inventory_snapshots</code>, <code>schemaV3</code> as at <code>41ea1eb</code>), not a current store rewound with <code>PRAGMA user_version</code>, and lists ambiguous rows; a store at <code>user_version</code> 1, 2 or 4–11 (revision 2.8: 4–12, so a store at 12 too) is refused with the re-baseline error before the writable open: its <code>user_version</code> is read on a read-only connection (as <code>OpenExistingReadOnly</code> does), so the database file is not written, no <code>writer.lock</code>, <code>artifacts/</code> or journal-mode change is made and nothing is migrated (SQLite's read-only open of a WAL-mode file may create its <code>-wal</code>/<code>-shm</code> side files, which the remedy removes); a new store and a re-anchored one have the same tables, columns (name, type, not-null, default, primary key, in order), indexes (name, uniqueness, origin, partial, and indexed columns with sort order and collation) and foreign keys, and the same <code>sqlite_schema</code> objects by type and name (<code>PRAGMA table_info</code>, <code>index_list</code>, <code>index_xinfo</code>, <code>foreign_key_list</code>; stored <code>CREATE</code> text may differ); revision 2.8 adds: <code>scout state restore</code> round-trips <code>associations.jsonl</code> and pending <code>areas.jsonl</code> records; after export and restore the guard reproduces the same window and flag; a completed manual map resets both.</td><td class="id">ADR-000, ADR-002, ADR-003, ADR-007, ADR-008</td></tr>
+    <tr><td class="id">REQ-179</td><td>Phase 2. Scenario: a fixture repo adopts the workflow in <code>report</code>; <code>scout init</code> records consent off; default-branch run publishes <code>scout/state</code>; PR A adds a GitHub PAT and a bare <code># noqa</code>; PR B touches pre-existing debt only; PR C is a fork; a rule-digest bump is simulated; the shadow window is simulated (14 days, 5 PR runs) and a maintainer activates <code>guardrails.SUPPRESS.added.unscoped</code>; PR D from a non-maintainer carries <code>scout-override</code>. Acceptance: PR A exits 0 in <code>report</code> with two <code>would_block</code> entries persisted; after activation an identical PR exits 1 listing exactly the activated <code>introduced</code> issue, the PAT still <code>would_block</code>; PR B exits 0; PR C cannot write the branch or read secrets and reports <code>ranking: deterministic (fork)</code>; digest mismatch → <code>comparison: recomputed</code> with attribution from the paired merge-base recompute (<code>introduced</code> where the rescanned base lacks the finding; <code>attribution: unknown</code> for the whole run when no comparable base can be produced and, for a finding that would otherwise be <code>introduced</code> and is not a <code>guardrails.*</code> check, per finding when the base's lane for its family was <code>blocked</code>/<code>failed</code> (<code>unknown</code> instead of <code>introduced</code>, excluded from <code>would_block</code> and the gate; <code>pre-existing</code> and <code>regressed</code> unaffected); the same path applies before a baseline is published); PR D's override rejected and logged; two concurrent publishes land via CAS; <code>scout import</code> reproduces the ledger byte-identically; a rule-version bump returns the check to shadow.</td><td class="id">ADR-000, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-180</td><td>Phase 3. Scenario: on Scout's own repo, a Python fixture and the nest or webpack checkout: nightly writes all Phase-3 signals of REQ-103–REQ-124 for four synthetic quarterly windows; a PR raises a function CC 9 → 14, adds a clone, adds a <code>ruff</code> ignore, lowers <code>tsconfig</code> strictness, adds <code>//nolint</code> and <code>@ts-nocheck</code>, commits a <code>.only</code>; an LCOV artifact is attached to one run and not the next. Acceptance: <code>scout signals --scope</code> shows numerator/denominator/population digest; CRAP present only with a matching artifact, <code>unmeasured</code> otherwise; <code>pr_effort</code> <code>unmeasured</code> locally, present in CI; <code>delta</code> issues carry <code>claim: descriptive</code>; all four guardrail mechanisms fire with base/head evidence in all three languages; TS import graph resolves <code>paths</code> aliases and separates type-only edges; 9/13 corpus regression holds; <code>readiness --matrix</code> prints REQ-18; given the PR commit author timestamps in <code>evaluation/change-cost-v2/raw/prs-{nest,webpack}.json.gz</code>, Scout's active-hours function reproduces <code>active_hours</code> in <code>evaluation/change-cost-v2/panel-final.csv.gz</code> for every panel PR of those two repositories (joined on <code>repo</code>, <code>number</code>) within 1e-9 h.</td><td class="id">ADR-000, ADR-001, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-181</td><td>Phase 3b. Scenario: on a Go, Python and TypeScript fixture snapshot mounted read-only with the network denied, run <code>scout subject capabilities</code> and <code>scout subject measure</code> twice on the same request, including a file in an unsupported language. Acceptance (principles only): the two runs are byte-identical; the snapshot tree digest is unchanged; no network or model call is made; every requested (unit, measure) pair has a result and <code>unmeasured</code> is never 0; <code>scout.crap@1</code> is <code>not_applicable</code> (no artifact channel in the first version, REQ-135); history and PR measures are absent from <code>capabilities</code>. Entry: Phase 3 <code>measures</code> done. The schema (<code>ib-subject-*/1</code>) is adopted by a separate council round after inertia-bench's design signs off, and Phase 3b does not complete before that.</td><td class="id">ADR-000, ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-182</td><td>Phase 5. Scenario: replay four Phase-3 windows plus a fifth adverse one; mark one window <code>intervention: refactor</code>; prompt-injection fixture; scorecard on Phase 2–3 ledgers; <code>moved_vs_pasted</code>, <code>stale_reference_rate</code>, <code>propagation_cost</code> on the corpus. A Jev replay of labelled sets runs only as an analysis named by a signed-off preregistration. Acceptance: trend flag fires only after three adverse comparable windows and not across the intervention window; <code>n &lt; 20</code> windows show <code>insufficient</code>; watch list sorted without a composite; annotations carry the resolved model and the question version key; a model bump marks prior annotations stale and ranking falls back disclosed; forced mismatch → <code>incomplete</code>; a simulated 429, timeout or cap hit never yields a low rank and is disclosed <code>ranking: deterministic (reason)</code> or <code>partial (n/N)</code>; the order-flip rate of each Choice is reported; no state/gate change from any annotation; the injection fixture (a critical-severity finding) changes at most its rank; the nightly audit sample is drawn with a stored inclusion probability per unit and presented blind (annotation, stratum and rank hidden), and on a synthetic frame the per-unit selection frequency matches the stored probability; scorecard prints the REQ-41 intervals (Wilson or design-based per line); Jev-quality lines are <code>insufficient</code> until X1's preregistration is signed off; exploratory metrics tagged and excluded from trend flags.</td><td class="id">ADR-000, ADR-002, ADR-003, ADR-008</td></tr>
+    <tr><td class="id">REQ-183</td><td>Present concrete issues before trends; population changes and legitimate refactors must not be presented as degradation, sparse scopes as healthy, or ownership as personnel rankings. All experiment-valued defaults/minimums marked provisional or [ASSUMPTION] remain so until their specified signed-off decision replaces them.</td><td class="id">ADR-000, ADR-003, ADR-008</td></tr>
+  </tbody>
+</table>
+  </div>
+</div>
+
+<!-- ============================ ADRs ============================ -->
+<div class="pane" id="adr">
+  <div class="block">
+  <div class="head"><h2>Decisions</h2><span class="say">Append-only. ADR-001 onward are council-signed; ADR-000 records the v1 user decisions.</span></div>
+  <div class="list tint" style="margin-bottom:14px"><ul>
+    <li>A new ADR needs a council round with zero issues.</li>
+    <li>Accepted ADRs are never edited, except their status line, which the commit adopting a later ADR updates to name what supersedes or amends them.</li>
+    <li>Status: <span class="st prov">proposed</span> <span class="st acc">accepted</span> <span class="st sup">superseded</span></li>
+  </ul></div>
+<article class="adr s-acc">
+  <header><span class="aid">ADR-000</span><span class="adate">2026-10-19</span><span class="st acc">accepted</span><span class="rel">user decisions, no council round; partly superseded by ADR-004–ADR-009; amended by ADR-001–ADR-003</span></header>
+  <h3>Set the v1 baseline for mapping, state, signals and toolchain</h3>
+  <ul class="dec">
+    <li>Keep the areas reconciliation layer and never run the agent map on PR runs.</li>
+    <li>Store the baseline on the protected <code>scout/state</code> git branch.</li>
+    <li>Use an eligible-not-active allow-list with two-track promotion; Jev may route and rank, never change issue state or the gate.</li>
+    <li>Make Go, Python and TypeScript tier-1 languages and replace the rebuild requirements with governed specification documents.</li>
+    <li>Pin Clawpatch v0.7.3 with the ported redaction patch; later ADRs amend the patch and mapping policy.</li>
+  </ul>
+  <div class="callouts">
+    <section class="co co-ev"><h4>Informed by</h4><ul><li>The v1 memo §15 records seven user decisions</li><li>E3 and the Clawpatch 0.7.3 review informed retaining the areas layer</li><li>The Clawpatch compatibility record §7 informed the upgrade and ported patch</li></ul></section>
+    <section class="co co-ch"><h4>Changes</h4><ul><li>Originally replaced nightly refresh with debounced monitored-area changes on default-branch merges</li><li>Replaced the 20-PR shadow minimum with at least 5 comparable-base PR runs, retaining 14 days</li><li>Adopted the allow-list's two-track promotion procedure</li><li>ADR-006 replaced the merge-trigger clause; ADR-002 kept the requirements file live until Phase 6, and ADR-009 retired it</li></ul></section>
+  </div>
+  <details><summary>Rationale and conditions</summary><ul>
+    <li>Defer S3 until the branch backend is proven, then allow an optional adapter.</li>
+    <li>The shadow window requires both at least 14 days and at least 5 comparable-base PR runs; both are configurable.</li>
+    <li>Blocking overrides require a maintainer. Rare security checks may activate on track A alone with <code>provisional: true</code>.</li>
+    <li>Clawpatch 0.8.x needs a separate review.</li>
+  </ul></details>
+  <footer>Review: <code>docs/adrs/2026-10-19-v1-decisions/</code> (v1 council decision memo; no round files recorded)</footer>
+</article>
+
+<article class="adr s-acc">
+  <header><span class="aid">ADR-001</span><span class="adate">2026-10-21</span><span class="st acc">accepted</span><span class="rel">partly superseded by ADR-002; amended by ADR-003; amends ADR-000</span></header>
+  <h3>Replace invalidated inertia evidence with E1b v2</h3>
+  <ul class="dec">
+    <li>Replace E1b v1 with council-signed E1b v2.</li>
+    <li>Present structural measures as descriptive structure to watch, not cost already being paid.</li>
+    <li>Add scope-level <code>scout.burden_density@1</code> without equating it with E1b's per-PR <code>Q</code>.</li>
+    <li>Measure PR effort from API-sourced author active hours and report queue time separately.</li>
+    <li>Separate commit and PR populations, fix scopes per map version and withdraw per-repository E1b re-estimation.</li>
+  </ul>
+  <div class="callouts">
+    <section class="co co-ev"><h4>Informed by</h4><ul><li>R-033 records invalidated E1b v1; R-034 records user direction</li><li>R-035: E1b v2 covers 7,717 merged PRs, 12 repositories and 480 directory areas</li><li>T2: +0.023 log-hours/SD, 90% CI [+0.004, +0.041], Holm p 0.165; T4: +0.006 relative dispersion/SD, 90% CI [−0.010, +0.023]</li><li>Exploratory P1: −0.15% relative MSE gain, 95% CI [−0.69, +0.38]; failed validation leaves H4 undecided</li></ul></section>
+    <section class="co co-ch"><h4>Changes</h4><ul><li>Replaces invalidated results with v2 estimates and explicit limits</li><li>Defines stable scopes, measurement populations, effort sources and provenance</li><li>Phase 3 requires active-hours reproduction within 1e-9 hours</li><li>ADR-002 later removes X7, X8 and A8 as hypothesis studies move to inertia-bench</li></ul></section>
+  </div>
+  <section class="co co-gate"><h4>Open conditions</h4><ul><li>At sign-off, primary-family priority and provisional framing remain for the user to decide</li><li>A predictive claim needs a council-signed pooled test with at least 5% relative MSE reduction and a CI lower bound above zero</li><li>That upgrade also requires multiplicity control and consistency across all but one repository with at least 10 units</li></ul></section>
+  <details><summary>Rationale and conditions</summary><ul>
+    <li>The associations do not identify causation or amplification-mediated cost.</li>
+    <li>The single-commit floor affects 38% of 7,030 measured active-time rows; read T2 and T4 together.</li>
+    <li>Without PR metadata, I4, <code>batch_size</code> and I5's active-hours component stay <code>unmeasured</code>, not zero.</li>
+    <li>Keep <code>change_coupling.unexplained</code> exploratory until a dependency check validates it.</li>
+  </ul></details>
+  <footer>Review: <code>docs/adrs/2026-10-21-e1b-v2/</code> (final round 5, 12 → 0 issues)</footer>
+</article>
+
+<article class="adr s-acc">
+  <header><span class="aid">ADR-002</span><span class="adate">2026-10-22/23</span><span class="st acc">accepted</span><span class="rel">partly superseded by ADR-003, ADR-005, ADR-007, ADR-009; amended by ADR-008; supersedes part of ADR-001; amends ADR-000</span></header>
+  <h3>Make Scout a product and an inertia-bench subject</h3>
+  <ul class="dec">
+    <li>Scout owns product experiments X1–X6, X9 and X10; inertia-bench owns inertia hypothesis studies.</li>
+    <li>Reasoning lanes use subscription-authenticated <code>claude -p</code> or <code>codex exec</code> with Anthropic/OpenAI models, without their API keys in CI.</li>
+    <li>Jev stays on OpenRouter, with local Infisical injection and a trusted-CI secret.</li>
+    <li>Add an offline, deterministic, snapshot-only subject interface after Phase 3 measures.</li>
+    <li>Keep versioned Jev annotations advisory and use probability-sampled blind audits with stored inclusion probabilities.</li>
+  </ul>
+  <div class="callouts">
+    <section class="co co-ev"><h4>Informed by</h4><ul><li>R-036 records product-only scope and model-use direction</li><li>R-037 supplies subject-interface principles, not an adopted exact schema</li><li>R-038 and the Jev actions review inform versioning, failures, blind audits and calibration</li><li>No new experiment supports this revision; frozen E1b-v2 remains citable</li></ul></section>
+    <section class="co co-ch"><h4>Changes</h4><ul><li>Replaces the HTTP contextual provider with model-CLI integration</li><li>Removes X7, X8 and A8 without reusing their IDs; freezes inertia hypotheses here</li><li>Adds Phase 3b and keeps the requirements file live until Phase 6</li><li>Replaces low-ranked-only auditing with probability sampling and a provisional 5% total audit fraction</li></ul></section>
+  </div>
+  <section class="co co-gate"><h4>Open conditions</h4><ul><li>The exact subject schema and missingness mapping need a separate council round after inertia-bench's design signs off</li><li>X1/X3/X4/X5/X10 need signed preregistrations before Jev-versus-label comparisons, thresholds, bands or default changes</li><li>Jev-quality lines remain <code>insufficient</code> until X1's preregistration is signed off</li></ul></section>
+  <details><summary>Rationale and conditions</summary><ul>
+    <li>History, PR measures and coverage artifacts stay outside the first subject-interface version; <code>scout.crap@1</code> is <code>not_applicable</code>.</li>
+    <li>Optional lanes without a logged-in CLI report <code>skipped (no model CLI)</code> without changing the exit code.</li>
+    <li>The 2,000-call cap schedules triage first, then other families in stable unit-key order, disclosing unreached coverage as <code>n/N</code>.</li>
+    <li>Only the call cap applies until Phase 5 measures billed usage and sets a cost bound.</li>
+  </ul></details>
+  <footer>Review: <code>docs/adrs/2026-10-22-rescope/</code> (final round 6, 25 → 0 issues)</footer>
+</article>
+
+<article class="adr s-acc">
+  <header><span class="aid">ADR-003</span><span class="adate">2026-10-23</span><span class="st acc">accepted</span><span class="rel">partly superseded by ADR-007; supersedes part of ADR-002; amends ADR-000, ADR-001</span></header>
+  <h3>Confirm user decisions and align the design with shipped behavior</h3>
+  <ul class="dec">
+    <li>Keep code quality primary and principal series descriptive: structure to watch, not cost.</li>
+    <li>Confirm opt-in pseudonymous study export, with Scout's dogfood ledger as the first pooled dataset.</li>
+    <li>Separate secret-free, read-only PR workflows from trusted runs with state publication, Jev and PR metadata access.</li>
+    <li>Pin Jev to <code>typesafe/jev-1.14-20261014</code> through OpenRouter <code>alpha/decisions</code>; launch provisionally with per-finding disclosure.</li>
+    <li>Use blind independent <code>claude -p</code> and <code>codex exec</code> labelling plus adjudication, without per-case user review.</li>
+  </ul>
+  <div class="callouts">
+    <section class="co co-ev"><h4>Informed by</h4><ul><li>R-039 records user decisions on export, metadata, framing, Jev and labelling</li><li>Release <code>v0.1.2</code> records coverage-aware attribution and pinned scanner provisioning</li><li>7,134 axum series keys stayed unchanged after an agent refresh and content-only commit</li><li>Area-ID retention of 0.95 on fastapi and 0.85 on axum are scenario observations, not X2 results</li></ul></section>
+    <section class="co co-ch"><h4>Changes</h4><ul><li>Closes three open decisions and replaces per-case human review with agent adjudication</li><li>Preserves 52 user-confirmed triage cases as <code>human</code>, with precedence for the same unit and question</li><li>Uses paired merge-base recompute for absent or incomparable baselines; ADR-007 later removes the legacy-manifest exception</li><li>Replaces Phase 4's Jaccard ≥ 0.8 gate with non-gating retention and retained-area Jaccard reports</li></ul></section>
+  </div>
+  <section class="co co-gate"><h4>Open conditions</h4><ul><li>Jev launch stays provisional until X1 reports</li><li>Tuning minimums remain 0.8/0.8, raised to 0.9 on the costlier side, until the user sets costs and minimums</li><li>The 0.9 triage-recall judgement is an assumption and gates nothing while ranking is ordinal</li></ul></section>
+  <details><summary>Rationale and conditions</summary><ul>
+    <li>Otherwise-introduced, non-<code>guardrails.*</code> findings are <code>unknown</code> when the base did not inspect their family, and do not affect <code>would_block</code> or the gate.</li>
+    <li>Defaults replace precision/recall point minimums only, not X1's gain threshold or X4/X5 lower bounds.</li>
+    <li>Jev versions include question <code>kind</code>; its $0.50 assumed billed-cost cap stops when billed cost is unreported.</li>
+    <li>Area-ID retention does not establish X2 matched-area survival or change X2's decision rule.</li>
+  </ul></details>
+  <footer>Review: <code>docs/adrs/2026-10-23-decisions/</code> (final round 7, 16 → 0 issues)</footer>
+</article>
+
+<article class="adr s-acc">
+  <header><span class="aid">ADR-004</span><span class="adate">2026-10-23</span><span class="st acc">accepted</span><span class="rel">supersedes part of ADR-000</span></header>
+  <h3>Correct the Clawpatch review-safety patch pin</h3>
+  <ul class="dec">
+    <li>Pin the review-safety patch to <code>scout-review-sanitize-v3</code>.</li>
+    <li>Keep Clawpatch at v0.7.3.</li>
+    <li>Add <code>USER</code> and <code>LOGNAME</code> to the host auth context copied by the patched <code>claudeEnv</code>.</li>
+    <li>Correct the dogfood release pin to <code>v0.1.4</code> and the timeout symbol to <code>defaultMapTimeoutMS = "900000"</code>.</li>
+    <li>Leave every other substantive design statement unchanged.</li>
+  </ul>
+  <div class="callouts">
+    <section class="co co-ev"><h4>Informed by</h4><ul><li>Local staging inside Scout's worktree silently applied no review-safety patch</li><li>Fix <code>06c9154</code> gives staging its own git repository and checks patch application</li><li>A macOS authentication observation and one fastapi map informed the fix, not a universal failure claim</li><li>The council treats the pin as a code fact, not experimental evidence</li></ul></section>
+    <section class="co co-ch"><h4>Changes</h4><ul><li>Replaced the v2 patch pin in design §4 and Appendix 7 (at <code>9a3d19f5</code>; now REQ-57)</li><li>Refreshed code citations, the dogfood pin and the timeout symbol</li><li>Leaves CP07 §7 as the historical v2 port record</li><li>Made no requirements change because the requirements file did not state the patch pin</li></ul></section>
+  </div>
+  <details><summary>Rationale and conditions</summary><ul>
+    <li>Bootstrap rebuilds when the installed marker differs from the pinned patch version and digest.</li>
+    <li>The v3 fingerprint invalidates keyed caches once and triggers a local rebuild.</li>
+    <li>The existing <code>v0.1.4</code> bundle still carries v2 and needs a later release for main's v3 provider-review check.</li>
+    <li>Clawpatch 0.8.x still requires a separate compatibility review.</li>
+  </ul></details>
+  <footer>Review: <code>docs/adrs/2026-10-23-clawpatch-patch-v3/</code> (final round 5, 10 → 0 issues)</footer>
+</article>
+
+<article class="adr s-acc">
+  <header><span class="aid">ADR-005</span><span class="adate">2026-10-23</span><span class="st acc">accepted</span><span class="rel">partly superseded by ADR-006, ADR-007; supersedes part of ADR-000, ADR-002</span></header>
+  <h3>Pin agent mapping to codex gpt-6-luna at xhigh</h3>
+  <ul class="dec">
+    <li>Fix mapping to provider <code>codex</code>, model <code>gpt-6-luna</code> and effort <code>xhigh</code> in code, not configuration.</li>
+    <li>Never use <code>claude</code> or a model/provider fallback for mapping.</li>
+    <li>Report <code>skipped (no model CLI)</code> when <code>codex</code> is absent from <code>PATH</code>.</li>
+    <li>A failed installed CLI keeps the heuristic map and reports exploration incomplete without changing areas or issue identity.</li>
+    <li>Keep area-match Jaccard 0.5 as an assumption pending X2b and a later council decision.</li>
+  </ul>
+  <div class="callouts">
+    <section class="co co-ev"><h4>Informed by</h4><ul><li>R-040 records the user's mapper pin and decision to retain 0.5 pending a codex-only repeat</li><li>R-041: X2 selected <code>adopt</code> at <code>t* = 0.30</code> using probe-served <code>gpt-6.1-sol</code> with unrecorded effort</li><li>X2's <code>claude-opus-5-5</code> arm returned <code>fallback</code>, with replication <code>not replicated</code></li><li>X2 does not establish a default for the pinned mapper; smoke maps are operational observations</li></ul></section>
+    <section class="co co-ch"><h4>Changes</h4><ul><li>Narrows ADR-002's mapping-provider policy, keeping subscription-CLI and no-API-key rules</li><li>Adds risk R15 and planned X2b without adopting 0.30</li><li>Changes REQ-31 to distinguish mapping from review</li><li>ADR-006 closes the pending-X2b clause; ADR-007 removes <code>CLAWPATCH_PROVIDER</code></li></ul></section>
+  </div>
+  <details><summary>Rationale and conditions</summary><ul>
+    <li>X2 measured one-step clean-layout transitions in two repositories, with one run of seven maps per repository.</li>
+    <li>X2b must fix how X2 and X2b combine before collection, including <code>fallback</code> and <code>inconclusive</code> branches.</li>
+    <li>A later council design round decides the proposal; a threshold is never adopted automatically.</li>
+    <li>A model change needs a code change and a new council-signed study before adopting an area default. Same-name provider changes remain undetected by name-echoing probes.</li>
+  </ul></details>
+  <footer>Review: <code>docs/adrs/2026-10-23-codex-luna-mapping/</code> (final round 6, 17 → 0 issues)</footer>
+</article>
+
+<article class="adr s-acc">
+  <header><span class="aid">ADR-006</span><span class="adate">2026-10-24</span><span class="st acc">accepted</span><span class="rel">partly superseded by ADR-008; supersedes part of ADR-000, ADR-005</span></header>
+  <h3>Run the agent map only at onboarding and on manual refresh</h3>
+  <ul class="dec">
+    <li>Run the agent map only at onboarding and on a maintainer's manual refresh, never on PR runs.</li>
+    <li>Attempt onboarding on default-branch pushes and nightly runs until a map completes and is reconciled.</li>
+    <li>Require local <code>scout map --refresh --allow-egress</code>, or trusted <code>refresh-map</code> dispatch with <code>authorize-egress</code>.</li>
+    <li>Remove merge, structural-change, debounce, nightly and staleness remapping after onboarding.</li>
+    <li>Keep Jaccard 0.5 as an unsupported assumption, the heuristic map canonical, and issue identity and series keys stable.</li>
+  </ul>
+  <div class="callouts">
+    <section class="co co-ev"><h4>Informed by</h4><ul><li>R-042: X2b returned <code>fallback</code> for <code>gpt-6-luna</code> at <code>xhigh</code>; all 13 thresholds from 0.30–0.90 failed C1–C3</li><li>Fastapi mean per-refresh survival was 0.5721 at 0.30 and 0.4154 at 0.50, below C1's 0.8 minimum</li><li>X2 used another model and did not transfer to the production mapper</li><li>R-043 records user direction to adopt the fallback and retain 0.5; HD5b stays <code>not-supported</code></li></ul></section>
+    <section class="co co-ch"><h4>Changes</h4><ul><li>Supersedes ADR-000's merge-trigger clause and closes ADR-005's pending-X2b clause</li><li>Amends REQ-13 and replaces Phase 4's debounced-burst acceptance</li><li>Adds risk R16 for stale areas, without an automatic alarm</li><li>ADR-008 later allows pending-area association, not automatic agent maps</li></ul></section>
+  </div>
+  <section class="co co-gate"><h4>Open conditions</h4><ul><li>Ship the changed workflow and compatible released binary together, updating dogfood and documentation pins</li><li>Reject policies that still set <code>mapping.refresh.debounce</code></li><li>Re-run amended Phase 4 before claiming acceptance; the recorded scenario remains unrun</li></ul></section>
+  <details><summary>Rationale and conditions</summary><ul>
+    <li>Keep onboarding open after a <code>skipped</code>, <code>blocked</code> or <code>incomplete</code> attempt.</li>
+    <li>X2b measured one run of seven maps per repository and nothing below 0.30.</li>
+    <li>Its pass set was empty, with no <code>t*</code> or survival margin; zero <code>different_concern</code> labels among 521 pairs did not establish stability.</li>
+    <li>Adopt the design and requirements before committing companion code.</li>
+  </ul></details>
+  <footer>Review: <code>docs/adrs/2026-10-24-area-refresh-fallback/</code> (final round 5, 12 → 0 issues)</footer>
+</article>
+
+<article class="adr s-acc">
+  <header><span class="aid">ADR-007</span><span class="adate">2026-10-24</span><span class="st acc">accepted</span><span class="rel">partly superseded by ADR-008; supersedes part of ADR-000, ADR-002, ADR-003, ADR-005</span></header>
+  <h3>Consolidate state, baseline, model CLI and CI installation cutovers</h3>
+  <ul class="dec">
+    <li>Create stores at schema 12 and keep only the v1 re-anchor from version 3, preserving <code>legacy_id</code> without merging ambiguous rows.</li>
+    <li>Refuse versions 1, 2 and 4–11 after a read-only version check, with a re-baseline remedy.</li>
+    <li>Require non-null <code>uninspected</code> for differential baselines; refuse missing lane health with <code>unavailable</code>, exit 3.</li>
+    <li>Detect model CLIs in order <code>claude</code>, then <code>codex</code>; opted-in lanes use the policy provider, not <code>CLAWPATCH_PROVIDER</code>.</li>
+    <li>Replace the composite action with release-tag installation and toolchain scripts shared by both reusable workflows.</li>
+  </ul>
+  <div class="callouts">
+    <section class="co co-ev"><h4>Informed by</h4><ul><li>R-044 records user direction to address four design-bound audit findings</li><li>R-046: all tags v0.1.0–v0.1.5 write schema 12; 17 observed baseline manifests contain <code>uninspected</code></li><li>R-045 documents workspace-relative action resolution and release-tag skew</li><li>R-047 documents that read-only WAL opens may create side files</li></ul></section>
+    <section class="co co-ch"><h4>Changes</h4><ul><li>Replaces the migration ladder with the version-3 re-anchor</li><li>Replaces legacy-baseline recompute with explicit refusal and removes Scout's provider-variable use</li><li>Adds the workflow-to-tag interface, R17 and A13; updates REQ-10, REQ-25, REQ-27 and REQ-31</li><li>ADR-008 later changes the current schema to 13 and refuses version 12</li></ul></section>
+  </div>
+  <section class="co co-gate"><h4>Open conditions</h4><ul><li>Ship the state cutover decisions together in one release</li><li>Ship CI scripts in release N before workflows and caller pins require tag N</li><li>Move each caller's workflow revision and <code>scout-version</code> together to versions containing both scripts</li></ul></section>
+  <details><summary>Rationale and conditions</summary><ul>
+    <li>Re-baselining a refused store loses unpublished local state; A13 leaves other repositories' baselines and surviving S3 bundles unobserved.</li>
+    <li>Compare new and re-anchored schemas using a genuine v1 DDL fixture, not a rewound current store.</li>
+    <li>Import older manifests without comparison identifiers and replace or delete <code>export_base</code> transactionally according to lane health.</li>
+    <li>Export identifiers and health from the latest finalized run, else a valid imported base, else empty identifiers and <code>uninspected: []</code>.</li>
+  </ul></details>
+  <footer>Review: <code>docs/adrs/2026-10-24-cutover-cleanup/</code> (final round 7, 16 → 0 issues)</footer>
+</article>
+
+<article class="adr s-prov">
+  <header><span class="aid">ADR-008</span><span class="adate">2026-10-31</span><span class="st prov">accepted · provisional</span><span class="rel">supersedes part of ADR-000, ADR-006, ADR-007; amends ADR-002 (adds X11)</span></header>
+  <h3>Add opt-in, off-by-default merge-time area association</h3>
+  <ul class="dec">
+    <li>Run <code>association</code> and <code>association-fallback</code> only on default-branch pushes, with both lanes opt-in and off by default.</li>
+    <li>Jev routes residual clusters through <code>merge.covered</code> and <code>merge.which_area</code> at provisional thresholds 0.60 and 0.535.</li>
+    <li>Send unresolved or <code>none</code> clusters to <code>codex exec gpt-6.1-terra</code> at effort <code>high</code>, with separate consent and no <code>claude</code> fallback.</li>
+    <li>Store existing-area associations separately; fallback new areas stay pending until a maintainer accepts or merges them.</li>
+    <li>Move state to schema 13 and recommend manual refresh without starting an agent map or changing issue state, the gate, identity or series.</li>
+  </ul>
+  <div class="callouts">
+    <section class="co co-ev"><h4>Informed by</h4><ul><li>Fastapi: assignment precision 0.922 [0.840, 0.964] (71/77), recall 0.922, across 92 unseen clusters</li><li>Axum: precision 0.622 [0.514, 0.719] (51/82), resolved recall 0.810, across 109 clusters; fastapi did not replicate</li><li>Both development runs used agent-reviewed labels and teacher-forced membership, without preregistration or council review; HD6 stays <code>inconclusive</code></li><li>R-059 grants a provisional exception; R-061 confirms user direction after axum's result</li></ul></section>
+    <section class="co co-ch"><h4>Changes</h4><ul><li>Amends ADR-006 for pending areas only, retaining onboarding/manual-only maps</li><li>Amends ADR-007 to schema 13, refuses version 12 and fixes fallback to <code>codex</code></li><li>Exports decisions and inherited-file records in <code>state/v1/associations.jsonl</code></li><li>Adds planned X11 tied to proposed HD8; updates REQ-10, REQ-13, REQ-28 and REQ-31</li></ul></section>
+  </div>
+  <section class="co co-gate"><h4>Before any release enables it</h4><ul><li>Record the <code>orderflip</code> flip rate on <code>merge.which_area</code>; the 20 % second permutation does not replace this gate</li><li>Obtain council sign-off on X11's preregistration before any run</li><li>X11 decides whether to upgrade, retain provisionally or remove the lane</li></ul></section>
+  <details><summary>Rationale and conditions</summary><ul>
+    <li>Pending areas stay out of ownership lookups and model catalogues; maintainer acceptance survives later reconciliation.</li>
+    <li>Closed-loop error accumulation and duplicate pending areas remain unmeasured.</li>
+    <li>The fallback cap of 40, pending-area cap of 10 and guard defaults of 20 merges, 20 clusters, 0.40 fallback rate and 0.20 pending-new rate are assumptions.</li>
+    <li>Report pending-new rate as <code>unmeasured</code> without the required floor or answered fallback cluster; disclose unknown guard recall, false-fire rate and its blind spot for wrong Jev assignments.</li>
+  </ul></details>
+  <footer>Review: <code>docs/adrs/2026-10-31-jev-merge-association/</code> (final round 11, 14 → 0 issues; content round 8, adoption 3 → 0 issues)</footer>
+</article>
+
+  <article class="adr s-acc">
+    <header><span class="aid">ADR-009</span><span class="adate">2026-11-06</span><span class="st acc">accepted</span><span class="rel">supersedes part of ADR-000 (item 6) and ADR-002 (Appendix 12, experiment list)</span></header>
+    <h3>One design document with requirements and ADR appendices</h3>
+    <ul class="dec">
+      <li><code>docs/scout-design.html</code> is the governed design: a visual overview, Appendix A (requirements, normative) and Appendix B (ADRs).</li>
+      <li>It replaces <code>docs/scout-design.md</code>, <code>SCOUT_REBUILD_REQUIREMENTS.md</code> and <code>docs/scout-allowlist.md</code>; REQ-1 to REQ-41 keep their IDs.</li>
+      <li>It ends the planned Phase 6 spec cutover: no <code>scout-product-contract.md</code> or <code>scout-adapter-contracts.md</code>, and the requirements file is retired now, not at Phase 6.</li>
+      <li>Council records move to <code>docs/adrs/&lt;YYYY-MM-DD&gt;-&lt;topic&gt;/</code>, each with an <code>ADR.md</code> summary.</li>
+      <li>Legacy documents are deleted, including <code>docs/enaible-findings.md</code> (not moved to <code>docs/evidence/</code>); git keeps them at <code>9a3d19f5</code>.</li>
+      <li>An accepted ADR is never edited, except its status line, which the commit adopting a later ADR updates.</li>
+    </ul>
+    <div class="callouts">
+      <section class="co co-ev"><h4>Informed by</h4><ul><li>User direction, 2026-11-06 (R-062)</li><li>The 163 KB design had grown by revision paragraphs; readers could not find what is decided or required</li></ul></section>
+      <section class="co co-ch"><h4>Changes</h4><ul><li>REQ-37 follows the design's principles-only subject interface; the old requirement's exact <code>ib-subject-*/1</code> schema, wall-clock cap and sort order are not adopted</li><li>REQ-42 adopts the experiment list X1–X6, X9–X11</li><li>Every design section, allow-list section and REQ is mapped to a REQ, an ADR or a listed drop (<code>requirements-map.md</code>)</li><li><code>AGENTS.md</code> design rules 1 and 2 name this file, its governed documents and the ADR folders</li></ul></section>
+    </div>
+    <details><summary>Rationale and conditions</summary><ul>
+      <li>Apart from the decisions above, the restructure moves and condenses text; decisions stay in their original ADRs.</li>
+      <li>Code comments that cited <code>design §n</code> now cite <code>REQ-n</code> or <code>ADR-NNN</code> (<code>design-section-map.json</code>).</li>
+      <li>Frozen evaluation records and earlier ledger rows keep their old paths; <code>docs/adrs/README.md</code> maps them and says which revision a frozen citation of a deleted file means.</li>
+    </ul></details>
+    <footer>Review: <code>docs/adrs/2026-11-06-design-restructure/</code></footer>
+  </article>
+  </div>
+</div>
+</body>
+</html>

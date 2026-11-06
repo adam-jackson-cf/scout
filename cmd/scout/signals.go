@@ -11,7 +11,7 @@ import (
 	"scout/internal/state"
 )
 
-// signalsCmd lists recorded descriptive signals (design §3.2, §8). By default
+// signalsCmd lists recorded descriptive signals (REQ-33, REQ-44). By default
 // it shows the most recent snapshot of each metric per scope.
 func signalsCmd(ctx context.Context, args []string) int {
 	set := flag.NewFlagSet("signals", flag.ContinueOnError)

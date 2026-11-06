@@ -436,7 +436,7 @@ type Observation struct {
 	RuleID           string `json:"ruleId,omitempty"`
 	RuleVersion      string `json:"ruleVersion,omitempty"`
 	// Claim is set only on observations produced by a named promotion rule
-	// (design §3.2); an ordinary scanner finding leaves it empty.
+	// (REQ-8); an ordinary scanner finding leaves it empty.
 	Claim             SignalClaim       `json:"claim,omitempty"`
 	ModelVersion      string            `json:"modelVersion,omitempty"`
 	SourceSeverity    Severity          `json:"sourceSeverity"`
@@ -917,7 +917,7 @@ type Issue struct {
 	Files             []string            `json:"files,omitempty"`
 	History           []IssueHistoryEntry `json:"history"`
 	// Claim and Rule are set only on an issue promoted by a named, versioned
-	// rule (design §3.2): Rule is "<rule id>@<version>". Empty for ordinary findings.
+	// rule (REQ-8): Rule is "<rule id>@<version>". Empty for ordinary findings.
 	Claim        SignalClaim   `json:"claim,omitempty"`
 	Rule         string        `json:"rule,omitempty"`
 	Verification *Verification `json:"verification,omitempty"`

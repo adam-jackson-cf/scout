@@ -8,7 +8,7 @@ import (
 )
 
 // CrapThreshold is the CRAP value above which a function counts toward the
-// scope's crap_load (design §8.2).
+// scope's crap_load (REQ-107).
 const CrapThreshold = 30.0
 
 // Coverage is the revision-matched line coverage a CRAP computation reads.

@@ -1,5 +1,5 @@
-// Package guardrails detects guardrail erosion introduced by a change (design
-// §5.1/§5.2, allow-list table 1). It has three mechanisms, all producing
+// Package guardrails detects guardrail erosion introduced by a change (REQ-62,
+// REQ-72–REQ-76). It has three mechanisms, all producing
 // Finding values and combined by ChangesAll:
 //
 //   - SuppressAdded (suppress.go): lint/type-check suppressions on lines added

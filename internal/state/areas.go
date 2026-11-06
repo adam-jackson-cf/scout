@@ -10,7 +10,7 @@ import (
 	"scout/internal/areas"
 )
 
-// schemaAreas is the area labels table (design §4, §7.2). Areas are labels over
+// schemaAreas is the area labels table (REQ-53, REQ-48). Areas are labels over
 // Clawpatch output: nothing here feeds issue identity or signal scope keys.
 var schemaAreas = []string{
 	`CREATE TABLE IF NOT EXISTS areas (area_id TEXT PRIMARY KEY, payload BLOB NOT NULL)`,
