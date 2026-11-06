@@ -146,6 +146,218 @@
         "scripts/guardrails/inspect.go"
       ],
       "behavior": "Bound each test subprocess to a 30-second context cancelled at test cleanup."
-    }
+    },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections/table/superseded_not_pending": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Maintainer action refuses superseded not pending without changing exported rows."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections/table/merge_retired_target": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Maintainer action refuses merge retired target without changing exported rows."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections/table/merge_superseded_target": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Maintainer action refuses merge superseded target without changing exported rows."
+  },
+  "internal/areas/pending_lifecycle_test.go/TestPendingReconcileLifecycle": {
+    "source": [
+      "internal/areas/areas.go"
+    ],
+    "behavior": "Pending areas are ignored and maintainer acceptance survives matching or unmatched heuristic ownership."
+  },
+  "internal/areas/pending_lifecycle_test.go/TestPendingReconcileLifecycle/table/pending_unmatched": {
+    "source": [
+      "internal/areas/areas.go"
+    ],
+    "behavior": "Pending areas are ignored and maintainer acceptance survives matching or unmatched heuristic ownership (case pending_unmatched)."
+  },
+  "internal/areas/pending_lifecycle_test.go/TestPendingReconcileLifecycle/table/pending_overlap": {
+    "source": [
+      "internal/areas/areas.go"
+    ],
+    "behavior": "Pending areas are ignored and maintainer acceptance survives matching or unmatched heuristic ownership (case pending_overlap)."
+  },
+  "internal/areas/pending_lifecycle_test.go/TestPendingReconcileLifecycle/table/accepted_matched": {
+    "source": [
+      "internal/areas/areas.go"
+    ],
+    "behavior": "Pending areas are ignored and maintainer acceptance survives matching or unmatched heuristic ownership (case accepted_matched)."
+  },
+  "internal/areas/pending_lifecycle_test.go/TestPendingReconcileLifecycle/table/accepted_unmatched_heuristic": {
+    "source": [
+      "internal/areas/areas.go"
+    ],
+    "behavior": "Pending areas are ignored and maintainer acceptance survives matching or unmatched heuristic ownership (case accepted_unmatched_heuristic)."
+  },
+  "internal/areas/pending_lifecycle_test.go/TestPendingMapSupersession": {
+    "source": [
+      "internal/areas/areas.go"
+    ],
+    "behavior": "Completed mapping supersedes only labels whose surviving files all occur in active area FileSets."
+  },
+  "internal/areas/pending_lifecycle_test.go/TestPendingMapSupersession/table/all_files_active": {
+    "source": [
+      "internal/areas/areas.go"
+    ],
+    "behavior": "Completed mapping supersedes only labels whose surviving files all occur in active area FileSets (case all_files_active)."
+  },
+  "internal/areas/pending_lifecycle_test.go/TestPendingMapSupersession/table/partial_active": {
+    "source": [
+      "internal/areas/areas.go"
+    ],
+    "behavior": "Completed mapping supersedes only labels whose surviving files all occur in active area FileSets (case partial_active)."
+  },
+  "internal/areas/pending_lifecycle_test.go/TestPendingMapSupersession/table/deleted_path": {
+    "source": [
+      "internal/areas/areas.go"
+    ],
+    "behavior": "Completed mapping supersedes only labels whose surviving files all occur in active area FileSets (case deleted_path)."
+  },
+  "internal/areas/pending_lifecycle_test.go/TestPendingMapSupersession/table/renamed_old_path": {
+    "source": [
+      "internal/areas/areas.go"
+    ],
+    "behavior": "Completed mapping supersedes only labels whose surviving files all occur in active area FileSets (case renamed_old_path)."
+  },
+  "internal/areas/pending_lifecycle_test.go/TestPendingMapSupersession/table/renamed_uncovered_live_path": {
+    "source": [
+      "internal/areas/areas.go"
+    ],
+    "behavior": "Completed mapping supersedes only labels whose surviving files all occur in active area FileSets (case renamed_uncovered_live_path)."
+  },
+  "internal/areas/pending_lifecycle_test.go/TestPendingMapSupersession/table/all_deleted": {
+    "source": [
+      "internal/areas/areas.go"
+    ],
+    "behavior": "Completed mapping supersedes only labels whose surviving files all occur in active area FileSets (case all_deleted)."
+  },
+  "internal/areas/pending_lifecycle_test.go/TestPendingMapSupersession/table/heuristic_only": {
+    "source": [
+      "internal/areas/areas.go"
+    ],
+    "behavior": "Completed mapping supersedes only labels whose surviving files all occur in active area FileSets (case heuristic_only)."
+  },
+  "internal/state/pending_actions_test.go/TestPendingAreaReadOnlyRefuses": {
+    "source": [
+      "internal/state/area_actions.go"
+    ],
+    "behavior": "Read-only stores refuse maintainer acceptance and merging without changing exported rows."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreasList": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Maintainers can list pending area IDs and files in text and JSON."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaAccept": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Authorized acceptance activates ownership and records durable provenance and audit history."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaMerge": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Authorized merging resolves pending labels through durable associations without changing the target map FileSet."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Invalid maintainer actions return unavailable and do not mutate exported rows."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections/table/missing_authorize": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Invalid maintainer actions return unavailable and do not mutate exported rows (case missing_authorize)."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections/table/missing_actor": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Invalid maintainer actions return unavailable and do not mutate exported rows (case missing_actor)."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections/table/missing_reason": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Invalid maintainer actions return unavailable and do not mutate exported rows (case missing_reason)."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections/table/unknown_pending": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Invalid maintainer actions return unavailable and do not mutate exported rows (case unknown_pending)."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections/table/active_not_pending": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Invalid maintainer actions return unavailable and do not mutate exported rows (case active_not_pending)."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections/table/merge_missing_authorize": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Invalid maintainer actions return unavailable and do not mutate exported rows (case merge_missing_authorize)."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections/table/merge_missing_actor": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Invalid maintainer actions return unavailable and do not mutate exported rows (case merge_missing_actor)."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections/table/merge_missing_reason": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Invalid maintainer actions return unavailable and do not mutate exported rows (case merge_missing_reason)."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections/table/merge_unknown_pending": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Invalid maintainer actions return unavailable and do not mutate exported rows (case merge_unknown_pending)."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections/table/merge_active_source": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Invalid maintainer actions return unavailable and do not mutate exported rows (case merge_active_source)."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections/table/merge_unknown_target": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Invalid maintainer actions return unavailable and do not mutate exported rows (case merge_unknown_target)."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingAreaCommandRejections/table/merge_pending_target": {
+    "source": [
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Invalid maintainer actions return unavailable and do not mutate exported rows (case merge_pending_target)."
+  },
+  "cmd/scout/pending_areas_test.go/TestPendingSummary": {
+    "source": [
+      "internal/engine/gate.go",
+      "cmd/scout/main.go"
+    ],
+    "behavior": "Summary text and emitted JSON expose pending areas with their files."
+  },
+  "cmd/scout/pending_areas_test.go/TestAcceptedPendingSurvivesMapRefresh": {
+    "source": [
+      "internal/engine/gate.go",
+      "cmd/scout/main.go"
+    ],
+    "behavior": "An accepted unmatched area survives map refresh while remaining pending files appear in the summary."
+  }
   }
 }

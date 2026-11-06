@@ -139,6 +139,13 @@ func (s *Store) Export(ctx context.Context) (map[string][]byte, error) {
 	if associationFile != nil {
 		files[ExportAssociations] = associationFile
 	}
+	actions, err := s.metadataValue(ctx, metadataAreaActions)
+	if err != nil {
+		return nil, err
+	}
+	if actions != "" {
+		files[ExportAreaActions] = []byte(actions)
+	}
 	refreshFile, err := s.ExportMappingRefreshFile(ctx)
 	if err != nil {
 		return nil, err
@@ -505,7 +512,10 @@ func (s *Store) Import(ctx context.Context, files map[string][]byte) error {
 	if err != nil {
 		return err
 	}
-	return s.importRows(ctx, meta, issues, blocks, signals, files[ExportCoverageSummary], areaList, associations, files[ExportMappingRefresh])
+	if _, err := decodeAreaActions(files[ExportAreaActions]); err != nil {
+		return err
+	}
+	return s.importRows(ctx, meta, issues, blocks, signals, files[ExportCoverageSummary], areaList, associations, files[ExportMappingRefresh], files[ExportAreaActions])
 }
 
 // decodeSignals reads every signals/*.jsonl file of an export, validated, in
@@ -588,7 +598,7 @@ func DecodeIssues(files map[string][]byte) ([]domain.Issue, error) {
 	return issues, nil
 }
 
-func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []domain.Issue, blocks []domain.WouldBlock, signals []domain.Signal, summary []byte, areaList []areas.Area, associations []domain.Association, refresh []byte) error {
+func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []domain.Issue, blocks []domain.WouldBlock, signals []domain.Signal, summary []byte, areaList []areas.Area, associations []domain.Association, refresh, actions []byte) error {
 	return s.withTransaction(ctx, func(tx *sql.Tx) error {
 		var count int
 		if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM issues`).Scan(&count); err != nil {
@@ -635,6 +645,9 @@ func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []doma
 			return err
 		}
 		if err := importMappingRefresh(ctx, tx, refresh); err != nil {
+			return err
+		}
+		if _, err := tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`, metadataAreaActions, string(actions)); err != nil {
 			return err
 		}
 		// The comparison identifiers travel with lane health: a manifest that
