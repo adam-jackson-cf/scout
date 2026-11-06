@@ -1,5 +1,5 @@
 // Package importgraph extracts internal import edges (Go, Python, TypeScript/JS)
-// and computes scout.cycle_mass@1 (design §8.2). Nodes are repo-relative slash
+// and computes scout.cycle_mass@1 (REQ-106). Nodes are repo-relative slash
 // paths: source files for Python/TS, package directories for Go. Output is
 // deterministic (sorted). Type-only edges are kept apart from runtime edges.
 package importgraph

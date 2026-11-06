@@ -58,7 +58,7 @@ type RefreshOutcome struct {
 
 // Run performs at most one agent map: at onboarding (default-branch pushes and
 // nightly runs attempt it until one has completed) or when forced. PR runs and
-// non-default pushes never map. Design §4.
+// non-default pushes never map. REQ-13.
 func (r *Refresher) Run(ctx context.Context, run RefreshRun) (RefreshOutcome, error) {
 	record, err := r.Store.LoadMappingRefresh(ctx)
 	if err != nil {

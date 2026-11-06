@@ -1,23 +1,23 @@
 # Remaining work (2026-11-06)
 
-This is the single list of Scout work still to do. It replaces `HANDOFF.md` (deleted) and the remaining-work table that used to be `docs/STATUS.md` §5. The detailed specifications stay where they are, and this plan points to them:
+This is the single list of Scout work still to do. It replaces `HANDOFF.md` (deleted) and the former remaining-work table in `docs/STATUS.md`. The detailed specifications stay where they are, and this plan points to them:
 
-- design §11 (product phases) and §13 (experiments) in `docs/scout-design.md`;
+- product requirements and experiments in `docs/scout-design.html` Appendix A (REQ-1…REQ-183);
 - the per-phase specification in `docs/plans/2026-11-01-rev-2.8-merge-association.md`.
 
 Where this plan and the design differ, the design wins. Machine setup, accounts and the repository gate are in `CONTRIBUTING.md`.
 
 ## Where things stand
 
-| Area                                  | State                                                                                                                                         | Evidence                                                                     |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Design                                | Revision 2.8 adopted, SHA-256 `d1fb1274…9b75`                                                                                                 | `docs/STATUS.md` §1; `docs/design-reviews/2026-10-31-jev-merge-association/` |
-| Product roadmap (design §11)          | Phases 1–4 done, with three open items (track B)                                                                                              | `docs/STATUS.md` §1                                                          |
-| Merge-time association (rev 2.8 plan) | Phases 0–2 done (`1d4e0cc`, `3e89f23`); the lane is not wired into `scout assess` yet                                                         | `docs/STATUS.md` §1                                                          |
-| Repository gate                       | Gate schema v2: the pre-commit hook runs `checks.commit`, the required CI check `gate` runs `checks.ci`, and `main` is protected (`5776d102`) | `.omp/gate.json`; `CONTRIBUTING.md`                                          |
-| Toolchain                             | Go 1.26.10, Clawpatch 0.7.3                                                                                                                   | `toolchain/versions.env`                                                     |
+| Area                                                | State                                                                                                                                         | Evidence                                         |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Design                                              | `docs/scout-design.html`, ADR-009 adopted 2026-11-06                                                                                          | `docs/adrs/2026-11-06-design-restructure/ADR.md` |
+| Product roadmap (REQ-167, REQ-168, REQ-178–REQ-182) | Phases 1–4 done, with three open items (track B)                                                                                              | `docs/STATUS.md` §1                              |
+| Merge-time association (rev 2.8 plan)               | Phases 0–2 done (`1d4e0cc`, `3e89f23`); the lane is not wired into `scout assess` yet                                                         | `docs/STATUS.md` §1                              |
+| Repository gate                                     | Gate schema v2: the pre-commit hook runs `checks.commit`, the required CI check `gate` runs `checks.ci`, and `main` is protected (`5776d102`) | `.omp/gate.json`; `CONTRIBUTING.md`              |
+| Toolchain                                           | Go 1.26.10, Clawpatch 0.7.3                                                                                                                   | `toolchain/versions.env`                         |
 
-Two phase series exist. Track A numbers follow the rev 2.8 plan (A3–A7), and track B numbers follow design §11 (Phases 3–6). They are different phases.
+Two phase series exist. Track A numbers follow the rev 2.8 plan (A3–A7), and track B numbers follow the product roadmap (REQ-167, REQ-168, REQ-180–REQ-182; Phases 3–6). They are different phases.
 
 ```mermaid
 flowchart LR
@@ -48,23 +48,23 @@ The lane ships off by default as a provisional opt-in. The fastapi result did no
 
 Each phase also needs `go test ./...`, the commit hook, its phase scenario, and a record in `docs/STATUS.md` §1.
 
-## Track B: product roadmap (design §11)
+## Track B: product roadmap (REQ-167, REQ-168, REQ-180–REQ-182)
 
-| #   | Work                                                                                                                               | Entry condition                     | Notes                                                                                                                                                                                                                                                                  |
-| --- | ---------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| B1  | Phase 3 CI item: observe `pr_effort` in a trusted default-branch CI run                                                            | a trusted run on `main`             | Wired already (`scout-guardian-trusted.yml`, `pull-requests: read`) but never observed                                                                                                                                                                                 |
-| B2  | Re-run Phase 4 under the rev 2.6 acceptance on fastapi `d666ccb` and axum `562fa20`, and record the result in `docs/STATUS.md` §1  | `ead1a3f` (done)                    | The scenario script `/tmp/scout-p4/scenario.sh` was lost with the old machine. Rebuild it against the amended acceptance.                                                                                                                                              |
-| B3  | Phase 3b: the exact schema for the subject interface                                                                               | inertia-bench design signed off     | Needs its own council round                                                                                                                                                                                                                                            |
-| B4  | Phase 5: trends, exploratory measures, the rubric lane, self-evaluation, and agent-labelled eval data                              | track C preregistrations signed off | Design §11 Phase 5                                                                                                                                                                                                                                                     |
-| B5  | Phase 6: study export (the dogfood ledger is dataset #1), web inertia panels, release, dogfood in `guardian`, and the spec cutover | B4                                  | The spec cutover archives `SCOUT_REBUILD_REQUIREMENTS.md` under `docs/evidence/` and writes `docs/scout-product-contract.md` and `docs/scout-adapter-contracts.md`. The same council round should move `docs/enaible-findings.md` to `docs/evidence/` and update R-002 |
+| #   | Work                                                                                                                              | Entry condition                     | Notes                                                                                                                     |
+| --- | --------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| B1  | Phase 3 CI item: observe `pr_effort` in a trusted default-branch CI run                                                           | a trusted run on `main`             | Wired already (`scout-guardian-trusted.yml`, `pull-requests: read`) but never observed                                    |
+| B2  | Re-run Phase 4 under the rev 2.6 acceptance on fastapi `d666ccb` and axum `562fa20`, and record the result in `docs/STATUS.md` §1 | `ead1a3f` (done)                    | The scenario script `/tmp/scout-p4/scenario.sh` was lost with the old machine. Rebuild it against the amended acceptance. |
+| B3  | Phase 3b: the exact schema for the subject interface                                                                              | inertia-bench design signed off     | Needs its own council round                                                                                               |
+| B4  | Phase 5: trends, exploratory measures, the rubric lane, self-evaluation, and agent-labelled eval data                             | track C preregistrations signed off | REQ-34, REQ-67–REQ-69, REQ-108–REQ-110, REQ-123–REQ-124, REQ-136–REQ-138, REQ-182                                         |
+| B5  | Phase 6: study export (the dogfood ledger is dataset #1), web inertia panels, release, dogfood in `guardian`                      | B4                                  | REQ-36, REQ-168. The spec cutover is done by ADR-009.                                                                     |
 
 ## Track C: experiments that need a council-signed preregistration
 
 None of these is preregistered yet. Each one follows the experiment rules in `CLAUDE.md`: preregister, plant an effect and a null, get council sign-off with zero issues, then freeze.
 
-| ID              | Question (design §13)                                                        | Feeds                             |
+| ID              | Question (REQ-169–REQ-177)                                                   | Feeds                             |
 | --------------- | ---------------------------------------------------------------------------- | --------------------------------- |
-| X1              | Jev ranking vs deterministic ranking                                         | B4; design assumption A4          |
+| X1              | Jev ranking vs deterministic ranking                                         | B4; REQ-169                       |
 | X3, X4, X5, X10 | Phase 5 measures, the rubric lane and self-evaluation                        | B4                                |
 | X6              | Replay of unwarranted guardrail blocks                                       | allow-list promotion              |
 | X9              | Hand-check of 200 `moved/pasted/new` labels and 200 `stale_reference` labels | B4                                |
@@ -74,36 +74,29 @@ HD6b and HD7 are `proposed` and have no test yet (`docs/hypothesis-ledger.md`).
 
 ## Owner decisions
 
-| #   | Decision                                                                                                                                                                     | Blocks                                                      |
-| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| D1  | Jev false-action costs and per-decision minimums (design §15 item 1). The provisional defaults 0.8/0.8, raised to 0.9 on the costlier side, are in force until you set them. | the minimums in the X1, X3, X4, X5 and X10 preregistrations |
+| #   | Decision                                                                                                                                                          | Blocks                                                      |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| D1  | Jev false-action costs and per-decision minimums (REQ-98). The provisional defaults 0.8/0.8, raised to 0.9 on the costlier side, are in force until you set them. | the minimums in the X1, X3, X4, X5 and X10 preregistrations |
 
 ## Known gaps (from `docs/STATUS.md` §1)
 
 - When agent mapping succeeds with zero features, the heuristic output is not re-merged.
 - An issue left unmatched during a rename keeps its old anchor path.
 - The policy `version` strings for Gitleaks checks are the long rule-pack version.
-- The shadow-window bound (`unknown` ≤ 10 % of PR runs) cannot be computed yet. `ShadowStats` has no producer, and `comparison` is not persisted (design §7.2).
-
-## Corrections that need a council round (design rule 1)
-
-These are stale statements in governed text. They need a design review round, not a direct edit:
-
-- The design's status line says "Nothing of revision 2.8 is implemented yet". Plan Phases 0–2 are done.
-- The design's status line says the dogfood caller pins `v0.1.4`. It now pins `v0.1.6` (`.github/workflows/scout-nightly.yml`).
+- The shadow-window bound (`unknown` ≤ 10 % of PR runs) cannot be computed yet. `ShadowStats` has no producer, and `comparison` is not persisted (REQ-22, REQ-78).
 
 ## Candidate source (not in the ledger)
 
-MOSS, arXiv:2610.26902: an LLM-judge monitoring loop whose thresholds transferred across benchmarks. It may matter for X1 and nightly mode. Read the full paper before using it. If it informs a decision, record it as R-062.
+MOSS, arXiv:2610.26902: an LLM-judge monitoring loop whose thresholds transferred across benchmarks. It may matter for X1 and nightly mode. Read the full paper before using it. If it informs a decision, record it under the next free research-ledger ID.
 
-## What this tidy-up changed
+## Docs that stay
 
-- **Deleted:** `HANDOFF.md`, the 2026-11-04 machine-migration handoff. Its setup and account notes moved to `CONTRIBUTING.md`, and its remaining work moved here. Its migration checks (branches, worktrees, stash) were one-time and are complete.
-- **Kept, governed:**
-  - `SCOUT_REBUILD_REQUIREMENTS.md` stays in the repository root. It is the live product spec until the Phase 6 cutover (B5), and the design cites it by path.
-  - `docs/scout-allowlist.md` and `docs/jev-adapter-audit.md` are adopted or cited by the design.
-- **Kept, cited as evidence:**
-  - `docs/scout-design-brief.md`, `docs/inertia-research.md` and `docs/archive/scout-design-v1.md` are cited by the design or by review records.
-  - `docs/enaible-findings.md` is cited by R-002; it moves in B5.
-- **Kept as the per-phase specification:** `docs/plans/2026-11-01-rev-2.8-merge-association.md`. The design review rounds cite it.
-- `docs/STATUS.md` keeps current state, evidence and decisions. Its remaining-work section now points here.
+- **Governed design:** `docs/scout-design.html`. Appendix A holds REQ-1…REQ-183; Appendix B indexes ADR-000…ADR-009.
+- **Decisions and review evidence:** `docs/adrs/`, indexed by `docs/adrs/README.md`.
+- **Reference:** `docs/references/` describes the CLI, lanes, policy, environment and CI.
+- **Plans:** `docs/plans/` keeps this remaining-work list and the per-phase merge-association specification.
+- **Current state:** `docs/STATUS.md` keeps code/phase state, evidence and resume pointers.
+- **Ledgers:** `docs/research-ledger.md` and `docs/hypothesis-ledger.md` keep sources and hypothesis state.
+- **Jev audit:** `docs/jev-adapter-audit.md` keeps the adapter audit and open design-level gaps.
+- **Deleted by ADR-009:** `docs/scout-design.md`, `SCOUT_REBUILD_REQUIREMENTS.md`, `docs/scout-allowlist.md`, `docs/archive/`, `docs/scout-design-brief.md`, `docs/inertia-research.md` and `docs/enaible-findings.md`. Git keeps their history.
+- `HANDOFF.md` was deleted in the earlier tidy-up. Its setup and account notes moved to `CONTRIBUTING.md`, and its remaining work moved here.

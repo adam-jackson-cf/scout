@@ -20,7 +20,7 @@ const (
 	CLICodex         = "codex"
 	LaneContextual   = "contextual"
 	LaneClawpatchRev = "clawpatch-review"
-	// DefaultMaxPerRun is the Jev call cap (design §6, [ASSUMPTION]).
+	// DefaultMaxPerRun is the Jev call cap (REQ-29, [ASSUMPTION]).
 	DefaultMaxPerRun = 2000
 	// DefaultMaxCostUSD is the cap on billed Jev cost per run, in US dollars
 	// [ASSUMPTION]: five times the ≈ $0.10 the default call cap costs at E2's

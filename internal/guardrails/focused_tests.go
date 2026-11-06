@@ -30,7 +30,7 @@ func focusHits(code string) []string {
 // FocusedTestsAdded reports focused tests (`.only`, `fit`, `fdescribe`) on
 // lines added in head inside JS/TS test files. Non-test files, generated files
 // and focus markers that already existed on the replaced base line are
-// ignored. There is no Go or Python construct (allow-list table 1).
+// ignored. There is no Go or Python construct (REQ-76).
 func FocusedTestsAdded(base, head map[string][]byte, changed []string) []Finding {
 	return scanHeadFiles(head, changed, func(p string, hc []byte) []Finding {
 		if langOf(p) != langTS || !isTestPath(p, langTS) || isGenerated(hc) {

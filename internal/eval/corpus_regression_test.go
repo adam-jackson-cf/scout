@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-// The v1 corpus regression (design §7.3 Track A, §9.8; REQ-19): the 9
+// The v1 corpus regression (REQ-19): the 9
 // adjudicated true issues stay detected and the 13 adjudicated false positives
 // stay unflagged.
 //

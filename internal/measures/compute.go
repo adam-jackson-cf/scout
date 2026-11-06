@@ -62,7 +62,7 @@ func MeasuredPopulation(candidates []domain.File, lizard map[string]FileMeasure)
 }
 
 // Candidates filters inventory files to production source of supported
-// languages (design §8.2 path roles); only files Scout may read qualify.
+// languages (REQ-125 path roles); only files Scout may read qualify.
 func Candidates(files []domain.File) []domain.File {
 	var out []domain.File
 	for _, file := range files {
@@ -74,7 +74,7 @@ func Candidates(files []domain.File) []domain.File {
 	return out
 }
 
-// Compute derives the §8.2 signals for every scope: scout.cc, complex_burden,
+// Compute derives the REQ-103–REQ-105, REQ-107 and REQ-111 signals for every scope: scout.cc, complex_burden,
 // burden_density, dup_pct and scout.crap (`unmeasured` unless the input
 // carries a revision-matched coverage artifact).
 func Compute(in Input) []domain.Signal {

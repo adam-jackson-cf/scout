@@ -11,7 +11,7 @@ import (
 	"scout/internal/policy"
 )
 
-// Exit codes (design §7.4): precedence 3 > 2 > 1 > 0.
+// Exit codes (REQ-24): precedence 3 > 2 > 1 > 0.
 const (
 	ExitClean       = 0
 	ExitGated       = 1
@@ -238,7 +238,7 @@ func dispositioned(state domain.IssueState) bool {
 }
 
 // PathRoleVersion versions the path-role classifier of the deterministic
-// baseline (design §6: stored with every ranking disclosure).
+// baseline (REQ-89: stored with every ranking disclosure).
 const PathRoleVersion = "path-role/v1"
 
 var pathMarkers = []struct{ marker, role string }{
@@ -383,7 +383,7 @@ func wouldBlockID(base, head, check, issue string) string {
 }
 
 // Ranking is the ranking of introduced and regressed findings and its
-// disclosure (design §6): which method produced it, why a fallback happened,
+// disclosure (REQ-89, REQ-92): which method produced it, why a fallback happened,
 // and the versions every stored ranking carries.
 type Ranking struct {
 	// Method is the disclosure line: `deterministic (<reason>)`,
@@ -403,7 +403,7 @@ type Ranking struct {
 
 // RankingItem is one ranked issue. Ranking is the per-finding disclosure.
 // Score is the deterministic baseline's score and is absent for Jev-ranked
-// items: design §6 never shows Jev's probability (it stays in the state store
+// items: REQ-96 never shows Jev's probability (it stays in the state store
 // for X1), only the position and its disclosure.
 type RankingItem struct {
 	IssueID         string             `json:"issueId"`

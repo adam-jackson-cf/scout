@@ -4,7 +4,7 @@ import "fmt"
 
 // DefaultAreasMatchJaccard is a configurable default, not a validated
 // threshold: [ASSUMPTION; X2b `fallback`, X2's 0.30 is for another model] in
-// design §4 A1. It applies at onboarding and manual agent maps.
+// REQ-53. It applies at onboarding and manual agent maps.
 const DefaultAreasMatchJaccard = 0.5
 
 // Mapping is the effective `mapping:` policy block.

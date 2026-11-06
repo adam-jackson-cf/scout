@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// AssociationOutcome is how a merge-time cluster or file was decided (design §4).
+// AssociationOutcome is how a merge-time cluster or file was decided (REQ-154).
 type AssociationOutcome string
 
 const (
@@ -46,7 +46,7 @@ const (
 
 // Association is one merge-time decision record: one per decided cluster per
 // run and one per inherited file. Records are append-only apart from the
-// Stale and Superseded flags. Jev request bodies in RawAnswer are redacted (§6).
+// Stale and Superseded flags. Jev request bodies in RawAnswer are redacted (REQ-154).
 type Association struct {
 	ID                 string     `json:"id"`
 	RunID              string     `json:"run_id"`

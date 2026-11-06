@@ -10,7 +10,7 @@ import (
 )
 
 // Provider names Scout passes to Clawpatch. Clawpatch also knows acpx, grok,
-// opencode, pi, cursor and mock; Scout rejects them (design rev 2.2 §4):
+// opencode, pi, cursor and mock; Scout rejects them (REQ-59):
 // reasoning-LLM use goes only through `codex` or `claude` in the CLI's own
 // subscription login, with no API-key environment.
 const (

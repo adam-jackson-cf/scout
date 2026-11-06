@@ -1,5 +1,5 @@
 // Package measures computes Scout's principal (snapshot) quality measures
-// (design §8.2): complexity from lizard, duplication from jscpd, over the
+// (REQ-103, REQ-105): complexity from lizard, duplication from jscpd, over the
 // eligible production-source population of each feature or directory scope.
 // Every signal is descriptive and carries numerator, denominator, population
 // digest and tool/config digests; a measure that could not run is
@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-// Eligibility constants (design §8.2): the supported source extensions and the
+// Eligibility constants (REQ-125): the supported source extensions and the
 // non-production path-role globs below define the measured population.
 const (
 	// MinFileNLOC is the smallest file (lizard NLOC) in the eligible population.

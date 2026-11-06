@@ -7,7 +7,7 @@ import (
 )
 
 // schemaPRMetadata records which PR-metadata document backed the PR-level signals of
-// a snapshot (design §8.3 provenance). Never holds tokens or PR contents.
+// a snapshot (REQ-132 provenance). Never holds tokens or PR contents.
 var schemaPRMetadata = []string{
 	`CREATE TABLE IF NOT EXISTS pr_metadata_sources (seq INTEGER PRIMARY KEY AUTOINCREMENT, snapshot TEXT NOT NULL, kind TEXT NOT NULL, origin TEXT NOT NULL, digest TEXT NOT NULL, fetched_at TEXT NOT NULL, prs INTEGER NOT NULL, UNIQUE(snapshot, digest))`,
 }

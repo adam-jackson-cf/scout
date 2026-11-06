@@ -66,7 +66,7 @@ type Result struct {
 	CoverageGaps []string // modified, unowned, not heuristic-owned: counted, not decided
 }
 
-// Classify applies the measured residual rules (design §4) to one merge's
+// Classify applies the measured residual rules (REQ-141, REQ-142) to one merge's
 // changes. inTree reports whether a path exists in the parent tree (variant
 // siblings must exist there).
 func Classify(changes []Change, own Ownership, inTree func(string) bool) Result {

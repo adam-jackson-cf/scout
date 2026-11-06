@@ -11,7 +11,7 @@ import (
 	"scout/internal/domain"
 )
 
-// schemaSignals adds the append-only signals ledger (design §3.2). The primary key
+// schemaSignals adds the append-only signals ledger (REQ-8, REQ-44). The primary key
 // is the signal identity plus tool and config digests, so recomputing a
 // snapshot with the same tool is idempotent and a different tool appends.
 var schemaSignals = []string{

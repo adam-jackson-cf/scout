@@ -18,7 +18,7 @@ func pyBranchy(name string, branches int) string {
 	return b.String()
 }
 
-// Design §11 Phase 3: a PR raising a function CC 9 → 14 yields one descriptive,
+// REQ-180: a PR raising a function CC 9 → 14 yields one descriptive,
 // report-only delta issue and leaves the guardian-profile exit code unchanged.
 func TestDiffDeltaIsReportOnlyUnderGuardianProfile(t *testing.T) {
 	for _, tool := range []string{"ruff", "gitleaks", "semgrep", "lizard", "jscpd"} {

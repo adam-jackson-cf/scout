@@ -22,7 +22,7 @@ type migratedIssue struct {
 // unambiguously. Every store has the table, so new and re-anchored schemas match.
 const schemaMigrationAmbiguities = `CREATE TABLE issue_migration_ambiguities (issue_id TEXT PRIMARY KEY, legacy_id TEXT NOT NULL, reason TEXT NOT NULL)`
 
-// reanchorIssues re-anchors the v1 issue store (design §3.3): every issue gets a
+// reanchorIssues re-anchors the v1 issue store (REQ-10): every issue gets a
 // durable opaque ID and an anchor derived from its linked observations, keeps
 // its old ID as legacy_id, loses approval fields and states, and ambiguous rows
 // are listed rather than merged.

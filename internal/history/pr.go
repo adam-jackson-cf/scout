@@ -7,7 +7,7 @@ import (
 	"scout/internal/domain"
 )
 
-// PR-level thresholds (design §8.3).
+// PR-level thresholds (REQ-127).
 const (
 	MaxPRFiles   = 50
 	MaxPRCommits = 100

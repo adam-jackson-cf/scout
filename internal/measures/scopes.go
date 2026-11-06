@@ -7,7 +7,7 @@ import (
 	"scout/internal/domain"
 )
 
-// Scope is one measurement scope (design §4): a heuristic feature, or a
+// Scope is one measurement scope (REQ-54): a heuristic feature, or a
 // directory for files no feature owns. Paths are sorted repository-relative
 // file paths.
 type Scope struct {

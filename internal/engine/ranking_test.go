@@ -222,7 +222,7 @@ func TestJevRanksByStoredAnswersAndStoresAnnotationsVersionsAndRequests(t *testi
 		t.Fatalf("versions %q %q", ranking.BaselineVersion, ranking.RankFormulaVersion)
 	}
 	for _, item := range ranking.Items {
-		// Jev's probability is never shown (design §6): no score in the product output.
+		// Jev's probability is never shown (REQ-96): no score in the product output.
 		if item.Score != nil || item.BaselineScore == 0 || item.Ranking != "jev (unvalidated, X1 pending)" || !strings.HasPrefix(item.QuestionVersion, "triage.real_defect@") {
 			t.Fatalf("item %+v", item)
 		}

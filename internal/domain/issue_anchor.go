@@ -13,7 +13,7 @@ import (
 // identity so a moved secret stays the same issue.
 const SecretMechanism = "secret diagnostic reported"
 
-// IssueAnchor is the identity-bearing evidence of an issue (design §3.3).
+// IssueAnchor is the identity-bearing evidence of an issue (REQ-5).
 // Line and byte ranges are locators on observations and never appear here.
 type IssueAnchor struct {
 	// Path is the rename-followed repository path. Empty for a digest-matched secret.
@@ -30,7 +30,7 @@ type IssueAnchor struct {
 	Secret bool `json:"secretDigest,omitempty"`
 }
 
-// AnchorOf derives the identity anchor of an observation (design §3.3). Line
+// AnchorOf derives the identity anchor of an observation (REQ-5). Line
 // and byte ranges are deliberately ignored: they are locators, not identity.
 // ok is false for an observation with no evidence location.
 func AnchorOf(observation Observation) (IssueAnchor, bool) {

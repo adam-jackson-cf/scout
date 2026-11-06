@@ -1,5 +1,5 @@
 // Package baseline publishes and restores Scout's exported ledger on the
-// protected scout/state git branch (design §7.2) using git plumbing only, so no
+// protected scout/state git branch (REQ-26) using git plumbing only, so no
 // working tree is touched and no .sqlite/WAL file can ever be committed.
 package baseline
 

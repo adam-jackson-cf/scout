@@ -20,15 +20,15 @@ type MeasuresOptions struct {
 	// inventory.
 	Only  []string
 	Tools measures.Tools
-	// History also computes the §8.3 exposure and interest measures over the
+	// History also computes the REQ-112–REQ-120 exposure and interest measures over the
 	// repository's commit history (push and nightly runs).
 	History bool
 	// PRMetadata, when set, supplies merged-PR metadata for pr_effort,
-	// batch_size and the PR part of dispersion (§8.3). Nil: those signals are
+	// batch_size and the PR part of dispersion (REQ-117, REQ-118, REQ-122). Nil: those signals are
 	// `unmeasured`.
 	PRMetadata *PRMetadataOptions
 	// Artifacts are the coverage and test-result files to ingest for this
-	// run (design §8.2); only revision-matched coverage yields scout.crap.
+	// run (REQ-107); only revision-matched coverage yields scout.crap.
 	Artifacts []artifacts.Spec
 }
 
@@ -40,8 +40,8 @@ type PRMetadataOptions struct {
 	Fetch prmeta.FetchOptions
 }
 
-// runMeasuresLanes computes the §8.2 principal signals over the run's
-// inventory, and optionally the §8.3 history signals, and records them. Both
+// runMeasuresLanes computes the REQ-103–REQ-107 and REQ-111 principal signals over the run's
+// inventory, and optionally the REQ-112–REQ-120 history signals, and records them. Both
 // lanes are signal-mode: a failure is reported in lane health and never fails
 // the run.
 func runMeasuresLanes(ctx context.Context, store *state.Store, root string, current inventory.ScanResult, features []domain.Feature, options Options) []domain.LaneHealth {

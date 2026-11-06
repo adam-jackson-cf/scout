@@ -200,7 +200,7 @@ func AssessReadiness(ctx context.Context, config Config, options Options) (Readi
 		clientErr = client.CheckPrerequisites(ctx)
 	}
 	add("pinned_clawpatch", clawpatchNeeded, clientErr)
-	// Reasoning-LLM lanes are optional (design §3.4, §7.3): a missing model CLI
+	// Reasoning-LLM lanes are optional (REQ-18): a missing model CLI
 	// or withheld egress is reported, never makes the assessment not ready.
 	_, _, cliErr := modelcli.Detect(config.Provider.CLI)
 	add("model_cli", false, cliErr)

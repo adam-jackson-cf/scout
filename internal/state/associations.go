@@ -12,7 +12,7 @@ import (
 	"scout/internal/domain"
 )
 
-// schemaAssociations is the merge-time association table (design §4, §7.2): one
+// schemaAssociations is the merge-time association table (REQ-154): one
 // payload row per decided cluster per run and per inherited file. The refresh
 // generation is the LastAgentRefreshAt in force when decided ("" before
 // onboarding); the refresh guard reads rows of one generation in decision order.

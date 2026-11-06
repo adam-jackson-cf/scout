@@ -20,7 +20,7 @@ import (
 	"scout/internal/measures"
 )
 
-// Delta rule identifiers (design §3.2, §8.2). A rule is named and versioned:
+// Delta rule identifiers (REQ-8, REQ-125). A rule is named and versioned:
 // changing its threshold or matching bumps the version.
 const (
 	DeltaCCRule  = "delta.cc-threshold"
@@ -67,7 +67,7 @@ type DeltaReport struct {
 // ComputeDeltas applies the delta rules to the changed files between the merge
 // base and the tree at root. Functions are matched by file and name in both
 // sides; files or functions present on one side only are a population change,
-// never a delta (design §8.2).
+// never a delta (REQ-125).
 func ComputeDeltas(ctx context.Context, root, mergeBase string, changed []string, tools measures.Tools) DeltaReport {
 	report := DeltaReport{Issues: []DeltaIssue{}}
 	changedProd := map[string]bool{}
@@ -382,7 +382,7 @@ func extractBlobs(ctx context.Context, root, rev string, paths []string, dir str
 }
 
 // deltaLane promotes each delta to a ledger observation through the ordinary
-// inline-lane path (design §3.2). The observation carries the rule id, version
+// inline-lane path (REQ-8). The observation carries the rule id, version
 // and `descriptive` claim, so the issue it correlates into is report-only: its
 // check id `delta.*` is never blocking-eligible. Rules that could not run are
 // reported as lane health, never as an empty result.
@@ -408,7 +408,7 @@ func deltaLane(root, mergeBase string, changed []string, tools measures.Tools) I
 }
 
 // observation renders the delta as a validated ledger observation. The anchor
-// is file + function (design §3.3): evidence carries the measured values, the
+// is file + function (REQ-5): evidence carries the measured values, the
 // threshold and the base revision, so a re-run on the same PR matches the same
 // issue.
 func (d DeltaIssue) observation(runID string, now time.Time) domain.Observation {

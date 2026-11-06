@@ -9,7 +9,7 @@ import (
 	"scout/internal/inventory"
 )
 
-// mappingAreas lists the area labels (design §4); retired areas are included
+// mappingAreas lists the area labels (REQ-53); retired areas are included
 // with their retiredSnapshot so triage can see why a label disappeared.
 func mappingAreas(ctx context.Context, flags *commonFlags) int {
 	store, err := openStore(flags)

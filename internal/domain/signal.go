@@ -72,7 +72,7 @@ const (
 )
 
 // Signal is one descriptive measurement at a scope for a snapshot and, for
-// history measures, a window (design §3.2). Signals are append-only, can never
+// history measures, a window (REQ-33, REQ-44). Signals are append-only, can never
 // gate, and carry what a reader needs to judge comparability: numerator,
 // denominator, the eligible-population digest and tool/config digests.
 //

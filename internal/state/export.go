@@ -21,7 +21,7 @@ import (
 )
 
 // ExportDir is the repository-relative directory holding the exported ledger
-// (design §7.2). Every key of an export map is a slash path beneath it.
+// (REQ-48). Every key of an export map is a slash path beneath it.
 const ExportDir = "state/v1"
 
 // Export file names, relative to the repository root of the export.

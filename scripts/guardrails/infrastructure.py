@@ -15,8 +15,7 @@ from typing import Any
 ROOT = Path.cwd()
 ERRORS: list[str] = []
 GOVERNED = {
-    "docs/scout-design.md",
-    "SCOUT_REBUILD_REQUIREMENTS.md",
+    "docs/scout-design.html",
     "docs/research-ledger.md",
     "docs/hypothesis-ledger.md",
     "CLAUDE.md",
@@ -407,8 +406,7 @@ def prettier(files: list[str], root: Path) -> None:
         and p not in GOVERNED
         and not p.startswith((
             "evaluation/",
-            "docs/design-reviews/",
-            "docs/archive/",
+            "docs/adrs/",
             "internal/analyzers/rules/",
             "scripts/guardrails/vendor/",
             "third_party/",

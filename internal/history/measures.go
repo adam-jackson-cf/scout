@@ -13,7 +13,7 @@ import (
 	"scout/internal/domain"
 )
 
-// Tunables fixed by design §8.3.
+// Tunables fixed by REQ-34 and REQ-126.
 const (
 	MaxChangeFiles   = 50
 	MinChanges       = 20 // below this a distributional measure is `insufficient`
@@ -178,7 +178,7 @@ type Window struct {
 // window k of a year starts at Jan 1 + k*days, the last one is cut at the next
 // 1 January, and the next year restarts at k=1; labels are YYYY-<days>d-<k>.
 // A window whose end lies after the observation end (+1 s) is Immature:
-// right-censored, to be shown but never compared with complete windows (§8.6).
+// right-censored, to be shown but never compared with complete windows (REQ-132).
 func Windows(first, end time.Time, days int) (fixed []Window, trailing Window) {
 	first, end = first.UTC(), end.UTC()
 	for y := first.Year(); y <= end.Year(); y++ {
