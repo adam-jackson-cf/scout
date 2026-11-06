@@ -21,7 +21,6 @@ import (
 	"scout/internal/contextual"
 	"scout/internal/domain"
 	"scout/internal/engine"
-	"scout/internal/inventory"
 	"scout/internal/issues"
 	"scout/internal/prmeta"
 	"scout/internal/state"
@@ -115,6 +114,7 @@ var commands = []struct {
 	{"issue", showIssue},
 	{"mapping", mapping},
 	{"map", mapCmd},
+	{"areas", areasCmd},
 	{"coverage", coverage},
 	{"triage", triage},
 	{"signals", signalsCmd},
@@ -269,19 +269,11 @@ func assess(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	report := struct {
-		Run           domain.Run             `json:"run"`
-		Plan          domain.Plan            `json:"plan"`
-		Diff          inventory.DiffResult   `json:"diff"`
-		MappingStatus clawpatch.MapStatus    `json:"mappingStatus"`
-		MappingGaps   []inventory.MappingGap `json:"mappingGaps"`
-		Issues        []domain.Issue         `json:"issues"`
-		Adapters      []domain.AdapterResult `json:"adapters"`
-		Gate          domain.Gate            `json:"gate"`
-		Health        []domain.LaneHealth    `json:"health"`
-		WouldBlock    []domain.WouldBlock    `json:"would_block"`
-		Ranking       engine.Ranking         `json:"ranking"`
-	}{result.Run, result.Plan, result.Diff, result.Map.Status, result.MappingGaps, result.Issues, result.Adapters, verdict.Gate, health, []domain.WouldBlock{}, ranking}
+	pending, err := pendingAssessmentAreas(ctx, flags)
+	if err != nil {
+		return emit(flags, "unavailable", exitUnavailable, nil, err)
+	}
+	report := assessmentReport{result.Run, result.Plan, result.Diff, result.Map.Status, result.MappingGaps, result.Issues, result.Adapters, verdict.Gate, health, []domain.WouldBlock{}, ranking, pending}
 	return emit(flags, verdict.Gate.Status, verdict.Gate.ExitCode, report, nil)
 }
 

@@ -187,7 +187,7 @@ func TestFallbackIsDisclosedInJSONAndSummaryAndVersionsAreStored(t *testing.T) {
 			if !strings.Contains(string(encoded), `"method":"`+want+`"`) || !strings.Contains(string(encoded), `"ranking":"`+want+`"`) {
 				t.Fatalf("json lacks the disclosure: %s", encoded)
 			}
-			summary := Summary(domain.Gate{Status: "clean", Profile: "report", Comparison: domain.ComparisonRecomputed}, ranking, issues, nil, 0, []domain.LaneHealth{health})
+			summary := Summary(domain.Gate{Status: "clean", Profile: "report", Comparison: domain.ComparisonRecomputed}, ranking, issues, nil, 0, []domain.LaneHealth{health}, nil)
 			if !strings.Contains(summary, "ranking: "+want+".") {
 				t.Fatalf("summary lacks the disclosure:\n%s", summary)
 			}

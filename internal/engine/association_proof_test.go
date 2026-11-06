@@ -174,7 +174,7 @@ func assertAssociationHealth(t *testing.T, h domain.LaneHealth, status domain.La
 	} else if status == domain.LaneSkipped {
 		text = "skipped (" + reason + ")"
 	}
-	summary := Summary(domain.Gate{}, Ranking{}, nil, nil, 0, []domain.LaneHealth{h})
+	summary := Summary(domain.Gate{}, Ranking{}, nil, nil, 0, []domain.LaneHealth{h}, nil)
 	if !strings.Contains(summary, "| "+text+" |") {
 		t.Fatalf("summary lacks health %q: %s", text, summary)
 	}

@@ -182,7 +182,7 @@ func Reconcile(prev []Area, agentFeatures []domain.Feature, heuristicOwned func(
 		if !area.Active() || areaTaken[ai] {
 			continue
 		}
-		if fullyOwned(area.FileSet, heuristicOwned) {
+		if area.AcceptedBy == "" && area.AcceptedAt == nil && fullyOwned(area.FileSet, heuristicOwned) {
 			area.RetiredSnapshot = cfg.Snapshot
 			report.Retired = append(report.Retired, area.ScoutAreaID)
 		} else {
@@ -218,6 +218,43 @@ func Reconcile(prev []Area, agentFeatures []domain.Feature, heuristicOwned func(
 	sort.Strings(report.Retired)
 	sort.Strings(report.Kept)
 	return next, report
+}
+
+// Supersede marks proposals and decisions whose surviving files are all covered
+// by active agent-map area file sets. It never changes the input payloads.
+func Supersede(prev []Area, records []domain.Association, exists func(string) bool) ([]Area, []domain.Association) {
+	covered := make(map[string]bool)
+	next := make([]Area, len(prev))
+	for i, area := range prev {
+		next[i] = cloneArea(area)
+		if area.Active() {
+			for _, path := range area.FileSet {
+				covered[path] = true
+			}
+		}
+	}
+	allCovered := func(files []string) bool {
+		for _, path := range files {
+			if (exists == nil || exists(path)) && !covered[path] {
+				return false
+			}
+		}
+		return true
+	}
+	for i := range next {
+		if next[i].Status == StatusPending && allCovered(next[i].FileSet) {
+			next[i].Status = StatusSuperseded
+		}
+	}
+	out := make([]domain.Association, len(records))
+	for i, record := range records {
+		out[i] = record
+		out[i].Files = append([]string(nil), record.Files...)
+		out[i].AreaIDs = append([]string(nil), record.AreaIDs...)
+		out[i].InheritedAreaIDs = append([]string(nil), record.InheritedAreaIDs...)
+		out[i].Superseded = record.Superseded || allCovered(record.Files)
+	}
+	return next, out
 }
 
 // FeatureFiles is the sorted, de-duplicated owned-file set of a feature.

@@ -68,7 +68,15 @@ func mapCmd(ctx context.Context, args []string) int {
 	refresher := &engine.Refresher{
 		Store: store, Mapper: client, Now: time.Now,
 		Reconcile: func(ctx context.Context, mapped clawpatch.MapResult) error {
-			report, err := reconcileAreas(ctx, store, mapped, mapping.AreasMatchJaccard, revision)
+			tree, err := exec.CommandContext(ctx, "git", "-C", root, "ls-tree", "-r", "--name-only", "-z", revision).Output()
+			if err != nil {
+				return fmt.Errorf("list mapped revision files: %w", err)
+			}
+			existing := make(map[string]bool)
+			for _, path := range strings.Split(string(tree), "\x00") {
+				existing[path] = true
+			}
+			report, err := reconcileAreas(ctx, store, mapped, mapping.AreasMatchJaccard, revision, func(path string) bool { return existing[path] })
 			if err != nil {
 				return err
 			}
@@ -94,12 +102,30 @@ func mapCmd(ctx context.Context, args []string) int {
 // reconcileAreas folds a successful agent refresh into the stored areas and
 // returns what changed. Only the latest merged output decides heuristic
 // ownership.
-func reconcileAreas(ctx context.Context, store *state.Store, mapped clawpatch.MapResult, matchJaccard float64, revision string) (areas.Report, error) {
+func reconcileAreas(ctx context.Context, store *state.Store, mapped clawpatch.MapResult, matchJaccard float64, revision string, exists ...func(string) bool) (areas.Report, error) {
 	prev, err := store.ListAreas(ctx)
 	if err != nil {
 		return areas.Report{}, err
 	}
 	active := mapped.Features // clawpatch returns only the latest map's (non-stale) records
 	next, report := areas.Reconcile(prev, active, areas.HeuristicOwner(active), areas.Config{MatchJaccard: matchJaccard, Snapshot: revision})
-	return report, store.ReplaceAreas(ctx, next)
+	records, err := store.ListAssociations(ctx)
+	if err != nil {
+		return report, err
+	}
+	var present func(string) bool
+	if len(exists) > 0 {
+		present = exists[0]
+	}
+	next, superseded := areas.Supersede(next, records, present)
+	if err := store.ReplaceAreas(ctx, next); err != nil {
+		return report, err
+	}
+	var ids []string
+	for i, record := range superseded {
+		if record.Superseded && !records[i].Superseded {
+			ids = append(ids, record.ID)
+		}
+	}
+	return report, store.MarkAssociationsSuperseded(ctx, ids)
 }
