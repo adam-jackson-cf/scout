@@ -1,0 +1,35 @@
+{
+  "rule": "SKILL.metadata",
+  "bad": false,
+  "target": {
+    "metadata_schema": {
+      "required": [
+        "name",
+        "description",
+        "global"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "global": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "shared_skill_scope": {
+      "field": "global",
+      "value": true
+    }
+  },
+  "metadata": {
+    "name": "sample",
+    "description": "uSe WhEn testing metadata",
+    "global": true
+  },
+  "directory": "sample"
+}

@@ -1,1 +1,38 @@
-{"rule": "SKILL.metadata", "bad": false}
+{
+  "rule": "SKILL.metadata",
+  "bad": false,
+  "target": {
+    "metadata_schema": {
+      "required": [
+        "name",
+        "description"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "hide": {
+          "type": "boolean"
+        },
+        "disable-model-invocation": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "shared_skill_scope": {
+      "applicable": false,
+      "rationale": "no shared skills: `.agents/skills/` holds project-scoped skills only"
+    }
+  },
+  "metadata": {
+    "name": "sample",
+    "description": "uSe WhEn testing metadata",
+    "hide": true,
+    "disable-model-invocation": true
+  },
+  "directory": "sample"
+}

@@ -1,1 +1,13 @@
-{"rule": "GATE.pre-commit", "bad": true}
+{
+  "rule": "GATE.pre-commit",
+  "bad": true,
+  "config": {
+    "schemaVersion": 2,
+    "checks": {
+      "commit": ["bash", "scripts/gate.sh", "commit"],
+      "ci": ["bash", "scripts/gate.sh", "ci"]
+    }
+  },
+  "ci_argv": ["bash", "scripts/gate.sh", "ci"],
+  "hook_installed": true
+}

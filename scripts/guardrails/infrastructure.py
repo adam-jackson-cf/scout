@@ -94,7 +94,7 @@ def parity(root: Path) -> None:
     for command in (
         "scripts/bootstrap-tools.sh",
         "source .tools/activate",
-        "bash scripts/gate.sh full",
+        "bash scripts/gate.sh ci",
         "git config core.hooksPath .githooks",
     ):
         if command not in guidance:
@@ -105,31 +105,89 @@ def parity(root: Path) -> None:
             )
 
 
-def gate_schema(config: dict[str, Any]) -> None:
-    rule = "RUNNER.local-ci-parity"
-    if type(config.get("schemaVersion")) is not int or config["schemaVersion"] != 1:
-        fail(".omp/gate.json", rule, "set schemaVersion to integer 1")
-    timeout = config.get("pathCheckTimeoutMs")
-    if type(timeout) is not int or timeout <= 0:
-        fail(
-            ".omp/gate.json",
-            rule,
-            "set a positive integer pathCheckTimeoutMs with measured headroom",
-        )
+def gate_commands(config: dict[str, Any]) -> None:
+    rule = "GATE.local-ci-parity"
+    checks = config.get("checks", {})
+    if not isinstance(checks, dict):
+        fail(".omp/gate.json", rule, "set checks to an object of commit and ci argv")
+    else:
+        for name, argv in checks.items():
+            if name not in {"commit", "ci"} or not command_argv(argv):
+                fail(
+                    ".omp/gate.json",
+                    rule,
+                    f"set checks.{name} to a nonempty argv array",
+                )
+    if "pathCheck" in config and not command_argv(config["pathCheck"]):
+        fail(".omp/gate.json", rule, "set pathCheck to a nonempty argv array")
+
+
+def gate_options(config: dict[str, Any]) -> None:
+    rule = "GATE.local-ci-parity"
+    if "pathCheckTimeoutMs" in config:
+        timeout = config["pathCheckTimeoutMs"]
+        if type(timeout) is not int or timeout <= 0:
+            fail(".omp/gate.json", rule, "set a positive integer pathCheckTimeoutMs")
     for field in ("testGlobs", "sensitive"):
-        values = config.get(field)
-        if (
-            not isinstance(values, list)
-            or not values
-            or not all(isinstance(value, str) and value for value in values)
+        if field in config and (
+            not isinstance(config[field], list)
+            or not all(isinstance(value, str) for value in config[field])
         ):
-            fail(
-                ".omp/gate.json",
-                rule,
-                f"populate {field} with nonempty string patterns",
-            )
-    if config.get("agentMerge") not in {"allowed", "disabled"}:
+            fail(".omp/gate.json", rule, f"set {field} to a string array")
+    if "agentMerge" in config and config["agentMerge"] not in ("allowed", "disabled"):
         fail(".omp/gate.json", rule, "set agentMerge to allowed or disabled")
+    if "ciHost" in config and config["ciHost"] not in ("github", "nuc"):
+        fail(".omp/gate.json", rule, "set ciHost to github or nuc")
+
+
+def gate_schema(config: dict[str, Any]) -> None:
+    rule = "GATE.local-ci-parity"
+    if type(config.get("schemaVersion")) is not int or config["schemaVersion"] != 2:
+        fail(".omp/gate.json", rule, "set schemaVersion to integer 2")
+    allowed = {
+        "schemaVersion",
+        "checks",
+        "pathCheck",
+        "pathCheckTimeoutMs",
+        "testGlobs",
+        "sensitive",
+        "agentMerge",
+        "ciHost",
+    }
+    for field in config.keys() - allowed:
+        fail(".omp/gate.json", rule, f"remove unsupported field {field}")
+    gate_commands(config)
+    gate_options(config)
+
+
+def command_argv(value: Any) -> bool:
+    return (
+        isinstance(value, list)
+        and bool(value)
+        and all(isinstance(argument, str) and bool(argument) for argument in value)
+    )
+
+
+def gate_contract(
+    config: dict[str, Any], ci_argv: Any, hook_installed: bool, rule: str
+) -> None:
+    gate_schema(config)
+    checks = config.get("checks", {})
+    if not isinstance(checks, dict):
+        return
+    if rule == "GATE.pre-commit":
+        if not command_argv(checks.get("commit")) or hook_installed is not True:
+            fail(
+                ".githooks/pre-commit",
+                rule,
+                "install an executable hook running checks.commit",
+            )
+    elif not command_argv(checks.get("ci")) or ci_argv != checks["ci"]:
+        fail(
+            ".github/workflows/gate.yml",
+            rule,
+            "execute exact checks.ci argv and propagate its exit",
+        )
 
 
 def ci_prerequisites(workflow: str) -> None:
@@ -156,22 +214,18 @@ def ci_prerequisites(workflow: str) -> None:
 def runner(root: Path) -> None:
     config = json.loads((root / ".omp/gate.json").read_text())
     gate_schema(config)
-    for field, mode in {
-        "gate": "full",
-        "commitGate": "commit",
-        "fastGate": "fast",
-        "pathCheck": "path",
-    }.items():
-        if config.get(field) != ["bash", "scripts/gate.sh", mode]:
+    checks = config.get("checks", {})
+    for name in ("commit", "ci"):
+        if not isinstance(checks, dict) or not command_argv(checks.get(name)):
             fail(
-                ".omp/gate.json",
-                "RUNNER.local-ci-parity",
-                f"use authoritative gate.sh {mode} argv for {field}",
+                ".omp/gate.json", "GATE.local-ci-parity", f"declare checks.{name} argv"
             )
+    if not command_argv(config.get("pathCheck")):
+        fail(".omp/gate.json", "GATE.path-check", "declare pathCheck argv")
     workflow = (root / ".github/workflows/gate.yml").read_text()
     ci_prerequisites(workflow)
     if (
-        'json.load(open(".omp/gate.json"))["gate"]' not in workflow
+        'json.load(open(".omp/gate.json"))["checks"]["ci"]' not in workflow
         or "name: gate" not in workflow
         or "subprocess.run" not in workflow
         or "sys.exit" not in workflow
@@ -179,33 +233,139 @@ def runner(root: Path) -> None:
         fail(
             ".github/workflows/gate.yml",
             "GATE.local-ci-parity",
-            "run exact gate argv and propagate its exit in the gate job",
+            "run exact checks.ci argv and propagate its exit in the gate job",
         )
+
+
+def skill_field(field: str, value: Any, definition: dict[str, Any], path: str) -> None:
+    types: dict[str, type[Any] | tuple[type[Any], ...]] = {
+        "string": str,
+        "boolean": bool,
+        "integer": int,
+        "number": (int, float),
+        "array": list,
+        "object": dict,
+        "null": type(None),
+    }
+    kind = definition.get("type")
+    expected = types.get(kind) if isinstance(kind, str) else None
+    if (
+        expected is None
+        or not isinstance(value, expected)
+        or (kind in ("integer", "number") and isinstance(value, bool))
+    ):
+        fail(path, "SKILL.metadata", f"set {field} to schema type {kind}")
+    if "enum" in definition and value not in definition["enum"]:
+        fail(path, "SKILL.metadata", f"set {field} to a declared schema value")
+
+
+def skill_schema(metadata: dict[str, Any], schema: dict[str, Any], path: str) -> None:
+    properties = schema.get("properties", {})
+    required = schema.get("required", [])
+    if not isinstance(properties, dict) or not isinstance(required, list):
+        fail(
+            path,
+            "SKILL.metadata",
+            "declare schema properties and required fields in target policy",
+        )
+        return
+    for field in required:
+        if field not in metadata:
+            fail(path, "SKILL.metadata", f"add required metadata field {field}")
+    for field, value in metadata.items():
+        definition = properties.get(field)
+        if definition is None:
+            if schema.get("additionalProperties") is False:
+                fail(
+                    path, "SKILL.metadata", f"remove undeclared metadata field {field}"
+                )
+        else:
+            skill_field(field, value, definition, path)
+
+
+def skill_scope(metadata: dict[str, Any], scope: dict[str, Any], path: str) -> None:
+    if (
+        scope.get("applicable") is False
+        and "field" not in scope
+        and "value" not in scope
+        and isinstance(scope.get("rationale"), str)
+        and scope["rationale"].strip()
+    ):
+        return
+    field = scope.get("field")
+    if not isinstance(field, str) or "value" not in scope:
+        fail(
+            path,
+            "SKILL.metadata",
+            "declare shared_skill_scope field and value in target policy",
+        )
+    elif (
+        field not in metadata
+        or type(metadata[field]) is not type(scope["value"])
+        or metadata[field] != scope["value"]
+    ):
+        fail(path, "SKILL.metadata", f"set shared skill {field} to {scope['value']!r}")
+
+
+def skill_metadata(
+    metadata: dict[str, Any], directory: str, target: dict[str, Any], path: str
+) -> None:
+    schema = target.get("metadata_schema")
+    scope = target.get("shared_skill_scope")
+    if not isinstance(schema, dict) or not isinstance(scope, dict):
+        fail(
+            path,
+            "SKILL.metadata",
+            "declare metadata_schema and shared_skill_scope in target policy",
+        )
+        return
+    skill_schema(metadata, schema, path)
+    skill_scope(metadata, scope, path)
+    if metadata.get("name") != directory:
+        fail(path, "SKILL.metadata", f"set name to directory name {directory}")
+    description = metadata.get("description")
+    if not isinstance(description, str) or not description.lower().startswith(
+        "use when"
+    ):
+        fail(path, "SKILL.metadata", "begin description with USE WHEN")
+
+
+def skill_frontmatter(text: str, path: str) -> dict[str, Any]:
+    lines = text.splitlines()
+    if not lines or lines[0] != "---" or "---" not in lines[1:]:
+        fail(
+            path,
+            "SKILL.metadata",
+            "add delimited YAML metadata at the start of SKILL.md",
+        )
+        return {}
+    metadata: dict[str, Any] = {}
+    for line in lines[1 : lines.index("---", 1)]:
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        match = re.fullmatch(r"([A-Za-z_][\w-]*):\s*(.*?)\s*", line)
+        if not match or match[1] in metadata:
+            fail(path, "SKILL.metadata", "use unique top-level metadata fields")
+            continue
+        key, value = match.groups()
+        try:
+            metadata[key] = json.loads(value)
+        except json.JSONDecodeError:
+            if value.startswith("'") and value.endswith("'"):
+                metadata[key] = value[1:-1].replace("''", "'")
+            else:
+                metadata[key] = value
+    return metadata
 
 
 def skills(root: Path) -> None:
+    target = json.loads((root / ".omp/guardrails.json").read_text()).get("skills", {})
     for path in sorted((root / ".agents/skills").glob("*/SKILL.md")):
         text = path.read_text()
-        front = text.split("---", 2)
-        metadata = dict(
-            re.findall(
-                r"^(\w+):\s*[\"']?(.*?)[\"']?$",
-                front[1] if len(front) == 3 else "",
-                re.M,
-            )
+        relative = str(path.relative_to(root))
+        skill_metadata(
+            skill_frontmatter(text, relative), path.parent.name, target, relative
         )
-        if metadata.get("name") != path.parent.name or not metadata.get(
-            "description", ""
-        ).lower().startswith("use when"):
-            fail(
-                str(path.relative_to(root)),
-                "SKILL.metadata",
-                "match name to directory and begin description with USE WHEN",
-            )
-        if "global" in metadata and metadata["global"].lower() not in {"true", "false"}:
-            fail(
-                str(path.relative_to(root)), "SKILL.metadata", "set global to a boolean"
-            )
         for link in re.findall(r"\]\(([^)#]+)(?:#[^)]*)?\)", text):
             if "://" not in link and not (path.parent / link).exists():
                 fail(
@@ -361,7 +521,7 @@ def main() -> bool:
         else subprocess.check_output(["git", "ls-files", "-z"], text=True).split("\0")
     )
     prettier(files, ROOT)
-    if mode == "full":
+    if mode == "ci":
         runtime_seams(ROOT)
         audit(["govulncheck", "-C", "cmd/scout", "-scan=module"])
     for message in ERRORS:

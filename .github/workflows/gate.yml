@@ -2,7 +2,6 @@ name: Repository gate
 on:
   pull_request:
   push:
-    branches: [main]
 permissions:
   contents: read
 jobs:
@@ -30,4 +29,4 @@ jobs:
         shell: bash
         run: |
           source .tools/activate
-          .tools/venv/bin/python -c 'import json,subprocess,sys; sys.exit(subprocess.run(json.load(open(".omp/gate.json"))["gate"]).returncode)'
+          .tools/venv/bin/python -c 'import json,subprocess,sys; sys.exit(subprocess.run(json.load(open(".omp/gate.json"))["checks"]["ci"]).returncode)'

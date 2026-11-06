@@ -16,7 +16,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -44,7 +44,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -72,7 +72,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -100,7 +100,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -115,18 +115,21 @@
     {
       "id": "GATE.local-ci-parity",
       "activation_evidence": "canary.activation_canary sources generated activate in an activated parent, a child without the function, and repeatedly in that child; PATH must stay identical and path smoke must pass",
-      "coverage_evidence": "full gate runs check-only exact ledger synchronization then vendored upstream validator/catalog; ledger_canary proves fresh/stale aggregate behavior",
+      "coverage_evidence": "CI gate runs check-only exact ledger synchronization then vendored upstream validator/catalog; ledger_canary proves fresh/stale aggregate behavior",
       "evidence_kind": "local_ci",
       "status": "implemented",
       "contract": {
         "configuration": ".omp/gate.json",
-        "authoritative_command_field": "gate",
-        "ci_executes_gate_argv_or_parallel_jobs_whose_union_equals_gate": true,
-        "parallel_jobs_must_use_the_gate_runner_with_tier_selectors_only": true,
+        "schema_version": 2,
+        "authoritative_command_field": "checks.ci",
+        "ci_host_field": "ciHost",
+        "ci_executes_checks_ci_argv_or_parallel_jobs_whose_union_equals_it": true,
+        "parallel_jobs_must_use_the_checks_ci_runner_with_tier_selectors_only": true,
         "required_status_check_name": "gate",
         "parallel_gate_aggregate_depends_on_every_tier_job": true,
         "parallel_gate_aggregate_always_runs": true,
         "parallel_gate_aggregate_fails_on_failed_cancelled_or_skipped_tiers": true,
+        "scope": "full_t1_and_t2_suite_on_every_push_and_pull_request",
         "check_only": true,
         "nonzero_exit_propagates": true
       },
@@ -135,12 +138,12 @@
         "scripts/guardrails/infrastructure.py",
         "scripts/guardrails/merge-ledger.py",
         "scripts/guardrails/vendor/validate_rule_coverage.py",
-        "scripts/guardrails/vendor/enaible-rules.json"
+        "scripts/guardrails/vendor/guardrail-rules.json"
       ],
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -158,10 +161,11 @@
       "status": "implemented",
       "contract": {
         "configuration": ".omp/gate.json",
-        "required_command_field": "commitGate",
-        "scope": "staged_or_affected_files_only",
+        "required_command_field": "checks.commit",
+        "scope": "static_checks_all_t1_and_t2_seams_for_affected_code",
         "hook_manager": "any_tracked_manager_or_native_hook",
-        "installed_pre_commit_hook_executes_exact_commit_gate_argv": true,
+        "installed_pre_commit_hook_executes_exact_checks_commit_argv": true,
+        "hook_installed_in_every_clone": true,
         "nonzero_exit_blocks_commit": true
       },
       "implementation_paths": [
@@ -172,8 +176,6 @@
       ],
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
-      "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -191,47 +193,6 @@
           "pre-commit"
         ],
         "diagnostic": "GATE.pre-commit"
-      }
-    },
-    {
-      "id": "GATE.pre-push",
-      "evidence_kind": "git_hook",
-      "status": "implemented",
-      "contract": {
-        "configuration": ".omp/gate.json",
-        "required_command_field": "fastGate",
-        "scope": "commits_being_pushed_relative_to_default_branch",
-        "hook_manager": "any_tracked_manager_or_native_hook",
-        "installed_pre_push_hook_executes_exact_fast_gate_argv": true,
-        "nonzero_exit_blocks_push": true
-      },
-      "implementation_paths": [
-        "scripts/guardrails/gate.py",
-        "scripts/guardrails/infrastructure.py",
-        "scripts/guardrails/hook.py",
-        ".githooks/pre-push"
-      ],
-      "local_runner": "scripts/gate.sh",
-      "local_marker": "scripts/guardrails/gate.py",
-      "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
-      "canary": {
-        "command": [
-          ".tools/venv/bin/python",
-          "scripts/guardrails/canary.py",
-          "{fixture}"
-        ],
-        "passing": "scripts/guardrails/fixtures/GATE.pre-push.positive.json",
-        "violating": "scripts/guardrails/fixtures/GATE.pre-push.negative.json",
-        "diagnostic": "GATE.pre-push"
-      },
-      "hook_install_check": {
-        "command": [
-          ".tools/venv/bin/python",
-          "scripts/guardrails/hook-check.py",
-          "pre-push"
-        ],
-        "diagnostic": "GATE.pre-push"
       }
     },
     {
@@ -259,7 +220,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -313,7 +274,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -342,7 +303,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -368,7 +329,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -392,7 +353,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -419,7 +380,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -446,7 +407,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -484,7 +445,7 @@
     {
       "id": "RUNNER.local-ci-parity",
       "activation_evidence": "canary.activation_canary sources generated activate in an activated parent, a child without the function, and repeatedly in that child; PATH must stay identical and path smoke must pass",
-      "coverage_evidence": "full gate runs check-only exact ledger synchronization then vendored upstream validator/catalog; ledger_canary proves fresh/stale aggregate behavior",
+      "coverage_evidence": "CI gate runs check-only exact ledger synchronization then vendored upstream validator/catalog; ledger_canary proves fresh/stale aggregate behavior",
       "evidence_kind": "local_ci",
       "status": "implemented",
       "contract": {
@@ -495,12 +456,12 @@
         "scripts/guardrails/infrastructure.py",
         "scripts/guardrails/merge-ledger.py",
         "scripts/guardrails/vendor/validate_rule_coverage.py",
-        "scripts/guardrails/vendor/enaible-rules.json"
+        "scripts/guardrails/vendor/guardrail-rules.json"
       ],
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -526,7 +487,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -550,7 +511,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -566,10 +527,18 @@
       "id": "SKILL.metadata",
       "evidence_kind": "local_ci",
       "status": "implemented",
+      "policy_path": ".omp/guardrails.json",
+      "metadata_policy": "Require name and description; allow optional boolean hide and disable-model-invocation; reject unknown fields.",
+      "shared_skill_scope": {
+        "applicable": false,
+        "rationale": "no shared skills: `.agents/skills/` holds project-scoped skills only"
+      },
+      "scope_enforcement": "A target-declared field/value scope remains enforced; project-only exemption requires an explicit non-applicable declaration with rationale and no field/value requirement.",
       "contract": {
         "name_matches_directory": true,
         "use_when_prefix_case_insensitive": true,
-        "global_boolean_for_shared": true
+        "target_metadata_schema_required": true,
+        "shared_skill_scope_metadata_must_match_target_schema": true
       },
       "implementation_paths": [
         "scripts/guardrails/gate.py",
@@ -578,7 +547,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -604,7 +573,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",

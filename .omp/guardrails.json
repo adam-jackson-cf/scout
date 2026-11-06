@@ -162,7 +162,7 @@
   "budget": {
     "wallMs": 159000,
     "perTestMs": 46000,
-    "status": "provisional; owner approved 2026-11-05; includes failed cold run, no silent exclusion",
+    "status": "provisional; owner-approved 159 s ceiling retained; commit-tier baseline measured 2026-11-06",
     "baselineRuns": [
       "baseline-1.jsonl",
       "baseline-2.jsonl",
@@ -171,10 +171,65 @@
       "baseline-5.jsonl"
     ],
     "multiplier": 1.5,
-    "increaseRequiresOwnerApproval": true
+    "increaseRequiresOwnerApproval": true,
+    "commitTierMeasurement": {
+      "command": [
+        "bash",
+        "scripts/gate.sh",
+        "commit"
+      ],
+      "date": "2026-11-06",
+      "scope": "Disposable shared clone overlaid with schema-v2 changes; exactly one staged comment-only change in internal/association/cluster.go; all T1 packages and affected T2 seams selected from .omp/test-tiers.json",
+      "baselineWallSeconds": [
+        23.737778250011615,
+        20.748959791002562,
+        22.571862334007164,
+        20.12906220802688,
+        20.28354683300131
+      ],
+      "exitCodes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "maximumWallSeconds": 23.737778250011615,
+      "provisionalBudgetMs": 159000,
+      "budgetIncreaseApplied": false,
+      "clock": "time.monotonic; includes staged snapshot, static checks, Go tests and staged secret scan",
+      "toolchain": "Pinned .tools/activate with Go 1.26.10"
+    }
   },
   "testGrowth": {},
   "frozen": [
     "evaluation/"
-  ]
+  ],
+  "skills": {
+    "metadata_schema": {
+      "required": [
+        "name",
+        "description"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "hide": {
+          "type": "boolean"
+        },
+        "disable-model-invocation": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "shared_skill_scope": {
+      "applicable": false,
+      "rationale": "no shared skills: `.agents/skills/` holds project-scoped skills only"
+    }
+  }
 }

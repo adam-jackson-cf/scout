@@ -1,20 +1,17 @@
 {
-  "schemaVersion": 1,
-  "gate": [
-    "bash",
-    "scripts/gate.sh",
-    "full"
-  ],
-  "commitGate": [
-    "bash",
-    "scripts/gate.sh",
-    "commit"
-  ],
-  "fastGate": [
-    "bash",
-    "scripts/gate.sh",
-    "fast"
-  ],
+  "schemaVersion": 2,
+  "checks": {
+    "commit": [
+      "bash",
+      "scripts/gate.sh",
+      "commit"
+    ],
+    "ci": [
+      "bash",
+      "scripts/gate.sh",
+      "ci"
+    ]
+  },
   "pathCheck": [
     "bash",
     "scripts/gate.sh",
@@ -57,5 +54,6 @@
     "go.mod",
     "go.sum"
   ],
-  "agentMerge": "allowed"
+  "agentMerge": "allowed",
+  "ciHost": "github"
 }

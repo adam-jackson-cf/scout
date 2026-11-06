@@ -64,7 +64,16 @@
   },
   "RUFF.ISORT.known-first-party": {
     "key": "lint.isort.known-first-party",
-    "value": []
+    "value": [
+      "internal",
+      "scripts",
+      "canaries",
+      "fanout",
+      "policy",
+      "python_quality_scope",
+      "quality",
+      "scalability"
+    ]
   },
   "RUFF.ISORT.split-on-trailing-comma": {
     "key": "lint.isort.split-on-trailing-comma",
@@ -105,14 +114,7 @@
   "RUFF.ROOT.exclude": {
     "key": "exclude",
     "value": [
-      "evaluation",
-      ".tools",
-      "scripts/guardrails/fixtures",
-      "scripts/guardrails/vendor",
-      ".agent",
-      ".agents",
       ".build",
-      ".enaible",
       ".git",
       ".tox",
       ".venv",
@@ -121,14 +123,14 @@
       "*.egg-info",
       "build",
       "dist",
-      "docs/reference",
-      "migrations",
       "node_modules",
       ".pytest_cache",
       ".mypy_cache",
       ".ruff_cache",
-      "tools/enaible/.venv",
-      "tests/fixtures/"
+      "evaluation",
+      ".tools",
+      "scripts/guardrails/fixtures",
+      "scripts/guardrails/vendor"
     ]
   },
   "RUFF.ROOT.fix": {
@@ -242,5 +244,71 @@
   "RUFF.SETTING.target-version": {
     "key": "target-version",
     "value": "py311"
-  }
+  },
+  "target": {
+    "maintained_roots": [
+      "internal/association/testdata/gen/",
+      "scripts/guardrails/",
+      ".agents/skills/",
+      "tests/"
+    ],
+    "maintained_import_roots": [
+      "scripts/guardrails/python",
+      "scripts/guardrails"
+    ],
+    "maintained_packages": [
+      "internal.association.testdata.gen",
+      "scripts.guardrails",
+      "scripts.guardrails.python",
+      "scripts.guardrails.tests"
+    ],
+    "maintained_sources": [],
+    "supported_python_versions": [
+      "3.11"
+    ],
+    "exclusion_rationales": {
+      "evaluation": "Frozen signed-off studies; not maintained product Python.",
+      ".tools": "Pinned generated tool environments.",
+      "scripts/guardrails/fixtures": "Checker input data and frozen contract proofs, not maintained source.",
+      "scripts/guardrails/vendor": "Byte-preserved upstream guardrail snapshots."
+    },
+    "module_override_evidence": {
+      "lizard": {
+        "kind": "missing-stub",
+        "evidence": "Pinned lizard 1.21.7 (toolchain/python-requirements.lock); installed distribution has no py.typed or bundled .pyi stubs."
+      }
+    },
+    "canonical_test_groups": {
+      "unit": "T1",
+      "seams": "T2",
+      "integration": "T2",
+      "support": "support",
+      "fixtures": "data"
+    },
+    "maintained_first_party_names": [
+      "internal",
+      "scripts",
+      "canaries",
+      "fanout",
+      "policy",
+      "python_quality_scope",
+      "quality",
+      "scalability"
+    ]
+  },
+  "ruff_default_exclusions": [
+    ".build",
+    ".git",
+    ".tox",
+    ".venv",
+    "venv",
+    "__pycache__",
+    "*.egg-info",
+    "build",
+    "dist",
+    "node_modules",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache"
+  ]
 }

@@ -8,9 +8,10 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from check import ROOT, ast_errors, decode_source, diagnostic, lint_source, run_tool
+
 import policy
 import scalability
-from check import ROOT, ast_errors, decode_source, diagnostic, lint_source, run_tool
 
 
 def fixture_findings(fixture: dict[str, Any]) -> list[tuple[str, str]]:
@@ -18,14 +19,14 @@ def fixture_findings(fixture: dict[str, Any]) -> list[tuple[str, str]]:
     if kind == "ruff-config":
         return [
             (rule, "restore the approved Ruff setting " + rule.rsplit(".", 1)[-1])
-            for rule in policy.ruff_errors(fixture["config"])
+            for rule in policy.ruff_errors(fixture["config"], fixture.get("target"))
         ]
     if kind == "mypy-config":
         config = configparser.ConfigParser()
         config.read_string(fixture["config"])
         return [
             (rule, "restore the approved mypy setting " + rule.rsplit(".", 1)[-1])
-            for rule in policy.mypy_errors(config)
+            for rule in policy.mypy_errors(config, fixture.get("target"))
         ]
     if kind == "coverage":
         missing = sorted(set(fixture["maintained"]) - set(fixture["checked"]))
@@ -36,7 +37,10 @@ def fixture_findings(fixture: dict[str, Any]) -> list[tuple[str, str]]:
                 + ", ".join(missing),
             )
             for rule in policy.coverage_errors(
-                fixture["maintained"], fixture["checked"]
+                fixture["maintained"],
+                fixture["checked"],
+                fixture.get("target"),
+                fixture.get("packages"),
             )
         ]
     return boundary_findings(fixture)
@@ -83,12 +87,16 @@ def source_findings(fixture: dict[str, Any]) -> list[tuple[str, str]]:
                 for line in result.stdout.splitlines()
                 if result.returncode == 1 and code in line and "error: " in line
             ]
-    return ast_errors(source, relpath)
+    target = fixture.get("target", policy.target_policy())
+    return ast_errors(source, relpath, target["canonical_test_groups"])
 
 
 def check_fixture(path: Path) -> int:
     fixture: dict[str, Any] = json.loads(path.read_text())
-    findings = fixture_findings(fixture)
+    rule_id = fixture.get("rule", path.parent.name)
+    findings = [
+        finding for finding in fixture_findings(fixture) if finding[0] == rule_id
+    ]
     for rule, fix in findings:
         diagnostic(fixture.get("path", str(path)), rule, fix)
     return int(bool(findings))

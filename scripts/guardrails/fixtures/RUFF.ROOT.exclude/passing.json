@@ -8,14 +8,7 @@
     "respect-gitignore": true,
     "preview": true,
     "exclude": [
-      "evaluation",
-      ".tools",
-      "scripts/guardrails/fixtures",
-      "scripts/guardrails/vendor",
-      ".agent",
-      ".agents",
       ".build",
-      ".enaible",
       ".git",
       ".tox",
       ".venv",
@@ -24,14 +17,14 @@
       "*.egg-info",
       "build",
       "dist",
-      "docs/reference",
-      "migrations",
       "node_modules",
       ".pytest_cache",
       ".mypy_cache",
       ".ruff_cache",
-      "tools/enaible/.venv",
-      "tests/fixtures/"
+      "evaluation",
+      ".tools",
+      "scripts/guardrails/fixtures",
+      "scripts/guardrails/vendor"
     ],
     "lint": {
       "select": [
@@ -121,5 +114,47 @@
       "line-ending": "auto",
       "docstring-code-format": true
     }
+  },
+  "rule": "RUFF.ROOT.exclude",
+  "target": {
+    "maintained_import_roots": [
+      "scripts/guardrails/python",
+      "scripts/guardrails"
+    ],
+    "maintained_packages": [
+      "scripts.guardrails",
+      "scripts.guardrails.python"
+    ],
+    "maintained_sources": [
+      "scripts/guardrails/gate.py",
+      "scripts/guardrails/python/check.py"
+    ],
+    "supported_python_versions": [
+      "3.11",
+      "3.12"
+    ],
+    "exclusion_rationales": {
+      "evaluation": "frozen non-maintained studies",
+      ".tools": "generated tool environment",
+      "scripts/guardrails/fixtures": "checker input data, not maintained source",
+      "scripts/guardrails/vendor": "byte-preserved third-party source"
+    },
+    "module_override_evidence": {
+      "lizard": {
+        "kind": "missing-stub",
+        "evidence": "pinned distribution has no py.typed or bundled stubs"
+      }
+    },
+    "canonical_test_groups": {
+      "unit": "T1",
+      "seams": "T2",
+      "integration": "T2",
+      "support": "support",
+      "fixtures": "data"
+    },
+    "maintained_first_party_names": [
+      "scripts",
+      "internal"
+    ]
   }
 }

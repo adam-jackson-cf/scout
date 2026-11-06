@@ -26,7 +26,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -55,7 +55,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -70,18 +70,21 @@
     {
       "id": "GATE.local-ci-parity",
       "activation_evidence": "canary.activation_canary sources generated activate in an activated parent, a child without the function, and repeatedly in that child; PATH must stay identical and path smoke must pass",
-      "coverage_evidence": "full gate runs check-only exact ledger synchronization then vendored upstream validator/catalog; ledger_canary proves fresh/stale aggregate behavior",
+      "coverage_evidence": "CI gate runs check-only exact ledger synchronization then vendored upstream validator/catalog; ledger_canary proves fresh/stale aggregate behavior",
       "evidence_kind": "local_ci",
       "status": "implemented",
       "contract": {
         "configuration": ".omp/gate.json",
-        "authoritative_command_field": "gate",
-        "ci_executes_gate_argv_or_parallel_jobs_whose_union_equals_gate": true,
-        "parallel_jobs_must_use_the_gate_runner_with_tier_selectors_only": true,
+        "schema_version": 2,
+        "authoritative_command_field": "checks.ci",
+        "ci_host_field": "ciHost",
+        "ci_executes_checks_ci_argv_or_parallel_jobs_whose_union_equals_it": true,
+        "parallel_jobs_must_use_the_checks_ci_runner_with_tier_selectors_only": true,
         "required_status_check_name": "gate",
         "parallel_gate_aggregate_depends_on_every_tier_job": true,
         "parallel_gate_aggregate_always_runs": true,
         "parallel_gate_aggregate_fails_on_failed_cancelled_or_skipped_tiers": true,
+        "scope": "full_t1_and_t2_suite_on_every_push_and_pull_request",
         "check_only": true,
         "nonzero_exit_propagates": true
       },
@@ -90,12 +93,12 @@
         "scripts/guardrails/infrastructure.py",
         "scripts/guardrails/merge-ledger.py",
         "scripts/guardrails/vendor/validate_rule_coverage.py",
-        "scripts/guardrails/vendor/enaible-rules.json"
+        "scripts/guardrails/vendor/guardrail-rules.json"
       ],
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -132,7 +135,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -150,10 +153,11 @@
       "status": "implemented",
       "contract": {
         "configuration": ".omp/gate.json",
-        "required_command_field": "commitGate",
-        "scope": "staged_or_affected_files_only",
+        "required_command_field": "checks.commit",
+        "scope": "static_checks_all_t1_and_t2_seams_for_affected_code",
         "hook_manager": "any_tracked_manager_or_native_hook",
-        "installed_pre_commit_hook_executes_exact_commit_gate_argv": true,
+        "installed_pre_commit_hook_executes_exact_checks_commit_argv": true,
+        "hook_installed_in_every_clone": true,
         "nonzero_exit_blocks_commit": true
       },
       "implementation_paths": [
@@ -164,8 +168,6 @@
       ],
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
-      "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -183,47 +185,6 @@
           "pre-commit"
         ],
         "diagnostic": "GATE.pre-commit"
-      }
-    },
-    {
-      "id": "GATE.pre-push",
-      "evidence_kind": "git_hook",
-      "status": "implemented",
-      "contract": {
-        "configuration": ".omp/gate.json",
-        "required_command_field": "fastGate",
-        "scope": "commits_being_pushed_relative_to_default_branch",
-        "hook_manager": "any_tracked_manager_or_native_hook",
-        "installed_pre_push_hook_executes_exact_fast_gate_argv": true,
-        "nonzero_exit_blocks_push": true
-      },
-      "implementation_paths": [
-        "scripts/guardrails/gate.py",
-        "scripts/guardrails/infrastructure.py",
-        "scripts/guardrails/hook.py",
-        ".githooks/pre-push"
-      ],
-      "local_runner": "scripts/gate.sh",
-      "local_marker": "scripts/guardrails/gate.py",
-      "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
-      "canary": {
-        "command": [
-          ".tools/venv/bin/python",
-          "scripts/guardrails/canary.py",
-          "{fixture}"
-        ],
-        "passing": "scripts/guardrails/fixtures/GATE.pre-push.positive.json",
-        "violating": "scripts/guardrails/fixtures/GATE.pre-push.negative.json",
-        "diagnostic": "GATE.pre-push"
-      },
-      "hook_install_check": {
-        "command": [
-          ".tools/venv/bin/python",
-          "scripts/guardrails/hook-check.py",
-          "pre-push"
-        ],
-        "diagnostic": "GATE.pre-push"
       }
     },
     {
@@ -260,12 +221,15 @@
         "scripts/guardrails/python/check.py",
         "scripts/guardrails/python/policy.py",
         "scripts/guardrails/python/quality.py",
-        "scripts/guardrails/python/scalability.py"
+        "scripts/guardrails/python/scalability.py",
+        "scripts/guardrails/python/settings.json",
+        "scripts/guardrails/python/python_quality_scope.py",
+        "scripts/guardrails/python/canaries.py"
       ],
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -283,7 +247,7 @@
           "exclude = (^evaluation/|^\\.tools/|^scripts/guardrails/fixtures/|^scripts/guardrails/vendor/)"
         ]
       },
-      "adaptation": "Maintained generator and all scripts/guardrails Python explicitly enumerated; frozen evaluation excluded; only lizard untyped third-party override.",
+      "adaptation": "Target-owned settings.json declares maintained roots, package inventory, supported Python versions, canonical test groups, first-party imports and named override evidence. Production discovers maintained sources; frozen evaluation is excluded with a non-maintained rationale. Fixture target inputs exercise the same contracts.",
       "scope": {
         "maintained": [
           "internal/association/testdata/gen/gen_parity.py",
@@ -298,11 +262,12 @@
         ]
       },
       "execution_modes": [
-        "full"
+        "ci"
       ],
       "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance.",
       "deviation": " Excludes scripts/guardrails/vendor/**: immutable byte-identical upstream validator/catalog snapshots, not maintained Scout Python.",
-      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages."
+      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages.",
+      "policy_path": "scripts/guardrails/python/settings.json"
     },
     {
       "id": "MYPY.SETTING.mypy_path",
@@ -312,12 +277,15 @@
         "scripts/guardrails/python/check.py",
         "scripts/guardrails/python/policy.py",
         "scripts/guardrails/python/quality.py",
-        "scripts/guardrails/python/scalability.py"
+        "scripts/guardrails/python/scalability.py",
+        "scripts/guardrails/python/settings.json",
+        "scripts/guardrails/python/python_quality_scope.py",
+        "scripts/guardrails/python/canaries.py"
       ],
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -335,7 +303,7 @@
           "mypy_path = scripts/guardrails/python:scripts/guardrails"
         ]
       },
-      "adaptation": "Maintained generator and all scripts/guardrails Python explicitly enumerated; frozen evaluation excluded; only lizard untyped third-party override.",
+      "adaptation": "Target-owned settings.json declares maintained roots, package inventory, supported Python versions, canonical test groups, first-party imports and named override evidence. Production discovers maintained sources; frozen evaluation is excluded with a non-maintained rationale. Fixture target inputs exercise the same contracts.",
       "scope": {
         "maintained": [
           "internal/association/testdata/gen/gen_parity.py",
@@ -350,10 +318,11 @@
         ]
       },
       "execution_modes": [
-        "full"
+        "ci"
       ],
       "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance.",
-      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages."
+      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages.",
+      "policy_path": "scripts/guardrails/python/settings.json"
     },
     {
       "id": "MYPY.SETTING.python_version",
@@ -363,12 +332,15 @@
         "scripts/guardrails/python/check.py",
         "scripts/guardrails/python/policy.py",
         "scripts/guardrails/python/quality.py",
-        "scripts/guardrails/python/scalability.py"
+        "scripts/guardrails/python/scalability.py",
+        "scripts/guardrails/python/settings.json",
+        "scripts/guardrails/python/python_quality_scope.py",
+        "scripts/guardrails/python/canaries.py"
       ],
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -387,7 +359,7 @@
         ]
       },
       "deviation": "Adapted Python 3.12 reference to repository-pinned Python 3.11.11 (py311 / 3.11).",
-      "adaptation": "Maintained generator and all scripts/guardrails Python explicitly enumerated; frozen evaluation excluded; only lizard untyped third-party override.",
+      "adaptation": "Target-owned settings.json declares maintained roots, package inventory, supported Python versions, canonical test groups, first-party imports and named override evidence. Production discovers maintained sources; frozen evaluation is excluded with a non-maintained rationale. Fixture target inputs exercise the same contracts.",
       "scope": {
         "maintained": [
           "internal/association/testdata/gen/gen_parity.py",
@@ -402,10 +374,11 @@
         ]
       },
       "execution_modes": [
-        "full"
+        "ci"
       ],
       "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance.",
-      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages."
+      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages.",
+      "policy_path": "scripts/guardrails/python/settings.json"
     },
     {
       "id": "MYPY.SETTING.show_error_codes",
@@ -420,7 +393,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -471,7 +444,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -517,12 +490,15 @@
         "scripts/guardrails/python/check.py",
         "scripts/guardrails/python/policy.py",
         "scripts/guardrails/python/quality.py",
-        "scripts/guardrails/python/scalability.py"
+        "scripts/guardrails/python/scalability.py",
+        "scripts/guardrails/python/settings.json",
+        "scripts/guardrails/python/python_quality_scope.py",
+        "scripts/guardrails/python/canaries.py"
       ],
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -541,7 +517,7 @@
           "ignore_missing_imports = True"
         ]
       },
-      "adaptation": "Maintained generator and all scripts/guardrails Python explicitly enumerated; frozen evaluation excluded; only lizard untyped third-party override.",
+      "adaptation": "Target-owned settings.json declares maintained roots, package inventory, supported Python versions, canonical test groups, first-party imports and named override evidence. Production discovers maintained sources; frozen evaluation is excluded with a non-maintained rationale. Fixture target inputs exercise the same contracts.",
       "scope": {
         "maintained": [
           "internal/association/testdata/gen/gen_parity.py",
@@ -556,10 +532,11 @@
         ]
       },
       "execution_modes": [
-        "full"
+        "ci"
       ],
       "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance.",
-      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages."
+      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages.",
+      "policy_path": "scripts/guardrails/python/settings.json"
     },
     {
       "id": "MYPY.package-coverage",
@@ -569,12 +546,15 @@
         "scripts/guardrails/python/check.py",
         "scripts/guardrails/python/policy.py",
         "scripts/guardrails/python/quality.py",
-        "scripts/guardrails/python/scalability.py"
+        "scripts/guardrails/python/scalability.py",
+        "scripts/guardrails/python/settings.json",
+        "scripts/guardrails/python/python_quality_scope.py",
+        "scripts/guardrails/python/canaries.py"
       ],
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -587,13 +567,14 @@
         "diagnostic": "MYPY.package-coverage: add maintained files to the explicit mypy invocation: scripts/guardrails/check.py"
       },
       "configuration": {
-        "path": "mypy.ini",
+        "path": "scripts/guardrails/python/settings.json",
         "contains": [
-          "follow_imports = skip",
-          "exclude = (^evaluation/|^\\.tools/|^scripts/guardrails/fixtures/|^scripts/guardrails/vendor/)"
+          "\"maintained_packages\"",
+          "\"scripts.guardrails.python\"",
+          "\"scripts.guardrails.tests\""
         ]
       },
-      "adaptation": "Maintained generator and all scripts/guardrails Python explicitly enumerated; frozen evaluation excluded; only lizard untyped third-party override.",
+      "adaptation": "Target-owned settings.json declares maintained roots, package inventory, supported Python versions, canonical test groups, first-party imports and named override evidence. Production discovers maintained sources; frozen evaluation is excluded with a non-maintained rationale. Fixture target inputs exercise the same contracts.",
       "scope": {
         "maintained": [
           "internal/association/testdata/gen/gen_parity.py",
@@ -608,10 +589,11 @@
         ]
       },
       "execution_modes": [
-        "full"
+        "ci"
       ],
       "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance.",
-      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages."
+      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages.",
+      "policy_path": "scripts/guardrails/python/settings.json"
     },
     {
       "id": "MYPY.strict",
@@ -626,7 +608,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -677,7 +659,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -731,7 +713,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -757,7 +739,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -781,7 +763,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -808,7 +790,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -835,7 +817,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -883,7 +865,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -930,7 +912,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -971,12 +953,15 @@
         "scripts/guardrails/python/check.py",
         "scripts/guardrails/python/policy.py",
         "scripts/guardrails/python/quality.py",
-        "scripts/guardrails/python/scalability.py"
+        "scripts/guardrails/python/scalability.py",
+        "scripts/guardrails/python/settings.json",
+        "scripts/guardrails/python/python_quality_scope.py",
+        "scripts/guardrails/python/canaries.py"
       ],
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -986,7 +971,7 @@
         ],
         "passing": "scripts/guardrails/fixtures/PYQ102/passing.json",
         "violating": "scripts/guardrails/fixtures/PYQ102/violating.json",
-        "diagnostic": "PYQ102: move noncanonical test group 'random' under tests/unit/, tests/integration/, tests/seams/, tests/support/ or tests/fixtures/"
+        "diagnostic": "PYQ102: move noncanonical test group 'random' under a mapped canonical group: tests/unit/, tests/seams/, tests/integration/, tests/support/, tests/fixtures/"
       },
       "scope": {
         "maintained": [
@@ -1002,12 +987,20 @@
         ]
       },
       "execution_modes": [
-        "full",
-        "commit (affected files)"
+        "ci"
       ],
-      "adaptation": "Scout roots: maintained generator and guardrail scripts; canonical test groups and skill naming preserved. Analyzer-like Python lives in scripts/guardrails/analyzers; explicit subprocess seams, dynamic-import adapter and contracts.py boundary rules are executable in quality.py.",
+      "adaptation": "Target-owned settings.json declares maintained roots, package inventory, supported Python versions, canonical test groups, first-party imports and named override evidence. Production discovers maintained sources; frozen evaluation is excluded with a non-maintained rationale. Fixture target inputs exercise the same contracts.",
       "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance.",
-      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages."
+      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages.",
+      "policy_path": "scripts/guardrails/python/settings.json",
+      "configuration": {
+        "path": "scripts/guardrails/python/settings.json",
+        "contains": [
+          "\"canonical_test_groups\"",
+          "\"unit\": \"T1\"",
+          "\"seams\": \"T2\""
+        ]
+      }
     },
     {
       "id": "PYQ103",
@@ -1022,7 +1015,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1068,7 +1061,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1114,7 +1107,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1160,7 +1153,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1206,7 +1199,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1252,7 +1245,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1298,7 +1291,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1344,7 +1337,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1390,7 +1383,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1436,7 +1429,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1482,7 +1475,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1528,7 +1521,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1574,7 +1567,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1620,7 +1613,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1666,7 +1659,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1712,7 +1705,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1758,7 +1751,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1804,7 +1797,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1850,7 +1843,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1896,7 +1889,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1942,7 +1935,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -1993,7 +1986,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2044,7 +2037,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2095,7 +2088,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2146,7 +2139,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2198,7 +2191,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2249,7 +2242,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2295,12 +2288,15 @@
         "scripts/guardrails/python/check.py",
         "scripts/guardrails/python/policy.py",
         "scripts/guardrails/python/quality.py",
-        "scripts/guardrails/python/scalability.py"
+        "scripts/guardrails/python/scalability.py",
+        "scripts/guardrails/python/settings.json",
+        "scripts/guardrails/python/python_quality_scope.py",
+        "scripts/guardrails/python/canaries.py"
       ],
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2315,7 +2311,7 @@
       "configuration": {
         "path": "ruff.toml",
         "contains": [
-          "known-first-party = ["
+          "known-first-party = [\"internal\", \"scripts\", \"canaries\", \"fanout\", \"policy\", \"python_quality_scope\", \"quality\", \"scalability\"]"
         ]
       },
       "scope": {
@@ -2332,11 +2328,12 @@
         ]
       },
       "execution_modes": [
-        "full",
-        "commit (affected files)"
+        "ci"
       ],
       "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance.",
-      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages."
+      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages.",
+      "adaptation": "Target-owned settings.json declares maintained roots, package inventory, supported Python versions, canonical test groups, first-party imports and named override evidence. Production discovers maintained sources; frozen evaluation is excluded with a non-maintained rationale. Fixture target inputs exercise the same contracts.",
+      "policy_path": "scripts/guardrails/python/settings.json"
     },
     {
       "id": "RUFF.ISORT.split-on-trailing-comma",
@@ -2351,7 +2348,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2402,7 +2399,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2453,7 +2450,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2504,7 +2501,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2555,7 +2552,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2606,7 +2603,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2657,7 +2654,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2708,7 +2705,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2759,7 +2756,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2805,12 +2802,15 @@
         "scripts/guardrails/python/check.py",
         "scripts/guardrails/python/policy.py",
         "scripts/guardrails/python/quality.py",
-        "scripts/guardrails/python/scalability.py"
+        "scripts/guardrails/python/scalability.py",
+        "scripts/guardrails/python/settings.json",
+        "scripts/guardrails/python/python_quality_scope.py",
+        "scripts/guardrails/python/canaries.py"
       ],
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2825,7 +2825,8 @@
       "configuration": {
         "path": "ruff.toml",
         "contains": [
-          "exclude = ["
+          "exclude = [",
+          "\"evaluation\", # Frozen signed-off studies; never run as maintained checks."
         ]
       },
       "scope": {
@@ -2842,12 +2843,13 @@
         ]
       },
       "execution_modes": [
-        "full",
-        "commit (affected files)"
+        "ci"
       ],
       "deviation": "Adds frozen evaluation, pinned .tools environments and JSON canary fixture trees to the reference exclusions. Excludes scripts/guardrails/vendor/**: immutable byte-identical upstream validator/catalog snapshots, not maintained Scout Python.",
       "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance.",
-      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages."
+      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages.",
+      "adaptation": "Target-owned settings.json declares maintained roots, package inventory, supported Python versions, canonical test groups, first-party imports and named override evidence. Production discovers maintained sources; frozen evaluation is excluded with a non-maintained rationale. Fixture target inputs exercise the same contracts.",
+      "policy_path": "scripts/guardrails/python/settings.json"
     },
     {
       "id": "RUFF.ROOT.fix",
@@ -2862,7 +2864,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2914,7 +2916,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -2965,7 +2967,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3016,7 +3018,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3067,7 +3069,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3118,7 +3120,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3169,7 +3171,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3220,7 +3222,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3271,7 +3273,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3322,7 +3324,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3373,7 +3375,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3424,7 +3426,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3475,7 +3477,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3526,7 +3528,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3577,7 +3579,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3628,7 +3630,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3679,7 +3681,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3730,7 +3732,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3781,7 +3783,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3832,7 +3834,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3883,7 +3885,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3934,7 +3936,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -3985,7 +3987,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4036,7 +4038,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4087,7 +4089,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4138,7 +4140,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4189,7 +4191,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4235,12 +4237,15 @@
         "scripts/guardrails/python/check.py",
         "scripts/guardrails/python/policy.py",
         "scripts/guardrails/python/quality.py",
-        "scripts/guardrails/python/scalability.py"
+        "scripts/guardrails/python/scalability.py",
+        "scripts/guardrails/python/settings.json",
+        "scripts/guardrails/python/python_quality_scope.py",
+        "scripts/guardrails/python/canaries.py"
       ],
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "python/check.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": ".omp/gate.json",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4273,16 +4278,17 @@
         ]
       },
       "execution_modes": [
-        "full",
-        "commit (affected files)"
+        "ci"
       ],
       "upstream_snapshot_exclusion": "scripts/guardrails/vendor/** contains byte-for-byte vendored bundled coverage validator/catalog; maintained-source Ruff, mypy, AST and fanout checks exclude upstream snapshots to preserve provenance.",
-      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages."
+      "diagnostic_contract": "Canary marker includes the actual rule-specific remediation, not just a rule ID; the canary driver preserves production checker messages.",
+      "adaptation": "Target-owned settings.json declares maintained roots, package inventory, supported Python versions, canonical test groups, first-party imports and named override evidence. Production discovers maintained sources; frozen evaluation is excluded with a non-maintained rationale. Fixture target inputs exercise the same contracts.",
+      "policy_path": "scripts/guardrails/python/settings.json"
     },
     {
       "id": "RUNNER.local-ci-parity",
       "activation_evidence": "canary.activation_canary sources generated activate in an activated parent, a child without the function, and repeatedly in that child; PATH must stay identical and path smoke must pass",
-      "coverage_evidence": "full gate runs check-only exact ledger synchronization then vendored upstream validator/catalog; ledger_canary proves fresh/stale aggregate behavior",
+      "coverage_evidence": "CI gate runs check-only exact ledger synchronization then vendored upstream validator/catalog; ledger_canary proves fresh/stale aggregate behavior",
       "evidence_kind": "local_ci",
       "status": "implemented",
       "contract": {
@@ -4293,12 +4299,12 @@
         "scripts/guardrails/infrastructure.py",
         "scripts/guardrails/merge-ledger.py",
         "scripts/guardrails/vendor/validate_rule_coverage.py",
-        "scripts/guardrails/vendor/enaible-rules.json"
+        "scripts/guardrails/vendor/guardrail-rules.json"
       ],
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4324,7 +4330,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4348,7 +4354,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4364,10 +4370,18 @@
       "id": "SKILL.metadata",
       "evidence_kind": "local_ci",
       "status": "implemented",
+      "policy_path": ".omp/guardrails.json",
+      "metadata_policy": "Require name and description; allow optional boolean hide and disable-model-invocation; reject unknown fields.",
+      "shared_skill_scope": {
+        "applicable": false,
+        "rationale": "no shared skills: `.agents/skills/` holds project-scoped skills only"
+      },
+      "scope_enforcement": "A target-declared field/value scope remains enforced; project-only exemption requires an explicit non-applicable declaration with rationale and no field/value requirement.",
       "contract": {
         "name_matches_directory": true,
         "use_when_prefix_case_insensitive": true,
-        "global_boolean_for_shared": true
+        "target_metadata_schema_required": true,
+        "shared_skill_scope_metadata_must_match_target_schema": true
       },
       "implementation_paths": [
         "scripts/guardrails/gate.py",
@@ -4376,7 +4390,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4404,7 +4418,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4432,7 +4446,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4466,7 +4480,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4477,7 +4491,7 @@
         "violating": "scripts/guardrails/fixtures/TEST.budget.fast-tier-time.negative.json",
         "diagnostic": "TEST.budget.fast-tier-time"
       },
-      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Commit and CI share static checks and every T1 package; commit selects affected seam packages and CI runs every T2 package."
     },
     {
       "id": "TEST.budget.per-test-time",
@@ -4501,7 +4515,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4512,7 +4526,7 @@
         "violating": "scripts/guardrails/fixtures/TEST.budget.per-test-time.negative.json",
         "diagnostic": "TEST.budget.per-test-time"
       },
-      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Commit and CI share static checks and every T1 package; commit selects affected seam packages and CI runs every T2 package."
     },
     {
       "id": "TEST.coverage-minimum",
@@ -4531,7 +4545,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4542,7 +4556,7 @@
         "violating": "scripts/guardrails/fixtures/TEST.coverage-minimum.negative.json",
         "diagnostic": "TEST.coverage-minimum"
       },
-      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Commit and CI share static checks and every T1 package; commit selects affected seam packages and CI runs every T2 package."
     },
     {
       "id": "TEST.duplicate-path",
@@ -4567,7 +4581,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4578,7 +4592,7 @@
         "violating": "scripts/guardrails/fixtures/TEST.duplicate-path.negative.json",
         "diagnostic": "TEST.duplicate-path"
       },
-      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Commit and CI share static checks and every T1 package; commit selects affected seam packages and CI runs every T2 package."
     },
     {
       "id": "TEST.failure-propagation",
@@ -4594,7 +4608,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4626,7 +4640,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4637,7 +4651,7 @@
         "violating": "scripts/guardrails/fixtures/TEST.growth.justified.negative.json",
         "diagnostic": "TEST.growth.justified"
       },
-      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Commit and CI share static checks and every T1 package; commit selects affected seam packages and CI runs every T2 package."
     },
     {
       "id": "TEST.placement",
@@ -4655,7 +4669,7 @@
       "local_runner": "scripts/gate.sh",
       "local_marker": "scripts/guardrails/gate.py",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4681,7 +4695,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4692,7 +4706,7 @@
         "violating": "scripts/guardrails/fixtures/TEST.subprocess-timeouts.negative.json",
         "diagnostic": "TEST.subprocess-timeouts"
       },
-      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Commit and CI share static checks and every T1 package; commit selects affected seam packages and CI runs every T2 package."
     },
     {
       "id": "TEST.tiers",
@@ -4708,7 +4722,7 @@
       "local_runner": "scripts/guardrails/gate.py",
       "local_marker": "str(Path(__file__).resolve().parent / \"tests/check.py\")",
       "ci_runner": ".github/workflows/gate.yml",
-      "ci_marker": "[\"gate\"]",
+      "ci_marker": "[\"checks\"][\"ci\"]",
       "canary": {
         "command": [
           ".tools/venv/bin/python",
@@ -4719,7 +4733,7 @@
         "violating": "scripts/guardrails/fixtures/TEST.tiers.negative.json",
         "diagnostic": "TEST.tiers"
       },
-      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Fast/full share static checks; full additionally owns real scanner/CLI seam packages."
+      "reason": "Owned Go test enforcement; all seven passing/violating fixture pairs exercised. Commit and CI share static checks and every T1 package; commit selects affected seam packages and CI runs every T2 package."
     }
   ]
 }
