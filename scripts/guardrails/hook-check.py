@@ -292,6 +292,12 @@ def real_pushes() -> None:
 
 
 def main() -> int:
+    if sys.argv[1:] == ["pre-push", "--real-pushes"]:
+        # Behavioural push proof: runs the fast test tier twice, so it is a
+        # full-gate step, not part of the validator's 60 s install check.
+        real_pushes()
+        print("GATE.pre-push: real clean push passes, broken non-HEAD push blocked")
+        return 0
     hook = sys.argv[1]
     field = {"pre-commit": "commitGate", "pre-push": "fastGate"}[hook]
     entry = ROOT / ".githooks" / hook
@@ -314,8 +320,6 @@ def main() -> int:
         if (result.returncode != 0) != bool(expected):
             return 1
     snapshots()
-    if hook == "pre-push":
-        real_pushes()
     print(
         f"GATE.{hook}: installed hook blocking, independent staged checkout, and advertised default-branch selection proved"
     )
