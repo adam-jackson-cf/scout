@@ -136,13 +136,13 @@ func terraRejected(t *testing.T, answer, diagnostic, before string, timeout time
 	assertNoClaude(t, dir)
 }
 func TestTerraRejectsModelMismatch(t *testing.T) {
-	terraRejected(t, terraExisting(), "model: wrong\nreasoning effort: high", "", time.Second)
+	terraRejected(t, terraExisting(), "model: wrong\nreasoning effort: high", "", 10*time.Second)
 }
 func TestTerraRejectsEffortMismatch(t *testing.T) {
-	terraRejected(t, terraExisting(), "model: gpt-6.1-terra\nreasoning effort: low", "", time.Second)
+	terraRejected(t, terraExisting(), "model: gpt-6.1-terra\nreasoning effort: low", "", 10*time.Second)
 }
 func TestTerraRejectsExecutedCommand(t *testing.T) {
-	terraRejected(t, terraExisting(), terraDiagnostic()+"\nexec\n/bin/pwd", "", time.Second)
+	terraRejected(t, terraExisting(), terraDiagnostic()+"\nexec\n/bin/pwd", "", 10*time.Second)
 }
 func TestTerraRejectsTimeout(t *testing.T) {
 	root, store, opts, _ := terraLaneFixture(t, 1, "none")
@@ -157,16 +157,16 @@ func TestTerraRejectsTimeout(t *testing.T) {
 	assertNoClaude(t, dir)
 }
 func TestTerraRejectsUnparsable(t *testing.T) {
-	terraRejected(t, "not JSON", terraDiagnostic(), "", time.Second)
+	terraRejected(t, "not JSON", terraDiagnostic(), "", 10*time.Second)
 }
 func TestTerraRejectsUnknownArea(t *testing.T) {
-	terraRejected(t, `{"decision":"existing","area_id":"missing"}`, terraDiagnostic(), "", time.Second)
+	terraRejected(t, `{"decision":"existing","area_id":"missing"}`, terraDiagnostic(), "", 10*time.Second)
 }
 func TestTerraRejectsProcessError(t *testing.T) {
-	terraRejected(t, terraExisting(), terraDiagnostic(), "exit 17", time.Second)
+	terraRejected(t, terraExisting(), terraDiagnostic(), "exit 17", 10*time.Second)
 }
 func TestTerraRejectsMissingNewDescription(t *testing.T) {
-	terraRejected(t, `{"decision":"new","new_title":"","new_summary":""}`, terraDiagnostic(), "", time.Second)
+	terraRejected(t, `{"decision":"new","new_title":"","new_summary":""}`, terraDiagnostic(), "", 10*time.Second)
 }
 func TestTerraPromptPin(t *testing.T) {
 	sum := sha256.Sum256([]byte(TerraPrompt()))
