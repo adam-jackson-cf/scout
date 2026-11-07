@@ -418,7 +418,12 @@ type RankingItem struct {
 	QuestionVersion string             `json:"questionVersion,omitempty"`
 }
 
-const summaryLimit = 60
+const (
+	summaryLimit           = 60
+	summaryIssueLimit      = 12
+	summaryWouldBlockLimit = 8
+	summaryPendingLimit    = 8
+)
 
 // Summary renders the Markdown PR summary, never longer than 60 lines.
 func Summary(gate domain.Gate, ranking Ranking, issues []domain.AttributedIssue, wouldBlock []domain.WouldBlock, pre int, health []domain.LaneHealth, pending []areas.Area, guard association.GuardState) string {
@@ -433,7 +438,11 @@ func Summary(gate domain.Gate, ranking Ranking, issues []domain.AttributedIssue,
 	if len(pending) > 0 {
 		add("")
 		add("### Pending areas")
-		for _, area := range pending {
+		for index, area := range pending {
+			if index == summaryPendingLimit {
+				add("- … %d more", len(pending)-index)
+				break
+			}
 			add("- `%s`: %s", area.ScoutAreaID, strings.Join(area.FileSet, ", "))
 		}
 	}
@@ -456,7 +465,7 @@ func Summary(gate domain.Gate, ranking Ranking, issues []domain.AttributedIssue,
 		add("None.")
 	}
 	for index, item := range changed {
-		if index == 12 {
+		if index == summaryIssueLimit {
 			add("- … %d more (see scout-assessment.json)", len(changed)-index)
 			break
 		}
@@ -479,7 +488,7 @@ func Summary(gate domain.Gate, ranking Ranking, issues []domain.AttributedIssue,
 		add("None.")
 	}
 	for index, row := range wouldBlock {
-		if index == 8 {
+		if index == summaryWouldBlockLimit {
 			add("- … %d more", len(wouldBlock)-index)
 			break
 		}
