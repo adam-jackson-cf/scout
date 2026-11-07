@@ -117,6 +117,7 @@ var commands = []struct {
 	{"areas", areasCmd},
 	{"coverage", coverage},
 	{"triage", triage},
+	{"decisions", decisionsCmd},
 	{"signals", signalsCmd},
 	{"export", exportCmd},
 	{"import", importCmd},
