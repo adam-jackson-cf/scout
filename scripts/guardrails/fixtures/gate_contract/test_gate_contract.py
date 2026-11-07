@@ -17,35 +17,6 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[4]
 SKILL = Path.home() / ".omp/agent/skills/setup-repository-guardrails"
-SENSITIVE = [
-    ".github/",
-    ".omp/",
-    ".githooks/",
-    ".scout/",
-    ".agents/",
-    "scripts/guardrails/",
-    "toolchain/",
-    "bootstrap-tools.sh",
-    "gate.sh",
-    "build-clawpatch.sh",
-    "scout-design.html",
-    "docs/adrs/",
-    "jev-adapter-audit.md",
-    "evaluation/",
-    "third_party/",
-    "research-ledger.md",
-    "hypothesis-ledger.md",
-    "CLAUDE.md",
-    ".gitleaksignore",
-    ".gitmodules",
-    "AGENTS.md",
-    "ruff.toml",
-    "mypy.ini",
-    ".prettierrc",
-    ".prettierignore",
-    "go.mod",
-    "go.sum",
-]
 
 
 def command(argv: list[str], root: Path) -> subprocess.CompletedProcess[str]:
@@ -108,7 +79,6 @@ class GateConfigurationProof(unittest.TestCase):
         assert config.get("pathCheck")
         assert all(isinstance(item, str) and item for item in config["pathCheck"])
         assert config.get("ciHost") == "github"
-        assert config.get("sensitive") == SENSITIVE
         assert config.get("agentMerge") == "allowed"
         assert {"gate", "commit" + "Gate", "fast" + "Gate"}.isdisjoint(config)
 

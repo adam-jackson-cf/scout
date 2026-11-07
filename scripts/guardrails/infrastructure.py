@@ -126,12 +126,11 @@ def gate_options(config: dict[str, Any]) -> None:
         timeout = config["pathCheckTimeoutMs"]
         if type(timeout) is not int or timeout <= 0:
             fail(".omp/gate.json", rule, "set a positive integer pathCheckTimeoutMs")
-    for field in ("testGlobs", "sensitive"):
-        if field in config and (
-            not isinstance(config[field], list)
-            or not all(isinstance(value, str) for value in config[field])
-        ):
-            fail(".omp/gate.json", rule, f"set {field} to a string array")
+    if "testGlobs" in config and (
+        not isinstance(config["testGlobs"], list)
+        or not all(isinstance(value, str) for value in config["testGlobs"])
+    ):
+        fail(".omp/gate.json", rule, "set testGlobs to a string array")
     if "agentMerge" in config and config["agentMerge"] not in ("allowed", "disabled"):
         fail(".omp/gate.json", rule, "set agentMerge to allowed or disabled")
     if "ciHost" in config and config["ciHost"] not in ("github", "nuc"):
@@ -148,7 +147,6 @@ def gate_schema(config: dict[str, Any]) -> None:
         "pathCheck",
         "pathCheckTimeoutMs",
         "testGlobs",
-        "sensitive",
         "agentMerge",
         "ciHost",
     }

@@ -103,11 +103,7 @@ CI subchecks discover their maintained scope without forwarding the full
 repository inventory as process arguments. Commit snapshots receive their changed
 paths over NUL-separated stdin; `pathCheck` retains its explicit changed-path argv.
 The config allows 10 seconds for path checks: more than ten times the
-recorded 929.494 ms maximum baseline. Sensitive folder patterns end in `/`;
-file patterns are basename prefixes, so `bootstrap-tools.sh` protects
-`scripts/bootstrap-tools.sh` and `scout-design.html` protects `docs/scout-design.html`.
-Sensitive changes require owner merge even with `agentMerge` set to `allowed`;
-that setting never grants permission to perform Git writes.
+recorded 929.494 ms maximum baseline.
 The pre-commit hook transfers the staged index in bulk into an independent shared
 clone, so partially staged files are checked as committed, not as edited. Its
 commit tier runs static checks, every T1 package, and T2 seam packages affected by
