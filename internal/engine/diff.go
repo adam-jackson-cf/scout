@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"scout/internal/areas"
+	"scout/internal/association"
 	"scout/internal/decisions"
 	"scout/internal/domain"
 	"scout/internal/guardrails"
@@ -78,6 +79,7 @@ type DiffReport struct {
 	PreExisting      int                      `json:"preExisting"`
 	Changed          []string                 `json:"changedFiles"`
 	PendingAreas     []areas.Area             `json:"pendingAreas"`
+	AssociationGuard association.GuardState   `json:"associationGuard"`
 }
 
 // UnavailableReport is the report for a run that could not start or finish.
@@ -272,7 +274,8 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 	return DiffReport{
 		Base: baseSHA, Head: headSHA, MergeBase: mergeBase, Comparison: comparison, ComparisonReason: comparisonReason(comparison, banners), Gate: output.Gate, Health: ApplyDecisionsHealth(headResult.Lanes, decisionsHealth),
 		WouldBlock: output.WouldBlock, Ranking: ranking, Issues: reportIssues, PreExisting: output.Pre, Changed: changed,
-		PendingAreas: pending,
+		PendingAreas:     pending,
+		AssociationGuard: headResult.AssociationGuard,
 	}, nil
 }
 

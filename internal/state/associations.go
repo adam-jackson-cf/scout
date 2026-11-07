@@ -114,6 +114,8 @@ func normalizeAssociations(in []domain.Association) ([]domain.Association, error
 			return nil, fmt.Errorf("duplicate association %q", record.ID)
 		}
 		seen[record.ID] = true
+		// Catalogue staleness is a derived output annotation, never stored state.
+		record.CatalogueStale = false
 		record.DecidedAt = record.DecidedAt.UTC()
 		if record.LastAgentRefreshAt != nil {
 			refreshed := record.LastAgentRefreshAt.UTC()

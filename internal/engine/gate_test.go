@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"scout/internal/association"
 	"scout/internal/domain"
 	"scout/internal/policy"
 )
@@ -173,8 +174,24 @@ func TestSummaryIsBounded(t *testing.T) {
 		issues = append(issues, domain.AttributedIssue{IssueID: "i", CheckID: "c", Attribution: domain.AttributionIntroduced, Title: "t"})
 		rows = append(rows, domain.WouldBlock{CheckID: "c", Path: "p", Triage: "undecided"})
 	}
-	out := Summary(domain.Gate{Status: "gated", ExitCode: 1, Reasons: strings.Split(strings.Repeat("r\n", 100), "\n")}, DeterministicRanking(issues, "decisions not enabled"), issues, rows, 5, LaneHealthOf(domain.TriggerPR, domain.Run{}, nil), nil)
+	out := Summary(domain.Gate{Status: "gated", ExitCode: 1, Reasons: strings.Split(strings.Repeat("r\n", 100), "\n")}, DeterministicRanking(issues, "decisions not enabled"), issues, rows, 5, LaneHealthOf(domain.TriggerPR, domain.Run{}, nil), nil, association.GuardState{})
 	if n := strings.Count(out, "\n"); n > 60 {
 		t.Fatalf("summary has %d lines", n)
+	}
+}
+
+func TestSummaryCatalogueGuardSurvivesTruncation(t *testing.T) {
+	guard := association.GuardState{CatalogueStale: true, Recommendation: "Run scout map --refresh"}
+	gate := domain.Gate{Reasons: strings.Split(strings.Repeat("reason\n", 100), "\n")}
+	text := Summary(gate, Ranking{}, nil, nil, 0, nil, nil, guard)
+	if !strings.Contains(text, "catalogue-stale") || !strings.Contains(text, guard.Recommendation) {
+		t.Fatalf("summary dropped catalogue guard: %s", text)
+	}
+	if strings.Count(text, "\n") > 60 {
+		t.Fatalf("guard exceeded summary bound: %s", text)
+	}
+	healthy := Summary(domain.Gate{}, Ranking{}, nil, nil, 0, nil, nil, association.GuardState{})
+	if strings.Contains(healthy, "catalogue-stale") || strings.Contains(healthy, "scout map --refresh") {
+		t.Fatalf("healthy summary recommends refresh: %s", healthy)
 	}
 }

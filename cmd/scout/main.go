@@ -273,7 +273,7 @@ func assess(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	report := assessmentReport{result.Run, result.Plan, result.Diff, result.Map.Status, result.MappingGaps, result.Issues, result.Adapters, verdict.Gate, health, []domain.WouldBlock{}, ranking, pending}
+	report := assessmentReport{result.Run, result.Plan, result.Diff, result.Map.Status, result.MappingGaps, result.Issues, result.Adapters, verdict.Gate, health, []domain.WouldBlock{}, ranking, pending, result.Associations, associationGuardReport{result.AssociationGuard}}
 	return emit(flags, verdict.Gate.Status, verdict.Gate.ExitCode, report, nil)
 }
 
@@ -325,7 +325,8 @@ func readiness(ctx context.Context, args []string) int {
 	report := struct {
 		Ready        bool         `json:"ready"`
 		Capabilities []capability `json:"capabilities"`
-	}{assessmentReadiness.Ready, checks}
+		associationGuardReport
+	}{assessmentReadiness.Ready, checks, associationGuardReport{assessmentReadiness.AssociationGuard}}
 	if !assessmentReadiness.Ready {
 		return emit(flags, "unavailable", exitUnavailable, report, nil)
 	}

@@ -36,6 +36,38 @@ func testAssociations() []domain.Association {
 	return []domain.Association{inherited, unresolved, assigned}
 }
 
+func TestAssociationCatalogueStaleIsOutputOnly(t *testing.T) {
+	ctx := context.Background()
+	store := seedLedger(t, ctx, t.TempDir())
+	defer store.Close()
+	rows := testAssociations()
+	for i := range rows {
+		rows[i].CatalogueStale = true
+	}
+	if err := store.InsertAssociations(ctx, rows); err != nil {
+		t.Fatal(err)
+	}
+	stored, err := store.ListAssociations(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, row := range stored {
+		if row.CatalogueStale {
+			t.Fatal("output annotation persisted")
+		}
+	}
+	if !rows[0].CatalogueStale {
+		t.Fatal("normalization mutated caller's output")
+	}
+	files, err := store.Export(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bytes.Contains(files[ExportAssociations], []byte("catalogue_stale")) {
+		t.Fatal("derived annotation entered state export")
+	}
+}
+
 func TestAssociationsAndPendingAreasRoundTripByteIdentical(t *testing.T) {
 	ctx := context.Background()
 	source := seedLedger(t, ctx, t.TempDir())

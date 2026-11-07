@@ -507,6 +507,10 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 	}
 	inlineHealth = append(inlineHealth, associationHealth...)
 	result.Lanes = LaneHealthOf(options.Trigger, result.Run, inlineHealth)
+	result.Associations, result.AssociationGuard, err = associationOutput(ctx, store, config.associationGuard())
+	if err != nil {
+		return result, err
+	}
 	return result, nil
 }
 

@@ -89,6 +89,9 @@ type Association struct {
 	FallbackSkipped    bool   `json:"fallback_skipped"`
 	FallbackSkipReason string `json:"fallback_skip_reason,omitempty"`
 
+	// CatalogueStale is an output-only guard annotation, not a stored assignment flag.
+	CatalogueStale bool `json:"catalogue_stale,omitempty"`
+
 	Stale                 bool   `json:"stale"`
 	Superseded            bool   `json:"superseded"`
 	ThresholdsProvisional bool   `json:"thresholds_provisional"`

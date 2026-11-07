@@ -10,6 +10,7 @@ import (
 	"sort"
 
 	"scout/internal/analyzers"
+	"scout/internal/association"
 	"scout/internal/clawpatch"
 	"scout/internal/contextual"
 	"scout/internal/domain"
@@ -22,6 +23,7 @@ import (
 // It does not initialize state, map features, scan with analyzers, or call a model.
 func AssessReadiness(ctx context.Context, config Config, options Options) (Readiness, error) {
 	result := Readiness{Ready: true, Capabilities: []Capability{}}
+	result.AssociationGuard = association.Guard(nil, nil, config.associationGuard(), association.GuardState{})
 	add := func(name string, required bool, err error) {
 		entry := Capability{Name: name, Required: required, Ready: err == nil}
 		if err != nil {
@@ -87,6 +89,10 @@ func AssessReadiness(ctx context.Context, config Config, options Options) (Readi
 		return result, nil
 	default:
 		defer store.Close()
+		_, result.AssociationGuard, err = associationOutput(ctx, store, config.associationGuard())
+		if err != nil {
+			return result, err
+		}
 		base.run, err = store.LatestFinalizedRun(ctx)
 		if errors.Is(err, state.ErrNotFound) {
 			base.first = true
