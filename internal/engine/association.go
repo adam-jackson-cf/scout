@@ -9,6 +9,6 @@ import (
 )
 
 // RunAssociationLane runs the optional push-only association signal lane.
-func RunAssociationLane(ctx context.Context, store *state.Store, root string, trigger domain.LaneTrigger, options association.LaneOptions) (domain.LaneHealth, error) {
+func RunAssociationLane(ctx context.Context, store *state.Store, root string, trigger domain.LaneTrigger, options association.LaneOptions) ([]domain.LaneHealth, error) {
 	return association.Execute(ctx, store, root, trigger, options)
 }

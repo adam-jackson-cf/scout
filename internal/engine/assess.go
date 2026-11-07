@@ -500,10 +500,12 @@ func Assess(ctx context.Context, config Config, options Options) (Result, error)
 	}
 	associationHealth, associationErr := RunAssociationLane(ctx, store, root, trigger, associationOptions)
 	if associationErr != nil {
-		associationHealth.Status = domain.LaneFailed
-		associationHealth.Reason = associationErr.Error()
+		for i := range associationHealth {
+			associationHealth[i].Status = domain.LaneFailed
+			associationHealth[i].Reason = associationErr.Error()
+		}
 	}
-	inlineHealth = append(inlineHealth, associationHealth)
+	inlineHealth = append(inlineHealth, associationHealth...)
 	result.Lanes = LaneHealthOf(options.Trigger, result.Run, inlineHealth)
 	return result, nil
 }

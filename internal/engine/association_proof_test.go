@@ -205,10 +205,11 @@ func TestAssociationLaneZeroCalls(t *testing.T) {
 			if tc.change != nil {
 				tc.change(&o)
 			}
-			h, err := RunAssociationLane(context.Background(), s, root, tc.trigger, o)
+			healths, err := RunAssociationLane(context.Background(), s, root, tc.trigger, o)
 			if err != nil {
 				t.Fatal(err)
 			}
+			h := healths[0]
 			assertAssociationHealth(t, h, domain.LaneSkipped, tc.reason, 0)
 			if count.Load() != 0 {
 				t.Fatalf("skip called Jev %d times", count.Load())
@@ -228,10 +229,11 @@ func TestAssociationLaneFailureHealth(t *testing.T) {
 			s := associationStore(t, root, 2)
 			c, count := associationServer(t, mode)
 			o := associationOptions(base, head, c)
-			h, err := RunAssociationLane(context.Background(), s, root, domain.TriggerPush, o)
+			healths, err := RunAssociationLane(context.Background(), s, root, domain.TriggerPush, o)
 			if err != nil {
 				t.Fatal(err)
 			}
+			h := healths[0]
 			want := domain.LaneFailed
 			if mode == "partial" {
 				want = domain.LaneRan
@@ -265,7 +267,7 @@ func TestAssociationLaneFailureHealth(t *testing.T) {
 				t.Fatal(err)
 			}
 			onGate := Evaluate(GateInput{Policy: policy.Default(), Lanes: []domain.LaneHealth{h}}).Gate
-			offGate := Evaluate(GateInput{Policy: policy.Default(), Lanes: []domain.LaneHealth{off}}).Gate
+			offGate := Evaluate(GateInput{Policy: policy.Default(), Lanes: off}).Gate
 			if onGate.ExitCode != offGate.ExitCode {
 				t.Fatalf("optional lane changed exit code %d -> %d", offGate.ExitCode, onGate.ExitCode)
 			}
@@ -285,10 +287,11 @@ func TestAssociationLaneCaps(t *testing.T) {
 			} else {
 				o.Config.MaxCostUSD = .5
 			}
-			h, err := RunAssociationLane(context.Background(), s, root, domain.TriggerPush, o)
+			healths, err := RunAssociationLane(context.Background(), s, root, domain.TriggerPush, o)
 			if err != nil {
 				t.Fatal(err)
 			}
+			h := healths[0]
 			if h.Status != domain.LaneRan {
 				t.Fatalf("successful covered call then cap: %+v", h)
 			}
