@@ -53,7 +53,7 @@ func diff(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, report.Gate.Status, report.Gate.ExitCode, report, err)
 	}
-	text = engine.Summary(report.Gate, report.Ranking, report.Issues, report.WouldBlock, report.PreExisting, report.Health, report.PendingAreas)
+	text = engine.Summary(report.Gate, report.Ranking, report.Issues, report.WouldBlock, report.PreExisting, report.Health, report.PendingAreas, report.AssociationGuard)
 	if summary != "" {
 		if writeErr := os.WriteFile(summary, []byte(text), 0o644); writeErr != nil {
 			report.Gate.Reasons = append(report.Gate.Reasons, "summary not written: "+writeErr.Error())

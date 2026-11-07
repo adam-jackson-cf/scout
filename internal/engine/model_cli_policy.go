@@ -16,6 +16,7 @@ const ReasonNotOptedIn = "skipped (not opted in)"
 // Clawpatch review provider.
 func ApplyModelCLIPolicy(cfg Config, pol policy.Policy) Config {
 	consent := pol.ModelCLI()
+	cfg.AssociationGuard = pol.Mapping().Association.Guard
 	cfg.ModelLanes = consent.Lanes
 	if consent.Provider != "" {
 		cfg.Provider.CLI = consent.Provider

@@ -8,6 +8,7 @@ import (
 	"scout/internal/contextual"
 	"scout/internal/domain"
 	"scout/internal/inventory"
+	"scout/internal/policy"
 )
 
 type Config struct {
@@ -23,6 +24,8 @@ type Config struct {
 	ModelLanes   []string
 	Registry     *analyzers.Registry
 	Dependencies []inventory.DependencyEdge
+	// AssociationGuard is the committed policy's catalogue refresh guard.
+	AssociationGuard policy.AssociationGuard
 }
 
 type Options struct {
@@ -43,14 +46,16 @@ type Options struct {
 }
 
 type Result struct {
-	Run         domain.Run             `json:"run"`
-	Plan        domain.Plan            `json:"plan"`
-	Diff        inventory.DiffResult   `json:"diff"`
-	Map         clawpatch.MapResult    `json:"map"`
-	MappingGaps []inventory.MappingGap `json:"mappingGaps,omitempty"`
-	Adapters    []domain.AdapterResult `json:"adapters,omitempty"`
-	Issues      []domain.Issue         `json:"issues,omitempty"`
-	Lanes       []domain.LaneHealth    `json:"lanes,omitempty"`
+	Run              domain.Run             `json:"run"`
+	Plan             domain.Plan            `json:"plan"`
+	Diff             inventory.DiffResult   `json:"diff"`
+	Map              clawpatch.MapResult    `json:"map"`
+	MappingGaps      []inventory.MappingGap `json:"mappingGaps,omitempty"`
+	Adapters         []domain.AdapterResult `json:"adapters,omitempty"`
+	Issues           []domain.Issue         `json:"issues,omitempty"`
+	Lanes            []domain.LaneHealth    `json:"lanes,omitempty"`
+	Associations     []domain.Association   `json:"associations"`
+	AssociationGuard association.GuardState `json:"associationGuard"`
 }
 
 // Capability reports whether a prerequisite for the selected work is available.
@@ -63,8 +68,9 @@ type Capability struct {
 
 // Readiness describes prerequisites for work that would actually execute.
 type Readiness struct {
-	Ready        bool         `json:"ready"`
-	Capabilities []Capability `json:"capabilities"`
+	Ready            bool                   `json:"ready"`
+	Capabilities     []Capability           `json:"capabilities"`
+	AssociationGuard association.GuardState `json:"associationGuard"`
 }
 
 // Contextual categories are independent of concrete scanner rule categories.

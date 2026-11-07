@@ -21,6 +21,7 @@ type Association struct {
 	TChoice          float64
 	MaxPendingPerRun int
 	Fallback         AssociationFallback
+	Guard            AssociationGuard
 }
 
 // AssociationFallback configures the bounded Codex association decision pass.
@@ -29,6 +30,14 @@ type AssociationFallback struct {
 	Effort    string
 	Timeout   time.Duration
 	MaxPerRun int
+}
+
+// AssociationGuard configures the advisory catalogue refresh guard.
+type AssociationGuard struct {
+	WindowMerges      int
+	MinClusters       int
+	FallbackRateMax   float64
+	PendingNewRateMax float64
 }
 
 // Mapping is the effective `mapping:` policy block.
@@ -46,6 +55,7 @@ func DefaultMapping() Mapping {
 		Association: Association{
 			CoveredScore: .60, TChoice: .535, MaxPendingPerRun: 10,
 			Fallback: AssociationFallback{Model: "gpt-6.1-terra", Effort: "high", Timeout: 900 * time.Second, MaxPerRun: 40},
+			Guard:    AssociationGuard{WindowMerges: 20, MinClusters: 20, FallbackRateMax: .40, PendingNewRateMax: .20},
 		},
 	}
 }
@@ -66,6 +76,7 @@ type rawAssociation struct {
 	TChoice          *float64                `yaml:"t_choice"`
 	MaxPendingPerRun *int                    `yaml:"max_pending_per_run"`
 	Fallback         *rawAssociationFallback `yaml:"fallback"`
+	Guard            *rawAssociationGuard    `yaml:"guard"`
 }
 
 type rawAssociationFallback struct {
@@ -73,6 +84,34 @@ type rawAssociationFallback struct {
 	Effort    *string `yaml:"effort"`
 	Timeout   *string `yaml:"timeout"`
 	MaxPerRun *int    `yaml:"max_per_run"`
+}
+
+type rawAssociationGuard struct {
+	WindowMerges      *int     `yaml:"window_merges"`
+	MinClusters       *int     `yaml:"min_clusters"`
+	FallbackRateMax   *float64 `yaml:"fallback_rate_max"`
+	PendingNewRateMax *float64 `yaml:"pending_new_rate_max"`
+}
+
+func (r *rawAssociationGuard) UnmarshalYAML(n *yaml.Node) error {
+	if n.Kind != yaml.MappingNode {
+		return fmt.Errorf("mapping.association.guard must be a mapping")
+	}
+	for i := 0; i+1 < len(n.Content); i += 2 {
+		key, value := n.Content[i].Value, n.Content[i+1]
+		switch key {
+		case "window_merges", "min_clusters":
+			if value.Kind != yaml.ScalarNode || value.Tag != "!!int" {
+				return fmt.Errorf("mapping.association.guard.%s must be an integer", key)
+			}
+		case "fallback_rate_max", "pending_new_rate_max":
+			if value.Kind != yaml.ScalarNode || (value.Tag != "!!int" && value.Tag != "!!float") {
+				return fmt.Errorf("mapping.association.guard.%s must be a number", key)
+			}
+		}
+	}
+	type plain rawAssociationGuard
+	return decodeStrict(n, (*plain)(r))
 }
 
 func (r *rawAssociationFallback) UnmarshalYAML(n *yaml.Node) error {
@@ -117,9 +156,9 @@ func (r *rawAssociation) UnmarshalYAML(n *yaml.Node) error {
 			if value.Kind != yaml.ScalarNode || value.Tag != "!!int" {
 				return fmt.Errorf("mapping.association.max_pending_per_run must be an integer")
 			}
-		case "fallback":
+		case "fallback", "guard":
 			if value.Kind != yaml.MappingNode {
-				return fmt.Errorf("mapping.association.fallback must be a mapping")
+				return fmt.Errorf("mapping.association.%s must be a mapping", key)
 			}
 		}
 	}
@@ -176,6 +215,42 @@ func parseMapping(raw *rawMapping) (Mapping, error) {
 					return Mapping{}, fmt.Errorf("mapping.association.fallback.max_per_run must not be negative")
 				}
 				f.MaxPerRun = *r.MaxPerRun
+			}
+		}
+		if r := raw.Association.Guard; r != nil {
+			g := &m.Association.Guard
+			for _, count := range []struct {
+				name  string
+				value *int
+				dest  *int
+			}{
+				{"window_merges", r.WindowMerges, &g.WindowMerges},
+				{"min_clusters", r.MinClusters, &g.MinClusters},
+			} {
+				if count.value == nil {
+					continue
+				}
+				if *count.value <= 0 {
+					return Mapping{}, fmt.Errorf("mapping.association.guard.%s must be a positive integer", count.name)
+				}
+				*count.dest = *count.value
+			}
+			for _, threshold := range []struct {
+				name  string
+				value *float64
+				dest  *float64
+			}{
+				{"fallback_rate_max", r.FallbackRateMax, &g.FallbackRateMax},
+				{"pending_new_rate_max", r.PendingNewRateMax, &g.PendingNewRateMax},
+			} {
+				if threshold.value == nil {
+					continue
+				}
+				value := *threshold.value
+				if math.IsNaN(value) || math.IsInf(value, 0) || value < 0 || value > 1 {
+					return Mapping{}, fmt.Errorf("mapping.association.guard.%s %v must be finite and in [0, 1]", threshold.name, value)
+				}
+				*threshold.dest = value
 			}
 		}
 		for _, threshold := range []struct {

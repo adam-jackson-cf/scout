@@ -22,6 +22,8 @@ type assessmentReport struct {
 	WouldBlock    []domain.WouldBlock    `json:"would_block"`
 	Ranking       engine.Ranking         `json:"ranking"`
 	PendingAreas  []areas.Area           `json:"pendingAreas"`
+	Associations  []domain.Association   `json:"associations"`
+	associationGuardReport
 }
 
 func pendingAssessmentAreas(ctx context.Context, flags *commonFlags) ([]areas.Area, error) {

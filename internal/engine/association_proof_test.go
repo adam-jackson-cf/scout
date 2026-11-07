@@ -174,9 +174,19 @@ func assertAssociationHealth(t *testing.T, h domain.LaneHealth, status domain.La
 	} else if status == domain.LaneSkipped {
 		text = "skipped (" + reason + ")"
 	}
-	summary := Summary(domain.Gate{}, Ranking{}, nil, nil, 0, []domain.LaneHealth{h}, nil)
+	summary := Summary(domain.Gate{}, Ranking{}, nil, nil, 0, []domain.LaneHealth{h}, nil, association.GuardState{})
 	if !strings.Contains(summary, "| "+text+" |") {
 		t.Fatalf("summary lacks health %q: %s", text, summary)
+	}
+}
+
+func TestAssociationGuardConfigDefaultsPreserveZeroLimits(t *testing.T) {
+	if got, want := (Config{}).associationGuard(), policy.DefaultMapping().Association.Guard; got != want {
+		t.Fatalf("default guard %+v; want %+v", got, want)
+	}
+	configured := policy.AssociationGuard{WindowMerges: 4, MinClusters: 2, FallbackRateMax: 0, PendingNewRateMax: 0}
+	if got := (Config{AssociationGuard: configured}).associationGuard(); got != configured {
+		t.Fatalf("configured zero limits changed: %+v", got)
 	}
 }
 

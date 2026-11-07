@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"scout/internal/areas"
+	"scout/internal/association"
 	"scout/internal/domain"
 	"scout/internal/engine"
 	"scout/internal/state"
@@ -260,7 +261,7 @@ func TestPendingSummary(t *testing.T) {
 	a := areas.Area{ScoutAreaID: "proposal", Title: "Proposed concern", Status: areas.StatusPending, FileSet: pendingPaths("pkg/new.go", "pkg/other.go")}
 	pending := append([]areas.Area(nil), a)
 	report := engine.DiffReport{PendingAreas: pending}
-	text := engine.Summary(domain.Gate{Status: "clean"}, engine.Ranking{}, nil, nil, 0, nil, pending)
+	text := engine.Summary(domain.Gate{Status: "clean"}, engine.Ranking{}, nil, nil, 0, nil, pending, association.GuardState{})
 	if !strings.Contains(text, "proposal") || !strings.Contains(text, "pkg/new.go") || !strings.Contains(text, "pkg/other.go") {
 		t.Fatalf("summary omits pending files: %s", text)
 	}
@@ -300,7 +301,7 @@ func TestAcceptedPendingSurvivesMapRefresh(t *testing.T) {
 			pending = append(pending, a)
 		}
 	}
-	summary := engine.Summary(domain.Gate{Status: "clean"}, engine.Ranking{}, nil, nil, 0, nil, pending)
+	summary := engine.Summary(domain.Gate{Status: "clean"}, engine.Ranking{}, nil, nil, 0, nil, pending, association.GuardState{})
 	if len(pending) != 1 || !strings.Contains(summary, "remaining") || !strings.Contains(summary, "pkg/remaining.go") || strings.Contains(summary, "proposal") {
 		t.Fatalf("refresh pending summary: %s", summary)
 	}

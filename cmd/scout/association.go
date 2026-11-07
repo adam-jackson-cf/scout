@@ -12,6 +12,11 @@ import (
 	"scout/internal/policy"
 )
 
+// associationGuardReport shares the guard diagnostic across CLI outputs.
+type associationGuardReport struct {
+	AssociationGuard association.GuardState `json:"associationGuard"`
+}
+
 // associationOptions reuses assess's explicit commit range, or the GitHub push
 // payload when present. A missing range stays empty: it is never guessed.
 func associationOptions(pol policy.Policy, base, head string, fork, noEgress bool) (association.LaneOptions, domain.LaneTrigger, error) {

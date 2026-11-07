@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"scout/internal/areas"
+	"scout/internal/association"
 	"scout/internal/domain"
 	"scout/internal/policy"
 )
@@ -420,12 +421,15 @@ type RankingItem struct {
 const summaryLimit = 60
 
 // Summary renders the Markdown PR summary, never longer than 60 lines.
-func Summary(gate domain.Gate, ranking Ranking, issues []domain.AttributedIssue, wouldBlock []domain.WouldBlock, pre int, health []domain.LaneHealth, pending []areas.Area) string {
+func Summary(gate domain.Gate, ranking Ranking, issues []domain.AttributedIssue, wouldBlock []domain.WouldBlock, pre int, health []domain.LaneHealth, pending []areas.Area, guard association.GuardState) string {
 	var lines []string
 	add := func(format string, args ...any) { lines = append(lines, fmt.Sprintf(format, args...)) }
 	add("## Scout — %s (exit %d)", gate.Status, gate.ExitCode)
 	add("")
 	add("Profile `%s`; comparison `%s`; ranking: %s.", gate.Profile, gate.Comparison, ranking.Method)
+	if guard.CatalogueStale {
+		add("> catalogue-stale: %s", oneLine(guard.Recommendation))
+	}
 	if len(pending) > 0 {
 		add("")
 		add("### Pending areas")

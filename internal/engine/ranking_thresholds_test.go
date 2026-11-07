@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"scout/internal/association"
 	"scout/internal/decisions"
 	"scout/internal/decisions/thresholds"
 	"scout/internal/domain"
@@ -92,7 +93,7 @@ func TestSummaryNeverShowsAJevProbability(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	summary := Summary(domain.Gate{Status: "passed"}, ranking, issues, nil, 0, nil, nil)
+	summary := Summary(domain.Gate{Status: "passed"}, ranking, issues, nil, 0, nil, nil, association.GuardState{})
 	for _, shown := range []string{"0.2271", "0.9137", "0.6389", "22.7", "91.3", "63.9", "probab", "likelihood", "confidence"} {
 		if strings.Contains(strings.ToLower(summary), shown) {
 			t.Fatalf("summary shows %q:\n%s", shown, summary)
