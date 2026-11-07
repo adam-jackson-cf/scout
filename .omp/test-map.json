@@ -465,6 +465,11 @@
       "cmd/scout/main.go"
     ],
     "behavior": "An accepted unmatched area survives map refresh while remaining pending files appear in the summary."
-  }
+  },
+    "cmd/scout/orderflip_proof_test.go/TestOrderflipCLIExactMeasurement": {"source": ["cmd/scout/orderflip.go", "cmd/scout/main.go"], "behavior": "The CLI asks both orders, reports exactly one of three units flipped, exact per-unit choices, shifts and costs, and prints the measurement summary."},
+    "cmd/scout/orderflip_proof_test.go/TestOrderflipCLIFailureExcluded": {"source": ["cmd/scout/orderflip.go"], "behavior": "Failed HTTP calls leave one unit unmeasured and exclude it from the two-unit flip-rate denominator."},
+    "cmd/scout/orderflip_proof_test.go/TestOrderflipCLINoKey": {"source": ["cmd/scout/orderflip.go"], "behavior": "Missing Jev credentials refuse the command before any HTTP request."},
+    "cmd/scout/orderflip_proof_test.go/TestOrderflipCLINoAcknowledgement": {"source": ["cmd/scout/orderflip.go"], "behavior": "Missing committed egress acknowledgement refuses the command before any HTTP request."},
+    "cmd/scout/orderflip_proof_test.go/TestOrderflipCLIRefusesNonChoice": {"source": ["cmd/scout/orderflip.go"], "behavior": "A Noul question is refused because it has no option order, without HTTP requests."}
   }
 }

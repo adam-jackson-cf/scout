@@ -26,6 +26,7 @@ When more than one applies, the highest code wins: 3 > 2 > 1 > 0. Under the `rep
 | `issues`                           | Lists ledger issues.                                                                                                                                                          | `--status`, `--family`, `--file`, `--feature`, `--min-severity`, `--run`                                                                                                                                                                                                                          | `cmd/scout/main.go` `listIssues`                            |
 | `issue`                            | Shows one issue, optionally with the evidence from one run.                                                                                                                   | `--id`, `--run`                                                                                                                                                                                                                                                                                   | `cmd/scout/main.go` `showIssue`                             |
 | `triage`                           | Sets a human disposition on an issue. The change is recorded in an audit trail.                                                                                               | `--id`, `--state investigating\|accepted\|false_positive\|wont_fix`, `--actor`, `--reason`, `--authorize`, `--owner`, `--run`, `--artifact`, `--disposition`                                                                                                                                      | `cmd/scout/main.go` `triage`                                |
+| `decisions orderflip`              | Measures a Choice in two reversed option orders; completed measurements exit `0`, including failed/unmeasured units.                                                          | `--question merge.which_area --units <file.jsonl>`, `--json`                                                                                                                                                                                                                                      | `cmd/scout/orderflip.go`, `internal/decisions/orderflip`    |
 | `coverage`                         | Shows what a run examined, reused, skipped or blocked, and why.                                                                                                               | `--run` (default latest)                                                                                                                                                                                                                                                                          | `cmd/scout/main.go` `coverage`                              |
 | `mapping`                          | Shows the feature map; `--areas` lists area labels, `--unowned` lists directory scopes that no heuristic feature owns.                                                        | `--areas`, `--unowned`                                                                                                                                                                                                                                                                            | `cmd/scout/main.go` `mapping`, `cmd/scout/mapping_areas.go` |
 | `map`                              | Runs the Clawpatch agent map at onboarding (`--event` check: attempted on default-branch pushes and nightly runs until one map has completed) or forces one with `--refresh`. | `--refresh`, `--event pr\|push\|nightly`, `--default-branch`, `--allow-egress`                                                                                                                                                                                                                    | `cmd/scout/map.go`                                          |
@@ -55,3 +56,63 @@ When more than one applies, the highest code wins: 3 > 2 > 1 > 0. Under the `rep
 - `readiness` and `assess` expose the advisory refresh guard as `associationGuard` in JSON, including the generation, decision-ordered merge window, rate numerators/denominators, measurement reasons, stale latch and recommendation. The window contains the trailing merges producing residual clusters in the current agent-refresh generation; pending-new-ineligible merges still occupy window slots. Fallback measures Jev none/unresolved clusters divided by all residual clusters in that window, whether or not fallback ran. It reports `insufficient_clusters` below the whole-window cluster minimum. Pending-new filters to eligible merges and reports `insufficient_clusters` below their cluster minimum, or `no_fallback_answers` when that minimum is met but no fallback-answered cluster exists. Defaults are a 20-merge window, a 20-cluster minimum for each rate's population, fallback limit 0.40 and pending-new limit 0.20; configure them under `mapping.association.guard` in [the policy reference](policy-file.md).
 - A measured rate strictly exceeding either limit latches `catalogue-stale` and recommends `scout map --refresh`; equality does not trip the guard. Summaries show the diagnostic, and `assess` JSON `result.associations` annotates exported rows with `catalogue_stale`, even when the association lane is disabled. This is output only: stored rows, labels and gate exit codes are unchanged.
 - The guard replays stored decisions for the recorded last successful agent refresh, so import/restore preserves historical trips even if the current window is healthy. Inherited-only or excluded-only merges do not consume its window. A skipped fallback run is ineligible for pending-new measurement. Only a successful agent refresh resets the latch; catalogue edits do not. No guard output automatically invokes `map`.
+
+## Choice order-flip measurement
+
+`scout decisions orderflip --question merge.which_area --units <file.jsonl> [--json]`
+loads decisions consent and the exact model pin from the policy committed at
+`HEAD`. It refuses without enabled decisions, egress acknowledgement or a Jev key.
+As with the decisions lane, `--allow-egress` cannot replace committed consent.
+No measurement is run by `assess`; this is an explicit, standalone measurement.
+
+Each JSONL record is `{"id":"unique-unit-id","state":{...}}`. The bounded
+association state must include `catalogue`: an array of
+`{"id":"area-id","title":"...","summary":"...","sample_files":["path"]}`.
+The command constructs `merge.which_area@v1` with `decisions.MergeWhichArea` for
+each unit's catalogue (2–255 unique options), then uses the harness's deterministic
+unit-id permutation and its reverse. It preflights every unit before making calls.
+Only `merge.which_area` is supported; Noul questions have no option order.
+
+JSON output uses the standard outcome envelope. Its `result` contains flip rate
+(`null` if no units were measured), measured/unmeasured/flipped counts, maximum
+probability shift, reported USD cost, per-unit rows and `question_versions` keyed
+by unit ID (catalogues may differ). The aggregate `question_version` is empty:
+there is no single catalogue-specific version for the whole input. A failed call
+makes that unit unmeasured, never stable; reported billed costs are still included.
+Missing billed costs remain unknown to the adapter and are not estimated.
+Text output prints the aggregate summary; `--json` includes the per-unit rows.
+The measurement asks twice per unit and is not a ranking run: ranking per-run
+request and cost caps do not truncate this explicitly supplied measurement set.
+
+### Pilot FastAPI rounds 8–10
+
+The frozen pilot stores its catalogue in `noul_state`, not `choice_state`.
+This throwaway conversion preserves that bounded state and the original case ID;
+it writes only under `$TMPDIR` (falling back to `/tmp`), never under `evaluation/`.
+Run from the Scout checkout. `CONSENT_ROOT` names a repository with enabled,
+acknowledged decisions and an exact model pin committed at `HEAD` (set up with
+`scout init --decisions --acknowledge-egress --yes`, then commit its policy).
+This is a measurement command, not permission to run a new experiment without
+the repository's required experiment sign-off.
+
+```sh
+source .tools/activate
+export CONSENT_ROOT=/absolute/path/to/consented/repository
+export ORDERFLIP_UNITS="$(mktemp "${TMPDIR:-/tmp}/scout-orderflip.XXXXXX")"
+python3 - <<'PY'
+import json
+import os
+from pathlib import Path
+
+base = Path("evaluation/x2d-merge-association-pilot/data/postrun/rounds")
+with open(os.environ["ORDERFLIP_UNITS"], "w") as out:
+    for round_id in (8, 9, 10):
+        with (base / str(round_id) / "states.window.jsonl").open() as source:
+            for line in source:
+                row = json.loads(line)
+                out.write(json.dumps({"id": row["case_id"], "state": row["noul_state"]}) + "\n")
+PY
+infisical run --projectId 052b4c81-b9cc-4694-9019-d131ec3817cc --env dev --silent -- \
+  go run ./cmd/scout decisions orderflip --root "$CONSENT_ROOT" \
+  --question merge.which_area --units "$ORDERFLIP_UNITS" --json
+```
