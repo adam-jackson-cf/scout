@@ -26,8 +26,8 @@
 //	  max_cost_usd: 0.5          # billed-cost cap per run (USD)
 //	  egress_acknowledged: true  # required when enabled
 //	model_cli:                   # opt-in for the model-CLI lanes (REQ-63)
-//	  provider: claude           # claude | codex
-//	  lanes: [contextual, clawpatch-review]
+//	  provider: claude           # claude | codex; association fallback always uses codex
+//	  lanes: [contextual, clawpatch-review, association-fallback]
 //
 // The architecture key is owned by a later phase and is accepted and ignored.
 package policy

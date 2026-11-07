@@ -37,8 +37,8 @@ func runInit(args []string, in io.Reader, prompts io.Writer) int {
 	set.IntVar(&maxPerRun, "max-per-run", 0, "decisions.max_per_run call cap (default 2000)")
 	set.Float64Var(&maxCost, "max-cost-usd", 0, "decisions.max_cost_usd billed-cost cap per run in USD (default 0.5)")
 	set.BoolVar(&ack, "acknowledge-egress", false, "acknowledge that bounded, redacted code excerpts are sent to the provider")
-	set.StringVar(&cli, "model-cli", "", "claude|codex: CLI used by opted-in model-CLI lanes")
-	set.Var(&lanes, "lane", "model-CLI lane to opt in: contextual|clawpatch-review (repeatable)")
+	set.StringVar(&cli, "model-cli", "", "claude|codex: CLI used by opted-in lanes (association-fallback always uses codex)")
+	set.Var(&lanes, "lane", "model-CLI lane to opt in: contextual|clawpatch-review|association-fallback (repeatable)")
 	if !parse(set, args, flags) {
 		return exitUnavailable
 	}
@@ -74,6 +74,9 @@ func runInit(args []string, in io.Reader, prompts io.Writer) int {
 			}
 			if ask.yesNo("  clawpatch-review lane?") {
 				lanes, given["lane"] = append(lanes, policy.LaneClawpatchRev), true
+			}
+			if ask.yesNo("  association-fallback lane? Sends bounded file excerpts, PR title/body and catalogue content through codex to OpenAI, regardless of the selected model CLI provider.") {
+				lanes, given["lane"] = append(lanes, policy.LaneAssociationFallback), true
 			}
 		}
 	}

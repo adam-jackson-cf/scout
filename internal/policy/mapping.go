@@ -3,6 +3,8 @@ package policy
 import (
 	"fmt"
 	"math"
+	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -14,9 +16,19 @@ const DefaultAreasMatchJaccard = 0.5
 
 // Association configures the provisional, opt-in merge association lane.
 type Association struct {
-	Enabled      bool
-	CoveredScore float64
-	TChoice      float64
+	Enabled          bool
+	CoveredScore     float64
+	TChoice          float64
+	MaxPendingPerRun int
+	Fallback         AssociationFallback
+}
+
+// AssociationFallback configures the bounded Codex association decision pass.
+type AssociationFallback struct {
+	Model     string
+	Effort    string
+	Timeout   time.Duration
+	MaxPerRun int
 }
 
 // Mapping is the effective `mapping:` policy block.
@@ -31,7 +43,10 @@ type Mapping struct {
 func DefaultMapping() Mapping {
 	return Mapping{
 		AreasMatchJaccard: DefaultAreasMatchJaccard,
-		Association:       Association{CoveredScore: .60, TChoice: .535},
+		Association: Association{
+			CoveredScore: .60, TChoice: .535, MaxPendingPerRun: 10,
+			Fallback: AssociationFallback{Model: "gpt-6.1-terra", Effort: "high", Timeout: 900 * time.Second, MaxPerRun: 40},
+		},
 	}
 }
 
@@ -46,9 +61,39 @@ type rawMapping struct {
 }
 
 type rawAssociation struct {
-	Enabled      bool     `yaml:"enabled"`
-	CoveredScore *float64 `yaml:"covered_score"`
-	TChoice      *float64 `yaml:"t_choice"`
+	Enabled          bool                    `yaml:"enabled"`
+	CoveredScore     *float64                `yaml:"covered_score"`
+	TChoice          *float64                `yaml:"t_choice"`
+	MaxPendingPerRun *int                    `yaml:"max_pending_per_run"`
+	Fallback         *rawAssociationFallback `yaml:"fallback"`
+}
+
+type rawAssociationFallback struct {
+	Model     *string `yaml:"model"`
+	Effort    *string `yaml:"effort"`
+	Timeout   *string `yaml:"timeout"`
+	MaxPerRun *int    `yaml:"max_per_run"`
+}
+
+func (r *rawAssociationFallback) UnmarshalYAML(n *yaml.Node) error {
+	if n.Kind != yaml.MappingNode {
+		return fmt.Errorf("mapping.association.fallback must be a mapping")
+	}
+	for i := 0; i+1 < len(n.Content); i += 2 {
+		key, value := n.Content[i].Value, n.Content[i+1]
+		switch key {
+		case "model", "effort", "timeout":
+			if value.Kind != yaml.ScalarNode || value.Tag != "!!str" {
+				return fmt.Errorf("mapping.association.fallback.%s must be a string", key)
+			}
+		case "max_per_run":
+			if value.Kind != yaml.ScalarNode || value.Tag != "!!int" {
+				return fmt.Errorf("mapping.association.fallback.max_per_run must be an integer")
+			}
+		}
+	}
+	type plain rawAssociationFallback
+	return decodeStrict(n, (*plain)(r))
 }
 
 // UnmarshalYAML rejects scalar coercions while retaining strict unknown-key
@@ -67,6 +112,14 @@ func (r *rawAssociation) UnmarshalYAML(n *yaml.Node) error {
 		case "covered_score", "t_choice":
 			if value.Kind != yaml.ScalarNode || (value.Tag != "!!int" && value.Tag != "!!float") {
 				return fmt.Errorf("mapping.association.%s must be a number", key)
+			}
+		case "max_pending_per_run":
+			if value.Kind != yaml.ScalarNode || value.Tag != "!!int" {
+				return fmt.Errorf("mapping.association.max_pending_per_run must be an integer")
+			}
+		case "fallback":
+			if value.Kind != yaml.MappingNode {
+				return fmt.Errorf("mapping.association.fallback must be a mapping")
 			}
 		}
 	}
@@ -88,6 +141,43 @@ func parseMapping(raw *rawMapping) (Mapping, error) {
 	}
 	if raw.Association != nil {
 		m.Association.Enabled = raw.Association.Enabled
+		if raw.Association.MaxPendingPerRun != nil {
+			if *raw.Association.MaxPendingPerRun < 0 {
+				return Mapping{}, fmt.Errorf("mapping.association.max_pending_per_run must not be negative")
+			}
+			m.Association.MaxPendingPerRun = *raw.Association.MaxPendingPerRun
+		}
+		if r := raw.Association.Fallback; r != nil {
+			f := &m.Association.Fallback
+			if r.Model != nil {
+				model := strings.TrimSpace(*r.Model)
+				if model == "" || IsModelAlias(model) {
+					return Mapping{}, fmt.Errorf("mapping.association.fallback.model must pin an exact model id")
+				}
+				f.Model = model
+			}
+			if r.Effort != nil {
+				switch *r.Effort {
+				case "minimal", "low", "medium", "high", "xhigh":
+					f.Effort = *r.Effort
+				default:
+					return Mapping{}, fmt.Errorf("mapping.association.fallback.effort %q is unsupported", *r.Effort)
+				}
+			}
+			if r.Timeout != nil {
+				timeout, err := time.ParseDuration(*r.Timeout)
+				if err != nil || timeout <= 0 {
+					return Mapping{}, fmt.Errorf("mapping.association.fallback.timeout must be a positive duration string")
+				}
+				f.Timeout = timeout
+			}
+			if r.MaxPerRun != nil {
+				if *r.MaxPerRun < 0 {
+					return Mapping{}, fmt.Errorf("mapping.association.fallback.max_per_run must not be negative")
+				}
+				f.MaxPerRun = *r.MaxPerRun
+			}
+		}
 		for _, threshold := range []struct {
 			name  string
 			value *float64

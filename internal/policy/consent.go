@@ -15,11 +15,12 @@ import (
 
 // Decisions provider and model-CLI constants.
 const (
-	ProviderJev      = "jev"
-	CLIClaude        = "claude"
-	CLICodex         = "codex"
-	LaneContextual   = "contextual"
-	LaneClawpatchRev = "clawpatch-review"
+	ProviderJev             = "jev"
+	CLIClaude               = "claude"
+	CLICodex                = "codex"
+	LaneContextual          = "contextual"
+	LaneClawpatchRev        = "clawpatch-review"
+	LaneAssociationFallback = "association-fallback"
 	// DefaultMaxPerRun is the Jev call cap (REQ-29, [ASSUMPTION]).
 	DefaultMaxPerRun = 2000
 	// DefaultMaxCostUSD is the cap on billed Jev cost per run, in US dollars
@@ -146,7 +147,7 @@ func parseModelCLI(r *rawModelCLI) (ModelCLI, error) {
 	}
 	seen := map[string]bool{}
 	for _, l := range r.Lanes {
-		if l != LaneContextual && l != LaneClawpatchRev {
+		if l != LaneContextual && l != LaneClawpatchRev && l != LaneAssociationFallback {
 			return ModelCLI{}, fmt.Errorf("model_cli.lanes: unknown lane %q", l)
 		}
 		if seen[l] {

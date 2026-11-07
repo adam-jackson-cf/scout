@@ -241,7 +241,7 @@ func TestAssociationCLIOptionsPolicyAndPushRange(t *testing.T) {
 				t.Fatalf("enabled default push: health=%+v rows=%+v calls=%d", h, rows, calls.Load())
 			}
 			a := rows[0]
-			expected := association.Fingerprint{CoveredScore: tc.covered, TChoice: tc.choice, CoveredQuestion: decisions.MergeCovered.Version(cliAssociationModel), ChoiceQuestion: decisions.MergeWhichAreaTextDigest(), JevModel: cliAssociationModel}
+			expected := association.Fingerprint{CoveredScore: tc.covered, TChoice: tc.choice, CoveredQuestion: decisions.MergeCovered.Version(cliAssociationModel), ChoiceQuestion: decisions.MergeWhichAreaTextDigest(), JevModel: cliAssociationModel, PromptDigest: association.TerraPromptDigest, FallbackModel: "gpt-6.1-terra"}
 			if a.DecisionDigest != expected.Digest() || a.MergeCommit != head || len(a.Files) != 1 || a.Files[0] != "new/service.py" || a.JevOutcome != tc.outcome || a.Reason != tc.reason {
 				t.Fatalf("policy/range decision: %+v", a)
 			}
