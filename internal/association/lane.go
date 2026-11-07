@@ -13,6 +13,7 @@ import (
 	"scout/internal/clawpatch"
 	"scout/internal/decisions"
 	"scout/internal/domain"
+	"scout/internal/modelcli"
 	"scout/internal/policy"
 	"scout/internal/state"
 )
@@ -25,11 +26,16 @@ type LaneOptions struct {
 	Eligibility       decisions.Eligibility
 	Client            *decisions.Client
 	Fingerprint       Fingerprint
+	FallbackConsent   bool
 }
 
 // Execute runs the provisional, advisory association lane. Skips do not mutate state.
-func Execute(ctx context.Context, store *state.Store, root string, trigger domain.LaneTrigger, opts LaneOptions) (domain.LaneHealth, error) {
-	h := domain.LaneHealth{Lane: "association", Mode: domain.ModeSignal, Requires: domain.RequiresDecisionEgress, Status: domain.LaneSkipped}
+func Execute(ctx context.Context, store *state.Store, root string, trigger domain.LaneTrigger, opts LaneOptions) ([]domain.LaneHealth, error) {
+	healths := []domain.LaneHealth{
+		{Lane: "association", Mode: domain.ModeSignal, Requires: domain.RequiresDecisionEgress, Status: domain.LaneSkipped},
+		{Lane: "association-fallback", Mode: domain.ModeSignal, Requires: domain.RequiresModelCLI, Status: domain.LaneSkipped},
+	}
+	h, fallback := &healths[0], &healths[1]
 	switch {
 	case trigger != domain.TriggerPush:
 		h.Reason = "trigger"
@@ -45,11 +51,12 @@ func Execute(ctx context.Context, store *state.Store, root string, trigger domai
 		h.Reason = "egress not allowed"
 	}
 	if h.Reason != "" {
-		return h, nil
+		fallback.Reason = h.Reason
+		return healths, nil
 	}
 	catalogue, err := store.ListAreas(ctx)
 	if err != nil {
-		return h, err
+		return healths, err
 	}
 	active := make([]areas.Area, 0, len(catalogue))
 	for _, a := range catalogue {
@@ -59,32 +66,44 @@ func Execute(ctx context.Context, store *state.Store, root string, trigger domai
 	}
 	if len(active) < 2 || len(active) > 255 {
 		h.Reason = "catalogue size"
-		return h, nil
+		fallback.Reason = h.Reason
+		return healths, nil
 	}
 	if opts.Base == "" || opts.Head == "" {
 		h.Reason = "push range unavailable"
-		return h, nil
+		fallback.Reason = h.Reason
+		return healths, nil
 	}
 	if err := opts.Config.Validate(); err != nil {
-		return h, err
+		return healths, err
 	}
 	features, err := clawpatch.LoadFeatures(clawpatch.StateDir(root))
 	if err != nil {
-		return h, err
+		return healths, err
 	}
 	own, err := NewStoreOwnership(ctx, store, features)
 	if err != nil {
-		return h, err
+		return healths, err
 	}
 	if err := MarkStale(ctx, store, opts.Fingerprint); err != nil {
-		return h, err
+		return healths, err
 	}
 	generation, err := store.LoadMappingRefresh(ctx)
 	if err != nil {
-		return h, err
+		return healths, err
 	}
 	repo := Repo{Dir: root}
 	budget := jevBudget{opts: opts}
+	terra := NewTerraDecider(opts.Mapping.Fallback)
+	switch {
+	case !opts.FallbackConsent:
+		fallback.Reason = "no consent"
+	default:
+		if _, _, err := modelcli.Detect("codex"); err != nil {
+			fallback.Reason = "no model CLI"
+		}
+	}
+	pendingCount, fallbackSucceeded := 0, 0
 	var rows []domain.Association
 	baseRecord := func(m Merge, key string, files []string) domain.Association {
 		return domain.Association{ID: "association:" + laneDigest(opts.RunID+"\x00"+m.SHA+"\x00"+key), RunID: opts.RunID, DecidedAt: time.Now().UTC(), LastAgentRefreshAt: generation.LastAgentRefreshAt, MergeCommit: m.SHA, ClusterKey: key, Files: files, PRMetadata: domain.PRMetadataAbsent}
@@ -157,19 +176,63 @@ func Execute(ctx context.Context, store *state.Store, root string, trigger domai
 				a.EscalationReason = a.Reason
 			}
 			if composed.Outcome == "none" || a.Reason == domain.AssociationReasonBelowTChoice || a.Reason == domain.AssociationReasonPermutationNo {
-				a.FallbackSkipped, a.FallbackSkipReason = true, "no consent"
+				switch {
+				case fallback.Reason != "":
+					a.FallbackSkipped, a.FallbackSkipReason = true, fallback.Reason
+				case fallback.Units >= opts.Mapping.Fallback.MaxPerRun:
+					a.Reason = domain.AssociationReasonFallbackCap
+				default:
+					fallback.Units++
+					answer, terraErr := terra.Decide(ctx, input, active)
+					a.CLIName, a.CLIVersion = "codex", terra.version
+					a.PromptDigest = TerraPromptDigest
+					a.ReportedModel, a.ReportedEffort = terra.model, terra.effort
+					a.Retries += max(0, terra.attempts-1)
+					a.LatencyMillis += terra.latency.Milliseconds()
+					if terraErr != nil {
+						a.Reason = domain.AssociationReasonTerraFailure
+					} else {
+						fallbackSucceeded++
+						switch {
+						case answer.Decision == "existing":
+							a.Outcome, a.Reason, a.AreaIDs = domain.AssociationAssigned, "", []string{answer.AreaID}
+							out[i].Owners = a.AreaIDs
+						case pendingCount >= opts.Mapping.MaxPendingPerRun:
+							a.Reason = domain.AssociationReasonPendingCap
+						default:
+							pendingCount++
+							id := "area:association:" + laneDigest(a.ID)
+							a.Outcome, a.Reason, a.PendingAreaID = domain.AssociationPendingNew, "", id
+							out[i].Pending = id
+							catalogue = append(catalogue, areas.Area{ScoutAreaID: id, Title: answer.NewTitle, Summary: answer.NewSummary, FileSet: append([]string(nil), c.Files...), Origin: "association", Status: areas.StatusPending, ClusterID: c.ID, DecisionID: a.ID, FirstSeenSnapshot: opts.Head})
+						}
+					}
+					a.RawAnswer = decisions.Redact(strings.ReplaceAll(terra.raw, opts.Client.Key, "[REDACTED]"))
+				}
 			}
 			encoded, err := json.Marshal(audit)
 			if err != nil {
 				return nil, err
 			}
-			a.RawAnswer = decisions.Redact(strings.ReplaceAll(string(encoded), opts.Client.Key, "[REDACTED]"))
+			jevRaw := decisions.Redact(strings.ReplaceAll(string(encoded), opts.Client.Key, "[REDACTED]"))
+			if a.RawAnswer == "" {
+				a.RawAnswer = jevRaw
+			} else {
+				combined, err := json.Marshal(struct {
+					Jev   json.RawMessage `json:"jev"`
+					Terra string          `json:"terra"`
+				}{json.RawMessage(jevRaw), a.RawAnswer})
+				if err != nil {
+					return nil, err
+				}
+				a.RawAnswer = string(combined)
+			}
 			rows = append(rows, a)
 		}
 		return out, nil
 	})
 	if err != nil {
-		return h, err
+		return healths, err
 	}
 	for _, mr := range results {
 		for _, inherited := range mr.Inherited {
@@ -199,16 +262,16 @@ func Execute(ctx context.Context, store *state.Store, root string, trigger domai
 	}
 	if len(rows) > 0 {
 		if err := store.InsertAssociations(ctx, rows); err != nil {
-			return h, err
+			return healths, err
 		}
 	}
-	pendingChanged := false
+	pendingChanged := pendingCount > 0
 	for _, mr := range results {
 		pendingChanged = pendingChanged || len(mr.PendingMoves) > 0
 	}
 	if pendingChanged {
 		if err := store.ReplaceAreas(ctx, catalogue); err != nil {
-			return h, err
+			return healths, err
 		}
 	}
 	if budget.succeeded > 0 {
@@ -218,7 +281,14 @@ func Execute(ctx context.Context, store *state.Store, root string, trigger domai
 	} else {
 		h.Reason = "no residual clusters"
 	}
-	return h, nil
+	if fallbackSucceeded > 0 {
+		fallback.Status = domain.LaneRan
+	} else if fallback.Units > 0 {
+		fallback.Status = domain.LaneFailed
+	} else if fallback.Reason == "" {
+		fallback.Reason = "no residual clusters"
+	}
+	return healths, nil
 }
 
 type jevAudit struct {

@@ -21,17 +21,18 @@ var allTriggers = []domain.LaneTrigger{domain.TriggerPR, domain.TriggerPush, dom
 
 // Lane IDs.
 const (
-	LaneSecurity        = "security"
-	LaneGuardrails      = "guardrails"
-	LaneQuality         = "quality"
-	LaneArchitecture    = "architecture"
-	LanePerformance     = "performance"
-	LaneContextual      = "contextual"
-	LaneClawpatchReview = "clawpatch-review"
-	LaneMeasures        = "measures"
-	LaneHistory         = "history"
-	LaneDelta           = "delta"
-	LaneAssociation     = "association"
+	LaneSecurity            = "security"
+	LaneGuardrails          = "guardrails"
+	LaneQuality             = "quality"
+	LaneArchitecture        = "architecture"
+	LanePerformance         = "performance"
+	LaneContextual          = "contextual"
+	LaneClawpatchReview     = "clawpatch-review"
+	LaneMeasures            = "measures"
+	LaneHistory             = "history"
+	LaneDelta               = "delta"
+	LaneAssociation         = "association"
+	LaneAssociationFallback = "association-fallback"
 )
 
 // lanes is the registry in priority order. Contextual and clawpatch-review are
@@ -49,6 +50,7 @@ var lanes = []Lane{
 	{ID: LaneMeasures, Triggers: allTriggers, Mode: domain.ModeSignal, Requires: domain.RequiresTool},
 	{ID: LaneHistory, Triggers: []domain.LaneTrigger{domain.TriggerPush, domain.TriggerNightly}, Mode: domain.ModeSignal, Requires: domain.RequiresNone},
 	{ID: LaneAssociation, Triggers: []domain.LaneTrigger{domain.TriggerPush}, Mode: domain.ModeSignal, Requires: domain.RequiresDecisionEgress},
+	{ID: LaneAssociationFallback, Triggers: []domain.LaneTrigger{domain.TriggerPush}, Mode: domain.ModeSignal, Requires: domain.RequiresModelCLI},
 }
 
 // DefaultFamilies lists the scanner families assessed when none are selected.

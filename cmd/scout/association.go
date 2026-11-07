@@ -70,8 +70,9 @@ func associationOptions(pol policy.Policy, base, head string, fork, noEgress boo
 	mapping := pol.Mapping().Association
 	return association.LaneOptions{
 		Base: base, Head: head, Mapping: mapping, Config: config,
-		Eligibility: decisions.Eligibility{Enabled: consent.Enabled, HasKey: key != "", EgressAllowed: consent.EgressAcknowledged && !noEgress, Fork: fork},
-		Client:      &decisions.Client{Key: key},
-		Fingerprint: association.Fingerprint{CoveredScore: mapping.CoveredScore, TChoice: mapping.TChoice, CoveredQuestion: decisions.MergeCovered.Version(consent.Model), ChoiceQuestion: decisions.MergeWhichAreaTextDigest(), JevModel: consent.Model},
+		FallbackConsent: pol.LaneOptedIn(policy.LaneAssociationFallback),
+		Eligibility:     decisions.Eligibility{Enabled: consent.Enabled, HasKey: key != "", EgressAllowed: consent.EgressAcknowledged && !noEgress, Fork: fork},
+		Client:          &decisions.Client{Key: key},
+		Fingerprint:     association.Fingerprint{CoveredScore: mapping.CoveredScore, TChoice: mapping.TChoice, CoveredQuestion: decisions.MergeCovered.Version(consent.Model), ChoiceQuestion: decisions.MergeWhichAreaTextDigest(), JevModel: consent.Model, PromptDigest: association.TerraPromptDigest, FallbackModel: mapping.Fallback.Model},
 	}, trigger, nil
 }
