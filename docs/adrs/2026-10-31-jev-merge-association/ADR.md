@@ -1,6 +1,6 @@
 # ADR-008: Add provisional merge-time area association
 
-- **Status:** accepted (provisional)
+- **Status:** accepted (provisional); amended by ADR-012 (schema 14, readiness export/merge)
 - **Design revision:** 2.8 (adopted 2026-11-01)
 - **Decided:** 2026-10-31; **sources:** R-055–R-061, HD8, user direction confirmed after the axum result.
 
