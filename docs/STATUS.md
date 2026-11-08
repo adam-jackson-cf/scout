@@ -115,7 +115,6 @@ Written for a fresh session. Every claim cites a file in this repo unless marked
 - **Known gaps:**
   - **Attribution with base-side lane failures (fixed, `480949a`, 2026-10-23):** the paired recompute and imported `partial` baselines did not carry base lane coverage, so a head finding in a lane the base never inspected could read `introduced` and block in `guardian` (council rev 2.3 round 1, issue 5). Now the paired recompute carries base lane health (lanes `blocked`/`failed` count as uninspected, at family granularity); imported baselines carry a manifest `uninspected` list of `{family, reason}` (required since `25743e8`/rev 2.7; before it a legacy baseline without the list was recomputed with a banner); affected head findings are `unknown`, excluded from `would_block` and the gate, with one gate reason per family; `guardrails.*` findings are exempt. Files: `internal/engine/{diff,gate}.go`, `internal/engine/base_gaps_test.go`, `internal/baseline/load.go`, `internal/state/export.go`.
   - If agent mapping succeeds with zero features, heuristic output is not re-merged (Phase 4).
-  - An issue left unmatched during a rename keeps its old anchor path.
   - Policy `version` strings for Gitleaks checks are the long rule-pack version.
 
 **Toolchain.** Pinned, project-local, in `.tools/` (see §5). Clawpatch is a submodule at `third_party/clawpatch` (`734f81bc…`, v0.7.3). Pins are in `toolchain/`, and `internal/toolchain` enforces parity with the Go code. A fresh clone bootstraps and passes every test in about 44 s.
