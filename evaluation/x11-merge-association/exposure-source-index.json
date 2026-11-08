@@ -1,0 +1,104 @@
+{
+  "schema": "x11-exposure-source-index-v5",
+  "status": "EXTRACTED_SEALED_V4; not council sign-off",
+  "authority": "Owner direction, 2026-11-08; create-once extraction-v4 only, not inventory/scan/council sign-off",
+  "scout": {
+    "path": "/Users/adamjackson/Projects/work/scout-x11",
+    "commit": "04d5e632ae34d8056c3df5116b9ba87cfbf99282"
+  },
+  "inertia_bench": {
+    "path": "/Users/adamjackson/Projects/work/inertia-bench",
+    "commit": "85e7329bef230358740c2b7ae90b6364a15b675c",
+    "data_file_count": 36,
+    "screening_json_jsonl_csv_count": 27,
+    "screening_text_checksum_count": 8,
+    "other_data_file_count": 1,
+    "other_data_file_path": "docs/design/candidates.csv",
+    "breakdown": "36=27 screening JSON/JSONL/CSV+8 screening text/checksum+1 docs/design/candidates.csv",
+    "evidence": {
+      "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/exposure-extraction-v4/inertia-enumeration.json",
+      "sha256": "9d6f99c4efee874f7162e8d6576207e289347999998df38184d463f8f926497d"
+    }
+  },
+  "extraction": {
+    "seal": {
+      "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/exposure-extraction-v4/seal.json",
+      "sha256": "96fcfcbfada87faaa6624d9124fb3c88d55d714a8cd0bf79ce72a114e32f8510"
+    },
+    "recipe": {
+      "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/extract_exposures.py",
+      "sha256": "966f7ed55d0a30c3d5cc4e2deea5c78b912f98827e261bbdb9b265c44749c6b8"
+    },
+    "contexts": {
+      "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/exposure-contexts-v4.json",
+      "sha256": "2dd5b6b7d6665d64519585acdb63ed6eafadc3092bda25a38433616f896199fb"
+    },
+    "files": [
+      {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/exposure-extraction-v4/exposure-identifiers.json",
+        "sha256": "3a48e75f39a2a773cfadb2e9bc9ea12eb1f4b6ec6d33026dabde6a5f501f0ab8"
+      },
+      {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/exposure-extraction-v4/additional-identifiers.json",
+        "sha256": "03f6628b66f5d52f9c2f1b3ed1540e4d99541f028c3778a90ce99721a073f3ca"
+      },
+      {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/exposure-extraction-v4/unattributed-identifiers.json",
+        "sha256": "b15ab49722bb9f40538cd1b16e02082e6b4be31c16348cbd1e2af4c76c1c633d"
+      },
+      {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/exposure-extraction-v4/coverage.json",
+        "sha256": "d2a29358c31abb66034fe7dfeda5e88e4741f37ceae14fbdb8ce3764d79b4777"
+      },
+      {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/exposure-extraction-v4/inertia-enumeration.json",
+        "sha256": "9d6f99c4efee874f7162e8d6576207e289347999998df38184d463f8f926497d"
+      }
+    ],
+    "runtime_identity": {
+      "git": {
+        "path": "/opt/homebrew/Cellar/git/2.56.0_2/bin/git",
+        "sha256": "371fc6bfbfea4d9ace7d122feefe100503d24f827bc94f54ab3973583ffea11f",
+        "version": "git version 2.56.0"
+      },
+      "python": {
+        "path": "/Users/adamjackson/.local/share/uv/python/cpython-3.14.10-macos-aarch64-none/bin/python3.14",
+        "sha256": "26b5194d2beb09e648b4676ddc18a1384f182a7ed84f3db73106096aba6febf4",
+        "version": "3.14.10 (main, Oct 26 2026, 13:59:48) [Clang 23.1.3 ]"
+      }
+    }
+  },
+  "summary": {
+    "compatible_records": 50016,
+    "coverage_status_counts": {
+      "non_data_source_or_document": 321,
+      "parsed_identifier_projection": 24001,
+      "unclassified_non_data": 3
+    },
+    "fastapi_association_records": 8866,
+    "inertia_data_files": 36,
+    "inertia_scoped_records": 1350,
+    "inertia_scoped_records_filter": "sum(r['study'].startswith('inertia-bench/') for r in compatible scoped commit/path/blob records)",
+    "inertia_screening_identifiers": 4714,
+    "studies": 19,
+    "unattributed_records": 262080,
+    "unscoped_by_kind": {
+      "blob": 177483,
+      "commit": 61135,
+      "path": 23462,
+      "pr": 0
+    }
+  },
+  "supersedes_for_binding": {
+    "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/exposure-extraction-v3/seal.json",
+    "sha256": "a37745dfc2befcb7fff1bcd38edb803393433c58163674b5a1e6f1982351a3e6"
+  },
+  "qualifications": [
+    "Pinned inertia data36=27 screening JSON/JSONL/CSV+8 screening text/checksum+1 docs/design/candidates.csv; exact listing sealed.",
+    "3 unclassified non-data paths: inertia .gitattributes, .gitignore, docs/design/screening/raw-SHA256SUMS; listed, not falsely counted parsed.",
+    "Unscoped full commits/blobs used across repositories; empty blob excluded; paths never crossmatched.",
+    "Repository-only identities from additional-identifiers.json are descriptive per candidate/study, never score exclusions or commit-overlap claims.",
+    "Sealed v4 contains other-task human-confirmation-51.csv path mis-scoped to microsoft/TypeScript; provenance issue disclosed, not association exclusion.",
+    "V3/v4 extraction files preserved unchanged; old zero-data claim superseded."
+  ]
+}

@@ -1,0 +1,201 @@
+{
+  "frontend": {
+    "argv": [
+      "env",
+      "-i",
+      "CGO_ENABLED=0",
+      "GIT_NO_REPLACE_OBJECTS=1",
+      "GOAMD64=v1",
+      "GOARCH=arm64",
+      "GOARM64=v8.0",
+      "GOCACHE=/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/artifacts/preparation-runtime/gocache",
+      "GOENV=off",
+      "GOEXPERIMENT=",
+      "GOFLAGS=-mod=readonly",
+      "GOMODCACHE=/Users/adamjackson/go/pkg/mod",
+      "GOOS=darwin",
+      "GOPROXY=off",
+      "GOSUMDB=off",
+      "GOTMPDIR=/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/artifacts/preparation-runtime/tmp",
+      "GOTOOLCHAIN=local",
+      "GOWORK=off",
+      "HOME=/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/artifacts/preparation-runtime/home",
+      "LANG=C",
+      "PATH=/Users/adamjackson/.local/share/mise/installs/go/1.26.10/bin:/Users/adamjackson/Projects/work/x11-tools/83b941f8c8a994a6f02af7c08dfda99683279e0cc55ad456d3352335344b4c1e/git/bin",
+      "/Users/adamjackson/.local/share/mise/installs/go/1.26.10/bin/go",
+      "test",
+      "-v",
+      "-pgo=off",
+      "./evaluation/x11-merge-association/frontend"
+    ],
+    "cwd": "/Users/adamjackson/Projects/work/scout-x11",
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "=== RUN   TestJSONParityWithProduct\n--- PASS: TestJSONParityWithProduct (0.22s)\n=== RUN   TestInvalidGitBytePathRefusesWithoutPartialOutput\n--- PASS: TestInvalidGitBytePathRefusesWithoutPartialOutput (0.17s)\n=== RUN   TestMissingExactSHAOwnershipRefusesWithoutOutput\n--- PASS: TestMissingExactSHAOwnershipRefusesWithoutOutput (0.15s)\n=== RUN   TestUnknownRequestFieldsRefuse\n--- PASS: TestUnknownRequestFieldsRefuse (0.00s)\n=== RUN   TestPreparationOwnershipMatchesProductLoader\n--- PASS: TestPreparationOwnershipMatchesProductLoader (1.25s)\nPASS\nok  \tscout/evaluation/x11-merge-association/frontend\t2.111s\n",
+    "wall_seconds": 2.705706958018709
+  },
+  "integrated": {
+    "argv": [
+      "env",
+      "-i",
+      "HOME=/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/artifacts/preparation-runtime/python-home",
+      "PATH=/Users/adamjackson/Projects/work/x11-tools/python-4c17f7a00b8b57db0e61f0375d3c1345997a5f82739eb969b5ab82d8e7132c6e/bin",
+      "LANG=C",
+      "TMPDIR=/Users/adamjackson/Projects/work/x11-scale-scratch",
+      "/Users/adamjackson/Projects/work/x11-tools/python-4c17f7a00b8b57db0e61f0375d3c1345997a5f82739eb969b5ab82d8e7132c6e/bin/python3.14",
+      "-I",
+      "-B",
+      "-c",
+      "import hashlib,pathlib,runpy,sys; p=pathlib.Path(sys.argv[1]); assert hashlib.sha256(p.read_bytes()).hexdigest()==sys.argv[2]; sys.argv=[str(p),\"--config\",sys.argv[3],\"--config-sha256\",sys.argv[4],\"--script\",sys.argv[5],\"--\",*sys.argv[6:]]; runpy.run_path(str(p),run_name=\"__main__\")",
+      "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/bootstrap_v6.py",
+      "5b8735ad1c03ca0afebf54dfe3f1123a96dabb72002db53de16f60d2ae0244e9",
+      "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/inventory-inputs.json",
+      "18ef246b0eb10e5ead090698dfe139778a2a806941b33135049635fa6e703da8",
+      "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/selftest.py"
+    ],
+    "cwd": "/Users/adamjackson/Projects/work/scout-x11",
+    "exit_code": 0,
+    "stderr": "...........test_assembler_derives_manifest_from_verified_seals (prep_selftest.PreparationTests.test_assembler_derives_manifest_from_verified_seals) ... ok\ntest_authorization_scope_and_unsigned_implementation (prep_selftest.PreparationTests.test_authorization_scope_and_unsigned_implementation) ... ok\ntest_budget_path_cannot_reset_and_sixth_operation_refused (prep_selftest.PreparationTests.test_budget_path_cannot_reset_and_sixth_operation_refused) ... ok\ntest_build_added_source_changes_selected_closure (prep_selftest.PreparationTests.test_build_added_source_changes_selected_closure) ... ok\ntest_build_refuses_existing_artifact (prep_selftest.PreparationTests.test_build_refuses_existing_artifact) ... ok\ntest_buildinfo_failure_never_promotes_and_retry_recovers (prep_selftest.PreparationTests.test_buildinfo_failure_never_promotes_and_retry_recovers) ... ok\ntest_case_safety (prep_selftest.PreparationTests.test_case_safety) ... ok\ntest_completed_seal_rejects_empty_or_inconsistent_trace (prep_selftest.PreparationTests.test_completed_seal_rejects_empty_or_inconsistent_trace) ... ok\ntest_content_and_operational_refusal_seals (prep_selftest.PreparationTests.test_content_and_operational_refusal_seals) ... ok\ntest_exact_blobs_ignore_export_attributes (prep_selftest.PreparationTests.test_exact_blobs_ignore_export_attributes) ... ok\ntest_forged_content_refusal_has_no_git_evidence (prep_selftest.PreparationTests.test_forged_content_refusal_has_no_git_evidence) ... ok\ntest_git_structural_operational_prerequisites (prep_selftest.PreparationTests.test_git_structural_operational_prerequisites) ... ok\ntest_gitlinks_and_excluded_codegraph_counts (prep_selftest.PreparationTests.test_gitlinks_and_excluded_codegraph_counts) ... ok\ntest_materialized_selected_tree_mismatches (prep_selftest.PreparationTests.test_materialized_selected_tree_mismatches) ... ok\ntest_memoryerror_sealing (prep_selftest.PreparationTests.test_memoryerror_sealing) ... ok\ntest_non_utf8_committed_path_is_structural_content (prep_selftest.PreparationTests.test_non_utf8_committed_path_is_structural_content) ... ok\ntest_noncanonical_operation_paths_refuse_before_commands (prep_selftest.PreparationTests.test_noncanonical_operation_paths_refuse_before_commands) ... ok\ntest_ownership_real_scanner_create_once_and_seals (prep_selftest.PreparationTests.test_ownership_real_scanner_create_once_and_seals) ... ok\ntest_persistent_budget_expiry_is_global_even_before_commands (prep_selftest.PreparationTests.test_persistent_budget_expiry_is_global_even_before_commands) ... ok\ntest_produced_refusals_through_inventory (prep_selftest.PreparationTests.test_produced_refusals_through_inventory) ... ok\ntest_revision_scope_excludes_unobserved_content_unit_only (prep_selftest.PreparationTests.test_revision_scope_excludes_unobserved_content_unit_only) ... ok\ntest_safe_symlink_and_executable_mode (prep_selftest.PreparationTests.test_safe_symlink_and_executable_mode) ... ok\ntest_safety_refusals (prep_selftest.PreparationTests.test_safety_refusals) ... ok\ntest_scanner_failures_are_always_operational (prep_selftest.PreparationTests.test_scanner_failures_are_always_operational) ... ok\ntest_scanner_retry_sealing (prep_selftest.PreparationTests.test_scanner_retry_sealing) ... ok\ntest_scanner_tree_drift_before_command (prep_selftest.PreparationTests.test_scanner_tree_drift_before_command) ... ok\ntest_timeout_and_interrupt_are_operational (prep_selftest.PreparationTests.test_timeout_and_interrupt_are_operational) ... ok\ntest_unicode_alias_safety (prep_selftest.PreparationTests.test_unicode_alias_safety) ... ok\n\n----------------------------------------------------------------------\nRan 28 tests in 132.196s\n\nOK\n........test_actual_subprocess_failure_plant (capacity_selftest_v8.CapacityTests.test_actual_subprocess_failure_plant) ... ok\ntest_direct_bound_uses_larger_observation_or_prediction (capacity_selftest_v8.CapacityTests.test_direct_bound_uses_larger_observation_or_prediction) ... ok\ntest_each_independent_gate_and_aggregate_failure (capacity_selftest_v8.CapacityTests.test_each_independent_gate_and_aggregate_failure) ... ok\ntest_identified_additive_coefficients (capacity_selftest_v8.CapacityTests.test_identified_additive_coefficients) ... ok\ntest_linked_attempt_bounds_and_exact_boundary (capacity_selftest_v8.CapacityTests.test_linked_attempt_bounds_and_exact_boundary) ... ok\ntest_typescript_shape_and_code_not_comment_padding (capacity_selftest_v8.CapacityTests.test_typescript_shape_and_code_not_comment_padding) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.295s\n\nOK\n...........\n----------------------------------------------------------------------\nRan 30 tests in 166.920s\n\nOK\n",
+    "stdout": "",
+    "wall_seconds": 168.17355641600443
+  },
+  "integration_base": "584da4a2",
+  "method": "git fetch origin; git stash; git merge --ff-only origin/main; git stash pop; additive resolution of five shared conflicts. No commit; stash retained.",
+  "research_ids": {
+    "ascending": true,
+    "count": 86,
+    "next_free": "R-087",
+    "unique": true
+  },
+  "revision": "8",
+  "shared_diff_vs_origin_main": {
+    "command": [
+      "git",
+      "diff",
+      "origin/main",
+      "--",
+      "docs/STATUS.md",
+      "docs/adrs/README.md",
+      "docs/hypothesis-ledger.md",
+      "docs/research-ledger.md",
+      "docs/scout-design.html"
+    ],
+    "deletions": 0,
+    "insertions": 33
+  },
+  "shared_files": [
+    "docs/STATUS.md",
+    "docs/adrs/README.md",
+    "docs/hypothesis-ledger.md",
+    "docs/research-ledger.md",
+    "docs/scout-design.html"
+  ],
+  "study": "X11a",
+  "x1_expected_adoption_exception": {
+    "extract": "HD9",
+    "proposed_state_hash_equals_signed_expected": true,
+    "reason": "X1 round9 \u00a713 condition2(a) allowed HD9 state/date\u2192preregistered plus one appended history line; Main confirmed keeping landed584da4a2 bytes. Every other owned extract matches."
+  },
+  "x1_owned_extracts": {
+    "ADR014Card": {
+      "actual": "b20a7636892feed1f288894e8f8a39b1dfd38ebeedf6635c75bbbdb577313681",
+      "expected": "b20a7636892feed1f288894e8f8a39b1dfd38ebeedf6635c75bbbdb577313681",
+      "matches": true
+    },
+    "ADR014Index": {
+      "actual": "343ca28ba725d15ebcf235136ea930871a19f9e3f7177cd8726d63a6c4644233",
+      "expected": "343ca28ba725d15ebcf235136ea930871a19f9e3f7177cd8726d63a6c4644233",
+      "matches": true
+    },
+    "HD9": {
+      "actual": "cd3f7d8a48dfe01b6c75909ffc2b674cbb3fec77ca6c9a8498007c72eb70612b",
+      "expected": "e937be022de233692782a8a5dae7546c76d1ab122bf65368339ad25d326d89bd",
+      "matches": false
+    },
+    "HD9Revision6History": {
+      "actual": "ec3ceabb5d5fd9ccd8834d33ba1a558f645bcad834817c98fe4bde275277bb45",
+      "expected": "ec3ceabb5d5fd9ccd8834d33ba1a558f645bcad834817c98fe4bde275277bb45",
+      "matches": true
+    },
+    "HD9Revision7History": {
+      "actual": "ae6d74fdfa9a0c7c7bc2139431da062bd42b2ebefcfe8aee194057b9265d1501",
+      "expected": "ae6d74fdfa9a0c7c7bc2139431da062bd42b2ebefcfe8aee194057b9265d1501",
+      "matches": true
+    },
+    "HD9Revision8History": {
+      "actual": "ed47dca4e65bb7ce8226b3aa601d278592dca217caedaf12162ddfb4ff24a192",
+      "expected": "ed47dca4e65bb7ce8226b3aa601d278592dca217caedaf12162ddfb4ff24a192",
+      "matches": true
+    },
+    "HD9Revision9History": {
+      "actual": "db0dbafac959e3d8468c003352b518ea06cd9a7d8df5f7dbfdc61bc9d8848593",
+      "expected": "db0dbafac959e3d8468c003352b518ea06cd9a7d8df5f7dbfdc61bc9d8848593",
+      "matches": true
+    },
+    "R-064": {
+      "actual": "dde5d84b57429868e24640fb8a563101284aaf283377228227dd32ddaa97bc8a",
+      "expected": "dde5d84b57429868e24640fb8a563101284aaf283377228227dd32ddaa97bc8a",
+      "matches": true
+    },
+    "R-065": {
+      "actual": "654b878450bef3706d7f41016196d0a9d9e251c94e9cf498dd5314401d069953",
+      "expected": "654b878450bef3706d7f41016196d0a9d9e251c94e9cf498dd5314401d069953",
+      "matches": true
+    },
+    "R-066": {
+      "actual": "5f7575f2dd061cf298866fa730abe5623408174001dd3766024e41150b1b8bd3",
+      "expected": "5f7575f2dd061cf298866fa730abe5623408174001dd3766024e41150b1b8bd3",
+      "matches": true
+    },
+    "R-067": {
+      "actual": "402364ce9693ba44c515dcd9c1cf4231a275f95e3b3b86829b7283b6c897ff89",
+      "expected": "402364ce9693ba44c515dcd9c1cf4231a275f95e3b3b86829b7283b6c897ff89",
+      "matches": true
+    },
+    "R-068": {
+      "actual": "27de628344f14767a5baff97cdf5f9cbec7c8bef18a9aaedf7b36357fe2f22db",
+      "expected": "27de628344f14767a5baff97cdf5f9cbec7c8bef18a9aaedf7b36357fe2f22db",
+      "matches": true
+    },
+    "R-071": {
+      "actual": "38a585b024e5093796f6a94f7662d22534bcfdb2a3e45fd802ccb80b26579976",
+      "expected": "38a585b024e5093796f6a94f7662d22534bcfdb2a3e45fd802ccb80b26579976",
+      "matches": true
+    },
+    "R-072": {
+      "actual": "0efc6a38f4be0212966442a0217d6b1f83c343b27e41b4d28a35acb83361592e",
+      "expected": "0efc6a38f4be0212966442a0217d6b1f83c343b27e41b4d28a35acb83361592e",
+      "matches": true
+    },
+    "R-078": {
+      "actual": "9006d01ecb5dabdb0ceab45dcd051ed1f79dc9515ab450872a17780dbc1b4462",
+      "expected": "9006d01ecb5dabdb0ceab45dcd051ed1f79dc9515ab450872a17780dbc1b4462",
+      "matches": true
+    },
+    "R-080": {
+      "actual": "4e671d2f6567965f2de039c6434fca20738a5db66a91efa055a964578fcb3e32",
+      "expected": "4e671d2f6567965f2de039c6434fca20738a5db66a91efa055a964578fcb3e32",
+      "matches": true
+    },
+    "R-081": {
+      "actual": "c02da10a410ecb37cf878f3c1145e48bd8e5b931d4fc04f34fe3eac08cba02e5",
+      "expected": "c02da10a410ecb37cf878f3c1145e48bd8e5b931d4fc04f34fe3eac08cba02e5",
+      "matches": true
+    },
+    "R-085": {
+      "actual": "3235cb77dafd8e674845a84f3ca4b695b96ef6318bf3b26ffaaf0e003185d0f2",
+      "expected": "3235cb77dafd8e674845a84f3ca4b695b96ef6318bf3b26ffaaf0e003185d0f2",
+      "matches": true
+    },
+    "R-086": {
+      "actual": "bc49d1952898fd2947b8b3db8a38f1a853b69307fb98cc593aa66e09bf301a45",
+      "expected": "bc49d1952898fd2947b8b3db8a38f1a853b69307fb98cc593aa66e09bf301a45",
+      "matches": true
+    },
+    "X1LedgerTracker": {
+      "actual": "06e927e65336ab92b86be7eca51625aff371f49f8610f6de99d9001db1eca5aa",
+      "expected": "06e927e65336ab92b86be7eca51625aff371f49f8610f6de99d9001db1eca5aa",
+      "matches": true
+    }
+  }
+}

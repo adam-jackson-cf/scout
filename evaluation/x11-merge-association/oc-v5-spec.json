@@ -1,0 +1,767 @@
+{
+  "schema": "x11a-oc-v7-spec-v1",
+  "scope": "Synthetic conditional-accuracy OC source and timing only; not full experiment driver; no candidate data or inventory OC executed",
+  "input_vector_contract": {
+    "source": "Eligible inventory output oc_vectors, null on any selection/projection/resource failure; no arbitrary replacement vectors",
+    "shape": "Exactly {segment_lengths:[3 integers1500..2000],counts:[3][2][L_r nonnegative integers],directory_cases:[3][2][list of {position:int,directory_hash:lowercase64hex}]}; L_r=min(2000,post-C0 envelope_r), shared across ages/arms within repository; repository and age order unchanged; cases stable position then original cluster/key order; positions0..L_r-1; counts exactly agree; at most2600 per age; null/empty/wrong-length counts refused",
+    "projection": "After association exclusion, retain all-added90% Cold/80% C0, renamed without modified75% Cold/50% C0, any modified/mixed-other0%; int(SHA256(UTF8(x11a-project-v4 NUL repository NUL age NUL commit NUL clusterID))) *100 < percentage*2^256",
+    "label_cap": "Among retained proxy cases, lowest2600 SHA256(UTF8(x11a-label-v5 NUL repository NUL age NUL commit NUL clusterID)), full case key ties, arm omitted; count by original commit position",
+    "output_fields": "segment_projection_inputs.projected_selected_counts are unlabelled yield; projected_label_selected_counts are capped OC counts; resource_proxy_selected_including_exposed never thinned",
+    "freeze": "Mandatory protocol reviewed_inventory adopts original inventory authority+output seal. Wrapper --inventory must be sole sealed output; verify original inventory authority with original sealed export manifest. Exact non-null vectors equality; hash vector bytes, inventory output, original authority/seal, protocol authority in build record. --recipe must be recipe_sources-pinned. OC/sensitivity fixed399; timing overrides forbidden.",
+    "directory_hash": "SHA256(UTF8(x11a-directory-v6 NUL canonical_repository NUL normalised product cluster.directory)); same across ages; report largest directory share, retained_directory_case_count N, retained_directory_count K and effective_directory_count N^2/sum(n_d^2) per repository x age after capped retention; N=0 gives K=0,effective=0"
+  },
+  "decision_date": "2026-11-08",
+  "repositories": [
+    "mandatory-0",
+    "mandatory-1",
+    "selected-high-none"
+  ],
+  "ages": [
+    "Cold",
+    "C0"
+  ],
+  "adoption_arms": [
+    "primary",
+    "Jev-only"
+  ],
+  "role_matching": "lowercase paths before role patterns; parent owns role implementation",
+  "scenario_radices": [
+    12,
+    39,
+    2,
+    3,
+    2,
+    5,
+    2
+  ],
+  "scenario_index": "((((((q*39+truth)*2+rho_merge)*3+crossarm)*2+agecorr)*5+missing)*2+rho_dir)",
+  "scenario_count": 56160,
+  "none_table": [
+    {
+      "index": 0,
+      "none": [
+        0.2,
+        0.2,
+        0.2
+      ]
+    },
+    {
+      "index": 1,
+      "none": [
+        0.2,
+        0.2,
+        0.4
+      ]
+    },
+    {
+      "index": 2,
+      "none": [
+        0.2,
+        0.2,
+        0.6
+      ]
+    },
+    {
+      "index": 3,
+      "none": [
+        0.2,
+        0.4,
+        0.2
+      ]
+    },
+    {
+      "index": 4,
+      "none": [
+        0.2,
+        0.4,
+        0.4
+      ]
+    },
+    {
+      "index": 5,
+      "none": [
+        0.2,
+        0.4,
+        0.6
+      ]
+    },
+    {
+      "index": 6,
+      "none": [
+        0.4,
+        0.2,
+        0.2
+      ]
+    },
+    {
+      "index": 7,
+      "none": [
+        0.4,
+        0.2,
+        0.4
+      ]
+    },
+    {
+      "index": 8,
+      "none": [
+        0.4,
+        0.2,
+        0.6
+      ]
+    },
+    {
+      "index": 9,
+      "none": [
+        0.4,
+        0.4,
+        0.2
+      ]
+    },
+    {
+      "index": 10,
+      "none": [
+        0.4,
+        0.4,
+        0.4
+      ]
+    },
+    {
+      "index": 11,
+      "none": [
+        0.4,
+        0.4,
+        0.6
+      ]
+    }
+  ],
+  "truth_table": [
+    {
+      "index": 0,
+      "kind": "uniform",
+      "precision": 0.9,
+      "recall": 0.9
+    },
+    {
+      "index": 1,
+      "kind": "boundary",
+      "precision": 0.8,
+      "recall": 0.8
+    },
+    {
+      "index": 2,
+      "kind": "age_boundary",
+      "Cold": {
+        "precision": 0.76,
+        "recall": 0.76
+      },
+      "C0": {
+        "precision": 0.84,
+        "recall": 0.84
+      },
+      "pooled": 0.8
+    },
+    {
+      "index": 3,
+      "kind": "single_defect",
+      "value": 0.75,
+      "repository": 0,
+      "arm": 0,
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 4,
+      "kind": "single_defect",
+      "value": 0.75,
+      "repository": 0,
+      "arm": 0,
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 5,
+      "kind": "single_defect",
+      "value": 0.75,
+      "repository": 0,
+      "arm": 1,
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 6,
+      "kind": "single_defect",
+      "value": 0.75,
+      "repository": 0,
+      "arm": 1,
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 7,
+      "kind": "single_defect",
+      "value": 0.75,
+      "repository": 1,
+      "arm": 0,
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 8,
+      "kind": "single_defect",
+      "value": 0.75,
+      "repository": 1,
+      "arm": 0,
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 9,
+      "kind": "single_defect",
+      "value": 0.75,
+      "repository": 1,
+      "arm": 1,
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 10,
+      "kind": "single_defect",
+      "value": 0.75,
+      "repository": 1,
+      "arm": 1,
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 11,
+      "kind": "single_defect",
+      "value": 0.75,
+      "repository": 2,
+      "arm": 0,
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 12,
+      "kind": "single_defect",
+      "value": 0.75,
+      "repository": 2,
+      "arm": 0,
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 13,
+      "kind": "single_defect",
+      "value": 0.75,
+      "repository": 2,
+      "arm": 1,
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 14,
+      "kind": "single_defect",
+      "value": 0.75,
+      "repository": 2,
+      "arm": 1,
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 15,
+      "kind": "single_defect",
+      "value": 0.78,
+      "repository": 0,
+      "arm": 0,
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 16,
+      "kind": "single_defect",
+      "value": 0.78,
+      "repository": 0,
+      "arm": 0,
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 17,
+      "kind": "single_defect",
+      "value": 0.78,
+      "repository": 0,
+      "arm": 1,
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 18,
+      "kind": "single_defect",
+      "value": 0.78,
+      "repository": 0,
+      "arm": 1,
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 19,
+      "kind": "single_defect",
+      "value": 0.78,
+      "repository": 1,
+      "arm": 0,
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 20,
+      "kind": "single_defect",
+      "value": 0.78,
+      "repository": 1,
+      "arm": 0,
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 21,
+      "kind": "single_defect",
+      "value": 0.78,
+      "repository": 1,
+      "arm": 1,
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 22,
+      "kind": "single_defect",
+      "value": 0.78,
+      "repository": 1,
+      "arm": 1,
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 23,
+      "kind": "single_defect",
+      "value": 0.78,
+      "repository": 2,
+      "arm": 0,
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 24,
+      "kind": "single_defect",
+      "value": 0.78,
+      "repository": 2,
+      "arm": 0,
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 25,
+      "kind": "single_defect",
+      "value": 0.78,
+      "repository": 2,
+      "arm": 1,
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 26,
+      "kind": "single_defect",
+      "value": 0.78,
+      "repository": 2,
+      "arm": 1,
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 27,
+      "kind": "both_arm_defect",
+      "value": 0.75,
+      "repository": 0,
+      "arms": [
+        0,
+        1
+      ],
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 28,
+      "kind": "both_arm_defect",
+      "value": 0.75,
+      "repository": 0,
+      "arms": [
+        0,
+        1
+      ],
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 29,
+      "kind": "both_arm_defect",
+      "value": 0.75,
+      "repository": 1,
+      "arms": [
+        0,
+        1
+      ],
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 30,
+      "kind": "both_arm_defect",
+      "value": 0.75,
+      "repository": 1,
+      "arms": [
+        0,
+        1
+      ],
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 31,
+      "kind": "both_arm_defect",
+      "value": 0.75,
+      "repository": 2,
+      "arms": [
+        0,
+        1
+      ],
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 32,
+      "kind": "both_arm_defect",
+      "value": 0.75,
+      "repository": 2,
+      "arms": [
+        0,
+        1
+      ],
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 33,
+      "kind": "both_arm_defect",
+      "value": 0.78,
+      "repository": 0,
+      "arms": [
+        0,
+        1
+      ],
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 34,
+      "kind": "both_arm_defect",
+      "value": 0.78,
+      "repository": 0,
+      "arms": [
+        0,
+        1
+      ],
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 35,
+      "kind": "both_arm_defect",
+      "value": 0.78,
+      "repository": 1,
+      "arms": [
+        0,
+        1
+      ],
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 36,
+      "kind": "both_arm_defect",
+      "value": 0.78,
+      "repository": 1,
+      "arms": [
+        0,
+        1
+      ],
+      "metric": "recall",
+      "other_margins": 0.9
+    },
+    {
+      "index": 37,
+      "kind": "both_arm_defect",
+      "value": 0.78,
+      "repository": 2,
+      "arms": [
+        0,
+        1
+      ],
+      "metric": "precision",
+      "other_margins": 0.9
+    },
+    {
+      "index": 38,
+      "kind": "both_arm_defect",
+      "value": 0.78,
+      "repository": 2,
+      "arms": [
+        0,
+        1
+      ],
+      "metric": "recall",
+      "other_margins": 0.9
+    }
+  ],
+  "rho_table": [
+    0,
+    0.1
+  ],
+  "crossarm_table": [
+    0,
+    0.5,
+    1
+  ],
+  "agecorr_table": [
+    0.5,
+    1
+  ],
+  "missing_table": [
+    {
+      "index": 0,
+      "m": 0,
+      "mechanism": "uniform"
+    },
+    {
+      "index": 1,
+      "m": 0.025,
+      "mechanism": "uniform"
+    },
+    {
+      "index": 2,
+      "m": 0.025,
+      "mechanism": "correct"
+    },
+    {
+      "index": 3,
+      "m": 0.05,
+      "mechanism": "uniform"
+    },
+    {
+      "index": 4,
+      "m": 0.05,
+      "mechanism": "correct"
+    }
+  ],
+  "truth_margins": {
+    "q": "1-none",
+    "r": "recall",
+    "f": "q*r*(1/precision-1)/(1-q)",
+    "infeasible_companion": "For precision defects only, if f>1 replace recall with min(.90,precision*(1-q)/(q*(1-precision))); report resulting own pooled margins. Never clamp heterogeneous boundary.",
+    "existing_failure": "abstain",
+    "none_assignment": "always incorrect (a1 vs existing truth a0)",
+    "limitation": "Existing failures abstain only. Precision-only .75/.78 defects at low none share may require reduced recall: infeasible under this abstain-only generator, not inherently infeasible in data. Wrong-ID-on-existing errors are not simulated; .72/.88 infeasibility is likewise generator-specific."
+  },
+  "latent_distribution": {
+    "revision": "two-point ICC rather than beta, fixed before inventory; direct measured compute decision",
+    "formula": "P=(1-sqrt(rho_merge)-sqrt(rho_dir))*mu+sqrt(rho_merge)*I[U_merge<mu]+sqrt(rho_dir)*I[U_dir<mu]; reject negative mean coefficient; independent merge/directory and correctness/none families",
+    "mean": "mu",
+    "variance": "(rho_merge+rho_dir)*mu*(1-mu) for shared merge+directory; distinct-merge same-directory ICC rho_dir; same-merge distinct-directory ICC rho_merge. Copula age/arm correlation is Gaussian, not Bernoulli Pearson.",
+    "within_merge_bernoulli_ICC": "rho",
+    "family_independence": "existing-correctness and none-assignment latent families independent; gold independent of both and trials",
+    "normal_factor": "sqrt(a*c)*Z + sqrt(a*(1-c))*Z_arm + sqrt((1-a)*c)*Z_age + sqrt((1-a)*(1-c))*Z_age_arm",
+    "normal_draw_order": "Z, Z_arm[0:2], Z_age[0:2], then Z_age_arm in age-major arm-minor order; all iid standard normal, including zero-weight factors",
+    "copula": "U=Phi(normal_factor); a=agecorr,c=crossarm; gold uses same factor c=1 and threshold q; c/a describe latent Gaussian correlation, not achieved binary Pearson correlation",
+    "open_uniform": "(float64(Uint64>>12)+.5)/2^52 strictly inside (0,1)",
+    "standard_normal": "sqrt(2)*Erfinv(2*open_uniform-1); Go1.26.10 math",
+    "ordering": "repository streams independent; within repository: position0..L_r-1, merge correct latent family, merge none-assignment latent family; case ordinal0..max(age capacities)-1; gold copula, assignment-trial copula; age Cold then C0, raw A/B labels, missingness race; skip absent age cases only after drawing gold/trial copula",
+    "directory_order": "Sorted union of directory hashes across ages, independently keyed directory/repo stream: correctness copula then none-assignment copula for every key (including rho_dir=0). Draw once per directory and reuse at every position and age."
+  },
+  "streams": {
+    "seed": "big-endian uint64 of SHA256(UTF8(x11a-oc-v6 + NUL + decimal scenario + NUL + decimal replicate + NUL + stream))[:8]",
+    "PRNG": "Go math/rand/v2 PCG(seed, seed XOR 0x9e3779b97f4a7c15)",
+    "study_names": [
+      "repo/0",
+      "repo/1",
+      "repo/2"
+    ],
+    "bootstrap_names": [
+      "bootstrap/0",
+      "bootstrap/1",
+      "bootstrap/2"
+    ],
+    "replicates": "zero-based, seed never reused across scenario/replicate/repository/family",
+    "vectorisation": "Independent scenario/replicate/repository stream work may execute in any scheduler order; do not change draw order inside one stream. Bootstrap streams isolated from generator; same block positions across ages/arms/metrics.",
+    "literal_fixture": "oc-v5-fixtures.json",
+    "directory_names": [
+      "directory/0",
+      "directory/1",
+      "directory/2"
+    ],
+    "directory_bootstrap_names": [
+      "directory-bootstrap/0",
+      "directory-bootstrap/1",
+      "directory-bootstrap/2"
+    ]
+  },
+  "missingness": {
+    "unit": "one shared label mask per repository/age/position/case across adoption arms, not separate races per arm",
+    "race": "-log(open_uniform)/w; stable tie-break original case index",
+    "uniform_weight": 1,
+    "correct_weight": "4 if either adoption arm has a correct assignment, otherwise1",
+    "error_sensitivity_weight": "4 if either arm has a wrong assignment or an existing abstention, otherwise1",
+    "limit": "At each proposed removal recompute both arms recall U_all/(E_known+U_all) and assigned unknown/(A_known+A_unknown), stop at first proposal exceeding m in either arm, do not skip.",
+    "count_preservation": "Never remove outputs, sampled cases or unknown counts from denominators. m0 has one mechanism only.",
+    "labels": "Truth shared across arms. A/B independently flip covered probability.01; true existing correct a0 probability.99 else a1 for A/a2 for B. True-none erroneous existing likewise distinct IDs. One shared gold kind Bernoulli(.5) per case; independent kind flips.01. Disagreement or disjoint IDs adjudicated to truth; agreed mistakes retained. Quality per age recomputed on nonmissing raw answers: covered kappa>=.60 and actual routing<=.40."
+  },
+  "estimators": {
+    "count_names": [
+      "C",
+      "A_known",
+      "E_known",
+      "A_unknown",
+      "U_all"
+    ],
+    "worst_precision": "C/(A_known+A_unknown)",
+    "worst_recall": "C/(E_known+U_all)",
+    "best_precision": "(C+A_unknown)/(A_known+A_unknown)",
+    "best_recall": "(C+A_unknown)/(E_known+A_unknown)",
+    "pool": "half Cold estimate plus half C0 estimate, not ratio of pooled counts",
+    "verdict": "Ordered negative if any adequately measured best upper<.80, otherwise inadequacy=>inconclusive, otherwise all six worst point/lower>=.80=>supported; age accuracy bounds not vetoes",
+    "support_gates": "Each age known A/E>=800, sampled cases>=1200, active merge positions>=100, both unknown fractions<=.05, quality passed, nonzero bootstrap denominators in>=95%; projected vectors capped2600/age. Binding synthetic pr_cap=0.",
+    "negative_gates": "Both ages own-metric known count>=200, valid quality/missingness/interval. Other cell inadequacy does not prevent valid negative."
+  },
+  "bootstrap": {
+    "OC_count": 399,
+    "real_analysis_count": 10000,
+    "real_analysis_seed": "big-endian uint64 first8 SHA256 bytes of UTF8(x11a-analysis-v6 NUL canonical repository NUL bootstrap); PCG(seed,seed XOR0x9e3779b97f4a7c15)",
+    "real_analysis_draw_order": "Independent repository streams: commit bootstrap and directory-bootstrap, names x11a-analysis-v6 NUL canonical_repository NUL bootstrap or directory-bootstrap; each10000 replicates; ceil(L_r/20) circular starts IntN(L_r) or K IntN(K) draws per replicate, same draws across ages/arms/metrics.",
+    "method": "circular moving block20, ceil(L_r/20) uniform starts in0..L_r-1, final block truncated to remaining positions for total exactly L_r; same starts ages/arms/metrics; precompute L_r rolling20-commit sums then vectorise integer additions, sum individual positions for partial final block",
+    "percentile": "sort finite pooled estimator draws, index floor(p*(n-1)), p=.025/.975; more5% zero denominator invalid",
+    "nominal_quantile_probability_MC_standard_error_399": 0.007816023641463079,
+    "nominal_quantile_probability_MC_standard_error_10000": 0.0015612494995995996,
+    "interpretation": "399 approximates real10000; OC controls simulated event probabilities for399, not bootstrap coverage or approximation error. Historical 12-study 10000 comparison is smoke-only, not calibration or validation of rev6 directory estimator.",
+    "comparison_artifact": "oc-v5-timing-10000-r2.json",
+    "directory_method": "Sorted union of directory hashes, K keys; resample K keys with replacement, paired across both ages/arms/all metrics; sum all cases for each key, absent age contributes zero; independent directory-bootstrap/repo stream. No area-specific reseeding. 399 OC,10000 real.",
+    "combination": "For each pooled metric lower=min(commit lower,directory lower); best-case upper=max(commit upper,directory upper). Each component separately requires>=95% finite draws; empty/invalid component invalidates bound. Same estimator in OC and real; counts399 vs10000 only difference. Robust to either dimension singly, NOT exact multiway-cluster coverage guarantee; threats: two-way dependence, directory rho>.10, few-directory bootstrap.",
+    "directory_optimization": "Exact coalescing identical [age][arm]Counts vectors in first sorted-directory occurrence order. For every replicate still draw K IntN(K) on same directory stream; tally selected class multiplicities then scale/add each class. Integer sums and seeded sampled estimators identical to individual-key aggregation, no changed bootstrap distribution."
+  },
+  "events": [
+    "primary_support",
+    "primary_false_not_supported",
+    "Jev-only_support",
+    "Jev-only_false_not_supported",
+    "union_own_defective_arm_support",
+    "union_own_boundary_arm_support"
+  ],
+  "false_support": "union over supported arms with any own true pooled repository metric strictly below.80, not support of a healthy other arm",
+  "boundary": "separate union over supported arms with own true pooled metric exactly.80; homogeneous and heterogeneous boundary both arms counted in union, not classified strictly defective",
+  "sequential_MC": {
+    "looks": [
+      256,
+      512,
+      1024
+    ],
+    "per_interval_alpha": 4.946185501741058e-08,
+    "interval": "Gate one-sided CP lower BetaInv(.05/3,k,n-k+1), upper BetaInv(1-.05/3,k+1,n-k); zero/one endpoints; implementation interval(alpha=2*.05/3). Descriptive bounds use two-sided simultaneous alpha. Inverse beta48 iterations, CF tolerance2e-14 max300 fails closed.",
+    "family": "Intersection-union feasible iff every relevant event in every binding scenario passes; one-sided level .05/3 at each of3 looks gives false-feasible<=.05, no scenario/event multiplicity penalty. Bonferroni two-sided simultaneous intervals alpha=.05/(56160*3*6) descriptive ONLY, never gate.",
+    "uniform90_pass": "both arms support lower>=.80 and false-not-supported upper<=.05",
+    "defect_boundary_pass": "own-defective union upper<=.05 and own-boundary union upper<=.05",
+    "fail": "Any relevant confidence interval wholly beyond required limit; otherwise continue; unresolved after1024=>not-testable, never silently pass",
+    "record": "every visited look event counts and intervals, every scenario final status including failures. Continue other scenarios unless total compute stop.",
+    "gate_one_sided_alpha": 0.016666666666666666,
+    "effective_integer_pass_thresholds": [
+      {
+        "n": 256,
+        "support_min_successes": 219,
+        "error_max_events": 5
+      },
+      {
+        "n": 512,
+        "support_min_successes": 429,
+        "error_max_events": 15
+      },
+      {
+        "n": 1024,
+        "support_min_successes": 847,
+        "error_max_events": 36
+      }
+    ]
+  },
+  "sensitivity": {
+    "scenario_count": 198,
+    "seed_indices": "56160..56357; index=2*old_sensitivity_index+directory_index",
+    "indices_0_14": "Base catalogue0..14 unchanged, each crossed rho_dir0/.10; actual indices0..29",
+    "indices_15_98": "Base catalogue15..98 unchanged, each crossed rho_dir0/.10; actual indices30..197; old variants same order",
+    "temporal": "hold merge latent probabilities for20/40 commits starting circular origin0; trial/gold draws remain independent across positions except specified age copula",
+    "fixed_studies_per_scenario": 1024,
+    "decision": "descriptive only; no support-power promise and no candidate replacement; sensitivity mode separately reports full fixed-sample counts and bounds",
+    "projection_core_hours_from_slowest_final_profile": 3.0332030859093337
+  },
+  "timing": {
+    "runtime": "go1.26.10 darwin arm64",
+    "artifacts": [
+      "oc-v7-timing-metadata.json",
+      "oc-v7-timing-balanced.json",
+      "oc-v7-timing-concentrated.json",
+      "oc-v7-timing-singleton.json",
+      "oc-v7-timing-balanced-maximum.json",
+      "oc-v7-timing-concentrated-maximum.json",
+      "oc-v7-timing-singleton-maximum.json",
+      "oc-v7-timing-go-closure.json"
+    ],
+    "historical_artifacts": [
+      "oc-v6-timing-metadata.json",
+      "oc-v6-timing-balanced-r3.json",
+      "oc-v6-timing-concentrated-r3.json",
+      "oc-v6-timing-singleton-r3.json",
+      "oc-v5-timing.json",
+      "oc-v5-timing-two-point.json",
+      "oc-v5-timing-final.json",
+      "oc-v5-timing-10000.json",
+      "oc-v5-timing-stress.json",
+      "oc-v5-timing-final-r2.json",
+      "oc-v5-timing-10000-r2.json",
+      "oc-v5-timing-stress-r2.json",
+      "oc-v6-timing-balanced.json",
+      "oc-v6-timing-concentrated.json",
+      "oc-v6-timing-singleton.json",
+      "oc-v6-timing-balanced-r2.json",
+      "oc-v6-timing-concentrated-r2.json",
+      "oc-v6-timing-singleton-r2.json"
+    ],
+    "fixed_single_core_budget_hours": 384,
+    "sensitivity_single_core_budget_hours": 8,
+    "projection": {
+      "binding_scenarios": 56160,
+      "minimum_studies": 14376960,
+      "maximum_studies": 57507840,
+      "sensitivity_scenarios": 198,
+      "sensitivity_studies": 202752,
+      "formula": "sample seconds /120 *scenario_count *replicates; measured synthetic timing only, not runtime guarantee or universal worst-case bound",
+      "single_core_binding_cap_hours": 384,
+      "single_core_sensitivity_cap_hours": 8,
+      "measured_mixed_length_minimum_hours": [58.32554484224, 56.46885504, 201.25843991552],
+      "measured_mixed_length_maximum_hours": [233.30217936896, 225.87542016, 805.03375966208],
+      "measured_all2000_minimum_hours": [59.831209717760004, 59.35593940224, 182.05223851776],
+      "measured_all2000_maximum_hours": [239.32483887104001, 237.42375760896, 728.20895407104],
+      "profile_order": ["balanced", "concentrated", "singleton"],
+      "capacity_risk": "Every measured minimum fits384h; singleton maximum does not at either length pattern. Shorter mixed lengths need not time faster due to synthetic data distribution and measurement noise. No monotonic performance or universal feasibility claim.",
+      "decision": "Retain384h fixed serial cap under R-064; no universal feasibility claim. New synthetic v7 metadata supplies measured timing for per-repository lengths1500/1666/2000 across balanced/concentrated/singleton directory profiles. Actual OC measures elapsed/studies and projects minimum256 replicates over all56160 binding scenarios; projected minimum beyond384h or elapsed cap => pre-map not-testable, no directory filtering, scenario removal, or reselection. stop_reasons preserves first OC gate failure and separate compute stop; status is first stop reason. Sensitivity may stop at8h with remainder unmeasured. No prior headroom claim carried forward."
+    },
+    "rationale": "Keep fixed384h cap; new directory robustness honestly makes directory-heavy OC possibly not-testable. No claim all inventories fit, no historical3x margin carried forward; all binding scenarios retained. Timing profiles descriptive compute evidence, not statistical evidence.",
+    "closure_contract": "tool-pins-v7/oc-build-recipe-v7.json; same pinned -pgo=off compiler/environment, current exact selected package/file closure, reviewed stdlib bootstrap_v6.py before helper import. Original authority/seal/vector/recipe bindings mandatory. Historical v6 recipe/timing metadata preserved; parent freezes final digests."
+  },
+  "directory_rho_table": [
+    0,
+    0.1
+  ]
+}
