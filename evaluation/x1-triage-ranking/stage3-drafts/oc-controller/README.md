@@ -1,51 +1,51 @@
-# Stage-3 OC controller — Option G draft, round-1 fixes
+# Draft stage-3 OC controller
 
-**DRAFT; no authority until a new zero-issue scoped review.** All validation is synthetic. No preparation action, real repository data, inventory, model, scan or binding OC was used. Acceptance of this draft alone cannot authorise any later stage.
+**Synthetic-only, non-authoritative draft.** Implements the P l.163 counters/seeds, l.169 calibration disclosure, l.171 safety order/scheduling/statuses, l.181 fixed eight binding workers, l.185 actual OC caps, and §11 integrity pauses/duplicate-stage refusal. It carries no authority until its scoped review reports zero issues; acceptance itself does not authorize preparation or a real run. No candidate data, scan or model call is used here.
 
-Implements the counter/seed portions of P163, unreachable-safety handling in P169, safety ordering/scheduling/statuses in P171, actual shared caps in P185 and §11 integrity pauses. It does not implement P175's binding gate or P181's locked resource remeasurement.
+## One controller, one durable stage
 
-## Signed identities and immutable freeze
+`SafetySchedule(p_gate=..., inventory_sha256=..., meter=..., oc_started_at=..., clock=..., run_root=...)` owns the fixed `x1-oc-controller/` directory under the root. The default root is this draft folder; root injection is for isolated synthetic tests, not a second production-stage identifier. A process lock prevents concurrent owners. The create-once `freeze.json` binds the absolute first-full-OC origin, p_gate, inventory digest, source digests, ordered identity-list digest and operational-policy digest. An existing freeze is verified, never replaced; contradictory origins, inputs or sources refuse.
 
-`controller.py` imports the signed `fixed_population.population_identity` and `criticality_key` by explicit path after checking source SHA-256. An interval group's dimensions are **exactly** `cap_M`, `prevalence`, `realised_gain`, `scanner_control_true_at_prevalence`, `rank_structure`, `size_dependence`, `unresolved_kappa`. Fixed factors and critical share are not identity dimensions.
+The hash-chained `journal.jsonl` is flushed and fsync'd **before** each transition is applied. Replay restores the same attempt, phase, counters, calibration disclosures and stops. A nonterminal replay records a process-loss integrity pause requiring reviewed resume. A torn trailing record is preserved byte-for-byte and identified by digest in the recovery pause; unexplained interior corruption refuses. A terminated replay returns the identical frozen report without dispatching. Counter commits remain in the durable journal, not millions of duplicated in-memory event objects. Reports retain all population counters and control events.
 
-The constructor verifies the exact OC-manifest byte SHA-256 (`1caea1a5ddba3a3d9eae99bba780e5de987ad7771f6cce06af9b0171be96761d`) and enumerates all **2,016** identities: 336 κ=0 and 1,680 κ>0. HMAC uses each signed identity's UTF-8 bytes with key `169-x1-safety-order`; ties use identity bytes. The ordered-list digest hashes the compact JSON array of **identity strings**, without re-parsing them.
+Raw actual cumulative binding-plus-safety core-hours are compared with 2,880 using `>=`; ×2 is solely the separate projection convention. Unpaused wall time starts at the frozen first-full-OC origin and stops at 15 days using `>=`. Meter faults take a recorded integrity path that does not reread the faulty meter. Decision state and the nested runtime manifest are exposed only as read-only values; `finish`, `next_group` and `mark_unreachable` no longer exist publicly.
 
-Pinned values, independently computed with OpenSSL and stored in `known_answers.json`:
+## Binding lanes and the controller-owned safety loop
 
-- Ordered list SHA-256: `04aa2184f79cb3795f60305a6b8fa31687d5acd7069846e78b6acf1b1f4dd4ff`.
-- Policy SHA-256: `e2c8c9ec1da43b4eeface3cf3c52c711ecad8cef11be97c00defe51fc12353ca`.
+`binding_population(canonical_cell_json, population_index, slot=0..7)` returns a read-only lease with `step(gate, trial)`, `report()`, `complete` and `exhausted`. Each population has its own nonreentrant lock and fixed worker slot. Eight binding slots may execute concurrently under one shared meter/state lock. A ninth slot, a reused live slot, or concurrent calls on one population refuse. Binding stops at 2,000 eligible trials, 4,000 executions or `ceil(4000/p_gate)` attempts. Completion wins if the last execution simultaneously reaches both limits.
 
-`SafetySchedule(freeze_path=..., p_gate=..., meter=..., oc_started_at=..., clock=...)` refuses mismatches and writes a **create-once** freeze record containing both digests, source digests and timestamp before dispatch. The list, policy and nested policy values refuse mutation. That synthetic freeze is not an experiment stage seal or approval.
+`run(gate, trial, calibration, criticality)` owns safety pacing through termination; no caller-driven per-step safety handle is exposed. Every leased binding population must already be complete/exhausted and free of pending faults. Gold arrives asynchronously through `stop_gold()`; integrity stop through `stop_integrity(evidence)`. The loop owns group dispatch, increasing-index serial safety lanes 0–4 (slots 5–7 reserved idle), and four serial criticality phases. Callback signatures:
 
-## Operational policy (hashed in source)
+- `calibration(profile_identity, population_index, population_seed)` returns **prepared population data**, not an asserted reachability record. The controller calls the digest-pinned signed kernel's `calibrate_population` itself. All five populations are calibrated before the first attempt. It retains identity, population index, target, realised, excess, latent gain, reachability, kernel SHA and the controller-computed record digest. The first five records per base profile are reused across all six κ groups; conflicting disclosures refuse. Any unreachable population makes the group `unmeasured (unreachable target)` with actual zero counters and advances the frozen order.
+- `gate(group_identity, population_index, attempt, audit_seed)` returns an exact bool. Rejection performs no trial work.
+- `trial(group_identity, population_index, attempt, seeds)` returns an exact adequacy bool; `seeds` contains audit/bootstrap/missing-mask/canonical-safety seeds. Safety stops at 2,000 executions including inadequacy, independent of labels/outcomes.
+- `criticality(group_identity, j, key)` returns a JSON object with the exact signed `key` and `completed: true`; all additional descriptive outcome fields are retained. All four j records are required for `measured`.
 
-- Start immediately after all binding rows complete. One group at a time in frozen order.
-- Reserve eight worker slots. Population i uses slot i (0–4); slots 5–7 remain reserved idle. Execute population lanes synchronously in increasing index. A helper is a child of its active lane. No overlapping/reentrant attempt or criticality call is permitted. This is the conservative fixed allocation; it does not promise eightfold speedup or full utilisation.
-- Meter **raw measured cumulative binding-plus-safety core-hours**. Wall time is seconds since the **first full-OC process start**, never paused. There is **no ×2 multiplier on actual meters**; ×2 remains the preregistered resource-projection factor.
-- Check meters before every attempt, dispatch, criticality phase and completion, and after executed work. Stop at `>=2880` actual core-hours or `>=15` actual wall days. `stop_gold()` is irreversible. Grid completion and §11 integrity termination also record causes. At termination, identity-bound counters and statuses are snapshotted; later calls cannot make a partial group measured. Work interrupted by a stop remains charged and unclassified, never silently added to eligible results.
-- `pause(evidence)` requires an outcome-independent §11 integrity kind and evidence digest. `resume(reviewed_resolution)` preserves group/attempt order; clock continues. Every pause/resume/termination records its cause and time. Trial crashes/non-bool adequacy latch an integrity pause. Completion remains refused until reviewed resolution reconciles `executions == eligible + inadequate + crashed`.
-- Criticality follows all five population lanes and runs j=(0,.1,1,3) in that fixed order. Completion records use the signed `criticality_key(identity,j)`; all four records are required before automatic group completion/next dispatch.
+The journal timestamps dispatch/completion, lane start/stop, calibration and criticality start/result (the result is the normal phase stop), and explicit phase stops at interruptions. The source of identities is the pinned signed `population_identity`; group dimensions are the six manifest dimensions plus `unresolved_kappa`, never `critical_share`. Order is ascending HMAC-SHA256 (`169-x1-safety-order`) over exact identity UTF-8 bytes with a byte tie-break. The freeze hashes the compact JSON **array of identity strings**. String seed cells must themselves be compact sorted-key canonical JSON; phases and integer indices are strict.
 
-## Counters, statuses and reporting
+## Atomic stops and integrity recovery
 
-Population counters cannot be supplied to the constructor. Execution leases bind `(group identity, population index)`; stale, duplicate, foreign and incomplete populations are refused. Attempts stop at `ceil(4000/p_gate)` independently of the 4,000-execution limit. Gate rejection never calls the trial. Inadequate/crashed executions remain charged. Binding stops at 2,000 eligible; safety at 2,000 executions including inadequacy. Completion on the last permitted counter wins over exhaustion.
+One state lock serializes every counter commit, pause, completion, termination and snapshot. It is short-lived and never held over callback work. After a gate returns, the controller reauthorizes before the durable trial-start transition (the defined linearization point).
 
-Final reports retain all five population snapshots, counters, Wilson intervals, criticality records and calibration provenance. Statuses are `measured`, `unmeasured; cell fails`, `unmeasured (unreachable target)` and `not completed by gold`. Exhaustion precedence applies only to the active group's own populations. Unstarted groups have no invented counters. Unreachable profiles require identity/target/source/digest-bound calibration records and advance without reordering. Only measured groups enter pooled membership.
+The hashed policy fixes the in-flight rule: a newly observed cap **after** a trial returns retains its result. Gold, an integrity stop or a pause during an attempt leaves it charged and unclassified; no trial starts after a gate-window stop/pause. Exactly one termination freezes all 2,016 identities in order, without duplicates. A later callback cannot change that report.
 
-## Independent known answers and reproduction
+Gate/trial/calibration/criticality faults, malformed results and `BaseException` all latch the same integrity mechanism. Gate faults have their own count and do not masquerade as gate rejections or enter a measured gate-failure denominator. `resume({"reviewed": true, "evidence_sha256": ...})` journals the reviewed resolution. The owned loop then reruns the **same pending phase/index with the same seeds**; a binding lease likewise retries its pending phase on the next `step`. There is no `adequate` parameter or asserted-outcome resolution API. Paused in-flight work is retried, never classified by an operator.
 
-`known_answers.json` records full OpenSSL HMACs, the first/last frozen identities, ordered-list/policy digests and seed64 vectors. Seed messages use identity bytes, NUL separators, zero-based decimal indices, manifest phases and first64 big-endian conversion. Population-phase attempts must be zero. Tests reproduce HMAC vectors with `openssl dgst -sha256 -hmac` over explicit stdin bytes, independently of production `canonical`.
+## Independent derivation and validation
+
+From the repository root after `source .tools/activate`:
 
 ```sh
-source .tools/activate
-PYTHONDONTWRITEBYTECODE=1 .tools/venv/bin/python evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v
+D=evaluation/x1-triage-ranking/stage3-drafts/oc-controller
+PYTHONDONTWRITEBYTECODE=1 .tools/venv/bin/python "$D/derive_known_answers.py"
+PYTHONDONTWRITEBYTECODE=1 .tools/venv/bin/python "$D/test_controller.py" -v
+PYTHONDONTWRITEBYTECODE=1 .tools/venv/bin/python "$D/mutate_round2.py"
 ```
 
-**Result: 19 tests passed in 0.795 seconds.** Full exercised output, issue-to-fix/test mapping and per-file SHA-256s are recorded in `reviews/round-1-response.md` and `reviews/round-1-test-output.txt`. The suite exercises exact counter stops, all group identities, known-answer seeds/digests/Wilson endpoints, execution-boundary caps/gold, immutable snapshots, criticality/membership refusal, integrity pauses/crashes, unreachable progression/grid termination and outcome-independent scheduling. An initial hand-entered Wilson fixture was corrected using an independent 60-digit Decimal calculation of z²/(2000+z²); the decision rule was unchanged.
+`derive_known_answers.py` imports neither controller nor signed kernel. It independently enumerates the seven identity axes, invokes OpenSSL for every order HMAC and the final array SHA, independently reproduces four seed vectors, and computes an interior Wilson known answer using 60-digit Decimal. Its complete output is committed as `reviews/round-2-derivation-output.json` and as the current `known_answers.json`. The policy digest is explicitly a **checksum of the published policy**, not an independently derived design claim. `policy.json` specifies the reviewed operational choices and is checksum-pinned in the controller.
 
-## Conservative choices submitted for review
+`reviews/round-2-response.md` maps all findings and named round-1 residuals to implementation/test lines, commands, complete observed output and file SHA-256s. Raw suite and scratch-only guard-mutant output are preserved alongside it. Tests include eight concurrent binding lanes, stop-window races and invariant snapshots, actual process loss mid-safety and same-seed replay, criticality/gate/BaseException faults, counter boundaries, unreachable population 3, immutable state, meter origins/decreases and independent pins. Some transition tests seed feasible prior counter states through the private journal reducer; they are explicitly unit fixtures, not claims that full OC ran.
 
-1. Synchronous population lanes and criticality, with eight reserved slots and no outcome-driven throttling or reassignment.
-2. Raw actual meters; an unpaused wall clock from first full-OC start; §11 evidence-only pauses/resolution and irreversible snapshot termination.
-3. Compact JSON array of signed identity strings; byte tie-break; separately pinned operational-policy digest; create-once synthetic freeze before dispatch.
-4. Crash resolution must be externally reviewed, recorded and reconciled before resume; it is never an automatic retry or a licence to invent a missing outcome.
+## Open choices for review
+
+None are deferred to an operator. The round-2 recommended design is implemented here. The conservative torn-tail handling preserves evidence and requires reviewed resume; no recovery resets the origin or counters. Real trust anchors, a production run root and stage authority remain later scoped prerequisites, not authority supplied by this synthetic draft.

@@ -1,381 +1,579 @@
-"""Synthetic counter/schedule regressions for all scoped round-1 findings."""
-import hashlib
-import hmac
+"""Synthetic state-machine tests, including real fsync/replay and threaded stops.
+
+Some transition tests seed a feasible prior counter state through the private
+journal reducer; these are unit fixtures, never claimed as actual OC trials.
+"""
+import copy
+from dataclasses import replace
+import importlib.util
+import inspect
 import json
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
+import threading
 import unittest
+from unittest.mock import patch
 
-from controller import (Population, SafetySchedule, ORDER_SHA256, POLICY_SHA256,
-                        canonical, criticality_key, population_identity, seed, wilson)
+HERE = Path(__file__).resolve().parent
+spec = importlib.util.spec_from_file_location("x1_controller_test", HERE / "controller.py")
+c = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = c
+spec.loader.exec_module(c)
+REVIEW = {"reviewed": True, "evidence_sha256": "a" * 64}
+PAUSE = {"kind": "execution integrity", "evidence_sha256": "b" * 64}
 
 
 class Meter:
-    def __init__(self):
-        self.core = 0.0
-        self.now = 100.0
-
-    def cpu(self):
-        return self.core
-
-    def clock(self):
-        return self.now
+    def __init__(self): self.core, self.now = 0., 100000.
+    def __call__(self): return self.core
+    def clock(self): return self.now
 
 
 class ControllerTests(unittest.TestCase):
-    def setUp(self):
-        self.temporary = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temporary.cleanup)
-        self.counter = 0
-        self.known = json.loads(Path(__file__).with_name("known_answers.json").read_text())
+    def make(self, *, root=None, meter=None, **kw):
+        if root is None:
+            temp = tempfile.TemporaryDirectory()
+            self.addCleanup(temp.cleanup)
+            root = Path(temp.name)
+        meter = Meter() if meter is None else meter
+        args = dict(p_gate=.5, inventory_sha256="c" * 64, meter=meter,
+                    oc_started_at=100000., clock=meter.clock, run_root=root)
+        args.update(kw)
+        schedule = c.SafetySchedule(**args)
+        self.addCleanup(schedule.close)
+        return schedule, meter, root
 
-    def schedule(self, p_gate=.5):
-        self.counter += 1
-        meter = Meter()
-        path = Path(self.temporary.name)/f"freeze-{self.counter}.json"
-        schedule = SafetySchedule(freeze_path=path, p_gate=p_gate, meter=meter.cpu,
-                                  clock=meter.clock, oc_started_at=100.0)
-        return schedule, meter, path
+    def lane(self, s, index=0, slot=0):
+        return s.binding_population(c.canonical({"cell": slot}).decode(), index, slot=slot)
 
-    @staticmethod
-    def drive(population, adequate=True, count=2000):
-        for _ in range(count):
-            population.step(lambda _: True, lambda _: adequate)
+    def prepared(self, profile, index, seed):
+        dimensions = json.loads(profile)[1]
+        return c._kernel().prepare_population(seed=seed, run_count=1, sizes=(50,),
+            prevalence=dimensions["prevalence"], cap=dimensions["cap_M"])
 
-    def finish_group(self, schedule, adequate=True):
-        populations = schedule.next_group(binding_rows_complete=True)
-        for p in populations:
-            self.drive(p, adequate=adequate)
-        for j in (0.0, .1, 1.0, 3.0):
-            schedule.run_criticality(j, lambda key: {"key": key, "completed": True})
-        return populations
+    def seed_active(self, s, *, eligible=1999, inadequate=0, complete=False):
+        # Feasible journal fixture immediately before the final trial per lane.
+        with s._state_lock:
+            s._emit("dispatch", {"identity": s.ordered[0]})
+            for index in range(5):
+                s._new_population(s.ordered[0], index, True, index)
+        s._calibrate(self.prepared)
+        with s._state_lock:
+            for key in s._active["populations"]:
+                p = copy.deepcopy(s._populations[key])
+                count = 2000 if complete else eligible + inadequate
+                p.update(attempts=count, executions=count, gate_passes=count,
+                         eligible=2000 if complete else eligible, inadequate=0 if complete else inadequate)
+                s._save_population(key, p)
 
-    def test_signed_identity_exact_dimensions_and_independent_order_pin(self):
-        schedule, _, path = self.schedule()
-        self.assertEqual(len(schedule.ordered), 2016)
-        required = {"cap_M", "prevalence", "realised_gain", "scanner_control_true_at_prevalence",
-                    "rank_structure", "size_dependence", "unresolved_kappa"}
-        zero = 0
-        for identity in schedule.ordered:
-            kind, dims = json.loads(identity)
-            self.assertEqual(kind, "safety-interval-group")
-            self.assertEqual(set(dims), required)
-            self.assertEqual(identity, population_identity(kind, dims))
-            for name, axis in schedule.manifest["final_safety_OC"]["dimensions"].items():
-                self.assertIn(dims[name], axis)
-            zero += dims["unresolved_kappa"] == 0
-        self.assertEqual(zero, 336)
-        self.assertEqual(schedule.ordered[0], self.known["first_identity"])
-        self.assertEqual(schedule.ordered[-1], self.known["last_identity"])
-        self.assertEqual(hashlib.sha256(json.dumps(list(schedule.ordered), separators=(",", ":")).encode()).hexdigest(), self.known["ordered_groups_sha256"])
-        self.assertEqual(ORDER_SHA256, self.known["ordered_groups_sha256"])
-        self.assertEqual(POLICY_SHA256, self.known["policy_sha256"])
-        record = json.loads(path.read_text())
-        self.assertEqual(record["ordered_groups_sha256"], ORDER_SHA256)
-        self.assertEqual(record["policy_sha256"], POLICY_SHA256)
-        self.assertEqual(len(record["source_sha256"]), 3)
-        self.assertIn("created_at_utc", record)
-        actual = subprocess.check_output(["openssl", "dgst", "-sha256", "-hmac", "169-x1-safety-order"], input=schedule.ordered[0].encode()).decode().split()[-1]
-        self.assertEqual(actual, self.known["hmac_order_first"])
+    def start_run(self, s, gate=None, trial=None, calibration=None, criticality=None):
+        errors = []
+        def execute():
+            try:
+                s.run(gate or (lambda *a: True), trial or (lambda *a: True),
+                      calibration or self.prepared,
+                      criticality or (lambda identity, j, key: {"key": key, "completed": True}))
+            except BaseException as error:
+                errors.append(error)
+        thread = threading.Thread(target=execute, daemon=True)
+        thread.start()
+        return thread, errors
 
-    def test_seed_known_answers_openssl_and_input_refusals(self):
-        for row in self.known["seeds"]:
-            cell = row["cell"]
-            raw = cell.encode() if isinstance(cell, str) else json.dumps(cell, sort_keys=True, separators=(",", ":")).encode()
-            message = b"\0".join((raw, str(row["population"]).encode(), str(row["attempt"]).encode(), row["phase"].encode()))
-            actual = subprocess.check_output(["openssl", "dgst", "-sha256", "-hmac", "169-x1-oc-v4"], input=message).decode().split()[-1]
-            self.assertEqual(actual, row["hmac_sha256"])
-            self.assertEqual(seed(cell, row["population"], row["attempt"], row["phase"]), int(actual[:16], 16))
-        for p, a, phase in ((True, 0, "audit"), (-1, 0, "audit"), (0, -1, "audit"),
-                             (0, .5, "audit"), (0, 0, "unknown"), (0, 1, "population")):
-            with self.assertRaises(ValueError):
-                seed(self.known["first_identity"], p, a, phase)
+    def stop_join(self, s, thread, errors):
+        s.stop_gold()
+        thread.join(15)
+        self.assertFalse(thread.is_alive())
+        self.assertEqual(errors, [])
 
-    def test_manifest_substitution_and_create_once_freeze(self):
-        schedule, meter, path = self.schedule()
-        with self.assertRaises(FileExistsError):
-            SafetySchedule(freeze_path=path, p_gate=.5, meter=meter.cpu, clock=meter.clock, oc_started_at=100)
-        with self.assertRaises(ValueError):
-            SafetySchedule(freeze_path=Path(self.temporary.name)/"bad", p_gate=.5,
-                           meter=meter.cpu, clock=meter.clock, oc_started_at=100, manifest_bytes=b"{}")
-        with self.assertRaises(AttributeError):
-            schedule.ordered = tuple(reversed(schedule.ordered))
-        with self.assertRaises(TypeError):
-            schedule.policy["reserved_worker_slots"] = 7
-        with self.assertRaises(TypeError):
-            schedule.policy["limits"]["core_hours"] = 1
+    def assert_report(self, s):
+        report = s.gold_report()
+        self.assertEqual(tuple(g["identity"] for g in report["groups"]), s.ordered)
+        self.assertEqual(len(set(g["identity"] for g in report["groups"])), 2016)
+        self.assertEqual(sum(e["kind"] == "terminate" for e in report["events"]), 1)
+        for group in report["groups"]:
+            for p in group["populations"]:
+                self.assertEqual(p["executions"], p["eligible"] + p["inadequate"] + p["crashed"])
+        return report
 
-    def test_serial_lease_refuses_reentry_and_gold_inside_trial_discards_result(self):
-        schedule, _, _ = self.schedule()
-        p = schedule.next_group(binding_rows_complete=True)[0]
-        def trial(_):
-            with self.assertRaises(RuntimeError):
-                p.step(lambda _: self.fail("reentrant gate executed"), lambda _: True)
-            return True
-        p.step(lambda _: True, trial)
-        self.assertEqual(p.executions, 1)
-        def stop_inside_trial(_):
-            schedule.stop_gold()
-            return True
+    def test_independent_known_answers_and_canonical_seed_refusals(self):
+        known = json.loads((HERE / "known_answers.json").read_bytes())
+        s, _, _ = self.make()
+        self.assertEqual(s.ordered[0], known["first_identity"])
+        self.assertEqual(s.ordered[-1], known["last_identity"])
+        self.assertEqual(c.digest(c.canonical(s.ordered)), known["ordered_groups_sha256"])
+        self.assertEqual(c.POLICY_SHA256, known["policy_sha256"])
+        for row in known["seeds"]:
+            self.assertEqual(c.seed(row["cell"], row["population"], row["attempt"], row["phase"]), row["seed64"])
+        for cell in ('{"b":1,"a":2}', '{"a": 2}', 'garbage', 'NaN'):
+            with self.subTest(cell=cell), self.assertRaises(ValueError): c.seed(cell, 0, 0, "audit")
+        for args in (({}, True, 0, "audit"), ({}, -1, 0, "audit"), ({}, 0, -1, "audit"), ({}, 0, 1, "population"), ({}, 0, 0, "bad")):
+            with self.assertRaises(ValueError): c.seed(*args)
+        expected = [float(v) for v in known["wilson_50_2000_decimal60"]]
+        for actual, want in zip(c.wilson(50, 2000), expected): self.assertAlmostEqual(actual, want, places=15)
+        self.assertIsNone(c.wilson(0, 0))
+        for args in ((True, 2), (3, 2), (-1, 2)):
+            with self.assertRaises(ValueError): c.wilson(*args)
+
+    def test_source_order_policy_refusals_before_freeze(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            bad = root / "bad.py"
+            bad.write_text("# substituted signed source\n")
+            with self.assertRaises(RuntimeError): self.make(root=root, kernel_path=bad)
+            for target, replacement in (("ORDER_SHA256", "0"*64), ("POLICY", {"changed": True})):
+                with patch.object(c, target, replacement), self.assertRaises(RuntimeError): self.make(root=root)
+                self.assertFalse((root / "x1-oc-controller/freeze.json").exists())
+            with self.assertRaises(ValueError): self.make(root=root, manifest_bytes=b"{}")
+        for probability in (0, -1, 1.01, True, float("nan")):
+            with self.assertRaises(ValueError): self.make(p_gate=probability)
+
+    def test_eight_concurrent_binding_slots_equal_serial_and_refuse_reentry(self):
+        s, _, _ = self.make()
+        lanes = [self.lane(s, slot=i) for i in range(8)]
+        barrier = threading.Barrier(9)
+        entered = [threading.Event() for _ in lanes]
+        failures = []
+        def worker(i):
+            try:
+                def trial(index):
+                    entered[i].set()
+                    barrier.wait(10)
+                    return True
+                lanes[i].step(lambda index: True, trial)
+            except BaseException as error: failures.append(error)
+        threads = [threading.Thread(target=worker, args=(i,)) for i in range(8)]
+        for thread in threads: thread.start()
+        for event in entered: self.assertTrue(event.wait(10))
+        with self.assertRaises(ValueError): self.lane(s, slot=8)
+        with self.assertRaises(RuntimeError): lanes[0].step(lambda i: True, lambda i: True)
+        barrier.wait(10)
+        for thread in threads: thread.join(10)
+        self.assertEqual(failures, [])
+        serial, _, _ = self.make()
+        for i, lane in enumerate(lanes):
+            other = self.lane(serial, slot=i)
+            other.step(lambda n: True, lambda n: True)
+            self.assertEqual(lane.report(), other.report())
+
+    def test_binding_completion_caps_and_gate_failures(self):
+        for adequate, complete in ((True, True), (False, False)):
+            s, _, _ = self.make()
+            lane = self.lane(s)
+            with s._state_lock:
+                p = copy.deepcopy(s._populations[lane._key])
+                p.update(attempts=3999, executions=3999, gate_passes=3999, eligible=1999, inadequate=2000)
+                s._save_population(lane._key, p)
+            lane.step(lambda i: True, lambda i: adequate)
+            self.assertEqual(lane.complete, complete)
+            self.assertEqual(lane.exhausted, not complete)
+            self.assertEqual(lane.report()["executions"], 4000)
+            with self.assertRaises(RuntimeError): lane.step(lambda i: True, lambda i: True)
+        s, _, _ = self.make(p_gate=.3)
+        lane = self.lane(s)
+        cap = 13334
+        with s._state_lock:
+            p = copy.deepcopy(s._populations[lane._key])
+            p.update(attempts=cap-1, gate_failures=cap-1)
+            s._save_population(lane._key, p)
+        lane.step(lambda i: False, lambda i: self.fail("rejected gate executed trial"))
+        self.assertTrue(lane.exhausted)
+        self.assertEqual(lane.report()["gate_failures"], cap)
+
+    def test_gate_window_gold_pause_and_cap_never_start_trial(self):
+        for action in ("gold", "pause", "cap"):
+            s, meter, _ = self.make()
+            lane = self.lane(s)
+            inside, release = threading.Event(), threading.Event()
+            errors, called = [], []
+            def gate(index): inside.set(); release.wait(10); return True
+            def work():
+                try: lane.step(gate, lambda i: called.append(i) or True)
+                except c.Stopped: pass
+                except BaseException as error: errors.append(error)
+            thread = threading.Thread(target=work)
+            thread.start()
+            self.assertTrue(inside.wait(10))
+            if action == "gold": s.stop_gold()
+            elif action == "pause": s.pause(PAUSE)
+            else: meter.core = 2880
+            release.set(); thread.join(10)
+            self.assertEqual(errors, [])
+            self.assertEqual(called, [])
+            self.assertEqual(lane.report()["executions"], 0)
+            if action == "pause":
+                s.resume(REVIEW)
+                lane.step(lambda i: True, lambda i: called.append(i) or True)
+                self.assertEqual(called, [0])
+            s.stop_gold(); self.assert_report(s)
+
+    def test_trial_window_gold_pause_and_cap_classification(self):
+        for action in ("gold", "pause", "cap", "integrity"):
+            s, meter, _ = self.make()
+            lane = self.lane(s)
+            inside, release = threading.Event(), threading.Event()
+            errors = []
+            def trial(index): inside.set(); release.wait(10); return True
+            def work():
+                try: lane.step(lambda i: True, trial)
+                except c.Stopped: pass
+                except BaseException as error: errors.append(error)
+            thread = threading.Thread(target=work); thread.start()
+            self.assertTrue(inside.wait(10))
+            if action == "gold": s.stop_gold()
+            elif action == "pause": s.pause(PAUSE)
+            elif action == "integrity": s.stop_integrity(PAUSE)
+            else: meter.core = 2880
+            release.set(); thread.join(10)
+            self.assertEqual(errors, [])
+            report = lane.report()
+            self.assertEqual(report["executions"], 1)
+            self.assertEqual(report["eligible"], int(action == "cap"))
+            self.assertEqual(report["crashed"], int(action != "cap"))
+            if action == "pause":
+                s.resume(REVIEW)
+                seen = []
+                lane.step(lambda i: self.fail("trial recovery reran gate"), lambda i: seen.append(i) or False)
+                self.assertEqual(seen, [0])
+                self.assertEqual(lane.report()["attempts"], 1)
+                self.assertEqual(lane.report()["executions"], 1)
+            s.stop_gold(); self.assert_report(s)
+
+    def fault_case(self, phase, value):
+        s, _, _ = self.make()
+        lane = self.lane(s)
+        calls = []
+        def broken(index):
+            calls.append(index)
+            if isinstance(value, BaseException): raise value
+            return value
+        with self.assertRaises(c.Stopped):
+            lane.step(broken if phase == "gate" else lambda i: True, broken if phase == "trial" else lambda i: True)
+        self.assertTrue(s.paused)
+        before = lane.report()
+        self.assertEqual(before["gate_failures"], 0)
+        self.assertEqual(before["gate_faults"], int(phase == "gate"))
+        with self.assertRaises(ValueError): s.resume({"reviewed": False, "evidence_sha256": "a"*64})
+        s.resume(REVIEW)
+        recovered = []
+        lane.step(lambda i: recovered.append(("gate", i)) or True, lambda i: recovered.append(("trial", i)) or False)
+        self.assertEqual(recovered, [("gate", 0), ("trial", 0)] if phase == "gate" else [("trial", 0)])
+        self.assertEqual(lane.report()["attempts"], 1)
+        self.assertEqual(lane.report()["inadequate"], 1)
+        self.assertTrue(lane.report()["incidents"][0]["resolved"])
+        self.assertFalse(hasattr(s, "resolve_crash"))
+        self.assertNotIn("adequate", inspect.signature(s.resume).parameters)
+
+    def test_gate_exception_is_latched(self): self.fault_case("gate", RuntimeError("gate crash"))
+    def test_nonbool_gate_is_latched_not_gate_failure(self): self.fault_case("gate", 1)
+    def test_trial_exception_is_latched(self): self.fault_case("trial", RuntimeError("trial crash"))
+    def test_nonbool_trial_is_latched(self): self.fault_case("trial", "true")
+    def test_baseexception_is_latched(self): self.fault_case("trial", KeyboardInterrupt())
+
+    def test_owned_loop_calibration_order_disclosure_and_outcome_independence(self):
+        projections = []
+        for outcome in (True, False):
+            s, _, _ = self.make()
+            self.seed_active(s, eligible=1999 if outcome else 0, inadequate=0 if outcome else 1999)
+            seen = []
+            def calibration(profile, index, seed):
+                s.stop_gold()  # Next controller-issued group, not an external next_group call.
+                return self.prepared(profile, index, seed)
+            report = s.run(lambda *a: True, lambda *a: seen.append(a[:3]) or outcome,
+                           calibration, lambda identity, j, key: {"key": key, "completed": True})
+            self.assertEqual(len(seen), 5)
+            self.assertEqual(report["groups"][0]["status"], "measured")
+            self.assertEqual(len(report["groups"][0]["criticality"]), 4)
+            self.assertEqual(len(report["groups"][0]["calibration"]), 5)
+            for record in report["groups"][0]["calibration"]:
+                self.assertTrue(set(("target", "realised", "excess", "latent_gain", "reachable", "kernel_sha256", "record_sha256")) <= set(record))
+                payload = {k: v for k, v in record.items() if k != "record_sha256"}
+                self.assertEqual(c.digest(c.canonical(payload)), record["record_sha256"])
+            kinds = [e["kind"] for e in report["events"]]
+            for kind in ("dispatch", "phase_start", "calibration", "lane_start", "lane_stop", "criticality", "complete", "terminate"):
+                self.assertIn(kind, kinds)
+            self.assertTrue(all(type(e["timestamp"]) in (int, float) for e in report["events"]))
+            projections.append([(e["kind"], e["data"].get("identity"), e["data"].get("population"), e["data"].get("j")) for e in report["events"]])
+            for removed in ("next_group", "mark_unreachable", "finish", "run_criticality"):
+                self.assertFalse(hasattr(s, removed))
+            self.assert_report(s)
+        self.assertEqual(*projections)
+
+    def test_unreachable_population_three_before_attempt_and_profile_reuse(self):
+        s, _, _ = self.make()
+        called = []
+        def calibration(profile, index, seed):
+            called.append(index)
+            prepared = self.prepared(profile, index, seed)
+            if index == 3:
+                prepared = replace(prepared, runs=tuple(replace(r, annotated=frozenset()) for r in prepared.runs))
+            return prepared
+        with s._state_lock:
+            s._emit("dispatch", {"identity": s.ordered[0]})
+            for i in range(5): s._new_population(s.ordered[0], i, True, i)
+        s._calibrate(calibration)
+        self.assertEqual(called, list(range(5)))
+        self.assertFalse(s._active["calibration"][3]["reachable"])
+        with s._state_lock:
+            s._complete("unmeasured (unreachable target)")
+            profile = s._profile(s.ordered[0])
+            other = next(identity for identity in s.ordered[1:] if s._profile(identity) == profile)
+            s._emit("dispatch", {"identity": other})
+            for i in range(5): s._new_population(other, i, True, i)
+        s._calibrate(lambda *a: self.fail("profile was recalibrated for a different kappa"))
+        self.assertFalse(s._active["calibration"][3]["reachable"])
+        self.assertEqual(called, list(range(5)))
+        self.assertTrue(all(p["attempts"] == 0 for p in s._populations.values()))
+        # Isolate the cross-kappa consistency guard with a corrupt private fixture.
+        s._active["calibration"][3]["reachable"] = True
         with self.assertRaises(RuntimeError):
-            p.step(lambda _: True, stop_inside_trial)
-        report = schedule.gold_report()
-        counts = report["groups"][0]["populations"][0]
-        self.assertEqual((counts["executions"], counts["eligible"], counts["crashed"]), (2, 1, 1))
-        self.assertEqual(report["groups"][0]["status"], "not completed by gold")
+            s._calibrate(lambda *a: self.fail("cached profile invoked callback"))
+        # A supplied assertion is not a PreparedPopulation and cannot skip work.
+        other_s, _, _ = self.make()
+        entered = threading.Event()
+        def asserted(*args): entered.set(); return {"reachable": False}
+        thread, errors = self.start_run(other_s, calibration=asserted)
+        self.assertTrue(entered.wait(10))
+        with other_s._condition:
+            self.assertTrue(other_s._condition.wait_for(lambda: other_s.paused, timeout=10))
+        self.assertEqual(len(other_s._completed), 0)
+        self.stop_join(other_s, thread, errors)
 
-    def test_gate_rejections_never_execute_and_attempt_cap(self):
-        schedule, _, _ = self.schedule(1)
-        p = schedule.binding_population("binding-cell", 0)
-        for _ in range(4000):
-            p.step(lambda _: False, lambda _: self.fail("rejected gate executed"))
-        self.assertTrue(p.exhausted)
-        self.assertEqual((p.attempts, p.executions), (4000, 0))
-        with self.assertRaises(RuntimeError):
-            p.step(lambda _: True, lambda _: True)
-        report = p.report()
-        self.assertEqual(report["gate_failures"], 4000)
-        self.assertIsNone(report["conditional_inadequacy_Wilson_MC95"])
+    def test_unreachable_owned_loop_advances_in_frozen_order(self):
+        s, _, _ = self.make()
+        def calibration(profile, index, seed):
+            if s._active["identity"] != s.ordered[0]: s.stop_gold()
+            prepared = self.prepared(profile, index, seed)
+            if index == 3: prepared = replace(prepared, runs=tuple(replace(r, annotated=frozenset()) for r in prepared.runs))
+            return prepared
+        s.run(lambda *a: self.fail("unreachable group executed gate"), lambda *a: True, calibration, lambda *a: {})
+        report = self.assert_report(s)
+        self.assertEqual(report["groups"][0]["status"], "unmeasured (unreachable target)")
+        self.assertEqual([p["attempts"] for p in report["groups"][0]["populations"]], [0]*5)
+        dispatch = [e["data"]["identity"] for e in report["events"] if e["kind"] == "dispatch"]
+        self.assertEqual(dispatch, list(s.ordered[:2]))
 
-    def test_execution_cap_is_independent_inadequacy_is_charged(self):
-        schedule, _, _ = self.schedule(.5)
-        p = schedule.binding_population("binding-cell", 0)
-        self.drive(p, adequate=False, count=4000)
-        self.assertTrue(p.exhausted)
-        self.assertEqual((p.attempts, p.executions, p.inadequate), (4000, 4000, 4000))
-        self.assertLess(p.attempts, p.attempt_cap)
-        with self.assertRaises(RuntimeError):
-            p.step(lambda _: True, lambda _: True)
-
-    def test_completion_on_last_attempt_and_execution_wins(self):
-        schedule, _, _ = self.schedule(1)
-        p = schedule.binding_population("attempt-last", 0)
-        for _ in range(2000):
-            p.step(lambda _: False, lambda _: self.fail("unexpected execution"))
-        self.drive(p)
-        self.assertEqual(p.attempts, p.attempt_cap)
-        self.assertTrue(p.complete)
-        self.assertFalse(p.exhausted)
-        with self.assertRaises(RuntimeError):
-            p.step(lambda _: True, lambda _: True)
-        other, _, _ = self.schedule(.5)
-        q = other.binding_population("execution-last", 0)
-        self.drive(q, adequate=False)
-        self.drive(q)
-        self.assertEqual(q.executions, 4000)
-        self.assertTrue(q.complete)
-        self.assertFalse(q.exhausted)
-
-    def test_safety_stops_at_executions_including_inadequacy(self):
-        schedule, _, _ = self.schedule()
-        p = schedule.next_group(binding_rows_complete=True)[0]
-        self.drive(p, adequate=False)
-        self.assertTrue(p.complete)
-        self.assertEqual((p.executions, p.eligible, p.inadequate), (2000, 0, 2000))
-        with self.assertRaises(RuntimeError):
-            p.step(lambda _: True, lambda _: True)
-
-    def test_population_lane_mapping_and_finish_membership(self):
-        schedule, _, _ = self.schedule()
-        binding = schedule.binding_population("binding", 0)
-        with self.assertRaises(RuntimeError):
-            schedule.next_group(binding_rows_complete=False)
-        pops = schedule.next_group(binding_rows_complete=True)
-        with self.assertRaises(RuntimeError):
-            pops[1].step(lambda _: True, lambda _: True)
-        for invalid in ([pops[0]]*5, pops[:4], [binding]+list(pops[1:]),
-                        [Population("foreign", 0, .5, True)]+list(pops[1:])):
-            with self.assertRaises(RuntimeError):
-                schedule.finish(invalid, {})
-        self.assertEqual([p.population_index for p in pops], list(range(5)))
-        with self.assertRaises(RuntimeError):
-            schedule.finish(pops, {})
-        with self.assertRaises(RuntimeError):
-            schedule.run_criticality(0.0, lambda key: {"key": key, "completed": True})
-
-    def test_criticality_exact_keys_order_and_auto_completion(self):
-        schedule, _, _ = self.schedule()
-        pops = schedule.next_group(binding_rows_complete=True)
-        identity = pops[0].group_identity
-        for p in pops:
-            self.drive(p)
-        with self.assertRaises(ValueError):
-            schedule.run_criticality(.1, lambda key: {"key": key, "completed": True})
-        with self.assertRaises(ValueError):
-            schedule.run_criticality(0.0, lambda key: {"key": key, "completed": False})
-        for j in (0, .1, 1, 3):
-            actual = schedule.run_criticality(j, lambda key: {"key": key, "completed": True})
-            self.assertEqual(actual, criticality_key(identity, float(j)))
-        following = schedule.next_group(binding_rows_complete=True)
-        self.assertEqual(following[0].group_identity, schedule.ordered[1])
-        schedule.stop_gold()
-        report = schedule.gold_report()
-        self.assertEqual(report["groups"][0]["status"], "measured")
-        self.assertEqual(len(report["groups"][0]["populations"]), 5)
-        self.assertEqual(len(report["groups"][0]["criticality"]), 4)
-        self.assertEqual(report["pooled_group_indices"], [0])
-
-    def test_gold_before_during_and_after_last_trial_is_irreversible(self):
-        unstarted, _, _ = self.schedule()
-        with self.assertRaises(RuntimeError):
-            unstarted.gold_report()
-        unstarted.stop_gold()
-        self.assertTrue(all(g["status"] == "not completed by gold" for g in unstarted.gold_report()["groups"]))
-        for count in (1, 1999, 2000):
-            schedule, _, _ = self.schedule()
-            pops = schedule.next_group(binding_rows_complete=True)
-            self.drive(pops[0], count=count)
-            schedule.stop_gold()
-            before = schedule.gold_report()
-            self.assertEqual(before["groups"][0]["populations"][0]["executions"], count)
-            with self.assertRaises(RuntimeError):
-                pops[0].step(lambda _: True, lambda _: True)
-            with self.assertRaises(RuntimeError):
-                schedule.finish(pops, {})
-            self.assertEqual(before, schedule.gold_report())
-            self.assertEqual(before["events"][-1]["cause"], "gold")
-
-    def test_caps_at_execution_boundary_and_wall_clock_unpaused(self):
-        schedule, meter, _ = self.schedule()
-        p = schedule.next_group(binding_rows_complete=True)[0]
-        meter.core = 1440
-        self.drive(p, count=1)  # Actual meter is not multiplied by two.
-        meter.core = 2880
-        with self.assertRaises(RuntimeError):
-            p.step(lambda _: self.fail("gate ran after cap"), lambda _: True)
-        self.assertEqual(p.attempts, 1)
-        self.assertEqual(schedule.gold_report()["events"][-1]["cause"], "OC core-hour cap")
-        other, clock, _ = self.schedule()
-        q = other.next_group(binding_rows_complete=True)[0]
-        other.pause({"kind": "closure mismatch", "evidence_sha256": "a"*64})
-        clock.now += 15*86400
-        with self.assertRaises(RuntimeError):
-            other.resume({"kind": "reviewed integrity resolution", "evidence_sha256": "b"*64})
-        self.assertEqual(other.gold_report()["events"][-1]["cause"], "OC wall-day cap")
-        self.assertEqual(q.attempts, 0)
-
-    def test_cap_during_last_trial_and_criticality_freezes_partial_counts(self):
-        schedule, meter, _ = self.schedule()
-        p = schedule.next_group(binding_rows_complete=True)[0]
-        self.drive(p, count=1999)
-        def last_trial(_):
-            meter.core = 2880
-            return True
-        with self.assertRaises(RuntimeError):
-            p.step(lambda _: True, last_trial)
-        self.assertEqual(schedule.gold_report()["groups"][0]["populations"][0]["executions"], 2000)
-        other, _, _ = self.schedule()
-        pops = other.next_group(binding_rows_complete=True)
-        for population in pops:
-            self.drive(population)
-        for j in (0.0, .1, 1.0):
-            other.run_criticality(j, lambda key: {"key": key, "completed": True})
-        def gold_at_last_phase(key):
-            other.stop_gold()
+    def criticality_fault(self, bad):
+        s, _, _ = self.make()
+        self.seed_active(s, complete=True)
+        entered = threading.Event()
+        calls = []
+        def criticality(identity, j, key):
+            calls.append(key)
+            if len(calls) == 1:
+                entered.set()
+                if isinstance(bad, BaseException): raise bad
+                return bad
             return {"key": key, "completed": True}
-        with self.assertRaises(RuntimeError):
-            other.run_criticality(3.0, gold_at_last_phase)
-        frozen = other.gold_report()
-        self.assertEqual(frozen["groups"][0]["status"], "not completed by gold")
-        self.assertEqual(len(frozen["groups"][0]["criticality"]), 3)
-        self.assertEqual(frozen["pooled_group_indices"], [])
+        def calibration(profile, index, seed): s.stop_gold(); return self.prepared(profile, index, seed)
+        thread, errors = self.start_run(s, calibration=calibration, criticality=criticality)
+        self.assertTrue(entered.wait(10))
+        with s._condition: self.assertTrue(s._condition.wait_for(lambda: s.paused, timeout=10))
+        self.assertEqual(len(calls), 1)
+        s.resume(REVIEW)
+        thread.join(15)
+        self.assertFalse(thread.is_alive()); self.assertEqual(errors, [])
+        self.assertEqual(calls[0], calls[1])
+        self.assertEqual(len(calls), 5)
+        self.assertTrue(any(e["kind"] == "pause" and e["data"].get("incident", {}).get("phase") == "criticality" for e in s.events))
 
-    def test_integrity_pause_resume_preserves_attempt_and_group(self):
-        schedule, meter, _ = self.schedule()
-        p = schedule.next_group(binding_rows_complete=True)[0]
-        self.drive(p, count=3)
-        schedule.pause({"kind": "closure mismatch", "evidence_sha256": "a"*64})
-        with self.assertRaises(RuntimeError):
-            p.step(lambda _: True, lambda _: True)
-        with self.assertRaises(ValueError):
-            schedule.pause({"kind": "bad safety outcome", "evidence_sha256": "a"*64})
-        meter.now += 900
-        schedule.resume({"kind": "reviewed integrity resolution", "evidence_sha256": "b"*64})
+    def test_criticality_exception_is_latched(self): self.criticality_fault(RuntimeError("criticality crash"))
+    def test_criticality_malformed_is_latched(self): self.criticality_fault({"completed": "true"})
+    def test_criticality_baseexception_is_latched(self): self.criticality_fault(KeyboardInterrupt())
+
+    def test_replay_mid_attempt_and_after_gold_and_fixed_freeze(self):
+        s, meter, root = self.make()
+        lane = self.lane(s)
+        with self.assertRaises(c.Stopped): lane.step(lambda i: True, lambda i: (_ for _ in ()).throw(RuntimeError("loss")))
+        before = lane.report()
+        s.close()
+        recovered, _, _ = self.make(root=root, meter=meter)
+        self.assertTrue(recovered.paused)
+        self.assertEqual(recovered.freeze["oc_started_at"], 100000.)
+        self.assertEqual(recovered.freeze["p_gate"], .5)
+        recovered.resume(REVIEW)
+        restored = self.lane(recovered)
         seen = []
-        p.step(lambda i: seen.append(i) is None, lambda _: True)
-        self.assertEqual(seen, [3])
-        self.assertEqual(p.group_identity, schedule.ordered[0])
-        self.assertEqual([e["event"] for e in schedule.events], ["start", "pause", "resume"])
-        self.assertEqual(schedule.events[-1]["wall_seconds"], 900)
+        restored.step(lambda i: self.fail("recovery changed pending phase"), lambda i: seen.append(i) or True)
+        self.assertEqual(seen, [0])
+        self.assertEqual(restored.report()["attempts"], before["attempts"])
+        recovered.stop_gold(); frozen = recovered.gold_report(); recovered.close()
+        last, _, _ = self.make(root=root, meter=meter)
+        self.assertEqual(last.gold_report(), frozen)
+        self.assertEqual(last.run(None, None, None, None), frozen)
+        last.close()
+        with self.assertRaises(RuntimeError): self.make(root=root, meter=meter, oc_started_at=99999.)
+        with self.assertRaises(RuntimeError): self.make(root=root, meter=meter, p_gate=.4)
+        with self.assertRaises(RuntimeError): self.make(root=root, meter=meter, inventory_sha256="d"*64)
 
-    def test_crash_and_nonbool_latch_integrity_with_reconciled_counts(self):
-        for trial in (lambda _: (_ for _ in ()).throw(RuntimeError("synthetic crash")), lambda _: "false"):
-            schedule, _, _ = self.schedule()
-            p = schedule.next_group(binding_rows_complete=True)[0]
-            with self.assertRaises((RuntimeError, ValueError)):
-                p.step(lambda _: True, trial)
-            self.assertTrue(schedule.paused)
-            self.assertEqual((p.executions, p.eligible, p.inadequate, p.crashed), (1, 0, 0, 1))
-            self.assertEqual(p.report()["crashed"], 1)
-            with self.assertRaises(RuntimeError):
-                schedule.resume({"kind": "reviewed integrity resolution", "evidence_sha256": "b"*64})
-            schedule.resolve_crash(p, 0, False, {"kind": "reviewed integrity resolution", "evidence_sha256": "c"*64})
-            schedule.resume({"kind": "reviewed integrity resolution", "evidence_sha256": "b"*64})
-            self.assertEqual((p.executions, p.inadequate, p.crashed), (1, 1, 0))
-        with self.assertRaises(TypeError):
-            Population("identity", 0, .5, attempts=2000)
+    def test_process_lock_and_torn_tail_preserves_evidence(self):
+        s, meter, root = self.make()
+        lane = self.lane(s)
+        lane.step(lambda i: False, lambda i: True)
+        with self.assertRaises(RuntimeError): self.make(root=root, meter=meter)
+        s.close()
+        journal = root / "x1-oc-controller/journal.jsonl"
+        with journal.open("ab") as stream: stream.write(b'{"torn":')
+        original = journal.read_bytes()
+        recovered, _, _ = self.make(root=root, meter=meter)
+        self.assertTrue(recovered.paused)
+        self.assertTrue(journal.read_bytes().startswith(original))
+        self.assertTrue(recovered.events[-1]["data"]["tail_sha256"])
+        recovered.resume(REVIEW)
+        recovered.stop_gold(); expected = recovered.gold_report(); recovered.close()
+        again, _, _ = self.make(root=root, meter=meter)
+        self.assertEqual(again.gold_report(), expected)
 
-    def test_exhaustion_is_bound_only_to_active_group(self):
-        schedule, _, _ = self.schedule(1)
-        p = schedule.next_group(binding_rows_complete=True)[0]
-        for _ in range(4000):
-            p.step(lambda _: False, lambda _: self.fail("rejected gate executed"))
-        schedule.stop_gold()
-        report = schedule.gold_report()
-        self.assertEqual(report["groups"][0]["status"], "unmeasured; cell fails")
-        self.assertEqual(report["groups"][0]["populations"][0]["gate_failures"], 4000)
-        self.assertEqual(report["groups"][1]["status"], "not completed by gold")
-        self.assertEqual(report["groups"][1]["populations"], [])
-        self.assertEqual(report["pooled_group_indices"], [])
+    def test_meter_origin_decrease_and_fault_latch_without_meter_read(self):
+        s, meter, _ = self.make(oc_started_at=100000.-14*86400)
+        lane = self.lane(s)
+        meter.now += 86400
+        with self.assertRaises(c.Stopped): lane.step(lambda i: True, lambda i: True)
+        self.assertEqual(s.gold_report()["termination"]["cause"], "OC wall-day cap")
+        for fault in (float("nan"), -1., .5):
+            other, m, _ = self.make()
+            lease = self.lane(other)
+            m.core = 1.
+            lease.step(lambda i: False, lambda i: True)
+            m.core = fault
+            with self.assertRaises(c.Stopped): lease.step(lambda i: True, lambda i: True)
+            self.assertTrue(other.paused)
+            self.assertEqual(other.events[-1]["data"]["kind"], "meter integrity")
+        other, m, _ = self.make()
+        lease = self.lane(other)
+        m.now -= 1
+        with self.assertRaises(c.Stopped): lease.step(lambda i: True, lambda i: True)
+        self.assertTrue(other.paused)
 
-    def test_unreachable_provenance_advances_in_order_and_grid_completion_logged(self):
-        schedule, _, _ = self.schedule()
-        for index in range(2016):
-            pops = schedule.next_group(binding_rows_complete=True)
-            self.assertEqual(pops[0].group_identity, schedule.ordered[index])
-            record = {"group_identity": pops[0].group_identity, "reachable": False,
-                      "target": json.loads(pops[0].group_identity)[1]["realised_gain"], "calibration_source_sha256": "ed670a6bf8076d791c06cfc2426aff03a0a2f9b1730982cf3fdfb2ec13bc49a2"}
-            if index == 0:
-                with self.assertRaises(ValueError):
-                    schedule.mark_unreachable(record, "0"*64)
-                wrong_source = {**record, "calibration_source_sha256": "a"*64}
-                with self.assertRaises(ValueError):
-                    schedule.mark_unreachable(wrong_source, hashlib.sha256(canonical(wrong_source)).hexdigest())
-            schedule.mark_unreachable(record, hashlib.sha256(canonical(record)).hexdigest())
-        self.assertTrue(schedule.terminated)
-        report = schedule.gold_report()
-        self.assertEqual(report["events"][-1]["cause"], "grid complete")
-        self.assertEqual(report["pooled_group_indices"], [])
-        self.assertTrue(all(g["status"] == "unmeasured (unreachable target)" for g in report["groups"]))
-        self.assertTrue(all(p["attempts"] == 0 for g in report["groups"] for p in g["populations"]))
+    def test_private_readonly_state_and_completion_guard(self):
+        s, _, _ = self.make()
+        for field, value in (("terminated", False), ("paused", False), ("oc_started_at", 0), ("manifest", {})):
+            with self.assertRaises(AttributeError): setattr(s, field, value)
+        with self.assertRaises(TypeError): s.manifest["final_safety_OC"]["critical_j"][0] = 9
+        self.seed_active(s, complete=True)
+        with s._state_lock, self.assertRaises(RuntimeError): s._complete("measured")
+        self.assertFalse(hasattr(s, "finish"))
+        s.stop_gold()
+        with self.assertRaises(AttributeError): s.terminated = False
+        with self.assertRaises(c.Stopped): self.lane(s)
+        report = s.gold_report(); report["groups"].clear()
+        self.assertEqual(len(s.gold_report()["groups"]), 2016)
 
-    def test_outcome_independent_dispatch_events_statuses_and_integrity_stop(self):
-        outcomes = []
-        for adequate in (False, True):
-            schedule, _, _ = self.schedule()
-            self.finish_group(schedule, adequate=adequate)
-            next_identity = schedule.next_group(binding_rows_complete=True)[0].group_identity
-            schedule.stop_integrity({"kind": "independent OS malfunction", "evidence_sha256": "a"*64})
-            report = schedule.gold_report()
-            outcomes.append((next_identity, report["events"], [g["status"] for g in report["groups"]]))
-        self.assertEqual(outcomes[0], outcomes[1])
+    def test_actual_process_loss_mid_safety_replays_same_attempt_and_seeds(self):
+        with tempfile.TemporaryDirectory() as directory:
+            code = """
+import json, os, sys
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+import controller as c
+root = Path(sys.argv[2])
+s = c.SafetySchedule(p_gate=.5, inventory_sha256='c'*64, meter=lambda: 0.,
+                     oc_started_at=100000., clock=lambda: 100000., run_root=root)
+def prepare(profile, index, seed):
+    d = json.loads(profile)[1]
+    return c._kernel().prepare_population(seed=seed, run_count=1, sizes=(50,),
+        prevalence=d['prevalence'], cap=d['cap_M'])
+def crash(identity, index, attempt, seeds):
+    (root/'child-seeds.json').write_text(json.dumps(seeds, sort_keys=True))
+    os._exit(17)
+s.run(lambda *a: True, crash, prepare, lambda *a: {})
+"""
+            result = subprocess.run([sys.executable, "-c", code, str(HERE), directory], timeout=30)
+            self.assertEqual(result.returncode, 17)
+            s, meter, _ = self.make(root=Path(directory))
+            self.assertTrue(s.paused)
+            s.resume(REVIEW)
+            seen = []
+            def trial(identity, index, attempt, seeds):
+                seen.append((index, attempt, seeds))
+                meter.core = 2880
+                return True
+            s.run(lambda *a: self.fail("pending trial reran gate"), trial,
+                  lambda *a: self.fail("completed calibration repeated"), lambda *a: {})
+            self.assertEqual(len(seen), 1)
+            self.assertEqual(seen[0][:2], (0, 0))
+            self.assertEqual(seen[0][2], json.loads((Path(directory)/"child-seeds.json").read_text()))
+            first = self.assert_report(s)["groups"][0]["populations"][0]
+            self.assertEqual((first["attempts"], first["executions"], first["eligible"]), (1, 1, 1))
 
-    def test_probability_meter_and_wilson_boundaries(self):
-        for value in (float("nan"), -1, 0, 1.01, True):
-            with self.assertRaises(ValueError):
-                self.schedule(value)
-        schedule, meter, _ = self.schedule(.3)
-        p = schedule.binding_population("binding", 0)
-        self.assertEqual(p.attempt_cap, 13334)
-        for value in (-1, float("nan"), True):
-            meter.core = value
-            with self.assertRaises(ValueError):
-                p.step(lambda _: True, lambda _: True)
-        # Independent 60-digit Decimal endpoint: z²/(2000+z²), z=1.959963984540054.
-        self.assertAlmostEqual(wilson(0, 2000)[1], 0.001917047281252934, places=14)
-        self.assertAlmostEqual(wilson(2000, 2000)[0], 0.9980829527187471, places=14)
-        self.assertEqual(wilson(0, 0), None)
+
+    def test_unfinished_binding_refuses_safety_and_grid_complete(self):
+        s, _, _ = self.make()
+        lane = self.lane(s)
+        def stop_calibration(*args):
+            s.stop_gold()
+            return self.prepared(*args)
+        with self.assertRaises(RuntimeError): s.run(None, None, stop_calibration, None)
+        with self.assertRaises(c.Stopped): lane.step(lambda i: True, lambda i: (_ for _ in ()).throw(RuntimeError()))
+        s.resume(REVIEW)
+        with self.assertRaises(RuntimeError): s.run(None, None, stop_calibration, None)
+        other, _, _ = self.make()
+        # Seed a completed-grid transition fixture; no claim to have run full OC.
+        other._completed = [{"identity": identity, "status": "measured", "populations": [], "calibration": [], "criticality": {}} for identity in other.ordered]
+        report = other.run(None, None, None, None)
+        self.assertEqual(report["termination"]["cause"], "grid complete")
+        self.assert_report(other)
+
+    def test_gold_cap_and_completion_races_are_single_atomic_termination(self):
+        for race in ("cap", "completion"):
+            s, meter, _ = self.make()
+            if race == "completion":
+                self.seed_active(s, complete=True)
+                with s._state_lock:
+                    for j in s._critical_j:
+                        key = c.criticality_key(s.ordered[0], j)
+                        s._emit("criticality", {"key": key, "record": {"key": key, "completed": True}})
+            barrier = threading.Barrier(3)
+            errors = []
+            def first(): barrier.wait(); s.stop_gold()
+            def second():
+                barrier.wait()
+                try:
+                    with s._state_lock:
+                        if race == "cap": meter.core = 2880; s._boundary()
+                        else: s._complete("measured")
+                except c.Stopped: pass
+                except BaseException as error: errors.append(error)
+            threads = [threading.Thread(target=first), threading.Thread(target=second)]
+            for thread in threads: thread.start()
+            barrier.wait()
+            for thread in threads: thread.join(10)
+            self.assertEqual(errors, [])
+            self.assert_report(s)
+
+
+    def test_fault_arriving_after_reviewed_resume_latches_new_incident(self):
+        for phase in ("gate", "trial"):
+            s, _, _ = self.make()
+            lane = self.lane(s)
+            inside, release = threading.Event(), threading.Event()
+            errors = []
+            def late_fault(index):
+                inside.set()
+                release.wait(10)
+                raise RuntimeError("fault observed after earlier resolution")
+            def work():
+                try:
+                    lane.step(late_fault if phase == "gate" else lambda i: True,
+                              late_fault if phase == "trial" else lambda i: True)
+                except c.Stopped:
+                    pass
+                except BaseException as error:
+                    errors.append(error)
+            thread = threading.Thread(target=work)
+            thread.start()
+            self.assertTrue(inside.wait(10))
+            s.pause(PAUSE)
+            s.resume(REVIEW)
+            release.set()
+            thread.join(10)
+            self.assertEqual(errors, [])
+            self.assertTrue(s.paused)
+            self.assertEqual(len(lane.report()["incidents"]), 1)
+            s.resume(REVIEW)
+            lane.step(lambda i: True, lambda i: True)
+            self.assertEqual(lane.report()["attempts"], 1)
 
 
 if __name__ == "__main__":

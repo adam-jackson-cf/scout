@@ -1,0 +1,627 @@
+SHA256 evaluator.py 940480b9190971549acb2abd20cd9853c67a377a45cf3b1ab2ccd927d96f7eed
+SHA256 provenance.py 5742d827f9e080a9934b39f94670cdecaba8bf74c6b58bcfd65d3a230e8c3932
+SHA256 test_evaluator.py 9948edea3d09902c6609362fc13cbeb010813097526a1b1d023859369ea60703
+SHA256 mutate_round2.py e09b53c2a19ec2f09c207bfbec0c08fd633b932839f4ecff334d860c2a3191a9
+
+MUTANT R2-01-resource-row-gate
+COMMAND ['/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python', '/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-gezwhwta/x1/stage3-drafts/final-evaluator/test_evaluator.py', '-v', 'EvaluatorTests.test_resource_fit_propagates_to_every_row']
+test_resource_fit_propagates_to_every_row (__main__.EvaluatorTests.test_resource_fit_propagates_to_every_row) ... FAIL
+
+======================================================================
+FAIL: test_resource_fit_propagates_to_every_row (__main__.EvaluatorTests.test_resource_fit_propagates_to_every_row)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-gezwhwta/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 296, in test_resource_fit_propagates_to_every_row
+    self.assertEqual(failed["status"], "not testable before dev")
+AssertionError: 'draft_synthetic_rows_passed' != 'not testable before dev'
+- draft_synthetic_rows_passed
++ not testable before dev
+
+
+----------------------------------------------------------------------
+Ran 1 test in 4.750s
+
+FAILED (failures=1)
+RESULT R2-01-resource-row-gate KILLED
+
+MUTANT R2-02-signed-manifest-pin
+COMMAND ['/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python', '/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-_k7_nu01/x1/stage3-drafts/final-evaluator/test_evaluator.py', '-v', 'EvaluatorTests.test_signed_manifest_pin_with_consistent_bundle_resealing']
+test_signed_manifest_pin_with_consistent_bundle_resealing (__main__.EvaluatorTests.test_signed_manifest_pin_with_consistent_bundle_resealing) ... FAIL
+
+======================================================================
+FAIL: test_signed_manifest_pin_with_consistent_bundle_resealing (__main__.EvaluatorTests.test_signed_manifest_pin_with_consistent_bundle_resealing)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-_k7_nu01/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 143, in test_signed_manifest_pin_with_consistent_bundle_resealing
+    with self.assertRaisesRegex(ValueError, "substituted signed manifest bytes"):
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 2.967s
+
+FAILED (failures=1)
+RESULT R2-02-signed-manifest-pin KILLED
+
+MUTANT R2-03-missing-finite-gain
+COMMAND ['/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python', '/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-zae44l9x/x1/stage3-drafts/final-evaluator/test_evaluator.py', '-v', 'EvaluatorTests.test_nonfinite_exponent_gain_bytes_fail_cells']
+test_nonfinite_exponent_gain_bytes_fail_cells (__main__.EvaluatorTests.test_nonfinite_exponent_gain_bytes_fail_cells) ... 
+  test_nonfinite_exponent_gain_bytes_fail_cells (__main__.EvaluatorTests.test_nonfinite_exponent_gain_bytes_fail_cells) (kind='missing', target=0, exponent=b'-1e400') ... FAIL
+  test_nonfinite_exponent_gain_bytes_fail_cells (__main__.EvaluatorTests.test_nonfinite_exponent_gain_bytes_fail_cells) (kind='missing', target=0.2, exponent=b'1e400') ... FAIL
+
+======================================================================
+FAIL: test_nonfinite_exponent_gain_bytes_fail_cells (__main__.EvaluatorTests.test_nonfinite_exponent_gain_bytes_fail_cells) (kind='missing', target=0, exponent=b'-1e400')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-zae44l9x/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 243, in test_nonfinite_exponent_gain_bytes_fail_cells
+    self.assertIs(result["cell_reports"][key]["passed"], False)
+AssertionError: True is not False
+
+======================================================================
+FAIL: test_nonfinite_exponent_gain_bytes_fail_cells (__main__.EvaluatorTests.test_nonfinite_exponent_gain_bytes_fail_cells) (kind='missing', target=0.2, exponent=b'1e400')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-zae44l9x/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 243, in test_nonfinite_exponent_gain_bytes_fail_cells
+    self.assertIs(result["cell_reports"][key]["passed"], False)
+AssertionError: True is not False
+
+----------------------------------------------------------------------
+Ran 1 test in 28.689s
+
+FAILED (failures=2)
+RESULT R2-03-missing-finite-gain KILLED
+
+MUTANT R1-05-reference-finite-gain
+COMMAND ['/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python', '/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-m67w3_j3/x1/stage3-drafts/final-evaluator/test_evaluator.py', '-v', 'EvaluatorTests.test_nonfinite_exponent_gain_bytes_fail_cells']
+test_nonfinite_exponent_gain_bytes_fail_cells (__main__.EvaluatorTests.test_nonfinite_exponent_gain_bytes_fail_cells) ... 
+  test_nonfinite_exponent_gain_bytes_fail_cells (__main__.EvaluatorTests.test_nonfinite_exponent_gain_bytes_fail_cells) (kind='calibrated-reference', target=0, exponent=b'-1e400') ... FAIL
+  test_nonfinite_exponent_gain_bytes_fail_cells (__main__.EvaluatorTests.test_nonfinite_exponent_gain_bytes_fail_cells) (kind='calibrated-reference', target=0.2, exponent=b'1e400') ... FAIL
+
+======================================================================
+FAIL: test_nonfinite_exponent_gain_bytes_fail_cells (__main__.EvaluatorTests.test_nonfinite_exponent_gain_bytes_fail_cells) (kind='calibrated-reference', target=0, exponent=b'-1e400')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-m67w3_j3/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 243, in test_nonfinite_exponent_gain_bytes_fail_cells
+    self.assertIs(result["cell_reports"][key]["passed"], False)
+AssertionError: True is not False
+
+======================================================================
+FAIL: test_nonfinite_exponent_gain_bytes_fail_cells (__main__.EvaluatorTests.test_nonfinite_exponent_gain_bytes_fail_cells) (kind='calibrated-reference', target=0.2, exponent=b'1e400')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-m67w3_j3/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 243, in test_nonfinite_exponent_gain_bytes_fail_cells
+    self.assertIs(result["cell_reports"][key]["passed"], False)
+AssertionError: True is not False
+
+----------------------------------------------------------------------
+Ran 1 test in 29.299s
+
+FAILED (failures=2)
+RESULT R1-05-reference-finite-gain KILLED
+
+MUTANT R2-04-host-identity
+COMMAND ['/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python', '/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py', '-v', 'EvaluatorTests.test_complete_host_and_load_provenance']
+test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) ... 
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.memsize': 68719476736, 'logical_cpus': 18, 'os_build': 'synthetic-os'}) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 1, 'hw.memsize': 68719476736, 'logical_cpus': 18, 'os_build': 'synthetic-os'}) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': '', 'hw.memsize': 68719476736, 'logical_cpus': 18, 'os_build': 'synthetic-os'}) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'logical_cpus': 18, 'os_build': 'synthetic-os'}) ... ERROR
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': '68719476736', 'logical_cpus': 18, 'os_build': 'synthetic-os'}) ... ERROR
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': True, 'logical_cpus': 18, 'os_build': 'synthetic-os'}) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 0, 'logical_cpus': 18, 'os_build': 'synthetic-os'}) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 68719476736, 'os_build': 'synthetic-os'}) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 68719476736, 'logical_cpus': '18', 'os_build': 'synthetic-os'}) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 68719476736, 'logical_cpus': True, 'os_build': 'synthetic-os'}) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 68719476736, 'logical_cpus': 0, 'os_build': 'synthetic-os'}) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 68719476736, 'logical_cpus': 18}) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 68719476736, 'logical_cpus': 18, 'os_build': 1}) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 68719476736, 'logical_cpus': 18, 'os_build': ''}) ... FAIL
+
+======================================================================
+ERROR: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'logical_cpus': 18, 'os_build': 'synthetic-os'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 321, in test_complete_host_and_load_provenance
+    self.gate(host=host, runs=[{**self.measurement_run, "host": host}])
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 51, in gate
+    return evaluate(self.manifest_bytes, provenance_payloads=payloads,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/evaluator.py", line 136, in evaluate
+    resources = resource_fit(maximum, inventory, manifest, oc["host"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/evaluator.py", line 85, in resource_fit
+    return {"passed": hours <= 2880 and wall <= 15 and 8*rss <= host["hw.memsize"]-8*1024**3,
+                                                                ~~~~^^^^^^^^^^^^^^
+KeyError: 'hw.memsize'
+
+======================================================================
+ERROR: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': '68719476736', 'logical_cpus': 18, 'os_build': 'synthetic-os'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 321, in test_complete_host_and_load_provenance
+    self.gate(host=host, runs=[{**self.measurement_run, "host": host}])
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 51, in gate
+    return evaluate(self.manifest_bytes, provenance_payloads=payloads,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/evaluator.py", line 136, in evaluate
+    resources = resource_fit(maximum, inventory, manifest, oc["host"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/evaluator.py", line 85, in resource_fit
+    return {"passed": hours <= 2880 and wall <= 15 and 8*rss <= host["hw.memsize"]-8*1024**3,
+                                                                ~~~~~~~~~~~~~~~~~~^~~~~~~~~~
+TypeError: unsupported operand type(s) for -: 'str' and 'int'
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.memsize': 68719476736, 'logical_cpus': 18, 'os_build': 'synthetic-os'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 320, in test_complete_host_and_load_provenance
+    with self.subTest(host=host), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 1, 'hw.memsize': 68719476736, 'logical_cpus': 18, 'os_build': 'synthetic-os'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 320, in test_complete_host_and_load_provenance
+    with self.subTest(host=host), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': '', 'hw.memsize': 68719476736, 'logical_cpus': 18, 'os_build': 'synthetic-os'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 320, in test_complete_host_and_load_provenance
+    with self.subTest(host=host), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': True, 'logical_cpus': 18, 'os_build': 'synthetic-os'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 320, in test_complete_host_and_load_provenance
+    with self.subTest(host=host), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 0, 'logical_cpus': 18, 'os_build': 'synthetic-os'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 320, in test_complete_host_and_load_provenance
+    with self.subTest(host=host), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 68719476736, 'os_build': 'synthetic-os'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 320, in test_complete_host_and_load_provenance
+    with self.subTest(host=host), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 68719476736, 'logical_cpus': '18', 'os_build': 'synthetic-os'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 320, in test_complete_host_and_load_provenance
+    with self.subTest(host=host), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 68719476736, 'logical_cpus': True, 'os_build': 'synthetic-os'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 320, in test_complete_host_and_load_provenance
+    with self.subTest(host=host), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 68719476736, 'logical_cpus': 0, 'os_build': 'synthetic-os'})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 320, in test_complete_host_and_load_provenance
+    with self.subTest(host=host), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 68719476736, 'logical_cpus': 18})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 320, in test_complete_host_and_load_provenance
+    with self.subTest(host=host), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 68719476736, 'logical_cpus': 18, 'os_build': 1})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 320, in test_complete_host_and_load_provenance
+    with self.subTest(host=host), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (host={'hw.model': 'synthetic-host', 'hw.memsize': 68719476736, 'logical_cpus': 18, 'os_build': ''})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-10rmxl2r/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 320, in test_complete_host_and_load_provenance
+    with self.subTest(host=host), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 39.710s
+
+FAILED (failures=12, errors=2)
+RESULT R2-04-host-identity KILLED
+
+MUTANT R2-04-load-provenance
+COMMAND ['/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python', '/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-6zve1n1n/x1/stage3-drafts/final-evaluator/test_evaluator.py', '-v', 'EvaluatorTests.test_complete_host_and_load_provenance']
+test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) ... 
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='load_averages', value=[0, 0]) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='load_averages', value=[0, -1, 0]) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='load_averages', value=[0, '0', 0]) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='load_averages', value=[0, True, 0]) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='load_averages', value=None) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='concurrent_process_count', value=0) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='concurrent_process_count', value=True) ... FAIL
+  test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='concurrent_process_count', value=None) ... FAIL
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='load_averages', value=[0, 0])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-6zve1n1n/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 328, in test_complete_host_and_load_provenance
+    with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='load_averages', value=[0, -1, 0])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-6zve1n1n/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 328, in test_complete_host_and_load_provenance
+    with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='load_averages', value=[0, '0', 0])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-6zve1n1n/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 328, in test_complete_host_and_load_provenance
+    with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='load_averages', value=[0, True, 0])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-6zve1n1n/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 328, in test_complete_host_and_load_provenance
+    with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='load_averages', value=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-6zve1n1n/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 328, in test_complete_host_and_load_provenance
+    with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='concurrent_process_count', value=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-6zve1n1n/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 328, in test_complete_host_and_load_provenance
+    with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='concurrent_process_count', value=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-6zve1n1n/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 328, in test_complete_host_and_load_provenance
+    with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_host_and_load_provenance (__main__.EvaluatorTests.test_complete_host_and_load_provenance) (field='concurrent_process_count', value=None)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-6zve1n1n/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 328, in test_complete_host_and_load_provenance
+    with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 33.314s
+
+FAILED (failures=8)
+RESULT R2-04-load-provenance KILLED
+
+MUTANT R2-05-point-cutoff
+COMMAND ['/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python', '/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-n4dpktf0/x1/stage3-drafts/final-evaluator/test_evaluator.py', '-v', 'EvaluatorTests.test_ordered_typed_verdict_and_interval_boundaries']
+test_ordered_typed_verdict_and_interval_boundaries (__main__.EvaluatorTests.test_ordered_typed_verdict_and_interval_boundaries) ... FAIL
+
+======================================================================
+FAIL: test_ordered_typed_verdict_and_interval_boundaries (__main__.EvaluatorTests.test_ordered_typed_verdict_and_interval_boundaries)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-n4dpktf0/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 412, in test_ordered_typed_verdict_and_interval_boundaries
+    self.assertEqual(verdict(**{**effect, **patch}), want)
+AssertionError: 'support' != 'inconclusive'
+- support
++ inconclusive
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.035s
+
+FAILED (failures=1)
+RESULT R2-05-point-cutoff KILLED
+
+MUTANT R2-05-reversed-interval
+COMMAND ['/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python', '/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-ag97eu51/x1/stage3-drafts/final-evaluator/test_evaluator.py', '-v', 'EvaluatorTests.test_ordered_typed_verdict_and_interval_boundaries']
+test_ordered_typed_verdict_and_interval_boundaries (__main__.EvaluatorTests.test_ordered_typed_verdict_and_interval_boundaries) ... FAIL
+
+======================================================================
+FAIL: test_ordered_typed_verdict_and_interval_boundaries (__main__.EvaluatorTests.test_ordered_typed_verdict_and_interval_boundaries)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-ag97eu51/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 412, in test_ordered_typed_verdict_and_interval_boundaries
+    self.assertEqual(verdict(**{**effect, **patch}), want)
+AssertionError: 'support' != 'inconclusive'
+- support
++ inconclusive
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.034s
+
+FAILED (failures=1)
+RESULT R2-05-reversed-interval KILLED
+
+MUTANT R2-06-bootstrap-truthiness
+COMMAND ['/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python', '/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py', '-v', 'EvaluatorTests.test_complete_typed_bootstrap_evidence']
+test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) ... 
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (value=True) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (value='false') ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (value={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0, 'extra': 1}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_means', evidence={'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_means', evidence={'bootstrap_means': 9999, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_means', evidence={'bootstrap_means': 10000.0, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_means', evidence={'bootstrap_means': True, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_seed', evidence={'bootstrap_means': 10000, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_seed', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169301, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_seed', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300.0, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_seed', evidence={'bootstrap_means': 10000, 'bootstrap_seed': True, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='resampling_unit', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='resampling_unit', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='resampling_unit', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': True, 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='one_sided_level', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='one_sided_level', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.9, 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='one_sided_level', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 1, 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='one_sided_level', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': True, 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='one_sided_level', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': '.95', 'unknown_or_incomplete_receipts': 0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='unknown_or_incomplete_receipts', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='unknown_or_incomplete_receipts', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 1}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='unknown_or_incomplete_receipts', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0.0}) ... FAIL
+  test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='unknown_or_incomplete_receipts', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': False}) ... FAIL
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (value=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 382, in test_complete_typed_bootstrap_evidence
+    with self.subTest(value=value), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (value='false')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 382, in test_complete_typed_bootstrap_evidence
+    with self.subTest(value=value), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (value={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0, 'extra': 1})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 382, in test_complete_typed_bootstrap_evidence
+    with self.subTest(value=value), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_means', evidence={'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_means', evidence={'bootstrap_means': 9999, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_means', evidence={'bootstrap_means': 10000.0, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_means', evidence={'bootstrap_means': True, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_seed', evidence={'bootstrap_means': 10000, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_seed', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169301, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_seed', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300.0, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='bootstrap_seed', evidence={'bootstrap_means': 10000, 'bootstrap_seed': True, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='resampling_unit', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='resampling_unit', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='resampling_unit', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': True, 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='one_sided_level', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='one_sided_level', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.9, 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='one_sided_level', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 1, 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='one_sided_level', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': True, 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='one_sided_level', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': '.95', 'unknown_or_incomplete_receipts': 0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='unknown_or_incomplete_receipts', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='unknown_or_incomplete_receipts', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 1})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='unknown_or_incomplete_receipts', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': 0.0})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) (field='unknown_or_incomplete_receipts', evidence={'bootstrap_means': 10000, 'bootstrap_seed': 169300, 'resampling_unit': 'run-cluster', 'one_sided_level': 0.95, 'unknown_or_incomplete_receipts': False})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-wgz0gg5u/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 392, in test_complete_typed_bootstrap_evidence
+    with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 34.372s
+
+FAILED (failures=23)
+RESULT R2-06-bootstrap-truthiness KILLED
+
+MUTANT R2-06-bootstrap-inverse
+COMMAND ['/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python', '/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-ji3ypvu4/x1/stage3-drafts/final-evaluator/test_evaluator.py', '-v', 'EvaluatorTests.test_complete_typed_bootstrap_evidence']
+test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence) ... FAIL
+
+======================================================================
+FAIL: test_complete_typed_bootstrap_evidence (__main__.EvaluatorTests.test_complete_typed_bootstrap_evidence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-ji3ypvu4/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 377, in test_complete_typed_bootstrap_evidence
+    selected = self.select(pre)
+               ^^^^^^^^^^^^^^^^
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-ji3ypvu4/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 63, in select
+    return select_postdev(predev["sealed_result"], predev["result_sha256"],
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-ji3ypvu4/x1/stage3-drafts/final-evaluator/evaluator.py", line 220, in select_postdev
+    raise ValueError("unbound/unmeasured Mhat/c_U evidence")
+ValueError: unbound/unmeasured Mhat/c_U evidence
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-evaluator-r2-ji3ypvu4/x1/stage3-drafts/final-evaluator/test_evaluator.py", line 379, in test_complete_typed_bootstrap_evidence
+    self.fail(f"complete typed bootstrap evidence was refused: {exc}")
+AssertionError: complete typed bootstrap evidence was refused: unbound/unmeasured Mhat/c_U evidence
+
+----------------------------------------------------------------------
+Ran 1 test in 3.687s
+
+FAILED (failures=1)
+RESULT R2-06-bootstrap-inverse KILLED
+
+SUMMARY 10/10 mutants killed

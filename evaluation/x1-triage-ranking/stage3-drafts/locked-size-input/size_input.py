@@ -3,7 +3,6 @@ from dataclasses import dataclass
 import hashlib
 import importlib.util
 import json
-import math
 from pathlib import Path
 import random
 import re
@@ -23,15 +22,19 @@ def canonical(value):
     return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
 
 
-def controller_seed(cell, population, attempt, phase):
-    # Explicit file import: the controller alone owns the manifest seed convention.
+def controller():
+    # Explicit file import: the controller owns seed and Wilson conventions.
     name = "x1_locked_size_controller"
     if name not in sys.modules:
         spec = importlib.util.spec_from_file_location(name, CONTROLLER_PATH)
         module = importlib.util.module_from_spec(spec)
         sys.modules[name] = module
         spec.loader.exec_module(module)
-    return sys.modules[name].seed(cell, population, attempt, phase)
+    return sys.modules[name]
+
+
+def controller_seed(cell, population, attempt, phase):
+    return controller().seed(cell, population, attempt, phase)
 
 
 def _hex(value, width):
@@ -116,11 +119,9 @@ class SizeInput:
 
     def estimate_p_gate(self):
         successes = sum(self.gate_selection(i)[1] for i in range(DRAWS))
-        p, z = successes/DRAWS, 1.959963984540054
-        centre = (p+z*z/(2*DRAWS))/(1+z*z/DRAWS)
-        half = z*math.sqrt(p*(1-p)/DRAWS+z*z/(4*DRAWS*DRAWS))/(1+z*z/DRAWS)
+        p = successes/DRAWS
         return {"draws": DRAWS, "successes": successes, "p_gate": p,
-                "Wilson_MC95": [centre-half, centre+half],
+                "Wilson_MC95": controller().wilson(successes, DRAWS),
                 "attempt_cap_per_population": (4000*DRAWS+successes-1)//successes if successes else None,
                 "hard_trial_execution_cap_per_population": 4000,
                 "status": "estimated" if successes else "not testable",

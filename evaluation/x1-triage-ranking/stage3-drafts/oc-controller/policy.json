@@ -1,0 +1,19 @@
+{
+  "binding_workers": 8,
+  "binding_scheduling": "eight fixed slots 0-7; one nonreentrant serial-attempt lease per slot; shared state lock and actual meter",
+  "safety_scheduling": "controller-owned run loop; increasing population indices 0-4 serially; slots 5-7 reserved idle; no external per-step safety API",
+  "group_order": "ascending HMAC-SHA256 of signed population_identity UTF-8 bytes; byte-order tie break",
+  "calibration": "signed kernel calibrates all five prepared populations before any attempt; first-profile disclosure and reachability reused across all six kappa groups",
+  "criticality_order": [0.0, 0.1, 1.0, 3.0],
+  "criticality_scheduling": "four synchronous phases after all population lanes stop; completion requires all four records",
+  "meter": "raw cumulative binding-plus-safety core-hours; no x2 multiplier",
+  "wall_clock": "absolute first-full-OC origin frozen with p_gate and its inventory digest; never paused or reset",
+  "limits": {"core_hours": 2880, "wall_days": 15},
+  "boundary": "shared state lock before dispatch, gate, trial, criticality, completion and counter commits; caps use >=",
+  "inflight": "durable trial-start is the linearization point; cap observed after return retains result; gold, integrity stop or pause during work leaves it charged and unclassified; no trial starts after a gate-window stop",
+  "integrity": "gate, trial, calibration, criticality and meter faults latch a recorded pause; reviewed resume re-executes the same pending phase/index and seeds; no asserted outcome",
+  "durability": "fixed controller-owned run directory; exclusive process lock; create-once freeze; hash-chained fsync append-before-apply journal; replay or recorded process-loss pause; terminated replay is immutable",
+  "timestamps": "journal group dispatch/completion, lane start/stop, calibration and criticality starts/stops and every pause/termination",
+  "start": "after every leased binding population completes or exhausts with no pending fault",
+  "authority": "synthetic draft only; no stage authority"
+}
