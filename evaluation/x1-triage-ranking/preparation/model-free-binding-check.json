@@ -1,0 +1,24 @@
+{
+  "schema": "scout.x1.model-free-binding-check.v1",
+  "status": "unexecuted acceptance recipe; no pass or stage authority",
+  "authority": "Preparation action 3 permits implementation and fixture acceptance only after its scoped zero-issue review. No frame or development collection is permitted. Inventory additionally requires sealed passing evidence and its own review.",
+  "fixtures": [
+    "Synthetic repository with differing commit/parent policies, nonempty scanner issue IDs, and deliberately enabled model settings before the binding is applied.",
+    "django/django pinned tip a05e16a7230fe33d3f43f4a3aaed103cebb42efc and its first parent. Resolve and seal the exact parent SHA after authorised object fetch, before acceptance. No moving refs or substituted pair."
+  ],
+  "policy_source": "evaluation/x1-triage-ranking/preparation/model-free-policy.json",
+  "binding_requirement": "Bind policy loading at both commit and parent; a working-directory file alone is not an override because policy.Load reads base-ref policy. Preserve scanner/rule/tool/evidence bytes and issue identity.",
+  "required_checks_per_fixture": [
+    "Before invoking fixture scanners, capture both resolved effective policies: decisions.enabled=false, model_cli.lanes=[], mapping.association.enabled=false, and heuristic-only mapping.",
+    "OPENROUTER_API_KEY is absent; record only the presence boolean, never its value or environment contents.",
+    "Capture all child-process starts and argv under a no-model process interlock. Any attempted or actual claude/codex start fails acceptance; never run a real CLI or model to test the interlock. Synthetic-only positive control: with key absent and binding deliberately not applied, place logging claude/codex stubs first on PATH and at any configured CLI paths. Each records argv and exits non-zero. Require capture of attempted starts and interlock failure; then require no starts in the bound run.",
+    "Compare sorted complete issue-ID sets to a scanner-only reference without the override, with identical pinned scanner/rule/tool inputs and the same key/process interlock. Require exact equality at commit and parent. Do not invoke model-enabled decision stages for this reference."
+  ],
+  "required_sealed_evidence": [
+    "Authentic scoped preparation authority; fixture source and exact commit/parent SHAs; all source/runtime/scanner/policy digests; commands and timestamps",
+    "Unbound synthetic resolved policy showing model settings enabled and positive-control argv/interlock failure; bound resolved effective policy at both revisions, absence boolean, complete process argv log and exact issue-ID equality result for each fixture",
+    "Actual fixture outputs, immutable hashes and passing review record; no JSON approval flag substitutes for the records"
+  ],
+  "refusal": "Any missing, stale, substituted, failed or unmeasured check refuses frame/dev scans and inventory advancement. Fixture output cannot be used as collected inventory or sample-selection evidence.",
+  "executed_here": false
+}

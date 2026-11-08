@@ -1,0 +1,121 @@
+{
+  "checks": [
+    "Go heterogeneous zero/nonzero variance classification",
+    "Python vertex/complete interval parity",
+    "Python constant-ratio zero variance classification",
+    "Python nonzero variance control",
+    "Repositories byte-identical interval",
+    "Vertices byte-identical interval",
+    "source provenance unchanged during supplement"
+  ],
+  "checks_passed": 7,
+  "go": {
+    "Repositories": {
+      "BootstrapSD": 4.664103458530475e-15,
+      "Capped": 0,
+      "Interval": [
+        0.20000000000000004,
+        0.20000000000000004
+      ],
+      "Omitted": 0,
+      "Point": 0.20000000000000004,
+      "Skew": -0.999999999999998
+    },
+    "Vertices": {
+      "Combinations": 1,
+      "GainRange": [
+        0.20000000000000004,
+        0.20000000000000004
+      ],
+      "Interval": [
+        0.20000000000000004,
+        0.20000000000000004
+      ],
+      "Omitted": 0
+    }
+  },
+  "go_classification_test": "=== RUN   TestHeterogeneousInexactRatioClassification\n--- PASS: TestHeterogeneousInexactRatioClassification (0.00s)\nPASS\n",
+  "provenance": {
+    "binary_sha256": "c6adbe8a9194adf2660e5df8cf5d2cf936c5a76c5260f092c07265a75519543f",
+    "classification_test_binary_sha256": "e990400d736932dbd30e51b361be06a7d1a4d05934e6086578ad22404311315d",
+    "go_version": "go version go1.26.10 darwin/arm64",
+    "python_executable": "/Users/adamjackson/Projects/work/scout-x1/.tools/venv/bin/python",
+    "python_executable_sha256": "570b41051d135bcfc011b41272224f7cc66b0d0e7f735761dcb8611029f51d6d",
+    "python_optimize": 0,
+    "python_version": "3.11.11",
+    "script_sha256": {
+      "/Users/adamjackson/Projects/work/scout-x1/evaluation/x1-triage-ranking/validation/interval_diagnostic.go": "437f9c2559156f8befb613d3e17f19e2aad5437217081dbd4a1d0fb95c069417",
+      "/Users/adamjackson/Projects/work/scout-x1/evaluation/x1-triage-ranking/validation/kernel_rounding.py": "906d385f59ec61d0ba1c508cad3295b561f7a3504e9933e335a246751b657c23",
+      "/Users/adamjackson/Projects/work/scout-x1/evaluation/x1-triage-ranking/validation/kernel_rounding_test.go": "33bde17be1cf67a0da47661f384901e79b60915f5cb8e6fd9d2f0652b1ff8def",
+      "/Users/adamjackson/Projects/work/scout-x1/evaluation/x1-triage-ranking/validation/ranking.py": "8bc2e7cbbc5da6ba47aeff3effb5dd04d5e5ecc9c1e01051647900095770a780"
+    }
+  },
+  "python_complete": [
+    0.20000000000000004,
+    [
+      0.20000000000000004,
+      0.20000000000000004
+    ],
+    0
+  ],
+  "python_vertex": {
+    "adequate": true,
+    "conditional_interval": null,
+    "gain_range": [
+      0.20000000000000004,
+      0.20000000000000004
+    ],
+    "interval": [
+      0.20000000000000004,
+      0.20000000000000004
+    ],
+    "repositories": {
+      "a": {
+        "adequate": true,
+        "audit_selected": 2000,
+        "gain_range": [
+          0.2,
+          0.2
+        ],
+        "known_positive": 400,
+        "unmeasured": 0,
+        "vertices": 1,
+        "weighted_missing_share": 0.0
+      },
+      "b": {
+        "adequate": true,
+        "audit_selected": 2000,
+        "gain_range": [
+          0.2,
+          0.2
+        ],
+        "known_positive": 400,
+        "unmeasured": 0,
+        "vertices": 1,
+        "weighted_missing_share": 0.0
+      },
+      "c": {
+        "adequate": true,
+        "audit_selected": 2000,
+        "gain_range": [
+          0.2,
+          0.2
+        ],
+        "known_positive": 400,
+        "unmeasured": 0,
+        "vertices": 1,
+        "weighted_missing_share": 0.0
+      }
+    },
+    "safety": {
+      "unresolved": 0,
+      "violating": 0
+    },
+    "verdict": "support",
+    "vertex_combinations": 1,
+    "zero_denominator_replicates": 0
+  },
+  "python_zero_variance_classifications": 6000,
+  "schema": "x1-kernel-rounding-fixture/rev8",
+  "synthetic_only": true
+}

@@ -1,0 +1,469 @@
+{
+  "schema": "x1-draft-submission-digests/rev7",
+  "date": "2026-11-08",
+  "state": "Draft for X1 round 7 / ADR-014 round 5; no council sign-off, adoption or stage authority",
+  "self_excluded": true,
+  "integration_base_commit": "7bb73e52ffcc4daa74247bee1ecc2008ffd1d830",
+  "review": {
+    "response": "evaluation/x1-triage-ranking/reviews/round-6-response.md",
+    "addresses": [
+      "X1-R6-01",
+      "X1-R6-02",
+      "X1-R6-03",
+      "X1-R6-04",
+      "X1-R6-05",
+      "X1-R6-06",
+      "X1-R6-07",
+      "X1-R6-08",
+      "X1-R6-09",
+      "X1-R6-10"
+    ],
+    "joint_previous_records": [
+      "evaluation/x1-triage-ranking/reviews/round-6.md",
+      "docs/adrs/2026-11-08-x1-delegated-decisions/round-4.md"
+    ],
+    "joint_previous_record_sha256": "0682fcf9a04f0e84e70b3d56e6275bfcb17bb5d9463b519b0c39c2d3dcf26d28",
+    "previous_submission": "evaluation/x1-triage-ranking/reviews/rev6-digests.json",
+    "previous_submission_sha256": "cca1baf432389b094588b6085888e8116442f0ee9baef15cbc750ef30086a746",
+    "author_response_cannot_close_findings": true,
+    "next_joint_records": [
+      "evaluation/x1-triage-ranking/reviews/round-7.md",
+      "docs/adrs/2026-11-08-x1-delegated-decisions/round-5.md"
+    ]
+  },
+  "validation": {
+    "self_test": {
+      "path": "evaluation/x1-triage-ranking/validation/synthetic-results-rev7.json",
+      "checks_passed": 249,
+      "elapsed_seconds": 14.639295042026788,
+      "exit_code": 0,
+      "planted_effect": "support",
+      "planted_null": "not supported"
+    },
+    "strong_effect": {
+      "path": "evaluation/x1-triage-ranking/validation/strong-effect-OC-rev7.json",
+      "trials": 2000,
+      "support_count": 2000,
+      "support_wilson_mc95": [
+        0.9980829527187469,
+        0.9999999999999998
+      ],
+      "realised_gain": 0.463,
+      "inadequate_trials": 0,
+      "elapsed_seconds": 4.032096792012453
+    },
+    "benchmark": {
+      "path": "evaluation/x1-triage-ranking/validation/compute-benchmark-rev7.json",
+      "total_trials": 32000,
+      "bootstrap_replicates": 1999,
+      "full_vertex_combinations": 512,
+      "one_two_worker_scientific_byte_equality": true,
+      "elapsed_seconds": 687.1048966250382,
+      "exit_code": 0
+    },
+    "historical_method_selection_rerun": false,
+    "full_product_rule4_harness": "Not implemented or authorised by numerical validation; separately reviewed before full authority",
+    "kernel_rounding": {
+      "path": "evaluation/x1-triage-ranking/validation/kernel-rounding-rev7-final.json",
+      "checks_passed": 6,
+      "exit_code": 0
+    },
+    "optimization_refusal": {
+      "path": "evaluation/x1-triage-ranking/validation/optimization-refusal-rev7.json",
+      "expected_exit_code": 1
+    },
+    "source_snapshot_integrity": "evaluation/x1-triage-ranking/validation/source-snapshot-checks-rev7.json"
+  },
+  "numerical_runtime": {
+    "python_executable": "/Users/adamjackson/Projects/work/scout-x1/.tools/venv/bin/python",
+    "python_version": "3.11.11",
+    "python_executable_sha256": "570b41051d135bcfc011b41272224f7cc66b0d0e7f735761dcb8611029f51d6d",
+    "go_version": "go version go1.26.10 darwin/arm64",
+    "toolchain_pin_changed": false,
+    "source": "R-085; CPython 3.12 changed float sum(); historical 3.14.10 numerical evidence stays immutable. Scanner virtualenv was already 3.11.11.",
+    "python_optimize": 0
+  },
+  "resources": {
+    "authoritative_projection": "evaluation/x1-triage-ranking/validation/compute-projection-rev7.json",
+    "counts": {
+      "calibrated_references": 1792,
+      "complete_total": 17920,
+      "missing": 252,
+      "requested_coverage": 16128,
+      "safety_complete_interval_groups": 336,
+      "safety_full512_interval_groups": 1680,
+      "safety_outcomes": 8064,
+      "safety_profiles": 336
+    },
+    "total_core_hours": 1288.4370581039998,
+    "total_OC_wall_days_at_8_workers": 6.710609677624999,
+    "binding_critical_path_core_hours": 711.8476906426667,
+    "binding_critical_path_wall_days": 3.707540055430556,
+    "descriptive_safety_core_hours": 576.589367461333,
+    "caps": {
+      "core_hours": 2880,
+      "wall_days": 15,
+      "workers": 8
+    },
+    "fits_caps": true,
+    "attempt_and_execution_contract": {
+      "assumed_projection_p_gate": 0.5,
+      "assumption_not_empirical": true,
+      "attempt_cap_per_population": 8000,
+      "eligible_trials_per_population": 2000,
+      "exhaustion": "unmeasured; cell fails",
+      "formula": "ceil(4000/p_gate)",
+      "hard_trial_execution_cap_per_population": 4000,
+      "locked_inventory_requirement": "Remeasure p_gate with 100000 keyed checks, CPU and RSS at locked sizes; missing evidence or failed fit is not testable",
+      "projected_trial_execution_multiplier": 2,
+      "trial_execution_definition": "gate-passing attempts including inadequate audits",
+      "zero_gate_probability": "not testable"
+    },
+    "break_even_envelope": {
+      "budget_core_hours": 2880,
+      "fixed_hours": 851.5762128222221,
+      "formula": "fixed_hours + units_per_population*per_unit_hours + ceil(4000/p_gate)*gate_hours_per_attempt <=2880",
+      "gate_hours_per_attempt": 0.0010717366185555555,
+      "maximum_L_at_mean1000": 1886.4454153693625,
+      "maximum_attempt_cap_at_assumed_units": 1493031,
+      "maximum_units_per_population_at_assumed_p_gate": 5659336.246108088,
+      "minimum_p_gate_at_assumed_units": 0.00267911382951861,
+      "per_unit_hours": 0.0003569057936111111,
+      "scope": "total planning envelope; never a testability stop"
+    },
+    "memory": {
+      "L400_peak_rss_bytes": {
+        "calibration": 831799296,
+        "construction": 173359104,
+        "trials": 90914816
+      },
+      "calibration_rss_bytes_per_unit": 667.1625481481482,
+      "calibration_rss_intercept_bytes": 31204238.222222224,
+      "eight_worker_memory_break_even_units": 12828553.367592886,
+      "eight_worker_peak_rss_bytes": 6654394368,
+      "eight_worker_projected_bytes_at_assumed_units": 6654394368.0,
+      "envelope_caveat": "linear calibration RSS inference; physical-memory upper bound leaves no OS/scheduler reserve; locked available-memory fit still required",
+      "host_physical_memory_bytes": 68719476736,
+      "locked_requirement": "remeasure locked RSS and fit available memory; missing RSS fails closed",
+      "scope": "conservative lifetime high-water; trials sum worker+helper; linear 8-worker projection, not measured simultaneous 8 workers"
+    },
+    "maximum_registered_L_mean1000_example": {
+      "interpretation": "INFERENCE: planning p_gate=.5, measured-input extrapolation; binding-only stop, total planning descriptive",
+      "units": 6000000,
+      "core_hours": 3001.5848674373333,
+      "binding_core_hours": 1939.7424407760002,
+      "wall_days": 15.633254517902778,
+      "fits": true,
+      "total_planning_fits_cpu_caps": false
+    },
+    "interpretation": "Binding construction/calibration/enumeration, requested-base evaluation, binding trials/gates times 2 plus locked memory fit define testability stop. Safety charged at 2000 executions uses remaining capacity, unfinished by gold unmeasured; total envelope is planning only. Locked available-memory/CPU remeasurement still required.",
+    "binding_break_even_envelope": {
+      "budget_core_hours": 2880,
+      "fixed_hours": 397.1563102888889,
+      "formula": "binding_fixed_hours + U*binding_per_unit_hours + ceil(4000/p_gate)*binding_gate_hours_per_attempt <= 2880",
+      "gate_hours_per_attempt": 0.0009647116025555555,
+      "maximum_L_at_mean1000": 3225.1962919419925,
+      "maximum_attempt_cap_at_assumed_units": 2255461,
+      "maximum_units_per_population_at_assumed_p_gate": 9675588.875825977,
+      "minimum_p_gate_at_assumed_units": 0.0017734733608783305,
+      "per_unit_hours": 0.0002558114062777778
+    },
+    "maximum_registered_units_example": {
+      "units": 12000000,
+      "binding_core_hours": 3474.6108784426674,
+      "fits": false,
+      "interpretation": "Fresh measured costs do not support round-6 inference that every U<=12M fits; legitimate CPU stop, no grid/cap changes"
+    }
+  },
+  "preserved_superseded_projections": [
+    {
+      "path": "evaluation/x1-triage-ranking/validation/compute-projection-rev6.json",
+      "core_hours": 1602.201825423111,
+      "wall_days": 8.344801174078702,
+      "reason": "Safety overcharged at 4000 instead of 2000; descriptive total wrongly gated binding fit; preserved unchanged"
+    },
+    {
+      "path": "evaluation/x1-triage-ranking/validation/compute-projection-rev5-final2.json",
+      "core_hours": 2624.5328224111113,
+      "wall_days": 13.669441783391205,
+      "reason": "Superseded: rejected sampling gates charged as expensive trials, narrow enumeration extrapolation and unpinned numerical 3.14.10"
+    },
+    {
+      "path": "evaluation/x1-triage-ranking/validation/compute-projection-rev5.json",
+      "core_hours": 3224.7242595555554,
+      "wall_days": 16.795438851851852,
+      "reason": "Initial full-frame-per-search projection failed unchanged caps"
+    }
+  ],
+  "source_snapshots": [
+    "evaluation/x1-triage-ranking/validation/synthetic-sources-rev5-initial.json",
+    "evaluation/x1-triage-ranking/validation/calibration-sources-rev5-before-opt.json",
+    "evaluation/x1-triage-ranking/validation/calibration-sources-rev5-before-transition-fix.json",
+    "evaluation/x1-triage-ranking/validation/interval-diagnostic-sources-rev4.json",
+    "evaluation/x1-triage-ranking/validation/rev5-reviewed-sources.json",
+    "evaluation/x1-triage-ranking/validation/kernel-sources-rev6.json",
+    "evaluation/x1-triage-ranking/validation/rev6-executed-sources.json"
+  ],
+  "source_loss": {
+    "status": "Exact bytes not recovered; disclosed, not reconstructed or reattributed",
+    "revision3": {
+      "ranking.py": "6b2910f7b1ee409d5ead14ff8ecd8cc12626870224610b798c899ce1ef4133d2",
+      "self_test.py": "0f5f98013495ef9ad968d860de78da65b8f781db4726001c746fe4a13a7fbefb",
+      "outer_simulation.py": "9760fa0eb7f3ef017eeccb148ad0d5d06dd2066e21db9bea09d34232b521a067"
+    },
+    "revision4": {
+      "ranking.py": "405f2a4a466cd61fd46c8fc9e6aa25d98f76c3612d9c010eec614a79afdfcbad",
+      "self_test.py": "3c47f232dcb5fe1f5d52b8e4c156105c8e606d22260dd9bb778d86a57ae685ff",
+      "compute_benchmark.py": "dabebd882ea064da987c7460271edde243fb1dccd08468c932bc376a023456c4"
+    },
+    "recovery_scope": "Available worktree and saved snapshots; original revision-4 authors confirmed no retained final-byte copies/eval state. Earlier diagnostic source is not the later reviewed source.",
+    "prevention": "Snapshot every executable in a reviewed set before overwrite; rev5-reviewed-sources.json predates revision-6 modifications"
+  },
+  "preparation": {
+    "sources": "evaluation/x1-triage-ranking/preparation/README.md",
+    "runtime_attestation": "evaluation/x1-triage-ranking/preparation/runtime-attestation-rev6.json",
+    "effective_policy_acceptance": "evaluation/x1-triage-ranking/preparation/model-free-binding-check.json",
+    "acceptance_executed": false,
+    "development_sample": "Keyed last-2000-first-parent window sample, 150 units/repository, at most 5/commit and at least 30 commits/repository; inventory collection only",
+    "clock_start": "First action executed under authentic preparation authority; five permitted preparation actions only",
+    "GUIDE_session": "Not performed; at most three fresh isolated stage-3 CLI authors with reviewed packet/previous draft/verbatim issues only, no empirical data; exposed replacements consume slots, all logged before labels, exhaustion means not testable before dev; actual GUIDE/isolation reviewed to zero issues",
+    "remaining_stage_prerequisites": [
+      "Authentic scoped zero-issue reviews and seals",
+      "Authorised pinned-object fetch/verification and full installed closure",
+      "Passing synthetic/pinned-pair model-free binding acceptance",
+      "X1 identifier completeness/delta review",
+      "Inventory test/dev scans and complete projections including dev collection",
+      "Locked runtime/memory/resource fit and reviewed final evaluator/product-backed rule-4 harness"
+    ],
+    "effective_policy_positive_control": "Unexecuted synthetic-only unbound logging CLI stubs, absent key, enabled resolved policy, attempted starts/interlock failure required before bound no-start check; no real CLI/models"
+  },
+  "adr_status_check": {
+    "source_ref": "origin/main at 7bb73e52ffcc4daa74247bee1ecc2008ffd1d830",
+    "reference": "docs/adrs/2026-11-08-gitleaks-policy-version/ADR.md",
+    "status": "accepted; decided by the agent under owner delegation (R-064)",
+    "ADR014_status_already_matches": true,
+    "status_line_changed": false,
+    "adoption": "Only on explicit joint zero-issue final round in ADR-014 folder"
+  },
+  "ledger_allocation": {
+    "CPython_source": "R-085",
+    "X11_reserved": [
+      "R-082",
+      "R-083",
+      "R-084"
+    ],
+    "next_free": "R-087",
+    "HD9_state": "proposed",
+    "new_IDs_consumed": [
+      "R-086"
+    ],
+    "Go_fusion_source": "R-086",
+    "R081_correction": "Main authorised in-place correction of this unmerged row to revision-7 binding-only accounting"
+  },
+  "owned_extracts_sha256": {
+    "R-064": {
+      "source": "docs/research-ledger.md",
+      "selector": "one full LF-terminated Markdown row for R-064",
+      "sha256": "dde5d84b57429868e24640fb8a563101284aaf283377228227dd32ddaa97bc8a"
+    },
+    "R-065": {
+      "source": "docs/research-ledger.md",
+      "selector": "one full LF-terminated Markdown row for R-065",
+      "sha256": "654b878450bef3706d7f41016196d0a9d9e251c94e9cf498dd5314401d069953"
+    },
+    "R-066": {
+      "source": "docs/research-ledger.md",
+      "selector": "one full LF-terminated Markdown row for R-066",
+      "sha256": "5f7575f2dd061cf298866fa730abe5623408174001dd3766024e41150b1b8bd3"
+    },
+    "R-067": {
+      "source": "docs/research-ledger.md",
+      "selector": "one full LF-terminated Markdown row for R-067",
+      "sha256": "402364ce9693ba44c515dcd9c1cf4231a275f95e3b3b86829b7283b6c897ff89"
+    },
+    "R-068": {
+      "source": "docs/research-ledger.md",
+      "selector": "one full LF-terminated Markdown row for R-068",
+      "sha256": "27de628344f14767a5baff97cdf5f9cbec7c8bef18a9aaedf7b36357fe2f22db"
+    },
+    "R-071": {
+      "source": "docs/research-ledger.md",
+      "selector": "one full LF-terminated Markdown row for R-071",
+      "sha256": "38a585b024e5093796f6a94f7662d22534bcfdb2a3e45fd802ccb80b26579976"
+    },
+    "R-072": {
+      "source": "docs/research-ledger.md",
+      "selector": "one full LF-terminated Markdown row for R-072",
+      "sha256": "0efc6a38f4be0212966442a0217d6b1f83c343b27e41b4d28a35acb83361592e"
+    },
+    "R-078": {
+      "source": "docs/research-ledger.md",
+      "selector": "one full LF-terminated Markdown row for R-078",
+      "sha256": "9006d01ecb5dabdb0ceab45dcd051ed1f79dc9515ab450872a17780dbc1b4462"
+    },
+    "R-080": {
+      "source": "docs/research-ledger.md",
+      "selector": "one full LF-terminated Markdown row for R-080",
+      "sha256": "4e671d2f6567965f2de039c6434fca20738a5db66a91efa055a964578fcb3e32"
+    },
+    "R-081": {
+      "source": "docs/research-ledger.md",
+      "selector": "one full LF-terminated Markdown row for R-081",
+      "sha256": "b2118a3a31e56f3e4e198c3e14e84ea1f32c080e9f62027d842000cf2667d4ce"
+    },
+    "HD9": {
+      "source": "docs/hypothesis-ledger.md",
+      "selector": "full LF-terminated HD9 register row",
+      "sha256": "e937be022de233692782a8a5dae7546c76d1ab122bf65368339ad25d326d89bd"
+    },
+    "ADR014Index": {
+      "source": "docs/adrs/README.md",
+      "selector": "full LF-terminated ADR-014 index row",
+      "sha256": "343ca28ba725d15ebcf235136ea930871a19f9e3f7177cd8726d63a6c4644233"
+    },
+    "ADR014Card": {
+      "source": "docs/scout-design.html",
+      "selector": "complete ADR-014 article, including two-space indent and trailing LF",
+      "sha256": "b20a7636892feed1f288894e8f8a39b1dfd38ebeedf6635c75bbbdb577313681"
+    },
+    "R-085": {
+      "source": "docs/research-ledger.md",
+      "selector": "one full LF-terminated Markdown row for R-085",
+      "sha256": "3235cb77dafd8e674845a84f3ca4b695b96ef6318bf3b26ffaaf0e003185d0f2"
+    },
+    "HD9Revision6History": {
+      "source": "docs/hypothesis-ledger.md",
+      "selector": "full LF-terminated line beginning - 2026-11-08 — HD9 remains proposed. X1 revision 6",
+      "sha256": "0bf75e8368553bcaf4be988ea1d80886d00597b7e560f7675a4cf16ff8faea01"
+    },
+    "X1LedgerTracker": {
+      "source": "docs/STATUS.md",
+      "selector": "full LF-terminated line beginning - Ledgers must be updated when a source/hypothesis is used",
+      "sha256": "730856e50c84846ed15cfe70975b9a0670204c1fdbbefd226b55bdbb644ecd5a"
+    },
+    "HD9Revision7History": {
+      "source": "docs/hypothesis-ledger.md",
+      "selector": "full LF-terminated line beginning - 2026-11-08 — HD9 remains proposed. X1 revision 7",
+      "sha256": "ae6d74fdfa9a0c7c7bc2139431da062bd42b2ebefcfe8aee194057b9265d1501"
+    },
+    "R-086": {
+      "source": "docs/research-ledger.md",
+      "selector": "one full LF-terminated Markdown row for R-086",
+      "sha256": "bc49d1952898fd2947b8b3db8a38f1a853b69307fb98cc593aa66e09bf301a45"
+    }
+  },
+  "extract_note": "X1-owned shared rows, history/tracker line and design card are identified separately to expose sibling integration staleness; these do not waive whole-file review.",
+  "file_count": 110,
+  "files_sha256": {
+    "docs/STATUS.md": "4f811845662beb848e112ef25f01381254ba434885889d1891d7f996c7de6ae9",
+    "docs/adrs/2026-11-08-x1-delegated-decisions/ADR.md": "fd724da98a0ce670a1c4ec862e4495f17474d3c330e98e9c780a45534516ce37",
+    "docs/adrs/2026-11-08-x1-delegated-decisions/round-1.md": "7bc229fd392215971646bfc547883050e82512c21777fbd311cf779e3e394710",
+    "docs/adrs/2026-11-08-x1-delegated-decisions/round-2.md": "5a298d77bb778d79c17d158657d868ccdadb0ce8a5eef9d01a8d170a22f976ed",
+    "docs/adrs/2026-11-08-x1-delegated-decisions/round-3.md": "9530480f20aa59b2c4c72047dfab46c263d73dd86e716a5a566fee4d54f87038",
+    "docs/adrs/2026-11-08-x1-delegated-decisions/round-4.md": "0682fcf9a04f0e84e70b3d56e6275bfcb17bb5d9463b519b0c39c2d3dcf26d28",
+    "docs/adrs/README.md": "c277db8d8703c087b8c922693abcf1be24b7e0d5006d7798e6aef2b4492ec602",
+    "docs/hypothesis-ledger.md": "8bda09c7dfa705e5fc754c0b23d9af1cb06d934a9503a709d912ac8957473910",
+    "docs/research-ledger.md": "77d84f564ea1ac1727487d005e7f760820610002c8105784860d9bacd68d006c",
+    "docs/scout-design.html": "f7180b872e7380b8c2a644b8c7fe33b90c9ccf3e3cc0a4c8c3662227dbb3d8a9",
+    "evaluation/x1-triage-ranking/PREREGISTRATION.md": "5db9e331e0e1bb1719b18a4f41daac99360caef60251b012858e7b1191db7c77",
+    "evaluation/x1-triage-ranking/README.md": "c9985161e7542e050f6ca4e224ea231918e40281360acd0d04a2f8bfeb234b6b",
+    "evaluation/x1-triage-ranking/inputs/x11-rev4-digests.json": "e9edba67c885623df6900a08aee1cde463e5fa78f828bbb04ca3d8efd7a0324c",
+    "evaluation/x1-triage-ranking/oc-manifest.json": "72e07be486cb2d4f04bd74247f073ceaf4f07b8ed11623d6660c7a55fc2d268f",
+    "evaluation/x1-triage-ranking/preparation/README.md": "509ea3040fde082c32f167039b7252016e693a29d26a060da4613e74721a4058",
+    "evaluation/x1-triage-ranking/preparation/dev-census.json": "6faf0c4f5ca52345cc9399668829255996413d8b5b72e3b2df77d9cb2cad24a3",
+    "evaluation/x1-triage-ranking/preparation/exposure-recipe.json": "c065347e08a8571228764dae19fc686f3a6909e612a4119aad7bb58d86c5d383",
+    "evaluation/x1-triage-ranking/preparation/exposure-sources.json": "67dc5a4bd7322317cb3785e1ddf7ad1ccbe75a4c73a9cdeab5ccb4d6afbadf60",
+    "evaluation/x1-triage-ranking/preparation/frozen-exposure-inputs.json": "ec92fba6d3f91c671301244539a8caefc5025c0d6b03efca77c5bdfc4bd96425",
+    "evaluation/x1-triage-ranking/preparation/guide-author-isolation.json": "c83c286df27f5a9edafdbcfe4213fcb7213d593812dbd6a4357e8369319d693f",
+    "evaluation/x1-triage-ranking/preparation/model-free-binding-check.json": "5056ae748e05717e7a1e16dd8974f11519045c01bdc3ce6498adf3b14aedc59c",
+    "evaluation/x1-triage-ranking/preparation/model-free-policy.json": "87de394937a225f87f1d53fed00c09bff88372a5de17b6669656478a32245f9f",
+    "evaluation/x1-triage-ranking/preparation/pins.json": "6d556fb5156e8ced3c17ae7526a841e51688145faad4a3f8a6a2ce0c939100fc",
+    "evaluation/x1-triage-ranking/preparation/runtime-attestation-rev6.json": "19463957becfc23a391eac03582b32eaa0ff392069bccd9aed9000f390ad2d62",
+    "evaluation/x1-triage-ranking/preparation/runtime-attestation.json": "3a924a0c8484eb51b9f62a8b0a805f9d6e5b023a3043e1a0ddd2b64d05e653ab",
+    "evaluation/x1-triage-ranking/reviews/README.md": "d5edef1e8d340c6c0d3850393922e6c6b1d96c5eb2e99fddc291bf997b14ccb6",
+    "evaluation/x1-triage-ranking/reviews/rev3-digests.json": "894dc63b0522a23589187c6de9fa4e672878fc1c07b85bfbbdcd224e5ab2f448",
+    "evaluation/x1-triage-ranking/reviews/rev4-digests.json": "01c790837f961cd208fed98b3bd653b514da36e6d8bcee3b2fa4270f88e1876c",
+    "evaluation/x1-triage-ranking/reviews/rev5-digests.json": "ba1d2ae4efdf1c66e6d5f3002b5d0f892bac079a3efe4cbc2d98fd7826f69a95",
+    "evaluation/x1-triage-ranking/reviews/rev6-digests.json": "cca1baf432389b094588b6085888e8116442f0ee9baef15cbc750ef30086a746",
+    "evaluation/x1-triage-ranking/reviews/round-1-response.md": "66340fd83af645782d5a8772fa7c74e4261d34a7e9d9ff01b8383fc5d5443ffe",
+    "evaluation/x1-triage-ranking/reviews/round-1.md": "89eab4a5d0f63487da200ab34db28dc0528ed9fcc73745c9d1075272339e172d",
+    "evaluation/x1-triage-ranking/reviews/round-2-response.md": "4c926bfa0111e458cb23b006101fa605ef57005cb2065a1f6e7260144bc14986",
+    "evaluation/x1-triage-ranking/reviews/round-2.md": "4021d173533876e775bf9200bc3a1aa1164f04feffbe9f3beb56dfb3b400d1ef",
+    "evaluation/x1-triage-ranking/reviews/round-3-response.md": "0117db6c3af240beddbef0ebc2a77a9ea886bb00f7aec4a4a984e89184e5b6ad",
+    "evaluation/x1-triage-ranking/reviews/round-3.md": "7bc229fd392215971646bfc547883050e82512c21777fbd311cf779e3e394710",
+    "evaluation/x1-triage-ranking/reviews/round-4-response.md": "be9579d04d03512605ad4bd6350cca331eecb39a71a1b9eee0d1888692063739",
+    "evaluation/x1-triage-ranking/reviews/round-4.md": "5a298d77bb778d79c17d158657d868ccdadb0ce8a5eef9d01a8d170a22f976ed",
+    "evaluation/x1-triage-ranking/reviews/round-5-response.md": "cf517de83a7ed13a5f5fe4ee6cbf63170e5729e5d0e29210ef5437cbab53611c",
+    "evaluation/x1-triage-ranking/reviews/round-5.md": "9530480f20aa59b2c4c72047dfab46c263d73dd86e716a5a566fee4d54f87038",
+    "evaluation/x1-triage-ranking/reviews/round-6-response.md": "143c06457606e01cdb61e63633f3144488956bdb281f0637793acadb14f58447",
+    "evaluation/x1-triage-ranking/reviews/round-6.md": "0682fcf9a04f0e84e70b3d56e6275bfcb17bb5d9463b519b0c39c2d3dcf26d28",
+    "evaluation/x1-triage-ranking/validation/calibration-overhead-rev5-final.json": "52d8f63527643395e0487535b0a23e06fc791357554244f19dadc64e66892f3b",
+    "evaluation/x1-triage-ranking/validation/calibration-overhead-rev5-final2.json": "5a340ebdfa26f35560e8ccce36f06f437cb1e6ad3e045153101e152b829c73dc",
+    "evaluation/x1-triage-ranking/validation/calibration-overhead-rev5.json": "b01d5a000bdb8a81b816bdee48f2cd240ed5f0b47a7a9100da0984ede9807073",
+    "evaluation/x1-triage-ranking/validation/calibration-overhead-rev6.json": "0a299b0014898a25c92e8a111bd68a9d1ddcf3f1edf8d547ca4319cd13c3221d",
+    "evaluation/x1-triage-ranking/validation/calibration-overhead-rev7.json": "415e3ac6c66b7bcca1d43f359f113417db2cb8f06a2f039ba87e71326bf9d954",
+    "evaluation/x1-triage-ranking/validation/calibration-sources-rev5-before-opt.json": "795283eb79ab1aa480f90ba0de613bcc0620f6b97281b9ece452449bf8ff11eb",
+    "evaluation/x1-triage-ranking/validation/calibration-sources-rev5-before-transition-fix.json": "5334c47b0260556a1e5a2e19608a202013aa8a4f34ef2ab33a8ac0fde0cf24cd",
+    "evaluation/x1-triage-ranking/validation/compute-baseline-rev4.json": "44a3b3e8ca82cbb98c3b9a9b8ef04e82053b0184eacf4d4d35f237ba6ffb3497",
+    "evaluation/x1-triage-ranking/validation/compute-benchmark-rev4.json": "e5f068d7badf2f43afcfbd2ee0c0d0a270efe605329a43a865ae114a7aab1ca8",
+    "evaluation/x1-triage-ranking/validation/compute-benchmark-rev5.json": "fc086226d92a622f32b289dc6b88a6716fd31573fd98d27dedb200fb9f0ed5df",
+    "evaluation/x1-triage-ranking/validation/compute-benchmark-rev6.json": "9662eb5e9d9344effed4f3141041cf86856c869c9a5219b0f0311eba32076a1f",
+    "evaluation/x1-triage-ranking/validation/compute-benchmark-rev7.json": "f268997dba849fd256916e556817764638d4a6c858e6458fccb7ad85a23801b8",
+    "evaluation/x1-triage-ranking/validation/compute-projection-rev4-final.json": "b422c2a6fc7de6e548fa94cc4f36beec403ea9b169aff0429fb01386c44947dd",
+    "evaluation/x1-triage-ranking/validation/compute-projection-rev4-total.json": "65752e13309281fc8d1019034428103e5f2a445248bc1c142a958b402713a3c1",
+    "evaluation/x1-triage-ranking/validation/compute-projection-rev4.json": "4d2ca24912b6c94689138ff626869bd7473747a2dfde86497a59925f6e10dc0b",
+    "evaluation/x1-triage-ranking/validation/compute-projection-rev5-final.json": "3d6c2ff4c76e96c9c215025e4237744e5d6e53540f10966d3e09df6e603638cc",
+    "evaluation/x1-triage-ranking/validation/compute-projection-rev5-final2.json": "7ebbbb5da4798aac8acc93c6bb1616042075c77a7f62e912027a1ffb7cf8e121",
+    "evaluation/x1-triage-ranking/validation/compute-projection-rev5.json": "ee616c45674f9beb82bbc8c3951576cf955e1e3c62a2281089fc0b6ec474ad4b",
+    "evaluation/x1-triage-ranking/validation/compute-projection-rev6.json": "972b3620d76f8f2d344aadc47e07b7b226c445828a166f264a215cceeb7b9199",
+    "evaluation/x1-triage-ranking/validation/compute-projection-rev7-L2000.json": "f1671be3649f8b7693c5c019a33521bcaa3d58c17ef94bd4c10ffde7088447af",
+    "evaluation/x1-triage-ranking/validation/compute-projection-rev7-U12000000.json": "7e3961e8af995cb44917ef26028383974661ce8809b71fe484dfc3fdc7adb0ec",
+    "evaluation/x1-triage-ranking/validation/compute-projection-rev7.json": "281270a3d91f054980b032ef99e1f05a7a41beed2e743feb8254439022d16121",
+    "evaluation/x1-triage-ranking/validation/compute_benchmark.py": "d39f40a28a6fd70698ea9e53e30448dec193c395d264002436dad9278ea6c90d",
+    "evaluation/x1-triage-ranking/validation/fixed_population.py": "ed670a6bf8076d791c06cfc2426aff03a0a2f9b1730982cf3fdfb2ec13bc49a2",
+    "evaluation/x1-triage-ranking/validation/interval-diagnostic-rev4.json": "50d41cc86c0342e05110d322b5d452ffcad7570c612efbbaee705ce11cc18a54",
+    "evaluation/x1-triage-ranking/validation/interval-diagnostic-sources-rev4.json": "d12d80627cecd6e7ee0b291dee939638cf7752c24ae62164bb495bf0ab693722",
+    "evaluation/x1-triage-ranking/validation/interval-diagnostic-spec-rev4.json": "e5a93a49c14a4345cba2fd6f2d4ddc55a998eaa199d371299d5965443fe54bb6",
+    "evaluation/x1-triage-ranking/validation/interval_diagnostic.go": "437f9c2559156f8befb613d3e17f19e2aad5437217081dbd4a1d0fb95c069417",
+    "evaluation/x1-triage-ranking/validation/interval_diagnostic.py": "a4b233374bdfec466bfc5862166497a4bbac48b13668aee2697fcb90e2b7c345",
+    "evaluation/x1-triage-ranking/validation/kernel-rounding-rev7-final.json": "c974259794fb559b00187767562fe0d552268aac3608da5544e6812bb2f26446",
+    "evaluation/x1-triage-ranking/validation/kernel-rounding-rev7.json": "133319e305f9c23f7c5e660860cd648afe6336c09d6fccb5fd9af930333d4ff9",
+    "evaluation/x1-triage-ranking/validation/kernel-sources-rev6.json": "66193e0fee0da8e8a2e386cac973329c81267a893657314bfcf0f42616579e22",
+    "evaluation/x1-triage-ranking/validation/kernel_rounding.py": "395fb9e08e92b042e7ab0c7cbfcd2a9baa88f615103e9f1012f4530e3d0ce8cf",
+    "evaluation/x1-triage-ranking/validation/kernel_rounding_test.go": "33bde17be1cf67a0da47661f384901e79b60915f5cb8e6fd9d2f0652b1ff8def",
+    "evaluation/x1-triage-ranking/validation/optimization-refusal-rev7.json": "ef94cf73c2be6673905c773a71fa1f640987cc96b7135f64c09e9f87e099adc7",
+    "evaluation/x1-triage-ranking/validation/outer-results.json": "b851c2c1b6ffacee1957ade0071aa9fd38ede0dce5ebd2e3577a2967923f6352",
+    "evaluation/x1-triage-ranking/validation/outer_simulation.py": "91d07760b61551810282622c2bda53c34fcfcb72a9ffd1798b1a5ffb8ece23f6",
+    "evaluation/x1-triage-ranking/validation/pilot-summary-rev4.json": "05da900b22b738a61c36d4f02efc76c722109aa2dcffff40fba04f828c14475d",
+    "evaluation/x1-triage-ranking/validation/pilot-summary-rev5.json": "c21a5a13ea18e521c7fd8469d93b4547471924dd740c75f1c2368fc2ea8ed17e",
+    "evaluation/x1-triage-ranking/validation/ranking.py": "8bc2e7cbbc5da6ba47aeff3effb5dd04d5e5ecc9c1e01051647900095770a780",
+    "evaluation/x1-triage-ranking/validation/reproduce_reports-initial-rev5.py": "0b7781db46f78e81a0ac091bf123a3fe1e4045925c09396a6299065119a10ed4",
+    "evaluation/x1-triage-ranking/validation/reproduce_reports-optimized-rev5.py": "d680ee085bc20525761fdedf924f9d5ac0be12984be9a10c1e3ac4ff5b102887",
+    "evaluation/x1-triage-ranking/validation/reproduce_reports-pilot-rev5.py": "3ee6476c7d142bc1e7340fa9ba31d668aa42cc92d744c66cc5dc910638cf0ee2",
+    "evaluation/x1-triage-ranking/validation/reproduce_reports.py": "dd749c32c5ae2326266317edd66d91b9520338afe59fb58af50ba6255d6241d7",
+    "evaluation/x1-triage-ranking/validation/rev5-reviewed-sources.json": "fa6820c87e068c16b102e2b0d7647c31c6a8f58eccca8f3d3bb8b437fe2bf89d",
+    "evaluation/x1-triage-ranking/validation/rev6-executed-sources.json": "fafdcbc291a2521e1bf2b5f90ea43e7046135140c9bbb579c69ad41c4e9e6086",
+    "evaluation/x1-triage-ranking/validation/rev6-reviewed-sources.json": "33d0fc21db11c381d051a331e7c5db3a765889abba52a79b294336f080eac7cb",
+    "evaluation/x1-triage-ranking/validation/rev7-executed-sources.json": "13c805f30d5b8ce2442464e3a754f8df684664669a40659e211bf55d5f21a88a",
+    "evaluation/x1-triage-ranking/validation/self_test.py": "36d07d5648fdb0db325cb7583b02c4117cab1ada07b5fefe4590c66c8f03eb8a",
+    "evaluation/x1-triage-ranking/validation/source-snapshot-checks-rev7.json": "bfa5a445272441fa11cb95fe92a988a1cfd74c3dfbf71d61c37449aa2f21a5b1",
+    "evaluation/x1-triage-ranking/validation/strong-effect-OC-rev5-closure.json": "379f2c28ac5fa79ae738d2f1ad18acf823d389ff717616a0d8e37147a4e582fb",
+    "evaluation/x1-triage-ranking/validation/strong-effect-OC-rev5-final.json": "6f26bad6dcf9f9d7414757ae3ca73b68990187b3d3b52edadd856cb6613a4375",
+    "evaluation/x1-triage-ranking/validation/strong-effect-OC-rev5-optimized.json": "19c78ee133a87c3f05a9319e58b7bff59031e886837733edb668c566d945615b",
+    "evaluation/x1-triage-ranking/validation/strong-effect-OC-rev5.json": "089941397a9036830532ffe52410f3f3ca65a153db4e6cfa3e57ec2960ddbb8b",
+    "evaluation/x1-triage-ranking/validation/strong-effect-OC-rev6.json": "96cbbeaae60431010a97964a39ced7522d2c80d90eeb81d49ebc69945355b476",
+    "evaluation/x1-triage-ranking/validation/strong-effect-OC-rev7.json": "da5cc7ad3a833788407046ff6317e0d5e8bcd1acf0098d6b642d1b1a771d1b41",
+    "evaluation/x1-triage-ranking/validation/synthetic-results-rev1.json": "fbc4cc0de2c948574a76216cffd12cb33b488f0fedd3c3519de4ddf0b5a82277",
+    "evaluation/x1-triage-ranking/validation/synthetic-results-rev2.json": "24549f3ed2fcaecb357bf747ec31058ae115592f8bf63a1319763d2a84faa77d",
+    "evaluation/x1-triage-ranking/validation/synthetic-results-rev4-percentile.json": "b206c43600f80dab426f303a915695176418680296105144545e332dca04c56d",
+    "evaluation/x1-triage-ranking/validation/synthetic-results-rev4.json": "9f3ec381a945028c5a246ea723f03ee771815ff3bfdf609c917505e12c66c2f2",
+    "evaluation/x1-triage-ranking/validation/synthetic-results-rev5-closure.json": "f0ae8b5c7b341d2f5d932c72a416ae8451f99429c973e7079daad1869324c134",
+    "evaluation/x1-triage-ranking/validation/synthetic-results-rev5-final.json": "f5ea12d6d3df4043610921e98fb42a8ceea47f973ca0bd5311ba388fdeabe124",
+    "evaluation/x1-triage-ranking/validation/synthetic-results-rev5-optimized.json": "b235853e5a6b185c8908543a82430c0cb569261dfb200434e3d8d27a19c34392",
+    "evaluation/x1-triage-ranking/validation/synthetic-results-rev5.json": "a7a2c26a3fbf7eedf60216bddea196364022453769c95c06f7029946385b552b",
+    "evaluation/x1-triage-ranking/validation/synthetic-results-rev6.json": "92b935e4685b597c1fe120c5057a6e0fb1cc2dd81657a43ebae4c02e3f8c6073",
+    "evaluation/x1-triage-ranking/validation/synthetic-results-rev7.json": "616bf68453d1ed3ba01bf3286496175459c99e9fc42c33612890c011beaf707f",
+    "evaluation/x1-triage-ranking/validation/synthetic-results.json": "e65ec36c7d57a0d15f32bc3d2d7bd5f1f76f4148189ec2676653ef996901a350",
+    "evaluation/x1-triage-ranking/validation/synthetic-sources-rev5-initial.json": "a77aff4f00d87a5d98dafe3114df227b9de27ffb215c45a82ef6074781aee4c2"
+  }
+}

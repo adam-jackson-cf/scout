@@ -1,0 +1,132 @@
+{
+  "authority": "No preparation or full-study authority. Failed caps require reviewed revision before preparation; no automatic grid reduction.",
+  "benchmark": "evaluation/x1-triage-ranking/validation/compute-benchmark-rev5.json",
+  "benchmark_sha256": "fc086226d92a622f32b289dc6b88a6716fd31573fd98d27dedb200fb9f0ed5df",
+  "binding_critical_path_core_hours": 864.8313830333339,
+  "binding_critical_path_wall_days_at_8_workers": 4.504330119965281,
+  "binding_oc_gate": false,
+  "calibrated_populations": 11900,
+  "calibration_overhead": "evaluation/x1-triage-ranking/validation/calibration-overhead-rev5-final.json",
+  "calibration_overhead_sha256": "52d8f63527643395e0487535b0a23e06fc791357554244f19dadc64e66892f3b",
+  "canonical_bound": "one independent construction per safety profile/population, shared across six unresolved and four critical axes; conservatively charge 24 full fixed-key reevaluations per profile/population",
+  "caps": {
+    "core_hours": 2880,
+    "wall_days": 15,
+    "workers": 8
+  },
+  "construction_counts": {
+    "base": 90860,
+    "safety_profiles_shared_across_24_states": 1680
+  },
+  "counts": {
+    "calibrated_references": 1792,
+    "complete_total": 17920,
+    "missing": 252,
+    "requested_coverage": 16128,
+    "safety_complete_interval_groups": 336,
+    "safety_full512_interval_groups": 1680,
+    "safety_outcomes": 8064,
+    "safety_profiles": 336
+  },
+  "descriptive_safety_core_hours": 1760.2941915999997,
+  "execution_overhead_multiplier": 2,
+  "fits_caps": true,
+  "fixed_key_calibration": "one construction per population; at most20 truth-only search evaluations and one full-frame materialisation. Full measured calibration API CPU includes candidate construction, search, truth and final frame; no22fullframes.",
+  "gate_attempt_contract": {
+    "assumed_projection_p_gate": 0.5,
+    "assumption_not_empirical": true,
+    "attempt_cap_per_population": 8000,
+    "eligible_trials_per_population": 2000,
+    "formula": "ceil(4000/p_gate)",
+    "locked_inventory_keyed_SRS20_gate_draws": 100000,
+    "locked_inventory_requirement": "Remeasure p_gate using 100000 keyed size-only SRS20 draws; remeasure independent construction, fixed-key calibration and complete/full512 trial CPU at locked sizes up to L2000; recompute this projection before full authority.",
+    "observed_synthetic_gate_estimates": [
+      {
+        "L": 40,
+        "attempt_cap_per_population": 7561,
+        "cpu_seconds": 1.244948,
+        "draws": 100000,
+        "elapsed_seconds": 1.2454859580029733,
+        "gate": "each repository selected N>=1000; total selected N<=60000",
+        "key": "SHA256 canonical x1-compute-rev5,size-only-SRS20-gate,L,draw",
+        "p_gate": 0.52906,
+        "passes": 52906,
+        "scope": "synthetic benchmark sizes, not a locked-inventory estimate"
+      },
+      {
+        "L": 400,
+        "attempt_cap_per_population": 7588,
+        "cpu_seconds": 1.3271019999999965,
+        "draws": 100000,
+        "elapsed_seconds": 1.3283490830217488,
+        "gate": "each repository selected N>=1000; total selected N<=60000",
+        "key": "SHA256 canonical x1-compute-rev5,size-only-SRS20-gate,L,draw",
+        "p_gate": 0.52716,
+        "passes": 52716,
+        "scope": "synthetic benchmark sizes, not a locked-inventory estimate"
+      }
+    ],
+    "projected_trial_attempt_multiplier": 4.0,
+    "zero_gate_probability": "not testable"
+  },
+  "measured_inputs": {
+    "construction_cpu_seconds_per_unit": 4.1285500000000013e-07,
+    "full_truth_only_calibration_cpu_seconds_per_unit": 5.041354166666667e-06,
+    "maximum_trial_cpu_seconds": {
+      "complete": 0.0009367115000000013,
+      "full512": 0.044332921500000004
+    },
+    "reevaluation_cpu_seconds_per_unit": 3.4261766666666647e-06
+  },
+  "population_extrapolation": {
+    "eligible_runs_per_repository": 400,
+    "maximum_registered_L": 2000,
+    "mean_run_size": 1000.0,
+    "method": "maximum measured per-unit CPU across genuine L40/400 populations; linear extrapolation, not observed inventory runtime",
+    "repositories": 3,
+    "units_per_population": 1200000.0
+  },
+  "projected_core_hours": {
+    "construction": {
+      "base": 25.00800353333334,
+      "safety_profiles_shared_across_24_states": 0.46239760000000013
+    },
+    "reevaluation": {
+      "canonical_state": 92.09562879999994,
+      "requested_base": 184.1912575999999,
+      "truth_only_calibration_and_final_frame": 39.99474305555556
+    },
+    "total": 2625.1255746333336,
+    "trials": {
+      "binding_complete": 373.0193351111116,
+      "binding_missing": 248.26436040000004,
+      "descriptive_safety_complete": 6.994112533333342,
+      "descriptive_safety_full512": 1655.095736
+    }
+  },
+  "projected_wall_days_at_8_workers": 13.672529034548612,
+  "reevaluation_counts": {
+    "canonical_state": 40320,
+    "requested_base": 80640
+  },
+  "reporter_sha256": "d680ee085bc20525761fdedf924f9d5ac0be12984be9a10c1e3ac4ff5b102887",
+  "reproduce_cli": "source .tools/activate && python evaluation/x1-triage-ranking/validation/reproduce_reports.py projection --output evaluation/x1-triage-ranking/validation/compute-projection-rev5-final.json --input evaluation/x1-triage-ranking/validation/compute-benchmark-rev5.json --p-gate 0.5 --inventory-runs 400 --mean-run-size 1000.0",
+  "safety_schedule": "Start after binding rows, concurrently with labelling; descriptive, no efficacy gate. Finish before canonical gold or report unmeasured. All safety CPU remains inside the full OC resource cap.",
+  "schema": "x1-authoritative-OC-resource-projection/rev5-final",
+  "source_closure": {
+    "frame_materialisation": "evaluate_population now delegates unchanged allocation/order operations to _run_order; it is not AST-identical. New final-frame CPU is measured and conservatively maxed with old full-reevaluation CPU. Exact truth/full-frame and fixed-key/full-regeneration equivalence fixtures are owned by the signed synthetic validation.",
+    "optimized_helper_sha256": "a2bd93eddd340f902ebf4c73fe6ecea0c07460ced5ec1310e2b5b126b7373fae",
+    "prepare_population_AST_identical": true,
+    "prepare_population_AST_sha256": "bd818a649f5650589408042c6d0211b4a22709bc939a52507cdcd4a25e9bfc5f",
+    "reused_benchmark_helper_sha256": "9db1f2edfa8951ae90436bf9a5940c3fa2383140775340c95e3ad1f7e42f99a6",
+    "reused_evidence": "Original immutable benchmark retains its executed old helper hash. Only construction and interval trial costs are reused, plus its conservative full-frame reevaluation cost; optimized calibration CPU comes exclusively from the new measured API.",
+    "snapshot": "evaluation/x1-triage-ranking/validation/calibration-sources-rev5-before-opt.json",
+    "snapshot_sha256": "795283eb79ab1aa480f90ba0de613bcc0620f6b97281b9ece452449bf8ff11eb",
+    "unchanged_trial_sources": {
+      "interval_diagnostic.go": true,
+      "ranking.py": true
+    }
+  },
+  "status": "projection_not_observed_full_grid_runtime",
+  "synthetic_only": true
+}

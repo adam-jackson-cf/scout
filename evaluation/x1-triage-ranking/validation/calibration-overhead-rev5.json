@@ -1,0 +1,64 @@
+{
+  "measurements": [
+    {
+      "L": 40,
+      "conservative_22_evaluation_overhead_cpu_seconds_per_unit": 4.93456333333335e-06,
+      "elapsed_seconds": 3.343910333001986,
+      "frame_evaluation_cpu_seconds": [
+        0.30418599999999996,
+        0.301244,
+        0.30210900000000007,
+        0.3039909999999999,
+        0.305547,
+        0.3068379999999997,
+        0.3090820000000001,
+        0.31279999999999974,
+        0.3123969999999998,
+        0.3138099999999997
+      ],
+      "frame_evaluations": 10,
+      "full_calibration_cpu_seconds": 3.3411619999999997,
+      "maximum_frame_cpu_seconds_per_unit": 2.615083333333331e-06,
+      "non_frame_cpu_seconds": 0.2691580000000009,
+      "reachable": false,
+      "realised": 0.07666666666666666,
+      "target": 0.2,
+      "units": 120000
+    },
+    {
+      "L": 400,
+      "conservative_22_evaluation_overhead_cpu_seconds_per_unit": 5.245133666666654e-06,
+      "elapsed_seconds": 39.70389879203867,
+      "frame_evaluation_cpu_seconds": [
+        3.655073,
+        3.649438,
+        3.635160000000001,
+        3.7696500000000004,
+        3.673689999999997,
+        3.5912229999999994,
+        3.751802999999999,
+        3.6631060000000026,
+        3.752444000000004,
+        3.6608700000000027
+      ],
+      "frame_evaluations": 10,
+      "full_calibration_cpu_seconds": 39.663439,
+      "maximum_frame_cpu_seconds_per_unit": 3.1413750000000005e-06,
+      "non_frame_cpu_seconds": 2.860981999999993,
+      "reachable": false,
+      "realised": 0.07698333333333333,
+      "target": 0.2,
+      "units": 1200000
+    }
+  ],
+  "reporter_sha256": "0b7781db46f78e81a0ac091bf123a3fe1e4045925c09396a6299065119a10ed4",
+  "reproduce_cli": "source .tools/activate && python evaluation/x1-triage-ranking/validation/reproduce_reports.py calibration-overhead --output evaluation/x1-triage-ranking/validation/calibration-overhead-rev5.json",
+  "schema": "x1-calibration-overhead/rev5",
+  "scope": "Full exact fixed-key calibration API on genuine independent populations. Nested frame evaluation CPU is separated from breakpoint construction, truth aggregation and search; no population reconstruction per evaluation.",
+  "source_sha256": {
+    "evaluation/x1-triage-ranking/validation/fixed_population.py": "9db1f2edfa8951ae90436bf9a5940c3fa2383140775340c95e3ad1f7e42f99a6",
+    "evaluation/x1-triage-ranking/validation/ranking.py": "cad370785167328c95fcbb78390aafe2b1b24d34e4ac8e4aae9544e9d99e276e",
+    "evaluation/x1-triage-ranking/validation/reproduce_reports.py": "0b7781db46f78e81a0ac091bf123a3fe1e4045925c09396a6299065119a10ed4"
+  },
+  "synthetic_only": true
+}

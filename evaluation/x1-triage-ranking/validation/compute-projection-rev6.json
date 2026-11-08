@@ -1,0 +1,136 @@
+{
+  "authority": "Synthetic resource evidence only; no preparation or full-study authority. No automatic grid reduction.",
+  "benchmark": "evaluation/x1-triage-ranking/validation/compute-benchmark-rev6.json",
+  "benchmark_sha256": "9662eb5e9d9344effed4f3141041cf86856c869c9a5219b0f0311eba32076a1f",
+  "binding_critical_path_core_hours": 621.3154967724441,
+  "binding_critical_path_wall_days_at_8_workers": 3.23601821235648,
+  "binding_oc_gate": false,
+  "break_even_envelope": {
+    "budget_core_hours": 2880,
+    "fixed_hours": 1264.763838177778,
+    "formula": "fixed_hours + units_per_population*per_unit_hours + ceil(4000/p_gate)*gate_hours_per_attempt <=2880",
+    "gate_hours_per_attempt": 0.0008162305612222158,
+    "maximum_L_at_mean1000": 1944.595625766526,
+    "maximum_attempt_cap_at_assumed_units": 1573486,
+    "maximum_units_per_population_at_assumed_p_gate": 5833786.877299578,
+    "minimum_p_gate_at_assumed_units": 0.0025421262089398954,
+    "per_unit_hours": 0.00027575678562962927
+  },
+  "calibrated_populations": 11900,
+  "calibration_overhead": "evaluation/x1-triage-ranking/validation/calibration-overhead-rev6.json",
+  "calibration_overhead_sha256": "0a299b0014898a25c92e8a111bd68a9d1ddcf3f1edf8d547ca4319cd13c3221d",
+  "candidate_enumeration_accounting": "Worst-case every size 20..2000, p=.55, a=.05 charged 11900 times; measured enumeration removed from per-unit calibration CPU before extrapolation",
+  "caps": {
+    "core_hours": 2880,
+    "wall_days": 15,
+    "workers": 8
+  },
+  "construction_counts": {
+    "base": 90860,
+    "safety_profiles_shared_across_24_states": 1680
+  },
+  "counts": {
+    "calibrated_references": 1792,
+    "complete_total": 17920,
+    "missing": 252,
+    "requested_coverage": 16128,
+    "safety_complete_interval_groups": 336,
+    "safety_full512_interval_groups": 1680,
+    "safety_outcomes": 8064,
+    "safety_profiles": 336
+  },
+  "descriptive_safety_core_hours": 980.8863286506668,
+  "execution_overhead_multiplier": 2,
+  "fits_caps": true,
+  "gate_attempt_contract": {
+    "assumed_projection_p_gate": 0.5,
+    "assumption_not_empirical": true,
+    "attempt_cap_per_population": 8000,
+    "eligible_trials_per_population": 2000,
+    "exhaustion": "unmeasured; cell fails",
+    "formula": "ceil(4000/p_gate)",
+    "hard_trial_execution_cap_per_population": 4000,
+    "locked_inventory_requirement": "Remeasure p_gate with 100000 keyed checks, CPU and RSS at locked sizes; missing evidence or failed fit is not testable",
+    "projected_trial_execution_multiplier": 2,
+    "trial_execution_definition": "gate-passing attempts including inadequate audits",
+    "zero_gate_probability": "not testable"
+  },
+  "measured_inputs": {
+    "calibration_excluding_enumeration_cpu_seconds_per_unit": 5.246651666666667e-06,
+    "construction_cpu_seconds_per_unit": 4.13415e-07,
+    "maximum_trial_cpu_seconds": {
+      "complete": 0.0010558725,
+      "full512": 0.046924070500000005
+    },
+    "reevaluation_cpu_seconds_per_unit": 3.271078333333328e-06,
+    "sampling_gate_cpu_seconds_per_check": 1.4555329999999885e-05,
+    "worst_case_enumeration_cpu_seconds_per_calibrated_population": 6.546945999999999
+  },
+  "memory": {
+    "L400_peak_rss_bytes": {
+      "calibration": 829947904,
+      "construction": 172752896,
+      "trials": 88670208
+    },
+    "eight_worker_peak_rss_bytes": 6639583232,
+    "locked_requirement": "remeasure locked RSS and fit available memory; missing RSS fails closed",
+    "scope": "conservative lifetime high-water; trials sum worker+helper; linear 8-worker projection, not measured simultaneous 8 workers"
+  },
+  "population_extrapolation": {
+    "eligible_runs_per_repository": 400,
+    "maximum_registered_L": 2000,
+    "mean_run_size": 1000.0,
+    "method": "maximum measured per-unit CPU at independent L40/400; enumeration separately fixed per calibrated population",
+    "repositories": 3,
+    "units_per_population": 1200000.0
+  },
+  "projected_core_hours": {
+    "candidate_enumeration": 43.282587444444445,
+    "construction": {
+      "base": 25.0419246,
+      "safety_profiles_shared_across_24_states": 0.4630248
+    },
+    "reevaluation": {
+      "canonical_state": 87.92658559999987,
+      "requested_base": 175.85317119999974,
+      "truth_only_calibration_and_final_frame_excluding_enumeration": 41.62343655555556
+    },
+    "sampling_gate_checks": {
+      "binding_complete": 5.796255857777732,
+      "binding_missing": 0.08150984799999936,
+      "descriptive_safety_complete": 0.10867979733333248,
+      "descriptive_safety_full512": 0.5433989866666623
+    },
+    "total": 1602.201825423111,
+    "trials": {
+      "binding_complete": 210.23594666666665,
+      "binding_missing": 131.38739740000003,
+      "descriptive_safety_complete": 3.941924,
+      "descriptive_safety_full512": 875.9159826666668
+    }
+  },
+  "projected_wall_days_at_8_workers": 8.344801174078702,
+  "reevaluation_counts": {
+    "canonical_state": 40320,
+    "requested_base": 80640
+  },
+  "reporter_sha256": "4942de744a4f9f1537c21d60936c2ff2c3fed781a7c16160300b1f2c4cb8a094",
+  "reproduce_cli": "source .tools/activate && .tools/venv/bin/python evaluation/x1-triage-ranking/validation/reproduce_reports.py projection --output evaluation/x1-triage-ranking/validation/compute-projection-rev6.json --input evaluation/x1-triage-ranking/validation/compute-benchmark-rev6.json --p-gate 0.5 --inventory-runs 400 --mean-run-size 1000.0",
+  "schema": "x1-authoritative-OC-resource-projection/rev6",
+  "source_closure": {
+    "exact_bytes_identical": true,
+    "executed_source_sha256": {
+      "evaluation/x1-triage-ranking/validation/compute_benchmark.py": "5c2557beff77369a3291f4ea20d83acc00e4faf7fc24f2480d1471c347771e11",
+      "evaluation/x1-triage-ranking/validation/fixed_population.py": "090e93489f4fbf7487a05bc99ae3f77032cc515d3381b41dd80156d1d7c46d9a",
+      "evaluation/x1-triage-ranking/validation/interval_diagnostic.go": "27c79a310e03cafa769c22e90c1a8736de1fd0d32ef0ddab42df6ea28838b63b",
+      "evaluation/x1-triage-ranking/validation/ranking.py": "9fc05fa5ccb9d0d41ff231cec7bcb14c67653399171ddff7a9448a400f483ed7",
+      "evaluation/x1-triage-ranking/validation/reproduce_reports.py": "4942de744a4f9f1537c21d60936c2ff2c3fed781a7c16160300b1f2c4cb8a094"
+    },
+    "python_executable_sha256": "570b41051d135bcfc011b41272224f7cc66b0d0e7f735761dcb8611029f51d6d",
+    "python_version": "3.11.11",
+    "snapshot": "evaluation/x1-triage-ranking/validation/rev6-executed-sources.json",
+    "snapshot_sha256": "fafdcbc291a2521e1bf2b5f90ea43e7046135140c9bbb579c69ad41c4e9e6086"
+  },
+  "status": "projection_not_observed_full_grid_runtime",
+  "synthetic_only": true
+}

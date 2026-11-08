@@ -1,0 +1,41 @@
+{
+  "schema": "x1-total-OC-resource-projection/rev4",
+  "synthetic_only": true,
+  "base_projection": "compute-projection-rev4-final.json",
+  "base_projection_sha256": "b422c2a6fc7de6e548fa94cc4f36beec403ea9b169aff0429fb01386c44947dd",
+  "base_complete_reference_missing_core_hours": 399.1302102666682,
+  "measured_inputs": {
+    "max_complete_trial_cpu_seconds": 0.0012681354999999996,
+    "max_full_vertex_trial_cpu_seconds": 0.0527638835,
+    "max_preparation_cpu_seconds": 0.48224900000001014
+  },
+  "safety_contract": {
+    "base_profiles": 336,
+    "outcome_cells": 8064,
+    "complete_interval_groups": 336,
+    "full_vertex_interval_groups": 1680,
+    "critical_shares_per_interval_group": 4,
+    "eligible_trials_per_group": 10000,
+    "populations_per_group": 5,
+    "trial_attempt_multiplier": 2,
+    "runtime_overhead_multiplier": 2,
+    "calibration_preparations_per_profile_population": 22,
+    "canonical_preparation_bound": "one full measured population preparation per outcome cell/population, conservative even though critical interventions share the same latent keys"
+  },
+  "additional_core_hours": {
+    "complete_intervals": 4.734372533333332,
+    "missing_intervals": 984.9258253333334,
+    "calibration": 9.902179466666876,
+    "canonical_state_preparation": 10.802377600000225,
+    "total": 1010.3647549333339
+  },
+  "total_projected_core_hours": 1409.494965200002,
+  "total_projected_wall_days_at_8_cores": 7.341119610416677,
+  "caps": {
+    "workers": 8,
+    "core_hours": 2880,
+    "wall_days": 15
+  },
+  "fits_caps": true,
+  "interpretation": "Measured-input extrapolation, not an observed complete OC run. Adds explicitly registered canonical-safety boundary grid to full unchanged coverage/reference/missing grids; conditional critical-share reuse is exact because unknown-Y mask and ranking do not change. Locked-size/source closure and authentic final gates remain required."
+}

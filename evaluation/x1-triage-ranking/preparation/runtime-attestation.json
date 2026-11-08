@@ -1,0 +1,14 @@
+{
+  "schema": "x1-runtime-entrypoint-attestation/rev5",
+  "date": "2026-11-08",
+  "scope": "Version and entrypoint-byte metadata only; no model calls, scanners, builds, extraction or experiment execution. Not complete dependency closure or stage authority.",
+  "environment": "source .tools/activate",
+  "observed": [
+    {"name": "go", "version_output": "go version go1.26.10 darwin/arm64", "goroot": "/Users/adamjackson/.local/share/mise/installs/go/1.26.10", "binary": "/Users/adamjackson/.local/share/mise/installs/go/1.26.10/bin/go", "sha256": "5742f0004c49c005313d88cd06df964b09cad6bcf2eac4506bdb90abc923b1f4"},
+    {"name": "python", "version_output": "Python 3.14.10", "binary": "/Users/adamjackson/.local/bin/python", "sha256": "26b5194d2beb09e648b4676ddc18a1384f182a7ed84f3db73106096aba6febf4", "scope": "Actual numerical-validation interpreter, as recorded in preserved revision-4 and revision-5 evidence; not a claim that the scanner virtualenv matches its requested version."},
+    {"name": "claude", "argv": ["--version"], "version_output": "2.1.311 (Claude Code)", "binary": "/opt/homebrew/bin/claude", "sha256": "85d8c08707fcfd1e78ffa0204eefbc6ec9e4fe22f375fb2767ef85d957ed3161"},
+    {"name": "codex", "argv": ["--version"], "version_output": "codex-cli 0.166.0", "binary": "/opt/homebrew/bin/codex", "sha256": "39acf979729dd290f9a24ee38b2914e036c91b65952872e28ae2a6b88a7db7c1"}
+  ],
+  "requested_tooling_python": "3.11.11 in toolchain/versions.env; differs from actual numerical-validation interpreter 3.14.10. No version pin was changed. Bind the actual scanner environment and resolve compatibility before scanner execution.",
+  "remaining_prerequisites": ["Complete installed dependency/scanner closure and effective model-free policy binding before collection", "Actual requested/reported model session metadata and isolated GUIDE author session at implementation authority; --version did not create a session"]
+}
