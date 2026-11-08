@@ -62,6 +62,15 @@ func TestMapReusesCanonicalRecordsWithoutExecutingClawpatch(t *testing.T) {
 // argv, reports the pinned version, and writes one feature on a successful map.
 func fakeMapper(t *testing.T, egress bool, failAgent bool) (*Client, string) {
 	t.Helper()
+	agentScript := ""
+	if failAgent {
+		agentScript = "exit 3;"
+	}
+	return fakeMapperWithAgentScript(t, egress, agentScript)
+}
+
+func fakeMapperWithAgentScript(t *testing.T, egress bool, agentScript string) (*Client, string) {
+	t.Helper()
 	root := t.TempDir()
 	stateDir := filepath.Join(root, ".scout", "clawpatch")
 	if err := os.MkdirAll(filepath.Join(stateDir, "features"), 0o700); err != nil {
@@ -86,15 +95,11 @@ func fakeMapper(t *testing.T, egress bool, failAgent bool) (*Client, string) {
 		t.Fatal(err)
 	}
 	log := filepath.Join(t.TempDir(), "argv.log")
-	failure := "0"
-	if failAgent {
-		failure = "1"
-	}
 	script := "#!/bin/sh\n" +
 		"for a in \"$@\"; do if [ \"$a\" = --version ]; then echo " + Version + "; exit 0; fi; done\n" +
 		"shift 1; echo \"$*\" >> '" + log + "'\n" +
 		"case \"$*\" in\n" +
-		"*'--source agent'*) if [ " + failure + " = 1 ]; then exit 3; fi ;;\n" +
+		"*'--source agent'*) " + agentScript + " ;;\n" +
 		"esac\n" +
 		"case \"$*\" in *' map '*) printf '%s' '{\"schemaVersion\":1,\"featureId\":\"heur\",\"kind\":\"service\",\"source\":\"heuristic\",\"confidence\":\"high\"}' > '" + filepath.Join(stateDir, "features", "heur.json") + "';; esac\n" +
 		"case \"$*\" in *'--provider'*) env > '" + log + ".env';; esac\n"
@@ -324,6 +329,20 @@ func TestAgentMapFailureKeepsHeuristicFeaturesAndReportsIncomplete(t *testing.T)
 	}
 	if !strings.Contains(string(argv), "map --source agent --provider codex --model gpt-6-luna --reasoning-effort xhigh\n") || !strings.HasSuffix(string(argv), "map --source heuristic\n") {
 		t.Fatalf("unexpected argv sequence: %q", argv)
+	}
+}
+
+func TestAgentMapZeroFeaturesKeepsHeuristicFeaturesAndReportsIncomplete(t *testing.T) {
+	useFakeCLIs(t, "codex")
+	// A successful agent invocation emits no records; the same harness emits
+	// the "heur" feature when heuristic mapping is requested.
+	client, _ := fakeMapperWithAgentScript(t, true, "exit 0;")
+	result, err := client.Map(context.Background(), true, MapSourceAgent)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Status != MapMapped || result.Source != MapSourceHeuristic || !result.ExplorationIncomplete || len(result.Features) != 1 || result.Features[0].FeatureID != "heur" {
+		t.Fatalf("zero-feature agent map must keep heuristic features and flag incompleteness: %+v", result)
 	}
 }
 
