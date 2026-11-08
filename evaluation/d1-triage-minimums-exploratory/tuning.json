@@ -1,0 +1,177 @@
+[
+  {
+    "model": "typesafe/jev-1.14-20261014 @ e2-v2_noul",
+    "dev_cases": 51,
+    "dev_positives": 28,
+    "test_cases": 0,
+    "folds": 5,
+    "repeats": 5,
+    "shipped_threshold": 0.385,
+    "fold_thresholds": [
+      0.26,
+      0.385,
+      0.24333349999999998,
+      0.385,
+      0.385,
+      0.26,
+      0.385,
+      0.385,
+      0.24333349999999998,
+      0.385,
+      0.26,
+      0.385,
+      0.26,
+      0.385,
+      0.385,
+      0.385,
+      0.26,
+      0.385,
+      0.26,
+      0.24333349999999998,
+      0.385,
+      0.26,
+      0.26,
+      0.26,
+      0.385
+    ],
+    "default_0.5_heldout": {
+      "precision": 0.9047619047619048,
+      "recall": 0.6785714285714286,
+      "f": 0.7755102040816326,
+      "tp": 95,
+      "fp": 10,
+      "fn": 45
+    },
+    "tuned_heldout": {
+      "precision": 0.7950310559006211,
+      "recall": 0.9142857142857143,
+      "f": 0.8504983388704318,
+      "tp": 128,
+      "fp": 33,
+      "fn": 12
+    },
+    "tuned_folds": 25,
+    "total_folds": 25,
+    "failed_folds": [],
+    "strata_scope": "dev (in-sample)",
+    "strata": {
+      "axum": {
+        "precision": 0.5,
+        "recall": 1.0,
+        "f": 0.6666666666666666,
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "n": 8
+      },
+      "caddy": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f": 1.0,
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "n": 4
+      },
+      "eShopOnWeb": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f": 1.0,
+        "tp": 6,
+        "fp": 0,
+        "fn": 0,
+        "n": 8
+      },
+      "fastapi": {
+        "precision": 1.0,
+        "recall": 0.8888888888888888,
+        "f": 0.9411764705882353,
+        "tp": 8,
+        "fp": 0,
+        "fn": 1,
+        "n": 15
+      },
+      "junit5": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f": 1.0,
+        "tp": 4,
+        "fp": 0,
+        "fn": 0,
+        "n": 9
+      },
+      "nest": {
+        "precision": 0.3333333333333333,
+        "recall": 1.0,
+        "f": 0.5,
+        "tp": 1,
+        "fp": 2,
+        "fn": 0,
+        "n": 4
+      },
+      "webpack": {
+        "precision": 1.0,
+        "recall": 0.3333333333333333,
+        "f": 0.5,
+        "tp": 1,
+        "fp": 0,
+        "fn": 2,
+        "n": 3
+      }
+    },
+    "errors": [
+      {
+        "case_id": "d6269e9ba7ee",
+        "split": "dev",
+        "stratum": "fastapi",
+        "label": 1,
+        "score": 0.266667,
+        "kind": "false_negative"
+      },
+      {
+        "case_id": "1154b6cdfcfc",
+        "split": "dev",
+        "stratum": "webpack",
+        "label": 1,
+        "score": 0.266667,
+        "kind": "false_negative"
+      },
+      {
+        "case_id": "404abe793491",
+        "split": "dev",
+        "stratum": "webpack",
+        "label": 1,
+        "score": 0.3,
+        "kind": "false_negative"
+      },
+      {
+        "case_id": "typescript-quality-route-params-complexity-676c98ca",
+        "split": "dev",
+        "stratum": "nest",
+        "label": 0,
+        "score": 0.486667,
+        "kind": "false_positive"
+      },
+      {
+        "case_id": "rust-quality-documented-query-overlap-false-positive-562fa206",
+        "split": "dev",
+        "stratum": "axum",
+        "label": 0,
+        "score": 0.743333,
+        "kind": "false_positive"
+      },
+      {
+        "case_id": "typescript-architecture-loopback-url-676c98ca",
+        "split": "dev",
+        "stratum": "nest",
+        "label": 0,
+        "score": 0.84,
+        "kind": "false_positive"
+      }
+    ],
+    "warnings": [
+      "fewer than 50 dev cases per label; treat results as noisy",
+      "fold thresholds vary by more than 0.05; grow the label set"
+    ]
+  }
+]

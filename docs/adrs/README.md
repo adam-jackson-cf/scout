@@ -14,14 +14,14 @@ Rules (`AGENTS.md` design rules):
 | ADR-000 | `2026-10-19-v1-decisions/`          | v1 baseline decisions: map refresh, baseline branch, allow-list, Jev, language tiers, spec cutover, pin     | partly superseded      |
 | ADR-001 | `2026-10-21-e1b-v2/`                | Replace invalidated inertia evidence with E1b v2 (rev 2.1)                                                  | partly superseded      |
 | ADR-002 | `2026-10-22-rescope/`               | Re-scope Scout to a product and an inertia-bench subject (rev 2.2)                                          | partly superseded      |
-| ADR-003 | `2026-10-23-decisions/`             | Record user decisions and align the design with shipped behaviour (rev 2.3)                                 | partly superseded      |
+| ADR-003 | `2026-10-23-decisions/` | Record user decisions and align the design with shipped behaviour (rev 2.3) | partly superseded by ADR-007; amended by ADR-010 (triage minimums) |
 | ADR-004 | `2026-10-23-clawpatch-patch-v3/`    | Correct the Clawpatch review-safety patch pin (rev 2.4)                                                     | accepted               |
 | ADR-005 | `2026-10-23-codex-luna-mapping/`    | Pin agent mapping to codex `gpt-6-luna` at `xhigh` (rev 2.5)                                                | partly superseded      |
 | ADR-006 | `2026-10-24-area-refresh-fallback/` | Run the agent map only at onboarding and on manual refresh (rev 2.6)                                        | partly superseded      |
 | ADR-007 | `2026-10-24-cutover-cleanup/`       | Consolidate state, baseline, model-CLI and CI-installation cutovers (rev 2.7)                               | partly superseded      |
 | ADR-008 | `2026-10-31-jev-merge-association/` | Add provisional merge-time area association (rev 2.8)                                                       | accepted (provisional) |
 | ADR-009 | `2026-11-06-design-restructure/`    | Replace the design and requirements documents with `docs/scout-design.html`; rename review folders to ADRs | accepted               |
-| ADR-010 | `2026-11-08-d1-jev-minimums/` | Record owner-agreed Jev triage minimums; retain provisional threshold and preregistered review | proposed (council review pending) |
+| ADR-010 | `2026-11-08-d1-jev-minimums/` | Record owner-agreed Jev triage minimums; retain provisional threshold and preregistered review | accepted |
 
 ## Old paths and citations
 
