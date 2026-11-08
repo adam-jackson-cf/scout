@@ -1,0 +1,84 @@
+{
+  "argv": [
+    "env",
+    "-i",
+    "HOME=/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/artifacts/preparation-runtime/python-home",
+    "PATH=/Users/adamjackson/Projects/work/x11-tools/python-4c17f7a00b8b57db0e61f0375d3c1345997a5f82739eb969b5ab82d8e7132c6e/bin",
+    "LANG=C",
+    "TMPDIR=/tmp",
+    "/Users/adamjackson/Projects/work/x11-tools/python-4c17f7a00b8b57db0e61f0375d3c1345997a5f82739eb969b5ab82d8e7132c6e/bin/python3.14",
+    "-I",
+    "-B",
+    "-c",
+    "import hashlib,pathlib,runpy,sys; p=pathlib.Path(sys.argv[1]); assert hashlib.sha256(p.read_bytes()).hexdigest()==sys.argv[2]; sys.argv=[str(p),\"--config\",sys.argv[3],\"--config-sha256\",sys.argv[4],\"--script\",sys.argv[5],\"--\",*sys.argv[6:]]; runpy.run_path(str(p),run_name=\"__main__\")",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/bootstrap_v6.py",
+    "5b8735ad1c03ca0afebf54dfe3f1123a96dabb72002db53de16f60d2ae0244e9",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/inventory-inputs.json",
+    "06676fb31747c554b44841fb76aa334f759596c77f58f169f10d8ebabbceae95",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep_scale_v8.py",
+    "--inputs",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/inventory-inputs.json",
+    "--work",
+    "/Users/adamjackson/Projects/work/x11-tools/benchmark-v8-heldout-ts",
+    "--output",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-heldout-ts-v8.json",
+    "--scenario",
+    "heldout-ts",
+    "--prediction",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-heldout-ts-prediction-v8.json",
+    "--phase",
+    "run",
+    "--prediction-sha256",
+    "4b993052ef109fdcf0c53dce2f991392c0f6e163fa5091d8c2394be30406ccfe"
+  ],
+  "clock": {
+    "Main_continuous_wrapper_wall_seconds": 365.607,
+    "definition": "execute_stage starts its accounting clock at monotonic-now minus prior setup/freeze and current run_frozen validation elapsed. The receipt is charged compute across freeze+run phases, excluding operator wait, not one continuous process wall span. Main timed only the once-only run command; pre-run freeze occurred earlier. Residual wrapper/entry overhead is outside the internal clock (launch/bootstrap attribution is inference).",
+    "pre_run_fixture_setup_seconds": 46.08128170896089,
+    "pre_run_freeze_seconds": 9.647321375028696,
+    "prior_phase_charge_seconds": 55.72860308398958,
+    "receipt_charged_elapsed_seconds": 419.9873540849658,
+    "runner_phase_after_subtracting_prior_charge_seconds": 364.2587510009762,
+    "wrapper_minus_runner_phase_seconds": 1.3482489990238378
+  },
+  "cwd": "/Users/adamjackson/Projects/work/scout-x11",
+  "exit_code": 0,
+  "original_inputs_preserved_as": {
+    "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-heldout-ts-inputs-v8.json",
+    "sha256": "06676fb31747c554b44841fb76aa334f759596c77f58f169f10d8ebabbceae95"
+  },
+  "output_absent_before_run_reported_by_Main": true,
+  "ownership": "Every revision: 40702 owned paths,40700 planted non-test TypeScript source paths,0 planted test paths. The pre-frozen metadata requires genuine nonempty source ownership, not ownership of every test. Tests are association references; the pinned mapper source limits association candidates to200. No expectation or fixture changed after the run.",
+  "prediction": {
+    "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-heldout-ts-prediction-v8.json",
+    "sha256": "4b993052ef109fdcf0c53dce2f991392c0f6e163fa5091d8c2394be30406ccfe"
+  },
+  "prep": {
+    "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prepare_exports.py",
+    "sha256": "77446e97386561cf62f5afb8cfea96f5809f96445b8d724e223d2a57cb3eca44"
+  },
+  "receipt": {
+    "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-heldout-ts-v8.json",
+    "sha256": "c47075f934c1beaaa5fe7038aaea5eb4124413f3c9ec9470d0d6df8387ffe0c9"
+  },
+  "request": {
+    "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/reviews/rev8-heldout-request.json",
+    "sha256": "e196f8af705d82b090e57bb676776ebe1d5310e011eabb35166ef0bdf3512489"
+  },
+  "runner": "Main",
+  "schema": "x11a-heldout-run-v8",
+  "script": {
+    "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep_scale_v8.py",
+    "sha256": "721f91473786519326ae916e8f3922d0306499ffec71cc8e9e6f4fe44f911eba"
+  },
+  "stderr": {
+    "path": "/Users/adamjackson/Projects/work/x11-receipts/heldout-ts-v8.stderr",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "stderr_text": "",
+  "stdout": {
+    "path": "/Users/adamjackson/Projects/work/x11-receipts/heldout-ts-v8.stdout",
+    "sha256": "7f122afcb66657eb94d05072374229418ed8c81ac077eb3e83dad4e6b0ad1e65"
+  },
+  "wrapper_wall_seconds": 365.607
+}

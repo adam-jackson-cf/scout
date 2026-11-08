@@ -1,0 +1,30 @@
+{
+  "declared_before_benchmark_completion": true,
+  "fixture": {
+    "directories": 80,
+    "files_per_directory": 1000,
+    "files_per_revision": 80000,
+    "fresh_materialization_and_scanner_state_each_revision": true,
+    "language": "TypeScript",
+    "revisions": 20,
+    "same_tree_each_revision": true,
+    "source_bytes_per_revision": 3572400,
+    "source_lines_per_revision": 80000
+  },
+  "projection": {
+    "assumed_files_per_revision": 100000,
+    "assumption": "Linear in files times revisions with comparable per-file materialization and scanner work. Real language mixes, file bytes, structural complexity, and directory concentration can cost more; this is not a runtime guarantee.",
+    "elapsed_multiplier": 125.125,
+    "formula": "measured_revision_processing_seconds * (100000/80000) * (2002/20)",
+    "not_candidate_measurement": true,
+    "repositories": [
+      "django/django",
+      "microsoft/TypeScript",
+      "gin-gonic/gin",
+      "spf13/cobra",
+      "prometheus/prometheus"
+    ],
+    "revisions_per_repository": 2002
+  },
+  "schema": "x11a-preparation-scale-assumptions-v6"
+}

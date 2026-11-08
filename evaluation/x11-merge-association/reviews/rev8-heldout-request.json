@@ -1,0 +1,104 @@
+{
+  "argv": [
+    "env",
+    "-i",
+    "HOME=/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/artifacts/preparation-runtime/python-home",
+    "PATH=/Users/adamjackson/Projects/work/x11-tools/python-4c17f7a00b8b57db0e61f0375d3c1345997a5f82739eb969b5ab82d8e7132c6e/bin",
+    "LANG=C",
+    "TMPDIR=/tmp",
+    "/Users/adamjackson/Projects/work/x11-tools/python-4c17f7a00b8b57db0e61f0375d3c1345997a5f82739eb969b5ab82d8e7132c6e/bin/python3.14",
+    "-I",
+    "-B",
+    "-c",
+    "import hashlib,pathlib,runpy,sys; p=pathlib.Path(sys.argv[1]); assert hashlib.sha256(p.read_bytes()).hexdigest()==sys.argv[2]; sys.argv=[str(p),\"--config\",sys.argv[3],\"--config-sha256\",sys.argv[4],\"--script\",sys.argv[5],\"--\",*sys.argv[6:]]; runpy.run_path(str(p),run_name=\"__main__\")",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/bootstrap_v6.py",
+    "5b8735ad1c03ca0afebf54dfe3f1123a96dabb72002db53de16f60d2ae0244e9",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/inventory-inputs.json",
+    "06676fb31747c554b44841fb76aa334f759596c77f58f169f10d8ebabbceae95",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep_scale_v8.py",
+    "--inputs",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/inventory-inputs.json",
+    "--work",
+    "/Users/adamjackson/Projects/work/x11-tools/benchmark-v8-heldout-ts",
+    "--output",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-heldout-ts-v8.json",
+    "--scenario",
+    "heldout-ts",
+    "--prediction",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-heldout-ts-prediction-v8.json",
+    "--phase",
+    "run",
+    "--prediction-sha256",
+    "4b993052ef109fdcf0c53dce2f991392c0f6e163fa5091d8c2394be30406ccfe"
+  ],
+  "command": "env -i HOME=/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/artifacts/preparation-runtime/python-home PATH=/Users/adamjackson/Projects/work/x11-tools/python-4c17f7a00b8b57db0e61f0375d3c1345997a5f82739eb969b5ab82d8e7132c6e/bin LANG=C TMPDIR=/tmp /Users/adamjackson/Projects/work/x11-tools/python-4c17f7a00b8b57db0e61f0375d3c1345997a5f82739eb969b5ab82d8e7132c6e/bin/python3.14 -I -B -c 'import hashlib,pathlib,runpy,sys; p=pathlib.Path(sys.argv[1]); assert hashlib.sha256(p.read_bytes()).hexdigest()==sys.argv[2]; sys.argv=[str(p),\"--config\",sys.argv[3],\"--config-sha256\",sys.argv[4],\"--script\",sys.argv[5],\"--\",*sys.argv[6:]]; runpy.run_path(str(p),run_name=\"__main__\")' /Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/bootstrap_v6.py 5b8735ad1c03ca0afebf54dfe3f1123a96dabb72002db53de16f60d2ae0244e9 /Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/inventory-inputs.json 06676fb31747c554b44841fb76aa334f759596c77f58f169f10d8ebabbceae95 /Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep_scale_v8.py --inputs /Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/inventory-inputs.json --work /Users/adamjackson/Projects/work/x11-tools/benchmark-v8-heldout-ts --output /Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-heldout-ts-v8.json --scenario heldout-ts --prediction /Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-heldout-ts-prediction-v8.json --phase run --prediction-sha256 4b993052ef109fdcf0c53dce2f991392c0f6e163fa5091d8c2394be30406ccfe",
+  "cwd": "/Users/adamjackson/Projects/work/scout-x11",
+  "fixture": {
+    "association_limit": "Pinned mapper source packageTestFiles caps association candidates at 200; 40700 test files exercise discovery but do not imply groups times all40700 association filters.",
+    "bytes_per_revision_min": 395061604,
+    "change_fraction": 0.05,
+    "changed_source_files_each_revision_after_base": 4070,
+    "files_per_revision": 81402,
+    "first_parent_revisions": [
+      "1a73861ed7e39691e26db3082ff371fc5985cb83",
+      "0d847f09e01c3830fc880f348cdf058dc818db63",
+      "dbd775699b750d87284d2e237e902c1d0ef5a666"
+    ],
+    "fixture_spec": {
+      "churn_denominator": 20,
+      "generator": "nested-typescript-code-v8",
+      "large_code_files": 4,
+      "minimum_directory_depth": 3,
+      "minimum_large_code_bytes": 1050000,
+      "minimum_normal_code_bytes": 4800,
+      "revision_count": 3,
+      "source_files": 81400,
+      "test_fraction": "1/2",
+      "tests_tree_fraction_of_tests": "1/2"
+    },
+    "language": "TypeScript",
+    "large_code_files": 4,
+    "merge_revisions": [
+      "0d847f09e01c3830fc880f348cdf058dc818db63",
+      "dbd775699b750d87284d2e237e902c1d0ef5a666"
+    ],
+    "minimum_large_file_bytes": 1050000,
+    "ownership_construct": "Node mapper excludes tests from reviewable owned source groups; require genuine nonempty source ownership, not ownership of every test path. Report actual source/test ownership counts.",
+    "padding_bytes_per_source_file": 0,
+    "pre_run_frozen": true,
+    "revision_count": 3,
+    "shape": "Nested >=3-level TS imports/exports/functions; exactly half source files tests, equally split tests/ tree and sibling *.test.ts; four >=1MB executable-code files, no padding comments",
+    "sibling_test_files": 20350,
+    "source_files_per_revision": 81400,
+    "source_test_files": 40700,
+    "tests_tree_files": 20350
+  },
+  "go_receipts": [
+    {
+      "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-construct-v8.json",
+      "sha256": "1f7ac4d27f0e11a2e49acdbcdb8fc281bca5c4bc43c9b4b06954ee427f6617d7"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-files-v8.json",
+      "sha256": "fc659eb9a719e603eaa401c0434e10d2662dde2645b73f062671b14a82606e39"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-bytes-v8.json",
+      "sha256": "1b3bd639f7a03caf4d0627bcd77d09f6bcde0b6122e35d1cc2f79541eb1a08fd"
+    }
+  ],
+  "predicted_seconds_per_revision": 126.49289025945677,
+  "prediction": {
+    "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-heldout-ts-prediction-v8.json",
+    "sha256": "4b993052ef109fdcf0c53dce2f991392c0f6e163fa5091d8c2394be30406ccfe"
+  },
+  "prep": {
+    "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prepare_exports.py",
+    "sha256": "77446e97386561cf62f5afb8cfea96f5809f96445b8d724e223d2a57cb3eca44"
+  },
+  "rule": "Main runs once; no writer run, no source/input changes until completion; retain result even if failure. No candidate access.",
+  "script": {
+    "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep_scale_v8.py",
+    "sha256": "721f91473786519326ae916e8f3922d0306499ffec71cc8e9e6f4fe44f911eba"
+  }
+}

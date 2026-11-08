@@ -1,0 +1,108 @@
+{
+  "counts": {
+    "frontend_go_top_level": 5,
+    "integrated_outer": 29,
+    "nested_preparation": 26
+  },
+  "entrypoint_pins": {
+    "bootstrap": {
+      "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/bootstrap_v6.py",
+      "sha256": "5b8735ad1c03ca0afebf54dfe3f1123a96dabb72002db53de16f60d2ae0244e9"
+    },
+    "inputs": {
+      "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/inventory-inputs.json",
+      "sha256": "e958f0f1ba876a3ba83ab8c15df7825c9b5b06d86eee1a7e6322988492bbd6cc"
+    }
+  },
+  "frontend": {
+    "argv": [
+      "env",
+      "-i",
+      "CGO_ENABLED=0",
+      "GIT_NO_REPLACE_OBJECTS=1",
+      "GOAMD64=v1",
+      "GOARCH=arm64",
+      "GOARM64=v8.0",
+      "GOCACHE=/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/artifacts/preparation-runtime/gocache",
+      "GOENV=off",
+      "GOEXPERIMENT=",
+      "GOFLAGS=-mod=readonly",
+      "GOMODCACHE=/Users/adamjackson/go/pkg/mod",
+      "GOOS=darwin",
+      "GOPROXY=off",
+      "GOSUMDB=off",
+      "GOTMPDIR=/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/artifacts/preparation-runtime/tmp",
+      "GOTOOLCHAIN=local",
+      "GOWORK=off",
+      "HOME=/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/artifacts/preparation-runtime/home",
+      "LANG=C",
+      "PATH=/Users/adamjackson/.local/share/mise/installs/go/1.26.10/bin:/Users/adamjackson/Projects/work/x11-tools/83b941f8c8a994a6f02af7c08dfda99683279e0cc55ad456d3352335344b4c1e/git/bin",
+      "/Users/adamjackson/.local/share/mise/installs/go/1.26.10/bin/go",
+      "test",
+      "-v",
+      "-pgo=off",
+      "./evaluation/x11-merge-association/frontend"
+    ],
+    "cwd": "/Users/adamjackson/Projects/work/scout-x11",
+    "elapsed_seconds": 4.189201375003904,
+    "exit_code": 0,
+    "stderr": "",
+    "stdout": "=== RUN   TestJSONParityWithProduct\n--- PASS: TestJSONParityWithProduct (0.27s)\n=== RUN   TestInvalidGitBytePathRefusesWithoutPartialOutput\n--- PASS: TestInvalidGitBytePathRefusesWithoutPartialOutput (0.23s)\n=== RUN   TestMissingExactSHAOwnershipRefusesWithoutOutput\n--- PASS: TestMissingExactSHAOwnershipRefusesWithoutOutput (0.21s)\n=== RUN   TestUnknownRequestFieldsRefuse\n--- PASS: TestUnknownRequestFieldsRefuse (0.00s)\n=== RUN   TestPreparationOwnershipMatchesProductLoader\n--- PASS: TestPreparationOwnershipMatchesProductLoader (1.71s)\nPASS\nok  \tscout/evaluation/x11-merge-association/frontend\t2.715s\n"
+  },
+  "integrated": {
+    "argv": [
+      "env",
+      "-i",
+      "HOME=/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/artifacts/preparation-runtime/python-home",
+      "PATH=/Users/adamjackson/Projects/work/x11-tools/python-4c17f7a00b8b57db0e61f0375d3c1345997a5f82739eb969b5ab82d8e7132c6e/bin",
+      "LANG=C",
+      "TMPDIR=/Users/adamjackson/Projects/work/x11-scale-scratch",
+      "/Users/adamjackson/Projects/work/x11-tools/python-4c17f7a00b8b57db0e61f0375d3c1345997a5f82739eb969b5ab82d8e7132c6e/bin/python3.14",
+      "-I",
+      "-B",
+      "-c",
+      "import hashlib,pathlib,runpy,sys; p=pathlib.Path(sys.argv[1]); assert hashlib.sha256(p.read_bytes()).hexdigest()==sys.argv[2]; sys.argv=[str(p),\"--config\",sys.argv[3],\"--config-sha256\",sys.argv[4],\"--script\",sys.argv[5],\"--\",*sys.argv[6:]]; runpy.run_path(str(p),run_name=\"__main__\")",
+      "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/bootstrap_v6.py",
+      "5b8735ad1c03ca0afebf54dfe3f1123a96dabb72002db53de16f60d2ae0244e9",
+      "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/inventory-inputs.json",
+      "e958f0f1ba876a3ba83ab8c15df7825c9b5b06d86eee1a7e6322988492bbd6cc",
+      "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/selftest.py"
+    ],
+    "cwd": "/Users/adamjackson/Projects/work/scout-x11",
+    "elapsed_seconds": 208.45333741704235,
+    "exit_code": 0,
+    "stderr": "...........test_assembler_derives_manifest_from_verified_seals (prep_selftest.PreparationTests.test_assembler_derives_manifest_from_verified_seals) ... ok\ntest_authorization_scope_and_unsigned_implementation (prep_selftest.PreparationTests.test_authorization_scope_and_unsigned_implementation) ... ok\ntest_budget_path_cannot_reset_and_sixth_operation_refused (prep_selftest.PreparationTests.test_budget_path_cannot_reset_and_sixth_operation_refused) ... ok\ntest_build_added_source_changes_selected_closure (prep_selftest.PreparationTests.test_build_added_source_changes_selected_closure) ... ok\ntest_build_refuses_existing_artifact (prep_selftest.PreparationTests.test_build_refuses_existing_artifact) ... ok\ntest_buildinfo_failure_never_promotes_and_retry_recovers (prep_selftest.PreparationTests.test_buildinfo_failure_never_promotes_and_retry_recovers) ... ok\ntest_case_safety (prep_selftest.PreparationTests.test_case_safety) ... ok\ntest_completed_seal_rejects_empty_or_inconsistent_trace (prep_selftest.PreparationTests.test_completed_seal_rejects_empty_or_inconsistent_trace) ... ok\ntest_content_and_operational_refusal_seals (prep_selftest.PreparationTests.test_content_and_operational_refusal_seals) ... ok\ntest_exact_blobs_ignore_export_attributes (prep_selftest.PreparationTests.test_exact_blobs_ignore_export_attributes) ... ok\ntest_forged_content_refusal_has_no_git_evidence (prep_selftest.PreparationTests.test_forged_content_refusal_has_no_git_evidence) ... ok\ntest_git_structural_operational_prerequisites (prep_selftest.PreparationTests.test_git_structural_operational_prerequisites) ... ok\ntest_gitlinks_and_excluded_codegraph_counts (prep_selftest.PreparationTests.test_gitlinks_and_excluded_codegraph_counts) ... ok\ntest_materialized_selected_tree_mismatches (prep_selftest.PreparationTests.test_materialized_selected_tree_mismatches) ... ok\ntest_non_utf8_committed_path_is_structural_content (prep_selftest.PreparationTests.test_non_utf8_committed_path_is_structural_content) ... ok\ntest_ownership_real_scanner_create_once_and_seals (prep_selftest.PreparationTests.test_ownership_real_scanner_create_once_and_seals) ... ok\ntest_persistent_budget_expiry_is_global_even_before_commands (prep_selftest.PreparationTests.test_persistent_budget_expiry_is_global_even_before_commands) ... ok\ntest_produced_refusals_through_inventory (prep_selftest.PreparationTests.test_produced_refusals_through_inventory) ... ok\ntest_revision_scope_excludes_unobserved_content_unit_only (prep_selftest.PreparationTests.test_revision_scope_excludes_unobserved_content_unit_only) ... ok\ntest_safe_symlink_and_executable_mode (prep_selftest.PreparationTests.test_safe_symlink_and_executable_mode) ... ok\ntest_safety_refusals (prep_selftest.PreparationTests.test_safety_refusals) ... ok\ntest_scanner_failures_are_always_operational (prep_selftest.PreparationTests.test_scanner_failures_are_always_operational) ... ok\ntest_scanner_retry_and_memoryerror_sealing (prep_selftest.PreparationTests.test_scanner_retry_and_memoryerror_sealing) ... ok\ntest_scanner_tree_drift_before_command (prep_selftest.PreparationTests.test_scanner_tree_drift_before_command) ... ok\ntest_timeout_and_interrupt_are_operational (prep_selftest.PreparationTests.test_timeout_and_interrupt_are_operational) ... ok\ntest_unicode_alias_safety (prep_selftest.PreparationTests.test_unicode_alias_safety) ... ok\n\n----------------------------------------------------------------------\nRan 26 tests in 163.299s\n\nOK\n..................\n----------------------------------------------------------------------\nRan 29 tests in 206.403s\n\nOK\n",
+    "stdout": ""
+  },
+  "interrupted_work": {
+    "envelope_receipt": "Existing create-once study copy matched provided source receipt and expected SHA; generator not rerun. ADR round-1 matched study round-6 byte-for-byte and was not changed.",
+    "initial_git_status": " M docs/STATUS.md\n M docs/adrs/README.md\n M docs/hypothesis-ledger.md\nMM docs/research-ledger.md\n M docs/scout-design.html\n?? docs/adrs/2026-11-08-x11a-delegated-decisions/\n?? evaluation/x11-merge-association/\n?? evaluation/x11b-guard-recovery/",
+    "launcher_failure": {
+      "exit_code": 1,
+      "reason": "reviewed entrypoint source drift: interrupted writer had not refreshed source pins; no benchmark work started. Source pin packet regenerated before successful run.",
+      "wall_seconds": 1.94
+    },
+    "prior_file_benchmark": "No surviving prep_scale/benchmark process found; retained benchmark-v7-files had empty ownership seal and partial revision records. Not treated as completed evidence; rerun in new benchmark-v7-files-rerun directory.",
+    "successful_benchmarks": {
+      "bytes": {
+        "exit_code": 0,
+        "outer_wall_seconds": 42.73,
+        "receipt": {
+          "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-bytes-v7.json",
+          "sha256": "fd2fa231a08d8d55353088a2c9712eb129810f4e6b594ef00d88749e59f11cd2"
+        }
+      },
+      "files": {
+        "exit_code": 0,
+        "outer_wall_seconds": 2805.29,
+        "receipt": {
+          "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-files-v7.json",
+          "sha256": "4aa468fd5dd4c96ff815a24d48fd17d175b4ea8fea3bd2ba9b20a16d671de2b2"
+        }
+      }
+    }
+  },
+  "revision": "7",
+  "scope": "Authorised synthetic checks only; no candidate scan/inventory/model calls by this writer",
+  "study": "X11a"
+}

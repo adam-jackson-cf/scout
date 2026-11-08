@@ -1,0 +1,39 @@
+{
+  "schema": "x11a-latency-only-planning-v4",
+  "source_commit": "04d5e632ae34d8056c3df5116b9ba87cfbf99282",
+  "field_read": "latency_s only; no outcome/label fields projected or associated",
+  "sources": [
+    {
+      "path": "evaluation/x2d-postrun-tuning/escalation/frozen-r8-10.calls.jsonl",
+      "source_sha256": "84c5e399098e3fca2f78718eea1cf42ab05e5980a50f6a48d5d0b5e8967a76ac",
+      "n": 25,
+      "mean_seconds": 4.468,
+      "median_seconds": 4.3,
+      "p90_seconds": 4.9,
+      "maximum_seconds": 5.9,
+      "sum_seconds": 111.7
+    },
+    {
+      "path": "evaluation/x2d-postrun-tuning/axum/escalation/axum-r1-5.calls.jsonl",
+      "source_sha256": "838113053058cd433453f7adb0902aa99989928704884cab14738bd4ad54d18d",
+      "n": 32,
+      "mean_seconds": 5.821875,
+      "median_seconds": 5.6,
+      "p90_seconds": 7.0,
+      "maximum_seconds": 10.3,
+      "sum_seconds": 186.3
+    }
+  ],
+  "planning": {
+    "fallback_seconds": 31,
+    "fallback_rule": "ceil(3 * pooled observed maximum 10.3s)",
+    "label_seconds": 60,
+    "label_rule": "one minute provision = >5 * observed fallback maximum; cross-task engineering assumption, not an empirical claim about Opus/Sol label sessions",
+    "map_seconds": 900,
+    "map_rule": "fixed planning allowance, not observed duration",
+    "summed_model_hours_ceiling": 3000,
+    "wall_days": 21,
+    "max_concurrent_calls": 6
+  },
+  "limitation": "57 historical fallback attempts are not representative label/model latency validation. Runtime hours/wall/rate-limit stops remain binding; no successful long-duration throughput is claimed."
+}

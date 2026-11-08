@@ -30,6 +30,7 @@ ADR-014 uses adopted-form route (a): it takes effect on its folder's explicit fi
 | ADR-010 | `2026-11-08-d1-jev-minimums/` | Record owner-agreed Jev triage minimums; retain provisional threshold and preregistered review | accepted |
 | ADR-011 | `2026-11-08-gitleaks-policy-version/` | Keep the exact Gitleaks rule-pack activation version; enforce binary-segment invariant in later code | accepted; agent-decided under R-064; owner review pending; effective on final zero-issue council round |
 | ADR-012 | `2026-11-08-shadow-readiness-inputs/` | Persist CI observations and authorized triage history; compute readiness under bounded evidence invariants | accepted; agent-decided under R-064; owner review pending; implementation pending; based on adopted ADR-011 |
+| ADR-013 | `2026-11-08-x11a-delegated-decisions/` | Record X11a assignment-study choices, supply-informed1500–2000 segments, bounded preparation and uniform label-prefix gates | accepted-form; agent-decided under R-064; owner review pending; not effective until final zero-issue council round |
 | ADR-014 | `2026-11-08-x1-delegated-decisions/` | Capture delegated X1 experiment-protocol choices; no product-default, flag, sampler or threshold adoption | accepted; decided by the agent under owner delegation (R-064) |
 
 ## Old paths and citations

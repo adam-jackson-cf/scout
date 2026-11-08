@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "/Users/adamjackson/Projects/work/x11-tools/python-4c17f7a00b8b57db0e61f0375d3c1345997a5f82739eb969b5ab82d8e7132c6e/bin/python3.14",
+    "-I",
+    "-B",
+    "-c",
+    "import hashlib,json,pathlib,runpy,sys\np=pathlib.Path(sys.argv[1])\nif hashlib.sha256(p.read_bytes()).hexdigest()!=sys.argv[2]: raise RuntimeError('bootstrap drift')\nb=runpy.run_path(str(p),run_name='trusted_metadata_bootstrap')\nc=json.loads(pathlib.Path(sys.argv[3]).read_text())\nif b['digest'](sys.argv[3])!=sys.argv[4]: raise RuntimeError('input drift')\nh=b['verified_helper'](c,p.parent)\nh.verify_python_runtime(c['export_preparation'])\nh.verify_preparation_closure(c)\nr=json.loads(pathlib.Path(sys.argv[5]).read_text())\nprint(json.dumps(h.go_metadata(r),sort_keys=True))\n",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/bootstrap_v6.py",
+    "5b8735ad1c03ca0afebf54dfe3f1123a96dabb72002db53de16f60d2ae0244e9",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/inventory-inputs.json",
+    "f457fe5a8fe0c251b23f28602798d55dfaa8856e4e23a7994dcd96298934e664",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/tool-pins-v6/frontend-build-recipe-v6.json"
+  ],
+  "cwd": "/Users/adamjackson/Projects/work/scout-x11",
+  "environment": {
+    "HOME": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/artifacts/preparation-runtime/python-home",
+    "LANG": "C",
+    "PATH": "/Users/adamjackson/Projects/work/x11-tools/python-4c17f7a00b8b57db0e61f0375d3c1345997a5f82739eb969b5ab82d8e7132c6e/bin",
+    "TMPDIR": "/tmp"
+  },
+  "exit_code": 0,
+  "output": {
+    "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/tool-pins-v7/frontend-go-closure-v7.json",
+    "sha256": "788f2a3be52a471602a4d622c90dae88b52d79a5bd8b8c1d9383c2ae42a22e37"
+  },
+  "scope": "Read-only selected Go/frontend metadata extraction, no build/scan/test.",
+  "stderr": "",
+  "wall_seconds": 2.410722957982216
+}

@@ -1,0 +1,754 @@
+{
+  "authority": {
+    "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/authority.json",
+    "sha256": "5aeaf7f7afd3fe9e3fc87e4cceea6adeb897d34b4f4fb117afda524a4c126b6d"
+  },
+  "budget": {
+    "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/artifacts/preparation-budget-v7.json",
+    "sha256": "9f37bf25a104efe326c5df5b340cb3b4a2c325d869efdc62ae7bf2fd63b7aac7"
+  },
+  "cleanup": "Synthetic source/repository/seals/stream retained for audit; execute cleaned fresh per-revision roots/states",
+  "command": [
+    "/Users/adamjackson/Projects/work/x11-tools/python-4c17f7a00b8b57db0e61f0375d3c1345997a5f82739eb969b5ab82d8e7132c6e/bin/python3.14",
+    "-I",
+    "-B",
+    "-c",
+    "import hashlib,pathlib,runpy,sys; p=pathlib.Path(sys.argv[1]); assert hashlib.sha256(p.read_bytes()).hexdigest()==sys.argv[2]; sys.argv=[str(p),\"--config\",sys.argv[3],\"--config-sha256\",sys.argv[4],\"--script\",sys.argv[5],\"--\",*sys.argv[6:]]; runpy.run_path(str(p),run_name=\"__main__\")",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/bootstrap_v6.py",
+    "5b8735ad1c03ca0afebf54dfe3f1123a96dabb72002db53de16f60d2ae0244e9",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/inventory-inputs.json",
+    "efee2c694f566afd08fec1c50b6d14036508e3928be9a5554b302d22381d529b",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep_scale_v7.py",
+    "--inputs",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/inventory-inputs.json",
+    "--work",
+    "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes",
+    "--output",
+    "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-bytes-v7.json",
+    "--scenario",
+    "bytes"
+  ],
+  "elapsed_seconds": 40.76915474998532,
+  "ended_utc": "2026-11-08T17:58:23.051303+00:00",
+  "fixture": {
+    "bytes_per_revision_min": 2000120047,
+    "change_fraction": 0.05,
+    "changed_source_files_each_revision_after_base": 100,
+    "files_per_revision": 2001,
+    "first_parent_revisions": [
+      "62552ed2f51af7af8c77bde0ec2b2ef02529a86c",
+      "8d81b3ea27b5408d92fce9b0c145ad6c49bd064a",
+      "28d4d45fbb3d14edb0815511d38095f733ba4086"
+    ],
+    "language": "Go",
+    "merge_revisions": [
+      "8d81b3ea27b5408d92fce9b0c145ad6c49bd064a",
+      "28d4d45fbb3d14edb0815511d38095f733ba4086"
+    ],
+    "padding_bytes_per_source_file": 1000000,
+    "revision_count": 3,
+    "shape": "package/function sources; byte-heavy scenario adds one block comment per source; no candidate-informed complexity tuning",
+    "source_files_per_revision": 2000
+  },
+  "fixture_environment": {
+    "CI": "1",
+    "GIT_ALLOW_PROTOCOL": "",
+    "GIT_AUTHOR_DATE": "2026-01-01T00:00:00Z",
+    "GIT_AUTHOR_EMAIL": "synthetic@example.invalid",
+    "GIT_AUTHOR_NAME": "Synthetic capacity",
+    "GIT_CEILING_DIRECTORIES": "/",
+    "GIT_COMMITTER_DATE": "2026-01-01T00:00:00Z",
+    "GIT_COMMITTER_EMAIL": "synthetic@example.invalid",
+    "GIT_COMMITTER_NAME": "Synthetic capacity",
+    "GIT_CONFIG_GLOBAL": "/dev/null",
+    "GIT_CONFIG_NOSYSTEM": "1",
+    "GIT_DISCOVERY_ACROSS_FILESYSTEM": "0",
+    "GIT_EXEC_PATH": "/Users/adamjackson/Projects/work/x11-tools/83b941f8c8a994a6f02af7c08dfda99683279e0cc55ad456d3352335344b4c1e/git/libexec/git-core",
+    "GIT_NO_LAZY_FETCH": "1",
+    "GIT_NO_REPLACE_OBJECTS": "1",
+    "GIT_OPTIONAL_LOCKS": "0",
+    "GIT_TEMPLATE_DIR": "/Users/adamjackson/Projects/work/x11-tools/83b941f8c8a994a6f02af7c08dfda99683279e0cc55ad456d3352335344b4c1e/git/share/git-core/templates",
+    "GIT_TERMINAL_PROMPT": "0",
+    "HOME": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/home",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "NODE_OPTIONS": "--max-old-space-size=8192",
+    "PATH": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/bin",
+    "TMPDIR": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/home"
+  },
+  "fixture_setup_seconds": 10.569012790976558,
+  "frontend_merge_count": 2,
+  "frontend_output": {
+    "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/frontend-output.json",
+    "sha256": "0a52f10a2833673f4227c8b09ede78c9fea600aa05dedf575859bb7dc4813a29"
+  },
+  "frontend_seconds": 0.2672673750203103,
+  "inputs": {
+    "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/inputs.json",
+    "sha256": "1e3f470a1642a3982da3b197dc319a9715de10873f722fc744142a10a2446d94"
+  },
+  "operations": [
+    {
+      "elapsed_seconds": 7.823410582961515,
+      "operation": "build-frontend",
+      "refusal": null,
+      "seal": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/build-frontend-seal.json",
+        "sha256": "f71ba6c54e226fe4b4457fb0f3d8f93bd580dd139c8d571674d0a36c3578b700"
+      },
+      "status": "completed"
+    },
+    {
+      "elapsed_seconds": 22.09936358302366,
+      "operation": "ownership",
+      "refusal": null,
+      "seal": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/ownership-seal.json",
+        "sha256": "6e678dac108915987072a599ca095fc679459eb9cc008783c7fc081589a11647"
+      },
+      "status": "completed"
+    }
+  ],
+  "original_snapshot_pairs": [
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/EXPORT_RECIPES.md",
+        "sha256": "9765a0aec882a6c77bb1351edb791edb57bcd78aa4e6196135bd84a8b1496dea"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/EXPORT_RECIPES.md",
+        "sha256": "9765a0aec882a6c77bb1351edb791edb57bcd78aa4e6196135bd84a8b1496dea"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/PREREGISTRATION.md",
+        "sha256": "9ba54c4df90c0708dc8acd2590af3963920c0554ef85df5bac2fce855584f218"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/PREREGISTRATION.md",
+        "sha256": "9ba54c4df90c0708dc8acd2590af3963920c0554ef85df5bac2fce855584f218"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/assemble_preparation.py",
+        "sha256": "b8b6a04899651058b1b61b65b2178dfdf8eff1019bb40ee3a124b3d98f3d51a0"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/assemble_preparation.py",
+        "sha256": "b8b6a04899651058b1b61b65b2178dfdf8eff1019bb40ee3a124b3d98f3d51a0"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/bootstrap_selftest_v6.py",
+        "sha256": "a9901432ace306ce867aa1e09ef617a24a4e8b6347359e86415a831784978ff7"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/bootstrap_selftest_v6.py",
+        "sha256": "a9901432ace306ce867aa1e09ef617a24a4e8b6347359e86415a831784978ff7"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/bootstrap_v6.py",
+        "sha256": "5b8735ad1c03ca0afebf54dfe3f1123a96dabb72002db53de16f60d2ae0244e9"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/bootstrap_v6.py",
+        "sha256": "5b8735ad1c03ca0afebf54dfe3f1123a96dabb72002db53de16f60d2ae0244e9"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/envelope_check.py",
+        "sha256": "00b6bf253f5ea2547854f228526fff34535084e008874725540769b9600bd1f5"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/envelope_check.py",
+        "sha256": "00b6bf253f5ea2547854f228526fff34535084e008874725540769b9600bd1f5"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/exposure-source-index.json",
+        "sha256": "bccbfd4b8a2e42c9a91cdd9ead0c3f939c5606950a5fcb9844f8d4b6a141c3d8"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/exposure-source-index.json",
+        "sha256": "bccbfd4b8a2e42c9a91cdd9ead0c3f939c5606950a5fcb9844f8d4b6a141c3d8"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/extract_exposures.py",
+        "sha256": "966f7ed55d0a30c3d5cc4e2deea5c78b912f98827e261bbdb9b265c44749c6b8"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/extract_exposures.py",
+        "sha256": "966f7ed55d0a30c3d5cc4e2deea5c78b912f98827e261bbdb9b265c44749c6b8"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/frontend/main.go",
+        "sha256": "8bbe00b526dd39ef0905fb85e47d85326418e57c062ebb241d8fd55770c4c6f9"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/frontend/main.go",
+        "sha256": "8bbe00b526dd39ef0905fb85e47d85326418e57c062ebb241d8fd55770c4c6f9"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/frontend/main_test.go",
+        "sha256": "1b49b60b85568ef8d3b440d12590335e5a9e17eb7b9997514af9827b833cf3c0"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/frontend/main_test.go",
+        "sha256": "1b49b60b85568ef8d3b440d12590335e5a9e17eb7b9997514af9827b833cf3c0"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/inventory.py",
+        "sha256": "88cdd3b1a76b60c7394f43df58fe52a0573f671f7d3c12c15f2f75ea2f1db9cc"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/inventory.py",
+        "sha256": "88cdd3b1a76b60c7394f43df58fe52a0573f671f7d3c12c15f2f75ea2f1db9cc"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/oc-v5-fixtures.json",
+        "sha256": "b5c2a1e6cd35284b633489f26e70db3d5c65c7ce145abdb280853c950609137e"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v5-fixtures.json",
+        "sha256": "b5c2a1e6cd35284b633489f26e70db3d5c65c7ce145abdb280853c950609137e"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/oc-v5-spec.json",
+        "sha256": "7f0f2f83887634b0ca303e189e5f9c8ec4505e5b06a646bfbb10b2c4b08999b4"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v5-spec.json",
+        "sha256": "7f0f2f83887634b0ca303e189e5f9c8ec4505e5b06a646bfbb10b2c4b08999b4"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/oc-v5-timing-10000-r2.json",
+        "sha256": "2e8c5dc2be122032ce271cb8568fc5fa81650427ff86cbd8bbb4d2abe5cbe93b"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v5-timing-10000-r2.json",
+        "sha256": "2e8c5dc2be122032ce271cb8568fc5fa81650427ff86cbd8bbb4d2abe5cbe93b"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/oc-v5-timing-final-r2.json",
+        "sha256": "d3ce6d8cc343fb49487ffdb3a91e0e08beaa1664f8d7abd415936399103bb86d"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v5-timing-final-r2.json",
+        "sha256": "d3ce6d8cc343fb49487ffdb3a91e0e08beaa1664f8d7abd415936399103bb86d"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/oc-v5-timing-stress-r2.json",
+        "sha256": "68bdc4b7b229b5bd344335ae3f6d9d67a1d494b06ffb0976a8faf779e6783d4e"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v5-timing-stress-r2.json",
+        "sha256": "68bdc4b7b229b5bd344335ae3f6d9d67a1d494b06ffb0976a8faf779e6783d4e"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/oc-v6-timing-balanced-r3.json",
+        "sha256": "7650a4a9234709681ca029bb6a2ab6f5300cc76efe0ba1edc510b52b95248c66"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v6-timing-balanced-r3.json",
+        "sha256": "7650a4a9234709681ca029bb6a2ab6f5300cc76efe0ba1edc510b52b95248c66"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/oc-v6-timing-concentrated-r3.json",
+        "sha256": "207ddd56e3c4ee7b0fa30170fa8085df728c1abb70e1e55375b836c8d0ea8c67"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v6-timing-concentrated-r3.json",
+        "sha256": "207ddd56e3c4ee7b0fa30170fa8085df728c1abb70e1e55375b836c8d0ea8c67"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/oc-v6-timing-metadata.json",
+        "sha256": "f99f67a43b7450fa3bcfd79cf569544b43a84e503dc028456325020b76961511"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v6-timing-metadata.json",
+        "sha256": "f99f67a43b7450fa3bcfd79cf569544b43a84e503dc028456325020b76961511"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/oc-v6-timing-singleton-r3.json",
+        "sha256": "f144bbb4b7b1fb7667f4cdaa0fdf087a2f2f6eff62279df2fa4cf3cd8dc84e20"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v6-timing-singleton-r3.json",
+        "sha256": "f144bbb4b7b1fb7667f4cdaa0fdf087a2f2f6eff62279df2fa4cf3cd8dc84e20"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/oc_selftest_v6.py",
+        "sha256": "0eba0a6330c8ca7bc52819684e94dd6b57387960f4fe757a03d71e35438789b4"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc_selftest_v6.py",
+        "sha256": "0eba0a6330c8ca7bc52819684e94dd6b57387960f4fe757a03d71e35438789b4"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/oc_timing_v7.py",
+        "sha256": "ff283ad8d923ada9d282b8d777b3f69750f2f4c5bb749aae87171199272e0a9f"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc_timing_v7.py",
+        "sha256": "ff283ad8d923ada9d282b8d777b3f69750f2f4c5bb749aae87171199272e0a9f"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/oc_v5.go",
+        "sha256": "34e51550f3f0a4d7d406e4302200af9a1f7302b33186b97c1734450373bb4966"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc_v5.go",
+        "sha256": "34e51550f3f0a4d7d406e4302200af9a1f7302b33186b97c1734450373bb4966"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/oc_v5.py",
+        "sha256": "5886200086055b9e403a823f465e6342981466d229f660fed8f55a8abfefcbcf"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc_v5.py",
+        "sha256": "5886200086055b9e403a823f465e6342981466d229f660fed8f55a8abfefcbcf"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/pin_tool_closure.py",
+        "sha256": "39dff5b8a75e41852af7d6f5f534728ed0667626e1eb42e8ab38e657109e8348"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/pin_tool_closure.py",
+        "sha256": "39dff5b8a75e41852af7d6f5f534728ed0667626e1eb42e8ab38e657109e8348"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-assumptions-v6.json",
+        "sha256": "57c5e0c08922b7d5857845e36f0d603efa9e0a013c45415668c8c8252cdd733c"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep-scale-assumptions-v6.json",
+        "sha256": "57c5e0c08922b7d5857845e36f0d603efa9e0a013c45415668c8c8252cdd733c"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-construct-v6b.json",
+        "sha256": "20077b7ecdf571648871038ae7be3e51e90fd289420617ab8a5f424c6d4fd3ae"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep-scale-construct-v6b.json",
+        "sha256": "20077b7ecdf571648871038ae7be3e51e90fd289420617ab8a5f424c6d4fd3ae"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-projection-v6.json",
+        "sha256": "f56243f117224e8e94da473bd21fa063b57a543d513590f96f5bd922dd6460e4"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep-scale-projection-v6.json",
+        "sha256": "f56243f117224e8e94da473bd21fa063b57a543d513590f96f5bd922dd6460e4"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-projection-v6b.json",
+        "sha256": "b448460c758d009d761401db2e53f3f74667708c618747bd410eded4d93f7538"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep-scale-projection-v6b.json",
+        "sha256": "b448460c758d009d761401db2e53f3f74667708c618747bd410eded4d93f7538"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-v6.json",
+        "sha256": "27d3612d8ddf59958040adbe4604d57b724fe460acd206602ff42c35f1d07104"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep-scale-v6.json",
+        "sha256": "27d3612d8ddf59958040adbe4604d57b724fe460acd206602ff42c35f1d07104"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep-scale-v6b.json",
+        "sha256": "49d4f502f70c1b134e8a9a0903bdeface84205a881ea4f843417869c4ea75ded"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep-scale-v6b.json",
+        "sha256": "49d4f502f70c1b134e8a9a0903bdeface84205a881ea4f843417869c4ea75ded"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep_scale_v6.py",
+        "sha256": "ddea776867bba3e5eeb2e15b2589c7f2b0264df727a72eb9689b78f5e7cb7448"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep_scale_v6.py",
+        "sha256": "ddea776867bba3e5eeb2e15b2589c7f2b0264df727a72eb9689b78f5e7cb7448"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep_scale_v6b.py",
+        "sha256": "1a89246556d5367d0f4eb955d483d294390481c61dbb4a19b0e1fc095cf7db41"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep_scale_v6b.py",
+        "sha256": "1a89246556d5367d0f4eb955d483d294390481c61dbb4a19b0e1fc095cf7db41"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep_scale_v7.py",
+        "sha256": "956624bb7e26abe215c8e75b3ea0e93069de443867dcb3256a5ef083e3ad6ed0"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep_scale_v7.py",
+        "sha256": "956624bb7e26abe215c8e75b3ea0e93069de443867dcb3256a5ef083e3ad6ed0"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep_selftest.py",
+        "sha256": "72946bfdf9e997df659d4fe0f6fd5c73502a2d41d29e1999c1c9fef1cba894d7"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep_selftest.py",
+        "sha256": "72946bfdf9e997df659d4fe0f6fd5c73502a2d41d29e1999c1c9fef1cba894d7"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prepare_exports.py",
+        "sha256": "d52135b07b13100fb0f0092de759c9bd17b06821d5c92eb5a4fa1d0e3c8e0e8d"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prepare_exports.py",
+        "sha256": "d52135b07b13100fb0f0092de759c9bd17b06821d5c92eb5a4fa1d0e3c8e0e8d"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/selftest.py",
+        "sha256": "d5f42e9d18138c3c944fbfc99044c59b1e8f81723f96765559672bf9008bc466"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/selftest.py",
+        "sha256": "d5f42e9d18138c3c944fbfc99044c59b1e8f81723f96765559672bf9008bc466"
+      }
+    },
+    {
+      "original": {
+        "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/stages.py",
+        "sha256": "e58dc239e13615c989410502afe47a8ef64f84a1e810bd6749551c654cb06a02"
+      },
+      "snapshot": {
+        "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/stages.py",
+        "sha256": "e58dc239e13615c989410502afe47a8ef64f84a1e810bd6749551c654cb06a02"
+      }
+    }
+  ],
+  "owned_paths_per_revision": [
+    2001,
+    2001,
+    2001
+  ],
+  "ownership_record_bytes": 229299,
+  "peak_rss_bytes": 692879360,
+  "platform": {
+    "machine": "arm64",
+    "python": "3.14.10",
+    "release": "25.6.0",
+    "system": "Darwin",
+    "version": "Darwin Kernel Version 25.6.0: Sat Jul 11 15:27:04 PDT 2026; root:xnu-12377.161.13~4/RELEASE_ARM64_T6050"
+  },
+  "preparation_script": {
+    "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prepare_exports.py",
+    "sha256": "d52135b07b13100fb0f0092de759c9bd17b06821d5c92eb5a4fa1d0e3c8e0e8d"
+  },
+  "projection": {
+    "assumed_bytes_per_revision": 2000000000,
+    "assumed_files_per_revision": 100000,
+    "assumed_revisions": 2002,
+    "attempt_ceiling_seconds": 1209600,
+    "attempt_fits": false,
+    "limitation": "Linear envelope projection, not a runtime guarantee; heterogeneous synthetic shapes reported separately without tuning or dropping failures.",
+    "max_concurrent_repositories": 5,
+    "multiplier": 33349.99167083125,
+    "not_candidate_measurement": true,
+    "per_repository_attempt_seconds": 1359650.9713388407,
+    "rule": "total measured seconds * max(file ratio, byte ratio) * revision ratio; includes setup/build/verification/frontend",
+    "three_attempt_seconds": 4078952.914016522,
+    "three_attempts_fit": false,
+    "whole_preparation_ceiling_seconds": 3628800
+  },
+  "python_runtime": {
+    "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/python-runtime-location-only.json",
+    "sha256": "a2a26396906ecd43a6f6e8eaa1a518baaf1f276c716f74ddad6f9e54342a2329"
+  },
+  "retained_work": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes",
+  "rss_method": "Darwin getrusage max child/self bytes; not simultaneous process-group aggregate",
+  "runner": {
+    "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/prep_scale_v7.py",
+    "sha256": "956624bb7e26abe215c8e75b3ea0e93069de443867dcb3256a5ef083e3ad6ed0"
+  },
+  "runtime_location_derivation": {
+    "derived": {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/python-runtime-location-only.json",
+      "sha256": "a2a26396906ecd43a6f6e8eaa1a518baaf1f276c716f74ddad6f9e54342a2329"
+    },
+    "from": [
+      "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association"
+    ],
+    "only_changed_field": "local_module_paths",
+    "original": {
+      "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/tool-pins-v6/python-runtime-v6b.json",
+      "sha256": "a33cccdec6af44cfb8fd34006d89a633840afef2444c00a88fa3249fe80978ac"
+    },
+    "to": [
+      "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source"
+    ]
+  },
+  "scanner_tree": {
+    "path": "/Users/adamjackson/Projects/work/scout-x11/evaluation/x11-merge-association/tool-pins-v6/clawpatch-tree-v6.json",
+    "sha256": "423a786aef8874ac34e01c9f9c3d0b52f78ddffb6af774a80801c3bd5c3b9f29"
+  },
+  "scenario": "bytes",
+  "schema": "x11a-preparation-scale-v7",
+  "source_snapshot": [
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/EXPORT_RECIPES.md",
+      "sha256": "9765a0aec882a6c77bb1351edb791edb57bcd78aa4e6196135bd84a8b1496dea"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/PREREGISTRATION.md",
+      "sha256": "9ba54c4df90c0708dc8acd2590af3963920c0554ef85df5bac2fce855584f218"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/assemble_preparation.py",
+      "sha256": "b8b6a04899651058b1b61b65b2178dfdf8eff1019bb40ee3a124b3d98f3d51a0"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/bootstrap_selftest_v6.py",
+      "sha256": "a9901432ace306ce867aa1e09ef617a24a4e8b6347359e86415a831784978ff7"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/bootstrap_v6.py",
+      "sha256": "5b8735ad1c03ca0afebf54dfe3f1123a96dabb72002db53de16f60d2ae0244e9"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/envelope_check.py",
+      "sha256": "00b6bf253f5ea2547854f228526fff34535084e008874725540769b9600bd1f5"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/exposure-source-index.json",
+      "sha256": "bccbfd4b8a2e42c9a91cdd9ead0c3f939c5606950a5fcb9844f8d4b6a141c3d8"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/extract_exposures.py",
+      "sha256": "966f7ed55d0a30c3d5cc4e2deea5c78b912f98827e261bbdb9b265c44749c6b8"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/frontend/main.go",
+      "sha256": "8bbe00b526dd39ef0905fb85e47d85326418e57c062ebb241d8fd55770c4c6f9"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/frontend/main_test.go",
+      "sha256": "1b49b60b85568ef8d3b440d12590335e5a9e17eb7b9997514af9827b833cf3c0"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/inventory.py",
+      "sha256": "88cdd3b1a76b60c7394f43df58fe52a0573f671f7d3c12c15f2f75ea2f1db9cc"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v5-fixtures.json",
+      "sha256": "b5c2a1e6cd35284b633489f26e70db3d5c65c7ce145abdb280853c950609137e"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v5-spec.json",
+      "sha256": "7f0f2f83887634b0ca303e189e5f9c8ec4505e5b06a646bfbb10b2c4b08999b4"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v5-timing-10000-r2.json",
+      "sha256": "2e8c5dc2be122032ce271cb8568fc5fa81650427ff86cbd8bbb4d2abe5cbe93b"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v5-timing-final-r2.json",
+      "sha256": "d3ce6d8cc343fb49487ffdb3a91e0e08beaa1664f8d7abd415936399103bb86d"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v5-timing-stress-r2.json",
+      "sha256": "68bdc4b7b229b5bd344335ae3f6d9d67a1d494b06ffb0976a8faf779e6783d4e"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v6-timing-balanced-r3.json",
+      "sha256": "7650a4a9234709681ca029bb6a2ab6f5300cc76efe0ba1edc510b52b95248c66"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v6-timing-concentrated-r3.json",
+      "sha256": "207ddd56e3c4ee7b0fa30170fa8085df728c1abb70e1e55375b836c8d0ea8c67"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v6-timing-metadata.json",
+      "sha256": "f99f67a43b7450fa3bcfd79cf569544b43a84e503dc028456325020b76961511"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc-v6-timing-singleton-r3.json",
+      "sha256": "f144bbb4b7b1fb7667f4cdaa0fdf087a2f2f6eff62279df2fa4cf3cd8dc84e20"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc_selftest_v6.py",
+      "sha256": "0eba0a6330c8ca7bc52819684e94dd6b57387960f4fe757a03d71e35438789b4"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc_timing_v7.py",
+      "sha256": "ff283ad8d923ada9d282b8d777b3f69750f2f4c5bb749aae87171199272e0a9f"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc_v5.go",
+      "sha256": "34e51550f3f0a4d7d406e4302200af9a1f7302b33186b97c1734450373bb4966"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/oc_v5.py",
+      "sha256": "5886200086055b9e403a823f465e6342981466d229f660fed8f55a8abfefcbcf"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/pin_tool_closure.py",
+      "sha256": "39dff5b8a75e41852af7d6f5f534728ed0667626e1eb42e8ab38e657109e8348"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep-scale-assumptions-v6.json",
+      "sha256": "57c5e0c08922b7d5857845e36f0d603efa9e0a013c45415668c8c8252cdd733c"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep-scale-construct-v6b.json",
+      "sha256": "20077b7ecdf571648871038ae7be3e51e90fd289420617ab8a5f424c6d4fd3ae"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep-scale-projection-v6.json",
+      "sha256": "f56243f117224e8e94da473bd21fa063b57a543d513590f96f5bd922dd6460e4"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep-scale-projection-v6b.json",
+      "sha256": "b448460c758d009d761401db2e53f3f74667708c618747bd410eded4d93f7538"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep-scale-v6.json",
+      "sha256": "27d3612d8ddf59958040adbe4604d57b724fe460acd206602ff42c35f1d07104"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep-scale-v6b.json",
+      "sha256": "49d4f502f70c1b134e8a9a0903bdeface84205a881ea4f843417869c4ea75ded"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep_scale_v6.py",
+      "sha256": "ddea776867bba3e5eeb2e15b2589c7f2b0264df727a72eb9689b78f5e7cb7448"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep_scale_v6b.py",
+      "sha256": "1a89246556d5367d0f4eb955d483d294390481c61dbb4a19b0e1fc095cf7db41"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep_scale_v7.py",
+      "sha256": "956624bb7e26abe215c8e75b3ea0e93069de443867dcb3256a5ef083e3ad6ed0"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prep_selftest.py",
+      "sha256": "72946bfdf9e997df659d4fe0f6fd5c73502a2d41d29e1999c1c9fef1cba894d7"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/prepare_exports.py",
+      "sha256": "d52135b07b13100fb0f0092de759c9bd17b06821d5c92eb5a4fa1d0e3c8e0e8d"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/selftest.py",
+      "sha256": "d5f42e9d18138c3c944fbfc99044c59b1e8f81723f96765559672bf9008bc466"
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/source/stages.py",
+      "sha256": "e58dc239e13615c989410502afe47a8ef64f84a1e810bd6749551c654cb06a02"
+    }
+  ],
+  "started_utc": "2026-11-08T17:57:42.280601+00:00",
+  "status": "completed",
+  "stream": {
+    "path": "/Users/adamjackson/Projects/work/x11-tools/benchmark-v7-bytes/ownership.ndjson",
+    "sha256": "5adf011d1d56b54e1392e7f5b856b159ddd05199d7f3f671be16ac8a91b4ffd1"
+  },
+  "stream_bytes": 228417,
+  "streamed_owned_paths": 6003,
+  "synthetic_only": true,
+  "tool_pins": {
+    "clawpatch": {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/83b941f8c8a994a6f02af7c08dfda99683279e0cc55ad456d3352335344b4c1e/clawpatch/dist/cli.js",
+      "sha256": "4eab263b87d6b0d0af1eb6792e1e38827e0b13ab53078e62f5ffed76cc4320eb"
+    },
+    "clawpatch_safety_marker": {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/83b941f8c8a994a6f02af7c08dfda99683279e0cc55ad456d3352335344b4c1e/clawpatch/.scout-review-safety",
+      "sha256": "2f0a6c0192d0243ef531a373a2173d67b9158289b8baa2f1056dacafe80463b3"
+    },
+    "git": {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/83b941f8c8a994a6f02af7c08dfda99683279e0cc55ad456d3352335344b4c1e/git/bin/git",
+      "sha256": "17c83995df4da28549a5f2ba5c89e798f13c02222c901089e4ba635bfaf8c28b"
+    },
+    "go": {
+      "path": "/Users/adamjackson/.local/share/mise/installs/go/1.26.10/bin/go",
+      "sha256": "5742f0004c49c005313d88cd06df964b09cad6bcf2eac4506bdb90abc923b1f4"
+    },
+    "node": {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/83b941f8c8a994a6f02af7c08dfda99683279e0cc55ad456d3352335344b4c1e/node/bin/node",
+      "sha256": "9187ad22c98cea5b635a79db52fa32ab3f6aa9d41e3abf5da71437cfef1ca9de"
+    },
+    "python": {
+      "path": "/Users/adamjackson/Projects/work/x11-tools/python-4c17f7a00b8b57db0e61f0375d3c1345997a5f82739eb969b5ab82d8e7132c6e/bin/python3.14",
+      "sha256": "26b5194d2beb09e648b4676ddc18a1384f182a7ed84f3db73106096aba6febf4"
+    },
+    "sandbox_exec": {
+      "path": "/usr/bin/sandbox-exec",
+      "sha256": "e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"
+    }
+  }
+}

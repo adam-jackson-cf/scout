@@ -132,6 +132,7 @@ ADR-014 captures X1 protocol choices only, with no product adoption; its draft h
 - ADR-014 captures X1 protocol choices only, effective on its final zero-issue council round, without product adoption.
 - Design changes need innovation-council sign-off with zero issues, rounds recorded under `docs/adrs/<date>-<topic>/` (`AGENTS.md`). Experiments likewise, preregistered and frozen after sign-off. Design changes may cite only signed-off experiments.
 - Ledgers must be updated when a source/hypothesis is used (`AGENTS.md` ledger rules): `docs/research-ledger.md` (R-001…R-064 and R-069 landed; concurrent allocations R-065–R-077 and R-079 retained; X1 uses R-078 Maurer–Pontil, R-080 diagnostic, R-081 revision-8 compute, R-085 CPython summation documentation and R-086 Go fusion sources; R-082–R-084 allocated to X11; **next free R-087**, confirmed by Main), `docs/hypothesis-ledger.md` (HD\* live; H\*/HA\*/HQ\* frozen). X1 revision 9 remains draft; HD9 remains proposed and ADR-014 waits for its final zero-issue round.
+- **ADR-013 / X11a revision8 is pending council sign-off, not in force:** agent-decided under R-064; owner review pending in this editable tracker. Accepted-form summary, index and Appendix B card are one signed set, effective only on the folder's final explicit zero-issue round. Revision8 adds held-out TypeScript capacity evidence and canonical machine-enforced attempt/global-stop records; it does not authorise full R1-01 implementation, model collection or product default/removal.
 - Secrets only via Infisical per command; never print/export/commit (`AGENTS.md`, General).
 
 ## 3. Evidence to date (one line per study)
@@ -147,6 +148,8 @@ ADR-014 captures X1 protocol choices only, with no product adoption; its draft h
 | **X2 area stability** (council-signed prereg rev 10, rounds 1–10; run 2026-10-23)                                   | Codex arm (decision): `adopt` Jaccard t\* = 0.30, the only passing threshold; mean survival axum 0.8035, fastapi 0.8120 (margin over 4/5 0.0035), 0/436 labelled matches `different_concern` (strict reading 0.32); design default 0.50 fails (0.721/0.766). Leave-one-transition-out passes only with T1 held out. Claude arm `fallback`, not replicated. HD5 `supported` for codex only; any default change needs a council design round | `evaluation/x2-area-stability/RESULTS.md`                                                 |
 
 **Hypothesis ledger now** (`docs/hypothesis-ledger.md:14-28`): H1 not-supported, H2 not-supported, H3 proposed, H4 inconclusive, H5 proposed, H6 proposed, H7 proposed; HA1 proposed (no test), HA2 proposed (X8), HA3 proposed, HA4 proposed; HQ1 not-supported; HD2 inconclusive; HD3 refuted; HD4 supported. Latest research entry **R-069** (rows are in append order).
+
+**X11a hypothesis tracking:** HD8 remains **proposed**, tested by X11a only after actual zero-issue sign-off. Revision8 retains its conditional result map, including accuracy-supported/high-gold-none-untested→inconclusive. Draft X11a sources R-073–R-076/R-079/R-082–R-084 are interleaved in ascending ID order with main's unchanged rows; next free research ID remains R-087.
 
 ## 4. Remaining work
 

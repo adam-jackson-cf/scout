@@ -37,6 +37,7 @@ States: `proposed` → `preregistered` → `under-test` → `supported` | `not-s
 
 ## History
 
+- 2026-11-08 — HD8: still proposed. X11a revision7 records equal-age pooled per-repository precision/recall and the exact verdict/high-gold-none→state mapping (§§6–7); no result or sign-off claimed. Main records under R-064: at actual final sign-off→preregistered, tested by X11a; at terminal results apply the mapping. X11b remains separately needed for guard/recovery/default/removal and concern-duplication evidence. R-073/R-084; no change to HD6/HD6b.
 - 2026-11-08 — HD9: proposed → preregistered; X1 revision 9 signed off in X1 round 9 / ADR-014 round 7 (X1; R-064, R-081).
 - 2026-11-08 — HD9 remains proposed. X1 revision 9 adopts both round-8 verbatim fixes: locked remeasurement tied to the binding-OC host and revision-7 replicate structure, fail-closed termination/resource-exhaustion classification, and frozen outcome-independent descriptive-safety scheduling. Earlier history is unchanged; no executable changes or product-result claim (X1; R-064, R-081).
 - 2026-11-08 — HD9 remains proposed. X1 revision 8 responds to round 7 with supplement binary/runtime closure, the fixed 8 GiB reserve and one-run/maximum-input locked resource stop, keyed partial-safety completion reporting, and Main-authorised correction of the unmerged revision-6 history line to L400 RSS projection only. Revision-7 history is unchanged; synthetic implementation checks do not test HD9 or grant stage authority (X1; R-064, R-081, R-085, R-086).
