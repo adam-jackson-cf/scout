@@ -231,23 +231,25 @@ func (c *Client) Map(ctx context.Context, inputsChanged bool, source MapSource) 
 	if source == MapSourceHeuristic {
 		return c.mapHeuristicLocked(ctx)
 	}
-	if _, err := c.invokeEnvLocked(ctx, agentEnv, agentArgs...); err != nil {
-		fallback, fallbackErr := c.mapHeuristicLocked(ctx)
-		if fallbackErr != nil {
-			return fallback, errors.Join(err, fallbackErr)
+	_, agentErr := c.invokeEnvLocked(ctx, agentEnv, agentArgs...)
+	reason := "agent mapping did not complete; heuristic map kept and exploration is incomplete"
+	if agentErr == nil {
+		features, err := LoadFeatures(c.stateDir)
+		if err != nil {
+			return MapResult{Status: MapBlocked, Source: source, Reason: "canonical Clawpatch records are unavailable"}, err
 		}
-		fallback.ExplorationIncomplete = true
-		fallback.Reason = "agent mapping did not complete; heuristic map kept and exploration is incomplete"
-		return fallback, nil
+		if len(features) > 0 {
+			return MapResult{Status: MapMapped, Source: source, Features: features}, nil
+		}
+		reason = "agent mapping produced zero features; heuristic map kept and exploration is incomplete"
 	}
-	features, err := LoadFeatures(c.stateDir)
+	heuristic, err := c.mapHeuristicLocked(ctx)
 	if err != nil {
-		return MapResult{Status: MapBlocked, Source: source, Reason: "canonical Clawpatch records are unavailable"}, err
+		return heuristic, errors.Join(agentErr, err)
 	}
-	if len(features) == 0 {
-		return MapResult{Status: MapMapped, Source: source, ExplorationIncomplete: true, Reason: "agent mapping produced zero features"}, nil
-	}
-	return MapResult{Status: MapMapped, Source: source, Features: features}, nil
+	heuristic.ExplorationIncomplete = true
+	heuristic.Reason = reason
+	return heuristic, nil
 }
 
 func (c *Client) mapHeuristicLocked(ctx context.Context) (MapResult, error) {

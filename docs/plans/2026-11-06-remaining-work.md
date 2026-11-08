@@ -83,7 +83,7 @@ HD6b and HD7 are `proposed` and have no test yet (`docs/hypothesis-ledger.md`).
 
 ## Known gaps (from `docs/STATUS.md` §1)
 
-- When agent mapping succeeds with zero features, the heuristic output is not re-merged.
+- **Fixed (2026-11-08):** zero-feature agent maps rerun heuristic mapping and return its features with exploration incomplete, without reconciling areas or completing onboarding (REQ-56).
 - The policy `version` strings for Gitleaks checks are the long rule-pack version.
 - The shadow-window bound (`unknown` ≤ 10 % of PR runs) cannot be computed yet. `ShadowStats` has no producer, and `comparison` is not persisted (REQ-22, REQ-78).
 
