@@ -21,6 +21,7 @@ Rules (`AGENTS.md` design rules):
 | ADR-007 | `2026-10-24-cutover-cleanup/`       | Consolidate state, baseline, model-CLI and CI-installation cutovers (rev 2.7)                               | partly superseded      |
 | ADR-008 | `2026-10-31-jev-merge-association/` | Add provisional merge-time area association (rev 2.8)                                                       | accepted (provisional) |
 | ADR-009 | `2026-11-06-design-restructure/`    | Replace the design and requirements documents with `docs/scout-design.html`; rename review folders to ADRs | accepted               |
+| ADR-010 | `2026-11-08-d1-jev-minimums/` | Record owner-agreed Jev triage minimums; retain provisional threshold and preregistered review | proposed (council review pending) |
 
 ## Old paths and citations
 
