@@ -10,7 +10,7 @@ import (
 
 const question = "triage.real_defect"
 
-func TestDefaultsAreProvisionalWithNoLabelsAndTheAssumedMinimums(t *testing.T) {
+func TestDefaultsAreProvisionalWithNoLabelsAndTheAgreedMinimums(t *testing.T) {
 	r, err := Resolve(nil, question, "triage.real_defect@v1")
 	if err != nil {
 		t.Fatal(err)
@@ -19,10 +19,13 @@ func TestDefaultsAreProvisionalWithNoLabelsAndTheAssumedMinimums(t *testing.T) {
 	if r.Source != "default" || r.Stale || r.Status != StatusProvisional || e.Status != StatusProvisional {
 		t.Fatalf("resolution %+v", r)
 	}
-	if e.LabelSet.Summary != "none" || e.ScoreSpace != SpaceRaw || e.MinimumsProvenance != "assumed" {
+	if e.LabelSet.Summary != "none" || e.ScoreSpace != SpaceRaw {
 		t.Fatalf("entry %+v", e)
 	}
-	// Precision 0.8; recall raised to 0.9 because a miss costs more.
+	if e.MinimumsProvenance != "agreed" {
+		t.Fatalf("minimums_provenance %q, want \"agreed\"", e.MinimumsProvenance)
+	}
+	// The owner agreed precision 0.8 and recall 0.9 because a miss costs more.
 	if e.MinPrecision != 0.8 || e.MinRecall != 0.9 || e.Metric != "fbeta" || e.Beta != 2 {
 		t.Fatalf("minimums %+v", e)
 	}

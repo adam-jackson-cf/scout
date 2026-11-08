@@ -29,7 +29,7 @@ flowchart LR
   A5 --> A7
   A6 --> A7
   C[Track C preregistrations] --> B4[B4 Phase 5]
-  D1[D1 Jev costs and minimums] --> C
+  D1[D1 minimums agreed 2026-11-08]
   B4 --> B5[B5 Phase 6]
   A3 --> X11[X11 run]
 ```
@@ -74,9 +74,10 @@ HD6b and HD7 are `proposed` and have no test yet (`docs/hypothesis-ledger.md`).
 
 ## Owner decisions
 
-| #   | Decision                                                                                                                                                          | Blocks                                                      |
-| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| D1  | Jev false-action costs and per-decision minimums (REQ-98). The provisional defaults 0.8/0.8, raised to 0.9 on the costlier side, are in force until you set them. | the minimums in the X1, X3, X4, X5 and X10 preregistrations |
+| #    | Decision                                                                                                                                                                                                                                                                                                                                                                                                                                     | Blocks                                                                   |
+| ---- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| D1   | **Done 2026-11-08 (R-063):** owner agreed `triage.real_defect` minimums of precision 0.80 / recall 0.90 from exploratory data, not costs (REQ-98). Threshold stays 0.3 provisional (REQ-102); these minimums are the starting point for X3/X5/X10 preregistrations, not experiment evidence for design changes.                                                                                                                              | —                                                                        |
+| D1-R | **Review and optimise the Jev triage minimums and threshold** (owner-requested). Entry: ≥ 30 human/`agent_reviewed` labels per label (jev-actions B-2), from the blind two-labeller protocol, and a council-signed preregistration (part of X3/X10 or its own). Work: preregistered tuning on a repository-split dev/test set; re-check 0.80/0.90 feasibility per stratum; set or replace the threshold; review the minimums with the owner. | Entry conditions above; does not block starting track C preregistrations |
 
 ## Known gaps (from `docs/STATUS.md` §1)
 
