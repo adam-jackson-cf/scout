@@ -1,32 +1,50 @@
 # Final evaluator — Option G draft
 
-**DRAFT, synthetic only. No authority until this artefact's scoped council review has zero issues.** It deliberately cannot emit `binding_gate_established`; successful synthetic fixtures emit `draft_synthetic_gate_passed`. No preparation action (a)–(e), models, scans or real-repository data was used.
+**DRAFT, synthetic only; no experiment, preparation, model, scan or real-repository authority.** This revision addresses scoped round-1 findings; it is not council sign-off and never emits `binding_gate_established`. Signed protocol sources and `check_frozen.py` (including its baseline exceptions) are unchanged.
 
-Implements PREREGISTRATION.md lines **127–139, 153–177, 181–185, 206, 224–228**, round 8's resource/safety requirements and round 9 readings 1–2. Signed bytes are never rewritten.
+## Byte-bound API
 
-- `evaluator.py`: exact manifest identity; enumerates all 18,172 binding cells × five populations (90,860 records); rejects absent, duplicate or extra identities; requires B=1,999, 2,000 eligible per population, both hard caps and reconciled gate/inadequacy counters. Applies both pooled Wilson tail upper ≤.035, calibrated realised null/power, null false-support upper ≤.05, power support lower ≥.80 and inadequacy upper ≤.05, missing-mask reachability, fixed-eight-worker CPU/memory/wall fit. Largest registered M≤Mhat is selected without skipping a failing row. Safety does not participate. Ordered §7 verdict boundaries preserve veto/integrity/negative/unresolved precedence.
-- `provenance.py`: exact byte-digest bundle membership against **external** trust anchors (not an input approval flag); complete-run maximum inputs; recorded host identity; rerun classification and evidence refusal. Completed closure-mismatched runs still enter maxima. Resource-exhaustion/host-load/operator termination cannot buy a rerun. The final host cannot change.
-- `test_evaluator.py`: full-grid planted effect/null summaries; missing/duplicate/B/cap mutants; wrong realised/unreachable references; resource limits; no lower-row bypass; ordered verdict boundaries; substituted input digests and completed-closure-failure maxima.
-- `check_frozen.py`: reproduces the manifest/baseline/owned-extract checks below. It only reads existing signed protocol files and Git objects, never candidate repositories.
+`evaluate(manifest_bytes, *, provenance_payloads, provenance_digests, synthetic_only)` evaluates every row **before dev**, without M̂. Each payload is bytes, and every SHA-256 is supplied in an external exact-membership digest map. Authenticity of those external anchors remains outside this synthetic draft. Manifest bytes must equal the bundle member and the signed byte digest, not a reserialized-object hash.
 
-The trust-anchor checker establishes byte integrity, **not** council authenticity. In real use, authentic externally reviewed source/locked-input/stage records are mandatory; JSON approvals or a bundle's self-declared hashes cannot create authority. The synthetic guard refuses all non-synthetic evaluation. This draft therefore cannot be mistaken for the separately reviewed authoritative evaluator.
+Pre-dev bundle members:
 
-## Open choices for review
+- `signed_manifest`: exact signed `oc-manifest.json` bytes.
+- `locked_inventory`: JSON with `eligible_sizes` (three complete repository size vectors, not the selected sample; each vector has 20–2,000 integer sizes, each size 20–2,000, inclusive), `gate_redraws=100000`, integer `gate_successes`, and `p_gate=gate_successes/100000`. The evaluator obtains both sizes and p_gate here, never from parallel arguments. Synthetic fixtures use synthetic repository names and sizes only.
+- `measurement_runs`: JSON with `locked_inventory_sha256` and ordered `runs`. Each run has an ID, host, three load averages, concurrent-process count, exact boolean completion flag, integrity-failure cause, evidence hashes where required, and per-operation `binding_inputs` for completed runs.
+- `sealed_oc_output`: JSON with `records`, SHA-256 of compact sorted-key JSON encoding of those records, `locked_inventory_sha256`, `signed_manifest_sha256`, and OC `host`. Host keys are `hw.model`, `hw.memsize`, `logical_cpus`, and `os_build`; every remeasurement must match the OC host or evaluation refuses with a deviation pause.
+- `source_runtime_closure`, `controller_freeze`, `scoped_council_record`: externally pinned closure/freeze/review bytes (synthetic, non-authoritative stand-ins in these tests).
 
-1. Keep this pre-clock executable synthetic-only and its status non-authoritative; the scoped review must bind the source, authentic locked input and trust anchors before any authoritative deployment. This is deliberately stricter than accepting self-declared stage flags.
-2. Check power conditional-inadequacy Wilson upper per population, conservatively, as well as pooled coverage/reference support criteria; no population may hide behind a pooled adequate rate.
-3. Supply resource components as measured, pre-overhead CPU seconds; apply ×2 once. Supply cumulative OC wall days already charged with overhead and max-phase lifetime high-water RSS bytes. Exact component maxima from every completed remeasurement must match the evaluator inputs. No planning slope/intercept substitutes for locked RSS.
-4. Represent records with explicit canonical cell dictionaries, zero-based population indices and separate gate/adequacy counters. The concrete dictionary serialization and external provenance bundle membership need scoped review; they are not new study dimensions.
+No parallel records, resources, p_gate, measurement-run or M̂ argument exists. Mutating any payload without changing its external digest is refused. Cross-member inventory, manifest and record seals are checked too.
 
-## Synthetic validation
+The pre-dev return contains `result`, canonical `sealed_result` bytes and `result_sha256`. The result includes every row, every cell's pooled and per-population counts/Wilson intervals, resource arithmetic, provenance hashes, and **every run**, including its complete original inputs and classification. If no row passes, status is `not testable before dev`.
 
-From repository root:
+`select_postdev(sealed_predev, predev_sha256, *, provenance_payloads, provenance_digests, synthetic_only)` requires the externally sealed pre-dev digest and the identical pre-dev bundle, plus `mhat_evidence`. This JSON binds `Mhat`, positive finite `c_U`, nonempty `bootstrap_evidence`, `predev_sha256`, and `locked_inventory_sha256`. M̂ must be an exact integer satisfying `min(2000, floor(.50/c_U))`; contradictory sealed evidence is refused. It selects the largest registered M ≤ M̂, then consults that row's sealed pass status; it cannot skip a failed nearest row or recompute rows using replacement records. Success remains `draft_synthetic_gate_passed`; failure is `not testable`.
+
+## Arithmetic and identities
+
+`provenance.INPUTS` specifies the measured maxima: construction/calibration/requested-base CPU per unit, worst-case enumeration CPU per calibrated population, gate CPU per check, complete/full512 trial CPU per execution, and construction/calibration/trial-plus-helper lifetime high-water RSS. Every completed run contributes each input's maximum, including completed closure-invalid runs. Only a documented qualifying integrity failure permits a rerun; unfinished failures cannot remain unresolved. Reports retain IDs, causes, completion flags, host/load evidence and inputs.
+
+`resource_fit` computes the signed rev8 binding expression using locked units, manifest counts, 4,000 executions, `ceil(4000/p_gate)` gate checks, calibration binding fraction 2044/2380, and ×2 **once**. Wall days are derived as binding core-hours/192, never supplied. Workers are fixed at eight; memory is eight times the largest measured RSS ≤ host memory − 8 GiB. CPU and wall caps are inclusive at 2,880 core-hours and 15 days. No planning slope/intercept or supplied whole-run totals replace locked measured maxima.
+
+The stage-3 generator **must import `expected_cells` and `identity` from `evaluator.py`**, rather than defining another binding identity schema. Compact sorted-key cell JSON is the seed-message identity. Populations are zero-based; gate rejections and inadequate executions have separate reconciled counters. Binding counts are 16,128 requested coverage, 1,792 calibrated reference, and 252 missing cells, with five populations each. Safety is not part of the gate.
+
+Known pins computed directly from existing bytes / the canonical identity construction (not new experiment results):
+
+| Basis | SHA-256 |
+|---|---|
+| Signed `oc-manifest.json` bytes | `1caea1a5ddba3a3d9eae99bba780e5de987ad7771f6cce06af9b0171be96761d` |
+| Signed `validation/reproduce_reports.py` resource arithmetic | `023e2e5bc6ca1ee282e4ebc75ef6b3bccdb96111d0f218c0341189d6a400168e` |
+| Compact sorted-key JSON array of sorted canonical identity strings | `3499e423b90df60972b1003c4fc8b65f77a03eada73d67afafa1288e8a43dda2` |
+
+## Regression coverage and reproduction
+
+`test_evaluator.py` contains full-grid planted effect/null fixtures; exact membership and B mutants; individually reconciled counter caps; both tails in each cell kind; support, null, inadequacy and realised-target last-pass/first-fail boundaries; malformed predicate/gain/measurement mutants; byte and cross-member seal substitutions; per-input maxima from different runs; CPU/p_gate/memory boundaries; rerun/host/evidence cases; pre-dev no-pass, post-dev seal tampering and no-row-bypass cases; ordered typed §7 verdicts including NaN precedence and the .10 upper boundary. These are deterministic synthetic behavioral fixtures, not outer-OC evidence.
+
+Reproduced after integration using the pinned interpreter:
 
 ```sh
-PYTHONDONTWRITEBYTECODE=1 .tools/venv/bin/python evaluation/x1-triage-ranking/stage3-drafts/final-evaluator/test_evaluator.py
+PYTHONDONTWRITEBYTECODE=1 .tools/venv/bin/python evaluation/x1-triage-ranking/stage3-drafts/final-evaluator/test_evaluator.py -v
 PYTHONDONTWRITEBYTECODE=1 .tools/venv/bin/python evaluation/x1-triage-ranking/stage3-drafts/final-evaluator/check_frozen.py
 ```
 
-Results: **6 tests passed** (CPython 3.11.11). Initial validation exposed an invalid synthetic test interval (lower .20 > upper .05); the fixture was corrected, not the decision rule. Planted summaries are deterministic behavioral fixtures, not claimed outer-OC evidence. No full OC, labels, real provenance attestation or product-backed rule-4 harness ran. Baseline unavailable.
-
-Frozen-byte result: **126/131 literal rev9 file hashes match; 5/5 shared-file owned-extract groups valid; 131/131 files unchanged against baseline e2b94e3c.** Nineteen of 20 owned extracts match literally; HD9's state-only `proposed`→`preregistered` transition is round-9 condition 2 (normalising only that state reproduces the signed hash). The five shared files already changed at baseline; none is edited here. Manifest SHA-256 remains `2253911be62da66a8f5187a4ebe2c5e986c8b981bf619e872f7ebf65d0c9c2da`.
+**Result: 14 tests passed in 149.162 seconds.** Full output is in `reviews/round-1-test-output.txt`; issue mappings, scratch-only mutation evidence and file digests are in `reviews/round-1-response.md`. An initial fixture attribute named `run` shadowed `unittest.TestCase.run`; the fixture was renamed before the passing run. No real inputs, authentic stage provenance or authority were exercised.

@@ -2,8 +2,8 @@
 import itertools
 import json
 import math
-import hashlib
-from provenance import verify_bundle, maximum_completed_inputs
+from provenance import (verify_bundle, maximum_completed_inputs, digest, encode,
+                        decode, number, INPUTS, validate_host)
 
 
 def identity(cell):
@@ -38,13 +38,14 @@ def wilson(k, n):
 
 
 def verdict(*, integrity, violating, adequate, upper, unresolved, point, lower):
-    if not all(math.isfinite(x) for x in (point, lower, upper)) or lower > upper:
-        raise ValueError("unmeasured/malformed interval")
-    if not integrity:
+    if any(type(flag) is not bool for flag in (integrity, violating, adequate, unresolved)):
+        raise ValueError("verdict flags must be bool")
+    if integrity is False:
         return "inconclusive"
-    if violating:
+    if violating is True:
         return "not supported"
-    if not adequate:
+    if (adequate is False or not all(type(x) in (int, float) and math.isfinite(x)
+                                    for x in (point, lower, upper)) or lower > upper):
         return "inconclusive"
     if upper < .10:
         return "not supported"
@@ -55,18 +56,36 @@ def verdict(*, integrity, violating, adequate, upper, unresolved, point, lower):
     return "inconclusive"
 
 
-def resource_fit(resources):
-    required = ("construction", "calibration", "enumeration", "requested_base", "trials", "gate_checks")
-    cpu = resources["cpu_seconds"]
-    rss = resources["peak_rss_bytes"]
-    if set(cpu) != set(required) or set(rss) != {"construction", "calibration", "trial_plus_helper"}:
-        return False
-    numbers = [*cpu.values(), *rss.values(), resources["wall_days"], resources["memory_bytes"]]
-    if not all(type(x) in (int, float) and math.isfinite(x) and x >= 0 for x in numbers):
-        return False
-    return (resources["workers"] == 8 and 2*sum(cpu.values())/3600 <= 2880
-            and resources["wall_days"] <= 15
-            and 8*max(rss.values()) <= resources["memory_bytes"]-8*1024**3)
+def resource_fit(inputs, inventory, manifest, host):
+    """Signed rev8 binding arithmetic; maxima are per operation, never run totals."""
+    validate_host(host)
+    if (set(inputs) != INPUTS or not all(number(v) for v in inputs.values())
+        or not number(inventory["p_gate"], positive=True) or inventory["p_gate"] > 1):
+        raise ValueError("malformed resource measurement or p_gate")
+    units = sum(sum(sizes) for sizes in inventory["eligible_sizes"].values())
+    p_gate = inventory["p_gate"]
+    requested = manifest["requested_latent_coverage_cell_count"]
+    references = manifest["calibrated_power_and_null"]["additional_reference_cells"]
+    missing = manifest["missing_label_grid"]["cell_count"]
+    safety = manifest["final_safety_OC"]["base_profile_count"]
+    populations = manifest["populations"]["per_cell"]
+    complete = requested + references
+    calibrated = (references + missing + safety) * populations
+    fraction = (references + missing) / (references + missing + safety)
+    seconds = (
+        (complete + missing)*populations*units*inputs["construction_cpu_per_unit"]
+        + requested*populations*units*inputs["requested_base_cpu_per_unit"]
+        + calibrated*(units*inputs["calibration_cpu_per_unit"]
+                      + inputs["enumeration_cpu_per_population"])*fraction
+        + populations*4000*(complete*inputs["complete_trial_cpu"] + missing*inputs["full512_trial_cpu"])
+        + (complete+missing)*populations*math.ceil(4000/p_gate)*inputs["gate_cpu_per_check"])
+    hours = 2*seconds/3600
+    wall = hours/192
+    rss = max(inputs[k] for k in ("construction_rss", "calibration_rss", "trial_plus_helper_rss"))
+    return {"passed": hours <= 2880 and wall <= 15 and 8*rss <= host["hw.memsize"]-8*1024**3,
+            "workers": 8, "core_hours": hours, "wall_days": wall,
+            "memory_bytes": host["hw.memsize"], "eight_worker_rss_bytes": 8*rss,
+            "maximum_inputs": inputs, "units_per_population": units}
 
 
 def summarize(rows):
@@ -82,26 +101,39 @@ def summarize(rows):
     return {"counts": totals, "Wilson_MC95": intervals}
 
 
-def evaluate(manifest, records, *, p_gate, resources, mhat, synthetic_only,
-             provenance_payloads, provenance_digests, measurement_runs, binding_host):
-    """Exact membership, counters, coverage, references and largest-row selection.
-
-    Synthetic provenance is explicit; authentic sealed provenance cannot be
-    inferred from data or a JSON approval flag. This draft cannot authorize OC.
-    """
-    if synthetic_only is not True or manifest["bootstrap_replicates"] != 1999:
-        raise ValueError("draft accepts synthetic fixtures only, B=1999")
-    if hashlib.sha256(identity(manifest).encode()).hexdigest() != "bfc7bb2d8b88712cecd3a21f0ab0c4d3bb4fe654ce1695baff0e3eafe4004ec7":
-        raise ValueError("substituted signed manifest")
+def evaluate(manifest_bytes, *, provenance_payloads, provenance_digests, synthetic_only):
+    """Pre-dev only: every evaluated input is decoded from verified bundle bytes."""
+    if synthetic_only is not True:
+        raise ValueError("draft accepts synthetic fixtures only")
     provenance = verify_bundle(provenance_payloads, provenance_digests)
-    maximum = maximum_completed_inputs(measurement_runs, binding_host)
-    flat = {**{"cpu:"+k: v for k, v in resources["cpu_seconds"].items()},
-            **{"rss:"+k: v for k, v in resources["peak_rss_bytes"].items()},
-            "wall_days": resources["wall_days"]}
-    if maximum != flat or resources["memory_bytes"] != binding_host["hw.memsize"]:
-        raise ValueError("resources are not maxima on the binding host")
-    if not math.isfinite(p_gate) or not 0 < p_gate <= 1:
-        raise ValueError("unmeasured p_gate")
+    if type(manifest_bytes) is not bytes or manifest_bytes != provenance_payloads["signed_manifest"]:
+        raise ValueError("manifest is not the verified signed bytes")
+    manifest = decode(manifest_bytes)
+    if manifest["bootstrap_replicates"] != 1999:
+        raise ValueError("B must be 1999")
+    inventory = decode(provenance_payloads["locked_inventory"])
+    p_gate = inventory["p_gate"]
+    successes = inventory["gate_successes"]
+    if (type(inventory["gate_redraws"]) is not int or inventory["gate_redraws"] != 100000 or type(successes) is not int
+        or not 0 < successes <= 100000 or not number(p_gate, positive=True)
+        or p_gate != successes/100000):
+        raise ValueError("unmeasured/inconsistent p_gate")
+    sizes = inventory["eligible_sizes"]
+    if (type(sizes) is not dict or len(sizes) != 3
+        or any(type(v) is not list or not 20 <= len(v) <= 2000
+               or any(type(n) is not int or not 20 <= n <= 2000 for n in v) for v in sizes.values())):
+        raise ValueError("incomplete locked eligible sizes")
+    oc = decode(provenance_payloads["sealed_oc_output"])
+    if (oc["locked_inventory_sha256"] != provenance["locked_inventory"]
+        or oc["signed_manifest_sha256"] != provenance["signed_manifest"]
+        or oc["records_sha256"] != digest(encode(oc["records"]))):
+        raise ValueError("OC input/record seal mismatch")
+    records = oc["records"]
+    measurements = decode(provenance_payloads["measurement_runs"])
+    if measurements["locked_inventory_sha256"] != provenance["locked_inventory"]:
+        raise ValueError("measurement inventory mismatch")
+    maximum, run_reports = maximum_completed_inputs(measurements["runs"], oc["host"])
+    resources = resource_fit(maximum, inventory, manifest, oc["host"])
     expected = {identity(c): c for c in expected_cells(manifest)}
     found = {}
     for record in records:
@@ -111,7 +143,7 @@ def evaluate(manifest, records, *, p_gate, resources, mhat, synthetic_only,
         found[key] = record
     if len(found) != 5*len(expected):
         raise ValueError("missing cell/population")
-    passed = {m: resource_fit(resources) for m in manifest["coverage_dimensions"]["cap_M"]}
+    passed = {m: resources["passed"] for m in manifest["coverage_dimensions"]["cap_M"]}
     reports = {}
     for key, cell in expected.items():
         rows = [found[key, p] for p in range(5)]
@@ -121,7 +153,7 @@ def evaluate(manifest, records, *, p_gate, resources, mhat, synthetic_only,
             if any(type(n) is not int or n < 0 for n in counts):
                 raise ValueError("noninteger/negative count")
             e, a, n = r["executions"], r["attempts"], r["eligible"]
-            if (r["B"] != 1999 or n != 2000 or not n <= e <= 4000 or not e <= a <= math.ceil(4000/p_gate)
+            if (type(r["B"]) is not int or r["B"] != 1999 or n != 2000 or not n <= e <= 4000 or not e <= a <= math.ceil(4000/p_gate)
                 or r["inadequate"] != e-n or r["gate_failures"] != a-e
                 or any(r[name] > n for name in ("lower_miss", "upper_miss", "support"))):
                 good = False
@@ -130,17 +162,20 @@ def evaluate(manifest, records, *, p_gate, resources, mhat, synthetic_only,
             # Tail gate is pooled; report each population separately below.
             if cell["kind"] == "calibrated-reference":
                 realised = r["realised_gain"]
-                if not math.isfinite(realised) or not r["reachable"]:
+                if not number(realised) and not (type(realised) in (int, float) and math.isfinite(realised) and realised < 0):
+                    good = False
+                elif r["reachable"] is not True:
                     good = False
                 elif cell["target"] == 0:
                     good &= realised <= 0
                 else:
                     good &= realised >= .20 and wilson(r["inadequate"], e)[1] <= .05
             elif cell["kind"] == "missing":
-                good &= r["mask_reachable"] and r["reachable"]
+                good &= r["mask_reachable"] is True and r["reachable"] is True
                 realised = r["realised_gain"]
                 target = cell["realised_gain"]
-                good &= math.isfinite(realised) and (realised <= 0 if target == 0 else realised >= target)
+                good &= (type(realised) in (int, float) and math.isfinite(realised)
+                         and (realised <= 0 if target == 0 else realised >= target))
         if good:
             good &= all(wilson(sum(r[name] for r in rows), 10000)[1] <= .035 for name in ("lower_miss", "upper_miss"))
             if cell["kind"] == "calibrated-reference":
@@ -149,11 +184,35 @@ def evaluate(manifest, records, *, p_gate, resources, mhat, synthetic_only,
         passed[cell["cap_M"]] &= bool(good)
         reports[key] = {"passed": bool(good), "pooled": summarize(rows),
                         "populations": [summarize([r]) for r in rows]}
-    if not math.isfinite(mhat) or mhat < 0:
-        raise ValueError("unmeasured Mhat")
-    candidates = [m for m in passed if m <= mhat]
+    result = {"status": "draft_synthetic_rows_passed" if any(passed.values()) else "not testable before dev",
+              "rows": passed, "cell_reports": reports, "resources": resources,
+              "measurement_runs": run_reports, "provenance_sha256": provenance,
+              "authority": "none; synthetic draft, scoped review required"}
+    sealed = encode(result)
+    return {"result": result, "sealed_result": sealed, "result_sha256": digest(sealed)}
+
+
+def select_postdev(sealed_predev, predev_sha256, *, provenance_payloads, provenance_digests,
+                   synthetic_only):
+    """Select only from externally sealed pre-dev rows; never recompute the gate."""
+    if synthetic_only is not True or type(sealed_predev) is not bytes or digest(sealed_predev) != predev_sha256:
+        raise ValueError("substituted pre-dev result")
+    provenance = verify_bundle(provenance_payloads, provenance_digests, postdev=True)
+    prior = decode(sealed_predev)
+    if prior["provenance_sha256"] != {k: v for k, v in provenance.items() if k != "mhat_evidence"}:
+        raise ValueError("pre-dev input bundle changed")
+    evidence = decode(provenance_payloads["mhat_evidence"])
+    if (evidence["predev_sha256"] != predev_sha256
+        or evidence["locked_inventory_sha256"] != provenance["locked_inventory"]
+        or not number(evidence["c_U"], positive=True) or type(evidence["Mhat"]) is not int
+        or not 0 <= evidence["Mhat"] <= 2000
+        or not evidence["bootstrap_evidence"]):
+        raise ValueError("unbound/unmeasured Mhat/c_U evidence")
+    expected_mhat = 2000 if evidence["c_U"] <= .50/2000 else math.floor(.50/evidence["c_U"])
+    if evidence["Mhat"] != expected_mhat:
+        raise ValueError("Mhat contradicts sealed c_U")
+    candidates = [int(m) for m in prior["rows"] if int(m) <= evidence["Mhat"]]
     selected = max(candidates) if candidates else None
-    return {"status": "draft_synthetic_gate_passed" if selected is not None and passed[selected] else "not testable",
-            "rows": passed, "selected_M": selected, "any_row_passed_before_dev": any(passed.values()),
-            "cell_reports": reports, "provenance_sha256": provenance,
-            "authority": "none; synthetic draft, scoped review required"}
+    return {"status": "draft_synthetic_gate_passed" if selected is not None and prior["rows"][str(selected)] is True else "not testable",
+            "selected_M": selected, "predev_sha256": predev_sha256,
+            "mhat_evidence_sha256": provenance["mhat_evidence"], "authority": prior["authority"]}

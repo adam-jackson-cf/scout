@@ -1,0 +1,156 @@
+=== execution cap: KILLED (exit 1) ===
+evaluator.py: ' or not n <= e <= 4000' -> ''
+test_reconciled_counter_caps_and_eligible_boundary (__main__.EvaluatorTests.test_reconciled_counter_caps_and_eligible_boundary) ... FAIL
+
+======================================================================
+FAIL: test_reconciled_counter_caps_and_eligible_boundary (__main__.EvaluatorTests.test_reconciled_counter_caps_and_eligible_boundary)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-mutant-shh3qgqs/evaluation/x1-triage-ranking/stage3-drafts/final-evaluator/test_evaluator.py", line 169, in test_reconciled_counter_caps_and_eligible_boundary
+    self.assertEqual(self.cell_passes("requested-coverage", patch), want)
+AssertionError: True != False
+
+----------------------------------------------------------------------
+Ran 1 test in 6.579s
+
+FAILED (failures=1)
+
+=== attempt cap: KILLED (exit 1) ===
+evaluator.py: 'not e <= a <= math.ceil(4000/p_gate)' -> 'not e <= a'
+test_reconciled_counter_caps_and_eligible_boundary (__main__.EvaluatorTests.test_reconciled_counter_caps_and_eligible_boundary) ... FAIL
+
+======================================================================
+FAIL: test_reconciled_counter_caps_and_eligible_boundary (__main__.EvaluatorTests.test_reconciled_counter_caps_and_eligible_boundary)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-mutant-621w1m27/evaluation/x1-triage-ranking/stage3-drafts/final-evaluator/test_evaluator.py", line 169, in test_reconciled_counter_caps_and_eligible_boundary
+    self.assertEqual(self.cell_passes("requested-coverage", patch), want)
+AssertionError: True != False
+
+----------------------------------------------------------------------
+Ran 1 test in 8.561s
+
+FAILED (failures=1)
+
+=== coverage tails: KILLED (exit 1) ===
+evaluator.py: '<= .035 for name' -> '<= .5 for name'
+test_each_tail_boundary_for_each_cell_kind (__main__.EvaluatorTests.test_each_tail_boundary_for_each_cell_kind) ... FAIL
+
+======================================================================
+FAIL: test_each_tail_boundary_for_each_cell_kind (__main__.EvaluatorTests.test_each_tail_boundary_for_each_cell_kind)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-mutant-h_pt8ewa/evaluation/x1-triage-ranking/stage3-drafts/final-evaluator/test_evaluator.py", line 180, in test_each_tail_boundary_for_each_cell_kind
+    self.assertEqual(self.gate(records=rows)["result"]["cell_reports"][key]["passed"], want)
+AssertionError: True != False
+
+----------------------------------------------------------------------
+Ran 1 test in 4.377s
+
+FAILED (failures=1)
+
+=== power support: KILLED (exit 1) ===
+evaluator.py: 'interval[0] >= .80' -> 'True'
+test_reference_power_null_and_inadequacy_boundaries (__main__.EvaluatorTests.test_reference_power_null_and_inadequacy_boundaries) ... FAIL
+
+======================================================================
+FAIL: test_reference_power_null_and_inadequacy_boundaries (__main__.EvaluatorTests.test_reference_power_null_and_inadequacy_boundaries)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-mutant-0sb0fb0z/evaluation/x1-triage-ranking/stage3-drafts/final-evaluator/test_evaluator.py", line 191, in test_reference_power_null_and_inadequacy_boundaries
+    self.assertEqual(self.gate(records=rows)["result"]["cell_reports"][key]["passed"], want)
+AssertionError: True != False
+
+----------------------------------------------------------------------
+Ran 1 test in 4.442s
+
+FAILED (failures=1)
+
+=== power inadequacy: KILLED (exit 1) ===
+evaluator.py: ' and wilson(r["inadequate"], e)[1] <= .05' -> ''
+test_reference_power_null_and_inadequacy_boundaries (__main__.EvaluatorTests.test_reference_power_null_and_inadequacy_boundaries) ... FAIL
+
+======================================================================
+FAIL: test_reference_power_null_and_inadequacy_boundaries (__main__.EvaluatorTests.test_reference_power_null_and_inadequacy_boundaries)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-mutant-1s2xmmlu/evaluation/x1-triage-ranking/stage3-drafts/final-evaluator/test_evaluator.py", line 194, in test_reference_power_null_and_inadequacy_boundaries
+    self.assertEqual(self.cell_passes("calibrated-reference", dict(inadequate=inadequate,
+AssertionError: True != False
+
+----------------------------------------------------------------------
+Ran 1 test in 13.287s
+
+FAILED (failures=1)
+
+=== missing-mask reachability: KILLED (exit 1) ===
+evaluator.py: 'r["mask_reachable"] is True and ' -> ''
+test_reachability_gain_and_missing_mask_types (__main__.EvaluatorTests.test_reachability_gain_and_missing_mask_types) ... FAIL
+
+======================================================================
+FAIL: test_reachability_gain_and_missing_mask_types (__main__.EvaluatorTests.test_reachability_gain_and_missing_mask_types)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-mutant-_y04ojfn/evaluation/x1-triage-ranking/stage3-drafts/final-evaluator/test_evaluator.py", line 204, in test_reachability_gain_and_missing_mask_types
+    self.assertFalse(self.cell_passes("missing", {"mask_reachable": value}))
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 1 test in 15.024s
+
+FAILED (failures=1)
+
+=== binding CPU/wall limit: KILLED (exit 1) ===
+evaluator.py: 'hours <= 2880 and wall <= 15' -> 'True'
+test_rev8_maxima_arithmetic_and_p_gate_cpu_boundary (__main__.EvaluatorTests.test_rev8_maxima_arithmetic_and_p_gate_cpu_boundary) ... FAIL
+
+======================================================================
+FAIL: test_rev8_maxima_arithmetic_and_p_gate_cpu_boundary (__main__.EvaluatorTests.test_rev8_maxima_arithmetic_and_p_gate_cpu_boundary)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-mutant-ym7ac79s/evaluation/x1-triage-ranking/stage3-drafts/final-evaluator/test_evaluator.py", line 220, in test_rev8_maxima_arithmetic_and_p_gate_cpu_boundary
+    self.assertFalse(resource_fit(above, self.inventory, self.manifest, self.host)["passed"])
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 1 test in 0.036s
+
+FAILED (failures=1)
+
+=== one-run rerun refusal: KILLED (exit 1) ===
+provenance.py: ' or (i and previous_failure is None)' -> ''
+test_rerun_qualifications_evidence_and_measurement_types (__main__.EvaluatorTests.test_rerun_qualifications_evidence_and_measurement_types) ... FAIL
+
+======================================================================
+FAIL: test_rerun_qualifications_evidence_and_measurement_types (__main__.EvaluatorTests.test_rerun_qualifications_evidence_and_measurement_types)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-mutant-vhdwzzw3/evaluation/x1-triage-ranking/stage3-drafts/final-evaluator/test_evaluator.py", line 264, in test_rerun_qualifications_evidence_and_measurement_types
+    with self.assertRaises(ValueError): maximum_completed_inputs(runs, self.host)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.032s
+
+FAILED (failures=1)
+
+=== remeasurement host: KILLED (exit 1) ===
+provenance.py: 'run["host"] != binding_host or ' -> ''
+test_memory_boundary_and_bound_host (__main__.EvaluatorTests.test_memory_boundary_and_bound_host) ... FAIL
+
+======================================================================
+FAIL: test_memory_boundary_and_bound_host (__main__.EvaluatorTests.test_memory_boundary_and_bound_host)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-mutant-z0bq6kve/evaluation/x1-triage-ranking/stage3-drafts/final-evaluator/test_evaluator.py", line 246, in test_memory_boundary_and_bound_host
+    with self.assertRaises(ValueError): self.gate(host={**self.host, field: value})
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 2.197s
+
+FAILED (failures=1)
+
+
+Meaningful mutants killed: 9/9
+CPU-only predicate deletion is equivalent because wall=hours/192; the combined CPU/wall deletion above is the meaningful resource-limit mutant.
