@@ -1,10 +1,10 @@
-# Scout — status (2026-11-07)
+# Scout — status (2026-11-08)
 
 Written for a fresh session. Every claim cites a file in this repo unless marked `[INFERENCE]` or `[UNVERIFIED]`. History: `git log` (initial import `41ea1eb`, Phase 1 `945ac4d`, toolchain `1235132`, Phase 2 part `fccc137`, Phase 3 part `4bab5c0`, Gitleaks batching `36d1023`). `.codegraph/`, `.scout/`, `.tools/`, `__pycache__/` and `*.pyc` are git-ignored. Never touch `.codegraph` (`AGENTS.md`).
 
-## 1. Current state (updated 2026-11-07)
+## 1. Current state (updated 2026-11-08)
 
-**Design: `docs/scout-design.html` (ADR-009, adopted 2026-11-06; signed digest in the zero-issue final round of `docs/adrs/2026-11-06-design-restructure/`); decisions ADR-000…ADR-009 in `docs/adrs/`**. Implementation plan: `docs/plans/2026-11-01-rev-2.8-merge-association.md`. Progress:
+**Design: `docs/scout-design.html`; decisions ADR-000…ADR-010 in `docs/adrs/`**. Latest amendment: owner-agreed triage minimums (ADR-010, 2026-11-08); review outcome and signed digests in the zero-issue final round of `docs/adrs/2026-11-08-d1-jev-minimums/`. Restructure provenance: ADR-009, adopted 2026-11-06, signed digest in the zero-issue final round of `docs/adrs/2026-11-06-design-restructure/`. Implementation plan: `docs/plans/2026-11-01-rev-2.8-merge-association.md`. Progress:
 
 - Plan Phase 0 (adoption): done (`1d4e0cc`).
 - Plan Phase 1 (state): schema 13, `associations` table and `state/v1/associations.jsonl` export/import (pre-2.8 exports import as zero associations), area `status` (`active`/`pending`/`superseded`), provenance and `accepted_by`/`accepted_at`; a store at 12 is refused with the re-baseline remedy. Files: `internal/domain/association.go`, `internal/state/{associations,store,areas,export}.go`, `internal/areas/areas.go`. Scenario: seeded store `scout export` → `scout import` into a fresh repo → `scout export`, identical bytes.
