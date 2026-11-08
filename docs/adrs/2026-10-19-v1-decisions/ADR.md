@@ -1,6 +1,6 @@
 # ADR-000: V1 baseline decisions: map refresh, baseline branch, allow-list, Jev, language tiers, spec cutover, Clawpatch pin
 
-- **Status:** partly superseded by ADR-004, ADR-005, ADR-006, ADR-007, ADR-008, ADR-009; amended by ADR-001, ADR-002, ADR-003
+- **Status:** partly superseded by ADR-004, ADR-005, ADR-006, ADR-007, ADR-008, ADR-009; amended by ADR-001, ADR-002, ADR-003, ADR-012 (readiness observations/eligibility, maintainer triage history, trusted readiness publication)
 - **Design revision:** v1 baseline decisions, carried into v2 (adopted 2026-10-19)
 - **Decided:** 2026-10-19; **sources:** user decisions recorded in `docs/archive/scout-design-v1.md`@9a3d19f5 §15 and `docs/scout-design.md`@9a3d19f5 Appendix items 1–7
 

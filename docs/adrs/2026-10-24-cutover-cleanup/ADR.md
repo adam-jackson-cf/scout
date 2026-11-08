@@ -1,6 +1,6 @@
 # ADR-007: Consolidate state, baseline, model CLI and CI installation cutovers
 
-- **Status:** partly superseded by ADR-008
+- **Status:** partly superseded by ADR-008; amended by ADR-012 (13→14 migration, export manifest v2, trusted readiness publication)
 - **Design revision:** 2.7 (adopted 2026-10-28, commit `9640370`)
 - **Decided:** 2026-10-24; **sources:** R-044–R-047, user direction to address the coding-guidance audit findings
 

@@ -1,6 +1,6 @@
 # ADR-003: Record user decisions and align the design with shipped behavior
 
-- **Status:** partly superseded by ADR-007; amended by ADR-010 (triage minimums)
+- **Status:** partly superseded by ADR-007; amended by ADR-010 (triage minimums), ADR-012 (readiness observations/eligibility, maintainer triage history, trusted readiness publication)
 - **Design revision:** 2.3 (adopted 2026-10-23)
 - **Decided:** 2026-10-23; **sources:** R-039, user direction in `docs/STATUS.md`@9a3d19f5 §6.9
 

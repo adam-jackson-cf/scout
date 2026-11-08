@@ -9,22 +9,25 @@ Rules (`AGENTS.md` design rules):
 - IDs are never reused.
 - An accepted ADR is never edited, except its status line. The commit that adopts a later ADR updates that line to name what supersedes or amends it.
 
-ADR-011 uses adopted-form route (a): its canonical files take effect on its folder's explicit final zero-issue council round, which names their signed SHA-256 digests; adoption is recorded outside signed files. It is a separate PR landing before ADR-012, which rebases after ADR-011 merges and is reviewed independently. No patch application or merge-method restriction is required. Owner confirmation is a new `user` ledger row and tracker update; rejection requires a superseding ADR.
+ADR-011 uses adopted-form route (a): its canonical files take effect on its folder's explicit final zero-issue council round, which names their signed SHA-256 digests; adoption is recorded outside signed files. ADR-011 was adopted in PR #17 at 7bb73e52; ADR-012 is based on it and is reviewed independently. No patch application or merge-method restriction is required. Owner confirmation is a new `user` ledger row and tracker update; rejection requires a superseding ADR.
+
+ADR-012 uses canonical adopted-form route (a), effective on its final zero-issue council round, with adoption outside signed files. Based on adopted ADR-011 (PR #17, 7bb73e52); separate ordinary PRs replace the superseded patch route. Owner confirmation is a new user ledger row and editable trackers; rejection requires a superseding ADR.
 
 | ID      | Folder                              | Decision                                                                                                    | Status                 |
 | ------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------- |
-| ADR-000 | `2026-10-19-v1-decisions/`          | v1 baseline decisions: map refresh, baseline branch, allow-list, Jev, language tiers, spec cutover, pin     | partly superseded      |
+| ADR-000 | `2026-10-19-v1-decisions/`          | v1 baseline decisions: map refresh, baseline branch, allow-list, Jev, language tiers, spec cutover, pin     | partly superseded; amended by ADR-001, ADR-002, ADR-003, ADR-012 (readiness observations/eligibility, maintainer triage history, trusted readiness publication) |
 | ADR-001 | `2026-10-21-e1b-v2/`                | Replace invalidated inertia evidence with E1b v2 (rev 2.1)                                                  | partly superseded      |
 | ADR-002 | `2026-10-22-rescope/`               | Re-scope Scout to a product and an inertia-bench subject (rev 2.2)                                          | partly superseded      |
-| ADR-003 | `2026-10-23-decisions/` | Record user decisions and align the design with shipped behaviour (rev 2.3) | partly superseded by ADR-007; amended by ADR-010 (triage minimums) |
+| ADR-003 | `2026-10-23-decisions/` | Record user decisions and align the design with shipped behaviour (rev 2.3) | partly superseded by ADR-007; amended by ADR-010 (triage minimums), ADR-012 (readiness observations/eligibility, maintainer triage history, trusted readiness publication) |
 | ADR-004 | `2026-10-23-clawpatch-patch-v3/`    | Correct the Clawpatch review-safety patch pin (rev 2.4)                                                     | accepted               |
 | ADR-005 | `2026-10-23-codex-luna-mapping/`    | Pin agent mapping to codex `gpt-6-luna` at `xhigh` (rev 2.5)                                                | partly superseded      |
 | ADR-006 | `2026-10-24-area-refresh-fallback/` | Run the agent map only at onboarding and on manual refresh (rev 2.6)                                        | partly superseded      |
-| ADR-007 | `2026-10-24-cutover-cleanup/`       | Consolidate state, baseline, model-CLI and CI-installation cutovers (rev 2.7)                               | partly superseded      |
-| ADR-008 | `2026-10-31-jev-merge-association/` | Add provisional merge-time area association (rev 2.8)                                                       | accepted (provisional) |
+| ADR-007 | `2026-10-24-cutover-cleanup/` | Consolidate state, baseline, model-CLI and CI-installation cutovers (rev 2.7) | partly superseded by ADR-008; amended by ADR-012 (13→14 migration, export manifest v2, trusted readiness publication) |
+| ADR-008 | `2026-10-31-jev-merge-association/` | Add provisional merge-time area association (rev 2.8) | accepted (provisional); amended by ADR-012 (schema 14, readiness export/merge) |
 | ADR-009 | `2026-11-06-design-restructure/`    | Replace the design and requirements documents with `docs/scout-design.html`; rename review folders to ADRs | accepted               |
 | ADR-010 | `2026-11-08-d1-jev-minimums/` | Record owner-agreed Jev triage minimums; retain provisional threshold and preregistered review | accepted |
 | ADR-011 | `2026-11-08-gitleaks-policy-version/` | Keep the exact Gitleaks rule-pack activation version; enforce binary-segment invariant in later code | accepted; agent-decided under R-064; owner review pending; effective on final zero-issue council round |
+| ADR-012 | `2026-11-08-shadow-readiness-inputs/` | Persist CI observations and authorized triage history; compute readiness under bounded evidence invariants | accepted; agent-decided under R-064; owner review pending; implementation pending; based on adopted ADR-011 |
 
 ## Old paths and citations
 

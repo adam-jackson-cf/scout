@@ -1,0 +1,10 @@
+# ADR-012 round 11 response
+
+Date: 2026-11-08. Responds to `round-11.md`; no sign-off claimed. Under R-064 adopt both recommended fixes, recorded in ADR.md’s Amendments section. Historical records remain unchanged.
+
+| Issue | Fix | Acceptance obligations |
+|---|---|---|
+| ADR012-R11-01 | Replace the provider-cause/inferred split with one supersession condition in ADR population, REQ-27/78 and CI/CLI: identify a superseding pinned-guardian-lane run for the same PR key, created before cancellation; verify its executed configuration equals pinned protected-default configuration and evaluates cancel-in-progress=true for the same evaluated group. Additionally require provider concurrency cause or no actor-initiated cancel recorded. Provider cause replaces only that last condition. Other workflow/job, unidentified canceller or PR-edited superseding configuration is assessed/gapped. R-070 records the control-workflow-concurrency link and quoted cross-workflow warning; R-077 links round 11. | ADR acceptance, B4-S and CI add all three prescribed cases: PR-added job cancels H1 with provider cause and no H2; pinned=false but H2 PR-edits R2=true with no recorded canceller; same pinned-mismatch case with provider cause. All assess/gap H1. The latter two fail an implementation that checks only true, not pinned equality. Existing all-false, R1-true/R2-false and unverifiable-R2 fixtures remain. |
+| ADR012-R11-02 | Correct the round-9 Amendments clause to say the inferred branch was conditioned on the cancelled run’s pinned cancel-in-progress, replaced in round 10. Retain the round-10 clause for its superseding-run decision; round 11 records the unified condition. | Provenance no longer credits round 9 with round 10’s opposite decision. No mirror changes needed for this historical credit correction. |
+
+No new mechanism, ledger ID or shipped behaviour. Other summaries remain accurate without changes. No checks/builds/tests/formatters or experiments were run. All changes are staged, not committed; requested SHA-256 values and staged diff statistics accompany the handoff for round 12 review.
