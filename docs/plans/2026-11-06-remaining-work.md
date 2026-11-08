@@ -30,7 +30,7 @@ flowchart LR
   A6 --> A7
   C[Track C preregistrations] --> B4[B4 Phase 5]
   D1[D1 non-triage costs and minimums open] --> C
-  D1R[D1-R triage review and optimise] --> X1[X1 preregistration or dedicated triage preregistration]
+  X1P[X1 or dedicated triage preregistration signed] --> D1R[D1-R triage review and optimise]
   B4 --> B5[B5 Phase 6]
   A3 --> X11[X11 run]
 ```
