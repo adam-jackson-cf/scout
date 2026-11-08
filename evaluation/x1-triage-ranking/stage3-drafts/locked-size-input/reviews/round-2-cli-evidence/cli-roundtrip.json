@@ -1,0 +1,103 @@
+{
+  "duplicate_publication_exit": 1,
+  "invocations": [
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/locked_commands.py",
+        "synthetic-input",
+        "--output",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-2-cli-evidence/synthetic-input.json"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/locked_commands.py",
+        "gate",
+        "--output",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-2-cli-evidence/gate.json",
+        "--input",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-2-cli-evidence/synthetic-input.json"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/locked_commands.py",
+        "benchmark",
+        "--output",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-2-cli-evidence/benchmark.json",
+        "--input",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-2-cli-evidence/synthetic-input.json",
+        "--trials",
+        "2000"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/locked_commands.py",
+        "calibration",
+        "--output",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-2-cli-evidence/calibration.json",
+        "--input",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-2-cli-evidence/synthetic-input.json"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/locked_commands.py",
+        "fit",
+        "--output",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-2-cli-evidence/fit.json",
+        "--input",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-2-cli-evidence/synthetic-input.json",
+        "--benchmark",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-2-cli-evidence/benchmark.json",
+        "--calibration",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-2-cli-evidence/calibration.json",
+        "--gate",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-2-cli-evidence/gate.json"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "resource_fit": {
+    "core_hours": 395.6442073515553,
+    "eight_worker_rss_bytes": 721027072,
+    "maximum_inputs": {
+      "calibration_cpu_per_unit": 4.727153729071532e-06,
+      "calibration_rss": 76218368,
+      "complete_trial_cpu": 0.001058481499999999,
+      "construction_cpu_per_unit": 4.2750380517503806e-07,
+      "construction_rss": 40665088,
+      "enumeration_cpu_per_population": 6.180257,
+      "full512_trial_cpu": 0.04823233749999999,
+      "gate_cpu_per_check": 1.5316870000000004e-05,
+      "requested_base_cpu_per_unit": 2.8791324200913186e-06,
+      "trial_plus_helper_rss": 90128384
+    },
+    "memory_bytes": 68719476736,
+    "passed": true,
+    "units_per_population": 65700,
+    "wall_days": 2.0606469132893506,
+    "workers": 8
+  },
+  "synthetic_only": true
+}

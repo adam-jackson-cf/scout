@@ -22,11 +22,28 @@ import tempfile
 import time
 
 from size_input import SizeInput, REPOSITORIES, canonical, synthetic_record, CONTROLLER_PATH
-from population import prepare_population
 
 HERE = Path(__file__).resolve().parent
 VALIDATION = HERE.parents[1] / "validation"
 ROOT = HERE.parents[3]
+SIGNED = {
+    "compute_benchmark.py": "d39f40a28a6fd70698ea9e53e30448dec193c395d264002436dad9278ea6c90d",
+    "reproduce_reports.py": "023e2e5bc6ca1ee282e4ebc75ef6b3bccdb96111d0f218c0341189d6a400168e",
+    "fixed_population.py": "ed670a6bf8076d791c06cfc2426aff03a0a2f9b1730982cf3fdfb2ec13bc49a2",
+    "ranking.py": "8bc2e7cbbc5da6ba47aeff3effb5dd04d5e5ecc9c1e01051647900095770a780",
+    "interval_diagnostic.go": "437f9c2559156f8befb613d3e17f19e2aad5437217081dbd4a1d0fb95c069417",
+    "../oc-manifest.json": "1caea1a5ddba3a3d9eae99bba780e5de987ad7771f6cce06af9b0171be96761d",
+}
+
+
+def pin_sources():
+    for name, expected in SIGNED.items():
+        if hashlib.sha256((VALIDATION/name).read_bytes()).hexdigest() != expected:
+            raise ValueError(f"substituted signed source: {name}")
+
+
+pin_sources()
+from population import prepare_population
 
 
 def load_file(name, path):
@@ -80,6 +97,7 @@ class SizeSite(ast.NodeTransformer):
 
 
 def locked_functions(inputs):
+    pin_sources()
     namespace = dict(vars(benchmark))
     namespace.update(size_input=inputs, locked_prepare=prepare_population, repositories=REPOSITORIES)
     for name, module in (("benchmark_population", benchmark), ("trial_frame", benchmark),
@@ -145,12 +163,23 @@ def host():
         return subprocess.check_output(args, text=True).strip()
     return {"hw.model": query("sysctl", "-n", "hw.model"),
             "hw.memsize": int(query("sysctl", "-n", "hw.memsize")),
-            "logical_cpu_count": os.cpu_count(), "os_build": query("sw_vers", "-buildVersion"),
-            "platform": platform.platform(), "python_version": platform.python_version(),
+            "logical_cpus": os.cpu_count(), "os_build": query("sw_vers", "-buildVersion")}
+
+
+def host_load():
+    return {"load_averages": list(os.getloadavg()),
+            "concurrent_process_count": len(subprocess.check_output(
+                ["ps", "-A", "-o", "pid="], text=True).splitlines())}
+
+
+def interpreter():
+    return {"python_executable": sys.executable, "python_version": platform.python_version(),
+            "python_optimize": sys.flags.optimize,
             "python_executable_sha256": hashlib.sha256(Path(sys.executable).resolve().read_bytes()).hexdigest()}
 
 
-def benchmark_mode(inputs, method, trials):
+def benchmark_mode(inputs, trials):
+    method = "studentized"
     populations = measurements(inputs, "benchmark_population")
     with tempfile.TemporaryDirectory(prefix="x1-locked-size-") as temporary:
         binary = str(Path(temporary)/"interval-kernel")
@@ -183,15 +212,19 @@ def calibration_mode(inputs):
     return {"measurements": rows, "worst_case_candidate_enumeration": enumeration}
 
 
-def locked_fit(inputs, data, calibration, gate):
-    """P181 fit: full locked cost maxima; no planning slope/intercept."""
+def measurement_run(inputs, data, calibration, gate, evidence_sha256):
+    """Extract binding operation maxima; only the final evaluator decides fit."""
     for result in (data, calibration, gate):
-        if canonical(result["provenance"]) != canonical(provenance(inputs)):
+        if result["provenance"]["size_input_sha256"] != inputs.sha256:
+            raise ValueError("size input mismatch")
+        if result["provenance"] != json.loads(canonical(provenance(inputs))) and result["integrity_failure"] is None:
             raise ValueError("source/input closure mismatch")
     if data["host"] != calibration["host"] or data["host"] != gate["host"]:
-        raise ValueError("locked measurements require the same host/interpreter")
-    if data["trials"] < 2000 or data["replicates"] != 1999 or not data["worker_count_equality"]["byte_identical_scientific_json"]:
-        raise ValueError("incomplete benchmark replicate structure")
+        raise ValueError("locked measurements require the same host")
+    if any(data[k] != r[k] for r in (calibration, gate)
+           for k in interpreter()):
+        raise ValueError("locked measurements require the same interpreter")
+    validate_benchmark(data)
     if gate["draws"] != 100000:
         raise ValueError("100000 keyed checks required")
     successes = gate["successes"]
@@ -214,27 +247,56 @@ def locked_fit(inputs, data, calibration, gate):
            "trial_worker_plus_helper": max(c["peak_rss_bytes"] for r in data["executions"] for c in r["cells"])}
     if any(not math.isfinite(v) or v <= 0 for v in (prep, reevaluate, cal, enumeration, cheap_gate, *worst.values(), *rss.values())):
         raise ValueError("unmeasured CPU/RSS")
-    binding = {"construction": (17920+252)*5*prep, "requested_base_evaluation": 16128*5*reevaluate,
-               "calibration_no_enumeration": (1792+252)*5*cal,
-               "enumeration": (1792+252)*5*enumeration,
-               "trials": 5*4000*(17920*worst[False]+252*worst[True]),
-               "gate_checks": (17920+252)*5*cap*cheap_gate if cap else None}
-    safety = {"construction": 336*5*prep, "canonical_state_evaluation": 8064*5*reevaluate,
-              "calibration_no_enumeration": 336*5*cal, "enumeration": 336*5*enumeration,
-              "trials": 5*2000*(336*worst[False]+1680*worst[True]),
-              "gate_checks": (336+1680)*5*cap*cheap_gate if cap else None}
-    binding_hours = 2*sum(binding.values())/3600 if cap else None
-    total_hours = binding_hours+2*sum(safety.values())/3600 if cap else None
-    memory_fit = 8*max(rss.values()) <= data["host"]["hw.memsize"]-8*1024**3
-    fits = binding_hours is not None and binding_hours <= 2880 and binding_hours/192 <= 15 and memory_fit
-    return {"status": "synthetic fit" if fits else "not testable", "fits_caps": fits,
-            "binding_oc_gate": False, "attempt_cap_per_population": cap,
-            "hard_trial_execution_cap_per_population": 4000, "overhead_multiplier": 2,
-            "binding_cpu_seconds_before_overhead": binding, "descriptive_safety_cpu_seconds_before_overhead": safety,
-            "binding_core_hours": binding_hours, "binding_wall_days_at_8_workers": binding_hours/192 if cap else None,
-            "total_planning_core_hours": total_hours, "memory": {"locked_phase_maxima": rss,
-            "eight_worker_bytes": 8*max(rss.values()), "fixed_reserve_bytes": 8*1024**3, "fits": memory_fit},
-            "resource_method": "maxima at complete locked sizes; no L40/L400 planning slope; safety never causes binding stop"}
+    values = {"construction_cpu_per_unit": prep/inputs.units,
+              "requested_base_cpu_per_unit": reevaluate/inputs.units,
+              "calibration_cpu_per_unit": cal/inputs.units,
+              "enumeration_cpu_per_population": enumeration, "gate_cpu_per_check": cheap_gate,
+              "complete_trial_cpu": worst[False], "full512_trial_cpu": worst[True],
+              "construction_rss": rss["construction"], "calibration_rss": rss["calibration"],
+              "trial_plus_helper_rss": rss["trial_worker_plus_helper"]}
+    failed = any(r["integrity_failure"] for r in (data, calibration, gate))
+    record = {"id": hashlib.sha256(canonical(evidence_sha256)).hexdigest(),
+              "host": data["host"], **data["host_load"]["start"],
+              "host_load": {name: r["host_load"] for name, r in
+                            (("benchmark", data), ("calibration", calibration), ("gate", gate))},
+              **{k: data[k] for k in interpreter()},
+              "size_input_sha256": inputs.sha256, "binding_inputs": values,
+              "completed": True, "integrity_failure": "closure mismatch" if failed else None}
+    if failed:
+        record["preserved_evidence_sha256"] = hashlib.sha256(canonical(evidence_sha256)).hexdigest()
+    return record
+
+
+def validate_benchmark(data):
+    expected = {(slot, missing, "studentized", fixture) for slot, missing, fixture in
+                itertools.product((40, 400), (False, True), ("uniform-srs", "mixed-explicit"))}
+    if (data["method"] != "studentized" or type(data["trials"]) is not int or data["trials"] < 2000
+        or data["replicates"] != 1999
+        or not data["worker_count_equality"]["byte_identical_scientific_json"]
+        or [r["workers"] for r in data["executions"]] != [1, 2]):
+        raise ValueError("incomplete studentized benchmark")
+    for run in data["executions"]:
+        actual = [(c["cell"]["L"], c["cell"]["missing_labels"], c["cell"]["method"],
+                   c["cell"]["fixture"]) for c in run["cells"]]
+        if len(actual) != 8 or set(actual) != expected or any(
+                c["measured_trials"] != data["trials"] for c in run["cells"]):
+            raise ValueError("frozen benchmark cell set required")
+
+
+def locked_inventory(inputs, gate):
+    return {"size_input_sha256": inputs.sha256, "L_r": inputs.lengths,
+            "eligible_sizes": {r: list(v) for r, v in inputs.vectors.items()},
+            "gate_redraws": gate["draws"], "gate_successes": gate["successes"],
+            "p_gate": gate["p_gate"]}
+
+
+def read_evidence(paths):
+    records, digests = [], {}
+    for path in paths:
+        data = path.read_bytes()
+        records.append(json.loads(data))
+        digests[str(path)] = hashlib.sha256(data).hexdigest()
+    return records, digests
 
 
 def publish(path, value):
@@ -248,7 +310,6 @@ def main():
     parser.add_argument("mode", choices=("synthetic-input", "gate", "benchmark", "calibration", "fit"))
     parser.add_argument("--input", type=Path)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--method", choices=("studentized", "percentile"), default="studentized")
     parser.add_argument("--trials", type=int, default=2000)
     parser.add_argument("--benchmark", type=Path)
     parser.add_argument("--calibration", type=Path)
@@ -266,26 +327,51 @@ def main():
     if args.trials < 2000:
         parser.error("trials>=2000 required; no reduced evidence mode")
     inputs = SizeInput(json.loads(args.input.read_text()))
-    closure, machine = provenance(inputs), host()
+    pin_sources()
+    closure, machine, load_start = provenance(inputs), host(), host_load()
+    runtime = interpreter()
     started = time.perf_counter()
     if args.mode == "gate":
         result = inputs.estimate_p_gate()
+        result["locked_inventory"] = locked_inventory(inputs, result)
     elif args.mode == "benchmark":
-        result = benchmark_mode(inputs, args.method, args.trials)
+        result = benchmark_mode(inputs, args.trials)
     elif args.mode == "calibration":
         result = calibration_mode(inputs)
     else:
         if not all((args.benchmark, args.calibration, args.gate)):
             parser.error("fit requires --benchmark, --calibration and --gate")
-        result = locked_fit(inputs, *(json.loads(p.read_text()) for p in (args.benchmark, args.calibration, args.gate)))
-        result["evidence_sha256"] = {str(p): hashlib.sha256(p.read_bytes()).hexdigest()
-                                      for p in (args.benchmark, args.calibration, args.gate)}
-    if closure != provenance(inputs) or inputs.record_bytes != canonical(json.loads(args.input.read_text())):
-        raise RuntimeError("source or size input changed; output not published")
-    result.update(schema="x1-locked-size-"+args.mode+"/synthetic-v1", synthetic_only=True,
+        records, digests = read_evidence((args.benchmark, args.calibration, args.gate))
+        inventory = locked_inventory(inputs, records[2])
+        result = {"measurement_runs": {
+                      "locked_inventory_sha256": hashlib.sha256(canonical(inventory)).hexdigest(),
+                      "runs": [measurement_run(inputs, *records, digests)]},
+                  "locked_inventory": inventory, "evidence_sha256": digests}
+    finish(inputs, args.input, args.output, args.mode, result, closure, machine,
+           load_start, runtime, started)
+
+
+def finish(inputs, input_path, output, mode, result, closure, machine, load_start, runtime, started):
+    end_closure = provenance(inputs)
+    input_end = input_path.read_bytes()
+    try:
+        unchanged_input = inputs.record_bytes == canonical(json.loads(input_end))
+    except (ValueError, UnicodeError):
+        unchanged_input = False
+    failed = closure != end_closure or not unchanged_input
+    if failed and "measurement_runs" in result:
+        for record in result["measurement_runs"]["runs"]:
+            record["integrity_failure"] = "closure mismatch"
+            record["preserved_evidence_sha256"] = hashlib.sha256(canonical(result["evidence_sha256"])).hexdigest()
+    result.update(schema="x1-locked-size-"+mode+"/synthetic-v1", synthetic_only=True,
                   authority="Draft synthetic evidence only; no preparation, inventory, remeasurement or OC authority",
-                  provenance=closure, host=machine, elapsed_seconds=time.perf_counter()-started)
-    publish(args.output, result)
+                  provenance=closure, end_provenance=end_closure, input_end_sha256=hashlib.sha256(input_end).hexdigest(),
+                  host=machine, host_load={"start": load_start, "end": host_load()}, **runtime,
+                  completed=True, integrity_failure="closure mismatch" if failed else None,
+                  elapsed_seconds=time.perf_counter()-started)
+    publish(output, result)
+    if failed:
+        raise RuntimeError("closure mismatch; completed evidence published")
 
 
 if __name__ == "__main__":

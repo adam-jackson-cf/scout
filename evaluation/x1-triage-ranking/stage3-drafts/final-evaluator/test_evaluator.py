@@ -4,11 +4,14 @@ from pathlib import Path
 import math
 import unittest
 from evaluator import expected_cells, identity, evaluate, resource_fit, select_postdev, verdict, wilson
-from provenance import INPUTS, MANIFEST_SHA256, encode, decode, digest, maximum_completed_inputs
+from provenance import INPUTS, MANIFEST_SHA256, encode, decode, digest, maximum_completed_inputs, member_bytes
 
 ROOT = Path(__file__).resolve().parents[2]
 IDENTITIES_SHA256 = "3499e423b90df60972b1003c4fc8b65f77a03eada73d67afafa1288e8a43dda2"
 REV8_SOURCE_SHA256 = "023e2e5bc6ca1ee282e4ebc75ef6b3bccdb96111d0f218c0341189d6a400168e"
+BOOTSTRAP_EVIDENCE = {"bootstrap_means": 10000, "bootstrap_seed": 169300,
+                      "resampling_unit": "run-cluster", "one_sided_level": .95,
+                      "unknown_or_incomplete_receipts": 0}
 
 
 class EvaluatorTests(unittest.TestCase):
@@ -52,7 +55,7 @@ class EvaluatorTests(unittest.TestCase):
         if payloads is None:
             payloads, pins = self.bundle()
         payloads, pins = dict(payloads), dict(pins)
-        evidence = dict(Mhat=mhat, c_U=.50/(mhat+.5), bootstrap_evidence={"synthetic_bootstrap": [1, 1, 1]},
+        evidence = dict(Mhat=mhat, c_U=.50/(mhat+.5), bootstrap_evidence=dict(BOOTSTRAP_EVIDENCE),
                         predev_sha256=predev["result_sha256"], locked_inventory_sha256=pins["locked_inventory"])
         evidence.update(evidence_changes or {})
         payloads["mhat_evidence"] = encode(evidence)
@@ -127,6 +130,19 @@ class EvaluatorTests(unittest.TestCase):
             bad[member] = encode(data)
             with self.assertRaises(ValueError):
                 evaluate(self.manifest_bytes, provenance_payloads=bad, provenance_digests=pins, synthetic_only=True)
+
+    def test_signed_manifest_pin_with_consistent_bundle_resealing(self):
+        payloads, pins = self.bundle()
+        replacement = self.manifest_bytes+b"\n"
+        payloads["signed_manifest"] = replacement
+        pins["signed_manifest"] = digest(replacement)
+        oc = decode(payloads["sealed_oc_output"])
+        oc["signed_manifest_sha256"] = pins["signed_manifest"]
+        payloads["sealed_oc_output"] = encode(oc)
+        pins["sealed_oc_output"] = digest(payloads["sealed_oc_output"])
+        with self.assertRaisesRegex(ValueError, "substituted signed manifest bytes"):
+            evaluate(replacement, provenance_payloads=payloads, provenance_digests=pins, synthetic_only=True)
+
 
     def test_seal_internal_references_and_inventory_types(self):
         payloads, pins = self.bundle()
@@ -205,8 +221,36 @@ class EvaluatorTests(unittest.TestCase):
         for target in (0, .1, .2):
             self.assertTrue(self.cell_passes("missing", {"realised_gain": target}, target=target))
             self.assertFalse(self.cell_passes("missing", {"realised_gain": .001 if target == 0 else target-.001}, target=target))
-        for gain in (float("nan"), float("inf")):
-            with self.assertRaises(ValueError): self.cell_passes("calibrated-reference", {"realised_gain": gain}, target=.2)
+        # Nonfinite JSON exponent payloads are exercised separately, not rejected by fixture encode.
+
+    def test_nonfinite_exponent_gain_bytes_fail_cells(self):
+        for kind in ("calibrated-reference", "missing"):
+            for target in (0, .2):
+                for exponent in (b"1e400", b"-1e400"):
+                    with self.subTest(kind=kind, target=target, exponent=exponent):
+                        rows, key, _ = self.changed_cell(kind, {"realised_gain": "overflow-token"}, target=target)
+                        raw_records = encode(rows).replace(b'"realised_gain":"overflow-token"',
+                                                          b'"realised_gain":'+exponent)
+                        payloads, pins = self.bundle()
+                        oc = decode(payloads["sealed_oc_output"])
+                        oc["records_sha256"] = digest(raw_records)
+                        oc["records"] = "raw-records-token"
+                        payloads["sealed_oc_output"] = encode(oc).replace(b'"raw-records-token"', raw_records)
+                        pins["sealed_oc_output"] = digest(payloads["sealed_oc_output"])
+                        self.assertEqual(member_bytes(payloads["sealed_oc_output"], "records"), raw_records)
+                        result = evaluate(self.manifest_bytes, provenance_payloads=payloads,
+                                          provenance_digests=pins, synthetic_only=True)["result"]
+                        self.assertIs(result["cell_reports"][key]["passed"], False)
+                        self.assertIs(result["rows"][700], False)
+
+    def test_exact_record_member_bytes(self):
+        for value in ([], [{"text": 'records" : ] }', "nested": {"records": [1, 2]}}]):
+            raw = b"  "+encode(value)+b" \n"
+            payload = b' { "before": {"records": []}, "records":'+raw+b', "after": true } '
+            self.assertEqual(member_bytes(payload, "records"), encode(value))
+        for payload in (b'{"records":[],"records":[]}', b'{"records":[NaN]}', b'{"other":[]}'):
+            with self.assertRaises(ValueError):
+                member_bytes(payload, "records")
 
     def test_rev8_maxima_arithmetic_and_p_gate_cpu_boundary(self):
         # Only gate CPU is nonzero here to put the analytic boundary exactly at 2880.
@@ -234,6 +278,24 @@ class EvaluatorTests(unittest.TestCase):
         full = self.gate(runs=[first, second])["result"]
         self.assertEqual([r["run"] for r in full["measurement_runs"]], [first, second])
         self.assertEqual(full["resources"]["maximum_inputs"], maxima)
+        self.assertEqual(full["status"], "not testable before dev")
+        self.assertTrue(all(value is False for value in full["rows"].values()))
+
+    def test_resource_fit_propagates_to_every_row(self):
+        inputs = {k: 1e-300 for k in INPUTS}
+        inputs["gate_cpu_per_check"] = 2880*3600/(2*18172*5*8000)
+        exact = self.gate(runs=[{**self.measurement_run, "binding_inputs": inputs}])["result"]
+        self.assertEqual(exact["resources"]["core_hours"], 2880)
+        self.assertEqual(exact["status"], "draft_synthetic_rows_passed")
+        self.assertTrue(all(value is True for value in exact["rows"].values()))
+        budget = self.host["hw.memsize"]-8*1024**3
+        inputs = {**self.inputs, "construction_rss": budget/8+1}
+        failed = self.gate(runs=[{**self.measurement_run, "binding_inputs": inputs}])["result"]
+        self.assertLess(failed["resources"]["core_hours"], 2880)
+        self.assertEqual(failed["resources"]["eight_worker_rss_bytes"], budget+8)
+        self.assertEqual(failed["status"], "not testable before dev")
+        self.assertTrue(all(value is False for value in failed["rows"].values()))
+
 
     def test_memory_boundary_and_bound_host(self):
         budget = self.host["hw.memsize"]-8*1024**3
@@ -249,6 +311,23 @@ class EvaluatorTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             evaluate(self.manifest_bytes, provenance_payloads=payloads, provenance_digests=pins,
                      synthetic_only=True, resources={"memory_bytes": 1})
+
+    def test_complete_host_and_load_provenance(self):
+        for field, wrong_values in (("hw.model", (1, "")), ("hw.memsize", ("68719476736", True, 0)),
+                                    ("logical_cpus", ("18", True, 0)), ("os_build", (1, ""))):
+            missing = {k: v for k, v in self.host.items() if k != field}
+            for host in (missing, *({**self.host, field: value} for value in wrong_values)):
+                with self.subTest(host=host), self.assertRaises(ValueError):
+                    self.gate(host=host, runs=[{**self.measurement_run, "host": host}])
+        for field, values in (("load_averages", ([0, 0], [0, -1, 0], [0, "0", 0], [0, True, 0], None)),
+                              ("concurrent_process_count", (0, True, None))):
+            for value in values:
+                run = {**self.measurement_run, field: value}
+                if value is None:
+                    del run[field]
+                with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+                    self.gate(runs=[run])
+
 
     def test_rerun_qualifications_evidence_and_measurement_types(self):
         valid = self.measurement_run
@@ -292,6 +371,28 @@ class EvaluatorTests(unittest.TestCase):
             select_postdev(pre["sealed_result"], pre["result_sha256"], provenance_payloads=postpayloads,
                            provenance_digests=postpins, synthetic_only=True)
 
+    def test_complete_typed_bootstrap_evidence(self):
+        pre = self.gate()
+        try:
+            selected = self.select(pre)
+        except ValueError as exc:
+            self.fail(f"complete typed bootstrap evidence was refused: {exc}")
+        self.assertEqual(selected["status"], "draft_synthetic_gate_passed")
+        for value in (True, "false", None, {}, {**BOOTSTRAP_EVIDENCE, "extra": 1}):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                self.select(pre, evidence_changes={"bootstrap_evidence": value})
+        wrong = {"bootstrap_means": (9999, 10000.0, True),
+                 "bootstrap_seed": (169301, 169300.0, True),
+                 "resampling_unit": ("run", True),
+                 "one_sided_level": (.90, 1, True, ".95"),
+                 "unknown_or_incomplete_receipts": (1, 0.0, False)}
+        for field, values in wrong.items():
+            missing = {k: v for k, v in BOOTSTRAP_EVIDENCE.items() if k != field}
+            for evidence in (missing, *({**BOOTSTRAP_EVIDENCE, field: value} for value in values)):
+                with self.subTest(field=field, evidence=evidence), self.assertRaises(ValueError):
+                    self.select(pre, evidence_changes={"bootstrap_evidence": evidence})
+
+
     def test_ordered_typed_verdict_and_interval_boundaries(self):
         effect = dict(integrity=True, violating=False, adequate=True, upper=.4, unresolved=False, point=.3, lower=.2)
         self.assertEqual(verdict(**effect), "support")
@@ -305,6 +406,8 @@ class EvaluatorTests(unittest.TestCase):
                             (dict(unresolved=True, upper=.05, lower=0), "not supported"),
                             (dict(unresolved=True), "inconclusive"),
                             (dict(point=.10, lower=0), "inconclusive"),
+                            (dict(point=math.nextafter(.10, 0), lower=.001, upper=.4), "inconclusive"),
+                            (dict(lower=.3, upper=.2), "inconclusive"),
                             (dict(point=.10, lower=.001), "support")):
             self.assertEqual(verdict(**{**effect, **patch}), want)
         for flag in ("integrity", "violating", "adequate", "unresolved"):

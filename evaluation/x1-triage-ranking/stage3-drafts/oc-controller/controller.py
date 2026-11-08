@@ -1,26 +1,28 @@
-"""Synthetic-only stage-3 counter/safety state machine; no run authority."""
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+"""Synthetic-only, durable X1 OC controller. This draft grants no run authority."""
+from dataclasses import dataclass
 import copy
+import fcntl
 import hashlib
 import hmac
 import importlib.util
 import itertools
 import json
 import math
+import os
 from pathlib import Path
 import sys
-import time
 import threading
+import time
 from types import MappingProxyType
 
 HERE = Path(__file__).resolve().parent
 EXPERIMENT = HERE.parents[1]
 MANIFEST_SHA256 = "1caea1a5ddba3a3d9eae99bba780e5de987ad7771f6cce06af9b0171be96761d"
 KERNEL_SHA256 = "ed670a6bf8076d791c06cfc2426aff03a0a2f9b1730982cf3fdfb2ec13bc49a2"
+RANKING_SHA256 = "8bc2e7cbbc5da6ba47aeff3effb5dd04d5e5ecc9c1e01051647900095770a780"
 ORDER_SHA256 = "04aa2184f79cb3795f60305a6b8fa31687d5acd7069846e78b6acf1b1f4dd4ff"
-POLICY_SHA256 = "e2c8c9ec1da43b4eeface3cf3c52c711ecad8cef11be97c00defe51fc12353ca"
-POLICY = {'checks': 'before every sampling attempt, criticality phase, dispatch and completion; caps use >=', 'criticality_order': [0.0, 0.1, 1.0, 3.0], 'criticality_scheduling': 'after all five population lanes stop, four synchronous j phases in listed order before next group', 'group_order': 'ascending HMAC-SHA256 of signed population_identity bytes; byte-order tie break', 'limits': {'core_hours': 2880, 'wall_days': 15}, 'meter': 'raw measured cumulative binding-plus-safety core-hours, no overhead multiplier', 'parallel_attempts': False, 'pause': 'only recorded section-11 integrity evidence; resume same group and next fixed attempt index; clock continues', 'reserved_worker_slots': 8, 'start': 'immediately after every binding row completes', 'termination': 'irreversible gold, shared caps, grid completion or recorded section-11 integrity stop; snapshot counts immediately', 'wall_clock': 'seconds since first full-OC process start, never paused', 'worker_mapping': 'population i uses slot i, i=0..4; slots 5..7 reserved idle; one synchronous lane at a time, increasing population index; helper is a child of the active lane'}
+POLICY_SHA256 = "71c848cdf686b5424629098f4a8bd30ea8b8ceae6ea050652e2a7f1d230dc33b"
+POLICY = json.loads((HERE / "policy.json").read_bytes())
 PHASES = frozenset(("population", "audit", "bootstrap", "missing-mask", "canonical-safety", "canonical-criticality", "sampling-gate-estimate"))
 
 
@@ -32,10 +34,18 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def _kernel():
-    path = EXPERIMENT / "validation/fixed_population.py"
+def _kernel(path=None):
+    path = EXPERIMENT / "validation/fixed_population.py" if path is None else Path(path)
     if digest(path.read_bytes()) != KERNEL_SHA256:
         raise RuntimeError("signed population identity source changed")
+    ranking = EXPERIMENT / "validation/ranking.py"
+    if digest(ranking.read_bytes()) != RANKING_SHA256:
+        raise RuntimeError("signed calibration dependency changed")
+    if "ranking" not in sys.modules:
+        spec = importlib.util.spec_from_file_location("ranking", ranking)
+        module = importlib.util.module_from_spec(spec)
+        sys.modules["ranking"] = module
+        spec.loader.exec_module(module)
     name = "x1_signed_controller_population"
     if name not in sys.modules:
         spec = importlib.util.spec_from_file_location(name, path)
@@ -54,7 +64,12 @@ def seed(cell, population, attempt, phase):
         raise ValueError("invalid phase or index")
     if phase == "population" and attempt != 0:
         raise ValueError("population phase uses attempt zero")
-    cell_bytes = cell.encode("utf-8") if isinstance(cell, str) else canonical(cell)
+    if isinstance(cell, str):
+        cell_bytes = cell.encode("utf-8")
+        if canonical(json.loads(cell)) != cell_bytes:
+            raise ValueError("cell string is not canonical JSON")
+    else:
+        cell_bytes = canonical(cell)
     message = b"\0".join((cell_bytes, str(population).encode(), str(attempt).encode(), phase.encode()))
     return int.from_bytes(hmac.digest(b"169-x1-oc-v4", message, "sha256")[:8], "big")
 
@@ -64,8 +79,7 @@ def safety_groups(manifest):
     dimensions = specification["dimensions"]
     for values in itertools.product(*dimensions.values()):
         for kappa in specification["unresolved_kappa"]:
-            yield population_identity("safety-interval-group", {
-                **dict(zip(dimensions, values)), "unresolved_kappa": kappa})
+            yield population_identity("safety-interval-group", {**dict(zip(dimensions, values)), "unresolved_kappa": kappa})
 
 
 def wilson(k, n):
@@ -88,347 +102,603 @@ def immutable(value):
     return value
 
 
-@dataclass(eq=False)
-class Population:
-    group_identity: str
-    population_index: int
-    p_gate: float
-    safety: bool = False
-    attempts: int = field(init=False, default=0)
-    executions: int = field(init=False, default=0)
-    eligible: int = field(init=False, default=0)
-    inadequate: int = field(init=False, default=0)
-    crashed: int = field(init=False, default=0)
-    incidents: list = field(init=False, default_factory=list)
-    _owner: object = field(init=False, default=None, repr=False)
+def _sha(value):
+    return isinstance(value, str) and len(value) == 64 and all(c in "0123456789abcdef" for c in value)
 
-    def __post_init__(self):
-        if type(self.p_gate) not in (int, float) or not math.isfinite(self.p_gate) or not 0 < self.p_gate <= 1:
-            raise ValueError("zero/unmeasured gate probability")
-        if type(self.population_index) is not int or self.population_index not in range(5) or type(self.safety) is not bool:
-            raise ValueError("invalid population identity")
-        self.attempt_cap = math.ceil(4000/self.p_gate)
+
+class Stopped(RuntimeError):
+    """No new work may start until reviewed resume, or ever after termination."""
+
+
+@dataclass(frozen=True)
+class BindingLane:
+    _owner: object
+    _key: str
+
+    def step(self, gate, trial):
+        return self._owner._attempt(self._key, gate, trial)
+
+    def report(self):
+        with self._owner._state_lock:
+            return self._owner._population_report(self._key)
 
     @property
     def complete(self):
-        return self.crashed == 0 and (self.executions if self.safety else self.eligible) == 2000
+        with self._owner._state_lock:
+            return self._owner._done(self._key)
 
     @property
     def exhausted(self):
-        return not self.complete and (self.attempts >= self.attempt_cap or self.executions >= 4000)
-
-    def step(self, gate, trial):
-        if self._owner is None:
-            raise RuntimeError("population has no execution lease")
-        self._owner.acquire(self)
-        try:
-            self._step(gate, trial)
-        finally:
-            self._owner.release()
-
-    def _step(self, gate, trial):
-        if self.complete or self.exhausted:
-            raise RuntimeError("population stopped")
-        index = self.attempts
-        self.attempts += 1
-        passes = gate(index)
-        if type(passes) is not bool:
-            self._owner.pause({"kind": "execution integrity", "evidence_sha256": digest(b"non-bool gate")})
-            raise ValueError("gate must report a bool")
-        if passes:
-            self.executions += 1
-            self.crashed += 1  # Unclassified in-flight work remains charged at an irreversible stop.
-            try:
-                adequate = trial(index)
-                if self._owner.terminated:
-                    raise RuntimeError("result discarded after termination")
-                if type(adequate) is not bool:
-                    raise ValueError("trial must report a bool")
-            except Exception as error:
-                self.incidents.append({"attempt": index, "type": type(error).__name__, "resolved": False})
-                if not self._owner.terminated:
-                    self._owner.pause({"kind": "execution integrity", "evidence_sha256": digest(type(error).__name__.encode())})
-                raise
-            self.crashed -= 1
-            self.eligible += int(adequate)
-            self.inadequate += int(not adequate)
-        self._owner.after_attempt()
-
-    def report(self):
-        if self.executions != self.eligible+self.inadequate+self.crashed:
-            raise RuntimeError("execution classification invariant violated")
-        return {"group_identity": self.group_identity, "population_index": self.population_index,
-                "attempts": self.attempts, "executions": self.executions, "eligible": self.eligible,
-                "inadequate": self.inadequate, "crashed": self.crashed,
-                "gate_failures": self.attempts-self.executions,
-                "gate_failure_Wilson_MC95": wilson(self.attempts-self.executions, self.attempts),
-                "conditional_inadequacy_Wilson_MC95": wilson(self.inadequate, self.executions),
-                "incidents": copy.deepcopy(self.incidents)}
+        with self._owner._state_lock:
+            return self._owner._exhausted(self._key)
 
 
 class SafetySchedule:
-    """Eight reserved slots; serial population lanes and criticality phases.
+    """Eight binding slots, serial owned safety loop, append-before-apply state."""
 
-    Meter is raw measured cumulative OC CPU, including binding. Clock is the
-    unpaused full-OC wall clock; 2x is a projection rule, never an actual meter.
-    Every execution lease consults this state machine before each attempt.
-    """
-    def __init__(self, *, freeze_path, p_gate, meter, oc_started_at, clock=time.time,
-                 manifest_bytes=None):
-        raw = (EXPERIMENT/"oc-manifest.json").read_bytes() if manifest_bytes is None else manifest_bytes
+    def __init__(self, *, p_gate, inventory_sha256, meter, oc_started_at,
+                 run_root=None, clock=time.time, manifest_bytes=None, kernel_path=None):
+        self._state_lock = threading.RLock()
+        self._condition = threading.Condition(self._state_lock)
+        self._run_lock = threading.Lock()
+        self._kernel = _kernel(kernel_path)
+        raw = (EXPERIMENT / "oc-manifest.json").read_bytes() if manifest_bytes is None else manifest_bytes
         if digest(raw) != MANIFEST_SHA256:
             raise ValueError("signed OC manifest bytes changed")
-        self.manifest = json.loads(raw)
-        identities = tuple(safety_groups(self.manifest))
-        if len(identities) != 2016 or len(set(identities)) != 2016 or sum(json.loads(s)[1]["unresolved_kappa"] == 0 for s in identities) != 336:
-            raise RuntimeError("safety grid changed")
+        self._manifest = immutable(json.loads(raw))
+        identities = tuple(safety_groups(json.loads(raw)))
         self._ordered = tuple(sorted(identities, key=lambda s: (hmac.digest(b"169-x1-safety-order", s.encode(), "sha256"), s.encode())))
-        self._ordered_sha256 = digest(canonical(self._ordered))
-        self._policy_bytes = canonical(POLICY)
-        self._policy = immutable(copy.deepcopy(POLICY))
-        self.check_freeze()
-        Population("validation", 0, p_gate)
-        if type(oc_started_at) not in (int, float) or not math.isfinite(oc_started_at):
-            raise ValueError("invalid full-OC start")
-        self.p_gate, self.meter, self.clock = p_gate, meter, clock
-        self.oc_started_at = oc_started_at
-        self._last_core = self._last_wall = 0
-        self._leases = {}
-        self._execution_lock = threading.Lock()
-        self._binding = {}
-        self._active = None
-        self._completed = []
-        self.events = []
-        self.paused = False
-        self.terminated = False
-        self._final = None
-        self._started_safety = False
-        now = self.clock()
-        self.freeze = {"ordered_groups_sha256": ORDER_SHA256, "policy_sha256": POLICY_SHA256,
-                       "created_at_utc": datetime.fromtimestamp(now, timezone.utc).isoformat(),
-                       "synthetic_only": True, "authority": "none; scoped review required",
-                       "source_sha256": {str(p.relative_to(EXPERIMENT)): digest(p.read_bytes()) for p in
-                           (Path(__file__).resolve(), EXPERIMENT/"validation/fixed_population.py", EXPERIMENT/"oc-manifest.json")}}
-        with Path(freeze_path).open("x") as stream:
-            stream.write(canonical(self.freeze).decode()+"\n")
-
-    @property
-    def ordered(self):
-        return self._ordered
-
-    @property
-    def policy(self):
-        return self._policy
-
-    def check_freeze(self):
-        if self._ordered_sha256 != ORDER_SHA256 or digest(self._policy_bytes) != POLICY_SHA256:
+        if len(set(identities)) != 2016 or digest(canonical(self._ordered)) != ORDER_SHA256 or digest(canonical(POLICY)) != POLICY_SHA256:
             raise RuntimeError("frozen safety order or policy mismatch")
-
-    def _boundary(self, *, allow_paused=False):
-        self.check_freeze()
-        if self.terminated:
-            raise RuntimeError("OC terminated")
-        core, wall = self.meter(), (self.clock()-self.oc_started_at)/86400
-        if any(type(x) not in (int, float) or not math.isfinite(x) or x < 0 for x in (core, wall)) or core < self._last_core or wall < self._last_wall:
-            raise ValueError("invalid/nonmonotone OC meter")
-        self._last_core, self._last_wall = core, wall
-        if core >= 2880 or wall >= 15:
-            self._terminate("OC core-hour cap" if core >= 2880 else "OC wall-day cap")
-            raise RuntimeError("OC cap reached")
-        if self.paused and not allow_paused:
-            raise RuntimeError("OC paused for integrity review")
-
-    def binding_population(self, identity, index):
-        self._boundary()
-        if self._started_safety:
-            raise RuntimeError("binding cannot restart after safety")
-        key = (identity, index)
-        if key in self._binding:
-            raise ValueError("duplicate binding lease")
-        p = Population(identity, index, self.p_gate)
-        p._owner = self
-        self._binding[key] = p
-        self._leases[id(p)] = key
-        return p
-
-    def next_group(self, *, binding_rows_complete):
-        if type(binding_rows_complete) is not bool or not binding_rows_complete:
-            raise RuntimeError("all binding rows must complete before safety")
-        self._boundary()
-        if self._active is not None:
-            raise RuntimeError("active group unfinished")
-        if len(self._completed) == len(self.ordered):
-            self._terminate("grid complete")
-            return None
-        if not self._started_safety:
-            self.events.append({"event": "start", "cause": "all binding rows complete", "wall_seconds": self.clock()-self.oc_started_at})
-            self._started_safety = True
-        identity = self.ordered[len(self._completed)]
-        populations = tuple(Population(identity, i, self.p_gate, safety=True) for i in range(5))
-        for p in populations:
-            p._owner = self
-            self._leases[id(p)] = (identity, p.population_index)
-        self._active = {"identity": identity, "populations": populations, "criticality": {}}
-        return populations
-
-    def acquire(self, population):
-        if not self._execution_lock.acquire(blocking=False):
-            raise RuntimeError("parallel or reentrant execution refused")
+        self._policy = immutable(copy.deepcopy(POLICY))
+        self._critical_j = tuple(self._manifest["final_safety_OC"]["critical_j"])
+        if type(p_gate) not in (int, float) or not math.isfinite(p_gate) or not 0 < p_gate <= 1 or not _sha(inventory_sha256):
+            raise ValueError("unmeasured gate probability or inventory digest")
+        if type(oc_started_at) not in (int, float) or not math.isfinite(oc_started_at):
+            raise ValueError("invalid full-OC origin")
+        self._p_gate, self._oc_started_at = p_gate, oc_started_at
+        self._meter, self._clock = meter, clock
+        self._last_core = self._last_wall = 0
+        self._epoch = 0
+        self._paused = self._terminated = self._started_safety = False
+        self._final = self._active = None
+        self._completed, self._events = [], []
+        self._populations, self._profiles, self._lane_locks = {}, {}, {}
+        self._slots, self._busy_slots = {}, set()
+        self._sequence, self._previous = 0, "0" * 64
+        self._closed = False
+        directory = (HERE if run_root is None else Path(run_root)) / "x1-oc-controller"
+        directory.mkdir(parents=True, exist_ok=True)
+        self._directory = directory
+        self._lock_file = (directory / "owner.lock").open("a+b")
         try:
-            self.authorize(population)
+            fcntl.flock(self._lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BaseException:
-            self._execution_lock.release()
+            self._lock_file.close()
+            raise RuntimeError("another controller owns this run directory") from None
+        self._journal_file = None
+        try:
+            sources = (Path(__file__).resolve(), HERE / "policy.json", EXPERIMENT / "validation/fixed_population.py",
+                       EXPERIMENT / "validation/ranking.py", EXPERIMENT / "oc-manifest.json")
+            expected = {"ordered_groups_sha256": ORDER_SHA256, "policy_sha256": POLICY_SHA256,
+                        "oc_started_at": oc_started_at, "p_gate": p_gate, "inventory_sha256": inventory_sha256,
+                        "synthetic_only": True, "authority": "none; scoped review required",
+                        "source_sha256": {str(p.relative_to(EXPERIMENT)): digest(p.read_bytes()) for p in sources}}
+            freeze_path = directory / "freeze.json"
+            recovered = freeze_path.exists()
+            self._tail_sha = None
+            self._tail_needs_newline = False
+            if recovered:
+                self._freeze = json.loads(freeze_path.read_bytes())
+                if {k: self._freeze.get(k) for k in expected} != expected:
+                    raise RuntimeError("existing freeze differs; second freeze refused")
+                self._replay(directory / "journal.jsonl")
+            else:
+                if (directory / "journal.jsonl").exists():
+                    raise RuntimeError("journal exists without freeze")
+                self._freeze = {**expected, "created_at": self._clock()}
+                with freeze_path.open("xb") as stream:
+                    stream.write(canonical(self._freeze) + b"\n")
+                    stream.flush()
+                    os.fsync(stream.fileno())
+            self._journal_file = (directory / "journal.jsonl").open("ab")
+            fd = os.open(directory, os.O_RDONLY)
+            try:
+                os.fsync(fd)
+            finally:
+                os.close(fd)
+            if recovered and not self._terminated:
+                if self._tail_needs_newline:
+                    self._journal_file.write(b"\n")
+                    self._journal_file.flush()
+                    os.fsync(self._journal_file.fileno())
+                self._emit("pause", {"kind": "process loss", "evidence_sha256": self._tail_sha or self._previous,
+                                     "tail_sha256": self._tail_sha})
+        except BaseException:
+            self.close()
             raise
 
-    def release(self):
-        self._execution_lock.release()
+    @property
+    def manifest(self): return self._manifest
+    @property
+    def ordered(self): return self._ordered
+    @property
+    def policy(self): return self._policy
+    @property
+    def freeze(self): return immutable(copy.deepcopy(self._freeze))
+    @property
+    def oc_started_at(self): return self._oc_started_at
+    @property
+    def p_gate(self): return self._p_gate
+    @property
+    def paused(self): return self._paused
+    @property
+    def terminated(self): return self._terminated
+    @property
+    def events(self):
+        with self._state_lock:
+            return copy.deepcopy(self._events)
 
-    def authorize(self, population):
-        self._boundary()
-        if self._leases.get(id(population)) != (population.group_identity, population.population_index):
-            raise RuntimeError("stale or foreign execution lease")
-        if population.safety:
-            active = self._active
-            if active is None or population not in active["populations"]:
-                raise RuntimeError("foreign safety population")
-            pending = next((p for p in active["populations"] if not p.complete and not p.exhausted), None)
-            if pending is not population:
-                raise RuntimeError("fixed population lane order violated")
-        elif self._started_safety:
-            raise RuntimeError("binding execution after safety start")
+    def close(self):
+        if not self._closed:
+            if (self._run_lock.locked() or self._busy_slots) and not self._terminated:
+                raise RuntimeError("cannot close a live controller")
+            if self._journal_file is not None:
+                self._journal_file.close()
+            self._lock_file.close()
+            self._closed = True
 
-    def after_attempt(self):
-        self._boundary()
+    def _replay(self, path):
+        if not path.exists():
+            return
+        pending_tail = None
+        with path.open("rb") as stream:
+            for raw in stream:
+                try:
+                    event = json.loads(raw) if raw.endswith(b"\n") else None
+                except (ValueError, UnicodeDecodeError):
+                    event = None
+                if event is None:
+                    if pending_tail is not None:
+                        raise RuntimeError("multiple corrupt journal records")
+                    pending_tail = digest(raw.removesuffix(b"\n"))
+                    self._tail_needs_newline = not raw.endswith(b"\n")
+                    continue
+                if pending_tail is not None:
+                    if event.get("kind") != "pause" or event.get("data", {}).get("tail_sha256") != pending_tail:
+                        raise RuntimeError("unreviewed corrupt journal interior")
+                    pending_tail = None
+                    self._tail_needs_newline = False
+                if event["seq"] != self._sequence or event["previous_sha256"] != self._previous:
+                    raise RuntimeError("journal chain mismatch")
+                self._apply(event)
+                self._sequence += 1
+                self._previous = digest(raw)
+        self._tail_sha = pending_tail
 
-    @staticmethod
-    def _evidence(evidence):
-        if (not isinstance(evidence, dict) or evidence.get("kind") not in
-            ("execution integrity", "closure mismatch", "independent OS malfunction", "reviewed integrity resolution")
-            or not isinstance(evidence.get("evidence_sha256"), str) or len(evidence["evidence_sha256"]) != 64
-            or any(c not in "0123456789abcdef" for c in evidence["evidence_sha256"])):
-            raise ValueError("section-11 integrity evidence required")
-
-    def pause(self, evidence):
-        self._boundary(allow_paused=True)
-        self._evidence(evidence)
-        if self.paused:
-            raise RuntimeError("already paused")
-        self.paused = True
-        self.events.append({"event": "pause", "cause": copy.deepcopy(evidence), "wall_seconds": self.clock()-self.oc_started_at})
-
-    def resolve_crash(self, population, attempt, adequate, evidence):
-        self._boundary(allow_paused=True)
-        self._evidence(evidence)
-        if not self.paused or evidence["kind"] != "reviewed integrity resolution" or type(adequate) is not bool or id(population) not in self._leases:
-            raise RuntimeError("reviewed paused crash resolution required")
-        incident = next((i for i in population.incidents if i["attempt"] == attempt and not i["resolved"]), None)
-        if incident is None:
-            raise ValueError("no unresolved execution")
-        incident.update(resolved=True, evidence_sha256=evidence["evidence_sha256"])
-        population.crashed -= 1
-        population.eligible += int(adequate)
-        population.inadequate += int(not adequate)
-        self.events.append({"event": "resolve", "population": population.population_index, "attempt": attempt, "cause": copy.deepcopy(evidence)})
-
-    def resume(self, evidence):
-        self._boundary(allow_paused=True)
-        self._evidence(evidence)
-        if not self.paused or evidence["kind"] != "reviewed integrity resolution" or any(p.crashed for p in self._all_populations()):
-            raise RuntimeError("unresolved integrity pause")
-        self.paused = False
-        self.events.append({"event": "resume", "cause": copy.deepcopy(evidence), "wall_seconds": self.clock()-self.oc_started_at})
-
-    def _all_populations(self):
-        return list(self._binding.values()) + (list(self._active["populations"]) if self._active else [])
-
-    def run_criticality(self, j, work):
-        if not self._execution_lock.acquire(blocking=False):
-            raise RuntimeError("parallel or reentrant criticality refused")
+    def _emit(self, kind, data):
+        # Every caller holds _state_lock (constructor is not yet published).
+        if self._closed:
+            raise RuntimeError("controller closed")
+        if kind in ("pause", "terminate") and self._active is not None:
+            if self._active.get("current_lane") is not None:
+                self._emit("lane_stop", {"identity": self._active["identity"],
+                                         "population": self._active["current_lane"], "reason": kind})
+            if self._active["pending_phase"] is not None:
+                self._emit("phase_stop", {"identity": self._active["identity"],
+                                          "phase": self._active["pending_phase"]["phase"], "reason": kind})
         try:
-            return self._run_criticality(j, work)
-        finally:
-            self._execution_lock.release()
+            timestamp = self._clock()
+            if type(timestamp) not in (int, float) or not math.isfinite(timestamp):
+                timestamp = None
+        except BaseException:
+            timestamp = None
+        event = {"seq": self._sequence, "previous_sha256": self._previous,
+                 "timestamp": timestamp, "kind": kind, "data": data}
+        raw = canonical(event) + b"\n"
+        self._journal_file.write(raw)
+        self._journal_file.flush()
+        os.fsync(self._journal_file.fileno())
+        self._apply(event)
+        self._sequence += 1
+        self._previous = digest(raw)
 
-    def _run_criticality(self, j, work):
-        self._boundary()
-        active = self._active
-        if active is None or not all(p.complete or p.exhausted for p in active["populations"]) or any(p.crashed for p in active["populations"]):
-            raise RuntimeError("populations unfinished")
-        values = self.manifest["final_safety_OC"]["critical_j"]
-        if type(j) not in (int, float) or isinstance(j, bool) or j != values[len(active["criticality"])]:
-            raise ValueError("criticality order changed")
-        key = criticality_key(active["identity"], values[len(active["criticality"])])
-        result = work(key)
-        self._boundary()
-        if not isinstance(result, dict) or result.get("completed") is not True or result.get("key") != key:
-            raise ValueError("incomplete or foreign criticality record")
-        active["criticality"][key] = copy.deepcopy(result)
-        if len(active["criticality"]) == len(values):
-            self.finish(active["populations"], active["criticality"])
+    def _apply(self, event):
+        kind, data = event["kind"], event["data"]
+        # Counter commits stay on disk, not millions of duplicated RAM records.
+        if kind not in ("population", "population_state", "meter"):
+            self._events.append(copy.deepcopy(event))
+        if kind == "meter":
+            self._last_core, self._last_wall = data["core"], data["wall"]
+        elif kind == "population":
+            self._populations[data["key"]] = copy.deepcopy(data["population"])
+            self._lane_locks[data["key"]] = threading.Lock()
+            if not data["population"]["safety"]:
+                self._slots[data["population"]["slot"]] = data["key"]
+            elif self._active is not None:
+                self._active["populations"].append(data["key"])
+        elif kind == "population_state":
+            self._populations[data["key"]] = copy.deepcopy(data["population"])
+        elif kind == "pause":
+            self._paused = True
+            self._epoch += 1
+        elif kind == "resume":
+            self._paused = False
+            self._epoch += 1
+        elif kind == "dispatch":
+            self._started_safety = True
+            self._active = {"identity": data["identity"], "populations": [], "calibration": [],
+                            "criticality": {}, "pending_phase": None, "current_lane": None}
+        elif kind == "calibration":
+            self._active["calibration"].append(copy.deepcopy(data["record"]))
+            self._active["pending_phase"] = None
+        elif kind == "profile":
+            self._profiles[data["profile"]] = copy.deepcopy(data["records"])
+        elif kind == "phase_start":
+            self._active["pending_phase"] = copy.deepcopy(data)
+        elif kind == "lane_start":
+            self._active["current_lane"] = data["population"]
+        elif kind == "lane_stop":
+            self._active["current_lane"] = None
+        elif kind == "criticality":
+            self._active["criticality"][data["key"]] = copy.deepcopy(data["record"])
+            self._active["pending_phase"] = None
+        elif kind == "complete":
+            self._completed.append(copy.deepcopy(data["snapshot"]))
+            for key in self._active["populations"]:
+                del self._populations[key]
+                del self._lane_locks[key]
+            self._active = None
+        elif kind == "terminate":
+            self._terminated = True
+            self._epoch += 1
+            self._final = self._build_report(data["cause"], event["timestamp"])
+
+    def _boundary(self):
+        if self._terminated:
+            raise Stopped("OC terminated")
+        if self._paused:
+            raise Stopped("OC paused for integrity review")
+        try:
+            core, wall = self._meter(), (self._clock() - self._oc_started_at) / 86400
+            if any(type(x) not in (int, float) or not math.isfinite(x) or x < 0 for x in (core, wall)) or core < self._last_core or wall < self._last_wall:
+                raise ValueError("invalid/nonmonotone OC meter")
+        except BaseException as error:
+            self._emit("pause", {"kind": "meter integrity", "error": type(error).__name__, "evidence_sha256": digest(str(error).encode())})
+            raise Stopped("meter integrity pause") from error
+        self._emit("meter", {"core": core, "wall": wall})
+        if core >= 2880 or wall >= 15:
+            self._terminate("OC core-hour cap" if core >= 2880 else "OC wall-day cap")
+            raise Stopped("OC cap reached")
+
+    def _new_population(self, identity, index, safety, slot):
+        key = identity + "\0" + str(index)
+        if key in self._populations:
+            return key
+        population = {"identity": identity, "index": index, "safety": safety, "slot": slot,
+                      "attempts": 0, "executions": 0, "eligible": 0, "inadequate": 0,
+                      "gate_failures": 0, "gate_passes": 0, "gate_faults": 0,
+                      "pending": None, "incidents": []}
+        self._emit("population", {"key": key, "population": population})
         return key
 
-    def finish(self, populations, criticality_records):
+    def binding_population(self, identity, index, *, slot):
+        with self._state_lock:
+            self._boundary()
+            if self._started_safety or type(index) is not int or index not in range(5) or type(slot) is not int or slot not in range(8):
+                raise ValueError("invalid binding lease")
+            seed(identity, index, 0, "population")
+            old = self._slots.get(slot)
+            key = identity + "\0" + str(index)
+            if old is not None and old != key and not (self._done(old) or self._exhausted(old)):
+                raise RuntimeError("binding slot already leased")
+            key = self._new_population(identity, index, False, slot)
+            if self._populations[key]["slot"] != slot:
+                raise RuntimeError("population already bound to another slot")
+            return BindingLane(self, key)
+
+    def _done(self, key):
+        p = self._populations[key]
+        return p["pending"] is None and (p["executions"] if p["safety"] else p["eligible"]) == 2000
+
+    def _exhausted(self, key):
+        p = self._populations[key]
+        return p["pending"] is None and not self._done(key) and (p["attempts"] >= math.ceil(4000/self._p_gate) or p["executions"] >= 4000)
+
+    def _save_population(self, key, p):
+        self._emit("population_state", {"key": key, "population": p})
+
+    def _fault(self, phase, error, *, key=None, index=None):
+        incident = {"phase": phase, "index": index, "error": type(error).__name__, "evidence_sha256": digest(str(error).encode()), "resolved": False}
+        if key is not None:
+            p = copy.deepcopy(self._populations[key])
+            p["incidents"].append(incident)
+            if phase == "gate":
+                p["gate_faults"] += 1
+            self._save_population(key, p)
+        self._emit("pause", {"kind": "execution integrity", "key": key, "incident": incident})
+        self._condition.notify_all()
+
+    def _attempt(self, key, gate, trial):
+        lane_lock = self._lane_locks[key]
+        if not lane_lock.acquire(blocking=False):
+            raise RuntimeError("parallel/reentrant population lane refused")
+        slot = self._populations[key]["slot"]
+        try:
+            with self._state_lock:
+                self._boundary()
+                p = self._populations[key]
+                if p["safety"] and not self._run_lock.locked():
+                    raise RuntimeError("safety work belongs to run loop")
+                if slot in self._busy_slots:
+                    raise RuntimeError("worker slot busy")
+                if self._done(key) or self._exhausted(key):
+                    raise RuntimeError("population stopped")
+                self._busy_slots.add(slot)
+                epoch = self._epoch
+                if p["pending"] is None:
+                    p = copy.deepcopy(p)
+                    p["pending"] = {"phase": "gate", "index": p["attempts"]}
+                    p["attempts"] += 1
+                    self._save_population(key, p)
+                index, phase = p["pending"]["index"], p["pending"]["phase"]
+            if phase == "gate":
+                try:
+                    passes = gate(index)
+                    if type(passes) is not bool:
+                        raise ValueError("gate must report a bool")
+                except BaseException as error:
+                    with self._state_lock:
+                        if not self._terminated:
+                            self._fault("gate", error, key=key, index=index)
+                    raise Stopped("gate integrity pause") from error
+                with self._state_lock:
+                    if self._terminated or self._paused or epoch != self._epoch:
+                        raise Stopped("gate result remains unclassified after stop/pause")
+                    p = copy.deepcopy(self._populations[key])
+                    p["pending"] = {"phase": "ready", "index": index} if passes else None
+                    p["gate_passes" if passes else "gate_failures"] += 1
+                    for incident in p["incidents"]:
+                        if incident["phase"] == "gate":
+                            incident["resolved"] = True
+                    self._save_population(key, p)
+                    self._boundary()
+                    if not passes:
+                        return
+            with self._state_lock:
+                self._boundary()
+                p = copy.deepcopy(self._populations[key])
+                if p["pending"]["phase"] == "ready":
+                    # This durable transition is the trial-start linearization point.
+                    p["executions"] += 1
+                    p["pending"] = {"phase": "trial", "index": index}
+                    self._save_population(key, p)
+            try:
+                adequate = trial(index)
+                if type(adequate) is not bool:
+                    raise ValueError("trial must report a bool")
+            except BaseException as error:
+                with self._state_lock:
+                    if not self._terminated:
+                        self._fault("trial", error, key=key, index=index)
+                raise Stopped("trial integrity pause") from error
+            with self._state_lock:
+                if self._terminated or self._paused or epoch != self._epoch:
+                    raise Stopped("trial result remains unclassified after stop/pause")
+                p = copy.deepcopy(self._populations[key])
+                p["pending"] = None
+                p["eligible" if adequate else "inadequate"] += 1
+                for incident in p["incidents"]:
+                    incident["resolved"] = True
+                self._save_population(key, p)
+                # A newly observed cap retains the completed trial result.
+                self._boundary()
+        finally:
+            with self._state_lock:
+                self._busy_slots.discard(slot)
+            lane_lock.release()
+
+    def pause(self, evidence):
+        with self._state_lock:
+            if self._terminated:
+                raise Stopped("OC terminated")
+            if not isinstance(evidence, dict) or evidence.get("kind") not in ("execution integrity", "closure mismatch", "host integrity", "process loss") or not _sha(evidence.get("evidence_sha256")):
+                raise ValueError("section-11 evidence required")
+            self._emit("pause", copy.deepcopy(evidence))
+            self._condition.notify_all()
+
+    def resume(self, evidence):
+        with self._state_lock:
+            if self._terminated or not self._paused:
+                raise Stopped("not a resumable integrity pause")
+            if not isinstance(evidence, dict) or evidence.get("reviewed") is not True or not _sha(evidence.get("evidence_sha256")):
+                raise ValueError("reviewed resolution evidence required")
+            self._emit("resume", copy.deepcopy(evidence))
+            self._condition.notify_all()
+
+    def _wait_ready(self):
+        with self._condition:
+            while self._paused and not self._terminated:
+                self._condition.wait()
+            return not self._terminated
+
+    def _profile(self, identity):
+        dimensions = dict(json.loads(identity)[1])
+        dimensions.pop("unresolved_kappa")
+        return population_identity("safety-profile", dimensions)
+
+    def _calibrate(self, calibration):
+        identity = self._active["identity"]
+        profile = self._profile(identity)
+        cached = self._profiles.get(profile)
+        for index in range(len(self._active["calibration"]), 5):
+            with self._state_lock:
+                self._boundary()
+                self._emit("phase_start", {"phase": "calibration", "population": index, "identity": identity})
+                epoch = self._epoch
+            try:
+                if cached is None:
+                    prepared = calibration(profile, index, seed(profile, index, 0, "population"))
+                    result = self._kernel.calibrate_population(prepared, json.loads(profile)[1]["realised_gain"])
+                    record = {"profile": profile, "population_index": index, "target": result["target"], "realised": result["realised"], "excess": result["excess"], "latent_gain": result["latent_gain"], "reachable": result["reachable"], "kernel_sha256": KERNEL_SHA256}
+                else:
+                    record = copy.deepcopy(cached[index])
+                    record.pop("identity", None)
+                    record.pop("record_sha256", None)
+                record["identity"] = identity
+                record["record_sha256"] = digest(canonical(record))
+            except BaseException as error:
+                with self._state_lock:
+                    if not self._terminated:
+                        self._fault("calibration", error, index=index)
+                raise Stopped("calibration integrity pause") from error
+            with self._state_lock:
+                if self._terminated or self._paused or epoch != self._epoch:
+                    raise Stopped("calibration interrupted")
+                self._emit("calibration", {"record": record})
+                self._boundary()
+        with self._state_lock:
+            if cached is None:
+                self._emit("profile", {"profile": profile, "records": copy.deepcopy(self._active["calibration"])})
+            # Every kappa reuses the first profile's five signed-kernel records.
+            expected = self._profiles[profile]
+            for a, b in zip(expected, self._active["calibration"]):
+                fields = ("target", "realised", "excess", "latent_gain", "reachable", "kernel_sha256", "population_index", "profile")
+                if any(a[f] != b[f] for f in fields):
+                    raise RuntimeError("profile calibration conflicts across kappa")
+
+    def _run_criticality(self, work):
+        identity = self._active["identity"]
+        for j in self._critical_j:
+            key = criticality_key(identity, j)
+            if key in self._active["criticality"]:
+                continue
+            with self._state_lock:
+                self._boundary()
+                self._emit("phase_start", {"phase": "criticality", "identity": identity, "j": j, "key": key})
+                epoch = self._epoch
+            try:
+                result = work(identity, j, key)
+                if not isinstance(result, dict) or result.get("key") != key or result.get("completed") is not True:
+                    raise ValueError("criticality must return completed exact key")
+                canonical(result)
+            except BaseException as error:
+                with self._state_lock:
+                    if not self._terminated:
+                        self._fault("criticality", error, index=j)
+                raise Stopped("criticality integrity pause") from error
+            with self._state_lock:
+                if self._terminated or self._paused or epoch != self._epoch:
+                    raise Stopped("criticality interrupted")
+                self._emit("criticality", {"key": key, "record": copy.deepcopy(result)})
+                self._boundary()
+
+    def run(self, gate, trial, calibration, criticality):
+        """Own safety pacing. calibration returns prepared data, never a verdict."""
+        if not self._run_lock.acquire(blocking=False):
+            raise RuntimeError("controller run already active")
+        try:
+            with self._state_lock:
+                if self._terminated:
+                    return self.gold_report()
+                if any(not (self._done(k) or self._exhausted(k)) for k, p in self._populations.items() if not p["safety"]):
+                    raise RuntimeError("binding populations unfinished or faulted")
+            while self._wait_ready():
+                try:
+                    with self._state_lock:
+                        self._boundary()
+                        if self._active is None:
+                            if len(self._completed) == len(self._ordered):
+                                self._terminate("grid complete")
+                                break
+                            self._emit("dispatch", {"identity": self._ordered[len(self._completed)]})
+                            for index in range(5):
+                                self._new_population(self._active["identity"], index, True, index)
+                    self._calibrate(calibration)
+                    with self._state_lock:
+                        if any(not r["reachable"] for r in self._active["calibration"]):
+                            self._complete("unmeasured (unreachable target)")
+                            continue
+                        identity = self._active["identity"]
+                    for index in range(5):
+                        with self._state_lock:
+                            key = self._new_population(identity, index, True, index)
+                            self._emit("lane_start", {"identity": identity, "population": index, "slot": index})
+                        try:
+                            while not self._done(key) and not self._exhausted(key):
+                                self._attempt(key,
+                                    lambda attempt: gate(identity, index, attempt, seed(identity, index, attempt, "audit")),
+                                    lambda attempt: trial(identity, index, attempt, {phase: seed(identity, index, attempt, phase) for phase in ("audit", "bootstrap", "missing-mask", "canonical-safety")}))
+                        finally:
+                            with self._state_lock:
+                                if not self._terminated:
+                                    self._emit("lane_stop", {"identity": identity, "population": index, "slot": index,
+                                                             "paused": self._paused})
+                    self._run_criticality(criticality)
+                    with self._state_lock:
+                        self._complete("measured" if all(self._done(k) for k in self._active["populations"]) else "unmeasured; cell fails")
+                except Stopped:
+                    continue
+            return self.gold_report()
+        finally:
+            self._run_lock.release()
+
+    def _population_report(self, key):
+        p = copy.deepcopy(self._populations[key])
+        pending = p["pending"]
+        crashed = int(pending is not None and pending["phase"] == "trial")
+        if p["executions"] != p["eligible"] + p["inadequate"] + crashed:
+            raise RuntimeError("execution classification invariant violated")
+        classified_gates = p["gate_failures"] + p["gate_passes"]
+        if p["attempts"] != classified_gates + int(pending is not None and pending["phase"] == "gate"):
+            raise RuntimeError("gate classification invariant violated")
+        return {**p, "crashed": crashed, "attempt_cap": math.ceil(4000/self._p_gate),
+                "gate_failure_Wilson_MC95": wilson(p["gate_failures"], classified_gates),
+                "conditional_inadequacy_Wilson_MC95": None if crashed else wilson(p["inadequate"], p["executions"])}
+
+    def _snapshot(self, status):
+        active = copy.deepcopy(self._active)
+        active["status"] = status
+        active["populations"] = [self._population_report(k) for k in active["populations"]]
+        return active
+
+    def _complete(self, status):
         self._boundary()
-        active = self._active
-        if active is None or len(populations) != 5 or {id(p) for p in populations} != {id(p) for p in active["populations"]}:
-            raise RuntimeError("duplicate, missing or foreign population")
-        if {p.population_index for p in populations} != set(range(5)) or any(not p.safety or p.group_identity != active["identity"] for p in populations):
-            raise RuntimeError("population identity mismatch")
-        keys = {criticality_key(active["identity"], j) for j in self.manifest["final_safety_OC"]["critical_j"]}
-        if set(criticality_records) != keys or criticality_records != active["criticality"]:
-            raise RuntimeError("incomplete or substituted criticality")
-        if not all(p.complete or p.exhausted for p in populations) or any(p.crashed for p in populations):
-            raise RuntimeError("populations unfinished")
-        self._complete_active("measured" if all(p.complete for p in populations) else "unmeasured; cell fails")
+        if status == "measured" and len(self._active["criticality"]) != 4:
+            raise RuntimeError("all criticality phases required")
+        self._emit("complete", {"snapshot": self._snapshot(status)})
 
-    def mark_unreachable(self, calibration, expected_sha256):
-        self._boundary()
-        active = self._active
-        if (active is None or any(p.attempts for p in active["populations"])
-            or digest(canonical(calibration)) != expected_sha256
-            or calibration.get("group_identity") != active["identity"] or calibration.get("reachable") is not False
-            or calibration.get("calibration_source_sha256") != KERNEL_SHA256
-            or calibration.get("target") != json.loads(active["identity"])[1]["realised_gain"]):
-            raise ValueError("unbound unreachable calibration")
-        active["calibration"] = copy.deepcopy(calibration)
-        self._complete_active("unmeasured (unreachable target)")
-
-    def _snapshot(self, active, status):
-        return {"identity": active["identity"], "status": status,
-                "populations": [p.report() for p in active["populations"]],
-                "criticality": copy.deepcopy(active["criticality"]),
-                "calibration": copy.deepcopy(active.get("calibration"))}
-
-    def _complete_active(self, status):
-        self._completed.append(self._snapshot(self._active, status))
-        self._active = None
-        if len(self._completed) == len(self.ordered):
-            self._terminate("grid complete")
+    def _build_report(self, cause, timestamp):
+        groups = copy.deepcopy(self._completed)
+        if self._active is not None:
+            keys = [k for k, p in self._populations.items() if p["safety"] and p["identity"] == self._active["identity"]]
+            exhausted = any(self._exhausted(k) for k in keys)
+            groups.append(self._snapshot("unmeasured; cell fails" if exhausted else "not completed by gold"))
+        for identity in self._ordered[len(groups):]:
+            groups.append({"identity": identity, "status": "not completed by gold", "populations": [], "calibration": [], "criticality": {}})
+        return {"freeze": copy.deepcopy(self._freeze), "termination": {"cause": cause, "timestamp": timestamp},
+                "groups": groups, "binding": [self._population_report(k) for k, p in self._populations.items() if not p["safety"]],
+                "events": copy.deepcopy(self._events)}
 
     def _terminate(self, cause):
-        if self.terminated:
-            return
-        self.terminated = True
-        self.events.append({"event": "termination", "cause": cause, "group_index": len(self._completed), "wall_seconds": self.clock()-self.oc_started_at})
-        groups = copy.deepcopy(self._completed)
-        if self._active:
-            status = "unmeasured; cell fails" if any(p.exhausted for p in self._active["populations"]) else "not completed by gold"
-            groups.append(self._snapshot(self._active, status))
-        for identity in self.ordered[len(groups):]:
-            groups.append({"identity": identity, "status": "not completed by gold", "populations": [], "criticality": {}, "calibration": None})
-        self._final = {"groups": groups, "pooled_group_indices": [i for i, g in enumerate(groups) if g["status"] == "measured"],
-                       "events": copy.deepcopy(self.events), "freeze": copy.deepcopy(self.freeze)}
+        if not self._terminated:
+            self._emit("terminate", {"cause": cause})
+            self._condition.notify_all()
 
     def stop_gold(self):
-        self.check_freeze()
-        self._terminate("gold")
+        with self._state_lock:
+            self._terminate("gold")
 
     def stop_integrity(self, evidence):
-        self._evidence(evidence)
-        self._terminate({"section_11_integrity_stop": copy.deepcopy(evidence)})
+        with self._state_lock:
+            if not isinstance(evidence, dict) or not _sha(evidence.get("evidence_sha256")):
+                raise ValueError("integrity evidence required")
+            if not self._terminated:
+                self._emit("integrity_stop", copy.deepcopy(evidence))
+                self._terminate("integrity stop")
 
     def gold_report(self):
-        self.check_freeze()
-        if not self.terminated:
-            raise RuntimeError("termination event required before final report")
-        return copy.deepcopy(self._final)
+        with self._state_lock:
+            if not self._terminated:
+                raise RuntimeError("no terminated report")
+            return copy.deepcopy(self._final)

@@ -33,6 +33,37 @@ def decode(data):
     except (TypeError, UnicodeError, json.JSONDecodeError) as exc:
         raise ValueError("malformed byte payload") from exc
 
+def member_bytes(data, member):
+    """Extract a top-level JSON value's exact UTF-8 bytes after strict decoding."""
+    decode(data)  # Reject duplicate keys, malformed JSON and nonstandard literals first.
+    text = data.decode("utf-8")
+    decoder = json.JSONDecoder()
+
+    def skip_space(index):
+        while index < len(text) and text[index] in " \t\r\n":
+            index += 1
+        return index
+
+    index = skip_space(0)
+    if text[index] != "{":
+        raise ValueError("expected JSON object")
+    index = skip_space(index+1)
+    while text[index] != "}":
+        key, index = decoder.raw_decode(text, index)
+        index = skip_space(index)
+        if text[index] != ":":
+            raise ValueError("expected member separator")
+        start = skip_space(index+1)
+        _, index = decoder.raw_decode(text, start)
+        if key == member:
+            return text[start:index].encode("utf-8")
+        index = skip_space(index)
+        if text[index] == "}":
+            break
+        index = skip_space(index+1)
+    raise ValueError("missing JSON member")
+
+
 
 def number(value, positive=False):
     return type(value) in (int, float) and math.isfinite(value) and (value > 0 if positive else value >= 0)
@@ -67,9 +98,9 @@ def maximum_completed_inputs(runs, binding_host):
         if type(run["id"]) is not str or not run["id"] or run["id"] in seen or (i and previous_failure is None):
             raise ValueError("duplicate or unauthorised rerun")
         seen.add(run["id"])
-        if (run["host"] != binding_host or len(run["load_averages"]) != 3
-            or not all(number(v) for v in run["load_averages"])
-            or type(run["concurrent_process_count"]) is not int or run["concurrent_process_count"] < 1):
+        if (run["host"] != binding_host or type(run.get("load_averages")) is not list
+            or len(run["load_averages"]) != 3 or not all(number(v) for v in run["load_averages"])
+            or type(run.get("concurrent_process_count")) is not int or run["concurrent_process_count"] < 1):
             raise ValueError("host mismatch or missing load provenance; pause for deviation")
         cause = run["integrity_failure"]
         if cause not in (None, "non-resource crash", "closure mismatch", "independent OS malfunction"):

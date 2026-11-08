@@ -1,0 +1,195 @@
+=== kernel digest: KILLED (exit 1) ===
+controller.py: '    if digest(path.read_bytes()) != KERNEL_SHA256:\n        raise RuntimeError("signed population identity source changed")\n' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-4ufjipmo/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_source_order_policy_refusals_before_freeze
+test_source_order_policy_refusals_before_freeze (__main__.ControllerTests.test_source_order_policy_refusals_before_freeze) ... FAIL
+
+======================================================================
+FAIL: test_source_order_policy_refusals_before_freeze (__main__.ControllerTests.test_source_order_policy_refusals_before_freeze)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-4ufjipmo/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 124, in test_source_order_policy_refusals_before_freeze
+    with self.assertRaises(RuntimeError): self.make(root=root, kernel_path=bad)
+AssertionError: RuntimeError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.025s
+
+FAILED (failures=1)
+
+=== order pin: KILLED (exit 1) ===
+controller.py: 'digest(canonical(self._ordered)) != ORDER_SHA256 or ' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-trj8n2ef/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_source_order_policy_refusals_before_freeze
+test_source_order_policy_refusals_before_freeze (__main__.ControllerTests.test_source_order_policy_refusals_before_freeze) ... FAIL
+
+======================================================================
+FAIL: test_source_order_policy_refusals_before_freeze (__main__.ControllerTests.test_source_order_policy_refusals_before_freeze)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-trj8n2ef/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 126, in test_source_order_policy_refusals_before_freeze
+    with patch.object(c, target, replacement), self.assertRaises(RuntimeError): self.make(root=root)
+AssertionError: RuntimeError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.052s
+
+FAILED (failures=1)
+
+=== policy pin: KILLED (exit 1) ===
+controller.py: ' or digest(canonical(POLICY)) != POLICY_SHA256' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-5sa2vgpi/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_source_order_policy_refusals_before_freeze
+test_source_order_policy_refusals_before_freeze (__main__.ControllerTests.test_source_order_policy_refusals_before_freeze) ... FAIL
+
+======================================================================
+FAIL: test_source_order_policy_refusals_before_freeze (__main__.ControllerTests.test_source_order_policy_refusals_before_freeze)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-5sa2vgpi/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 126, in test_source_order_policy_refusals_before_freeze
+    with patch.object(c, target, replacement), self.assertRaises(RuntimeError): self.make(root=root)
+AssertionError: RuntimeError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.040s
+
+FAILED (failures=1)
+
+=== criticality completion: KILLED (exit 1) ===
+controller.py: '        if status == "measured" and len(self._active["criticality"]) != 4:\n            raise RuntimeError("all criticality phases required")\n' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-qc0113xh/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_private_readonly_state_and_completion_guard
+test_private_readonly_state_and_completion_guard (__main__.ControllerTests.test_private_readonly_state_and_completion_guard) ... FAIL
+
+======================================================================
+FAIL: test_private_readonly_state_and_completion_guard (__main__.ControllerTests.test_private_readonly_state_and_completion_guard)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-qc0113xh/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 455, in test_private_readonly_state_and_completion_guard
+    with s._state_lock, self.assertRaises(RuntimeError): s._complete("measured")
+AssertionError: RuntimeError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.065s
+
+FAILED (failures=1)
+
+=== nonbool gate: KILLED (exit 1) ===
+controller.py: '                    if type(passes) is not bool:\n                        raise ValueError("gate must report a bool")\n' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-2scz2lyy/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_nonbool_gate_is_latched_not_gate_failure
+test_nonbool_gate_is_latched_not_gate_failure (__main__.ControllerTests.test_nonbool_gate_is_latched_not_gate_failure) ... FAIL
+
+======================================================================
+FAIL: test_nonbool_gate_is_latched_not_gate_failure (__main__.ControllerTests.test_nonbool_gate_is_latched_not_gate_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-2scz2lyy/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 269, in test_nonbool_gate_is_latched_not_gate_failure
+    def test_nonbool_gate_is_latched_not_gate_failure(self): self.fault_case("gate", 1)
+                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-2scz2lyy/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 251, in fault_case
+    with self.assertRaises(c.Stopped):
+AssertionError: Stopped not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.019s
+
+FAILED (failures=1)
+
+=== wall origin: KILLED (exit 1) ===
+controller.py: '(self._clock() - self._oc_started_at) / 86400' -> '(self._clock() - self._freeze["created_at"]) / 86400'
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-5ecxx6yw/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_meter_origin_decrease_and_fault_latch_without_meter_read
+test_meter_origin_decrease_and_fault_latch_without_meter_read (__main__.ControllerTests.test_meter_origin_decrease_and_fault_latch_without_meter_read) ... FAIL
+
+======================================================================
+FAIL: test_meter_origin_decrease_and_fault_latch_without_meter_read (__main__.ControllerTests.test_meter_origin_decrease_and_fault_latch_without_meter_read)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-5ecxx6yw/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 432, in test_meter_origin_decrease_and_fault_latch_without_meter_read
+    with self.assertRaises(c.Stopped): lane.step(lambda i: True, lambda i: True)
+AssertionError: Stopped not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.019s
+
+FAILED (failures=1)
+
+=== decreasing meter: KILLED (exit 1) ===
+controller.py: ' or core < self._last_core or wall < self._last_wall' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-zzfw0cqs/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_meter_origin_decrease_and_fault_latch_without_meter_read
+test_meter_origin_decrease_and_fault_latch_without_meter_read (__main__.ControllerTests.test_meter_origin_decrease_and_fault_latch_without_meter_read) ... FAIL
+
+======================================================================
+FAIL: test_meter_origin_decrease_and_fault_latch_without_meter_read (__main__.ControllerTests.test_meter_origin_decrease_and_fault_latch_without_meter_read)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-zzfw0cqs/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 440, in test_meter_origin_decrease_and_fault_latch_without_meter_read
+    with self.assertRaises(c.Stopped): lease.step(lambda i: True, lambda i: True)
+AssertionError: Stopped not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.103s
+
+FAILED (failures=1)
+
+=== Wilson variance: KILLED (exit 1) ===
+controller.py: 'p*(1-p)/n+' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-88lpfwnb/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_independent_known_answers_and_canonical_seed_refusals
+test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) ... FAIL
+
+======================================================================
+FAIL: test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-88lpfwnb/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 114, in test_independent_known_answers_and_canonical_seed_refusals
+    for actual, want in zip(c.wilson(50, 2000), expected): self.assertAlmostEqual(actual, want, places=15)
+                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0.024952073817968677 != 0.019014423503992475 within 15 places (0.005937650313976202 difference)
+
+----------------------------------------------------------------------
+Ran 1 test in 0.021s
+
+FAILED (failures=1)
+
+=== canonical seed: KILLED (exit 1) ===
+controller.py: '        if canonical(json.loads(cell)) != cell_bytes:\n            raise ValueError("cell string is not canonical JSON")\n' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-834qenn_/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_independent_known_answers_and_canonical_seed_refusals
+test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) ... 
+  test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='{"b":1,"a":2}') ... FAIL
+  test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='{"a": 2}') ... FAIL
+  test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='garbage') ... FAIL
+  test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='NaN') ... FAIL
+
+======================================================================
+FAIL: test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='{"b":1,"a":2}')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-834qenn_/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 110, in test_independent_known_answers_and_canonical_seed_refusals
+    with self.subTest(cell=cell), self.assertRaises(ValueError): c.seed(cell, 0, 0, "audit")
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='{"a": 2}')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-834qenn_/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 110, in test_independent_known_answers_and_canonical_seed_refusals
+    with self.subTest(cell=cell), self.assertRaises(ValueError): c.seed(cell, 0, 0, "audit")
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='garbage')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-834qenn_/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 110, in test_independent_known_answers_and_canonical_seed_refusals
+    with self.subTest(cell=cell), self.assertRaises(ValueError): c.seed(cell, 0, 0, "audit")
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='NaN')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-834qenn_/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 110, in test_independent_known_answers_and_canonical_seed_refusals
+    with self.subTest(cell=cell), self.assertRaises(ValueError): c.seed(cell, 0, 0, "audit")
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.020s
+
+FAILED (failures=4)
+
+Guard mutants killed: 9/9

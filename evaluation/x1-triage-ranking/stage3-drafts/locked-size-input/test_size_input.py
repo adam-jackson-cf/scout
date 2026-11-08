@@ -5,6 +5,8 @@ from dataclasses import FrozenInstanceError
 import hashlib
 import itertools
 import json
+import math
+import time
 from pathlib import Path
 import subprocess
 import tempfile
@@ -85,14 +87,31 @@ class SizeTests(unittest.TestCase):
                 else:
                     with self.assertRaises(ValueError):
                         inputs(vectors)
-        for mutate in ('extra', 'missing'):
-            vectors = {r: [50]*20 for r in REPOSITORIES}
-            if mutate == 'extra':
-                vectors['other'] = [50]*20
-            else:
-                del vectors[REPOSITORIES[0]]
-            with self.assertRaises(ValueError):
-                inputs(vectors)
+
+    def test_direct_malformed_records_and_position_boundary(self):
+        original = synthetic_record({r: [50]*20 for r in REPOSITORIES})
+        for count in (2, 4):
+            record = copy.deepcopy(original)
+            record["repositories"] = (record["repositories"]*2)[:count]
+            with self.assertRaisesRegex(ValueError, "exactly three"):
+                SizeInput(record)
+        for level in ("record", "repository", "run"):
+            for mutation in ("extra", "missing"):
+                record = copy.deepcopy(original)
+                target = record if level == "record" else record["repositories"][0]
+                if level == "run":
+                    target = target["runs"][0]
+                if mutation == "extra":
+                    target["unexpected"] = 0
+                else:
+                    del target[next(iter(target))]
+                with self.subTest(level=level, mutation=mutation), self.assertRaises(ValueError):
+                    SizeInput(record)
+        original["repositories"][0]["runs"][-1]["first_parent_position"] = 1999
+        self.assertEqual(SizeInput(original).lengths[REPOSITORIES[0]], 20)
+        original["repositories"][0]["runs"][-1]["first_parent_position"] = 2000
+        with self.assertRaisesRegex(ValueError, "positions"):
+            SizeInput(original)
 
     def test_identity_digest_and_invalid_order(self):
         record = synthetic_record({r: [50]*20 for r in REPOSITORIES})
@@ -195,6 +214,18 @@ class SizeTests(unittest.TestCase):
             for got, expected in zip(result['Wilson_MC95'], (centre-radius, centre+radius)):
                 self.assertAlmostEqual(got, expected)
 
+    def test_interior_gate_wilson_and_ceiling(self):
+        source = inputs()
+        with patch.object(SizeInput, "gate_selection", side_effect=lambda i: ({}, i < 3)) as selection:
+            result = source.estimate_p_gate()
+        self.assertEqual(selection.call_count, 100000)
+        self.assertEqual(result["attempt_cap_per_population"], 133333334)
+        n, k, z = 100000, 3, 1.959963984540054
+        centre = (2*k+z*z)/(2*(n+z*z))
+        radius = z*math.sqrt(z*z+4*k*(1-k/n))/(2*(n+z*z))
+        for actual, expected in zip(result["Wilson_MC95"], (centre-radius, centre+radius)):
+            self.assertAlmostEqual(actual, expected, places=15)
+
     def test_only_size_source_changed_in_kernel(self):
         old = ast.parse((commands.VALIDATION/'fixed_population.py').read_text())
         new = ast.parse(Path(__file__).with_name('population.py').read_text())
@@ -273,34 +304,143 @@ class LockedModeTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, 'signed size site drift'):
                 commands.locked_functions(inputs())
 
-    def test_fit_uses_locked_maxima_not_slopes(self):
+    def test_extraction_uses_locked_maxima_not_slopes(self):
+        source, data, calibration, gate = measurement_fixture()
+        result = commands.measurement_run(source, data, calibration, gate, {"synthetic": "1"*64})
+        values = result["binding_inputs"]
+        self.assertEqual(values["construction_cpu_per_unit"], 1/source.units)
+        self.assertEqual(values["requested_base_cpu_per_unit"], 2/source.units)
+        self.assertEqual(values["calibration_cpu_per_unit"], 3/source.units)
+        self.assertEqual(values["enumeration_cpu_per_population"], 4)
+        self.assertEqual(values["construction_rss"], 1000)
+        self.assertEqual(values["calibration_rss"], 2000)
+        self.assertEqual(values["trial_plus_helper_rss"], 3000)
+        self.assertNotIn("fits_caps", result)
+        calibration["measurements"][0]["peak_rss_bytes"] = 0
+        with self.assertRaisesRegex(ValueError, "unmeasured"):
+            commands.measurement_run(source, data, calibration, gate, {})
+
+    def test_frozen_method_and_cell_set_refused(self):
+        for mutation in ("method", "cell_method", "missing_cell", "duplicate_cell", "workers", "count"):
+            source, data, calibration, gate = measurement_fixture()
+            if mutation == "method":
+                data["method"] = "percentile"
+            elif mutation == "cell_method":
+                data["executions"][0]["cells"][0]["cell"]["method"] = "percentile"
+            elif mutation == "missing_cell":
+                data["executions"][0]["cells"].pop()
+            elif mutation == "duplicate_cell":
+                data["executions"][0]["cells"][-1] = copy.deepcopy(data["executions"][0]["cells"][0])
+            elif mutation == "workers":
+                data["executions"][1]["workers"] = 8
+            else:
+                data["executions"][0]["cells"][0]["measured_trials"] = 1999
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                commands.measurement_run(source, data, calibration, gate, {})
+
+    def test_patched_signed_digest_refused_before_measurement(self):
+        for name in commands.SIGNED:
+            with self.subTest(source=name), patch.dict(commands.SIGNED, {name: "0"*64}):
+                with self.assertRaisesRegex(ValueError, "substituted signed source"):
+                    commands.locked_functions(inputs())
+
+    def test_evidence_single_read_hashes_parsed_bytes(self):
+        path = SimpleNamespace(read_bytes=unittest.mock.Mock(side_effect=[b'{"v":1}', b'{"v":2}']))
+        records, digests = commands.read_evidence([path])
+        self.assertEqual(records, [{"v": 1}])
+        self.assertEqual(list(digests.values()), [hashlib.sha256(b'{"v":1}').hexdigest()])
+        path.read_bytes.assert_called_once_with()
+
+    def test_closure_failure_published_create_once_then_nonzero(self):
         source = inputs()
-        common = {'provenance': json.loads(canonical(commands.provenance(source))), 'host': {'hw.memsize': 64*1024**3}}
-        data = dict(common, trials=2000, replicates=1999, worker_count_equality={'byte_identical_scientific_json': True},
-                    population_measurements=[{'construction': {'cpu_seconds': 1., 'peak_rss_bytes': 1000},
-                                              'fixed_key_evaluations': [{'cpu_seconds': 2.}],
-                                              'size_only_sampling_gate': {'cpu_seconds': 1.}}],
-                    executions=[{'cells': [{'cell': {'missing_labels': m}, 'trial_timing': [{'cpu_seconds': .000001}],
-                                           'peak_rss_bytes': 3000} for m in (False, True)]}])
-        calibration = dict(common, measurements=[{'conservative_21_truth_one_frame_no_enumeration_cpu_seconds': 3.,
-                                                  'frame_evaluation_cpu_seconds': [2.], 'peak_rss_bytes': 2000}],
-                           worst_case_candidate_enumeration={'cpu_seconds': 4.})
-        gate = dict(common, draws=100000, successes=100000, attempt_cap_per_population=4000)
-        result = commands.locked_fit(source, data, calibration, gate)
-        self.assertEqual(result['binding_cpu_seconds_before_overhead']['construction'], 90860)
-        self.assertEqual(result['binding_cpu_seconds_before_overhead']['calibration_no_enumeration'], 30660)
-        self.assertEqual(result['binding_cpu_seconds_before_overhead']['enumeration'], 40880)
-        self.assertEqual(result['memory']['eight_worker_bytes'], 24000)
-        self.assertTrue(result['fits_caps'])
-        gate.update(successes=0, attempt_cap_per_population=None)
-        self.assertEqual(commands.locked_fit(source, data, calibration, gate)['status'], 'not testable')
-        gate.update(successes=100000, attempt_cap_per_population=4000)
-        data['host']['hw.memsize'] = 8*1024**3
-        self.assertFalse(commands.locked_fit(source, data, calibration, gate)['fits_caps'])
-        calibration['measurements'][0]['peak_rss_bytes'] = 0
-        # A missing phase measurement must not be hidden by another phase's max.
-        with self.assertRaisesRegex(ValueError, 'unmeasured'):
-            commands.locked_fit(source, data, calibration, gate)
+        basis = json.loads(canonical(commands.provenance(source)))
+        with tempfile.TemporaryDirectory() as temporary:
+            input_path, output = Path(temporary)/"input.json", Path(temporary)/"result.json"
+            closure_source = Path(temporary)/"synthetic-source.py"
+            closure_source.write_bytes(b"original synthetic source\n")
+            def closure(_):
+                value = copy.deepcopy(basis)
+                value["source_sha256"]["synthetic-source.py"] = hashlib.sha256(closure_source.read_bytes()).hexdigest()
+                return value
+            start = closure(source)
+            # Measurements have finished; mutate an actual disposable closure source.
+            measured = {"values": [123]}
+            closure_source.write_bytes(b"changed after measurement\n")
+            end = closure(source)
+            input_path.write_bytes(source.record_bytes)
+            with patch.object(commands, "provenance", side_effect=closure), patch.object(
+                    commands, "host_load", return_value={"load_averages": [0., 0., 0.], "concurrent_process_count": 1}):
+                with self.assertRaisesRegex(RuntimeError, "completed evidence published"):
+                    commands.finish(source, input_path, output, "benchmark", measured,
+                                    start, {"synthetic": True}, {}, {}, time.perf_counter())
+                result = json.loads(output.read_bytes())
+                self.assertTrue(result["completed"])
+                self.assertEqual(result["integrity_failure"], "closure mismatch")
+                self.assertEqual(result["values"], [123])
+                self.assertEqual(result["provenance"], start)
+                self.assertEqual(result["end_provenance"], end)
+                with self.assertRaises(FileExistsError):
+                    commands.finish(source, input_path, output, "benchmark", {}, start, {}, {}, {}, time.perf_counter())
+
+    def test_evaluator_provenance_roundtrip(self):
+        source, data, calibration, gate = measurement_fixture()
+        record = commands.measurement_run(source, data, calibration, gate, {"synthetic": "1"*64})
+        check_roundtrip(self, record, commands.locked_inventory(source, gate))
+        data["integrity_failure"] = "closure mismatch"
+        invalid = commands.measurement_run(source, data, calibration, gate, {"invalid": "2"*64})
+        invalid["binding_inputs"]["construction_rss"] = 9000
+        provenance, evaluator = evaluator_modules()
+        maxima, reports = provenance.maximum_completed_inputs(
+            json.loads(canonical([invalid, record])), record["host"])
+        self.assertEqual(maxima["construction_rss"], 9000)
+        self.assertEqual(reports[0]["classification"], "completed-invalid-included")
+
+
+def measurement_fixture():
+    """Fabricated unit-test records, never actual timing/RSS evidence."""
+    source = inputs()
+    common = {"provenance": json.loads(canonical(commands.provenance(source))),
+              "host": {"hw.model": "synthetic", "hw.memsize": 64*1024**3, "logical_cpus": 8, "os_build": "synthetic"},
+              "host_load": {"start": {"load_averages": [0., 0., 0.], "concurrent_process_count": 1},
+                            "end": {"load_averages": [0., 0., 0.], "concurrent_process_count": 1}},
+              **commands.interpreter(), "completed": True, "integrity_failure": None}
+    cells = [{"cell": {"L": slot, "missing_labels": missing, "method": "studentized", "fixture": fixture},
+              "measured_trials": 2000, "trial_timing": [{"cpu_seconds": .000001}],
+              "peak_rss_bytes": 3000}
+             for slot, missing, fixture in itertools.product((40, 400), (False, True),
+                                                             ("uniform-srs", "mixed-explicit"))]
+    data = dict(common, method="studentized", trials=2000, replicates=1999,
+                worker_count_equality={"byte_identical_scientific_json": True},
+                population_measurements=[{"construction": {"cpu_seconds": 1., "peak_rss_bytes": 1000},
+                                          "fixed_key_evaluations": [{"cpu_seconds": 2.}],
+                                          "size_only_sampling_gate": {"cpu_seconds": 1.}}],
+                executions=[{"workers": w, "cells": copy.deepcopy(cells)} for w in (1, 2)])
+    calibration = dict(common, measurements=[{"conservative_21_truth_one_frame_no_enumeration_cpu_seconds": 3.,
+                                              "frame_evaluation_cpu_seconds": [2.], "peak_rss_bytes": 2000}],
+                       worst_case_candidate_enumeration={"cpu_seconds": 4.})
+    gate = dict(common, draws=100000, successes=100000, p_gate=1., attempt_cap_per_population=4000)
+    return source, data, calibration, gate
+
+
+def evaluator_modules():
+    import sys
+    folder = commands.HERE.parent/"final-evaluator"
+    with patch.object(sys, "path", [str(folder), *sys.path]):
+        provenance = commands.load_file("provenance", folder/"provenance.py")
+        evaluator = commands.load_file("x1_size_evaluator", folder/"evaluator.py")
+    return provenance, evaluator
+
+
+def check_roundtrip(case, record, inventory):
+    provenance, evaluator = evaluator_modules()
+    record, inventory = json.loads(canonical(record)), json.loads(canonical(inventory))
+    maxima, reports = provenance.maximum_completed_inputs([record], record["host"])
+    manifest = json.loads((commands.VALIDATION.parent/"oc-manifest.json").read_bytes())
+    fit = evaluator.resource_fit(maxima, inventory, manifest, record["host"])
+    case.assertEqual(fit["maximum_inputs"], record["binding_inputs"])
+    case.assertEqual(fit["units_per_population"], sum(map(sum, inventory["eligible_sizes"].values())))
+    case.assertEqual(reports[0]["classification"], "completed-valid-included")
+    return fit
 
 
 if __name__ == '__main__':

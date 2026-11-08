@@ -3,7 +3,7 @@ import itertools
 import json
 import math
 from provenance import (verify_bundle, maximum_completed_inputs, digest, encode,
-                        decode, number, INPUTS, validate_host)
+                        decode, number, INPUTS, validate_host, member_bytes)
 
 
 def identity(cell):
@@ -126,7 +126,7 @@ def evaluate(manifest_bytes, *, provenance_payloads, provenance_digests, synthet
     oc = decode(provenance_payloads["sealed_oc_output"])
     if (oc["locked_inventory_sha256"] != provenance["locked_inventory"]
         or oc["signed_manifest_sha256"] != provenance["signed_manifest"]
-        or oc["records_sha256"] != digest(encode(oc["records"]))):
+        or oc["records_sha256"] != digest(member_bytes(provenance_payloads["sealed_oc_output"], "records"))):
         raise ValueError("OC input/record seal mismatch")
     records = oc["records"]
     measurements = decode(provenance_payloads["measurement_runs"])
@@ -192,6 +192,16 @@ def evaluate(manifest_bytes, *, provenance_payloads, provenance_digests, synthet
     return {"result": result, "sealed_result": sealed, "result_sha256": digest(sealed)}
 
 
+def complete_bootstrap_evidence(evidence):
+    """Typed §10 bootstrap declaration; receipt recomputation belongs to dev gates."""
+    expected = {"bootstrap_means": 10000, "bootstrap_seed": 169300,
+                "resampling_unit": "run-cluster", "one_sided_level": .95,
+                "unknown_or_incomplete_receipts": 0}
+    return (type(evidence) is dict and evidence.keys() == expected.keys()
+            and all(type(evidence[k]) is type(v) and evidence[k] == v
+                    for k, v in expected.items()))
+
+
 def select_postdev(sealed_predev, predev_sha256, *, provenance_payloads, provenance_digests,
                    synthetic_only):
     """Select only from externally sealed pre-dev rows; never recompute the gate."""
@@ -206,7 +216,7 @@ def select_postdev(sealed_predev, predev_sha256, *, provenance_payloads, provena
         or evidence["locked_inventory_sha256"] != provenance["locked_inventory"]
         or not number(evidence["c_U"], positive=True) or type(evidence["Mhat"]) is not int
         or not 0 <= evidence["Mhat"] <= 2000
-        or not evidence["bootstrap_evidence"]):
+        or not complete_bootstrap_evidence(evidence.get("bootstrap_evidence"))):
         raise ValueError("unbound/unmeasured Mhat/c_U evidence")
     expected_mhat = 2000 if evidence["c_U"] <= .50/2000 else math.floor(.50/evidence["c_U"])
     if evidence["Mhat"] != expected_mhat:
