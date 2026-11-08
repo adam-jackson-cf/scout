@@ -120,13 +120,13 @@ Written for a fresh session. Every claim cites a file in this repo unless marked
 
 **Toolchain.** Pinned, project-local, in `.tools/` (see §5). Clawpatch is a submodule at `third_party/clawpatch` (`734f81bc…`, v0.7.3). Pins are in `toolchain/`, and `internal/toolchain` enforces parity with the Go code. A fresh clone bootstraps and passes every test in about 44 s.
 
-**Jev labels.** All 52 E2 triage cases carry human labels: the user reviewed agent proposals on 2026-10-23 (`evaluation/jev-triage-labels-v1/`; real_defect 28, false_positive 23, cannot_tell 1). No Jev-versus-label comparison has been run; that needs a council-signed preregistration.
+**Jev labels.** All 52 E2 triage cases carry human labels: the user reviewed agent proposals on 2026-10-23 (`evaluation/jev-triage-labels-v1/`; real_defect 28, false_positive 23, cannot_tell 1). The owner waived preregistration for the exploratory comparison recorded in R-063 (2026-11-08), accepting minimums of precision 0.80 / recall 0.90; it is not citable as experiment evidence for design changes. Further comparisons require a council-signed preregistration.
 
 ## 2. Decisions in force
 
-- Requirements in `docs/scout-design.html` and decisions ADR-000…ADR-009 in `docs/adrs/` govern the product. Per-decision Jev costs and minimums stay at the provisional defaults until the user sets them (REQ-98).
+- Requirements in `docs/scout-design.html` and accepted decisions ADR-000…ADR-009 in `docs/adrs/` govern the product; ADR-010 is a draft pending council sign-off. The owner agreed `triage.real_defect` minimums of precision 0.80 / recall 0.90 on 2026-11-08 (D1, R-063); threshold 0.3 stays provisional and ungated. Other per-decision minimums retain their defaults, and each preregistration confirms or replaces its minimums (REQ-98). D1-R in `docs/plans/2026-11-06-remaining-work.md` records the later review and optimisation.
 - Design changes need innovation-council sign-off with zero issues, rounds recorded under `docs/adrs/<date>-<topic>/` (`AGENTS.md`). Experiments likewise, preregistered and frozen after sign-off. Design changes may cite only signed-off experiments.
-- Ledgers must be updated when a source/hypothesis is used (`AGENTS.md` ledger rules): `docs/research-ledger.md` (R-001…R-062), `docs/hypothesis-ledger.md` (HD\* live; H\*/HA\*/HQ\* frozen).
+- Ledgers must be updated when a source/hypothesis is used (`AGENTS.md` ledger rules): `docs/research-ledger.md` (R-001…R-063), `docs/hypothesis-ledger.md` (HD\* live; H\*/HA\*/HQ\* frozen).
 - Secrets only via Infisical per command; never print/export/commit (`AGENTS.md`, General).
 
 ## 3. Evidence to date (one line per study)
