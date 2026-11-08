@@ -1,0 +1,72 @@
+{
+  "measurements": [
+    {
+      "L": 40,
+      "candidate_truth_aggregation_and_bookkeeping_cpu_seconds": 0.02428100000000004,
+      "conservative_20_truth_plus_one_frame_cpu_seconds": 0.5448560000000001,
+      "conservative_full_calibration_cpu_seconds_per_unit": 4.540466666666667e-06,
+      "elapsed_seconds": 0.42146958399098366,
+      "frame_evaluation_cpu_seconds": [
+        0.30172699999999997
+      ],
+      "frame_evaluations": 1,
+      "full_calibration_cpu_seconds": 0.421128,
+      "maximum_frame_cpu_seconds_per_unit": 2.5143916666666662e-06,
+      "reachable": false,
+      "realised": 0.07666666666666666,
+      "target": 0.2,
+      "truth_only_cpu_seconds": [
+        0.011248000000000008,
+        0.010855000000000004,
+        0.010584999999999997,
+        0.010592999999999991,
+        0.010435,
+        0.010364999999999985,
+        0.010346999999999995,
+        0.01038900000000001,
+        0.010303000000000007
+      ],
+      "truth_only_evaluations": 9,
+      "units": 120000
+    },
+    {
+      "L": 400,
+      "candidate_truth_aggregation_and_bookkeeping_cpu_seconds": 0.2609090000000005,
+      "conservative_20_truth_plus_one_frame_cpu_seconds": 6.049625000000001,
+      "conservative_full_calibration_cpu_seconds_per_unit": 5.041354166666667e-06,
+      "elapsed_seconds": 4.864430582965724,
+      "frame_evaluation_cpu_seconds": [
+        3.641221
+      ],
+      "frame_evaluations": 1,
+      "full_calibration_cpu_seconds": 4.860525,
+      "maximum_frame_cpu_seconds_per_unit": 3.0343508333333333e-06,
+      "reachable": false,
+      "realised": 0.07698333333333333,
+      "target": 0.2,
+      "truth_only_cpu_seconds": [
+        0.10787800000000014,
+        0.10689399999999982,
+        0.1065799999999999,
+        0.10657699999999992,
+        0.10596799999999984,
+        0.10585200000000006,
+        0.10565999999999987,
+        0.10488600000000003,
+        0.10810000000000008
+      ],
+      "truth_only_evaluations": 9,
+      "units": 1200000
+    }
+  ],
+  "reporter_sha256": "d680ee085bc20525761fdedf924f9d5ac0be12984be9a10c1e3ac4ff5b102887",
+  "reproduce_cli": "source .tools/activate && python evaluation/x1-triage-ranking/validation/reproduce_reports.py calibration-overhead --output evaluation/x1-triage-ranking/validation/calibration-overhead-rev5-final.json",
+  "schema": "x1-calibration-overhead/rev5-final",
+  "scope": "Full exact truth-only fixed-key calibration on genuine independent populations. Charge observed full API plus maximum observed truth-only CPU for each unused search step up to20. Includes candidate construction, truth aggregation and one final full frame. No assumed speedup or22full-frame evaluations.",
+  "source_sha256": {
+    "evaluation/x1-triage-ranking/validation/fixed_population.py": "a2bd93eddd340f902ebf4c73fe6ecea0c07460ced5ec1310e2b5b126b7373fae",
+    "evaluation/x1-triage-ranking/validation/ranking.py": "cad370785167328c95fcbb78390aafe2b1b24d34e4ac8e4aae9544e9d99e276e",
+    "evaluation/x1-triage-ranking/validation/reproduce_reports.py": "d680ee085bc20525761fdedf924f9d5ac0be12984be9a10c1e3ac4ff5b102887"
+  },
+  "synthetic_only": true
+}

@@ -13,6 +13,8 @@ ADR-011 uses adopted-form route (a): its canonical files take effect on its fold
 
 ADR-012 uses canonical adopted-form route (a), effective on its final zero-issue council round, with adoption outside signed files. Based on adopted ADR-011 (PR #17, 7bb73e52); separate ordinary PRs replace the superseded patch route. Owner confirmation is a new user ledger row and editable trackers; rejection requires a superseding ADR.
 
+ADR-014 uses adopted-form route (a): it takes effect on its folder's explicit final zero-issue council round, which names its signed SHA-256 digests; adoption is recorded outside signed files. IDs were allocated across concurrent work, so a gap does not imply a missing record.
+
 | ID      | Folder                              | Decision                                                                                                    | Status                 |
 | ------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------- |
 | ADR-000 | `2026-10-19-v1-decisions/`          | v1 baseline decisions: map refresh, baseline branch, allow-list, Jev, language tiers, spec cutover, pin     | partly superseded; amended by ADR-001, ADR-002, ADR-003, ADR-012 (readiness observations/eligibility, maintainer triage history, trusted readiness publication) |
@@ -28,6 +30,7 @@ ADR-012 uses canonical adopted-form route (a), effective on its final zero-issue
 | ADR-010 | `2026-11-08-d1-jev-minimums/` | Record owner-agreed Jev triage minimums; retain provisional threshold and preregistered review | accepted |
 | ADR-011 | `2026-11-08-gitleaks-policy-version/` | Keep the exact Gitleaks rule-pack activation version; enforce binary-segment invariant in later code | accepted; agent-decided under R-064; owner review pending; effective on final zero-issue council round |
 | ADR-012 | `2026-11-08-shadow-readiness-inputs/` | Persist CI observations and authorized triage history; compute readiness under bounded evidence invariants | accepted; agent-decided under R-064; owner review pending; implementation pending; based on adopted ADR-011 |
+| ADR-014 | `2026-11-08-x1-delegated-decisions/` | Capture delegated X1 experiment-protocol choices; no product-default, flag, sampler or threshold adoption | accepted; decided by the agent under owner delegation (R-064) |
 
 ## Old paths and citations
 

@@ -1,0 +1,84 @@
+{
+  "benchmark_sha256": "f268997dba849fd256916e556817764638d4a6c858e6458fccb7ad85a23801b8",
+  "calibration_sha256": "415e3ac6c66b7bcca1d43f359f113417db2cb8f06a2f039ba87e71326bf9d954",
+  "checks": {
+    "ADR mirrors operational resource rule exactly": true,
+    "benchmark input byte identity": true,
+    "calibration input byte identity": true,
+    "fixed reserve is eight GiB": true,
+    "kernel-sources-rev6.json content hashes": true,
+    "manifest mirrors operational resource rule exactly": true,
+    "memory budget deducts fixed reserve": true,
+    "pre and post execution snapshots identical": true,
+    "protocol contains exactly one operational resource rule": true,
+    "reserve adjusted memory envelope equation": true,
+    "reserve fails twelve-million-unit memory envelope": true,
+    "rev5-reviewed-sources.json content hashes": true,
+    "rev6-executed-sources.json content hashes": true,
+    "rev6-reviewed-sources.json content hashes": true,
+    "rev7-executed-sources.json content hashes": true,
+    "rev7-reviewed-sources-rev8.json content hashes": true,
+    "rev8-executed-sources.json content hashes": true,
+    "rev8-preexecution-sources.json content hashes": true,
+    "revision seven HD9 history unchanged": true,
+    "round seven records byte identical": true,
+    "supplement closure fields present": true,
+    "supplement dynamically counts checks": true,
+    "timing inputs and all CPU projections unchanged": true
+  },
+  "checks_passed": 23,
+  "memory": {
+    "L400_peak_rss_bytes": {
+      "calibration": 831799296,
+      "construction": 173359104,
+      "trials": 90914816
+    },
+    "calibration_rss_bytes_per_unit": 667.1625481481482,
+    "calibration_rss_intercept_bytes": 31204238.222222224,
+    "eight_worker_memory_break_even_units": 11219137.750693528,
+    "eight_worker_peak_rss_bytes": 6654394368,
+    "eight_worker_projected_bytes_at_assumed_units": 6654394368.0,
+    "envelope_caveat": "linear calibration RSS inference with fixed 8 GiB reserve; locked max-phase lifetime high-water RSS remeasurement required",
+    "fixed_reserve_bytes": 8589934592,
+    "host_physical_memory_bytes": 68719476736,
+    "locked_requirement": "Fixed 8 workers: 8*max(locked construction RSS, locked calibration RSS, locked trial worker+helper RSS) <= hw.memsize-8 GiB; lifetime high-water method; failed or unmeasured means not testable; no worker reduction",
+    "scope": "conservative lifetime high-water; trials sum worker+helper; linear 8-worker projection, not measured simultaneous 8 workers",
+    "worker_memory_budget_bytes": 60129542144
+  },
+  "schema": "x1-affected-revision-checks/rev8",
+  "snapshot_archives": {
+    "kernel-sources-rev6.json": {
+      "entries": 4,
+      "sha256": "66193e0fee0da8e8a2e386cac973329c81267a893657314bfcf0f42616579e22"
+    },
+    "rev5-reviewed-sources.json": {
+      "entries": 11,
+      "sha256": "fa6820c87e068c16b102e2b0d7647c31c6a8f58eccca8f3d3bb8b437fe2bf89d"
+    },
+    "rev6-executed-sources.json": {
+      "entries": 6,
+      "sha256": "fafdcbc291a2521e1bf2b5f90ea43e7046135140c9bbb579c69ad41c4e9e6086"
+    },
+    "rev6-reviewed-sources.json": {
+      "entries": 11,
+      "sha256": "33d0fc21db11c381d051a331e7c5db3a765889abba52a79b294336f080eac7cb"
+    },
+    "rev7-executed-sources.json": {
+      "entries": 11,
+      "sha256": "13c805f30d5b8ce2442464e3a754f8df684664669a40659e211bf55d5f21a88a"
+    },
+    "rev7-reviewed-sources-rev8.json": {
+      "entries": 3,
+      "sha256": "f402aa9e49fb744336a0d47cc4550c12c71f5071b53fbe9f07ba18fa2664ba27"
+    },
+    "rev8-executed-sources.json": {
+      "entries": 7,
+      "sha256": "7412fae0f72de7a70cc208a10e6f65e3471b256fad4af79fd7e89a385af49d5d"
+    },
+    "rev8-preexecution-sources.json": {
+      "entries": 7,
+      "sha256": "7412fae0f72de7a70cc208a10e6f65e3471b256fad4af79fd7e89a385af49d5d"
+    }
+  },
+  "synthetic_only": true
+}

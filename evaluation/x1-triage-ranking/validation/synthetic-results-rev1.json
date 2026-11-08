@@ -1,0 +1,187 @@
+{
+  "checks": [
+    "planted gain recovered",
+    "planted null not supported",
+    "HT census gain exactly .20",
+    "certainty variance zero",
+    "critical below floor vetoes gain",
+    "unknown safety census cannot support",
+    "missing labels widen gain range",
+    "all deterministic fallback is not dropped",
+    "critical below floor certainty",
+    "small unannotated stratum probability capped",
+    "top stratum stored probability",
+    "bottom stratum stored probability",
+    "duplicate issue rejected",
+    "invalid pi rejected",
+    "rank collision rejected",
+    "planning power lower bound >= .80 at gain .20",
+    "null false-support upper bound <= .05"
+  ],
+  "checks_passed": 17,
+  "planning": {
+    "audit_fraction": 0.5,
+    "bootstrap_replicates": 199,
+    "population_per_repository": 1000,
+    "runs_per_repository": 20,
+    "scenarios": {
+      "0.0": {
+        "coverage_MC95": [
+          0.921078024928725,
+          0.9654084716420795
+        ],
+        "interval_coverage": 0.9475,
+        "support_MC95": [
+          8.673617379884035e-19,
+          0.009512294334296508
+        ],
+        "support_probability": 0.0,
+        "trials": 400,
+        "verdict_counts": {
+          "inconclusive": 10,
+          "not supported": 390,
+          "support": 0
+        }
+      },
+      "0.1": {
+        "coverage_MC95": [
+          0.9064647858253625,
+          0.9552595181037997
+        ],
+        "interval_coverage": 0.935,
+        "support_MC95": [
+          0.4240692032756731,
+          0.5214539729127131
+        ],
+        "support_probability": 0.4725,
+        "trials": 400,
+        "verdict_counts": {
+          "inconclusive": 197,
+          "not supported": 14,
+          "support": 189
+        }
+      },
+      "0.2": {
+        "coverage_MC95": [
+          0.921078024928725,
+          0.9654084716420795
+        ],
+        "interval_coverage": 0.9475,
+        "support_MC95": [
+          0.9904877056657034,
+          0.9999999999999999
+        ],
+        "support_probability": 1.0,
+        "trials": 400,
+        "verdict_counts": {
+          "inconclusive": 0,
+          "not supported": 0,
+          "support": 400
+        }
+      }
+    },
+    "self_test_bootstrap_replicates": 1999,
+    "truth_prevalence": 0.2
+  },
+  "planted_effect": {
+    "adequate": true,
+    "gain_range": [
+      0.2266278166278167,
+      0.2266278166278167
+    ],
+    "interval": [
+      0.17320911311784443,
+      0.2802626182741489
+    ],
+    "repositories": {
+      "synthetic-go": {
+        "adequate": true,
+        "audit_selected": 495,
+        "gain_range": [
+          0.23000000000000004,
+          0.23000000000000004
+        ],
+        "known_positive": 100,
+        "unmeasured": 0,
+        "weighted_missing_share": 0.0
+      },
+      "synthetic-python": {
+        "adequate": true,
+        "audit_selected": 487,
+        "gain_range": [
+          0.20202020202020204,
+          0.20202020202020204
+        ],
+        "known_positive": 99,
+        "unmeasured": 0,
+        "weighted_missing_share": 0.0
+      },
+      "synthetic-typescript": {
+        "adequate": true,
+        "audit_selected": 528,
+        "gain_range": [
+          0.24786324786324793,
+          0.24786324786324793
+        ],
+        "known_positive": 117,
+        "unmeasured": 0,
+        "weighted_missing_share": 0.0
+      }
+    },
+    "safety_fail": false,
+    "safety_unmeasured": false,
+    "verdict": "support"
+  },
+  "planted_null": {
+    "adequate": true,
+    "gain_range": [
+      0.016576016576016577,
+      0.016576016576016577
+    ],
+    "interval": [
+      -0.03201308381229695,
+      0.06872492805978689
+    ],
+    "repositories": {
+      "synthetic-go": {
+        "adequate": true,
+        "audit_selected": 495,
+        "gain_range": [
+          0.0,
+          0.0
+        ],
+        "known_positive": 100,
+        "unmeasured": 0,
+        "weighted_missing_share": 0.0
+      },
+      "synthetic-python": {
+        "adequate": true,
+        "audit_selected": 487,
+        "gain_range": [
+          -0.01010101010101011,
+          -0.01010101010101011
+        ],
+        "known_positive": 99,
+        "unmeasured": 0,
+        "weighted_missing_share": 0.0
+      },
+      "synthetic-typescript": {
+        "adequate": true,
+        "audit_selected": 528,
+        "gain_range": [
+          0.05982905982905984,
+          0.05982905982905984
+        ],
+        "known_positive": 117,
+        "unmeasured": 0,
+        "weighted_missing_share": 0.0
+      }
+    },
+    "safety_fail": false,
+    "safety_unmeasured": false,
+    "verdict": "not supported"
+  },
+  "production_rule4_complete": false,
+  "schema": "x1-synthetic-validation/rev1",
+  "synthetic_only": true
+}

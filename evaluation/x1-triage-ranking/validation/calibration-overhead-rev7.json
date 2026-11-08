@@ -1,0 +1,102 @@
+{
+  "measurements": [
+    {
+      "L": 40,
+      "candidate_enumeration_cpu_seconds": 0.010661999999999991,
+      "conservative_21_truth_one_frame_no_enumeration_cpu_seconds": 0.57252,
+      "conservative_nonenumeration_cpu_seconds_per_unit": 4.7710000000000006e-06,
+      "elapsed_seconds": 0.4723402080126107,
+      "frame_evaluation_cpu_seconds": [
+        0.332979
+      ],
+      "frame_evaluations": 1,
+      "full_calibration_cpu_seconds": 0.471411,
+      "maximum_frame_cpu_seconds_per_unit": 2.774825e-06,
+      "nonenumeration_bookkeeping_cpu_seconds": 0.034431999999999935,
+      "peak_rss_bytes": 111263744,
+      "reachable": false,
+      "realised": 0.07666666666666666,
+      "rss_scope": "fresh spawned process lifetime high-water; includes construction and calibration",
+      "target": 0.2,
+      "truth_only_cpu_seconds": [
+        0.010161000000000003,
+        0.009295999999999999,
+        0.009288000000000005,
+        0.009267000000000011,
+        0.009208000000000022,
+        0.009227999999999986,
+        0.009138000000000007,
+        0.009033999999999986,
+        0.009227000000000013,
+        0.009491000000000027
+      ],
+      "truth_only_evaluations": 10,
+      "units": 120000
+    },
+    {
+      "L": 400,
+      "candidate_enumeration_cpu_seconds": 0.011637999999999926,
+      "conservative_21_truth_one_frame_no_enumeration_cpu_seconds": 6.364298,
+      "conservative_nonenumeration_cpu_seconds_per_unit": 5.303581666666666e-06,
+      "elapsed_seconds": 5.223769500036724,
+      "frame_evaluation_cpu_seconds": [
+        3.894201
+      ],
+      "frame_evaluations": 1,
+      "full_calibration_cpu_seconds": 5.212356,
+      "maximum_frame_cpu_seconds_per_unit": 3.2451674999999997e-06,
+      "nonenumeration_bookkeeping_cpu_seconds": 0.3511070000000004,
+      "peak_rss_bytes": 831799296,
+      "reachable": false,
+      "realised": 0.07698333333333333,
+      "rss_scope": "fresh spawned process lifetime high-water; includes construction and calibration",
+      "target": 0.2,
+      "truth_only_cpu_seconds": [
+        0.10577999999999999,
+        0.09500200000000003,
+        0.094144,
+        0.093727,
+        0.09374599999999988,
+        0.09326200000000018,
+        0.09396300000000002,
+        0.09594799999999992,
+        0.09288600000000002,
+        0.09695199999999993
+      ],
+      "truth_only_evaluations": 10,
+      "units": 1200000
+    }
+  ],
+  "python_executable": ".tools/venv/bin/python",
+  "python_executable_sha256": "570b41051d135bcfc011b41272224f7cc66b0d0e7f735761dcb8611029f51d6d",
+  "python_optimize": 0,
+  "python_version": "3.11.11",
+  "reporter_sha256": "dd749c32c5ae2326266317edd66d91b9520338afe59fb58af50ba6255d6241d7",
+  "reproduce_cli": "source .tools/activate && .tools/venv/bin/python evaluation/x1-triage-ranking/validation/reproduce_reports.py calibration-overhead --output evaluation/x1-triage-ranking/validation/calibration-overhead-rev7.json",
+  "schema": "x1-calibration-overhead/rev7",
+  "scope": "Separate worst-case enumeration per calibrated population; per-unit API CPU excludes its measured enumeration and pads to 21 truth calls including returned-frame assertion. No double-counted enumeration.",
+  "source_sha256": {
+    "evaluation/x1-triage-ranking/validation/fixed_population.py": "ed670a6bf8076d791c06cfc2426aff03a0a2f9b1730982cf3fdfb2ec13bc49a2",
+    "evaluation/x1-triage-ranking/validation/ranking.py": "8bc2e7cbbc5da6ba47aeff3effb5dd04d5e5ecc9c1e01051647900095770a780",
+    "evaluation/x1-triage-ranking/validation/reproduce_reports.py": "dd749c32c5ae2326266317edd66d91b9520338afe59fb58af50ba6255d6241d7"
+  },
+  "synthetic_only": true,
+  "worst_case_candidate_enumeration": {
+    "cache_assumed": false,
+    "calibrated_populations": 11900,
+    "candidate_count": 530767,
+    "charge_per_calibrated_population": true,
+    "cpu_seconds": 6.347938,
+    "elapsed_seconds": 6.3690764579805546,
+    "peak_rss_bytes": 80314368,
+    "prevalence": 0.55,
+    "scope": "exact production enumeration on every size; structural fields only, no per-unit frame work",
+    "size_dependence": 0.05,
+    "sizes": {
+      "count": 1981,
+      "maximum": 2000,
+      "minimum": 20,
+      "step": 1
+    }
+  }
+}

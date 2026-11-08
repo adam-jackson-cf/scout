@@ -1,0 +1,37 @@
+{
+  "schema": "scout.x1.keyed-development-sample-recipe.v2",
+  "status": "draft_recipe_not_collected_not_authorised",
+  "source_pin_provenance": "evaluation/change-cost-v2/pins.json; existing fastapi/axum pins reused, not inferred from scores",
+  "n_max": 300,
+  "units_per_repository": 150,
+  "repositories": [
+    {
+      "repository": "fastapi/fastapi",
+      "url": "https://github.com/fastapi/fastapi",
+      "inclusive_tip": "d666ccb62216e45ca78643b52c235ba0d2c53986",
+      "known_local_path": "/tmp/scout-evidence/repos/fastapi",
+      "local_path_present": false
+    },
+    {
+      "repository": "tokio-rs/axum",
+      "url": "https://github.com/tokio-rs/axum",
+      "inclusive_tip": "562fa206f09514e7503e898decf73024f5ce6fd4",
+      "known_local_path": "/tmp/scout-evidence/repos/axum",
+      "local_path_present": false
+    }
+  ],
+  "keyed_development_sample_recipe": [
+    "Use the last 2000 first-parent commits through the exact pinned inclusive tip. Exclusive C0_dev is the 2000th first-parent ancestor; if the chain is shorter, C0_dev is the root and the window is full ancestry minus the root. Resolve and seal exact boundary SHAs only after authorised object fetch; no moving refs or window extension.",
+    "At each window commit and first parent collect model-free introduced/regressed issues with identical pinned scanner/rule/tool/effective-policy bytes and heuristic mapping. Apply only first-occurrence, repeated, pre-existing-at-C0_dev and unknown-attribution exclusions. Test freshness/exposure exclusions and test run-size eligibility do not apply. Examined units stay eligible, flagged and counted, and require current-guide labels; legacy labels never count. Dev quantities are per unit.",
+    "Order all eligible units by ascending HMAC-SHA256 digest, UTF-8 key 169-x1-dev, message repository NUL full commit SHA NUL issue ID; full SHA then UTF-8 issue ID break digest collisions. Repository is exact UTF-8 case-preserved owner/name above; SHA/run ID is full 40-character lowercase hexadecimal; issue ID is exact UTF-8 Scout issue ID. Greedily skip a unit once its commit has five selected units. Select 150 per repository with at most 5 units per commit, therefore at least 30 distinct commits per repository. Report distinct commits, selected identities and dev source-commit size distribution against the test frame. Unweighted estimates describe the commit-balanced mixture; unequal per-commit inclusion and the 2023-versus-2024+ era gap limit transport.",
+    "If either repository cannot supply 150 units under these rules, stop insufficient before dev models. No replacement repository, smaller target, window extension or legacy-label substitution. n_max remains 300.",
+    "Collection belongs to inventory, after preparation seals and authentic passing model-free binding checks. Include both development windows' commit/parent scans in inventory elapsed/resource projection. After separately authorised current-guide labelling, dev gates require at least 200 completed cases; none executed here."
+  ],
+  "pin_manifest": "evaluation/x1-triage-ranking/preparation/pins.json",
+  "missing_prerequisites": [
+    "Exact pinned repository objects/local clone paths are not available at the documented historical paths; an authorised object source is required.",
+    "Zero-issue review must approve this keyed development sample recipe and the exact resolved boundaries before collection.",
+    "Authentic model-free effective-policy binding checks, sealed preparation outputs and inventory review are required; the isolated GUIDE session belongs to stage 3."
+  ],
+  "collected_units": 0
+}
