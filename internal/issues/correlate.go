@@ -256,6 +256,11 @@ func scopeIncludes(scope domain.Scope, path string) bool {
 // coverage (and files absent from a partial run) leave the issue open.
 func resolveAbsent(ctx context.Context, store *state.Store, run domain.Run, pool []*candidate, settings options) error {
 	for _, cand := range pool {
+		if !cand.taken && cand.path != cand.issue.Anchor.Path {
+			if err := store.FollowIssueRename(ctx, cand.issue.IssueID, cand.path); err != nil {
+				return fmt.Errorf("follow rename for issue %q: %w", cand.issue.IssueID, err)
+			}
+		}
 		switch cand.issue.State {
 		case domain.IssueResolved, domain.IssueFalsePositive, domain.IssueWontFix:
 			continue

@@ -156,6 +156,38 @@ func TestIdentityStableAcrossInsertionAboveAndRename(t *testing.T) {
 	}
 }
 
+func TestIdentityStableAcrossRenameWithoutRelevantCoverage(t *testing.T) {
+	for name, coverage := range map[string]map[string]domain.CoverageStatus{
+		"absent":     nil,
+		"skipped":    {"b.go": domain.CoverageSkipped},
+		"incomplete": {"b.go": domain.CoverageIncomplete},
+		"blocked":    {"b.go": domain.CoverageBlocked},
+		"reused":     {"b.go": domain.CoverageReused},
+	} {
+		t.Run(name, func(t *testing.T) {
+			h := newHarness(t)
+			original := h.run([]finding{{path: "a.go", symbol: "pkg.Handle", quote: "eval(x)", line: 10}}, covered("a.go"))[0]
+
+			// The inventory sees the rename even though this run cannot
+			// determine whether the issue's failure mode is still present.
+			h.run(nil, coverage, WithRenames(map[string]string{"a.go": "b.go"}))
+			if issue := h.load(original.IssueID); issue.State != domain.IssueOpen {
+				t.Fatalf("rename without relevant coverage changed state to %q", issue.State)
+			}
+
+			// Rename information is per-run: the next assessment must rely
+			// on the persisted anchor to recognise the existing issue.
+			back := h.run([]finding{{path: "b.go", symbol: "pkg.Handle", quote: "eval(x)", line: 10}}, covered("b.go"))
+			if len(back) != 1 || back[0].IssueID != original.IssueID {
+				t.Fatalf("identity changed after an uninspected rename: got %#v, want issue %q", back, original.IssueID)
+			}
+			if all := h.all(); len(all) != 1 {
+				t.Fatalf("rename split the issue: got %d issues, want 1", len(all))
+			}
+		})
+	}
+}
+
 func TestEvidenceDriftKeepsDisposition(t *testing.T) {
 	for _, symbol := range []string{"", "pkg.Handle"} {
 		t.Run("symbol="+symbol, func(t *testing.T) {

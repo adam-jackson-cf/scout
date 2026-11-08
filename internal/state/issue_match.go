@@ -134,6 +134,30 @@ func (s *Store) MarkIssueAmbiguous(ctx context.Context, issueID string, others [
 	return updated, err
 }
 
+// FollowIssueRename persists an inventory rename without claiming a match or
+// successful re-check. Identity, disposition and verification remain unchanged.
+func (s *Store) FollowIssueRename(ctx context.Context, issueID, path string) error {
+	if issueID == "" || path == "" {
+		return errors.New("issue ID and renamed path are required")
+	}
+	return s.withTransaction(ctx, func(tx *sql.Tx) error {
+		issue, err := loadIssueTx(ctx, tx, issueID)
+		if err != nil {
+			return err
+		}
+		if issue.Anchor.Path == path {
+			return nil
+		}
+		issue.Anchor.Path = path
+		issue.Files = []string{path}
+		issue.UpdatedAt = time.Now().UTC()
+		if err := issue.Validate(); err != nil {
+			return fmt.Errorf("updated issue: %w", err)
+		}
+		return saveIssueTx(ctx, tx, issue, false)
+	})
+}
+
 // ResolveIssue resolves an issue after a relevant successful re-check: the
 // verification run must hold inspected, covered or flagged coverage of the
 // issue's own file (followed to followPath when the file was renamed, empty
