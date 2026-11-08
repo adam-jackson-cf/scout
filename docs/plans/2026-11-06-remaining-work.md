@@ -84,7 +84,7 @@ HD6b and HD7 are `proposed` and have no test yet (`docs/hypothesis-ledger.md`).
 ## Known gaps (from `docs/STATUS.md` §1)
 
 - **Fixed (2026-11-08):** zero-feature agent maps rerun heuristic mapping and return its features with exploration incomplete, without reconciling areas or completing onboarding (REQ-56).
-- The policy `version` strings for Gitleaks checks are the long rule-pack version.
+- **Gap 3 clarified by ADR-011 (effective on its final zero-issue council round):** retain the full Gitleaks rule-pack activation version, no migration. Exact-version equality is implemented; content binding is enforced only for bundled fingerprinted packs. Later code must enforce the Gitleaks pack version segment = binary pin in spec validation with a test, alongside a clearer short-version diagnostic. Semgrep action-ref parser-version binding and Scout-native guardrails logic-version binding remain open for a later ADR; guardrails reset only when someone hand-bumps the `@N` constant, an unenforced convention. Agent-decided under R-064; owner review pending in this editable tracker. ADR-011 lands as its own canonical PR first; ADR-012 rebases after it merges and receives independent review.
 - The shadow-window bound (`unknown` ≤ 10 % of PR runs) cannot be computed yet. `ShadowStats` has no producer, and `comparison` is not persisted (REQ-22, REQ-78).
 
 ## Candidate source (not in the ledger)
@@ -93,7 +93,7 @@ MOSS, arXiv:2610.26902: an LLM-judge monitoring loop whose thresholds transferre
 
 ## Docs that stay
 
-- **Governed design:** `docs/scout-design.html`. Appendix A holds REQ-1…REQ-183; Appendix B indexes ADR-000…ADR-010.
+- **Governed design:** `docs/scout-design.html`. Appendix A holds REQ-1…REQ-183; Appendix B indexes ADR-000…ADR-011 (ADR-011 effective on its final zero-issue council round).
 - **Decisions and review evidence:** `docs/adrs/`, indexed by `docs/adrs/README.md`.
 - **Reference:** `docs/references/` describes the CLI, lanes, policy, environment and CI.
 - **Plans:** `docs/plans/` keeps this remaining-work list and the per-phase merge-association specification.
