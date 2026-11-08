@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "cases": {
+    "internal/decisions/thresholds/thresholds_test.go/TestDefaultsAreProvisionalWithNoLabelsAndTheAgreedMinimums": {"source": ["internal/decisions/thresholds/defaults.json"], "behavior": "The embedded triage default records the owner's agreed precision 0.8 and recall 0.9 minimums while remaining provisional, ungated and untuned at threshold 0.3."},
     "internal/engine/summary_pending_proof_test.go/TestSummaryPendingAreasPreserveLaneHealthWithinBound": {"source": ["internal/engine/gate.go"], "behavior": "Pending areas show at most eight complete rows and an omitted count while retaining every lane-health row within sixty summary lines."},
     "internal/engine/summary_pending_proof_test.go/TestSummaryPendingAreasSmallListIsComplete": {"source": ["internal/engine/gate.go"], "behavior": "A small pending-area list renders every area and all its files without an omission line."},
     "internal/engine/association_proof_test.go/TestAssociationGuardConfigDefaultsPreserveZeroLimits": {"source": ["internal/engine/association.go"], "behavior": "An unset guard config uses policy defaults while configured zero rate thresholds remain zero."},
