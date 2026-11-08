@@ -9,6 +9,8 @@ Rules (`AGENTS.md` design rules):
 - IDs are never reused.
 - An accepted ADR is never edited, except its status line. The commit that adopts a later ADR updates that line to name what supersedes or amends it.
 
+ADR-011 uses adopted-form route (a): its canonical files take effect on its folder's explicit final zero-issue council round, which names their signed SHA-256 digests; adoption is recorded outside signed files. It is a separate PR landing before ADR-012, which rebases after ADR-011 merges and is reviewed independently. No patch application or merge-method restriction is required. Owner confirmation is a new `user` ledger row and tracker update; rejection requires a superseding ADR.
+
 | ID      | Folder                              | Decision                                                                                                    | Status                 |
 | ------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------- |
 | ADR-000 | `2026-10-19-v1-decisions/`          | v1 baseline decisions: map refresh, baseline branch, allow-list, Jev, language tiers, spec cutover, pin     | partly superseded      |
@@ -22,6 +24,7 @@ Rules (`AGENTS.md` design rules):
 | ADR-008 | `2026-10-31-jev-merge-association/` | Add provisional merge-time area association (rev 2.8)                                                       | accepted (provisional) |
 | ADR-009 | `2026-11-06-design-restructure/`    | Replace the design and requirements documents with `docs/scout-design.html`; rename review folders to ADRs | accepted               |
 | ADR-010 | `2026-11-08-d1-jev-minimums/` | Record owner-agreed Jev triage minimums; retain provisional threshold and preregistered review | accepted |
+| ADR-011 | `2026-11-08-gitleaks-policy-version/` | Keep the exact Gitleaks rule-pack activation version; enforce binary-segment invariant in later code | accepted; agent-decided under R-064; owner review pending; effective on final zero-issue council round |
 
 ## Old paths and citations
 

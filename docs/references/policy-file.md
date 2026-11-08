@@ -58,6 +58,14 @@ blocking:
 
 ## Notes
 
+For eligible `security.secrets.<rule>` checks in the pinned Gitleaks pack, activation `version` is exactly:
+
+```text
+gitleaks-default-rules/8.30.1@sha256:e163e53b9e7e8a8511e77271e2b323ed057759542a6d988258afe3a1fa329caf
+```
+
+Do not use the binary version `8.30.1`. All eligible rules in this pack share this value; `generic-api-key` remains report-only. Exact-version equality is implemented; content binding is enforced only for bundled fingerprinted packs, so their rule-content digest changes reset activation without migration. ADR-011 requires the Gitleaks pack version segment to match the binary pin; spec-validation enforcement with a test and a clearer short-version diagnostic are pending a later PR. Today's code does not guarantee parser/logic-bump resets: Semgrep-backed action-ref has no binary version in its pack key, and Scout-native guardrails reset only when someone hand-bumps the `@N` constant, an unenforced convention. Both binding gaps require a later ADR.
+
 - `scout init` is idempotent: it keeps existing activations and comments, and keeps an existing `profile` unless you pass `--profile`.
 - Model-CLI lanes and Jev stay off for a repository without a committed policy, even if `SCOUT_MODEL_CLI` is set.
 - `mapping.refresh` was removed in revision 2.6; a policy that still sets it (for example `mapping.refresh.debounce`) fails to parse because the decoder is strict.
