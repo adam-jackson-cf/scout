@@ -32,8 +32,12 @@ def derive():
     rows.sort(key=lambda pair: (pair[0], pair[1].encode()))
     ordered = [cell for _, cell in rows]
     first = ordered[0]
+    base_dimensions = dict(json.loads(first)[1])
+    base_dimensions.pop("unresolved_kappa")
+    construction_base = compact(["safety-profile", base_dimensions]).decode()
     specifications = [(first, 0, 0, "population"), (first, 1, 0, "audit"),
-                      (first, 0, 17, "bootstrap"), ({"kind": "sampling-gate-estimate"}, 0, 0, "sampling-gate-estimate")]
+                      (first, 0, 17, "bootstrap"), ({"kind": "sampling-gate-estimate"}, 0, 0, "sampling-gate-estimate"),
+                      (construction_base, 0, 0, "population")]
     seeds = []
     for cell, population, attempt, phase in specifications:
         cell_bytes = cell.encode() if isinstance(cell, str) else compact(cell)
@@ -50,6 +54,7 @@ def derive():
             "group_count": len(ordered), "first_identity": first, "last_identity": ordered[-1],
             "hmac_order_first": rows[0][0], "ordered_groups_sha256": openssl(compact(ordered)),
             "policy_sha256": openssl(compact(json.loads((HERE / "policy.json").read_bytes()))),
+            "construction_base": construction_base,
             "seeds": seeds, "wilson_50_2000_decimal60": bounds}
 
 

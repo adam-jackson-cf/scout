@@ -1,0 +1,103 @@
+{
+  "duplicate_publication_exit": 1,
+  "invocations": [
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/locked_commands.py",
+        "synthetic-input",
+        "--output",
+        "evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-3-cli-evidence/synthetic-input.json"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/locked_commands.py",
+        "gate",
+        "--output",
+        "evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-3-cli-evidence/gate.json",
+        "--input",
+        "evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-3-cli-evidence/synthetic-input.json"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/locked_commands.py",
+        "benchmark",
+        "--output",
+        "evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-3-cli-evidence/benchmark.json",
+        "--input",
+        "evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-3-cli-evidence/synthetic-input.json",
+        "--trials",
+        "2000"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/locked_commands.py",
+        "calibration",
+        "--output",
+        "evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-3-cli-evidence/calibration.json",
+        "--input",
+        "evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-3-cli-evidence/synthetic-input.json"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python",
+        "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/locked_commands.py",
+        "fit",
+        "--output",
+        "evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-3-cli-evidence/fit.json",
+        "--input",
+        "evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-3-cli-evidence/synthetic-input.json",
+        "--benchmark",
+        "evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-3-cli-evidence/benchmark.json",
+        "--calibration",
+        "evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-3-cli-evidence/calibration.json",
+        "--gate",
+        "evaluation/x1-triage-ranking/stage3-drafts/locked-size-input/reviews/round-3-cli-evidence/gate.json"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "resource_fit": {
+    "core_hours": 392.97058495333334,
+    "eight_worker_rss_bytes": 722993152,
+    "maximum_inputs": {
+      "calibration_cpu_per_unit": 4.6420547945205485e-06,
+      "calibration_rss": 76136448,
+      "complete_trial_cpu": 0.0010495315,
+      "construction_cpu_per_unit": 4.261339421613395e-07,
+      "construction_rss": 40271872,
+      "enumeration_cpu_per_population": 6.440753,
+      "full512_trial_cpu": 0.0471914345,
+      "gate_cpu_per_check": 1.63244e-05,
+      "requested_base_cpu_per_unit": 3.0071385083713866e-06,
+      "trial_plus_helper_rss": 90374144
+    },
+    "memory_bytes": 68719476736,
+    "passed": true,
+    "units_per_population": 65700,
+    "wall_days": 2.0467217966319446,
+    "workers": 8
+  },
+  "synthetic_only": true
+}

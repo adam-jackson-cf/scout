@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -41,7 +42,9 @@ class ControllerTests(unittest.TestCase):
         args = dict(p_gate=.5, inventory_sha256="c" * 64, meter=meter,
                     oc_started_at=100000., clock=meter.clock, run_root=root)
         args.update(kw)
-        schedule = c.SafetySchedule(**args)
+        # Synthetic fixtures reserve no real production-scale disk.
+        with patch.object(c.shutil, "disk_usage", return_value=SimpleNamespace(free=10**16)):
+            schedule = c.SafetySchedule(**args)
         self.addCleanup(schedule.close)
         return schedule, meter, root
 
@@ -248,8 +251,13 @@ class ControllerTests(unittest.TestCase):
             calls.append(index)
             if isinstance(value, BaseException): raise value
             return value
-        with self.assertRaises(c.Stopped):
+        caught = []
+        try:
             lane.step(broken if phase == "gate" else lambda i: True, broken if phase == "trial" else lambda i: True)
+        except BaseException as error:
+            caught.append(error)
+        self.assertEqual(len(caught), 1)
+        self.assertIsInstance(caught[0], c.Stopped)
         self.assertTrue(s.paused)
         before = lane.report()
         self.assertEqual(before["gate_failures"], 0)
@@ -468,6 +476,7 @@ from pathlib import Path
 sys.path.insert(0, sys.argv[1])
 import controller as c
 root = Path(sys.argv[2])
+c.shutil.disk_usage = lambda path: type("Disk", (), {"free": 10**16})()
 s = c.SafetySchedule(p_gate=.5, inventory_sha256='c'*64, meter=lambda: 0.,
                      oc_started_at=100000., clock=lambda: 100000., run_root=root)
 def prepare(profile, index, seed):
@@ -574,6 +583,283 @@ s.run(lambda *a: True, crash, prepare, lambda *a: {})
             s.resume(REVIEW)
             lane.step(lambda i: True, lambda i: True)
             self.assertEqual(lane.report()["attempts"], 1)
+
+
+    def test_process_loss_between_passing_gate_and_trial_start(self):
+        s, meter, root = self.make()
+        lane = self.lane(s)
+        original = s._boundary
+        calls = []
+        def boundary():
+            calls.append(None)
+            if len(calls) == 3:
+                raise RuntimeError("synthetic process loss before durable trial start")
+            original()
+        with patch.object(s, "_boundary", side_effect=boundary):
+            with self.assertRaises(RuntimeError):
+                lane.step(lambda i: True, lambda i: self.fail("lost before trial"))
+        self.assertEqual(lane.report()["pending"]["phase"], "ready")
+        s.close()
+        restored, _, _ = self.make(root=root, meter=meter)
+        self.assertTrue(restored.paused)
+        restored.resume(REVIEW)
+        recovered = self.lane(restored)
+        seen = []
+        recovered.step(lambda i: seen.append(("gate", i)) or True,
+                       lambda i: seen.append(("trial", i)) or True)
+        self.assertEqual(seen, [("gate", 0), ("trial", 0)])
+        self.assertEqual(recovered.report()["attempts"], 1)
+        self.assertEqual(recovered.report()["executions"], 1)
+
+    def test_gate_window_classifications_are_isolated(self):
+        for action in ("gold", "cap", "pause", "pause-resume"):
+            with self.subTest(action=action):
+                s, meter, root = self.make()
+                lane = self.lane(s)
+                seen = []
+                def gate(index):
+                    seen.append(index)
+                    if len(seen) == 1:
+                        if action == "gold": s.stop_gold()
+                        elif action == "cap": meter.core = 2880
+                        else:
+                            s.pause(PAUSE)
+                            if action == "pause-resume": s.resume(REVIEW)
+                    return True
+                caught = []
+                try: lane.step(gate, lambda i: self.fail("stopped gate started trial"))
+                except BaseException as error: caught.append(error)
+                self.assertEqual(len(caught), 1)
+                self.assertIsInstance(caught[0], c.Stopped)
+                self.assertEqual(lane.report()["gate_passes"], 0)
+                self.assertEqual(lane.report()["pending"], {"phase": "gate", "index": 0})
+                rows = [json.loads(line) for line in (root / "x1-oc-controller/journal.jsonl").read_bytes().splitlines()]
+                if s.terminated:
+                    position = next(i for i, row in enumerate(rows) if row["kind"] == "terminate")
+                    self.assertFalse(any(row["kind"] == "population_state" for row in rows[position+1:]))
+                else:
+                    if s.paused: s.resume(REVIEW)
+                    lane.step(gate, lambda i: True)
+                    self.assertEqual(seen, [0, 0])
+                s.stop_gold()
+
+    def test_gate_baseexception_is_latched(self):
+        self.fault_case("gate", KeyboardInterrupt())
+
+    def test_calibration_baseexception_is_latched(self):
+        s, _, _ = self.make()
+        with s._state_lock: s._emit("dispatch", {"identity": s.ordered[0]})
+        caught = []
+        try: s._calibrate(lambda *args: (_ for _ in ()).throw(KeyboardInterrupt()))
+        except BaseException as error: caught.append(error)
+        self.assertEqual(len(caught), 1)
+        self.assertIsInstance(caught[0], c.Stopped)
+        self.assertTrue(s.paused)
+        self.assertEqual(s.events[-1]["data"]["incident"]["phase"], "calibration")
+
+    def test_safety_handle_guard(self):
+        s, _, _ = self.make()
+        with s._state_lock:
+            s._emit("dispatch", {"identity": s.ordered[0]})
+            key = s._new_population(s.ordered[0], 0, True, 0)
+        caught = []
+        try: c.BindingLane(s, key).step(lambda i: False, lambda i: True)
+        except BaseException as error: caught.append(error)
+        self.assertEqual(len(caught), 1)
+        self.assertIsInstance(caught[0], RuntimeError)
+        self.assertEqual(s._populations[key]["attempts"], 0)
+
+    def test_paused_run_atomically_closes_binding_admission(self):
+        s, _, _ = self.make()
+        s.pause(PAUSE)
+        waiting = threading.Event()
+        original = s._wait_ready
+        def wait():
+            waiting.set()
+            return original()
+        s._wait_ready = wait
+        def stop(*args):
+            s.stop_gold()
+            return self.prepared(*args)
+        thread, errors = self.start_run(s, calibration=stop)
+        self.assertTrue(waiting.wait(10))
+        caught = []
+        # Holding the condition makes the resumed lease win the dispatch race,
+        # so this fails deterministically if admission only checks dispatch.
+        with s._condition:
+            s.resume(REVIEW)
+            try: self.lane(s)
+            except BaseException as error: caught.append(error)
+        thread.join(15)
+        self.assertFalse(thread.is_alive())
+        self.assertEqual(errors, [])
+        self.assertEqual(len(caught), 1)
+        self.assertIsInstance(caught[0], ValueError)
+        self.assertTrue(s._started_safety)
+        self.assertFalse(any(not p["safety"] for p in s._populations.values()))
+
+    def test_construction_base_vector_and_336_by_six(self):
+        known = json.loads((HERE / "known_answers.json").read_bytes())
+        s, _, _ = self.make()
+        counts = {}
+        for identity in s.ordered:
+            base = s._profile(identity)
+            counts[base] = counts.get(base, 0) + 1
+        self.assertEqual(len(counts), 336)
+        self.assertEqual(set(counts.values()), {6})
+        base = known["construction_base"]
+        vector = next(row for row in known["seeds"] if row["cell"] == base and row["phase"] == "population")
+        seen = []
+        with s._state_lock: s._emit("dispatch", {"identity": s.ordered[0]})
+        def prepare(profile, index, seed):
+            seen.append((profile, index, seed))
+            return self.prepared(profile, index, seed)
+        s._calibrate(prepare)
+        self.assertEqual(seen[0], (base, 0, vector["seed64"]))
+
+    def test_compact_record_counts_and_lost_gate_replay(self):
+        s, meter, root = self.make()
+        lane = self.lane(s)
+        journal = root / "x1-oc-controller/journal.jsonl"
+        before = journal.stat().st_size
+        with patch.object(c.os, "fsync", wraps=c.os.fsync) as sync:
+            lane.step(lambda i: False, lambda i: self.fail("gate rejected"))
+            self.assertEqual(sync.call_count, 0)
+            self.assertEqual(journal.stat().st_size, before)
+            lane.step(lambda i: True, lambda i: True)
+            self.assertEqual(sync.call_count, 2)
+        durable = lane.report()
+        lane.step(lambda i: False, lambda i: True)
+        s.close()
+        recovered, _, _ = self.make(root=root, meter=meter)
+        self.assertTrue(recovered.paused)
+        restored = recovered._population_report(lane._key)
+        self.assertEqual(restored, durable)
+        recovered.resume(REVIEW)
+        restored_lane = self.lane(recovered)
+        seen = []
+        restored_lane.step(lambda i: seen.append(i) or False, lambda i: True)
+        self.assertEqual(seen, [2])
+        rows = [json.loads(line) for line in journal.read_bytes().splitlines()]
+        self.assertFalse(any(row["kind"] == "meter" for row in rows))
+        counter_rows = [row for row in rows if row["kind"] == "population_state"]
+        self.assertTrue(all(set(row["data"]) == {"i", "d"} for row in counter_rows))
+        self.assertTrue(all("meter" in row for row in rows))
+
+    def test_disk_refusal_and_interpreter_provenance(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with patch.object(c.shutil, "disk_usage", return_value=SimpleNamespace(free=0)):
+                with self.assertRaises(RuntimeError):
+                    c.SafetySchedule(p_gate=.5, inventory_sha256="c"*64, meter=lambda: 0,
+                                     oc_started_at=100000., run_root=root)
+            self.assertFalse((root / "x1-oc-controller/freeze.json").exists())
+            refusal = json.loads((root / "x1-oc-controller/freeze-refused.json").read_bytes())
+            self.assertEqual(refusal["journal_projection"]["binding_populations"], 90860)
+            self.assertEqual(refusal["journal_projection"]["safety_populations"], 10080)
+            self.assertGreater(refusal["disk_refusal"]["required_free_bytes"], 0)
+        s, _, root = self.make()
+        self.assertEqual(s.freeze["interpreter"]["python_optimize"], 0)
+        self.assertEqual(s.freeze["interpreter"]["version"], "3.11.11")
+        self.assertEqual(s.freeze["interpreter"]["executable_sha256"], c.digest(Path(sys.executable).resolve().read_bytes()))
+        s.close()
+        with patch.object(c.platform, "python_version", return_value="different"):
+            with self.assertRaises(RuntimeError): self.make(root=root)
+        for arguments in (["-O"], []):
+            with tempfile.TemporaryDirectory() as directory:
+                code = """
+import sys
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+import controller as c
+if not sys.flags.optimize: c.sys.version_info = (3, 11, 12)
+try:
+    c.SafetySchedule(p_gate=.5, inventory_sha256='c'*64, meter=lambda: 0, oc_started_at=0, run_root=sys.argv[2])
+except RuntimeError:
+    sys.exit(0 if not (Path(sys.argv[2])/'x1-oc-controller/freeze.json').exists() else 2)
+sys.exit(3)
+"""
+                result = subprocess.run([sys.executable, *arguments, "-c", code, str(HERE), directory], capture_output=True, timeout=30)
+                self.assertEqual(result.returncode, 0, result.stderr.decode())
+
+    def test_journal_failure_poison_blocks_other_lane_and_replays(self):
+        for stage in ("write", "short", "flush", "fsync", "apply"):
+            with self.subTest(stage=stage):
+                s, meter, root = self.make()
+                first, second = self.lane(s), self.lane(s, slot=1)
+                entered, release = threading.Event(), threading.Event()
+                errors = []
+                def gate(index):
+                    entered.set()
+                    release.wait(10)
+                    return True
+                def worker():
+                    try: second.step(gate, lambda i: True)
+                    except BaseException as error: errors.append(error)
+                thread = threading.Thread(target=worker)
+                thread.start()
+                self.assertTrue(entered.wait(10))
+                original_file, original_apply = s._journal_file, s._apply
+                class FailingFile:
+                    def write(self, raw):
+                        if stage == "write":
+                            original_file.write(raw[:len(raw)//2])
+                            raise OSError("injected partial append")
+                        if stage == "short": return original_file.write(raw[:len(raw)//2])
+                        return original_file.write(raw)
+                    def flush(self):
+                        if stage == "flush": raise OSError("injected flush")
+                        return original_file.flush()
+                    def fileno(self): return original_file.fileno()
+                    def close(self): return original_file.close()
+                s._journal_file = FailingFile()
+                def failed_apply(event):
+                    if stage == "apply" and "seq" in event: raise RuntimeError("injected reducer")
+                    return original_apply(event)
+                caught = []
+                with patch.object(s, "_apply", side_effect=failed_apply), patch.object(c.os, "fsync", side_effect=OSError("injected fsync") if stage == "fsync" else c.os.fsync):
+                    try: first.step(lambda i: True, lambda i: True)
+                    except BaseException as error: caught.append(error)
+                try:
+                    journal = root / "x1-oc-controller/journal.jsonl"
+                    frozen_bytes = journal.read_bytes()
+                    self.assertEqual(len(caught), 1)
+                    self.assertTrue(s._poisoned)
+                    release.set()
+                    thread.join(10)
+                    self.assertFalse(thread.is_alive())
+                    self.assertEqual(len(errors), 1)
+                    self.assertIsInstance(errors[0], c.JournalPoisoned)
+                    for operation in (lambda: s.pause(PAUSE), lambda: s.resume(REVIEW),
+                                      lambda: first.step(lambda i: True, lambda i: True),
+                                      lambda: s.run(None, None, None, None),
+                                      lambda: s._emit("resume", REVIEW), s._boundary):
+                        blocked = []
+                        try:
+                            with s._state_lock: operation()
+                        except BaseException as error: blocked.append(error)
+                        self.assertEqual(len(blocked), 1)
+                        self.assertIsInstance(blocked[0], c.JournalPoisoned)
+                    self.assertEqual(journal.read_bytes(), frozen_bytes)
+                    s.close()
+                    recovered, _, _ = self.make(root=root, meter=meter)
+                    self.assertTrue(recovered.paused)
+                    self.assertEqual(recovered.events[-1]["data"]["kind"], "process loss")
+                    rows = []
+                    for line in frozen_bytes.splitlines():
+                        try: rows.append(json.loads(line))
+                        except ValueError: pass
+                    expected = 0
+                    for row in rows:
+                        if row["kind"] == "population_state" and row["data"]["i"] == 0:
+                            expected = row["data"]["d"].get("executions", expected)
+                    self.assertEqual(recovered._population_report(first._key)["executions"], expected)
+                finally:
+                    # Assertion-killed mutants must not strand their live peer.
+                    release.set()
+                    thread.join(10)
+                    s._journal_file = original_file
+                    s.close()
 
 
 if __name__ == "__main__":

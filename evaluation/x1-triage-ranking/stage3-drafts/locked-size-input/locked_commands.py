@@ -113,14 +113,24 @@ def locked_functions(inputs):
     return namespace
 
 
-def provenance(inputs):
+def provenance(inputs, *, tolerate_missing=False):
     paths = [HERE/name for name in ("size_input.py", "population.py", "locked_commands.py")]
     paths += [VALIDATION/name for name in ("compute_benchmark.py", "reproduce_reports.py", "ranking.py",
                                          "fixed_population.py", "interval_diagnostic.go")]
     paths += [CONTROLLER_PATH, VALIDATION.parent / "oc-manifest.json"]
+    digests, errors = {}, {}
+    for path in paths:
+        name = str(path.relative_to(ROOT))
+        try:
+            digests[name] = hashlib.sha256(path.read_bytes()).hexdigest()
+        except OSError as exc:
+            if not tolerate_missing:
+                raise
+            digests[name] = None
+            errors[name] = f"{type(exc).__name__}: {exc}"
     return {"size_input_sha256": inputs.sha256, "size_input_record": json.loads(inputs.record_bytes),
             "L_r": inputs.lengths, "units": inputs.units,
-            "source_sha256": {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths},
+            "source_sha256": digests, **({"source_errors": errors} if errors else {}),
             "size_site_substitutions": SIZE_SITES}
 
 
@@ -214,16 +224,25 @@ def calibration_mode(inputs):
 
 def measurement_run(inputs, data, calibration, gate, evidence_sha256):
     """Extract binding operation maxima; only the final evaluator decides fit."""
+    current = json.loads(canonical(provenance(inputs)))
+    failed = False
     for result in (data, calibration, gate):
-        if result["provenance"]["size_input_sha256"] != inputs.sha256:
+        if (result["provenance"]["size_input_sha256"] != inputs.sha256
+            or result.get("end_provenance", result["provenance"])["size_input_sha256"] != inputs.sha256):
             raise ValueError("size input mismatch")
-        if result["provenance"] != json.loads(canonical(provenance(inputs))) and result["integrity_failure"] is None:
-            raise ValueError("source/input closure mismatch")
+        if result["completed"] is not True or result["integrity_failure"] not in (None, "closure mismatch"):
+            raise ValueError("invalid component completion or failure cause")
+        failed |= (result["integrity_failure"] == "closure mismatch"
+                   or result["provenance"] != current
+                   or result.get("end_provenance", result["provenance"]) != current)
     if data["host"] != calibration["host"] or data["host"] != gate["host"]:
         raise ValueError("locked measurements require the same host")
     if any(data[k] != r[k] for r in (calibration, gate)
            for k in interpreter()):
         raise ValueError("locked measurements require the same interpreter")
+    if any(r["python_optimize"] != 0 or type(r["python_optimize"]) is not int
+           or r["python_version"] != "3.11.11" for r in (data, calibration, gate)):
+        raise ValueError("pinned unoptimized CPython 3.11.11 required")
     validate_benchmark(data)
     if gate["draws"] != 100000:
         raise ValueError("100000 keyed checks required")
@@ -254,7 +273,6 @@ def measurement_run(inputs, data, calibration, gate, evidence_sha256):
               "complete_trial_cpu": worst[False], "full512_trial_cpu": worst[True],
               "construction_rss": rss["construction"], "calibration_rss": rss["calibration"],
               "trial_plus_helper_rss": rss["trial_worker_plus_helper"]}
-    failed = any(r["integrity_failure"] for r in (data, calibration, gate))
     record = {"id": hashlib.sha256(canonical(evidence_sha256)).hexdigest(),
               "host": data["host"], **data["host_load"]["start"],
               "host_load": {name: r["host_load"] for name, r in
@@ -299,6 +317,59 @@ def read_evidence(paths):
     return records, digests
 
 
+def prior_measurement_runs(priors, inputs, inventory_digest, machine, runtime, binding_keys):
+    """Require every cumulative prior fit, in order, without dropping old runs."""
+    runs, seen = [], set()
+    causes = ("closure mismatch", "non-resource crash", "independent OS malfunction")
+    def digest(value):
+        return type(value) is str and len(value) == 64 and all(c in "0123456789abcdef" for c in value)
+    for prior in priors:
+        if (prior.get("schema") != "x1-locked-size-fit/synthetic-v1"
+            or prior.get("synthetic_only") is not True or prior.get("completed") is not True
+            or prior.get("integrity_failure") not in causes):
+            raise ValueError("prior fit requires a qualifying integrity failure")
+        if (prior["provenance"]["size_input_sha256"] != inputs.sha256
+            or prior["measurement_runs"]["locked_inventory_sha256"] != inventory_digest
+            or hashlib.sha256(canonical(prior["locked_inventory"])).hexdigest() != inventory_digest):
+            raise ValueError("prior size input or inventory mismatch")
+        if prior["host"] != machine:
+            raise ValueError("prior host mismatch")
+        if any(prior[k] != runtime[k] for k in runtime):
+            raise ValueError("prior interpreter mismatch")
+        incoming = prior["measurement_runs"]["runs"]
+        if len(incoming) != len(runs)+1 or incoming[:-1] != runs:
+            raise ValueError("every prior fit required in cumulative order")
+        run = incoming[-1]
+        cause = run["integrity_failure"]
+        if cause not in causes or cause != prior["integrity_failure"]:
+            raise ValueError("prior run requires exact qualifying failure cause")
+        if type(run["completed"]) is not bool:
+            raise ValueError("malformed prior completion flag")
+        if type(run["id"]) is not str or not run["id"] or run["id"] in seen:
+            raise ValueError("duplicate prior run")
+        if run["host"] != machine or run["size_input_sha256"] != inputs.sha256:
+            raise ValueError("prior run host or size input mismatch")
+        if any(run[k] != runtime[k] for k in runtime):
+            raise ValueError("prior run interpreter mismatch")
+        for field in (["preserved_evidence_sha256"]
+                      + (["contemporaneous_os_evidence_sha256"] if cause == "independent OS malfunction" else [])):
+            if not digest(run.get(field)):
+                raise ValueError("prior failure evidence absent")
+        loads = run.get("load_averages")
+        if (type(loads) is not list or len(loads) != 3
+            or any(type(v) not in (int, float) or not math.isfinite(v) or v < 0 for v in loads)
+            or type(run.get("concurrent_process_count")) is not int or run["concurrent_process_count"] < 1):
+            raise ValueError("prior load provenance missing")
+        if run["completed"]:
+            values = run["binding_inputs"]
+            if set(values) != binding_keys or any(
+                    type(v) not in (int, float) or not math.isfinite(v) or v <= 0 for v in values.values()):
+                raise ValueError("unmeasured prior binding inputs")
+        runs.append(run)
+        seen.add(run["id"])
+    return runs
+
+
 def publish(path, value):
     with path.open("x") as stream:
         json.dump(value, stream, indent=2, sort_keys=True, allow_nan=False)
@@ -314,6 +385,8 @@ def main():
     parser.add_argument("--benchmark", type=Path)
     parser.add_argument("--calibration", type=Path)
     parser.add_argument("--gate", type=Path)
+    parser.add_argument("--prior", type=Path, action="append", default=[],
+                        help="Every prior published fit, oldest first; repeat for each prior fit")
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError("locked evidence is create-once")
@@ -342,30 +415,49 @@ def main():
         if not all((args.benchmark, args.calibration, args.gate)):
             parser.error("fit requires --benchmark, --calibration and --gate")
         records, digests = read_evidence((args.benchmark, args.calibration, args.gate))
+        if any(r["host"] != machine for r in records):
+            raise ValueError("locked measurements require the same host")
+        if any(r[k] != runtime[k] for r in records for k in runtime):
+            raise ValueError("locked measurements require the same interpreter")
         inventory = locked_inventory(inputs, records[2])
+        inventory_digest = hashlib.sha256(canonical(inventory)).hexdigest()
+        priors, prior_digests = read_evidence(args.prior)
+        digests.update(prior_digests)
+        record = measurement_run(inputs, *records, digests)
+        prior_runs = prior_measurement_runs(priors, inputs, inventory_digest, machine, runtime,
+                                            set(record["binding_inputs"]))
         result = {"measurement_runs": {
-                      "locked_inventory_sha256": hashlib.sha256(canonical(inventory)).hexdigest(),
-                      "runs": [measurement_run(inputs, *records, digests)]},
+                      "locked_inventory_sha256": inventory_digest,
+                      "runs": prior_runs + [record]},
                   "locked_inventory": inventory, "evidence_sha256": digests}
     finish(inputs, args.input, args.output, args.mode, result, closure, machine,
            load_start, runtime, started)
 
 
 def finish(inputs, input_path, output, mode, result, closure, machine, load_start, runtime, started):
-    end_closure = provenance(inputs)
-    input_end = input_path.read_bytes()
+    end_closure = provenance(inputs, tolerate_missing=True)
+    input_error = None
     try:
-        unchanged_input = inputs.record_bytes == canonical(json.loads(input_end))
+        input_end = input_path.read_bytes()
+    except OSError as exc:
+        input_end = None
+        input_error = f"{type(exc).__name__}: {exc}"
+    try:
+        unchanged_input = input_end is not None and inputs.record_bytes == canonical(json.loads(input_end))
     except (ValueError, UnicodeError):
         unchanged_input = False
     failed = closure != end_closure or not unchanged_input
-    if failed and "measurement_runs" in result:
-        for record in result["measurement_runs"]["runs"]:
+    if "measurement_runs" in result:
+        record = result["measurement_runs"]["runs"][-1]
+        if failed:
             record["integrity_failure"] = "closure mismatch"
             record["preserved_evidence_sha256"] = hashlib.sha256(canonical(result["evidence_sha256"])).hexdigest()
+        failed |= record["integrity_failure"] is not None
     result.update(schema="x1-locked-size-"+mode+"/synthetic-v1", synthetic_only=True,
                   authority="Draft synthetic evidence only; no preparation, inventory, remeasurement or OC authority",
-                  provenance=closure, end_provenance=end_closure, input_end_sha256=hashlib.sha256(input_end).hexdigest(),
+                  provenance=closure, end_provenance=end_closure,
+                  input_end_sha256=hashlib.sha256(input_end).hexdigest() if input_end is not None else None,
+                  **({"input_end_error": input_error} if input_error else {}),
                   host=machine, host_load={"start": load_start, "end": host_load()}, **runtime,
                   completed=True, integrity_failure="closure mismatch" if failed else None,
                   elapsed_seconds=time.perf_counter()-started)

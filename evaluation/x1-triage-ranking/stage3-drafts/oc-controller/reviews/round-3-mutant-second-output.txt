@@ -1,0 +1,400 @@
+=== kernel digest: KILLED (exit 1) ===
+controller.py: '    if digest(path.read_bytes()) != KERNEL_SHA256:\n        raise RuntimeError("signed population identity source changed")\n' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-cv3tj2si/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_source_order_policy_refusals_before_freeze
+test_source_order_policy_refusals_before_freeze (__main__.ControllerTests.test_source_order_policy_refusals_before_freeze) ... FAIL
+
+======================================================================
+FAIL: test_source_order_policy_refusals_before_freeze (__main__.ControllerTests.test_source_order_policy_refusals_before_freeze)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-cv3tj2si/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 127, in test_source_order_policy_refusals_before_freeze
+    with self.assertRaises(RuntimeError): self.make(root=root, kernel_path=bad)
+AssertionError: RuntimeError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.018s
+
+FAILED (failures=1)
+
+=== order pin: KILLED (exit 1) ===
+controller.py: 'digest(canonical(self._ordered)) != ORDER_SHA256 or ' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-lvzhvcla/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_source_order_policy_refusals_before_freeze
+test_source_order_policy_refusals_before_freeze (__main__.ControllerTests.test_source_order_policy_refusals_before_freeze) ... FAIL
+
+======================================================================
+FAIL: test_source_order_policy_refusals_before_freeze (__main__.ControllerTests.test_source_order_policy_refusals_before_freeze)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-lvzhvcla/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 129, in test_source_order_policy_refusals_before_freeze
+    with patch.object(c, target, replacement), self.assertRaises(RuntimeError): self.make(root=root)
+AssertionError: RuntimeError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.049s
+
+FAILED (failures=1)
+
+=== policy pin: KILLED (exit 1) ===
+controller.py: ' or digest(canonical(POLICY)) != POLICY_SHA256' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-69dkmn7e/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_source_order_policy_refusals_before_freeze
+test_source_order_policy_refusals_before_freeze (__main__.ControllerTests.test_source_order_policy_refusals_before_freeze) ... FAIL
+
+======================================================================
+FAIL: test_source_order_policy_refusals_before_freeze (__main__.ControllerTests.test_source_order_policy_refusals_before_freeze)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-69dkmn7e/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 129, in test_source_order_policy_refusals_before_freeze
+    with patch.object(c, target, replacement), self.assertRaises(RuntimeError): self.make(root=root)
+AssertionError: RuntimeError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.087s
+
+FAILED (failures=1)
+
+=== criticality completion: KILLED (exit 1) ===
+controller.py: '        if status == "measured" and len(self._active["criticality"]) != 4:\n            raise RuntimeError("all criticality phases required")\n' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-wqch4fom/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_private_readonly_state_and_completion_guard
+test_private_readonly_state_and_completion_guard (__main__.ControllerTests.test_private_readonly_state_and_completion_guard) ... FAIL
+
+======================================================================
+FAIL: test_private_readonly_state_and_completion_guard (__main__.ControllerTests.test_private_readonly_state_and_completion_guard)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-wqch4fom/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 458, in test_private_readonly_state_and_completion_guard
+    with s._state_lock, self.assertRaises(RuntimeError): s._complete("measured")
+AssertionError: RuntimeError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.031s
+
+FAILED (failures=1)
+
+=== nonbool gate: KILLED (exit 1) ===
+controller.py: '                    if type(passes) is not bool:\n                        raise ValueError("gate must report a bool")\n' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-hnw8iq1g/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_nonbool_gate_is_latched_not_gate_failure
+test_nonbool_gate_is_latched_not_gate_failure (__main__.ControllerTests.test_nonbool_gate_is_latched_not_gate_failure) ... FAIL
+
+======================================================================
+FAIL: test_nonbool_gate_is_latched_not_gate_failure (__main__.ControllerTests.test_nonbool_gate_is_latched_not_gate_failure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-hnw8iq1g/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 272, in test_nonbool_gate_is_latched_not_gate_failure
+    def test_nonbool_gate_is_latched_not_gate_failure(self): self.fault_case("gate", 1)
+                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-hnw8iq1g/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 254, in fault_case
+    with self.assertRaises(c.Stopped):
+AssertionError: Stopped not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.022s
+
+FAILED (failures=1)
+
+=== wall origin: KILLED (exit 1) ===
+controller.py: '(self._clock() - self._oc_started_at) / 86400' -> '(self._clock() - self._freeze["created_at"]) / 86400'
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-d8otgysw/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_meter_origin_decrease_and_fault_latch_without_meter_read
+test_meter_origin_decrease_and_fault_latch_without_meter_read (__main__.ControllerTests.test_meter_origin_decrease_and_fault_latch_without_meter_read) ... FAIL
+
+======================================================================
+FAIL: test_meter_origin_decrease_and_fault_latch_without_meter_read (__main__.ControllerTests.test_meter_origin_decrease_and_fault_latch_without_meter_read)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-d8otgysw/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 435, in test_meter_origin_decrease_and_fault_latch_without_meter_read
+    with self.assertRaises(c.Stopped): lane.step(lambda i: True, lambda i: True)
+AssertionError: Stopped not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.044s
+
+FAILED (failures=1)
+
+=== decreasing meter: KILLED (exit 1) ===
+controller.py: ' or core < self._last_core or wall < self._last_wall' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-v0vwukm_/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_meter_origin_decrease_and_fault_latch_without_meter_read
+test_meter_origin_decrease_and_fault_latch_without_meter_read (__main__.ControllerTests.test_meter_origin_decrease_and_fault_latch_without_meter_read) ... FAIL
+
+======================================================================
+FAIL: test_meter_origin_decrease_and_fault_latch_without_meter_read (__main__.ControllerTests.test_meter_origin_decrease_and_fault_latch_without_meter_read)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-v0vwukm_/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 443, in test_meter_origin_decrease_and_fault_latch_without_meter_read
+    with self.assertRaises(c.Stopped): lease.step(lambda i: True, lambda i: True)
+AssertionError: Stopped not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.069s
+
+FAILED (failures=1)
+
+=== Wilson variance: KILLED (exit 1) ===
+controller.py: 'p*(1-p)/n+' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-_g97d4u7/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_independent_known_answers_and_canonical_seed_refusals
+test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) ... FAIL
+
+======================================================================
+FAIL: test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-_g97d4u7/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 117, in test_independent_known_answers_and_canonical_seed_refusals
+    for actual, want in zip(c.wilson(50, 2000), expected): self.assertAlmostEqual(actual, want, places=15)
+                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0.024952073817968677 != 0.019014423503992475 within 15 places (0.005937650313976202 difference)
+
+----------------------------------------------------------------------
+Ran 1 test in 0.015s
+
+FAILED (failures=1)
+
+=== canonical seed: KILLED (exit 1) ===
+controller.py: '        if canonical(json.loads(cell)) != cell_bytes:\n            raise ValueError("cell string is not canonical JSON")\n' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-hogi4kto/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_independent_known_answers_and_canonical_seed_refusals
+test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) ... 
+  test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='{"b":1,"a":2}') ... FAIL
+  test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='{"a": 2}') ... FAIL
+  test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='garbage') ... FAIL
+  test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='NaN') ... FAIL
+
+======================================================================
+FAIL: test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='{"b":1,"a":2}')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-hogi4kto/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 113, in test_independent_known_answers_and_canonical_seed_refusals
+    with self.subTest(cell=cell), self.assertRaises(ValueError): c.seed(cell, 0, 0, "audit")
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='{"a": 2}')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-hogi4kto/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 113, in test_independent_known_answers_and_canonical_seed_refusals
+    with self.subTest(cell=cell), self.assertRaises(ValueError): c.seed(cell, 0, 0, "audit")
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='garbage')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-hogi4kto/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 113, in test_independent_known_answers_and_canonical_seed_refusals
+    with self.subTest(cell=cell), self.assertRaises(ValueError): c.seed(cell, 0, 0, "audit")
+AssertionError: ValueError not raised
+
+======================================================================
+FAIL: test_independent_known_answers_and_canonical_seed_refusals (__main__.ControllerTests.test_independent_known_answers_and_canonical_seed_refusals) (cell='NaN')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-hogi4kto/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 113, in test_independent_known_answers_and_canonical_seed_refusals
+    with self.subTest(cell=cell), self.assertRaises(ValueError): c.seed(cell, 0, 0, "audit")
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.016s
+
+FAILED (failures=4)
+
+=== R3-01 poison latch: KILLED (exit 1) ===
+controller.py: '        raw = canonical(event) + b"\\n"\n        self._poisoned = True\n' -> '        raw = canonical(event) + b"\\n"\n        self._poisoned = False\n'
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-hm_fyovl/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays
+test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) ... 
+  test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='write') ... FAIL
+  test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='short') ... FAIL
+  test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='flush') ... FAIL
+  test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='fsync') ... FAIL
+  test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='apply') ... FAIL
+
+======================================================================
+FAIL: test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='write')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-hm_fyovl/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 822, in test_journal_failure_poison_blocks_other_lane_and_replays
+    self.assertTrue(s._poisoned)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='short')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-hm_fyovl/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 822, in test_journal_failure_poison_blocks_other_lane_and_replays
+    self.assertTrue(s._poisoned)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='flush')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-hm_fyovl/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 822, in test_journal_failure_poison_blocks_other_lane_and_replays
+    self.assertTrue(s._poisoned)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='fsync')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-hm_fyovl/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 822, in test_journal_failure_poison_blocks_other_lane_and_replays
+    self.assertTrue(s._poisoned)
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='apply')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-hm_fyovl/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 822, in test_journal_failure_poison_blocks_other_lane_and_replays
+    self.assertTrue(s._poisoned)
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 1 test in 0.070s
+
+FAILED (failures=5)
+
+=== R3-01 poisoned writer guard: KILLED (exit 1) ===
+controller.py: '        if self._poisoned:\n            raise JournalPoisoned("journal writer poisoned; restart and replay required")\n' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-mz23fae0/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays
+test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) ... 
+  test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='write') ... FAIL
+  test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='short') ... FAIL
+  test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='flush') ... FAIL
+  test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='fsync') ... FAIL
+  test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='apply') ... FAIL
+
+======================================================================
+FAIL: test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='write')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-mz23fae0/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 827, in test_journal_failure_poison_blocks_other_lane_and_replays
+    self.assertIsInstance(errors[0], c.JournalPoisoned)
+AssertionError: OSError('injected partial append') is not an instance of <class 'x1_controller_test.JournalPoisoned'>
+
+======================================================================
+FAIL: test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='short')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-mz23fae0/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 827, in test_journal_failure_poison_blocks_other_lane_and_replays
+    self.assertIsInstance(errors[0], c.JournalPoisoned)
+AssertionError: OSError('short journal write') is not an instance of <class 'x1_controller_test.JournalPoisoned'>
+
+======================================================================
+FAIL: test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='flush')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-mz23fae0/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 827, in test_journal_failure_poison_blocks_other_lane_and_replays
+    self.assertIsInstance(errors[0], c.JournalPoisoned)
+AssertionError: OSError('injected flush') is not an instance of <class 'x1_controller_test.JournalPoisoned'>
+
+======================================================================
+FAIL: test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='fsync')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-mz23fae0/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 826, in test_journal_failure_poison_blocks_other_lane_and_replays
+    self.assertEqual(len(errors), 1)
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_journal_failure_poison_blocks_other_lane_and_replays (__main__.ControllerTests.test_journal_failure_poison_blocks_other_lane_and_replays) (stage='apply')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-mz23fae0/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 826, in test_journal_failure_poison_blocks_other_lane_and_replays
+    self.assertEqual(len(errors), 1)
+AssertionError: 0 != 1
+
+----------------------------------------------------------------------
+Ran 1 test in 0.069s
+
+FAILED (failures=5)
+
+=== R3-03 binding admission: KILLED (exit 1) ===
+controller.py: 'self._started_safety or self._run_lock.locked() or ' -> 'self._started_safety or '
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-8k2bp007/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_paused_run_atomically_closes_binding_admission
+test_paused_run_atomically_closes_binding_admission (__main__.ControllerTests.test_paused_run_atomically_closes_binding_admission) ... FAIL
+
+======================================================================
+FAIL: test_paused_run_atomically_closes_binding_admission (__main__.ControllerTests.test_paused_run_atomically_closes_binding_admission)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-8k2bp007/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 690, in test_paused_run_atomically_closes_binding_admission
+    self.assertEqual(errors, [])
+AssertionError: Lists differ: [RuntimeError('binding populations unfinished or faulted')] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+RuntimeError('binding populations unfinished or faulted')
+
+- [RuntimeError('binding populations unfinished or faulted')]
++ []
+
+----------------------------------------------------------------------
+Ran 1 test in 0.016s
+
+FAILED (failures=1)
+
+=== R3-05 gate classification: KILLED (exit 1) ===
+controller.py: '                    if self._terminated or self._paused or epoch != self._epoch:\n                        raise Stopped("gate result remains unclassified after stop/pause")\n' -> ''
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-dcu70lfi/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_gate_window_classifications_are_isolated
+test_gate_window_classifications_are_isolated (__main__.ControllerTests.test_gate_window_classifications_are_isolated) ... 
+  test_gate_window_classifications_are_isolated (__main__.ControllerTests.test_gate_window_classifications_are_isolated) (action='pause-resume') ... FAIL
+
+======================================================================
+FAIL: test_gate_window_classifications_are_isolated (__main__.ControllerTests.test_gate_window_classifications_are_isolated) (action='pause-resume')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-dcu70lfi/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 629, in test_gate_window_classifications_are_isolated
+    self.assertEqual(lane.report()["gate_passes"], 0)
+AssertionError: 1 != 0
+
+----------------------------------------------------------------------
+Ran 1 test in 0.058s
+
+FAILED (failures=1)
+
+=== R3-05 gate BaseException: INVALID OR SURVIVED (exit -2) ===
+controller.py: '                        raise ValueError("gate must report a bool")\n                except BaseException as error:' -> '                        raise ValueError("gate must report a bool")\n                except Exception as error:'
+command: /Users/adamjackson/Projects/work/scout-x1g/.tools/venv/bin/python /var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-n7rnmoij/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py -v ControllerTests.test_gate_baseexception_is_latched
+test_gate_baseexception_is_latched (__main__.ControllerTests.test_gate_baseexception_is_latched) ... Traceback (most recent call last):
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-n7rnmoij/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 861, in <module>
+    unittest.main()
+  File "/Users/adamjackson/Projects/work/scout/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/unittest/main.py", line 102, in __init__
+    self.runTests()
+  File "/Users/adamjackson/Projects/work/scout/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/unittest/main.py", line 274, in runTests
+    self.result = testRunner.run(self.test)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/unittest/runner.py", line 217, in run
+    test(result)
+  File "/Users/adamjackson/Projects/work/scout/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/unittest/suite.py", line 122, in run
+    test(result)
+  File "/Users/adamjackson/Projects/work/scout/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/unittest/suite.py", line 84, in __call__
+    return self.run(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/unittest/suite.py", line 122, in run
+    test(result)
+  File "/Users/adamjackson/Projects/work/scout/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/unittest/case.py", line 678, in __call__
+    return self.run(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/unittest/case.py", line 623, in run
+    self._callTestMethod(testMethod)
+  File "/Users/adamjackson/Projects/work/scout/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/unittest/case.py", line 579, in _callTestMethod
+    if method() is not None:
+       ^^^^^^^^
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-n7rnmoij/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 642, in test_gate_baseexception_is_latched
+    self.fault_case("gate", KeyboardInterrupt())
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-n7rnmoij/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 255, in fault_case
+    lane.step(broken if phase == "gate" else lambda i: True, broken if phase == "trial" else lambda i: True)
+  File "/private/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-n7rnmoij/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/controller.py", line 138, in step
+    return self._owner._attempt(self._key, gate, trial)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-n7rnmoij/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/controller.py", line 525, in _attempt
+    passes = gate(index)
+             ^^^^^^^^^^^
+  File "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/x1g-controller-mutant-n7rnmoij/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/test_controller.py", line 252, in broken
+    if isinstance(value, BaseException): raise value
+                                         ^^^^^^^^^^^
+KeyboardInterrupt
+
+Traceback (most recent call last):
+  File "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/mutate_round2.py", line 63, in <module>
+    main()
+  File "/Users/adamjackson/Projects/work/scout-x1g/evaluation/x1-triage-ranking/stage3-drafts/oc-controller/mutate_round2.py", line 57, in main
+    raise RuntimeError(f"mutation not killed by an assertion: {name}")
+RuntimeError: mutation not killed by an assertion: R3-05 gate BaseException
