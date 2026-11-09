@@ -765,25 +765,30 @@ s.run(lambda *a: True, crash, prepare, lambda *a: {})
         s.close()
         with patch.object(c.platform, "python_version", return_value="different"):
             with self.assertRaises(RuntimeError): self.make(root=root)
-        for arguments in (["-O"], []):
+        for arguments, mode in ((["-O"], "optimization"), ([], "version"), ([], "implementation")):
             with tempfile.TemporaryDirectory() as directory:
                 code = """
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 sys.path.insert(0, sys.argv[1])
 import controller as c
-if not sys.flags.optimize: c.sys.version_info = (3, 11, 12)
+c.shutil.disk_usage = lambda path: SimpleNamespace(free=10**16)
+if sys.argv[3] == "version": c.sys.version_info = (3, 11, 12)
+if sys.argv[3] == "implementation": c.platform.python_implementation = lambda: "PyPy"
 try:
     c.SafetySchedule(p_gate=.5, inventory_sha256='c'*64, meter=lambda: 0, oc_started_at=0, run_root=sys.argv[2])
-except RuntimeError:
-    sys.exit(0 if not (Path(sys.argv[2])/'x1-oc-controller/freeze.json').exists() else 2)
+except RuntimeError as error:
+    print(str(error))
+    sys.exit(0 if str(error) == "requires CPython 3.11.11 with python_optimize=0" and not (Path(sys.argv[2])/'x1-oc-controller/freeze.json').exists() else 2)
 sys.exit(3)
 """
-                result = subprocess.run([sys.executable, *arguments, "-c", code, str(HERE), directory], capture_output=True, timeout=30)
+                result = subprocess.run([sys.executable, *arguments, "-c", code, str(HERE), directory, mode], capture_output=True, timeout=30)
                 self.assertEqual(result.returncode, 0, result.stderr.decode())
+                self.assertEqual(result.stdout.decode().strip(), "requires CPython 3.11.11 with python_optimize=0")
 
     def test_journal_failure_poison_blocks_other_lane_and_replays(self):
-        for stage in ("write", "short", "flush", "fsync", "apply"):
+        for stage in ("write", "short", "newline", "flush", "fsync", "apply"):
             with self.subTest(stage=stage):
                 s, meter, root = self.make()
                 first, second = self.lane(s), self.lane(s, slot=1)
@@ -800,12 +805,14 @@ sys.exit(3)
                 thread.start()
                 self.assertTrue(entered.wait(10))
                 original_file, original_apply = s._journal_file, s._apply
+                expected = copy.deepcopy(s._populations[first._key])
                 class FailingFile:
                     def write(self, raw):
                         if stage == "write":
                             original_file.write(raw[:len(raw)//2])
                             raise OSError("injected partial append")
                         if stage == "short": return original_file.write(raw[:len(raw)//2])
+                        if stage == "newline": return original_file.write(raw[:-1])
                         return original_file.write(raw)
                     def flush(self):
                         if stage == "flush": raise OSError("injected flush")
@@ -842,18 +849,25 @@ sys.exit(3)
                         self.assertIsInstance(blocked[0], c.JournalPoisoned)
                     self.assertEqual(journal.read_bytes(), frozen_bytes)
                     s.close()
-                    recovered, _, _ = self.make(root=root, meter=meter)
-                    self.assertTrue(recovered.paused)
-                    self.assertEqual(recovered.events[-1]["data"]["kind"], "process loss")
                     rows = []
                     for line in frozen_bytes.splitlines():
                         try: rows.append(json.loads(line))
                         except ValueError: pass
-                    expected = 0
                     for row in rows:
+                        expected.update(row.get("updates", {}).get("0", {}))
                         if row["kind"] == "population_state" and row["data"]["i"] == 0:
-                            expected = row["data"]["d"].get("executions", expected)
-                    self.assertEqual(recovered._population_report(first._key)["executions"], expected)
+                            expected.update(row["data"]["d"])
+                    for restart in range(2):
+                        failures = []
+                        try: recovered, _, _ = self.make(root=root, meter=meter)
+                        except BaseException as error: failures.append(repr(error))
+                        self.assertEqual(failures, [], f"{stage} restart {restart}")
+                        self.assertTrue(recovered.paused)
+                        self.assertEqual(recovered.events[-1]["data"]["kind"], "process loss")
+                        if stage == "newline":
+                            self.assertIsNone(recovered.events[-1]["data"]["tail_sha256"])
+                        self.assertEqual(recovered._populations[first._key], expected)
+                        recovered.close()
                 finally:
                     # Assertion-killed mutants must not strand their live peer.
                     release.set()

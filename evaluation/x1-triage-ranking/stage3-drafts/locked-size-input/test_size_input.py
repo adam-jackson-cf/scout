@@ -322,6 +322,9 @@ class LockedModeTests(unittest.TestCase):
         provenance, _ = evaluator_modules()
         self.assertEqual(set(values), provenance.INPUTS)
         self.assertNotIn("fits_caps", result)
+        data["population_measurements"][1]["fixed_key_evaluations"][1]["cpu_seconds"] = 10.
+        fixed = commands.measurement_run(source, data, calibration, gate, {"synthetic": "1"*64})
+        self.assertEqual(fixed["binding_inputs"]["requested_base_cpu_per_unit"], 10/3000)
         for row in calibration["measurements"]:
             row["peak_rss_bytes"] = 0
         with self.assertRaisesRegex(ValueError, "unmeasured"):
@@ -449,6 +452,63 @@ class RoundThreeTests(unittest.TestCase):
                 self.assertEqual(run["binding_inputs"]["construction_rss"], 3000)
                 self.assertEqual(run["preserved_evidence_sha256"],
                                  hashlib.sha256(canonical(result["evidence_sha256"])).hexdigest())
+
+    def test_agreeing_components_differ_from_fit_closure(self):
+        source, data, calibration, gate = measurement_fixture()
+        b = copy.deepcopy(data["provenance"])
+        b["source_sha256"]["synthetic-controller"] = "b"*64
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            with patch.object(commands, "provenance", return_value=b):
+                with self.assertRaisesRegex(RuntimeError, "completed evidence published"):
+                    self.run_fit(folder, "all-a", source, (data, calibration, gate))
+            result = json.loads((folder/"all-a-fit.json").read_bytes())
+            run = result["measurement_runs"]["runs"][0]
+            self.assertIs(result["completed"], True)
+            self.assertIs(run["completed"], True)
+            self.assertEqual(run["integrity_failure"], "closure mismatch")
+            self.assertEqual(result["integrity_failure"], "closure mismatch")
+            self.assertEqual(run["preserved_evidence_sha256"],
+                             hashlib.sha256(canonical(result["evidence_sha256"])).hexdigest())
+            self.assertEqual(run["binding_inputs"], {
+                "construction_cpu_per_unit": .002, "requested_base_cpu_per_unit": .003,
+                "calibration_cpu_per_unit": .004, "enumeration_cpu_per_population": 4.,
+                "gate_cpu_per_check": .25, "complete_trial_cpu": .03,
+                "full512_trial_cpu": .07, "construction_rss": 3000,
+                "calibration_rss": 4000, "trial_plus_helper_rss": 5000})
+
+    def test_calibration_failure_finalised_before_rerun(self):
+        source, data, calibration, gate = measurement_fixture()
+        calibration["measurements"][1]["peak_rss_bytes"] = 12000
+        a = calibration["provenance"]
+        b = copy.deepcopy(a)
+        b["source_sha256"]["synthetic-controller"] = "b"*64
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            input_path, published = folder/"input.json", folder/"published-calibration.json"
+            input_path.write_bytes(source.record_bytes)
+            with patch.object(commands, "provenance", return_value=b), patch.object(
+                    commands, "host_load", return_value=calibration["host_load"]["start"]):
+                with self.assertRaisesRegex(RuntimeError, "completed evidence published"):
+                    commands.finish(source, input_path, published, "calibration", calibration, a,
+                                    calibration["host"], calibration["host_load"]["start"],
+                                    commands.interpreter(), time.perf_counter())
+                failed_calibration = json.loads(published.read_bytes())
+                self.assertEqual(failed_calibration["integrity_failure"], "closure mismatch")
+                with self.assertRaisesRegex(RuntimeError, "completed evidence published"):
+                    self.run_fit(folder, "original", source, (data, failed_calibration, gate))
+                prior = folder/"original-fit.json"
+                original = json.loads(prior.read_bytes())["measurement_runs"]["runs"][0]
+                source, data, calibration, gate = measurement_fixture()
+                output = self.run_fit(folder, "rerun", source, (data, calibration, gate), [prior])
+            runs = json.loads(output.read_bytes())["measurement_runs"]["runs"]
+            self.assertEqual(runs[0], original)
+            self.assertEqual(runs[1]["binding_inputs"]["calibration_rss"], 4000)
+            provenance, _ = evaluator_modules()
+            maxima, reports = provenance.maximum_completed_inputs(runs, data["host"])
+            self.assertEqual(maxima["calibration_rss"], 12000)
+            self.assertEqual([r["classification"] for r in reports],
+                             ["completed-invalid-included", "completed-valid-included"])
 
     def test_prior_cli_preserves_maxima_and_reads_once(self):
         source, data, calibration, gate = measurement_fixture()

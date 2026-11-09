@@ -60,6 +60,23 @@ PYTHONDONTWRITEBYTECODE=1 .tools/venv/bin/python "$D/test_size_input.py"
 .tools/venv/bin/python "$D/locked_commands.py" fit --input /tmp/x1g-synthetic-sizes.json --benchmark /tmp/x1g-synthetic-benchmark.json --calibration /tmp/x1g-synthetic-calibration.json --gate /tmp/x1g-synthetic-gate.json --output /tmp/x1g-synthetic-fit.json
 ```
 
+### Finalise the original run before any rerun
+
+After **any component exits nonzero with published closure-mismatch evidence**, keep that output, finish the remaining components and run `fit` on the **original component set**. The fit publishes completed-invalid and exits nonzero; it is the mandatory first `--prior` of any rerun. **Never rerun or replace a component before this fit exists.** Run the following commands separately, not chained with `&&`: a completed-invalid command intentionally returns nonzero after publishing its evidence. A command that publishes no output is not this recovery path.
+
+If `benchmark` published `/tmp/x1g-synthetic-benchmark.json` and exited nonzero, retain it and the original gate, then finish calibration and finalise:
+
+```sh
+.tools/venv/bin/python "$D/locked_commands.py" calibration --input /tmp/x1g-synthetic-sizes.json --output /tmp/x1g-synthetic-calibration.json
+.tools/venv/bin/python "$D/locked_commands.py" fit --input /tmp/x1g-synthetic-sizes.json --benchmark /tmp/x1g-synthetic-benchmark.json --calibration /tmp/x1g-synthetic-calibration.json --gate /tmp/x1g-synthetic-gate.json --output /tmp/x1g-synthetic-fit.json
+```
+
+If `calibration` published `/tmp/x1g-synthetic-calibration.json` and exited nonzero, all components already exist; retain them and finalise immediately:
+
+```sh
+.tools/venv/bin/python "$D/locked_commands.py" fit --input /tmp/x1g-synthetic-sizes.json --benchmark /tmp/x1g-synthetic-benchmark.json --calibration /tmp/x1g-synthetic-calibration.json --gate /tmp/x1g-synthetic-gate.json --output /tmp/x1g-synthetic-fit.json
+```
+
 If a separately authorised rerun is required, retain the failed fit and include it explicitly (use fresh rerun component/output paths):
 
 ```sh
@@ -75,7 +92,7 @@ PYTHONDONTWRITEBYTECODE=1 .tools/venv/bin/python "$D/test_size_input.py" RoundTh
 PYTHONDONTWRITEBYTECODE=1 .tools/venv/bin/python "$D/round3_evidence.py" --output /tmp/x1g-r3-size-checks.json
 ```
 
-`round3_evidence.py` publishes the independent ten-input derivation, five focused fault-mutant results (construction minimum/first row, full512 mapped to complete, dropped gate divisor, dropped calibration frame), function/source digests and five fabricated-record extraction wall times. It exits nonzero for a surviving mutant. These timings are not binding benchmark evidence. The heterogeneous fixture's hand answers use 3,000 total units: construction 6/3,000=.002, requested base 9/3,000=.003, calibration 12/3,000=.004, enumeration 4, gate 25,000/100,000=.25, complete .03, full512 .07, and RSS 3,000/4,000/5,000. Each list maximum is outside its first row; trial CPU maxima occur in different worker executions, and calibration frame CPU exceeds every fixed-key CPU.
+`round3_evidence.py` publishes the independent ten-input derivation, six focused fault-mutant results (construction minimum/first row, full512 mapped to complete, dropped gate divisor, dropped calibration frame, dropped fixed-key evaluations), function/source digests and five fabricated-record extraction wall times. It exits nonzero for a surviving mutant. These timings are not binding benchmark evidence. The heterogeneous fixture's hand answers use 3,000 total units: construction 6/3,000=.002, requested base 9/3,000=.003, calibration 12/3,000=.004, enumeration 4, gate 25,000/100,000=.25, complete .03, full512 .07, and RSS 3,000/4,000/5,000. Each list maximum is outside its first row; trial CPU maxima occur in different worker executions. The frame-dominant fixture is complemented by a fixed-key-dominant variant with second-row CPU 10, whose requested-base answer is exactly 10/3,000.
 
 **Observed round-3 validation:** parent verification passed 30 tests in 596.312 seconds, all five focused extraction mutants were assertion-killed, and the actual full-count CLI integration passed in 593.939 seconds against the final controller closure. `reviews/round-3-response.md` maps all five findings and R2-02 residuals to lines/tests, exact commands, full output and SHA-256s. Logs and all six CLI receipts are preserved under `reviews/round-3-*`; historical round-2 receipts below are unchanged. These are synthetic validation results, not study results or run authority.
 
@@ -122,3 +139,6 @@ The independent canonical-record digest fixture uses 20 runs of size 50 in each 
 | R3-03 | tolerant end-only `provenance` and `finish` input snapshot preserve null/error | `test_missing_or_unreadable_end_snapshots_publish` (missing and unreadable, source and input) |
 | R3-04 | heterogeneous `measurement_fixture`, all-ten literal assertions; independent `round3_evidence.py` derivation/mutants | `test_extraction_uses_locked_maxima_not_slopes` |
 | R3-05 | `measurement_run` pinned component guards, existing `main` premeasurement guard | `test_component_input_host_interpreter_and_flags_refused`, `test_optimized_gate_subprocess_refused_before_measurement` |
+| R4-01 | finalise-before-rerun recovery commands above; existing fit/prior assembly | `test_calibration_failure_finalised_before_rerun` preserves original calibration RSS 12,000 over rerun 4,000 |
+| R4-02 | fixed-key-dominant extraction variant and `fixed-key-dropped` mutant | `test_extraction_uses_locked_maxima_not_slopes` |
+| R4-03 | A/A/A→B fit-time closure regression | `test_agreeing_components_differ_from_fit_closure` asserts all ten literal inputs, preserved digest and completed-invalid nonzero publication |

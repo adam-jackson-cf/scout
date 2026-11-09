@@ -50,6 +50,9 @@ def main():
                                  'r["size_only_sampling_gate"]["cpu_seconds"]'),
         "calibration-frame-dropped": (
             '+ [max(r["frame_evaluation_cpu_seconds"]) for r in calibration["measurements"]]', '+ []'),
+        "fixed-key-dropped": (
+            '[e["cpu_seconds"] for r in data["population_measurements"] for e in r["fixed_key_evaluations"]]',
+            '[]'),
     }
     actual = function(source, data, calibration, gate, {"synthetic": "1" * 64})["binding_inputs"]
     expected = independent_answers()
