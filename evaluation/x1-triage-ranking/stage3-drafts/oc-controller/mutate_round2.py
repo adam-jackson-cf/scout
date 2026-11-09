@@ -25,6 +25,10 @@ MUTANTS = [
     ("R3-05 gate BaseException", '                        raise ValueError("gate must report a bool")\n                except BaseException as error:', '                        raise ValueError("gate must report a bool")\n                except Exception as error:', "test_gate_baseexception_is_latched"),
     ("R3-05 calibration BaseException", '                record["record_sha256"] = digest(canonical(record))\n            except BaseException as error:', '                record["record_sha256"] = digest(canonical(record))\n            except Exception as error:', "test_calibration_baseexception_is_latched"),
     ("R3-05 safety handle", '                if p["safety"] and not self._run_lock.locked():\n                    raise RuntimeError("safety work belongs to run loop")\n', "", "test_safety_handle_guard"),
+    ("R4-01 newline-less complete record", '                    event = json.loads(raw)\n', '                    event = json.loads(raw) if raw.endswith(b"\\n") else None\n', "test_journal_failure_poison_blocks_other_lane_and_replays"),
+    ("R4-02 optimization", ' or sys.flags.optimize', "", "test_disk_refusal_and_interpreter_provenance"),
+    ("R4-02 version", ' or sys.version_info[:3] != (3, 11, 11)', "", "test_disk_refusal_and_interpreter_provenance"),
+    ("R4-02 implementation", 'platform.python_implementation() != "CPython" or ', "", "test_disk_refusal_and_interpreter_provenance"),
 ]
 
 

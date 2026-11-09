@@ -296,10 +296,11 @@ class SafetySchedule:
         with path.open("rb") as stream:
             for raw in stream:
                 try:
-                    event = json.loads(raw) if raw.endswith(b"\n") else None
+                    event = json.loads(raw)
                 except (ValueError, UnicodeDecodeError):
                     event = None
-                if event is None:
+                if event is None or (not raw.endswith(b"\n") and
+                                     (event["seq"] != self._sequence or event["previous_sha256"] != self._previous)):
                     if pending_tail is not None:
                         raise RuntimeError("multiple corrupt journal records")
                     pending_tail = digest(raw.removesuffix(b"\n"))
@@ -314,7 +315,8 @@ class SafetySchedule:
                     raise RuntimeError("journal chain mismatch")
                 self._apply(event)
                 self._sequence += 1
-                self._previous = digest(raw)
+                self._tail_needs_newline = not raw.endswith(b"\n")
+                self._previous = digest(raw if raw.endswith(b"\n") else raw + b"\n")
         self._tail_sha = pending_tail
 
     def _check_writer(self):
