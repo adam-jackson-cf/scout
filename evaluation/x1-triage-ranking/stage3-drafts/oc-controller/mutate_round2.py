@@ -18,6 +18,13 @@ MUTANTS = [
     ("decreasing meter", " or core < self._last_core or wall < self._last_wall", "", "test_meter_origin_decrease_and_fault_latch_without_meter_read"),
     ("Wilson variance", "p*(1-p)/n+", "", "test_independent_known_answers_and_canonical_seed_refusals"),
     ("canonical seed", "        if canonical(json.loads(cell)) != cell_bytes:\n            raise ValueError(\"cell string is not canonical JSON\")\n", "", "test_independent_known_answers_and_canonical_seed_refusals"),
+    ("R3-01 poison latch", '        raw = canonical(event) + b"\\n"\n        self._poisoned = True\n', '        raw = canonical(event) + b"\\n"\n        self._poisoned = False\n', "test_journal_failure_poison_blocks_other_lane_and_replays"),
+    ("R3-01 poisoned writer guard", '        if self._poisoned:\n            raise JournalPoisoned("journal writer poisoned; restart and replay required")\n', "", "test_journal_failure_poison_blocks_other_lane_and_replays"),
+    ("R3-03 binding admission", 'self._started_safety or self._run_lock.locked() or ', 'self._started_safety or ', "test_paused_run_atomically_closes_binding_admission"),
+    ("R3-05 gate classification", '                    if self._terminated or self._paused or epoch != self._epoch:\n                        raise Stopped("gate result remains unclassified after stop/pause")\n', "", "test_gate_window_classifications_are_isolated"),
+    ("R3-05 gate BaseException", '                        raise ValueError("gate must report a bool")\n                except BaseException as error:', '                        raise ValueError("gate must report a bool")\n                except Exception as error:', "test_gate_baseexception_is_latched"),
+    ("R3-05 calibration BaseException", '                record["record_sha256"] = digest(canonical(record))\n            except BaseException as error:', '                record["record_sha256"] = digest(canonical(record))\n            except Exception as error:', "test_calibration_baseexception_is_latched"),
+    ("R3-05 safety handle", '                if p["safety"] and not self._run_lock.locked():\n                    raise RuntimeError("safety work belongs to run loop")\n', "", "test_safety_handle_guard"),
 ]
 
 

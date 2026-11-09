@@ -3,7 +3,7 @@
   "binding_scheduling": "eight fixed slots 0-7; one nonreentrant serial-attempt lease per slot; shared state lock and actual meter",
   "safety_scheduling": "controller-owned run loop; increasing population indices 0-4 serially; slots 5-7 reserved idle; no external per-step safety API",
   "group_order": "ascending HMAC-SHA256 of signed population_identity UTF-8 bytes; byte-order tie break",
-  "calibration": "signed kernel calibrates all five prepared populations before any attempt; first-profile disclosure and reachability reused across all six kappa groups",
+  "calibration": "signed kernel calibrates all five prepared populations before any attempt; first-profile disclosure and reachability reused across all six kappa groups; construction seed uses the existing safety-profile kind with exactly six base dimensions, excluding kappa and j per M l.53 construction base; this is a construction-base seed cell, not the outcome-cell safety-profile identity that includes critical_share; retain current seed bytes",
   "criticality_order": [0.0, 0.1, 1.0, 3.0],
   "criticality_scheduling": "four synchronous phases after all population lanes stop; completion requires all four records",
   "meter": "raw cumulative binding-plus-safety core-hours; no x2 multiplier",
@@ -12,8 +12,10 @@
   "boundary": "shared state lock before dispatch, gate, trial, criticality, completion and counter commits; caps use >=",
   "inflight": "durable trial-start is the linearization point; cap observed after return retains result; gold, integrity stop or pause during work leaves it charged and unclassified; no trial starts after a gate-window stop",
   "integrity": "gate, trial, calibration, criticality and meter faults latch a recorded pause; reviewed resume re-executes the same pending phase/index and seeds; no asserted outcome",
-  "durability": "fixed controller-owned run directory; exclusive process lock; create-once freeze; hash-chained fsync append-before-apply journal; replay or recorded process-loss pause; terminated replay is immutable",
+  "durability": "fixed run directory and exclusive process lock; hash-chained compact short-index counter deltas; fsync append-before-apply at trial start/result and control linearization points; gate classifications coalesced until next durable point, same-seed replay may repeat lost gates; meter folded into durable records; any write/flush/fsync/apply failure poisons all work until restart, never append a pause on an uncertain chain; replay or recorded process-loss pause; immutable terminated replay",
   "timestamps": "journal group dispatch/completion, lane start/stop, calibration and criticality starts/stops and every pause/termination",
-  "start": "after every leased binding population completes or exhausts with no pending fault",
+  "start": "binding admission closed while run owns its lock; every leased binding population completes or exhausts without pending fault, rechecked atomically with first dispatch",
+  "disk": "freeze records reservation for 90860 binding and 10080 safety populations at frozen p_gate; insufficient run-volume free space writes freeze-refused.json and refuses freeze; reservation is conservative, measured synthetic bytes and latency are reported separately, never reduced scientific trial counts",
+  "interpreter": "CPython 3.11.11 only, python_optimize=0; executable real path, SHA-256 and version frozen and checked on replay",
   "authority": "synthetic draft only; no stage authority"
 }

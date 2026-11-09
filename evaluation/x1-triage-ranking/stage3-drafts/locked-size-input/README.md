@@ -34,7 +34,8 @@ The digest is SHA-256 of the **whole record**, compact sorted-key JSON with list
 4. Worst-case every-size enumeration is the unmodified signed reporter function.
 5. Every measurement output contains every L_r, complete input record/digest, exact size-site substitutions and start/end source closure. The six signed source/manifest digests from rev9 are pinned before signed imports and again before measurement. Stable `host` has exactly `hw.model`, `hw.memsize`, `logical_cpus`, `os_build`. Separate `host_load.start` and `.end` record three load averages and the concurrent-process count (`ps -A -o pid=`). Every gate, benchmark, calibration and fit output records interpreter path/digest/version and `python_optimize=0`.
 6. `fit` only extracts the ten evaluator binding inputs: full locked operation CPU maxima divided by total locked units where appropriate, separate enumeration and cheap gate costs, complete/full512 trial maxima, and phase RSS maxima. It emits **no resource decision, hours, stop status or duplicate arithmetic**. The final evaluator's `maximum_completed_inputs` and `resource_fit` alone apply the binding resource convention. Evidence is read once, then parsed and hashed from the same bytes. Only studentized evidence with the frozen eight cells, workers [1,2], B=1,999 and every measured trial count equal to the requested count (at least 2,000) is accepted.
-7. A completed measurement with a closure mismatch is still published create-once with all values, both closures, `completed: true`, `integrity_failure: "closure mismatch"`, then exits nonzero. Such evidence must be preserved and its maxima included with the permitted rerun, never replaced by that rerun. `fit` propagates this classification to its run record. No command here authorises a rerun.
+7. A completed measurement with a closure mismatch is still published create-once with all values, both closures, `completed: true`, `integrity_failure: "closure mismatch"`, then exits nonzero. Missing/unreadable end snapshots retain a `null` digest and the read error, never an invented hash. `fit` also publishes completed-invalid when component start/end closures differ from each other or the current closure, even if an earlier component was unflagged. Size-input, host and interpreter mismatches still refuse. Components must be completed, have an exact supported failure flag, and record unoptimized CPython 3.11.11.
+8. A rerun `fit` **must include every prior published fit**, oldest first, using repeatable `--prior FIT.json`. Each prior is read once, parsed and hashed from those bytes, and its digest joins `evidence_sha256`. The first prior contains one run; each subsequent prior must preserve that exact prefix and append one run. Inventory/input/host/interpreter bindings must match. Every prior's last run must have a qualifying integrity failure with its exact cause and required preserved evidence; an unflagged prior is refused. The new payload contains all prior runs followed by the new run, so a 9,000-byte failed construction maximum cannot be replaced by a 3,000-byte rerun. A fit-time closure failure changes only the new run, not prior causes. No command here authorises a rerun.
 
 ### Evaluator payload contract
 
@@ -58,6 +59,25 @@ PYTHONDONTWRITEBYTECODE=1 .tools/venv/bin/python "$D/test_size_input.py"
 .tools/venv/bin/python "$D/locked_commands.py" calibration --input /tmp/x1g-synthetic-sizes.json --output /tmp/x1g-synthetic-calibration.json
 .tools/venv/bin/python "$D/locked_commands.py" fit --input /tmp/x1g-synthetic-sizes.json --benchmark /tmp/x1g-synthetic-benchmark.json --calibration /tmp/x1g-synthetic-calibration.json --gate /tmp/x1g-synthetic-gate.json --output /tmp/x1g-synthetic-fit.json
 ```
+
+If a separately authorised rerun is required, retain the failed fit and include it explicitly (use fresh rerun component/output paths):
+
+```sh
+.tools/venv/bin/python "$D/locked_commands.py" fit --input /tmp/x1g-synthetic-sizes.json --benchmark /tmp/x1g-rerun-benchmark.json --calibration /tmp/x1g-rerun-calibration.json --gate /tmp/x1g-rerun-gate.json --prior /tmp/x1g-synthetic-fit.json --output /tmp/x1g-rerun-fit.json
+```
+
+For another authorised rerun, repeat `--prior` for **both** `/tmp/x1g-synthetic-fit.json` and `/tmp/x1g-rerun-fit.json` in that order. Never substitute only the most recent cumulative fit: the sequence check requires every published fit.
+
+Focused round-3 reproduction (fabricated records and disposable files only; no measurement modes or real data):
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 .tools/venv/bin/python "$D/test_size_input.py" RoundThreeTests LockedModeTests.test_extraction_uses_locked_maxima_not_slopes -v
+PYTHONDONTWRITEBYTECODE=1 .tools/venv/bin/python "$D/round3_evidence.py" --output /tmp/x1g-r3-size-checks.json
+```
+
+`round3_evidence.py` publishes the independent ten-input derivation, five focused fault-mutant results (construction minimum/first row, full512 mapped to complete, dropped gate divisor, dropped calibration frame), function/source digests and five fabricated-record extraction wall times. It exits nonzero for a surviving mutant. These timings are not binding benchmark evidence. The heterogeneous fixture's hand answers use 3,000 total units: construction 6/3,000=.002, requested base 9/3,000=.003, calibration 12/3,000=.004, enumeration 4, gate 25,000/100,000=.25, complete .03, full512 .07, and RSS 3,000/4,000/5,000. Each list maximum is outside its first row; trial CPU maxima occur in different worker executions, and calibration frame CPU exceeds every fixed-key CPU.
+
+**Observed round-3 validation:** parent verification passed 30 tests in 596.312 seconds, all five focused extraction mutants were assertion-killed, and the actual full-count CLI integration passed in 593.939 seconds against the final controller closure. `reviews/round-3-response.md` maps all five findings and R2-02 residuals to lines/tests, exact commands, full output and SHA-256s. Logs and all six CLI receipts are preserved under `reviews/round-3-*`; historical round-2 receipts below are unchanged. These are synthetic validation results, not study results or run authority.
 
 For a **single reproducible actual CLI integration run**, instead of the five manual measurement commands, run the following with a fresh destination. It invokes that exact five-mode sequence with no mocks, 100,000 keyed redraws, all eight studentized cells × 2,000 trials × both worker counts (32,000 helper trials), B=1,999, actual construction/calibration/enumeration and RSS. It checks the provenance round trip through `maximum_completed_inputs` and `resource_fit`, then create-once refusal. It retains all JSON evidence plus `cli-roundtrip.json` with exact argv, exit codes and the evaluator-only resource result.
 
@@ -92,8 +112,13 @@ The independent canonical-record digest fixture uses 20 runs of size 50 in each 
 | R1-06 | frozen input, tuples/mapping proxy, immutable canonical bytes | `test_immutable_snapshot` |
 | R1-07 | this README replaces unsupported scope/result claims with exact implementation and commands | parent records actual execution evidence; no worker test-result claim |
 | R2-01 | `host`, `host_load`, `interpreter`, `finish`, `read_evidence`, `measurement_run`, `locked_inventory` | `test_evidence_single_read_hashes_parsed_bytes`, `test_evaluator_provenance_roundtrip`, full `test_cli.py` integration |
-| R2-02 | `finish` preserves completed-invalid publication; `measurement_run` propagates integrity failure | `test_closure_failure_published_create_once_then_nonzero`, `test_evaluator_provenance_roundtrip` (invalid values retained in maxima) |
+| R2-02 and residuals R3-01–03 | `measurement_run`, `prior_measurement_runs`, `main`, `provenance`, `finish` preserve completed-invalid values across component/end-closure failures and reruns | `RoundThreeTests` cross-component publication, prior CLI maxima/read-once, prior validation/order, absent/unreadable snapshots and fit-end propagation tests |
 | R2-03 | no method CLI option; `benchmark_mode` fixes studentized; `validate_benchmark` freezes cells/workers/counts | `test_frozen_method_and_cell_set_refused`; full CLI retains scientific counts |
 | R2-04 | removed `locked_fit`; `measurement_run` extracts inputs only | `test_extraction_uses_locked_maxima_not_slopes`; evaluator round trip exercises sole resource decision |
 | R2-05 | shared controller module supplies seed and Wilson | `test_interior_gate_wilson_and_ceiling` (3/100,000; cap 133,333,334; independently calculated bounds) |
 | R2-07 | `SIGNED`, `pin_sources` before imports and measurement | `test_patched_signed_digest_refused_before_measurement` for every pinned source |
+| R3-01 | `measurement_run` classifies component closure drift; `finish` publishes and exits nonzero | `test_cross_component_closures_publish_then_nonzero`, `test_fit_end_failure_only_marks_new_run` |
+| R3-02 | repeatable `main --prior`, `read_evidence`, `prior_measurement_runs` preserve ordered cumulative fits and bind byte digests | `test_prior_cli_preserves_maxima_and_reads_once`, `test_prior_validation_and_cumulative_order` |
+| R3-03 | tolerant end-only `provenance` and `finish` input snapshot preserve null/error | `test_missing_or_unreadable_end_snapshots_publish` (missing and unreadable, source and input) |
+| R3-04 | heterogeneous `measurement_fixture`, all-ten literal assertions; independent `round3_evidence.py` derivation/mutants | `test_extraction_uses_locked_maxima_not_slopes` |
+| R3-05 | `measurement_run` pinned component guards, existing `main` premeasurement guard | `test_component_input_host_interpreter_and_flags_refused`, `test_optimized_gate_subprocess_refused_before_measurement` |

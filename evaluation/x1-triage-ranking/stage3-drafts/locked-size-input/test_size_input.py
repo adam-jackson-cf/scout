@@ -308,15 +308,22 @@ class LockedModeTests(unittest.TestCase):
         source, data, calibration, gate = measurement_fixture()
         result = commands.measurement_run(source, data, calibration, gate, {"synthetic": "1"*64})
         values = result["binding_inputs"]
-        self.assertEqual(values["construction_cpu_per_unit"], 1/source.units)
-        self.assertEqual(values["requested_base_cpu_per_unit"], 2/source.units)
-        self.assertEqual(values["calibration_cpu_per_unit"], 3/source.units)
-        self.assertEqual(values["enumeration_cpu_per_population"], 4)
-        self.assertEqual(values["construction_rss"], 1000)
-        self.assertEqual(values["calibration_rss"], 2000)
-        self.assertEqual(values["trial_plus_helper_rss"], 3000)
+        # 3 repositories * 20 runs * 50 units = 3,000 units. These
+        # literal answers are independent of the extraction implementation.
+        self.assertEqual(values, {
+            "construction_cpu_per_unit": .002,
+            "requested_base_cpu_per_unit": .003,
+            "calibration_cpu_per_unit": .004,
+            "enumeration_cpu_per_population": 4.,
+            "gate_cpu_per_check": .25,
+            "complete_trial_cpu": .03, "full512_trial_cpu": .07,
+            "construction_rss": 3000, "calibration_rss": 4000,
+            "trial_plus_helper_rss": 5000})
+        provenance, _ = evaluator_modules()
+        self.assertEqual(set(values), provenance.INPUTS)
         self.assertNotIn("fits_caps", result)
-        calibration["measurements"][0]["peak_rss_bytes"] = 0
+        for row in calibration["measurements"]:
+            row["peak_rss_bytes"] = 0
         with self.assertRaisesRegex(ValueError, "unmeasured"):
             commands.measurement_run(source, data, calibration, gate, {})
 
@@ -358,7 +365,7 @@ class LockedModeTests(unittest.TestCase):
             input_path, output = Path(temporary)/"input.json", Path(temporary)/"result.json"
             closure_source = Path(temporary)/"synthetic-source.py"
             closure_source.write_bytes(b"original synthetic source\n")
-            def closure(_):
+            def closure(_, **kwargs):
                 value = copy.deepcopy(basis)
                 value["source_sha256"]["synthetic-source.py"] = hashlib.sha256(closure_source.read_bytes()).hexdigest()
                 return value
@@ -396,6 +403,213 @@ class LockedModeTests(unittest.TestCase):
         self.assertEqual(reports[0]["classification"], "completed-invalid-included")
 
 
+class RoundThreeTests(unittest.TestCase):
+    def run_fit(self, folder, label, source, records, priors=()):
+        paths = []
+        for name, value in zip(("benchmark", "calibration", "gate"), records):
+            path = folder/f"{label}-{name}.json"
+            path.write_bytes(canonical(value))
+            paths.append(path)
+        input_path, output = folder/"input.json", folder/f"{label}-fit.json"
+        input_path.write_bytes(source.record_bytes)
+        argv = ["locked_commands.py", "fit", "--input", str(input_path), "--output", str(output)]
+        for option, path in zip(("--benchmark", "--calibration", "--gate"), paths):
+            argv += [option, str(path)]
+        for prior in priors:
+            argv += ["--prior", str(prior)]
+        with patch.object(commands.sys, "argv", argv), patch.object(
+                commands, "host", return_value=records[0]["host"]), patch.object(
+                commands, "host_load", return_value=records[0]["host_load"]["start"]):
+            commands.main()
+        return output
+
+    def test_cross_component_closures_publish_then_nonzero(self):
+        for during in (True, False):
+            source, data, calibration, gate = measurement_fixture()
+            a = copy.deepcopy(data["provenance"])
+            b = copy.deepcopy(a)
+            b["source_sha256"]["synthetic-controller"] = "b"*64
+            calibration["provenance"] = b
+            if during:
+                data.update(end_provenance=b, integrity_failure="closure mismatch")
+            else:
+                data["provenance"] = b
+            with self.subTest(during=during), tempfile.TemporaryDirectory() as temporary:
+                folder = Path(temporary)
+                with patch.object(commands, "provenance", return_value=b):
+                    with self.assertRaisesRegex(RuntimeError, "completed evidence published"):
+                        self.run_fit(folder, "cross", source, (data, calibration, gate))
+                result = json.loads((folder/"cross-fit.json").read_bytes())
+                run = result["measurement_runs"]["runs"][0]
+                self.assertTrue(result["completed"])
+                self.assertTrue(run["completed"])
+                self.assertEqual(run["integrity_failure"], "closure mismatch")
+                self.assertEqual(result["integrity_failure"], "closure mismatch")
+                self.assertEqual(len(run["binding_inputs"]), 10)
+                self.assertEqual(run["binding_inputs"]["construction_rss"], 3000)
+                self.assertEqual(run["preserved_evidence_sha256"],
+                                 hashlib.sha256(canonical(result["evidence_sha256"])).hexdigest())
+
+    def test_prior_cli_preserves_maxima_and_reads_once(self):
+        source, data, calibration, gate = measurement_fixture()
+        data["integrity_failure"] = "closure mismatch"
+        data["population_measurements"][1]["construction"]["peak_rss_bytes"] = 9000
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            with self.assertRaisesRegex(RuntimeError, "completed evidence published"):
+                self.run_fit(folder, "first", source, (data, calibration, gate))
+            prior = folder/"first-fit.json"
+            prior_bytes = prior.read_bytes()
+            source, data, calibration, gate = measurement_fixture()
+            original_read = Path.read_bytes
+            reads = []
+            def read(path):
+                if path == prior:
+                    reads.append(path)
+                return original_read(path)
+            with patch.object(Path, "read_bytes", read):
+                output = self.run_fit(folder, "second", source, (data, calibration, gate), [prior])
+            self.assertEqual(reads, [prior])
+            result = json.loads(output.read_bytes())
+            runs = result["measurement_runs"]["runs"]
+            self.assertEqual(runs[0], json.loads(prior_bytes)["measurement_runs"]["runs"][0])
+            self.assertEqual(runs[1]["binding_inputs"]["construction_rss"], 3000)
+            self.assertEqual(result["evidence_sha256"][str(prior)], hashlib.sha256(prior_bytes).hexdigest())
+            provenance, _ = evaluator_modules()
+            maxima, reports = provenance.maximum_completed_inputs(runs, data["host"])
+            self.assertEqual(maxima["construction_rss"], 9000)
+            self.assertEqual([r["classification"] for r in reports],
+                             ["completed-invalid-included", "completed-valid-included"])
+
+    def test_prior_validation_and_cumulative_order(self):
+        source, data, calibration, gate = measurement_fixture()
+        data["integrity_failure"] = "closure mismatch"
+        with tempfile.TemporaryDirectory() as temporary:
+            folder = Path(temporary)
+            with self.assertRaises(RuntimeError):
+                self.run_fit(folder, "first", source, (data, calibration, gate))
+            first = folder/"first-fit.json"
+            prior = json.loads(first.read_bytes())
+            runtime = {k: data[k] for k in commands.interpreter()}
+            def collect(values):
+                return commands.prior_measurement_runs(
+                    values, source, prior["measurement_runs"]["locked_inventory_sha256"],
+                    data["host"], runtime, set(prior["measurement_runs"]["runs"][0]["binding_inputs"]))
+            mutations = (
+                lambda p: p.update(integrity_failure=None),
+                lambda p: p["measurement_runs"].update(locked_inventory_sha256="f"*64),
+                lambda p: p["host"].update(os_build="different"),
+                lambda p: p["provenance"].update(size_input_sha256="f"*64),
+                lambda p: p.update(python_optimize=1),
+                lambda p: p["measurement_runs"]["runs"][0].update(completed=1),
+                lambda p: p["measurement_runs"]["runs"][0].update(integrity_failure="arbitrary"),
+                lambda p: p["measurement_runs"]["runs"][0].update(integrity_failure=None),
+                lambda p: p["measurement_runs"]["runs"][0].update(preserved_evidence_sha256=None),
+            )
+            for mutate in mutations:
+                bad = copy.deepcopy(prior)
+                mutate(bad)
+                with self.subTest(mutation=mutate), self.assertRaises(ValueError):
+                    collect([bad])
+            with self.assertRaises(RuntimeError):
+                self.run_fit(folder, "second", source, (data, calibration, gate), [first])
+            second = json.loads((folder/"second-fit.json").read_bytes())
+            self.assertEqual(len(collect([prior, second])), 2)
+            for values in ([second], [second, prior], [prior, prior]):
+                with self.assertRaises(ValueError):
+                    collect(values)
+            # A later fit's own closure failure never rewrites old run causes.
+            prior["integrity_failure"] = "non-resource crash"
+            prior["measurement_runs"]["runs"][0]["integrity_failure"] = "non-resource crash"
+            self.assertEqual(collect([prior])[0]["integrity_failure"], "non-resource crash")
+
+    def test_missing_or_unreadable_end_snapshots_publish(self):
+        for target, unreadable in itertools.product(("source", "input"), (False, True)):
+            source = inputs()
+            with self.subTest(target=target, unreadable=unreadable), tempfile.TemporaryDirectory(
+                    dir=commands.HERE) as temporary:
+                folder = Path(temporary)
+                closure_path, input_path, output = folder/"closure.py", folder/"input.json", folder/"result.json"
+                closure_path.write_bytes(b"disposable synthetic closure\n")
+                input_path.write_bytes(source.record_bytes)
+                with patch.object(commands, "CONTROLLER_PATH", closure_path):
+                    start = commands.provenance(source)
+                    selected = closure_path if target == "source" else input_path
+                    original_read = Path.read_bytes
+                    def read(path):
+                        if path == selected and unreadable:
+                            raise PermissionError("synthetic read refusal")
+                        return original_read(path)
+                    if not unreadable:
+                        selected.unlink()
+                    with patch.object(Path, "read_bytes", read), patch.object(
+                            commands, "host_load", return_value={}):
+                        with self.assertRaisesRegex(RuntimeError, "completed evidence published"):
+                            commands.finish(source, input_path, output, "benchmark", {"values": [123]},
+                                            start, {}, {}, {}, time.perf_counter())
+                    result = json.loads(output.read_bytes())
+                    self.assertEqual(result["values"], [123])
+                    self.assertTrue(result["completed"])
+                    self.assertEqual(result["integrity_failure"], "closure mismatch")
+                    if target == "source":
+                        key = str(closure_path.relative_to(commands.ROOT))
+                        self.assertIsNone(result["end_provenance"]["source_sha256"][key])
+                        self.assertIn(key, result["end_provenance"]["source_errors"])
+                    else:
+                        self.assertIsNone(result["input_end_sha256"])
+                        self.assertIn("Error", result["input_end_error"])
+
+    def test_fit_end_failure_only_marks_new_run(self):
+        source, data, calibration, gate = measurement_fixture()
+        old = commands.measurement_run(source, data, calibration, gate, {"old": "a"*64})
+        old.update(integrity_failure="non-resource crash", preserved_evidence_sha256="b"*64)
+        new = commands.measurement_run(source, data, calibration, gate, {"new": "c"*64})
+        prior_snapshot = copy.deepcopy(old)
+        start = commands.provenance(source)
+        end = copy.deepcopy(start)
+        end["source_sha256"]["synthetic-source"] = "d"*64
+        result = {"measurement_runs": {"runs": [old, new]}, "evidence_sha256": {"new": "c"*64}}
+        with tempfile.TemporaryDirectory() as temporary:
+            input_path, output = Path(temporary)/"input.json", Path(temporary)/"fit.json"
+            input_path.write_bytes(source.record_bytes)
+            with patch.object(commands, "provenance", return_value=end), patch.object(
+                    commands, "host_load", return_value={}):
+                with self.assertRaisesRegex(RuntimeError, "completed evidence published"):
+                    commands.finish(source, input_path, output, "fit", result, start,
+                                    {}, {}, {}, time.perf_counter())
+            runs = json.loads(output.read_bytes())["measurement_runs"]["runs"]
+            self.assertEqual(runs[0], prior_snapshot)
+            self.assertEqual(runs[1]["integrity_failure"], "closure mismatch")
+
+    def test_component_input_host_interpreter_and_flags_refused(self):
+        for field, value in (("python_optimize", 1), ("python_version", "3.11.10"),
+                             ("completed", False), ("integrity_failure", "arbitrary"),
+                             ("host", {}), ("size_input_sha256", "f"*64)):
+            source, data, calibration, gate = measurement_fixture()
+            if field == "size_input_sha256":
+                gate["provenance"][field] = value
+            elif field in ("python_optimize", "python_version"):
+                # Equal across components still must fail the pinned guard.
+                for record in (data, calibration, gate):
+                    record[field] = value
+            else:
+                gate[field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                commands.measurement_run(source, data, calibration, gate, {})
+
+    def test_optimized_gate_subprocess_refused_before_measurement(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            source, output = Path(temporary)/"input.json", Path(temporary)/"gate.json"
+            source.write_bytes(inputs().record_bytes)
+            result = subprocess.run(
+                [commands.sys.executable, "-O", str(commands.HERE/"locked_commands.py"),
+                 "gate", "--input", str(source), "--output", str(output)],
+                capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("pinned unoptimized CPython 3.11.11 required", result.stderr)
+            self.assertFalse(output.exists())
+
+
 def measurement_fixture():
     """Fabricated unit-test records, never actual timing/RSS evidence."""
     source = inputs()
@@ -409,16 +623,28 @@ def measurement_fixture():
               "peak_rss_bytes": 3000}
              for slot, missing, fixture in itertools.product((40, 400), (False, True),
                                                              ("uniform-srs", "mixed-explicit"))]
-    data = dict(common, method="studentized", trials=2000, replicates=1999,
+    data = dict(copy.deepcopy(common), method="studentized", trials=2000, replicates=1999,
                 worker_count_equality={"byte_identical_scientific_json": True},
-                population_measurements=[{"construction": {"cpu_seconds": 1., "peak_rss_bytes": 1000},
-                                          "fixed_key_evaluations": [{"cpu_seconds": 2.}],
-                                          "size_only_sampling_gate": {"cpu_seconds": 1.}}],
+                population_measurements=[
+                    {"construction": {"cpu_seconds": 1., "peak_rss_bytes": 1000},
+                     "fixed_key_evaluations": [{"cpu_seconds": 1.}, {"cpu_seconds": 2.}],
+                     "size_only_sampling_gate": {"cpu_seconds": 100.}},
+                    {"construction": {"cpu_seconds": 6., "peak_rss_bytes": 3000},
+                     "fixed_key_evaluations": [{"cpu_seconds": 3.}, {"cpu_seconds": 4.}],
+                     "size_only_sampling_gate": {"cpu_seconds": 25000.}}],
                 executions=[{"workers": w, "cells": copy.deepcopy(cells)} for w in (1, 2)])
-    calibration = dict(common, measurements=[{"conservative_21_truth_one_frame_no_enumeration_cpu_seconds": 3.,
-                                              "frame_evaluation_cpu_seconds": [2.], "peak_rss_bytes": 2000}],
-                       worst_case_candidate_enumeration={"cpu_seconds": 4.})
-    gate = dict(common, draws=100000, successes=100000, p_gate=1., attempt_cap_per_population=4000)
+    # Complete maximum in worker 1, full512 maximum in worker 2; neither
+    # maximum is in the first cell or first timing row.
+    data["executions"][0]["cells"][4]["trial_timing"].append({"cpu_seconds": .03})
+    data["executions"][1]["cells"][7]["trial_timing"].append({"cpu_seconds": .07})
+    data["executions"][1]["cells"][7]["peak_rss_bytes"] = 5000
+    calibration = dict(copy.deepcopy(common), measurements=[
+        {"conservative_21_truth_one_frame_no_enumeration_cpu_seconds": 3.,
+         "frame_evaluation_cpu_seconds": [1., 2.], "peak_rss_bytes": 2000},
+        {"conservative_21_truth_one_frame_no_enumeration_cpu_seconds": 12.,
+         "frame_evaluation_cpu_seconds": [5., 9.], "peak_rss_bytes": 4000}],
+        worst_case_candidate_enumeration={"cpu_seconds": 4.})
+    gate = dict(copy.deepcopy(common), draws=100000, successes=100000, p_gate=1., attempt_cap_per_population=4000)
     return source, data, calibration, gate
 
 

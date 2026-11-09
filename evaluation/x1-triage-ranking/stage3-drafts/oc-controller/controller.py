@@ -10,6 +10,8 @@ import json
 import math
 import os
 from pathlib import Path
+import platform
+import shutil
 import sys
 import threading
 import time
@@ -21,7 +23,7 @@ MANIFEST_SHA256 = "1caea1a5ddba3a3d9eae99bba780e5de987ad7771f6cce06af9b0171be967
 KERNEL_SHA256 = "ed670a6bf8076d791c06cfc2426aff03a0a2f9b1730982cf3fdfb2ec13bc49a2"
 RANKING_SHA256 = "8bc2e7cbbc5da6ba47aeff3effb5dd04d5e5ecc9c1e01051647900095770a780"
 ORDER_SHA256 = "04aa2184f79cb3795f60305a6b8fa31687d5acd7069846e78b6acf1b1f4dd4ff"
-POLICY_SHA256 = "71c848cdf686b5424629098f4a8bd30ea8b8ceae6ea050652e2a7f1d230dc33b"
+POLICY_SHA256 = "9b6de56992b00129edcb09d8c0b1e95e7f3bfb538dc3fea02c0529e94886bfd5"
 POLICY = json.loads((HERE / "policy.json").read_bytes())
 PHASES = frozenset(("population", "audit", "bootstrap", "missing-mask", "canonical-safety", "canonical-criticality", "sampling-gate-estimate"))
 
@@ -110,6 +112,23 @@ class Stopped(RuntimeError):
     """No new work may start until reviewed resume, or ever after termination."""
 
 
+class JournalPoisoned(RuntimeError):
+    """Uncertain append; only a new process/replay may recover this writer."""
+
+
+def journal_projection(p_gate):
+    # Conservative storage reservation, not a scientific trial-count reduction.
+    populations = 90860 + 10080
+    attempts = math.ceil(4000 / p_gate)
+    records = populations * (2 * 4000 + 16)
+    return {"binding_populations": 90860, "safety_populations": 10080,
+            "p_gate": p_gate, "attempt_cap_per_population": attempts,
+            "maximum_executions_per_population": 4000,
+            "reserved_records": records, "reserved_bytes_per_record": 2048,
+            "required_free_bytes": records * 2048,
+            "basis": "upper execution cap; two durable records per execution plus 16 control records per population; gate deltas coalesced; conservative 2048-byte record reservation, synthetic benchmark reports observed sizes separately"}
+
+
 @dataclass(frozen=True)
 class BindingLane:
     _owner: object
@@ -138,6 +157,8 @@ class SafetySchedule:
 
     def __init__(self, *, p_gate, inventory_sha256, meter, oc_started_at,
                  run_root=None, clock=time.time, manifest_bytes=None, kernel_path=None):
+        if platform.python_implementation() != "CPython" or sys.version_info[:3] != (3, 11, 11) or sys.flags.optimize:
+            raise RuntimeError("requires CPython 3.11.11 with python_optimize=0")
         self._state_lock = threading.RLock()
         self._condition = threading.Condition(self._state_lock)
         self._run_lock = threading.Lock()
@@ -166,6 +187,9 @@ class SafetySchedule:
         self._populations, self._profiles, self._lane_locks = {}, {}, {}
         self._slots, self._busy_slots = {}, set()
         self._sequence, self._previous = 0, "0" * 64
+        self._poisoned = False
+        self._pending_deltas = {}
+        self._population_ids, self._population_keys = {}, {}
         self._closed = False
         directory = (HERE if run_root is None else Path(run_root)) / "x1-oc-controller"
         directory.mkdir(parents=True, exist_ok=True)
@@ -184,6 +208,13 @@ class SafetySchedule:
                         "oc_started_at": oc_started_at, "p_gate": p_gate, "inventory_sha256": inventory_sha256,
                         "synthetic_only": True, "authority": "none; scoped review required",
                         "source_sha256": {str(p.relative_to(EXPERIMENT)): digest(p.read_bytes()) for p in sources}}
+            executable = Path(sys.executable).resolve()
+            expected["interpreter"] = {"executable": str(executable),
+                                       "executable_sha256": digest(executable.read_bytes()),
+                                       "version": platform.python_version(),
+                                       "implementation": platform.python_implementation(),
+                                       "python_optimize": sys.flags.optimize}
+            expected["journal_projection"] = journal_projection(p_gate)
             freeze_path = directory / "freeze.json"
             recovered = freeze_path.exists()
             self._tail_sha = None
@@ -196,12 +227,21 @@ class SafetySchedule:
             else:
                 if (directory / "journal.jsonl").exists():
                     raise RuntimeError("journal exists without freeze")
-                self._freeze = {**expected, "created_at": self._clock()}
+                free = shutil.disk_usage(directory).free
+                refusal = {"required_free_bytes": expected["journal_projection"]["required_free_bytes"],
+                           "observed_free_bytes": free, "timestamp": self._clock()}
+                if free < refusal["required_free_bytes"]:
+                    with (directory / "freeze-refused.json").open("xb") as stream:
+                        stream.write(canonical({**expected, "disk_refusal": refusal}) + b"\n")
+                        stream.flush()
+                        os.fsync(stream.fileno())
+                    raise RuntimeError("insufficient journal free space; refusal recorded without freeze")
+                self._freeze = {**expected, "created_at": self._clock(), "disk_admission": refusal}
                 with freeze_path.open("xb") as stream:
                     stream.write(canonical(self._freeze) + b"\n")
                     stream.flush()
                     os.fsync(stream.fileno())
-            self._journal_file = (directory / "journal.jsonl").open("ab")
+            self._journal_file = (directory / "journal.jsonl").open("ab", buffering=0)
             fd = os.open(directory, os.O_RDONLY)
             try:
                 os.fsync(fd)
@@ -212,8 +252,9 @@ class SafetySchedule:
                     self._journal_file.write(b"\n")
                     self._journal_file.flush()
                     os.fsync(self._journal_file.fileno())
-                self._emit("pause", {"kind": "process loss", "evidence_sha256": self._tail_sha or self._previous,
-                                     "tail_sha256": self._tail_sha})
+                with self._state_lock:
+                    self._emit("pause", {"kind": "process loss", "evidence_sha256": self._tail_sha or self._previous,
+                                         "tail_sha256": self._tail_sha})
         except BaseException:
             self.close()
             raise
@@ -276,10 +317,27 @@ class SafetySchedule:
                 self._previous = digest(raw)
         self._tail_sha = pending_tail
 
-    def _emit(self, kind, data):
-        # Every caller holds _state_lock (constructor is not yet published).
+    def _check_writer(self):
+        if self._poisoned:
+            raise JournalPoisoned("journal writer poisoned; restart and replay required")
         if self._closed:
             raise RuntimeError("controller closed")
+
+    def _emit(self, kind, data, *, durable=True):
+        # All callers hold the state lock. Gate deltas are memory-only until
+        # the next linearization point; no uncertain append is ever retried.
+        self._check_writer()
+        if not durable:
+            if kind != "population_state":
+                raise RuntimeError("only counter deltas may be deferred")
+            try:
+                self._pending_deltas.setdefault(str(data["i"]), {}).update(copy.deepcopy(data["d"]))
+                self._apply({"kind": kind, "data": data})
+            except BaseException:
+                self._poisoned = True
+                self._condition.notify_all()
+                raise
+            return
         if kind in ("pause", "terminate") and self._active is not None:
             if self._active.get("current_lane") is not None:
                 self._emit("lane_stop", {"identity": self._active["identity"],
@@ -294,17 +352,32 @@ class SafetySchedule:
         except BaseException:
             timestamp = None
         event = {"seq": self._sequence, "previous_sha256": self._previous,
-                 "timestamp": timestamp, "kind": kind, "data": data}
+                 "timestamp": timestamp, "kind": kind, "data": data,
+                 "meter": [self._last_core, self._last_wall]}
+        if self._pending_deltas:
+            event["updates"] = copy.deepcopy(self._pending_deltas)
         raw = canonical(event) + b"\n"
-        self._journal_file.write(raw)
-        self._journal_file.flush()
-        os.fsync(self._journal_file.fileno())
-        self._apply(event)
-        self._sequence += 1
-        self._previous = digest(raw)
+        self._poisoned = True
+        try:
+            if self._journal_file.write(raw) != len(raw):
+                raise OSError("short journal write")
+            self._journal_file.flush()
+            os.fsync(self._journal_file.fileno())
+            self._apply(event)
+            self._sequence += 1
+            self._previous = digest(raw)
+            self._pending_deltas.clear()
+        except BaseException:
+            self._condition.notify_all()
+            raise
+        self._poisoned = False
 
     def _apply(self, event):
         kind, data = event["kind"], event["data"]
+        for index, delta in event.get("updates", {}).items():
+            self._populations[self._population_keys[int(index)]].update(copy.deepcopy(delta))
+        if "meter" in event:
+            self._last_core, self._last_wall = event["meter"]
         # Counter commits stay on disk, not millions of duplicated RAM records.
         if kind not in ("population", "population_state", "meter"):
             self._events.append(copy.deepcopy(event))
@@ -312,13 +385,16 @@ class SafetySchedule:
             self._last_core, self._last_wall = data["core"], data["wall"]
         elif kind == "population":
             self._populations[data["key"]] = copy.deepcopy(data["population"])
+            index = data.get("i", len(self._population_ids))
+            self._population_ids[data["key"]] = index
+            self._population_keys[index] = data["key"]
             self._lane_locks[data["key"]] = threading.Lock()
             if not data["population"]["safety"]:
                 self._slots[data["population"]["slot"]] = data["key"]
             elif self._active is not None:
                 self._active["populations"].append(data["key"])
         elif kind == "population_state":
-            self._populations[data["key"]] = copy.deepcopy(data["population"])
+            self._populations[self._population_keys[data["i"]]].update(copy.deepcopy(data["d"]))
         elif kind == "pause":
             self._paused = True
             self._epoch += 1
@@ -355,6 +431,7 @@ class SafetySchedule:
             self._final = self._build_report(data["cause"], event["timestamp"])
 
     def _boundary(self):
+        self._check_writer()
         if self._terminated:
             raise Stopped("OC terminated")
         if self._paused:
@@ -366,7 +443,7 @@ class SafetySchedule:
         except BaseException as error:
             self._emit("pause", {"kind": "meter integrity", "error": type(error).__name__, "evidence_sha256": digest(str(error).encode())})
             raise Stopped("meter integrity pause") from error
-        self._emit("meter", {"core": core, "wall": wall})
+        self._last_core, self._last_wall = core, wall
         if core >= 2880 or wall >= 15:
             self._terminate("OC core-hour cap" if core >= 2880 else "OC wall-day cap")
             raise Stopped("OC cap reached")
@@ -385,7 +462,7 @@ class SafetySchedule:
     def binding_population(self, identity, index, *, slot):
         with self._state_lock:
             self._boundary()
-            if self._started_safety or type(index) is not int or index not in range(5) or type(slot) is not int or slot not in range(8):
+            if self._started_safety or self._run_lock.locked() or type(index) is not int or index not in range(5) or type(slot) is not int or slot not in range(8):
                 raise ValueError("invalid binding lease")
             seed(identity, index, 0, "population")
             old = self._slots.get(slot)
@@ -405,8 +482,9 @@ class SafetySchedule:
         p = self._populations[key]
         return p["pending"] is None and not self._done(key) and (p["attempts"] >= math.ceil(4000/self._p_gate) or p["executions"] >= 4000)
 
-    def _save_population(self, key, p):
-        self._emit("population_state", {"key": key, "population": p})
+    def _save_population(self, key, p, *, durable=True):
+        delta = {k: copy.deepcopy(v) for k, v in p.items() if self._populations[key][k] != v}
+        self._emit("population_state", {"i": self._population_ids[key], "d": delta}, durable=durable)
 
     def _fault(self, phase, error, *, key=None, index=None):
         incident = {"phase": phase, "index": index, "error": type(error).__name__, "evidence_sha256": digest(str(error).encode()), "resolved": False}
@@ -440,7 +518,7 @@ class SafetySchedule:
                     p = copy.deepcopy(p)
                     p["pending"] = {"phase": "gate", "index": p["attempts"]}
                     p["attempts"] += 1
-                    self._save_population(key, p)
+                    self._save_population(key, p, durable=False)
                 index, phase = p["pending"]["index"], p["pending"]["phase"]
             if phase == "gate":
                 try:
@@ -453,15 +531,17 @@ class SafetySchedule:
                             self._fault("gate", error, key=key, index=index)
                     raise Stopped("gate integrity pause") from error
                 with self._state_lock:
+                    self._check_writer()
                     if self._terminated or self._paused or epoch != self._epoch:
                         raise Stopped("gate result remains unclassified after stop/pause")
+                    self._boundary()
                     p = copy.deepcopy(self._populations[key])
                     p["pending"] = {"phase": "ready", "index": index} if passes else None
                     p["gate_passes" if passes else "gate_failures"] += 1
                     for incident in p["incidents"]:
                         if incident["phase"] == "gate":
                             incident["resolved"] = True
-                    self._save_population(key, p)
+                    self._save_population(key, p, durable=False)
                     self._boundary()
                     if not passes:
                         return
@@ -483,6 +563,7 @@ class SafetySchedule:
                         self._fault("trial", error, key=key, index=index)
                 raise Stopped("trial integrity pause") from error
             with self._state_lock:
+                self._check_writer()
                 if self._terminated or self._paused or epoch != self._epoch:
                     raise Stopped("trial result remains unclassified after stop/pause")
                 p = copy.deepcopy(self._populations[key])
@@ -500,6 +581,7 @@ class SafetySchedule:
 
     def pause(self, evidence):
         with self._state_lock:
+            self._check_writer()
             if self._terminated:
                 raise Stopped("OC terminated")
             if not isinstance(evidence, dict) or evidence.get("kind") not in ("execution integrity", "closure mismatch", "host integrity", "process loss") or not _sha(evidence.get("evidence_sha256")):
@@ -509,6 +591,7 @@ class SafetySchedule:
 
     def resume(self, evidence):
         with self._state_lock:
+            self._check_writer()
             if self._terminated or not self._paused:
                 raise Stopped("not a resumable integrity pause")
             if not isinstance(evidence, dict) or evidence.get("reviewed") is not True or not _sha(evidence.get("evidence_sha256")):
@@ -518,8 +601,9 @@ class SafetySchedule:
 
     def _wait_ready(self):
         with self._condition:
-            while self._paused and not self._terminated:
+            while self._paused and not self._terminated and not self._poisoned:
                 self._condition.wait()
+            self._check_writer()
             return not self._terminated
 
     def _profile(self, identity):
@@ -599,6 +683,7 @@ class SafetySchedule:
             raise RuntimeError("controller run already active")
         try:
             with self._state_lock:
+                self._check_writer()
                 if self._terminated:
                     return self.gold_report()
                 if any(not (self._done(k) or self._exhausted(k)) for k, p in self._populations.items() if not p["safety"]):
@@ -611,6 +696,8 @@ class SafetySchedule:
                             if len(self._completed) == len(self._ordered):
                                 self._terminate("grid complete")
                                 break
+                            if not self._started_safety and any(not (self._done(k) or self._exhausted(k)) for k, p in self._populations.items() if not p["safety"]):
+                                raise RuntimeError("binding populations unfinished or faulted")
                             self._emit("dispatch", {"identity": self._ordered[len(self._completed)]})
                             for index in range(5):
                                 self._new_population(self._active["identity"], index, True, index)
