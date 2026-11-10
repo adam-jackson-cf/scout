@@ -34,7 +34,7 @@ ADR-015 uses adopted-form route (a): its canonical signed set takes effect only 
 | ADR-012 | `2026-11-08-shadow-readiness-inputs/` | Persist CI observations and authorized triage history; compute readiness under bounded evidence invariants | accepted; agent-decided under R-064; owner review pending; implementation pending; based on adopted ADR-011 |
 | ADR-013 | `2026-11-08-x11a-delegated-decisions/` | Record X11a assignment-study choices, supply-informed1500–2000 segments, bounded preparation and uniform label-prefix gates | accepted-form; agent-decided under R-064; owner review pending; not effective until final zero-issue council round |
 | ADR-014 | `2026-11-08-x1-delegated-decisions/` | Capture delegated X1 experiment-protocol choices; no product-default, flag, sampler or threshold adoption | accepted; decided by the agent under owner delegation (R-064) |
-| ADR-015 | `2026-11-10-shadow-readiness-wiring/` | Select trusted-job reconciliation and authenticated dispatch triage; REST-only collection remains unmeasured without complete-event attestation | accepted-form; agent-decided under R-064; owner review pending; effective only on final zero-issue round; implementation pending |
+| ADR-015 | `2026-11-10-shadow-readiness-wiring/` | Adopt read-only diagnostic inventory and credential hardening; explicitly defer source/reassessment/triage/start, retaining ADR-012 readiness as incomplete | accepted-form; agent-decided under R-064; owner review pending; effective only on final zero-issue round; implementation pending |
 
 ## Old paths and citations
 
