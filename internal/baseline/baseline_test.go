@@ -41,7 +41,7 @@ func remoteWithClones(t *testing.T, n int) (string, []string) {
 // ledger builds the export files of a ledger holding one issue per id.
 func ledger(t *testing.T, updatedAt string, ids ...string) Tree {
 	t.Helper()
-	files := Tree{state.ExportWouldBlock: nil, state.ExportCoverageSummary: []byte("{}\n")}
+	files := Tree{state.ExportWouldBlock: nil, state.ExportCoverageSummary: []byte("{}\n"), state.ExportPRRuns: nil, state.ExportShadowTriage: nil}
 	var issues, dispositions []byte
 	for _, id := range ids {
 		issue, _ := state.CanonicalLine(map[string]any{"issueId": id, "title": "t"})

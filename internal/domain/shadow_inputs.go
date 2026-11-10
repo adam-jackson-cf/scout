@@ -46,6 +46,10 @@ type ShadowPendingImport struct {
 	Scope         ShadowScope
 	SourceLineage string
 	Publication   ShadowPublication
+	// History/Inputs retain a whole S2 import, including unpublished material and
+	// refusals. Publication is used for individual S1 publication inputs.
+	History *ShadowLedger `json:",omitempty"`
+	Inputs  *ShadowInputs `json:",omitempty"`
 }
 
 // ShadowInputs contains supplemental immutable input records. Scope lives on

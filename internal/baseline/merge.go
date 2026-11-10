@@ -20,8 +20,23 @@ import (
 // together. would_block rows are unioned. The coverage summary is local. The
 // manifest is regenerated for the merged files.
 func MergeState(current, local Tree) (Tree, error) {
-	if len(current) == 0 {
-		return local, nil
+	for _, tree := range []Tree{current, local} {
+		if len(tree) != 0 {
+			if _, err := state.ValidateState(tree); err != nil {
+				return nil, err
+			}
+		}
+	}
+	if len(current) == 0 || len(local) == 0 {
+		source := current
+		if len(local) != 0 {
+			source = local
+		}
+		out := make(Tree, len(source))
+		for path, data := range source {
+			out[path] = data
+		}
+		return out, nil
 	}
 	merged := Tree{}
 	for path, data := range current {
@@ -125,6 +140,9 @@ func MergeState(current, local Tree) (Tree, error) {
 		merged[path] = unioned
 	}
 
+	if err := mergeShadow(current, local, merged); err != nil {
+		return nil, err
+	}
 	meta, err := state.ReadManifestMeta(local[state.ExportManifest])
 	if err != nil {
 		return nil, err
