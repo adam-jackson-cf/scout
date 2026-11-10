@@ -143,3 +143,23 @@ type ShadowLedger struct {
 	Intervals    []ShadowInterval
 	Publications []ShadowPublication
 }
+
+// ChainProof is supplied by a trusted provider adapter, never by imported state.
+// An ancestry assertion without the repository, ref and genesis is insufficient.
+type ChainProof struct {
+	RepositoryID        string
+	StateRef            string
+	GenesisCommit       string
+	SourceTip           string
+	DestinationTip      string
+	Authenticated       bool
+	DestinationAncestor bool
+}
+
+// ShadowImportPlan separates verbatim restoration from material that still needs
+// destination authorization and CAS publication. Pending retains source provenance.
+type ShadowImportPlan struct {
+	BytePreserving bool
+	Adopt          ShadowLedger
+	Pending        ShadowLedger
+}

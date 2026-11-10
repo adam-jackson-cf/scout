@@ -37,7 +37,7 @@ const (
 
 const (
 	// ExportSchema identifies the export format in manifest.json.
-	ExportSchema = "scout.state/v1"
+	ExportSchema = "scout.state/v2"
 
 	// WouldBlockPresent is the manifest value declaring that would_block.jsonl
 	// carries the gate's shadow table.
@@ -153,6 +153,13 @@ func (s *Store) Export(ctx context.Context) (map[string][]byte, error) {
 	if refreshFile != nil {
 		files[ExportMappingRefresh] = refreshFile
 	}
+	shadowFiles, err := s.exportShadow(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for path, data := range shadowFiles {
+		files[path] = data
+	}
 	files[ExportManifest] = RenderManifest(meta, files)
 	return files, nil
 }
@@ -195,9 +202,39 @@ func (s *Store) exportWouldBlock(ctx context.Context) ([][]byte, string, error) 
 	if err != nil {
 		return nil, "", err
 	}
+	original, err := s.metadataValue(ctx, "legacy_export_bytes")
+	if err != nil {
+		return nil, "", err
+	}
+	preserved := map[string][]byte{}
+	if original != "" {
+		byID := make(map[string]domain.WouldBlock, len(rows))
+		for _, row := range rows {
+			byID[row.ID] = row
+		}
+		unchanged := len(SplitLines([]byte(original))) == len(rows)
+		for _, line := range bytes.SplitAfter([]byte(original), []byte{'\n'}) {
+			if len(bytes.TrimSpace(line)) == 0 {
+				continue
+			}
+			var prior domain.WouldBlock
+			if err := json.Unmarshal(line, &prior); err != nil || !sameHistory(prior, byID[prior.ID]) {
+				unchanged = false
+				continue
+			}
+			preserved[prior.ID] = line
+		}
+		if unchanged {
+			return [][]byte{[]byte(original)}, WouldBlockPresent, nil
+		}
+	}
 	sort.Slice(rows, func(i, j int) bool { return rows[i].ID < rows[j].ID })
 	lines := make([][]byte, 0, len(rows))
 	for _, row := range rows {
+		if line, ok := preserved[row.ID]; ok {
+			lines = append(lines, line)
+			continue
+		}
 		raw, err := json.Marshal(row)
 		if err != nil {
 			return nil, "", fmt.Errorf("encode would_block: %w", err)
@@ -248,7 +285,7 @@ func RenderManifest(meta ManifestMeta, files map[string][]byte) []byte {
 	entries := make([]fileEntry, 0, len(paths))
 	for _, path := range paths {
 		sum := sha256.Sum256(files[path])
-		records := bytes.Count(files[path], []byte{'\n'})
+		records := len(SplitLines(files[path]))
 		if strings.HasSuffix(path, ".json") {
 			records = 1
 		}
@@ -263,6 +300,7 @@ func RenderManifest(meta ManifestMeta, files map[string][]byte) []byte {
 		"files":        entries,
 		"absent":       absentFiles(paths),
 		"wouldBlock":   meta.WouldBlock,
+		"legacy":       []string{ExportWouldBlock},
 	}
 	uninspected := meta.Uninspected
 	if uninspected == nil {
@@ -478,10 +516,7 @@ func (s *Store) Import(ctx context.Context, files map[string][]byte) error {
 	if s.readOnly {
 		return errors.New("import requires a writable store")
 	}
-	if err := verifyManifest(files); err != nil {
-		return err
-	}
-	meta, err := ReadManifestMeta(files[ExportManifest])
+	meta, err := ValidateState(files)
 	if err != nil {
 		return err
 	}
@@ -515,7 +550,11 @@ func (s *Store) Import(ctx context.Context, files map[string][]byte) error {
 	if _, err := decodeAreaActions(files[ExportAreaActions]); err != nil {
 		return err
 	}
-	return s.importRows(ctx, meta, issues, blocks, signals, files[ExportCoverageSummary], areaList, associations, files[ExportMappingRefresh], files[ExportAreaActions])
+	ledger, inputs, err := DecodeShadow(files)
+	if err != nil {
+		return err
+	}
+	return s.importRows(ctx, meta, issues, blocks, signals, files[ExportCoverageSummary], areaList, associations, files[ExportMappingRefresh], files[ExportAreaActions], files[ExportWouldBlock], ledger, inputs)
 }
 
 // decodeSignals reads every signals/*.jsonl file of an export, validated, in
@@ -598,7 +637,7 @@ func DecodeIssues(files map[string][]byte) ([]domain.Issue, error) {
 	return issues, nil
 }
 
-func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []domain.Issue, blocks []domain.WouldBlock, signals []domain.Signal, summary []byte, areaList []areas.Area, associations []domain.Association, refresh, actions []byte) error {
+func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []domain.Issue, blocks []domain.WouldBlock, signals []domain.Signal, summary []byte, areaList []areas.Area, associations []domain.Association, refresh, actions, legacy []byte, ledger domain.ShadowLedger, inputs domain.ShadowInputs) error {
 	return s.withTransaction(ctx, func(tx *sql.Tx) error {
 		var count int
 		if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM issues`).Scan(&count); err != nil {
@@ -611,6 +650,12 @@ func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []doma
 			if err := s.ensureRepositoryIdentity(ctx, tx, meta.RepositoryID); err != nil {
 				return err
 			}
+		}
+		if err := importShadow(ctx, tx, ledger, inputs); err != nil {
+			return err
+		}
+		if _, err := tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES ('legacy_export_bytes',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`, string(legacy)); err != nil {
+			return err
 		}
 		for _, issue := range issues {
 			payload, err := encode(issue)
@@ -683,18 +728,35 @@ func verifyManifest(files map[string][]byte) error {
 	var parsed struct {
 		Schema string `json:"schema"`
 		Files  []struct {
-			Path   string `json:"path"`
-			SHA256 string `json:"sha256"`
+			Path    string `json:"path"`
+			SHA256  string `json:"sha256"`
+			Records int    `json:"records"`
 		} `json:"files"`
 	}
 	if err := json.Unmarshal(manifest, &parsed); err != nil {
 		return fmt.Errorf("decode manifest: %w", err)
 	}
-	if parsed.Schema != ExportSchema {
-		return fmt.Errorf("unsupported export schema %q", parsed.Schema)
+	switch parsed.Schema {
+	case "scout.state/v1":
+		for _, path := range shadowExportPaths {
+			if _, ok := files[path]; ok {
+				return errors.New("downgraded v1 state: republish the last intact v2 commit and reapply subsequent state")
+			}
+		}
+	case ExportSchema:
+		for _, path := range shadowExportPaths {
+			if _, ok := files[path]; !ok {
+				return fmt.Errorf("v2 export is missing %s", path)
+			}
+		}
+	default:
+		return fmt.Errorf("unsupported export schema %q: upgrade the writer; never overwrite it with an older snapshot", parsed.Schema)
 	}
 	listed := map[string]bool{ExportManifest: true}
 	for _, entry := range parsed.Files {
+		if listed[entry.Path] || !strings.HasPrefix(entry.Path, ExportDir+"/") {
+			return fmt.Errorf("invalid or duplicate manifest path %s", entry.Path)
+		}
 		data, ok := files[entry.Path]
 		if !ok {
 			return fmt.Errorf("export is missing %s", entry.Path)
@@ -702,6 +764,13 @@ func verifyManifest(files map[string][]byte) error {
 		sum := sha256.Sum256(data)
 		if hex.EncodeToString(sum[:]) != entry.SHA256 {
 			return fmt.Errorf("export file %s does not match its manifest digest", entry.Path)
+		}
+		records := len(SplitLines(data))
+		if strings.HasSuffix(entry.Path, ".json") {
+			records = 1
+		}
+		if entry.Records != records {
+			return fmt.Errorf("export file %s does not match its manifest record count", entry.Path)
 		}
 		listed[entry.Path] = true
 	}
