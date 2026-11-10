@@ -67,7 +67,7 @@ func seedLedger(t *testing.T, ctx context.Context, root string) *Store {
 			t.Fatal(err)
 		}
 	}
-	if err := store.TriageWouldBlock(ctx, "wb-1", domain.TriageWarranted, "maintainer", "real"); err != nil {
+	if _, err := store.db.ExecContext(ctx, `UPDATE would_block SET triage=?,triage_actor=?,triage_reason=?,triaged_at=? WHERE id='wb-1'`, domain.TriageWarranted, "maintainer", "real", now.UnixMilli()); err != nil {
 		t.Fatal(err)
 	}
 	if err := store.RecordSignals(ctx, testSignals()); err != nil {
@@ -155,7 +155,7 @@ func TestExportImportExportIsByteIdentical(t *testing.T) {
 			t.Fatalf("issue %s did not survive import:\nwant %+v\ngot  %+v", issue.IssueID, issue, got)
 		}
 	}
-	rows, err := target.ListWouldBlock(ctx)
+	rows, err := target.ListLegacyWouldBlock(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}

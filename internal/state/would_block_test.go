@@ -7,7 +7,7 @@ import (
 	"scout/internal/domain"
 )
 
-func TestWouldBlockIsIdempotentAndKeepsMaintainerTriage(t *testing.T) {
+func TestLegacyWouldBlockIsIdempotentAndPreservesExportTriage(t *testing.T) {
 	ctx := context.Background()
 	store, err := Open(t.TempDir())
 	if err != nil {
@@ -20,23 +20,18 @@ func TestWouldBlockIsIdempotentAndKeepsMaintainerTriage(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if err := store.TriageWouldBlock(ctx, "wb-1", domain.TriageWarranted, "alice", "real token"); err != nil {
+	// Simulate a historical triage value. Production has no mutable triage API.
+	if _, err := store.db.ExecContext(ctx, `UPDATE would_block SET triage=?,triage_actor='alice',triage_reason='real token',triaged_at=1 WHERE id='wb-1'`, domain.TriageWarranted); err != nil {
 		t.Fatal(err)
 	}
 	if err := store.RecordWouldBlock(ctx, row); err != nil {
 		t.Fatal(err)
 	}
-	rows, err := store.ListWouldBlock(ctx)
+	rows, err := store.ListLegacyWouldBlock(ctx)
 	if err != nil || len(rows) != 1 {
 		t.Fatalf("rows = %d, %v; want one idempotent row", len(rows), err)
 	}
 	if rows[0].Triage != domain.TriageWarranted || rows[0].TriageActor != "alice" || rows[0].TriagedAt == nil {
 		t.Fatalf("re-recording clobbered triage: %+v", rows[0])
-	}
-	if err := store.TriageWouldBlock(ctx, "missing", domain.TriageWarranted, "alice", ""); err == nil {
-		t.Fatal("triage of an unknown row must fail")
-	}
-	if err := store.TriageWouldBlock(ctx, "wb-1", "maybe", "alice", ""); err == nil {
-		t.Fatal("invalid triage value accepted")
 	}
 }

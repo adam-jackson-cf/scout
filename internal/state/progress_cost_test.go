@@ -277,29 +277,38 @@ func TestV3StoreMigratesAndResumes(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// Downgrade to the v3 layout: no plan_jobs, full progress in runs.payload.
-	v3Payload, err := encode(want)
-	if err != nil {
+	// Build a genuine historical v3 schema, not a current store with its
+	// version rewound (which would accidentally retain newly added tables).
+	v3 := newV1Store(t)
+	v3.insertRun(t, plan, want, nil)
+	if _, err := v3.db.Exec(`UPDATE runs SET finalized=0 WHERE run_id=?`, run.RunID); err != nil {
 		t.Fatal(err)
 	}
-	for _, step := range []struct {
-		query string
-		args  []any
-	}{
-		{`DROP TABLE plan_jobs`, nil},
-		{`DROP TABLE issue_migration_ambiguities`, nil},
-		{`UPDATE runs SET payload = ? WHERE run_id = ?`, []any{v3Payload, run.RunID}},
-		{`PRAGMA user_version=3`, nil},
-	} {
-		if _, err := store.db.ExecContext(ctx, step.query, step.args...); err != nil {
+	for _, coverage := range want.Coverage {
+		payload, err := encode(coverage)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := v3.db.Exec(`INSERT INTO coverage VALUES (?, ?, ?, ?)`, run.RunID, coverage.Key.String(), coverage.Status, payload); err != nil {
 			t.Fatal(err)
 		}
 	}
+	for index, job := range plan.Jobs[:2] {
+		commit := costCommit(job, index)
+		payload, err := encode(commit)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := v3.db.Exec(`INSERT INTO run_job_commits VALUES (?, ?, ?, ?)`, run.RunID, job.JobID, unixMillis(commit.CommittedAt), payload); err != nil {
+			t.Fatal(err)
+		}
+	}
+	v3.close(t)
 	if err := store.Close(); err != nil {
 		t.Fatal(err)
 	}
 
-	migrated, err := Open(root)
+	migrated, err := Open(v3.root)
 	if err != nil {
 		t.Fatal(err)
 	}

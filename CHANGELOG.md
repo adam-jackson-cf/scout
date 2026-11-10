@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Enforce the Gitleaks rule-pack label's binary version pin and explain mismatched secrets activation versions in readiness output (ADR-011); exact activation matching and blocking eligibility are unchanged.
+- Add ADR-012 schema 14 shadow persistence: immutable scoped PR attempts, finding/accounting links, policy frontiers, gaps, triage and import inputs. Writable schema 13 upgrades preserve unpublished history; read-only schema 13 opens require a writable upgrade. Remove the unauthenticated mutable triage API; legacy event export bytes remain unchanged. Collection, authorization, manifest v2 and readiness evaluation are not enabled by this storage change.
 - Keep issue identity across file renames even when the rename run has no relevant successful coverage; unmatched issues follow the new path without being resolved.
 - Preserve heuristic features and report incomplete exploration when an agent map succeeds with zero features (REQ-56).
 - Add merge-time area association: opt-in Jev `association` lane, separately consented codex Terra fallback, `scout areas list --pending`, `accept` and `merge`, and a refresh guard that recommends manual mapping without starting it.
