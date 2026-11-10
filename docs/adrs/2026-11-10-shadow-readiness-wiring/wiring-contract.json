@@ -1,0 +1,239 @@
+{
+  "schema": "scout-wiring/v1",
+  "adr": "ADR-015",
+  "supersedes": [],
+  "baseline_commit": "3a8cf3309bb2788705e1d2438cb4eae39187d96c",
+  "classification": "current governed state equals baseline plus approved deltas; unknown additions, deletions or changes refuse",
+  "baseline": {
+    "caller": ".github/workflows/scout-nightly.yml",
+    "trusted": ".github/workflows/scout-guardian-trusted.yml",
+    "pr": ".github/workflows/scout-guardian.yml",
+    "dispatch_inputs": {
+      "full": {
+        "type": "boolean",
+        "default": false
+      },
+      "refresh-map": {
+        "type": "boolean",
+        "default": false
+      },
+      "authorize-egress": {
+        "type": "boolean",
+        "default": false
+      }
+    },
+    "trusted_permissions": {
+      "contents": "write",
+      "pull-requests": "read"
+    },
+    "trusted_checkout_persist_credentials": true,
+    "scout_version": "v0.1.6"
+  },
+  "unchanged": {
+    "triggers": {
+      "pull_request": {},
+      "push": {
+        "branches": [
+          "main"
+        ]
+      },
+      "schedule": [
+        {
+          "cron": "23 3 * * *"
+        }
+      ],
+      "workflow_dispatch": true
+    },
+    "trusted_concurrency": {
+      "group": "scout-guardian-${{ github.repository }}-${{ github.ref }}",
+      "cancel-in-progress": false
+    },
+    "pr_concurrency_cancel": true,
+    "pr_permissions": {
+      "contents": "read"
+    },
+    "release_artifacts": [
+      "scout-{linux,darwin}-{amd64,arm64}",
+      "scout-{linux,darwin}-{amd64,arm64}.sha256",
+      "clawpatch-<version>-<revision>.tar.gz",
+      "clawpatch-<version>-<revision>.tar.gz.sha256",
+      "clawpatch-manifest.json",
+      "clawpatch-manifest.json.sha256"
+    ],
+    "install_scripts": [
+      "scripts/install-release.sh",
+      "scripts/ci-toolchain.sh"
+    ],
+    "policy_new_keys": [],
+    "policy_existing_key_authority": "internal/policy at baseline_commit; no key delta authorized",
+    "requirement_sha256": {
+      "REQ-162": "cd78d7738be9b3504cd29dbd6f37d464204cc64e7d15dc93c9e5f9a562f3bc53",
+      "REQ-163": "63203d2c66f48ada42304fb4f44d33ed528736a412a0f2480b31eb58f51c4852",
+      "REQ-168": "a2dbb02e5e25daebc7a5a16b76d7203adf2881b78b5148334f76cd7de61eaa8f"
+    }
+  },
+  "approved": {
+    "caller_dispatch_inputs": {
+      "shadow-operation": {
+        "type": "choice",
+        "options": [
+          "reconcile",
+          "triage",
+          "start"
+        ],
+        "default": "reconcile"
+      },
+      "shadow-event": {
+        "type": "string",
+        "default": ""
+      },
+      "shadow-verdict": {
+        "type": "choice",
+        "options": [
+          "none",
+          "warranted",
+          "not_warranted",
+          "undecided"
+        ],
+        "default": "none"
+      },
+      "shadow-reason": {
+        "type": "string",
+        "default": ""
+      }
+    },
+    "trusted_workflow_call_inputs": {
+      "shadow-operation": {
+        "type": "string",
+        "default": "reconcile"
+      },
+      "shadow-event": {
+        "type": "string",
+        "default": ""
+      },
+      "shadow-verdict": {
+        "type": "string",
+        "default": "none"
+      },
+      "shadow-reason": {
+        "type": "string",
+        "default": ""
+      }
+    },
+    "forwarding": {
+      "shadow-operation": "${{ inputs.shadow-operation || 'reconcile' }}",
+      "shadow-verdict": "${{ inputs.shadow-verdict || 'none' }}",
+      "shadow-event": "${{ inputs.shadow-event }}",
+      "shadow-reason": "${{ inputs.shadow-reason }}"
+    },
+    "permissions": {
+      "scout-nightly.yml/jobs/trusted": {
+        "contents": "write",
+        "pull-requests": "read",
+        "actions": "read"
+      },
+      "scout-guardian-trusted.yml/permissions": {
+        "contents": "write",
+        "pull-requests": "read",
+        "actions": "read"
+      },
+      "scout-guardian-trusted.yml/jobs/trusted": {
+        "contents": "write",
+        "pull-requests": "read",
+        "actions": "read"
+      }
+    },
+    "trusted_checkout_persist_credentials": false,
+    "job": "existing trusted",
+    "install_id": "install",
+    "restore_id": "baseline",
+    "action_ids": {
+      "triage": "shadow-triage",
+      "start": "shadow-start"
+    },
+    "action_placement": "immediately after restore, before map/assessment; zero-reassessment reconcile after successful action",
+    "ordinary_reconcile": {
+      "id": "shadow",
+      "after": "Publish the state baseline",
+      "before": "Retain assessment evidence",
+      "if": "${{ !cancelled() && steps.install.outcome == 'success' && steps.baseline.outcome == 'success' && env.SHADOW_OPERATION == 'reconcile' }}"
+    },
+    "existing_steps_guard": "conjoin existing guards with env.SHADOW_OPERATION == 'reconcile' for map, assessment, baseline publish, assessment artifact upload and assessment enforcement",
+    "action_if": "${{ !cancelled() && steps.install.outcome == 'success' && steps.baseline.outcome == 'success' && env.SHADOW_OPERATION == '<triage|start>' }}",
+    "commands": {
+      "reconcile": [
+        "scout",
+        "shadow",
+        "reconcile",
+        "--root",
+        "<root>",
+        "--remote",
+        "origin",
+        "--json"
+      ],
+      "triage": [
+        "scout",
+        "shadow",
+        "triage",
+        "--root",
+        "<root>",
+        "--remote",
+        "origin",
+        "--event",
+        "<id>",
+        "--verdict",
+        "<verdict>",
+        "--reason",
+        "<reason>",
+        "--json"
+      ],
+      "start": [
+        "scout",
+        "shadow",
+        "start",
+        "--root",
+        "<root>",
+        "--remote",
+        "origin",
+        "--reason",
+        "<receipt-reference>",
+        "--json"
+      ]
+    },
+    "settings": {
+      "selector_logic_version": "github-shadow/v1",
+      "event_source": "none",
+      "complete": false,
+      "event_deadline_ms": null,
+      "effective_lag_ms": null,
+      "attempt_deadline_ms": 7200000,
+      "reassessment_start_budget_ms": 2400000,
+      "triage_start_reassessment_budget_ms": 0
+    },
+    "minimum_release": "first actual release containing all commands, identified in implementation PR; no invented tag",
+    "auth": {
+      "source": "trusted pre-scan run context corroborated by REST run/attempt",
+      "numeric_original_executing_actor_equal": true,
+      "current_tip_check": "every CAS retry",
+      "logical_action": [
+        "repository_id",
+        "run_id"
+      ],
+      "first_terminal_action_record_final": true,
+      "input_rest_verifiable": false
+    },
+    "start": {
+      "per_lineage_once": true,
+      "requires_existing_state_branch": true,
+      "requires_validated_immutable_rollout_receipt": true,
+      "creates_complete_frontier": false
+    },
+    "implementation_proofs": [
+      "P23 scanner token-read/trusted-byte boundary on Linux/macOS",
+      "P24 own-attempt-only authority",
+      "P25 actual surface equality/adoption blobs",
+      "live provider refusal/capability receipt",
+      "all-writer and old-rerun cutover receipt"
+    ]
+  }
+}

@@ -91,6 +91,8 @@ HD6b and HD7 are `proposed` and have no test yet (`docs/hypothesis-ledger.md`).
 
 ADR-012 is agent-decided under R-064; owner review pending here. Based on adopted ADR-011 (PR #17, 7bb73e52), effective on its own final zero-issue round with adoption outside signed files. Scope is readiness evidence/counting/authorization invariants, not a selected CI workflow. Later implementation must prove that contract; owner confirmation is a new user row and tracker updates, rejection a superseding ADR.
 
+ADR-015 selects B4-S **non-certifying** collection/triage/start wiring (effective only on its explicit final zero-issue round): implement W1–W7/P25, pair external caller grants/release pins, prove S6 and record validated all-writer/rerun cutover before start. Collection and triage ship together: untriaged v1 events remain cohort-wide Undecided vetoes, even after a future complete interval. The certifying source is an **open, undated later-ADR prerequisite**; REST-only v1 has no PR-event population/event deadline/finite lag, never advances C and remains unmeasured/exit 2. B4-S/B5 full readiness acceptance is not closed by this decision or refusal-only tests.
+
 ## Candidate source (not in the ledger)
 
 MOSS, arXiv:2610.26902: an LLM-judge monitoring loop whose thresholds transferred across benchmarks. It may matter for X1 and nightly mode. Read the full paper before using it. If it informs a decision, record it under the next free research-ledger ID.
