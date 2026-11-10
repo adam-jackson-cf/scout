@@ -191,7 +191,7 @@ func (s *Store) exportSignals(ctx context.Context) (map[string][]byte, error) {
 // exportWouldBlock returns the gate's would_block rows as canonical lines
 // sorted by row ID.
 func (s *Store) exportWouldBlock(ctx context.Context) ([][]byte, string, error) {
-	rows, err := s.ListWouldBlock(ctx)
+	rows, err := s.ListLegacyWouldBlock(ctx)
 	if err != nil {
 		return nil, "", err
 	}

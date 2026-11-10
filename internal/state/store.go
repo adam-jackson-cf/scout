@@ -22,7 +22,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-const schemaVersion = 13
+const schemaVersion = 14
 
 var (
 	// ErrStoreLocked means another process already owns the target state directory.
@@ -79,7 +79,7 @@ func Open(root string) (*Store, error) {
 		if err != nil {
 			return nil, err
 		}
-		if version != 0 && version != schemaVersion && version != reanchorSourceVersion {
+		if version != 0 && version != schemaVersion && version != reanchorSourceVersion && version != 13 {
 			return nil, unsupportedVersionError(version)
 		}
 	} else if !errors.Is(err, fs.ErrNotExist) {
@@ -168,6 +168,8 @@ func OpenExistingReadOnly(root string) (*Store, error) {
 	}
 	switch version {
 	case schemaVersion:
+	case 13:
+		return nil, fmt.Errorf("state schema version 13 requires writable upgrade to version %d; open with a current Scout writer to preserve unpublished history", schemaVersion)
 	case reanchorSourceVersion:
 		return nil, fmt.Errorf("state schema version %d requires writable re-anchor to version %d", version, schemaVersion)
 	default:
@@ -268,6 +270,13 @@ func (s *Store) migrate(ctx context.Context) error {
 			if err := execAll(ctx, tx, schemaAddedAfterV1); err != nil {
 				return fmt.Errorf("create tables added since the v1 schema: %w", err)
 			}
+		case 13:
+			if err := execAll(ctx, tx, schemaShadow); err != nil {
+				return fmt.Errorf("create shadow schema: %w", err)
+			}
+			if err := migrateLegacyShadowTriage(ctx, tx); err != nil {
+				return fmt.Errorf("copy legacy shadow triage: %w", err)
+			}
 		default:
 			return unsupportedVersionError(current)
 		}
@@ -292,7 +301,7 @@ func execAll(ctx context.Context, tx *sql.Tx, statements []string) error {
 // state export, which is the durable baseline (REQ-26).
 func unsupportedVersionError(version int) error {
 	if version > schemaVersion {
-		return fmt.Errorf("state schema version %d is newer than supported version %d", version, schemaVersion)
+		return fmt.Errorf("state schema version %d is newer than supported version %d; upgrade the Scout writer", version, schemaVersion)
 	}
 	return fmt.Errorf("state schema version %d is not supported; re-baseline: remove .scout/state.sqlite* and run scout state restore --remote origin (or scout import --from <export directory>)", version)
 }
@@ -340,7 +349,7 @@ var schemaBase = []string{
 
 // schemaAddedAfterV1 holds the tables a v1 store lacks that need no backfill.
 // A re-anchored v1 store and a new store both end with them.
-var schemaAddedAfterV1 = slices.Concat(schemaWouldBlock, schemaSignals, schemaAnnotations, schemaIngested, schemaPRMetadata, schemaAreas, schemaAssociations)
+var schemaAddedAfterV1 = slices.Concat(schemaWouldBlock, schemaSignals, schemaAnnotations, schemaIngested, schemaPRMetadata, schemaAreas, schemaAssociations, schemaShadow)
 
 // schemaCurrent creates a new store at schemaVersion.
 var schemaCurrent = slices.Concat(schemaBase, []string{schemaPlanJobs, schemaMigrationAmbiguities}, schemaAddedAfterV1)

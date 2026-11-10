@@ -45,8 +45,10 @@ func (s *Store) RecordWouldBlock(ctx context.Context, row domain.WouldBlock) err
 	})
 }
 
-// ListWouldBlock returns every would_block row in deterministic order.
-func (s *Store) ListWouldBlock(ctx context.Context) ([]domain.WouldBlock, error) {
+// ListLegacyWouldBlock exposes only the pre-ADR-012 compatibility representation
+// used by the v1 export codec. Its mutable triage fields are never CI authority;
+// authorized shadow consumers must use ReadShadowLedger instead.
+func (s *Store) ListLegacyWouldBlock(ctx context.Context) ([]domain.WouldBlock, error) {
 	rows := []domain.WouldBlock{}
 	err := s.withRead(ctx, func(db *sql.DB) error {
 		result, err := db.QueryContext(ctx, `SELECT id, head_revision, base_revision, issue_id, check_id, rule_version, path, attribution, profile, triage, triage_actor, triage_reason, recorded_at, triaged_at FROM would_block ORDER BY check_id, recorded_at, id`)
@@ -73,35 +75,6 @@ func (s *Store) ListWouldBlock(ctx context.Context) ([]domain.WouldBlock, error)
 		return result.Err()
 	})
 	return rows, err
-}
-
-// TriageWouldBlock records a maintainer verdict on one shadow block.
-func (s *Store) TriageWouldBlock(ctx context.Context, id, triage, actor, reason string) error {
-	if id == "" || !domain.ValidTriage(triage) || actor == "" {
-		return errors.New("would_block ID, valid triage and actor are required")
-	}
-	if s.readOnly {
-		return errors.New("state store is read-only")
-	}
-	for _, value := range []string{actor, reason} {
-		if err := rejectUnsafePersistence(value); err != nil {
-			return err
-		}
-	}
-	return s.withTransaction(ctx, func(tx *sql.Tx) error {
-		result, err := tx.ExecContext(ctx, `UPDATE would_block SET triage = ?, triage_actor = ?, triage_reason = ?, triaged_at = ? WHERE id = ?`, triage, actor, reason, unixMillis(time.Now()), id)
-		if err != nil {
-			return fmt.Errorf("triage would_block: %w", err)
-		}
-		n, err := result.RowsAffected()
-		if err != nil {
-			return fmt.Errorf("triage would_block: %w", err)
-		}
-		if n == 0 {
-			return fmt.Errorf("would_block %q: %w", id, ErrNotFound)
-		}
-		return nil
-	})
 }
 
 func nonZero(t time.Time) time.Time {

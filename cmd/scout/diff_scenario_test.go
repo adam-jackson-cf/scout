@@ -144,7 +144,7 @@ func wouldBlockChecks(t *testing.T, root string) map[string]int {
 		t.Fatal(err)
 	}
 	defer store.Close()
-	rows, err := store.ListWouldBlock(context.Background())
+	rows, err := store.ListLegacyWouldBlock(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
