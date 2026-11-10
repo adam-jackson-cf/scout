@@ -301,6 +301,7 @@ type capability struct {
 func readiness(ctx context.Context, args []string) int {
 	set := flag.NewFlagSet("readiness", flag.ContinueOnError)
 	flags := common(set)
+	shadowOpts := registerShadowFlags(set)
 	var kind, from, to string
 	var paths, families, excludes stringsFlag
 	var full, authorized, matrix bool
@@ -315,6 +316,19 @@ func readiness(ctx context.Context, args []string) int {
 	set.BoolVar(&authorized, "allow-egress", false, "authorize selected provider calls")
 	if !parse(set, args, flags) {
 		return exitUnavailable
+	}
+	if shadowOpts.enabled {
+		return readinessShadow(ctx, flags, shadowOpts, set)
+	}
+	var shadowOnly bool
+	set.Visit(func(f *flag.Flag) {
+		switch f.Name {
+		case "check", "version", "as-of", "encoding":
+			shadowOnly = true
+		}
+	})
+	if shadowOnly {
+		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("--check, --version, --as-of and --encoding require --shadow"))
 	}
 	scope, err := scopeOptions(kind, paths, from, to, families)
 	if err != nil {
