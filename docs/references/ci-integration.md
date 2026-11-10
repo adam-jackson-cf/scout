@@ -72,19 +72,19 @@ Every lane downloads the Scout binary and the Clawpatch bundle from a release by
 
 ## Inputs
 
-| Input                | Workflow | Default                                                                 | Effect                                                                                                                                                        |
-| -------------------- | -------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `scout-version`      | both     | required                                                                | Release tag at or after `v0.1.6`, for example `v0.1.6`.                                                                                                       |
-| `release-repo`       | both     | empty → the repository hosting the workflow (`job.workflow_repository`) | `owner/name` that publishes releases.                                                                                                                         |
-| `fail-on-incomplete` | both     | `false`                                                                 | Assessment exits 2/3 fail when set. ADR-015 reserved wiring: shadow reconcile 2 is always neutral; shadow 3 consults this flag; triage/start 2/3 always fail. |
-| `full`               | trusted  | `false`                                                                 | Force `assess --full`.                                                                                                                                        |
-| `refresh-map`        | trusted  | `false`                                                                 | Run `scout map --refresh` before assessing.                                                                                                                   |
-| `authorize-egress`   | trusted  | `false`                                                                 | Pass `--allow-egress` to `map` and `assess`.                                                                                                                  |
+| Input                | Workflow | Default                                                                 | Effect                                                                                                                          |
+| -------------------- | -------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `scout-version`      | both     | required                                                                | Release tag at or after `v0.1.6`, for example `v0.1.6`.                                                                         |
+| `release-repo`       | both     | empty → the repository hosting the workflow (`job.workflow_repository`) | `owner/name` that publishes releases.                                                                                           |
+| `fail-on-incomplete` | both     | `false`                                                                 | Assessment exits 2/3 fail when set. ADR-015 reserved wiring: shadow reconcile 2 is always neutral; shadow 3 consults this flag. |
+| `full`               | trusted  | `false`                                                                 | Force `assess --full`.                                                                                                          |
+| `refresh-map`        | trusted  | `false`                                                                 | Run `scout map --refresh` before assessing.                                                                                     |
+| `authorize-egress`   | trusted  | `false`                                                                 | Pass `--allow-egress` to `map` and `assess`.                                                                                    |
 
 ## What To Check
 
 - The job summary: the ≤ 60-line Markdown summary on PRs, or `status: … (exit N)` on trusted runs.
-- Exit handling: assessment 0 passes, 1 fails, and 2/3 warn unless fail-on-incomplete. Under reserved ADR-015 wiring, reconcile 2 is always neutral, 3 warns/fails with that flag; triage/start require publication/idempotent success.
+- Exit handling: assessment 0 passes, 1 fails, and 2/3 warn unless fail-on-incomplete. Under reserved ADR-015 wiring, reconcile 2 is always neutral, 3 warns/fails with that flag.
 - The evidence artifact: `scout-assessment-<run_id>-pr` (kept 30 days) holds the assessment JSON, its stderr and the summary. `scout-assessment-<run_id>-<event>` (kept 90 days) holds the trusted run's JSON, stderr and `scout-map.json`.
 - The `scout/state` branch advances after each trusted run that exits 0 or 1.
 - On GitHub-hosted runners, the model-CLI lanes and the agent map report `skipped (no model CLI)`. That is expected and does not change the exit code.
