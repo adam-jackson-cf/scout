@@ -34,7 +34,11 @@ func readinessShadow(ctx context.Context, flags *commonFlags, opts *shadowFlags,
 	var inputErr error
 	set.Visit(func(f *flag.Flag) {
 		switch f.Name {
-		case "root", "json", "shadow", "check", "version", "as-of", "encoding":
+		case "as-of", "version":
+			if f.Value.String() == "" {
+				inputErr = fmt.Errorf("--%s requires a nonempty value", f.Name)
+			}
+		case "root", "json", "shadow", "check", "encoding":
 		default:
 			inputErr = fmt.Errorf("--%s cannot be combined with --shadow", f.Name)
 		}
