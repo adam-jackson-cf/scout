@@ -83,17 +83,17 @@ func TestConcurrentPublishersBothLandWithLinearHistory(t *testing.T) {
 	go func() {
 		defer wg.Done()
 		local := ledger(t, "2026-10-01T00:00:00Z", "issue:a")
-		aResult, aErr = Publish(ctx, first, func(current Tree) (Tree, error) {
+		aResult, aErr = Publish(ctx, first, func(current Parent) (Tree, error) {
 			once.Do(func() {
 				close(aStarted)
 				<-bLanded // B wins the race after A read the (empty) tip
 			})
-			return MergeState(current, local)
+			return MergeState(current.Tree, local)
 		})
 	}()
 	<-aStarted
-	bResult, err := Publish(ctx, second, func(current Tree) (Tree, error) {
-		return MergeState(current, ledger(t, "2026-10-01T00:00:00Z", "issue:b"))
+	bResult, err := Publish(ctx, second, func(current Parent) (Tree, error) {
+		return MergeState(current.Tree, ledger(t, "2026-10-01T00:00:00Z", "issue:b"))
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -143,8 +143,8 @@ func TestManyConcurrentPublishersAllLand(t *testing.T) {
 		go func() {
 			defer wg.Done()
 			id := "issue:" + string(rune('a'+i))
-			_, errs[i] = Publish(ctx, Options{Repo: clones[i], Remote: bare, Trusted: true, MaxAttempts: 32}, func(current Tree) (Tree, error) {
-				return MergeState(current, ledger(t, "2026-10-01T00:00:00Z", id))
+			_, errs[i] = Publish(ctx, Options{Repo: clones[i], Remote: bare, Trusted: true, MaxAttempts: 32}, func(current Parent) (Tree, error) {
+				return MergeState(current.Tree, ledger(t, "2026-10-01T00:00:00Z", id))
 			})
 		}()
 	}
@@ -186,7 +186,7 @@ func TestMergeKeepsNewerDispositionPerIssue(t *testing.T) {
 
 func TestPublishIsReadOnlyWithoutTrust(t *testing.T) {
 	bare, clones := remoteWithClones(t, 1)
-	_, err := Publish(context.Background(), Options{Repo: clones[0], Remote: bare}, func(Tree) (Tree, error) {
+	_, err := Publish(context.Background(), Options{Repo: clones[0], Remote: bare}, func(Parent) (Tree, error) {
 		t.Fatal("apply must not run for an untrusted publisher")
 		return nil, nil
 	})
@@ -201,7 +201,7 @@ func TestPublishIsReadOnlyWithoutTrust(t *testing.T) {
 func TestPublishNeverCommitsDatabaseFiles(t *testing.T) {
 	bare, clones := remoteWithClones(t, 1)
 	for _, path := range []string{"state/v1/state.sqlite", "state/v1/state.sqlite-wal", ".scout/state.sqlite", "state/v1/../x"} {
-		_, err := Publish(context.Background(), Options{Repo: clones[0], Remote: bare, Trusted: true}, func(Tree) (Tree, error) {
+		_, err := Publish(context.Background(), Options{Repo: clones[0], Remote: bare, Trusted: true}, func(Parent) (Tree, error) {
 			return Tree{path: []byte("x")}, nil
 		})
 		if err == nil {
@@ -218,7 +218,7 @@ func TestPublishUnchangedTreeAddsNoCommit(t *testing.T) {
 	bare, clones := remoteWithClones(t, 1)
 	opts := Options{Repo: clones[0], Remote: bare, Trusted: true, Now: func() time.Time { return time.Unix(1790000000, 0) }}
 	local := ledger(t, "2026-10-01T00:00:00Z", "issue:a")
-	apply := func(current Tree) (Tree, error) { return MergeState(current, local) }
+	apply := func(current Parent) (Tree, error) { return MergeState(current.Tree, local) }
 	first, err := Publish(ctx, opts, apply)
 	if err != nil || !first.Changed {
 		t.Fatalf("first publish = %+v, %v", first, err)
@@ -245,7 +245,7 @@ func publishedTree(t *testing.T, tree Tree) Options {
 	t.Helper()
 	bare, clones := remoteWithClones(t, 1)
 	opts := Options{Repo: clones[0], Remote: bare, Trusted: true}
-	if _, err := Publish(context.Background(), opts, func(Tree) (Tree, error) { return tree, nil }); err != nil {
+	if _, err := Publish(context.Background(), opts, func(Parent) (Tree, error) { return tree, nil }); err != nil {
 		t.Fatal(err)
 	}
 	return opts
