@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "cases": {
+    "cmd/scout/readiness_shadow_test.go/TestShadowReadinessRejectsEmptyExplicitSelectors": {"source": ["cmd/scout/readiness_shadow.go"], "behavior": "Explicit empty cutoff/version flags refuse as invalid input rather than silently becoming a default current query."},
     "cmd/scout/adr012_p22_proof_test.go/TestADR012ShadowCLIReadOnlyAndExits": {"source": ["cmd/scout/main.go", "cmd/scout/readiness_shadow.go"], "behavior": "The real readiness dispatcher exposes a read-only shadow query with exact flags, canonical output, exit mapping and unchanged matrix mode."},
     "cmd/scout/adr012_p22_proof_test.go/TestADR012ShadowCLIReadOnlyAndExits/no-store-no-initialization-tools-models-or-network": {"source": ["cmd/scout/readiness_shadow.go"], "behavior": "A missing store yields unmeasured exit 2 without creating files, discovering executables or requesting the network."},
     "cmd/scout/adr012_p22_proof_test.go/TestADR012ShadowCLIReadOnlyAndExits/pending-late-default-refused-explicit-C-historical": {"source": ["cmd/scout/readiness_shadow.go"], "behavior": "Current certification refuses pending late evidence while explicit frontier reproduction retains the canonical dossier and cannot authorize activation."},
