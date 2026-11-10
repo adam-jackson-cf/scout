@@ -79,6 +79,19 @@ func sanitized(text string) string {
 	return safe
 }
 
+// capabilityReason preserves the catalog's public rule-pack fingerprint while
+// sanitizing policy-controlled values and other free text in the explanation.
+func capabilityReason(check engine.Capability) string {
+	if check.PublicRuleVersion == "" {
+		return sanitized(check.Reason)
+	}
+	parts := strings.Split(check.Reason, check.PublicRuleVersion)
+	for index := range parts {
+		parts[index] = sanitized(parts[index])
+	}
+	return strings.Join(parts, check.PublicRuleVersion)
+}
+
 func emit(flags *commonFlags, status string, code int, result any, err error) int {
 	reply := outcome{Status: status, ExitCode: code, Result: result}
 	if err != nil {
@@ -320,7 +333,7 @@ func readiness(ctx context.Context, args []string) int {
 	}
 	checks := make([]capability, len(assessmentReadiness.Capabilities))
 	for index, check := range assessmentReadiness.Capabilities {
-		reason := sanitized(check.Reason)
+		reason := capabilityReason(check)
 		checks[index] = capability{Name: check.Name, Required: check.Required, Ready: check.Ready, Reason: reason}
 	}
 	report := struct {

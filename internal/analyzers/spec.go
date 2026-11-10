@@ -199,6 +199,12 @@ func (s Spec) Validate() error {
 	if strings.TrimSpace(s.Rules.Version) == "" {
 		return errors.New("adapter spec requires an exact rule version")
 	}
+	if s.gitleaks() {
+		label, _, ok := strings.Cut(s.Rules.Version, "@")
+		if !ok || label != "gitleaks-default-rules/"+s.Binary.Version {
+			return errors.New("Gitleaks rule-pack label version must match the pinned binary version")
+		}
+	}
 	if bundledRules != (len(s.Rules.BundledFiles) != 0) {
 		return errors.New("adapter bundled rule arguments and files must agree")
 	}
