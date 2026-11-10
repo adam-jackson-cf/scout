@@ -405,6 +405,8 @@ type ShadowStats struct {
 	WouldBlock int
 	// Warranted, NotWarranted, Undecided are maintainer triage counts.
 	Warranted, NotWarranted, Undecided int
+	// Cohort vetoes span every interval; the other counts remain window-scoped.
+	CohortNotWarranted, CohortUndecided int
 	// UnknownAttribution runs out of TotalRuns.
 	UnknownAttribution, TotalRuns int
 }
@@ -416,8 +418,11 @@ func (p Policy) ShadowReady(s ShadowStats) (bool, string) {
 	if err := ValidateEligibleID(s.CheckID); err != nil {
 		return false, err.Error()
 	}
-	if s.NotWarranted > 0 {
-		return false, fmt.Sprintf("%d not_warranted would_block event(s)", s.NotWarranted)
+	if s.NotWarranted+s.CohortNotWarranted > 0 {
+		return false, fmt.Sprintf("%d not_warranted would_block event(s)", s.NotWarranted+s.CohortNotWarranted)
+	}
+	if s.Undecided+s.CohortUndecided > 0 {
+		return false, fmt.Sprintf("%d undecided would_block event(s) await maintainer triage", s.Undecided+s.CohortUndecided)
 	}
 	if s.TotalRuns > 0 && s.UnknownAttribution*100 > 10*s.TotalRuns {
 		return false, fmt.Sprintf("unknown attribution %d/%d runs exceeds 10%%", s.UnknownAttribution, s.TotalRuns)
@@ -426,13 +431,10 @@ func (p Policy) ShadowReady(s ShadowStats) (bool, string) {
 		return false, fmt.Sprintf("shadow window %d day(s) < min_days %d", s.Days, p.shadow.MinDays)
 	}
 	if isRareSecurity(s.CheckID) && s.WouldBlock == 0 {
-		return true, "provisional: rare security check with zero would_block events at window end; activate with provisional: true"
+		return true, fmt.Sprintf("provisional: rare security check with zero would_block events at window end; %d inspected observations; activate with provisional: true", s.PRRuns)
 	}
 	if s.PRRuns < p.shadow.MinPRRuns {
 		return false, fmt.Sprintf("%d PR run(s) < min_pr_runs %d", s.PRRuns, p.shadow.MinPRRuns)
-	}
-	if s.Undecided > 0 {
-		return false, fmt.Sprintf("%d undecided would_block event(s) await maintainer triage", s.Undecided)
 	}
 	return true, "shadow window satisfied"
 }
