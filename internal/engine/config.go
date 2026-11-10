@@ -64,6 +64,9 @@ type Capability struct {
 	Required bool   `json:"required"`
 	Ready    bool   `json:"ready"`
 	Reason   string `json:"reason,omitempty"`
+	// PublicRuleVersion is trusted catalog metadata, not policy or scanner
+	// output. Renderers may preserve it while sanitizing the rest of Reason.
+	PublicRuleVersion string `json:"-"`
 }
 
 // Readiness describes prerequisites for work that would actually execute.

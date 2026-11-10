@@ -16,6 +16,7 @@ import (
 	"scout/internal/domain"
 	"scout/internal/inventory"
 	"scout/internal/modelcli"
+	"scout/internal/policy"
 	"scout/internal/state"
 )
 
@@ -73,6 +74,18 @@ func AssessReadiness(ctx context.Context, config Config, options Options) (Readi
 		return result, nil
 	}
 	specs := registry.Specs()
+	pol, err := policy.Load(root, "HEAD")
+	if err != nil {
+		return result, err
+	}
+	for _, spec := range specs {
+		for _, ruleID := range spec.Rules.RuleIDs {
+			checkID := CheckIDOf(spec.ID, ruleID)
+			if reason := pol.ActivationDiagnostic(checkID, spec.Rules.Version); reason != "" {
+				result.Capabilities = append(result.Capabilities, Capability{Name: checkID, Ready: true, Reason: reason, PublicRuleVersion: spec.Rules.Version})
+			}
+		}
+	}
 	toolBytes, err := json.Marshal(specs)
 	if err != nil {
 		return result, err

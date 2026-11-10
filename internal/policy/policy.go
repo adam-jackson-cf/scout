@@ -381,6 +381,19 @@ func (p Policy) CheckStatus(checkID, ruleVersion string) Status {
 	return Active
 }
 
+// ActivationDiagnostic explains why a configured secrets activation stays in
+// shadow when its version is not the current full rule-pack string.
+func (p Policy) ActivationDiagnostic(checkID, ruleVersion string) string {
+	if !strings.HasPrefix(checkID, secretsPrefix) || ValidateEligibleID(checkID) != nil {
+		return ""
+	}
+	a, ok := p.activations[checkID]
+	if !ok || a.Version == ruleVersion {
+		return ""
+	}
+	return fmt.Sprintf("check %s stays in shadow: blocking.checks[].version %q must equal the full rule-pack string %q", checkID, a.Version, ruleVersion)
+}
+
 // ShadowStats is the window evidence for one check in one repository.
 type ShadowStats struct {
 	CheckID string
