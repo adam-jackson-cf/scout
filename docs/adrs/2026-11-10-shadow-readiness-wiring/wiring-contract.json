@@ -30,6 +30,8 @@
     "scout_version": "v0.1.6"
   },
   "unchanged": {
+    "trusted_job_if": "github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)",
+    "trusted_job_timeout_minutes": 60,
     "triggers": {
       "pull_request": {},
       "push": {
@@ -52,14 +54,10 @@
     "pr_permissions": {
       "contents": "read"
     },
-    "release_artifacts": [
-      "scout-{linux,darwin}-{amd64,arm64}",
-      "scout-{linux,darwin}-{amd64,arm64}.sha256",
-      "clawpatch-<version>-<revision>.tar.gz",
-      "clawpatch-<version>-<revision>.tar.gz.sha256",
-      "clawpatch-manifest.json",
-      "clawpatch-manifest.json.sha256"
-    ],
+    "release_artifacts": {
+      "match_syntax": "anchored regular expressions over asset basenames; no other assets authorized",
+      "patterns": ["^scout-(linux|darwin)-(amd64|arm64)(\\.sha256)?$", "^clawpatch-[0-9]+\\.[0-9]+\\.[0-9]+-[0-9a-f]{40}\\.tar\\.gz(\\.sha256)?$", "^clawpatch-manifest\\.json(\\.sha256)?$"]
+    },
     "install_scripts": [
       "scripts/install-release.sh",
       "scripts/ci-toolchain.sh"
@@ -73,6 +71,18 @@
     }
   },
   "approved": {
+    "requirement_row_extraction": "UTF-8 physical line containing exactly one >REQ-N<; include indentation and LF; reject missing/duplicate/multiline row",
+    "approved_requirement_sha256": {
+      "REQ-25": "c79d4105d4a0c3405b511ff52b0ec1d62e78af2838f5d0c54e676d40e1cc9d13",
+      "REQ-160": "4090ad254d7afd92526cd32e421cc647ea008d399ee33ca4a0846345e8e9f5ca",
+      "REQ-161": "1b8bdac0887bef47db1b7d8ddd1ab209c720dbb5bb0b67e78fc8c57027c50245"
+    },
+    "operation_grammar": {
+      "all": {"reason_max_utf8_bytes": 1000, "reason_control_characters": false},
+      "reconcile": {"event": "", "verdict": "none", "reason": ""},
+      "triage": {"event": "existing canonical CI event ID", "verdict": ["warranted", "not_warranted", "undecided"], "reason_min_utf8_bytes": 1, "full": false, "refresh-map": false, "authorize-egress": false},
+      "start": {"event": "", "verdict": "none", "reason": "receipt reference", "full": false, "refresh-map": false, "authorize-egress": false}
+    },
     "caller_dispatch_inputs": {
       "shadow-operation": {
         "type": "choice",
@@ -151,16 +161,26 @@
       "triage": "shadow-triage",
       "start": "shadow-start"
     },
-    "action_placement": "immediately after restore, before map/assessment; zero-reassessment reconcile after successful action",
+    "step_order_constraints": [["install", "prepare-auth"], ["prepare-auth", "baseline"], ["baseline", "shadow-inputs"], ["shadow-inputs", "shadow-triage"], ["shadow-inputs", "shadow-start"], ["shadow-triage", "map"], ["shadow-start", "map"], ["Publish the state baseline", "Retain assessment evidence"], ["Retain assessment evidence", "Enforce assessment result"], ["Enforce assessment result", "shadow"]],
     "ordinary_reconcile": {
       "id": "shadow",
-      "after": "Publish the state baseline",
-      "before": "Retain assessment evidence",
+      "after": "Enforce assessment result",
+      "timeout-minutes": 2,
       "if": "${{ !cancelled() && steps.install.outcome == 'success' && steps.baseline.outcome == 'success' && env.SHADOW_OPERATION == 'reconcile' }}"
     },
-    "existing_steps_guard": "conjoin existing guards with env.SHADOW_OPERATION == 'reconcile' for map, assessment, baseline publish, assessment artifact upload and assessment enforcement",
-    "action_if": "${{ !cancelled() && steps.install.outcome == 'success' && steps.baseline.outcome == 'success' && env.SHADOW_OPERATION == '<triage|start>' }}",
+    "existing_step_if": {
+      "map": "${{ env.SHADOW_OPERATION == 'reconcile' }}",
+      "assessment": "${{ env.SHADOW_OPERATION == 'reconcile' }}",
+      "Publish the state baseline": "${{ (steps.assessment.outputs.exit_code == '0' || steps.assessment.outputs.exit_code == '1') && env.SHADOW_OPERATION == 'reconcile' }}",
+      "Retain assessment evidence": "${{ always() && env.SHADOW_OPERATION == 'reconcile' }}"
+    },
+    "assessment_enforcement_if": "${{ !cancelled() && env.SHADOW_OPERATION == 'reconcile' && steps.assessment.outcome != 'skipped' }}",
+    "action_if": {
+      "triage": "${{ !cancelled() && steps.install.outcome == 'success' && steps.baseline.outcome == 'success' && env.SHADOW_OPERATION == 'triage' }}",
+      "start": "${{ !cancelled() && steps.install.outcome == 'success' && steps.baseline.outcome == 'success' && env.SHADOW_OPERATION == 'start' }}"
+    },
     "commands": {
+      "validate": ["scout", "shadow", "validate", "--json"],
       "reconcile": [
         "scout",
         "shadow",
@@ -206,9 +226,64 @@
       "complete": false,
       "event_deadline_ms": null,
       "effective_lag_ms": null,
-      "attempt_deadline_ms": 7200000,
-      "reassessment_start_budget_ms": 2400000,
-      "triage_start_reassessment_budget_ms": 0
+      "attempt_deadline_ms": null,
+      "reassessment_enabled": false,
+      "inventory_timeout_minutes": 2,
+      "inventory_request_limit": 100,
+      "inventory_rate_remaining_floor": 200,
+      "inventory_horizon": "original run created_at >= authenticated start marker time",
+      "inventory_order": ["original_created_at", "numeric_run_id", "numeric_run_attempt", "numeric_job_id"],
+      "durable_write_types": ["start_marker", "authorized_existing_event_triage", "immutable_action_refusal", "action_idempotence", "associated_S3_publication"],
+      "forbidden_write_types": ["PRRunFact", "would_block_event", "event_link", "provider_event_obligation", "gap_point", "interval", "frontier"]
+    },
+    "runtime_contract": {
+      "normalization": {
+        "id": "shadow-inputs",
+        "after": "baseline",
+        "before": ["shadow-triage", "shadow-start", "map"],
+        "if": "${{ !cancelled() && steps.install.outcome == 'success' && steps.baseline.outcome == 'success' }}",
+        "command": ["scout", "shadow", "validate", "--json"],
+        "output_env": "SHADOW_OPERATION",
+        "valid_values": ["reconcile", "triage", "start"],
+        "non_dispatch": "reconcile",
+        "invalid": {"operation": "invalid", "exit": 3, "summary": "not_published/invalid_inputs", "writes": false}
+      },
+      "step_secrets": {
+        "baseline": {"GITHUB_TOKEN": "${{ github.token }}", "SCOUT_GIT_TOKEN": "${{ github.token }}"},
+        "assessment": {"GITHUB_TOKEN": "${{ github.token }}", "OPENROUTER_API_KEY": "${{ secrets.OPENROUTER_API_KEY }}"},
+        "Publish the state baseline": {"GITHUB_TOKEN": "${{ github.token }}", "SCOUT_GIT_TOKEN": "${{ github.token }}"},
+        "shadow": {"GITHUB_TOKEN": "${{ github.token }}", "SCOUT_GIT_TOKEN": "${{ github.token }}"},
+        "shadow-triage": {"GITHUB_TOKEN": "${{ github.token }}", "SCOUT_GIT_TOKEN": "${{ github.token }}"},
+        "shadow-start": {"GITHUB_TOKEN": "${{ github.token }}", "SCOUT_GIT_TOKEN": "${{ github.token }}"}
+      },
+      "other_steps_receive_no_credential_environment": true,
+      "checkout_token_input": "${{ github.token }}",
+      "credential_argv_allowed": false,
+      "event_id_regex": "^wb-[0-9a-f]{16}$",
+      "git_credential_helper": {
+        "if": "${{ !cancelled() && steps.install.outcome == 'success' }}",
+        "script_lines": ["#!/usr/bin/env bash", "case \"$1\" in", "  *Username*) printf '%s\\n' x-access-token ;;", "  *Password*) printf '%s\\n' \"$SCOUT_GIT_TOKEN\" ;;", "  *) exit 1 ;;", "esac"],
+        "prepare_step": "prepare-auth",
+        "path": "$RUNNER_TEMP/scout-auth/askpass",
+        "contains_token": false,
+        "username": "x-access-token",
+        "password_source": "SCOUT_GIT_TOKEN step environment",
+        "git_steps": ["baseline", "Publish the state baseline", "shadow", "shadow-triage", "shadow-start"],
+        "git_env": {"GIT_ASKPASS": "$RUNNER_TEMP/scout-auth/askpass", "GIT_TERMINAL_PROMPT": "0"},
+        "ls_remote_exit": {"0": "restore", "2": "branch absent", "other": "fail restore; no rebaseline fallback"}
+      },
+      "reason_control_character_regex": "[\\u0000-\\u001f\\u007f-\\u009f]",
+      "operation_exits": {
+        "reconcile": {"0": "neutral", "2": "neutral regardless fail-on-incomplete", "3": "warning; fail iff fail-on-incomplete", "no_start": {"exit": 2, "status": "not_started", "writes": false}},
+        "triage": {"0": "published or already_published", "1": "refused recorded; fail", "2": "not_published; fail; fresh dispatch", "3": "not_published; fail; remedy unavailable prerequisite", "no_start_exit": 3},
+        "start": {"0": "published or already_published", "1": "refused recorded; fail", "2": "not_published; fail; fresh dispatch", "3": "not_published; fail; remedy unavailable prerequisite"},
+        "missing_state_branch": {"exit": 3, "writes": false}
+      },
+      "summary_enum": ["published", "already_published", "refused", "not_published"],
+      "reassessment": "not authorized in v1; later source/identity/B/time/deadline/capacity ADR required, not a clock-only enablement",
+      "scout_version_regex": "^v[0-9]+\\.[0-9]+\\.[0-9]+([-.][0-9A-Za-z.]+)?$",
+      "tag_bumps": "allowed when release integration test proves all reserved commands; actual minimum tag documented by implementation",
+      "final_round_selection": "highest exact round-N.md; exactly one matching scout-signoff/v1 block there; pending higher round refuses; lower signatures historical; no non-round block"
     },
     "minimum_release": "first actual release containing all commands, identified in implementation PR; no invented tag",
     "auth": {
@@ -220,19 +295,31 @@
         "run_id"
       ],
       "first_terminal_action_record_final": true,
-      "input_rest_verifiable": false
+      "input_rest_verifiable": false,
+      "unpublished_run_attempt_max": 1,
+      "unpublished_rerun_exit": 2,
+      "unpublished_rerun_remedy": "fresh dispatch; no assumed input reuse"
     },
     "start": {
       "per_lineage_once": true,
       "requires_existing_state_branch": true,
       "requires_validated_immutable_rollout_receipt": true,
-      "creates_complete_frontier": false
+      "creates_complete_frontier": false,
+      "receipt_schema": "scout-shadow-rollout/v1",
+      "reference": "git:<40-hex-commit>:docs/operations/shadow/<path>#sha256=<64-lower-hex>",
+      "authority": "same-repository protected-default reachable receipt plus fresh current-tip maintainer start action",
+      "required_bindings": ["repository_id", "state_ref", "lineage_genesis", "migration_state_commit", "migration_result", "last_intact_v2_commit", "writer_inventory", "workflow_release_commits_digests", "old_run_disable_records", "minimum_binary_version", "linux_s6_evidence", "macos_s6_evidence", "external_inventory_and_rerun_prohibition_attested"],
+      "genesis_null_allowed_only_for_empty_history": true,
+      "future_complete_source_same_lineage": true,
+      "external_inventory_authority": "explicit current-tip maintainer attestation; not a REST completeness claim",
+      "refuse": ["unknown_schema_or_fields", "missing_evidence", "digest_or_binding_mismatch", "listed_old_writer", "observed_old_active_run"]
     },
     "implementation_proofs": [
-      "P23 scanner token-read/trusted-byte boundary on Linux/macOS",
+      "P23 scanner token-read/trusted-byte boundary including other processes argv/environment on Linux/macOS; never credentials in argv",
       "P24 own-attempt-only authority",
       "P25 actual surface equality/adoption blobs",
       "live provider refusal/capability receipt",
+      "later adopted complete-source/reassessment contract before any attempt collection",
       "all-writer and old-rerun cutover receipt"
     ]
   }

@@ -91,7 +91,9 @@ HD6b and HD7 are `proposed` and have no test yet (`docs/hypothesis-ledger.md`).
 
 ADR-012 is agent-decided under R-064; owner review pending here. Based on adopted ADR-011 (PR #17, 7bb73e52), effective on its own final zero-issue round with adoption outside signed files. Scope is readiness evidence/counting/authorization invariants, not a selected CI workflow. Later implementation must prove that contract; owner confirmation is a new user row and tracker updates, rejection a superseding ADR.
 
-ADR-015 selects B4-S **non-certifying** collection/triage/start wiring (effective only on its explicit final zero-issue round): implement W1–W7/P25, pair external caller grants/release pins, prove S6 and record validated all-writer/rerun cutover before start. Collection and triage ship together: untriaged v1 events remain cohort-wide Undecided vetoes, even after a future complete interval. The certifying source is an **open, undated later-ADR prerequisite**; REST-only v1 has no PR-event population/event deadline/finite lag, never advances C and remains unmeasured/exit 2. B4-S/B5 full readiness acceptance is not closed by this decision or refusal-only tests.
+ADR-015 selects B4-S non-certifying inventory/triage/start wiring (effective only on its final zero-issue round): implement W1–W7/P25, pair external caller grants/release pins, prove S6 and validated all-writer/rerun cutover. V1 writes start/existing-event triage/refusals only; no attempt facts, new event/link, gap, interval or C advance. Certifying source/reassessment is an **open, undated later-ADR prerequisite**; B4-S/B5 readiness acceptance remains open, not replaced by refusal-only tests. Preserve existing/imported cohort vetoes and triage in the same lineage.
+
+A later source/reassessment ADR must settle complete population/time, authenticated B/H, per-observation provider attempt identities, deadlines/lag/horizon and capacity. V1 performs no reassessments; an advancing clock alone cannot enable them. Inventory is diagnostic, never clean/zero evidence.
 
 ## Candidate source (not in the ledger)
 
