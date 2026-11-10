@@ -11,7 +11,20 @@ import (
 // fast-forward retains the original source exactly. Every other source remains
 // pending; this function cannot authorize its authors or mint destination stamps.
 func PlanShadowImport(dst, src domain.ShadowLedger, proof domain.ChainProof) (domain.ShadowImportPlan, error) {
-	if err := state.ValidateShadowLedger(dst); err != nil {
+	// A store may have final material without a publication chain. Validate its
+	// graph as staged material, but never use its claimed stamps as lineage proof.
+	destination := dst
+	if len(dst.Publications) == 0 {
+		destination.Facts = append([]domain.PRRunFact(nil), dst.Facts...)
+		destination.Events = append([]domain.ProviderPREvent(nil), dst.Events...)
+		for i := range destination.Facts {
+			destination.Facts[i].RecordedAt = nil
+		}
+		for i := range destination.Events {
+			destination.Events[i].RecordedAt = nil
+		}
+	}
+	if err := state.ValidateShadowLedger(destination); err != nil {
 		return domain.ShadowImportPlan{}, fmt.Errorf("destination history: %w", err)
 	}
 	if err := state.ValidateShadowLedger(src); err != nil {

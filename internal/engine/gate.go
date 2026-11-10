@@ -1,8 +1,6 @@
 package engine
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"fmt"
 	"sort"
 	"strings"
@@ -354,7 +352,7 @@ func Evaluate(in GateInput) GateOutput {
 		}
 		if item.WouldBlock {
 			out.WouldBlock = append(out.WouldBlock, domain.WouldBlock{
-				ID: wouldBlockID(in.BaseRevision, in.HeadRevision, item.CheckID, item.IssueID), HeadRevision: in.HeadRevision, BaseRevision: in.BaseRevision,
+				ID: domain.ShadowEventID(in.BaseRevision, in.HeadRevision, item.CheckID, item.IssueID, item.RuleVersion), HeadRevision: in.HeadRevision, BaseRevision: in.BaseRevision,
 				IssueID: item.IssueID, CheckID: item.CheckID, RuleVersion: item.RuleVersion, Path: item.Path, Attribution: item.Attribution,
 				Profile: profile, Triage: domain.TriageUndecided,
 			})
@@ -377,11 +375,6 @@ func Evaluate(in GateInput) GateOutput {
 	gate.Status = StatusOf(gate.ExitCode)
 	out.Gate = gate
 	return out
-}
-
-func wouldBlockID(base, head, check, issue string) string {
-	sum := sha256.Sum256([]byte(strings.Join([]string{base, head, check, issue}, "\x00")))
-	return "wb-" + hex.EncodeToString(sum[:8])
 }
 
 // Ranking is the ranking of introduced and regressed findings and its
