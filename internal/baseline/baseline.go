@@ -42,6 +42,12 @@ var (
 // Tree maps repository-relative slash paths to file content.
 type Tree map[string][]byte
 
+// Parent is the actual fetched CAS tip and its validated state tree.
+type Parent struct {
+	Commit string
+	Tree   Tree
+}
+
 // Options selects the repository, remote and branch to operate on.
 type Options struct {
 	// Repo is the git repository whose object store and remote configuration are used.
@@ -82,9 +88,9 @@ func (o Options) ref() string { return "refs/heads/" + o.branch() }
 // Publish applies apply to the current tip's tree and pushes the result as one
 // child commit using an expected-parent lease. When another publisher moves the
 // branch first, Publish re-reads the new tip, re-applies apply to it and tries
-// again, up to MaxAttempts times. apply receives an empty tree when the branch
-// does not exist yet and must be a pure function of its input.
-func Publish(ctx context.Context, opts Options, apply func(current Tree) (Tree, error)) (Result, error) {
+// again, up to MaxAttempts times. apply receives the actual fetched parent
+// (empty when absent), and must revalidate any provider authorization on retry.
+func Publish(ctx context.Context, opts Options, apply func(Parent) (Tree, error)) (Result, error) {
 	if !opts.Trusted {
 		return Result{}, ErrUntrusted
 	}
@@ -105,7 +111,12 @@ func Publish(ctx context.Context, opts Options, apply func(current Tree) (Tree, 
 		if err != nil && !errors.Is(err, ErrNoState) {
 			return Result{}, err
 		}
-		next, err := apply(current)
+		if tip != "" {
+			if _, err := state.ValidateState(current); err != nil {
+				return Result{}, err
+			}
+		}
+		next, err := apply(Parent{Commit: tip, Tree: current})
 		if err != nil {
 			return Result{}, err
 		}

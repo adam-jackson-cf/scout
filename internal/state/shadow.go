@@ -230,7 +230,7 @@ func applyShadowPublication(ctx context.Context, tx *sql.Tx, p domain.ShadowPubl
 			return err
 		}
 	}
-	return nil
+	return recordShadowInputs(ctx, tx, p.Inputs)
 }
 
 func shadowTime(t time.Time) bool {

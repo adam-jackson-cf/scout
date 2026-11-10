@@ -115,8 +115,8 @@ func publishState(ctx context.Context, flags *commonFlags, opts baseline.Options
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	result, err := baseline.Publish(ctx, opts, func(current baseline.Tree) (baseline.Tree, error) {
-		return baseline.MergeState(current, baseline.Tree(local))
+	result, err := baseline.Publish(ctx, opts, func(parent baseline.Parent) (baseline.Tree, error) {
+		return baseline.MergeState(parent.Tree, baseline.Tree(local))
 	})
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)

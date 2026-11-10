@@ -1,6 +1,11 @@
 package domain
 
-import "time"
+import (
+	"crypto/sha256"
+	"encoding/hex"
+	"strings"
+	"time"
+)
 
 // ShadowScope prevents local assessments and migrated history from certifying CI.
 type ShadowScope string
@@ -129,6 +134,7 @@ type ShadowPublication struct {
 	Frontiers    []ShadowFrontier
 	GapPoints    []ShadowGapPoint
 	Intervals    []ShadowInterval
+	Inputs       ShadowInputs `json:",omitzero"`
 }
 
 // ShadowLedger is a consistent persistence snapshot. No frontier means unmeasured;
@@ -162,4 +168,26 @@ type ShadowImportPlan struct {
 	BytePreserving bool
 	Adopt          ShadowLedger
 	Pending        ShadowLedger
+}
+
+// AuthorizedTriage is produced by trusted current-policy authorization.
+type AuthorizedTriage struct {
+	Row ShadowTriage
+}
+
+// ShadowBatch is unsealed collection material awaiting a CAS publication.
+type ShadowBatch struct {
+	CheckID, RuleVersion string
+	Ledger               ShadowLedger
+	Inputs               ShadowInputs
+	AuthorizedTriage     []AuthorizedTriage
+	Complete             bool
+	CompleteThrough      time.Time
+}
+
+// ShadowEventID binds a finding to its observation coordinates and exact rule.
+// B and the assessed merge result are deliberately not identity coordinates.
+func ShadowEventID(base, head, check, issue, version string) string {
+	sum := sha256.Sum256([]byte(strings.Join([]string{base, head, check, issue, version}, "\x00")))
+	return "wb-" + hex.EncodeToString(sum[:8])
 }
