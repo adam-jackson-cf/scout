@@ -133,8 +133,20 @@ def gate_options(config: dict[str, Any]) -> None:
         fail(".omp/gate.json", rule, "set testGlobs to a string array")
     if "agentMerge" in config and config["agentMerge"] not in ("allowed", "disabled"):
         fail(".omp/gate.json", rule, "set agentMerge to allowed or disabled")
-    if "ciHost" in config and config["ciHost"] not in ("github", "nuc"):
-        fail(".omp/gate.json", rule, "set ciHost to github or nuc")
+    if "ci" in config and not ci_contract(config["ci"]):
+        fail(
+            ".omp/gate.json",
+            rule,
+            "set ci to an object with nonempty string requiredContext and runner",
+        )
+
+
+def ci_contract(value: Any) -> bool:
+    return (
+        isinstance(value, dict)
+        and value.keys() == {"requiredContext", "runner"}
+        and all(isinstance(field, str) and bool(field) for field in value.values())
+    )
 
 
 def gate_schema(config: dict[str, Any]) -> None:
@@ -148,7 +160,7 @@ def gate_schema(config: dict[str, Any]) -> None:
         "pathCheckTimeoutMs",
         "testGlobs",
         "agentMerge",
-        "ciHost",
+        "ci",
     }
     for field in config.keys() - allowed:
         fail(".omp/gate.json", rule, f"remove unsupported field {field}")
