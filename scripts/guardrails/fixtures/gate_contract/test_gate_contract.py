@@ -78,7 +78,10 @@ class GateConfigurationProof(unittest.TestCase):
         assert isinstance(config.get("pathCheck"), list)
         assert config.get("pathCheck")
         assert all(isinstance(item, str) and item for item in config["pathCheck"])
-        assert config.get("ciHost") == "github"
+        assert config.get("ci") == {
+            "requiredContext": "gate",
+            "runner": "github-actions",
+        }
         assert config.get("agentMerge") == "allowed"
         assert {"gate", "commit" + "Gate", "fast" + "Gate"}.isdisjoint(config)
 
