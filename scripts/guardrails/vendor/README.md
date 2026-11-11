@@ -8,4 +8,9 @@ catalog; it does not depend on a contributor’s home directory.
 | File | Source path | SHA-256 |
 | --- | --- | --- |
 | `validate_rule_coverage.py` | `/Users/adamjackson/.omp/agent/skills/setup-repository-guardrails/scripts/validate_rule_coverage.py` | `ddce1136f9c0b00076939aced1bb83ced0a021124eecb5024efeece9703e33a0` |
-| `guardrail-rules.json` | `/Users/adamjackson/.omp/agent/skills/setup-repository-guardrails/assets/guardrail-rules.json` | `a8cee3c44348e24c9be1804220ddedd4715f89b0b37c0e198e5c143f58ea1430` |
+| `guardrail-rules.json` | `/Users/adamjackson/.omp/agent/skills/setup-repository-guardrails/assets/guardrail-rules.json` | `60639e533a6d3ed0f59bd45a2979f4026bcdf288ffcecadb0823fd8a9ec220fb` |
+
+`guardrail-rules.json` differs from its upstream snapshot in one line: the
+`GATE.local-ci-parity` contract names the host-neutral `ci` field
+(`"ci_contract_field": "ci"`) instead of the retired host enum field. Re-vendor the
+upstream file once its catalog carries the same change.
