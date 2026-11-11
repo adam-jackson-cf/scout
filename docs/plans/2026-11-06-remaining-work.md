@@ -91,6 +91,10 @@ HD6b and HD7 are `proposed` and have no test yet (`docs/hypothesis-ledger.md`).
 
 ADR-012 is agent-decided under R-064; owner review pending here. Based on adopted ADR-011 (PR #17, 7bb73e52), effective on its own final zero-issue round with adoption outside signed files. Scope is readiness evidence/counting/authorization invariants, not a selected CI workflow. Later implementation must prove that contract; owner confirmation is a new user row and tracker updates, rejection a superseding ADR.
 
+ADR-015 adopts council-recommended read-only diagnostic inventory/credential hardening only (effective on final zero-issue signoff): implement W1–W7/P25, compatible release/caller grants and S6 isolation before workflow merge. All existing inputs/assessment guards remain; v1 writes nothing, Complete=false and C unchanged. Certifying source/reassessment, triage/start transport/control storage and all-writer/rerun cutover are explicit open later-ADR decisions because no certifying source/event set exists. Source/identity/B/time/capacity/authority/provider/S6 proofs unblock them; B4-S/B5 and ADR-012 readiness remain incomplete until then. Preserve existing/imported vetoes, triage and lineage. Route-A envelope controls remain an unadopted known viable option.
+
+Diagnostic caps are operational, not event deadlines/lag. The later ADR must settle complete population/time, authenticated B/H and recipe/inspection facts, per-observation provider identity, evidence deadlines/lag/horizon/capacity and authenticated triage/start; a clock alone cannot enable reassessment.
+
 ## Candidate source (not in the ledger)
 
 MOSS, arXiv:2610.26902: an LLM-judge monitoring loop whose thresholds transferred across benchmarks. It may matter for X1 and nightly mode. Read the full paper before using it. If it informs a decision, record it under the next free research-ledger ID.

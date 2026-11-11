@@ -1,0 +1,275 @@
+{
+  "schema": "scout-wiring/v1",
+  "adr": "ADR-015",
+  "supersedes": [],
+  "baseline_commit": "3a8cf3309bb2788705e1d2438cb4eae39187d96c",
+  "classification": "current governed state equals baseline plus approved deltas; unknown additions, deletions or changes refuse",
+  "baseline": {
+    "caller": ".github/workflows/scout-nightly.yml",
+    "trusted": ".github/workflows/scout-guardian-trusted.yml",
+    "pr": ".github/workflows/scout-guardian.yml",
+    "dispatch_inputs": {
+      "full": {
+        "type": "boolean",
+        "default": false
+      },
+      "refresh-map": {
+        "type": "boolean",
+        "default": false
+      },
+      "authorize-egress": {
+        "type": "boolean",
+        "default": false
+      }
+    },
+    "trusted_permissions": {
+      "contents": "write",
+      "pull-requests": "read"
+    },
+    "trusted_checkout_persist_credentials": true,
+    "scout_version": "v0.1.6"
+  },
+  "unchanged": {
+    "trusted_job_if": "github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)",
+    "trusted_job_timeout_minutes": 60,
+    "triggers": {
+      "pull_request": {},
+      "push": {
+        "branches": [
+          "main"
+        ]
+      },
+      "schedule": [
+        {
+          "cron": "23 3 * * *"
+        }
+      ],
+      "workflow_dispatch": true
+    },
+    "trusted_concurrency": {
+      "group": "scout-guardian-${{ github.repository }}-${{ github.ref }}",
+      "cancel-in-progress": false
+    },
+    "pr_concurrency_cancel": true,
+    "pr_permissions": {
+      "contents": "read"
+    },
+    "release_artifacts": {
+      "match_syntax": "anchored regular expressions over asset basenames; no other assets authorized",
+      "patterns": [
+        "^scout-(linux|darwin)-(amd64|arm64)(\\.sha256)?$",
+        "^clawpatch-[0-9]+\\.[0-9]+\\.[0-9]+-[0-9a-f]{40}\\.tar\\.gz(\\.sha256)?$",
+        "^clawpatch-manifest\\.json(\\.sha256)?$"
+      ]
+    },
+    "install_scripts": [
+      "scripts/install-release.sh",
+      "scripts/ci-toolchain.sh"
+    ],
+    "policy_new_keys": [],
+    "policy_existing_key_authority": "internal/policy at baseline_commit; no key delta authorized",
+    "requirement_sha256": {
+      "REQ-162": "cd78d7738be9b3504cd29dbd6f37d464204cc64e7d15dc93c9e5f9a562f3bc53",
+      "REQ-163": "63203d2c66f48ada42304fb4f44d33ed528736a412a0f2480b31eb58f51c4852",
+      "REQ-168": "a2dbb02e5e25daebc7a5a16b76d7203adf2881b78b5148334f76cd7de61eaa8f",
+      "REQ-48": "5d296092b1feab42783a39967a725d8bf5a707cfd726abf2a97d65c32d187301",
+      "REQ-160": "64ecd261b4c8fcb3bfe72eb71989152c28933ca2a46b148bc6d72db784fe3bb2"
+    },
+    "dispatch_inputs": {
+      "full": {
+        "type": "boolean",
+        "default": false
+      },
+      "refresh-map": {
+        "type": "boolean",
+        "default": false
+      },
+      "authorize-egress": {
+        "type": "boolean",
+        "default": false
+      }
+    },
+    "existing_step_guards": "exact baseline_commit values; no assessment/map/publish/artifact/enforcement guard delta"
+  },
+  "approved": {
+    "requirement_row_extraction": "UTF-8 physical line containing exactly one >REQ-N<; include indentation and LF; reject missing/duplicate/multiline row",
+    "approved_requirement_sha256": {
+      "REQ-25": "a1fc27df018592b442fa8c584be119a71b842628b50ccb5efbf1ca04eec3a029",
+      "REQ-161": "9320c85c6f45aab577c1e11c9eb9966db88618b63e39e782c3b9f918ecf5e338"
+    },
+    "permissions": {
+      "scout-nightly.yml/jobs/trusted": {
+        "contents": "write",
+        "pull-requests": "read",
+        "actions": "read"
+      },
+      "scout-guardian-trusted.yml/permissions": {
+        "contents": "write",
+        "pull-requests": "read",
+        "actions": "read"
+      },
+      "scout-guardian-trusted.yml/jobs/trusted": {
+        "contents": "write",
+        "pull-requests": "read",
+        "actions": "read"
+      }
+    },
+    "trusted_checkout_persist_credentials": false,
+    "job": "existing trusted",
+    "install_id": "install",
+    "restore_id": "baseline",
+    "step_order_constraints": [
+      [
+        "install",
+        "baseline"
+      ],
+      [
+        "Publish the state baseline",
+        "Retain assessment evidence"
+      ],
+      [
+        "Retain assessment evidence",
+        "Enforce assessment result"
+      ],
+      [
+        "Enforce assessment result",
+        "shadow"
+      ]
+    ],
+    "ordinary_reconcile": {
+      "id": "shadow",
+      "after": "Enforce assessment result",
+      "timeout-minutes": 2,
+      "continue-on-error": "${{ !inputs.fail-on-incomplete }}",
+      "if": "${{ !cancelled() && steps.install.outcome == 'success' && steps.baseline.outcome == 'success' }}"
+    },
+    "commands": {
+      "reconcile": [
+        "scout",
+        "shadow",
+        "reconcile",
+        "--root",
+        "<root>",
+        "--json"
+      ]
+    },
+    "settings": {
+      "inventory_internal_deadline_seconds": 90,
+      "inventory_request_limit": 100,
+      "inventory_rate_remaining_floor": 200,
+      "inventory_order": "descending original created_at, then descending numeric run/attempt/job IDs",
+      "inventory_horizon": null,
+      "on_403_429_retry_after_missing_or_malformed_rate_headers": "stop immediately without waiting or retry; inventory_partial/unavailable exit 3",
+      "every_request_including_retries_counts": true,
+      "attempt_deadline_seconds": null,
+      "pr_event_deadline_seconds": null,
+      "collection_lag_seconds": null,
+      "reassessment_enabled": false,
+      "durable_write_types": [],
+      "forbidden_writes": [
+        "start_marker",
+        "action_refusal",
+        "action_idempotence",
+        "triage",
+        "PRRunFact",
+        "provider_event",
+        "event_link",
+        "event_obligation",
+        "gap",
+        "interval",
+        "frontier",
+        "S3_publication"
+      ],
+      "readiness": "unmeasured; Complete=false; C unchanged; diagnostic success is not activation evidence"
+    },
+    "runtime_contract": {
+      "step_secrets": {
+        "baseline": {
+          "GITHUB_TOKEN": "${{ github.token }}",
+          "SCOUT_GIT_TOKEN": "${{ github.token }}"
+        },
+        "assessment": {
+          "GITHUB_TOKEN": "${{ github.token }}",
+          "OPENROUTER_API_KEY": "${{ secrets.OPENROUTER_API_KEY }}"
+        },
+        "Publish the state baseline": {
+          "GITHUB_TOKEN": "${{ github.token }}",
+          "SCOUT_GIT_TOKEN": "${{ github.token }}"
+        },
+        "shadow": {
+          "GITHUB_TOKEN": "${{ github.token }}"
+        }
+      },
+      "other_steps_receive_no_credential_environment": true,
+      "checkout_token_input": "${{ github.token }}",
+      "credential_argv_allowed": false,
+      "git_credential_helper": {
+        "script_lines": [
+          "#!/usr/bin/env bash",
+          "case \"$1\" in",
+          "  *Username*) printf '%s\\n' x-access-token ;;",
+          "  *Password*) printf '%s\\n' \"$SCOUT_GIT_TOKEN\" ;;",
+          "  *) exit 1 ;;",
+          "esac"
+        ],
+        "lifecycle": "fresh directory inside each git step; no shared prepare-auth step",
+        "create": "mktemp -d \"$RUNNER_TEMP/scout-auth.XXXXXX\"",
+        "cleanup": "EXIT trap removes that helper directory",
+        "contains_token": false,
+        "username": "x-access-token",
+        "password_source": "SCOUT_GIT_TOKEN step environment",
+        "git_steps": [
+          "baseline",
+          "Publish the state baseline"
+        ],
+        "git_env": {
+          "GIT_ASKPASS": "<fresh helper path>",
+          "GIT_TERMINAL_PROMPT": "0"
+        },
+        "ls_remote_exit": {
+          "0": "restore",
+          "2": "branch absent",
+          "other": "fail restore; no rebaseline fallback"
+        }
+      },
+      "s6_integrity_targets": [
+        "GITHUB_ENV",
+        "GITHUB_PATH",
+        "GITHUB_OUTPUT",
+        "GITHUB_STATE",
+        "GITHUB_STEP_SUMMARY",
+        "BASH_ENV",
+        "askpass",
+        "installed Scout binary",
+        "installed Clawpatch binary",
+        "toolchain directory"
+      ],
+      "operation_exits": {
+        "reconcile": {
+          "0": "neutral diagnostic success only, readiness remains unmeasured",
+          "2": "neutral regardless fail-on-incomplete",
+          "3": "warning; fail iff fail-on-incomplete",
+          "step_timeout": "backstop kill = step failure; ignored unless fail-on-incomplete",
+          "job_timeout": "job cancelled; disclosed, never collection",
+          "old_binary": "unavailable/3 after preceding assessment; no store initialization"
+        }
+      },
+      "summary_enum": [
+        "inventory_available",
+        "inventory_partial",
+        "inventory_unavailable"
+      ],
+      "scout_version_regex": "^v[0-9]+\\.[0-9]+\\.[0-9]+([-.][0-9A-Za-z.]+)?$",
+      "tag_bumps": "allowed when release integration proves read-only reconcile and credential/restore contract; actual minimum tag documented by implementation",
+      "final_round_selection": "highest exact round-N.md; exactly one matching scout-signoff/v1 block there; pending higher round refuses; lower signatures historical; no non-round block"
+    },
+    "minimum_release": "first released version proving read-only reconcile and credential/restore contract; implementation records exact tag",
+    "implementation_proofs": [
+      "P23/S6 Linux/macOS own/sibling-process credential confidentiality and named write-integrity targets before workflow merge",
+      "P24 own-attempt-only authority unchanged",
+      "P25 exact actual surfaces and immutable signed adoption blobs",
+      "provider diagnostic limitation/rate/deadline receipts; no completeness or readiness attestation",
+      "later source/reassessment/triage/start ADR and ADR-012 S6 cutover remain required"
+    ]
+  }
+}
