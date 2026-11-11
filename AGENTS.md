@@ -67,6 +67,11 @@ codebase inertia (H*, HA*, HQ*) are not run here: they belong to inertia-bench
 ## General
 
 - Never modify or delete any `.codegraph` directory.
+- **Worktrees.** Remove a worktree as soon as it is finished with:
+  - when its PR merges or closes, run `git worktree remove --force <path>`, then delete its local `agent/*` branch, and the remote branch if it still exists;
+  - remove detached or scratch worktrees (including those under `/tmp`) when the task that created them ends.
+
+  Keep a worktree only while it has an open PR, uncommitted work, a running job, or a signed experiment record that references its files: for example, X1's closure pins `scout-x1/.tools`, and X11a runs in `scout-x11`. Name such a reference in the PR or in the study record. Never remove a worktree that has uncommitted changes without first committing or recording them.
 - **Toolchain.** Work inside the pinned toolchain: `git submodule update --init`, `scripts/bootstrap-tools.sh`,
   `source .tools/activate`. Tool versions change only in `toolchain/versions.env` (Clawpatch: the
   `third_party/clawpatch` submodule); a scanner or Clawpatch version change needs a compatibility review.
