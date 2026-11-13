@@ -5,7 +5,7 @@
 **A discovery-only CI guardian for a single repository: it finds evidence-backed issues and measures code structure over time, and blocks a pull request only for checks you have switched on.**
 
 ![Status](https://img.shields.io/badge/status-pre--release-orange.svg?style=flat-square)
-![Go](https://img.shields.io/badge/go-1.26.10-00ADD8.svg?style=flat-square)
+![Go](https://img.shields.io/badge/go-1.26.11-00ADD8.svg?style=flat-square)
 ![Primary CLI](https://img.shields.io/badge/cli-scout-blue.svg?style=flat-square)
 ![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-lightgrey.svg?style=flat-square)
 

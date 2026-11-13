@@ -2,7 +2,7 @@
 
 ## Install pinned tools and native hooks
 
-Install a Go bootstrap toolchain first (for example, `mise use go@1.26.10`).
+Install a Go bootstrap toolchain first (for example, `mise use go@1.26.11`).
 The installer fails clearly if Go is unavailable; Go's toolchain downloader
 then selects the version in `toolchain/versions.env`.
 
