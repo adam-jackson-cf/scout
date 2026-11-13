@@ -40,9 +40,6 @@ Accounts and external tools are not stored in the repository:
   into the command that needs it:
   `infisical run --projectId 052b4c81-b9cc-4694-9019-d131ec3817cc --env dev --silent -- <command>`.
   Never export or print the key.
-- The council agent set-up (lead Opus 5.5 high, challenger GPT-6 Astra high,
-  peer Opus 5.5 high) lives in `~/.omp/agent/config.yml`, outside the repo.
-  Copy it to a new machine if using the same omp set-up.
 - Do not copy `.codegraph/` or the ignored contents of `.scout/` (`state.db`
   and other local state). `.scout/policy.yaml` is tracked and arrives with the
   clone. Scout's published state is on `origin/scout/state`.
@@ -91,79 +88,45 @@ bash scripts/gate.sh commit
 bash scripts/gate.sh path internal/domain/types.go
 ```
 
-`.omp/gate.json` schema version 2 owns `checks.commit`, `checks.ci` and
-`pathCheck` argv arrays. CI's required `gate` job executes the exact `checks.ci`
-argv on pushes and pull requests, without modifying sources. Failures propagate.
-CI reads the Go pin from `toolchain/versions.env` before setup-go and runs
-`bash scripts/ci-sandbox.sh --strict` before bootstrap. The shared script installs
-Linux bubblewrap and handles the Ubuntu user-namespace restriction; an unusable
-sandbox blocks the gate immediately. Guardian provisioning calls the same script
-without `--strict`, preserving its warning-only behavior when the probe fails.
-CI subchecks discover their maintained scope without forwarding the full
-repository inventory as process arguments. Commit snapshots receive their changed
-paths over NUL-separated stdin; `pathCheck` retains its explicit changed-path argv.
-The config allows 10 seconds for path checks: more than ten times the
-recorded 929.494 ms maximum baseline.
+The pre-commit hook runs `bash scripts/gate.sh commit`. CI's required `gate` job
+runs `bash scripts/gate.sh ci` on pushes and pull requests, without modifying
+sources. Failures propagate. CI reads the Go pin from `toolchain/versions.env`
+before setup-go and runs `bash scripts/ci-sandbox.sh --strict` before bootstrap.
+The shared script installs Linux bubblewrap and handles the Ubuntu user-namespace
+restriction; an unusable sandbox blocks the gate immediately. Guardian
+provisioning calls the same script without `--strict`, preserving its
+warning-only behavior when the probe fails.
+
+The gate's checks live in `scripts/gate/`:
+
+- `run.py` runs the modes. The `path` mode checks file placement, Go naming,
+  package dependency direction and import fan-out against
+  `scripts/gate/structure.json`.
+- `tests.py` runs the Go test tiers declared in `scripts/gate/test-tiers.json`:
+  `fast` packages on every commit and in CI, `seam` packages in CI and on commits
+  that touch them. Every package with tests must declare a tier. The fast tier
+  enforces the declared coverage floor.
+- `python.py` runs pinned Ruff (lint and format check) over maintained Python,
+  and mypy in CI.
+- `infrastructure.py` checks toolchain pin parity, the CI workflow, Prettier
+  formatting of maintained Markdown/YAML, and (in CI) a strict `govulncheck`
+  dependency audit.
+
 The pre-commit hook transfers the staged index in bulk into an independent shared
-clone, so partially staged files are checked as committed, not as edited. Its
-commit tier runs static checks, every T1 package, and T2 seam packages affected by
-staged changes, using `.omp/test-tiers.json`. Secret scanning uses the original
-staged index, including Git's alternate index. Deleted files do not become
-formatter inputs. Every snapshot has its own Git directory, index, refs and
-config, and checker/test subprocesses receive no inherited `GIT_*` variables.
-There is no pre-push hook or push-range runner: CI owns the complete T1 and T2 suite.
-Failed tests print concise failure blocks and a `go test JSON:` path to the full
-temporary JSON log. The ledger's `hook-check.py pre-commit` installation check
-proves wiring, failure propagation and snapshot isolation in an isolated checkout.
-
-T1 tests retain provisional owner-approved limits of 159 seconds wall time and
-46 seconds per case, based on five recorded baseline runs. Speed failures require
-removing needless work or injecting clocks/runners, not moving tests to another tier.
-Growth mappings and owning tiers are maintained in `.omp/test-map.json` and
-`.omp/test-tiers.json`. Missing/invalid/stale measurements fail closed.
-Five complete commit-tier measurements with one staged association-package change
-are recorded in `.omp/guardrails.json` under `budget.commitTierMeasurement`.
-The provisional 159-second ceiling is retained; no budget increase was applied.
-
-Python's maintained roots/packages, supported versions, exclusion rationales,
-canonical test groups, first-party names and missing-stub override evidence live
-in `scripts/guardrails/python/settings.json`. Checkers consume that target policy;
-frozen `evaluation/**` remains excluded. Skill frontmatter follows the target-owned
-metadata schema in `.omp/guardrails.json`. `.agents/skills/` contains project-scoped
-skills only; no shared-skill metadata field is required here.
+clone, so partially staged files are checked as committed, not as edited. Secret
+scanning uses the original staged index, including Git's alternate index. Deleted
+files do not become formatter inputs. Every snapshot has its own Git directory,
+index, refs and config, and checker/test subprocesses receive no inherited
+`GIT_*` variables. There is no pre-push hook or push-range runner: CI owns the
+complete fast and seam suite. Failed tests print concise failure blocks and a
+`go test JSON:` path to the full temporary JSON log.
 
 Prettier 3.6.2 checks maintained tracked Markdown/YAML. All `evaluation/**`,
 `docs/adrs/**`, scanner rule assets under
 `internal/analyzers/rules/**`, governed design and ledger documents, third-party
 code, instruction/migration files and `.codegraph` directories remain excluded.
-Markdown fixtures under `internal/**/testdata` are also excluded. Checks never run frozen studies.
-The dependency audit is strict: unavailable tooling/network and vulnerability
-findings both fail. Runtime seam tests record revision, report paths and SHA-256
-artifact digests under ignored `.tools/guardrails-seam-*`.
+Markdown fixtures under `internal/**/testdata` are also excluded. Checks never run
+frozen studies. The dependency audit is strict: unavailable tooling/network and
+vulnerability findings both fail.
 
-Host protection is separate from offline checks. After the first green CI run,
-a maintainer must require `gate` on the default branch and verify host readback;
-`.omp/host-settings.json` records pending versus observed state. Fixture successes
-are never evidence that GitHub protection is installed.
-
-## Complete live host protection evidence
-
-After protection is applied, record successful live GitHub protection and
-repository-settings queries as JSON under `.omp/evidence/`, including the command,
-exit code, stdout/stderr, query time and checked revision. The readback must prove
-that the default branch requires `gate` and the supported auto/rebase merge
-settings are enabled; offline fixtures are not host evidence.
-
-Update only the `GIT.required-checks` row in `.omp/ledger.d/c.json`: point
-`host_query` at the successful record with assertions against its actual output,
-then change `status` to `implemented`. Rebuild the aggregate explicitly:
-
-```sh
-.tools/venv/bin/python scripts/guardrails/merge-ledger.py
-bash scripts/gate.sh ci
-```
-
-The CI gate checks that the aggregate exactly matches its fragments, then runs
-the byte-preserved validator/catalog in `scripts/guardrails/vendor/`. Neither
-check rewrites the ledger. The validator checks recorded live host-query evidence
-for `GIT.required-checks`; offline fixtures never replace that evidence.
+Branch protection on the default branch requires the `gate` check.

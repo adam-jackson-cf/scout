@@ -25,8 +25,6 @@ jobs:
       - name: Provision and require scanner sandbox
         run: bash scripts/ci-sandbox.sh --strict
       - run: scripts/bootstrap-tools.sh
-      - name: Run exact declared gate argv
+      - name: Run the repository gate
         shell: bash
-        run: |
-          source .tools/activate
-          .tools/venv/bin/python -c 'import json,subprocess,sys; sys.exit(subprocess.run(json.load(open(".omp/gate.json"))["checks"]["ci"]).returncode)'
+        run: bash scripts/gate.sh ci

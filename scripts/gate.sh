@@ -7,4 +7,4 @@ esac
 root="$(git rev-parse --show-toplevel)"
 cd "$root"
 source .tools/activate
-exec .tools/venv/bin/python scripts/guardrails/gate.py "$@"
+exec .tools/venv/bin/python scripts/gate/run.py "$@"

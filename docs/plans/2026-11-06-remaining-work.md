@@ -9,13 +9,13 @@ Where this plan and the design differ, the design wins. Machine setup, accounts 
 
 ## Where things stand
 
-| Area                                                | State                                                                                                                                         | Evidence                                         |
-| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
-| Design                                              | `docs/scout-design.html`, ADR-009 adopted 2026-11-06                                                                                          | `docs/adrs/2026-11-06-design-restructure/ADR.md` |
-| Product roadmap (REQ-167, REQ-168, REQ-178–REQ-182) | Phases 1–4 done; B1 observed (still unmeasured), B2 rerun passed; B3–B5 and B4-S remain open                                                  | `docs/STATUS.md` §1                              |
-| Merge-time association (rev 2.8 plan)               | Phases 0–7 done (A3–A7); default-off provisional opt-in                                                                                       | `docs/STATUS.md` §1; `CHANGELOG.md`              |
-| Repository gate                                     | Gate schema v2: the pre-commit hook runs `checks.commit`, the required CI check `gate` runs `checks.ci`, and `main` is protected (`5776d102`) | `.omp/gate.json`; `CONTRIBUTING.md`              |
-| Toolchain                                           | Go 1.26.10, Clawpatch 0.7.3                                                                                                                   | `toolchain/versions.env`                         |
+| Area                                                | State                                                                                                                                                     | Evidence                                         |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| Design                                              | `docs/scout-design.html`, ADR-009 adopted 2026-11-06                                                                                                      | `docs/adrs/2026-11-06-design-restructure/ADR.md` |
+| Product roadmap (REQ-167, REQ-168, REQ-178–REQ-182) | Phases 1–4 done; B1 observed (still unmeasured), B2 rerun passed; B3–B5 and B4-S remain open                                                              | `docs/STATUS.md` §1                              |
+| Merge-time association (rev 2.8 plan)               | Phases 0–7 done (A3–A7); default-off provisional opt-in                                                                                                   | `docs/STATUS.md` §1; `CHANGELOG.md`              |
+| Repository gate                                     | The pre-commit hook runs `bash scripts/gate.sh commit`, the required CI check `gate` runs `bash scripts/gate.sh ci`, and `main` is protected (`5776d102`) | `scripts/gate/`; `CONTRIBUTING.md`               |
+| Toolchain                                           | Go 1.26.10, Clawpatch 0.7.3                                                                                                                               | `toolchain/versions.env`                         |
 
 Two phase series exist. Track A numbers follow the rev 2.8 plan (A3–A7), and track B numbers follow the product roadmap (REQ-167, REQ-168, REQ-180–REQ-182; Phases 3–6). They are different phases.
 

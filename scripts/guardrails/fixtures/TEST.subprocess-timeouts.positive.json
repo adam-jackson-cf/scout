@@ -1,5 +1,0 @@
-{
-  "rule": "TEST.subprocess-timeouts",
-  "previous": "package example\n",
-  "current": "package example\nimport(\"os/exec\";\"context\";\"time\";\"testing\")\nfunc TestProcess(t *testing.T) { ctx,cancel:=context.WithTimeout(context.Background(),time.Second); defer cancel(); _=exec.CommandContext(ctx,\"git\") }\n"
-}
