@@ -114,10 +114,7 @@ The gate's checks live in `scripts/gate/`:
   formatting of maintained Markdown/YAML (`prettier-pin`, `prettier-format`),
   and (in CI) a strict `govulncheck` dependency audit (`dependency-audit`).
 
-Each finding prints as `path: rule: fix`. These rule names are scout's own.
-Import fan-out, naming conventions and other quality rules belong to the
-external agent harness, which checks the whole repository; scout's gate does
-not copy them.
+Each finding prints as `path: rule: fix`.
 
 The pre-commit hook transfers the staged index in bulk into an independent shared
 clone, so partially staged files are checked as committed, not as edited. Secret
