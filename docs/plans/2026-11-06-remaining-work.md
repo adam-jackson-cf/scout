@@ -15,7 +15,7 @@ Where this plan and the design differ, the design wins. Machine setup, accounts 
 | Product roadmap (REQ-167, REQ-168, REQ-178–REQ-182) | Phases 1–4 done; B1 observed (still unmeasured), B2 rerun passed; B3–B5 and B4-S remain open                                                              | `docs/STATUS.md` §1                              |
 | Merge-time association (rev 2.8 plan)               | Phases 0–7 done (A3–A7); default-off provisional opt-in                                                                                                   | `docs/STATUS.md` §1; `CHANGELOG.md`              |
 | Repository gate                                     | The pre-commit hook runs `bash scripts/gate.sh commit`, the required CI check `gate` runs `bash scripts/gate.sh ci`, and `main` is protected (`5776d102`) | `scripts/gate/`; `CONTRIBUTING.md`               |
-| Toolchain                                           | Go 1.26.10, Clawpatch 0.7.3                                                                                                                               | `toolchain/versions.env`                         |
+| Toolchain                                           | Go 1.26.11, Clawpatch 0.7.3                                                                                                                               | `toolchain/versions.env`                         |
 
 Two phase series exist. Track A numbers follow the rev 2.8 plan (A3–A7), and track B numbers follow the product roadmap (REQ-167, REQ-168, REQ-180–REQ-182; Phases 3–6). They are different phases.
 
