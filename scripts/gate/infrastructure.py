@@ -54,7 +54,7 @@ def parity(root: Path) -> None:
         ):
             fail(
                 "toolchain/node/package-lock.json",
-                "PARITY.lock-version",
+                "toolchain-pin",
                 f"relock {name} from versions.env",
             )
     declared = dict(
@@ -78,17 +78,17 @@ def parity(root: Path) -> None:
         ):
             fail(
                 "toolchain/python-requirements.lock",
-                "PARITY.lock-version",
+                "toolchain-pin",
                 f"relock {name} from versions.env",
             )
     if f"toolchain go{versions['GO_VERSION']}" not in (root / "go.mod").read_text():
-        fail("go.mod", "PARITY.lock-version", "match the pinned Go toolchain")
+        fail("go.mod", "toolchain-pin", "match the pinned Go toolchain")
     bootstrap = (root / "scripts/bootstrap-tools.sh").read_text()
     for tool in ("semgrep", "ruff", "lizard", "gitleaks", "jscpd", "mypy", "prettier"):
         if tool not in bootstrap or tool not in {*declared, *packages, "gitleaks"}:
             fail(
                 "scripts/bootstrap-tools.sh",
-                "PARITY.dependency-inventory",
+                "tool-inventory",
                 f"provision declared analyzer/tool {tool}",
             )
     guidance = (root / "CONTRIBUTING.md").read_text()
@@ -101,7 +101,7 @@ def parity(root: Path) -> None:
         if command not in guidance:
             fail(
                 "CONTRIBUTING.md",
-                "PARITY.install-guidance",
+                "install-guidance",
                 f"document the executable installer command: {command}",
             )
 
@@ -114,7 +114,7 @@ def ci_prerequisites(workflow: str) -> None:
     if not all(token in workflow for token in (pin, setup, sandbox, bootstrap)):
         fail(
             ".github/workflows/gate.yml",
-            "GATE.local-ci-parity",
+            "ci-parity",
             "read the Go pin from versions.env and require ci-sandbox.sh --strict before bootstrap",
         )
     elif workflow.index(pin) > workflow.index(setup) or workflow.index(
@@ -122,7 +122,7 @@ def ci_prerequisites(workflow: str) -> None:
     ) > workflow.index(bootstrap):
         fail(
             ".github/workflows/gate.yml",
-            "GATE.local-ci-parity",
+            "ci-parity",
             "load the Go pin before setup-go and require the scanner sandbox before bootstrap",
         )
 
@@ -133,7 +133,7 @@ def runner(root: Path) -> None:
     if "name: gate" not in workflow or "bash scripts/gate.sh ci" not in workflow:
         fail(
             ".github/workflows/gate.yml",
-            "GATE.local-ci-parity",
+            "ci-parity",
             "run bash scripts/gate.sh ci in the gate job",
         )
 
@@ -144,7 +144,7 @@ def prettier(files: list[str], root: Path) -> None:
     if version != "3.6.2" or actual != version:
         fail(
             "toolchain/versions.env",
-            "PRETTIER.version",
+            "prettier-pin",
             "install pinned Prettier 3.6.2",
         )
         return
@@ -167,7 +167,7 @@ def prettier(files: list[str], root: Path) -> None:
     if maintained and run(["prettier", "--check", *maintained]).returncode:
         fail(
             "maintained Markdown/YAML",
-            "PRETTIER.version",
+            "prettier-format",
             "format explicitly with pinned prettier; never format frozen/governed paths",
         )
 
@@ -176,7 +176,7 @@ def audit(args: list[str]) -> None:
     if run(args).returncode:
         fail(
             "go.mod",
-            "SECURITY.dependency-audit",
+            "dependency-audit",
             "resolve dependency vulnerabilities or audit failure; do not suppress findings",
         )
 

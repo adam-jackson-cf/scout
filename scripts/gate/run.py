@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Check-only repository gate shared by native hooks and CI."""
+"""Check-only repository gate shared by native hooks and CI.
+
+Scout's own rules: owned-path, test-placement, layering and gofmt here;
+toolchain-pin, tool-inventory, install-guidance, ci-parity, prettier-pin,
+prettier-format and dependency-audit in infrastructure.py.
+"""
 
 from __future__ import annotations
 
@@ -43,57 +48,29 @@ def paths() -> list[str]:
     return [p for p in output.split("\0") if p]
 
 
-def inspect(files: list[str]) -> list[dict[str, Any]]:
+def imports(files: list[str]) -> list[dict[str, Any]]:
     if not files:
         return []
-    with tempfile.TemporaryDirectory(prefix="scout-inspect-") as tmp:
-        exe = str(Path(tmp) / "inspect")
-        run(["go", "build", "-o", exe, "scripts/gate/inspect.go"])
+    with tempfile.TemporaryDirectory(prefix="scout-imports-") as tmp:
+        exe = str(Path(tmp) / "imports")
+        run(["go", "build", "-o", exe, "scripts/gate/imports.go"])
         rows: list[dict[str, Any]] = json.loads(
             run([exe, *files], capture_output=True).stdout
         )
         return rows
 
 
-def fanout(row: dict[str, Any]) -> None:
-    # Lizard's lexer counts nonblank, noncomment physical source lines, not LOC.
-    from lizard import analyze_file
-
-    nloc = analyze_file(row["Path"]).nloc
-    imports = {
-        p
-        for p in row["Imports"] or []
-        if p.startswith("scout/") or "." in p.split("/")[0]
-    }
-    limit = 3 if nloc > 800 else 10
-    if len(imports) > limit:
-        rule = "FANOUT.large-module" if nloc > 800 else "FANOUT.general"
-        error(
-            row["Path"],
-            rule,
-            f"reduce {len(imports)} architectural imports to {limit} ({nloc} NLOC)",
-        )
-
-
 def check_row(row: dict[str, Any], policy: dict[str, Any]) -> None:
     owner = str(Path(row["Path"]).parent)
-    if not re.fullmatch(r"[a-z][a-z0-9_]*", row["Package"]):
-        error(row["Path"], "NAME.conventions", "use a lowercase Go package identifier")
-    for symbol in row["Symbols"] or []:
-        if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", symbol):
-            error(
-                row["Path"], "NAME.conventions", f"rename {symbol} to a Go identifier"
-            )
     for dependency in row["Imports"] or []:
         if dependency.startswith("scout/"):
             target = dependency.removeprefix("scout/")
             if target not in policy["dependencies"].get(owner, []):
                 error(
                     row["Path"],
-                    "STRUCT.dependency-direction",
+                    "layering",
                     f"forbidden edge {owner} -> {target}; use an approved lower-layer contract",
                 )
-    fanout(row)
 
 
 def relative_path(name: str) -> str | None:
@@ -107,7 +84,7 @@ def relative_path(name: str) -> str | None:
                 return relative.as_posix()
         except ValueError:
             pass
-    error(name, "STRUCT.folder-placement", "use an owned path within this repository")
+    error(name, "owned-path", "use an owned path within this repository")
     return None
 
 
@@ -128,26 +105,18 @@ def path_check(files: list[str], policy: dict[str, Any]) -> None:
         if name.startswith("evaluation/"):
             continue
         if not any(re.fullmatch(pattern, name) for pattern in policy["owned_paths"]):
-            error(
-                name, "STRUCT.folder-placement", "place file in an approved owner path"
-            )
+            error(name, "owned-path", "place file in an approved owner path")
         if excluded_source(name):
             continue
         if p.suffix == ".go" and p.exists():
             gofiles.append(name)
-            if not re.fullmatch(r"[a-z][a-z0-9_]*\.go", p.name):
-                error(
-                    name,
-                    "NAME.conventions",
-                    "rename Go source to lowercase snake_case.go",
-                )
             if name.endswith("_test.go") and not name.startswith(("internal/", "cmd/")):
                 error(
                     name,
-                    "TEST.placement",
+                    "test-placement",
                     "place fast Go tests beside their internal/ or cmd/ owner",
                 )
-    for row in inspect(gofiles):
+    for row in imports(gofiles):
         check_row(row, policy)
 
 
@@ -216,7 +185,7 @@ def source_checks(files: list[str], mode: str, policy: dict[str, Any]) -> None:
         for name in run(
             ["gofmt", "-l", *gofiles], capture_output=True
         ).stdout.splitlines():
-            error(name, "GO.format", "run gofmt")
+            error(name, "gofmt", "run gofmt")
     run([
         sys.executable,
         "scripts/gate/python.py",

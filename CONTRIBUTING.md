@@ -99,18 +99,25 @@ warning-only behavior when the probe fails.
 
 The gate's checks live in `scripts/gate/`:
 
-- `run.py` runs the modes. The `path` mode checks file placement, Go naming,
-  package dependency direction and import fan-out against
-  `scripts/gate/structure.json`.
+- `run.py` runs the modes. The `path` mode checks file placement
+  (`owned-path`, `test-placement`) and package dependency direction
+  (`layering`) against `scripts/gate/structure.json`. `imports.go` reads each
+  Go file's imports for the `layering` check.
 - `tests.py` runs the Go test tiers declared in `scripts/gate/test-tiers.json`:
   `fast` packages on every commit and in CI, `seam` packages in CI and on commits
   that touch them. Every package with tests must declare a tier. The fast tier
   enforces the declared coverage floor.
 - `python.py` runs pinned Ruff (lint and format check) over maintained Python,
   and mypy in CI.
-- `infrastructure.py` checks toolchain pin parity, the CI workflow, Prettier
-  formatting of maintained Markdown/YAML, and (in CI) a strict `govulncheck`
-  dependency audit.
+- `infrastructure.py` checks toolchain pin parity (`toolchain-pin`,
+  `tool-inventory`, `install-guidance`), the CI workflow (`ci-parity`), Prettier
+  formatting of maintained Markdown/YAML (`prettier-pin`, `prettier-format`),
+  and (in CI) a strict `govulncheck` dependency audit (`dependency-audit`).
+
+Each finding prints as `path: rule: fix`. These rule names are scout's own.
+Import fan-out, naming conventions and other quality rules belong to the
+external agent harness, which checks the whole repository; scout's gate does
+not copy them.
 
 The pre-commit hook transfers the staged index in bulk into an independent shared
 clone, so partially staged files are checked as committed, not as edited. Secret
