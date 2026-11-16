@@ -1,0 +1,79 @@
+[Errno 1] Operation not permitted: '/dev/null'
+Traceback (most recent call last):
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/commands/wrapper.py", line 49, in wrapper
+    func(*args, **kwargs)
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/commands/scan.py", line 1134, in scan
+    ) = semgrep.run_scan.run_scan(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/telemetry.py", line 480, in inner
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/simple_profiling.py", line 100, in wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/run_scan.py", line 1417, in run_scan
+    configs_obj, config_errors = Config.from_config_list(
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/telemetry.py", line 480, in inner
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/config_resolver.py", line 674, in from_config_list
+    resolved_config, config_errors, missed = resolve_config(
+                                             ^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/telemetry.py", line 480, in inner
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/config_resolver.py", line 554, in resolve_config
+    config, errors, missed_rule_count = parse_config_files(
+                                        ^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/telemetry.py", line 480, in inner
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/config_resolver.py", line 526, in parse_config_files
+    result = future.result()
+             ^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/config_resolver.py", line 481, in context_aware_parse_config_string
+    return parse_config_string(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/telemetry.py", line 480, in inner
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/config_resolver.py", line 966, in parse_config_string
+    validate_via_rpc_with_fallback(
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/rule_lang.py", line 750, in validate_via_rpc_with_fallback
+    run_rpc_validate_exn(rules_tmp_path=tmp_path)
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/rule_lang.py", line 695, in run_rpc_validate_exn
+    raise e
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/rule_lang.py", line 688, in run_rpc_validate_exn
+    error = rpc_validate(out.Fpath(rules_tmp_path))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/telemetry.py", line 480, in inner
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/rpc_call.py", line 78, in validate
+    ret: Optional[out.RetValidate] = rpc_call(call, out.RetValidate)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/simple_profiling.py", line 100, in wrapper
+    result = func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/lib/python3.11/site-packages/semgrep/rpc.py", line 340, in rpc_call
+    with subprocess.Popen(
+         ^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/subprocess.py", line 992, in __init__
+    errread, errwrite) = self._get_handles(stdin, stdout, stderr)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/subprocess.py", line 1740, in _get_handles
+    errwrite = self._get_devnull()
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/Projects/work/scout-semgrep/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/subprocess.py", line 1137, in _get_devnull
+    self._devnull = os.open(os.devnull, os.O_RDWR)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+PermissionError: [Errno 1] Operation not permitted: '/dev/null'

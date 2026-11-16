@@ -3,6 +3,7 @@ package sandbox
 import (
 	"context"
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -16,15 +17,15 @@ func TestContainsVersionMatchesWholeTokensOnly(t *testing.T) {
 		"1.21.7-rc1":           false,
 		"11.21.7":              false,
 		"":                     false,
-		"semgrep\n1.100.0\nok": true,
-		"pre-1.100.0":          false,
+		"semgrep\n1.182.0\nok": true,
+		"pre-1.182.0":          false,
 	} {
 		version := "1.21.7"
 		if strings.Contains(output, "0.15.8") {
 			version = "0.15.8"
 		}
-		if strings.Contains(output, "1.100.0") {
-			version = "1.100.0"
+		if strings.Contains(output, "1.182.0") {
+			version = "1.182.0"
 		}
 		if got := ContainsVersion([]byte(output), version); got != want {
 			t.Errorf("ContainsVersion(%q, %q) = %t, want %t", output, version, got, want)
@@ -86,5 +87,17 @@ func TestRunConfinesWritesToTheStateDirectory(t *testing.T) {
 	}
 	if _, err := os.Stat(outside + "/escaped"); err == nil {
 		t.Fatal("sandbox wrote outside the state directory")
+	}
+	if runtime.GOOS == "darwin" {
+		request.Binary = "/bin/sh"
+		// Python's subprocess.DEVNULL opens the sink read/write, not just write-only.
+		request.Args = []string{"-c", "exec 3<> /dev/null"}
+		if _, _, err := Run(context.Background(), request); err != nil {
+			t.Fatalf("opening the null sink read/write failed: %v", err)
+		}
+		request.Args = []string{"-c", "exec 3<> /dev/zero"}
+		if _, _, err := Run(context.Background(), request); err == nil {
+			t.Fatal("opening another device for writing succeeded")
+		}
 	}
 }

@@ -8,7 +8,7 @@ import (
 
 func TestSemgrepJSONAccountsForScannedCleanAndFindingInputs(t *testing.T) {
 	spec := specForTest(t, "security.semgrep.python-unsafe-yaml-load")
-	raw := []byte(`{"version":"1.100.0","results":[{"check_id":"private.rules.scout.security.python.yaml-unsafe-load","path":"src/unsafe.py","start":{"line":4},"end":{"line":4},"extra":{"message":"unsafe YAML load","severity":"ERROR"}}],"errors":[],"paths":{"scanned":["src/unsafe.py","src/safe.py"]}}`)
+	raw := []byte(`{"version":"1.182.0","results":[{"check_id":"private.rules.scout.security.python.yaml-unsafe-load","path":"src/unsafe.py","start":{"line":4},"end":{"line":4},"extra":{"message":"unsafe YAML load","severity":"ERROR"}}],"errors":[],"paths":{"scanned":["src/unsafe.py","src/safe.py"]}}`)
 	parsed, err := parseOutput(spec, raw, "/tmp/fixture")
 	if err != nil {
 		t.Fatal(err)
@@ -20,7 +20,7 @@ func TestSemgrepJSONAccountsForScannedCleanAndFindingInputs(t *testing.T) {
 		t.Fatalf("unexpected normalized finding: %+v", parsed.findings[0])
 	}
 
-	incomplete := []byte(`{"version":"1.100.0","results":[],"errors":[{"type":"ParseError"}],"paths":{"scanned":["src/unsafe.py"]}}`)
+	incomplete := []byte(`{"version":"1.182.0","results":[],"errors":[{"type":"ParseError"}],"paths":{"scanned":["src/unsafe.py"]}}`)
 	withError, err := parseOutput(spec, incomplete, "/tmp/fixture")
 	if err != nil {
 		t.Fatal(err)
@@ -29,7 +29,7 @@ func TestSemgrepJSONAccountsForScannedCleanAndFindingInputs(t *testing.T) {
 		t.Fatal("scanner-reported error must not establish complete coverage")
 	}
 
-	omitted := []byte(`{"version":"1.100.0","results":[],"errors":[],"paths":{"scanned":["src/unsafe.py"]}}`)
+	omitted := []byte(`{"version":"1.182.0","results":[],"errors":[],"paths":{"scanned":["src/unsafe.py"]}}`)
 	partial, err := parseOutput(spec, omitted, "/tmp/fixture")
 	if err != nil {
 		t.Fatal(err)

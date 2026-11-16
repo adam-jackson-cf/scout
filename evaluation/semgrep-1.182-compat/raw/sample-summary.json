@@ -1,0 +1,214 @@
+{
+  "before": {
+    "version": "1.100.0",
+    "exit": 1,
+    "seconds": 5.64105337485671,
+    "scanned": [
+      ".github/workflows/mutable.yml",
+      ".hidden/unsafe.py",
+      "AutoPublicPathRuntimeModule.js",
+      "identity.css",
+      "ignored/unsafe.py",
+      "safe.py",
+      "unsafe.py",
+      "vendor/unsafe.py",
+      "vuln/pyproject.toml"
+    ],
+    "errors": [],
+    "findings": [
+      [
+        ".github/workflows/mutable.yml",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.security.scout.security.actions.mutable-ref",
+        5,
+        5,
+        "GitHub Actions resolves this action through a mutable ref. Pin the action to a reviewed full commit SHA before running repository workflows.",
+        "WARNING"
+      ],
+      [
+        ".hidden/unsafe.py",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.security.scout.security.python.yaml-unsafe-load",
+        2,
+        2,
+        "Unsafe PyYAML loader can construct arbitrary Python objects when parsing untrusted data.",
+        "ERROR"
+      ],
+      [
+        "AutoPublicPathRuntimeModule.js",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.security.scout.security.javascript.current-script-dom-clobbering",
+        1,
+        3,
+        "This webpack-style public-path runtime template reads document.currentScript.src without verifying that currentScript is a SCRIPT element. A named DOM element can clobber currentScript and supply an attacker-controlled script URL.",
+        "ERROR"
+      ],
+      [
+        "identity.css",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.performance.scout.performance.css.layout-height-transition",
+        2,
+        2,
+        "Transitioning the CSS height property requires layout work on animation frames. Prefer a compositor-friendly transform or opacity transition when the visual behavior permits it.",
+        "WARNING"
+      ],
+      [
+        "ignored/unsafe.py",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.security.scout.security.python.yaml-unsafe-load",
+        2,
+        2,
+        "Unsafe PyYAML loader can construct arbitrary Python objects when parsing untrusted data.",
+        "ERROR"
+      ],
+      [
+        "unsafe.py",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.security.scout.security.python.yaml-unsafe-load",
+        2,
+        2,
+        "Unsafe PyYAML loader can construct arbitrary Python objects when parsing untrusted data.",
+        "ERROR"
+      ],
+      [
+        "vendor/unsafe.py",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.security.scout.security.python.yaml-unsafe-load",
+        2,
+        2,
+        "Unsafe PyYAML loader can construct arbitrary Python objects when parsing untrusted data.",
+        "ERROR"
+      ],
+      [
+        "vuln/pyproject.toml",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.security.scout.security.python-multipart-cve-2024-24762",
+        2,
+        2,
+        "This direct python-multipart requirement excludes the 0.0.7 fix for CVE-2024-24762, so every resolvable release is affected by the multipart Content-Type ReDoS.",
+        "ERROR"
+      ]
+    ],
+    "command": [
+      "/Users/adamjackson/Projects/work/scout-semgrep/.tools/semgrep-baseline/bin/semgrep",
+      "scan",
+      "--config",
+      "/Users/adamjackson/Projects/work/scout-semgrep/internal/analyzers/rules/security",
+      "--config",
+      "/Users/adamjackson/Projects/work/scout-semgrep/internal/analyzers/rules/performance",
+      "--disable-version-check",
+      "--metrics=off",
+      "--no-git-ignore",
+      "--json",
+      "--error",
+      "unsafe.py",
+      "safe.py",
+      ".hidden/unsafe.py",
+      "ignored/unsafe.py",
+      "vendor/unsafe.py",
+      ".github/workflows/mutable.yml",
+      "vuln/pyproject.toml",
+      "identity.css",
+      "AutoPublicPathRuntimeModule.js"
+    ]
+  },
+  "after": {
+    "version": "1.182.0",
+    "exit": 1,
+    "seconds": 1.4537107918877155,
+    "scanned": [
+      ".github/workflows/mutable.yml",
+      ".hidden/unsafe.py",
+      "AutoPublicPathRuntimeModule.js",
+      "identity.css",
+      "ignored/unsafe.py",
+      "safe.py",
+      "unsafe.py",
+      "vendor/unsafe.py",
+      "vuln/pyproject.toml"
+    ],
+    "errors": [],
+    "findings": [
+      [
+        ".github/workflows/mutable.yml",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.security.scout.security.actions.mutable-ref",
+        5,
+        5,
+        "GitHub Actions resolves this action through a mutable ref. Pin the action to a reviewed full commit SHA before running repository workflows.",
+        "WARNING"
+      ],
+      [
+        ".hidden/unsafe.py",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.security.scout.security.python.yaml-unsafe-load",
+        2,
+        2,
+        "Unsafe PyYAML loader can construct arbitrary Python objects when parsing untrusted data.",
+        "ERROR"
+      ],
+      [
+        "AutoPublicPathRuntimeModule.js",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.security.scout.security.javascript.current-script-dom-clobbering",
+        1,
+        3,
+        "This webpack-style public-path runtime template reads document.currentScript.src without verifying that currentScript is a SCRIPT element. A named DOM element can clobber currentScript and supply an attacker-controlled script URL.",
+        "ERROR"
+      ],
+      [
+        "identity.css",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.performance.scout.performance.css.layout-height-transition",
+        2,
+        2,
+        "Transitioning the CSS height property requires layout work on animation frames. Prefer a compositor-friendly transform or opacity transition when the visual behavior permits it.",
+        "WARNING"
+      ],
+      [
+        "ignored/unsafe.py",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.security.scout.security.python.yaml-unsafe-load",
+        2,
+        2,
+        "Unsafe PyYAML loader can construct arbitrary Python objects when parsing untrusted data.",
+        "ERROR"
+      ],
+      [
+        "unsafe.py",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.security.scout.security.python.yaml-unsafe-load",
+        2,
+        2,
+        "Unsafe PyYAML loader can construct arbitrary Python objects when parsing untrusted data.",
+        "ERROR"
+      ],
+      [
+        "vendor/unsafe.py",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.security.scout.security.python.yaml-unsafe-load",
+        2,
+        2,
+        "Unsafe PyYAML loader can construct arbitrary Python objects when parsing untrusted data.",
+        "ERROR"
+      ],
+      [
+        "vuln/pyproject.toml",
+        "Users.adamjackson.Projects.work.scout-semgrep.internal.analyzers.rules.security.scout.security.python-multipart-cve-2024-24762",
+        2,
+        2,
+        "This direct python-multipart requirement excludes the 0.0.7 fix for CVE-2024-24762, so every resolvable release is affected by the multipart Content-Type ReDoS.",
+        "ERROR"
+      ]
+    ],
+    "command": [
+      "/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/bin/semgrep",
+      "scan",
+      "--config",
+      "/Users/adamjackson/Projects/work/scout-semgrep/internal/analyzers/rules/security",
+      "--config",
+      "/Users/adamjackson/Projects/work/scout-semgrep/internal/analyzers/rules/performance",
+      "--disable-version-check",
+      "--metrics=off",
+      "--no-git-ignore",
+      "--json",
+      "--error",
+      "unsafe.py",
+      "safe.py",
+      ".hidden/unsafe.py",
+      "ignored/unsafe.py",
+      "vendor/unsafe.py",
+      ".github/workflows/mutable.yml",
+      "vuln/pyproject.toml",
+      "identity.css",
+      "AutoPublicPathRuntimeModule.js"
+    ]
+  },
+  "same_findings": true,
+  "same_targets": true
+}
