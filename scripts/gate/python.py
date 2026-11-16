@@ -3,11 +3,14 @@
 
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 from pathlib import Path
 
 from inventory import repository_files
+from syntax_policy import check as syntax_check
+from typing_policy import check as typing_check
 
 ROOT = Path(__file__).resolve().parents[2]
 EXCLUDED_ROOTS = ("evaluation/", "third_party/", ".tools/")
@@ -38,11 +41,18 @@ def main() -> int:
     if mode not in {"full", "commit"}:
         raise ValueError("unknown mode: " + mode)
     files = maintained(repository_files())
+    structure = json.loads((ROOT / "scripts/gate/structure.json").read_text())
+    policy = structure["python"]
+    findings = syntax_check(ROOT, files, policy, structure["banned_folders"])
+    findings.extend(typing_check(ROOT, files, policy))
+    if findings:
+        print("\n".join(findings))
+        return 1
     if not files:
         return 0
     failed = tool("ruff", "check", "--config", "ruff.toml", *files)
     failed |= tool("ruff", "format", "--config", "ruff.toml", "--check", *files)
-    for root in ("scripts/gate/", "internal/association/testdata/gen/"):
+    for root in policy["maintained_packages"]:
         targets = [name for name in files if name.startswith(root)]
         if targets:
             failed |= tool(

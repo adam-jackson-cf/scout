@@ -45,6 +45,10 @@ class FrontInput:
     commit: str
 
 
+def cluster_fields(cluster: Any) -> Any:
+    return {key: cluster[key] for key in ("id", "dir", "stem", "files", "kinds")}
+
+
 def run_front(front: Any, inputs: FrontInput, neutralise: tuple[str, ...] = ()) -> Any:
     """Run one pilot commit, restoring every temporarily neutralised rule."""
     saved = (front.scope, front._LANG_DIR)
@@ -69,9 +73,7 @@ def run_front(front: Any, inputs: FrontInput, neutralise: tuple[str, ...] = ()) 
         "counts": {k: v for k, v in sorted(counts.items()) if v},
         "clusters": [
             dict(c, heuristic=[f for f in c["files"] if "heuristic_only" in info[f]])
-            for c in (
-                {k: c[k] for k in ("id", "dir", "stem", "files", "kinds")} for c in live
-            )
+            for c in map(cluster_fields, live)
         ],
         "inert": [{k: c[k] for k in ("dir", "stem", "files")} for c in inert],
         "decided": [c["id"] for c in order[:PR_CAP]],
