@@ -76,7 +76,8 @@ func darwinProfile(state, rulesRoot string) string {
 	profile := "(version 1)\n" +
 		"(allow default)\n" +
 		"(deny network*)\n" +
-		"(deny file-write* (require-not (subpath " + strconv.Quote(state) + ")))\n"
+		"(deny file-write* (require-not (subpath " + strconv.Quote(state) + ")))\n" +
+		"(allow file-write* (literal \"/dev/null\"))\n"
 	if rulesRoot != "" {
 		profile += "(deny file-write* (subpath " + strconv.Quote(rulesRoot) + "))\n"
 	}

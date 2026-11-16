@@ -28,7 +28,7 @@ func securitySpecs() []Spec {
 			Binary: Binary{
 				Path:        "semgrep",
 				VersionArgs: []string{"--version"},
-				Version:     "1.100.0",
+				Version:     "1.182.0",
 				Args: []string{
 					"scan",
 					"--config", "{bundled_rule_files}",
@@ -59,7 +59,7 @@ func securitySpecs() []Spec {
 			// clean files, and reports processing errors separately.
 			Output: Output{
 				Format:        OutputSemgrepJSON,
-				SchemaVersion: "1.100.0",
+				SchemaVersion: "1.182.0",
 			},
 			ExitCodes: map[int]ExitSemantics{
 				0:  ExitSuccess,
@@ -87,7 +87,7 @@ func securitySpecs() []Spec {
 			Binary: Binary{
 				Path:        "semgrep",
 				VersionArgs: []string{"--version"},
-				Version:     "1.100.0",
+				Version:     "1.182.0",
 				Args: []string{
 					"scan",
 					"--config", "{bundled_rule_files}",
@@ -116,7 +116,7 @@ func securitySpecs() []Spec {
 			},
 			Output: Output{
 				Format:        OutputSemgrepJSON,
-				SchemaVersion: "1.100.0",
+				SchemaVersion: "1.182.0",
 			},
 			ExitCodes: map[int]ExitSemantics{
 				0:  ExitSuccess,
@@ -144,7 +144,7 @@ func securitySpecs() []Spec {
 			Binary: Binary{
 				Path:        "semgrep",
 				VersionArgs: []string{"--version"},
-				Version:     "1.100.0",
+				Version:     "1.182.0",
 				Args: []string{
 					"scan",
 					"--config", "{bundled_rule_files}",
@@ -173,7 +173,7 @@ func securitySpecs() []Spec {
 			},
 			Output: Output{
 				Format:        OutputSemgrepJSON,
-				SchemaVersion: "1.100.0",
+				SchemaVersion: "1.182.0",
 			},
 			ExitCodes: map[int]ExitSemantics{
 				0:  ExitSuccess,
@@ -201,7 +201,7 @@ func securitySpecs() []Spec {
 			Binary: Binary{
 				Path:        "semgrep",
 				VersionArgs: []string{"--version"},
-				Version:     "1.100.0",
+				Version:     "1.182.0",
 				Args: []string{
 					"scan",
 					"--config", "{bundled_rule_files}",
@@ -231,7 +231,7 @@ func securitySpecs() []Spec {
 			},
 			Output: Output{
 				Format:        OutputSemgrepJSON,
-				SchemaVersion: "1.100.0",
+				SchemaVersion: "1.182.0",
 			},
 			ExitCodes: map[int]ExitSemantics{
 				0:  ExitSuccess,

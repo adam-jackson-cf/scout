@@ -69,7 +69,7 @@ func performanceSpecs() []Spec {
 			Binary: Binary{
 				Path:        "semgrep",
 				VersionArgs: []string{"--version"},
-				Version:     "1.100.0",
+				Version:     "1.182.0",
 				Args: []string{
 					"scan",
 					"--config", "{bundled_rule_files}",
@@ -98,7 +98,7 @@ func performanceSpecs() []Spec {
 			},
 			Output: Output{
 				Format:        OutputSemgrepJSON,
-				SchemaVersion: "1.100.0",
+				SchemaVersion: "1.182.0",
 			},
 			ExitCodes: map[int]ExitSemantics{
 				0:  ExitSuccess,

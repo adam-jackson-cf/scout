@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Upgrade Semgrep to 1.182.0, the last release supporting Intel Macs, with an upstream-compatible hash lock (setuptools 84.1.0 and protobuf 6.33.6); retain OpenTelemetry API 1.37.0 pending its separately tracked owner exception. Permit only `/dev/null` writes alongside private-state writes in the macOS scanner sandbox, matching Linux null-sink access. Compatibility evidence: `evaluation/semgrep-1.182-compat/RESULTS.md`.
 - Enforce native Python ownership, class/collaborator contracts, analyzer seams, loop depth and architectural fanout across maintained sources. Reject mypy package drift and undocumented overrides, and require explicit approval for new Ruff suppressions.
 - Enforce repository ownership, dependency directions, naming and test/fixture placement from the native structure policy. Changed-path checks give concrete corrected names and destinations; immutable decision history keeps its original paths.
 - Check the whole maintained repository at commit, including unstaged and untracked inputs and empty indexes, while preserving partially staged bytes and alternate indexes. Reject escaping source symlinks, run every fast-tier package and checker boundary suite, select all seam packages for unknown ownership, and run strict mypy with normal import following locally and in CI.
