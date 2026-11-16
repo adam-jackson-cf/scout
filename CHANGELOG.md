@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Enforce repository ownership, dependency directions, naming and test/fixture placement from the native structure policy. Changed-path checks give concrete corrected names and destinations; immutable decision history keeps its original paths.
 - Check the whole maintained repository at commit, including unstaged and untracked inputs and empty indexes, while preserving partially staged bytes and alternate indexes. Reject escaping source symlinks, run every fast-tier package and checker boundary suite, select all seam packages for unknown ownership, and run strict mypy with normal import following locally and in CI.
 - Consolidate current status, outstanding plan tasks and resume routing in `docs/HANDOFF.md`; completed phase evidence remains pinned in git history.
 - Enforce the Gitleaks rule-pack label's binary version pin and explain mismatched secrets activation versions in readiness output (ADR-011); exact activation matching and blocking eligibility are unchanged.
