@@ -1,0 +1,453 @@
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "changed": true,
+    "decisions": {
+      "egressAcknowledged": false,
+      "enabled": false,
+      "maxCostUsd": 0.5,
+      "maxPerRun": 2000,
+      "model": ""
+    },
+    "modelCli": {
+      "lanes": [
+        "association-fallback"
+      ],
+      "provider": "codex"
+    },
+    "next": "commit .scout/policy.yaml, add the scout-guardian workflow, then run a full default-branch run to publish the baseline",
+    "path": ".scout/policy.yaml",
+    "profile": "report"
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "changed": true,
+    "decisions": {
+      "egressAcknowledged": false,
+      "enabled": false,
+      "maxCostUsd": 0.5,
+      "maxPerRun": 2000,
+      "model": ""
+    },
+    "modelCli": {
+      "lanes": [
+        "association-fallback"
+      ],
+      "provider": "codex"
+    },
+    "next": "commit .scout/policy.yaml, add the scout-guardian workflow, then run a full default-branch run to publish the baseline",
+    "path": ".scout/policy.yaml",
+    "profile": "report"
+  }
+}
+--- FAIL: TestDiffDeltaIsReportOnlyUnderGuardianProfile (5.18s)
+    delta_scenario_test.go:43: docs-only PR: exit 2 issues []
+{"status":"incomplete","exitCode":2,"result":{"run":{"runId":"run-1a432f3e697055f1b1f141656181bd28","planId":"plan-ed5a37fa527142accc0a88cfe31e2ea4df62270463d4bfebd35c4e810d8b04f4","snapshot":{"repositoryId":"repo-8dd4b7e59c8b4b60778981376492ce1c38a14700289839dbe8aab6da533e267e","revision":"b268c36539c2e1715af9c220d78e914cbdc3c2c0","worktreeDigest":"e3fa64a9413e29cd1267be80ea7c62bcaaacc66f24b4f49bcd4ed32df9f1f58e","dirty":false,"ignoreRulesDigest":"86235d6ff989e78af9502eb7997bbb20065d89504257948617ade672125f1c54","exclusionsDigest":"dd9ad76a601246da6e4d8c108c4965c46e006523eacdb628e8b230f7bfff4e3b"},"scope":{"kind":"repository","selectedFamilies":["architecture","security","quality","performance"]},"state":"partial","startedAt":"2026-11-16T14:32:50.692411Z","finishedAt":"2026-11-16T14:32:53.218688Z","expectedCoverage":[{"filePath":"README.md","family":"performance","category":"frontend-layout-animation"},{"filePath":"README.md","family":"performance","category":"micro-optimization"},{"filePath":"README.md","family":"quality","category":"complexity"},{"filePath":"README.md","family":"security","category":"credential-leakage"},{"filePath":"README.md","family":"security","category":"dangerous-deserialization"},{"filePath":"README.md","family":"security","category":"dependency-vulnerability"},{"filePath":"README.md","family":"security","category":"dom-clobbering"},{"filePath":"README.md","family":"security","category":"workflow-supply-chain"},{"filePath":"pkg/legacy.py","family":"performance","category":"frontend-layout-animation"},{"filePath":"pkg/legacy.py","family":"performance","category":"micro-optimization"},{"filePath":"pkg/legacy.py","family":"quality","category":"complexity"},{"filePath":"pkg/legacy.py","family":"security","category":"credential-leakage"},{"filePath":"pkg/legacy.py","family":"security","category":"dangerous-deserialization"},{"filePath":"pkg/legacy.py","family":"security","category":"dependency-vulnerability"},{"filePath":"pkg/legacy.py","family":"security","category":"dom-clobbering"},{"filePath":"pkg/legacy.py","family":"security","category":"workflow-supply-chain"}],"coverage":[{"key":{"filePath":"README.md","family":"performance","category":"frontend-layout-animation"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["821cfe4df943891c386296efbff0954b138387a080028e5615141eb328a4c7ad"]},{"key":{"filePath":"README.md","family":"performance","category":"micro-optimization"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["324419d1feb527d01969d8db133b390290c9e29af1582d5cece8922a34c6550c"]},{"key":{"filePath":"README.md","family":"quality","category":"complexity"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["34da78df974ee69b2a647bd81f043cb45632469a4a9f3a4b87cb4e3041260c7c"]},{"key":{"filePath":"README.md","family":"security","category":"credential-leakage"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["96adb201fa2b001d422123839efa44bbaebea438ae422011cc8f4d74c9db71f0"]},{"key":{"filePath":"README.md","family":"security","category":"dangerous-deserialization"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["b6b83646fb686a84a9092d38e37dcea40784807de19e52694099bd2d02025f4e"]},{"key":{"filePath":"README.md","family":"security","category":"dependency-vulnerability"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["20f0d447c397616f354ea06140f305c9c9f2b9ae5e056c6f11d33fe3b17789a2"]},{"key":{"filePath":"README.md","family":"security","category":"dom-clobbering"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["c0ca2f45a8ef6a65630f88b219c33aa48d5a1773baa9d14689228728382706db"]},{"key":{"filePath":"README.md","family":"security","category":"workflow-supply-chain"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["446c946933acc3f5ddad15abe79e9cc274f3a9ee99a9df167e3d34a8ddacd3cc"]},{"key":{"filePath":"pkg/legacy.py","family":"performance","category":"frontend-layout-animation"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["821cfe4df943891c386296efbff0954b138387a080028e5615141eb328a4c7ad"]},{"key":{"filePath":"pkg/legacy.py","family":"performance","category":"micro-optimization"},"status":"inspected","inspectedRanges":[{"path":"pkg/legacy.py","startLine":1,"endLine":27}],"adapterResultIds":["324419d1feb527d01969d8db133b390290c9e29af1582d5cece8922a34c6550c"]},{"key":{"filePath":"pkg/legacy.py","family":"quality","category":"complexity"},"status":"inspected","inspectedRanges":[{"path":"pkg/legacy.py","startLine":1,"endLine":27}],"adapterResultIds":["34da78df974ee69b2a647bd81f043cb45632469a4a9f3a4b87cb4e3041260c7c"],"observationIds":["490b669d1adf2592521481608bfd1122538ffbb20087befe78cb902e56320d71"]},{"key":{"filePath":"pkg/legacy.py","family":"security","category":"credential-leakage"},"status":"inspected","inspectedRanges":[{"path":"pkg/legacy.py","startLine":1,"endLine":27}],"adapterResultIds":["96adb201fa2b001d422123839efa44bbaebea438ae422011cc8f4d74c9db71f0"]},{"key":{"filePath":"pkg/legacy.py","family":"security","category":"dangerous-deserialization"},"status":"incomplete","reason":"scanner output failed structured validation","adapterResultIds":["b6b83646fb686a84a9092d38e37dcea40784807de19e52694099bd2d02025f4e"]},{"key":{"filePath":"pkg/legacy.py","family":"security","category":"dependency-vulnerability"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["20f0d447c397616f354ea06140f305c9c9f2b9ae5e056c6f11d33fe3b17789a2"]},{"key":{"filePath":"pkg/legacy.py","family":"security","category":"dom-clobbering"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["c0ca2f45a8ef6a65630f88b219c33aa48d5a1773baa9d14689228728382706db"]},{"key":{"filePath":"pkg/legacy.py","family":"security","category":"workflow-supply-chain"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["446c946933acc3f5ddad15abe79e9cc274f3a9ee99a9df167e3d34a8ddacd3cc"]}],"failures":[{"stage":"file_analysis","code":"output_schema","message":"scanner output failed structured validation","retryable":false},{"stage":"file_analysis","code":"output_schema","message":"scanner output failed structured validation","retryable":false}],"omissions":[{"coverageKey":{"filePath":"README.md","family":"clawpatch","category":"mapping"},"reason":"eligible file has no canonical Clawpatch owner"},{"coverageKey":{"filePath":"pkg/legacy.py","family":"clawpatch","category":"mapping"},"reason":"eligible file has no canonical Clawpatch owner"}],"artifactRefs":[{"artifactId":"sha256:801d947c370e3b4c9ade5763e3527f2ebeee84d4d9546ebac8dd5da30d278cd8","digest":"801d947c370e3b4c9ade5763e3527f2ebeee84d4d9546ebac8dd5da30d278cd8","contentType":"application/vnd.scout.adapter+json"},{"artifactId":"sha256:94db7c4cae5c850678d429707c479e173627eb7d04ffbd3c7c7cd12312945891","digest":"94db7c4cae5c850678d429707c479e173627eb7d04ffbd3c7c7cd12312945891","contentType":"application/vnd.scout.adapter+json"},{"artifactId":"sha256:a84154fc1c5e9a8ac83e5576c5d06f6b4ad0ee3484778d5f7ec4c18a8731c366","digest":"a84154fc1c5e9a8ac83e5576c5d06f6b4ad0ee3484778d5f7ec4c18a8731c366","contentType":"application/vnd.scout.adapter+json"},{"artifactId":"sha256:e740764d72ad99996e321b6ea8db0b65d19fd35c6b32476d3e83c59b8b81e232","digest":"e740764d72ad99996e321b6ea8db0b65d19fd35c6b32476d3e83c59b8b81e232","contentType":"application/vnd.scout.adapter+json"},{"artifactId":"sha256:cbb9c6c946ca55ec57f699e7bfdf86c0bc8b4a8f3f5b5ae45e5fa69ef5f142bf","digest":"cbb9c6c946ca55ec57f699e7bfdf86c0bc8b4a8f3f5b5ae45e5fa69ef5f142bf","contentType":"application/vnd.scout.adapter+json"},{"artifactId":"sha256:88b33925a8a278289ef52bceecdc8930a9f00297c10123bbaffa7b044f9974b8","digest":"88b33925a8a278289ef52bceecdc8930a9f00297c10123bbaffa7b044f9974b8","contentType":"application/vnd.scout.adapter+json"},{"artifactId":"sha256:9d3c14f8bf89f6f25c1563eefcb5f5d29f5bb43bc580dcc0c804b9c4d0167bd3","digest":"9d3c14f8bf89f6f25c1563eefcb5f5d29f5bb43bc580dcc0c804b9c4d0167bd3","contentType":"application/vnd.scout.adapter+json"},{"artifactId":"sha256:c941e8aa49e080d531583e6933e05d6d5edb30b5d14d4f69c293a82b4bb3e2d4","digest":"c941e8aa49e080d531583e6933e05d6d5edb30b5d14d4f69c293a82b4bb3e2d4","contentType":"application/vnd.scout.adapter+json"},{"artifactId":"sha256:d7b25764ced3307c17c5f68725e76dc6e52589fd8cef6b86ccc5ac5e381d1a09","digest":"d7b25764ced3307c17c5f68725e76dc6e52589fd8cef6b86ccc5ac5e381d1a09","contentType":"application/vnd.scout.adapter+json"},{"artifactId":"sha256:8f1ed5faf8b70e3fc93cada3be2a9be02665bb061958af39c2f30dc851eee521","digest":"8f1ed5faf8b70e3fc93cada3be2a9be02665bb061958af39c2f30dc851eee521","contentType":"application/vnd.scout.adapter+json"},{"artifactId":"sha256:268fe8f6a0caf5febb884abab8059458f8a2bd4cb528916e79f3ad084926e898","digest":"268fe8f6a0caf5febb884abab8059458f8a2bd4cb528916e79f3ad084926e898","contentType":"application/vnd.scout.adapter+json"},{"artifactId":"sha256:18c726cdf1cce41189a00799fee8b59f3accc8b1b266dc7f1b5a995de9ee023d","digest":"18c726cdf1cce41189a00799fee8b59f3accc8b1b266dc7f1b5a995de9ee023d","contentType":"application/vnd.scout.adapter+json"},{"artifactId":"sha256:415192251396172256a123c6597c8147e2cbab36c7144b7c384746fbb7841356","digest":"415192251396172256a123c6597c8147e2cbab36c7144b7c384746fbb7841356","contentType":"application/vnd.scout.adapter+json"},{"artifactId":"sha256:99844aba1d69bfd8ed117f9ab2cfe7bc691a0235fedc0ef616e3ca94790dcf49","digest":"99844aba1d69bfd8ed117f9ab2cfe7bc691a0235fedc0ef616e3ca94790dcf49","contentType":"application/vnd.scout.adapter+json"},{"artifactId":"sha256:50b8baa71423efa37d62c983534fabb6d49e0a2edbc3c567e46b8ed1951277b3","digest":"50b8baa71423efa37d62c983534fabb6d49e0a2edbc3c567e46b8ed1951277b3","contentType":"application/vnd.scout.adapter+json"},{"artifactId":"sha256:3881ef5839f64e548e3418436030dfc628db3db276a4acea76b68cad58c57b06","digest":"3881ef5839f64e548e3418436030dfc628db3db276a4acea76b68cad58c57b06","contentType":"application/vnd.scout.adapter+json"}]},"plan":{"planId":"plan-ed5a37fa527142accc0a88cfe31e2ea4df62270463d4bfebd35c4e810d8b04f4","runId":"run-1a432f3e697055f1b1f141656181bd28","snapshot":{"repositoryId":"repo-8dd4b7e59c8b4b60778981376492ce1c38a14700289839dbe8aab6da533e267e","revision":"b268c36539c2e1715af9c220d78e914cbdc3c2c0","worktreeDigest":"e3fa64a9413e29cd1267be80ea7c62bcaaacc66f24b4f49bcd4ed32df9f1f58e","dirty":false,"ignoreRulesDigest":"86235d6ff989e78af9502eb7997bbb20065d89504257948617ade672125f1c54","exclusionsDigest":"dd9ad76a601246da6e4d8c108c4965c46e006523eacdb628e8b230f7bfff4e3b"},"scope":{"kind":"repository","selectedFamilies":["architecture","security","quality","performance"]},"jobs":[{"jobId":"job-279b583f3f228d98504f2ec38c734ff3b6590f6330044dc9b2a921150454a634","stage":"file_analysis","coverageKey":{"filePath":"README.md","family":"performance","category":"frontend-layout-animation"},"inputFingerprint":"5646c7a6e813c50ac4216d50bf0c62d60b240d0f50bf55808c6e9459e348e278","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-fa636b2a83c603554f6d49fc47b95e9dc6b922c9bc0302fb1294cbe6c7ab3b92","stage":"file_analysis","coverageKey":{"filePath":"README.md","family":"performance","category":"micro-optimization"},"inputFingerprint":"e0bcd3a35723c8335fe177cc1fcff23e3e0708f8eff6daf165452893ccd37ca8","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-e78d945c63ca718bb938a0f3519b33d13e1ce59cf37db8e7126f3216a63fa034","stage":"file_analysis","coverageKey":{"filePath":"README.md","family":"quality","category":"complexity"},"inputFingerprint":"7ef1764636fed30ab0d8b942f003bf7e350a7830680bd8da0e1d45944cfd9129","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-de3a5447a3e8186ab314e7cf1bda4998b2899eb9d0843b0d062ce594ba6e1d58","stage":"file_analysis","coverageKey":{"filePath":"README.md","family":"security","category":"credential-leakage"},"inputFingerprint":"62e64d656d9bab054ca091b68ea9d2057c5711b4be57a1bd80f782dade66e65c","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-317dac670db6e66aa80c4df476df5908a2e2609eb3f14f0987f53aa892f2ba63","stage":"file_analysis","coverageKey":{"filePath":"README.md","family":"security","category":"dangerous-deserialization"},"inputFingerprint":"035727084ddb8e2f5a4199477b0445075076bbcdc80d0038e96478b6b678e193","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-7d24b6079bfaea2e5156d51df0639abad206dcd719595baf300e665c8c950910","stage":"file_analysis","coverageKey":{"filePath":"README.md","family":"security","category":"dependency-vulnerability"},"inputFingerprint":"3b43c7a3417928f024f0385d0e12726f397c8ec30f5109afe6830fb51b1d2fab","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-5c4fc6051f90a9c1cbd14e4ca625b278df1ee3bc8976990eff4bd991bd0040d4","stage":"file_analysis","coverageKey":{"filePath":"README.md","family":"security","category":"dom-clobbering"},"inputFingerprint":"c88f193d1db10a633f7af984a9f6bb4aa38dd1a1e3d89629a9d51091ae643c41","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-f3e0fac1303ba22d549f39ffa3b79d9ff94f47b005d20053524125f6545d93d9","stage":"file_analysis","coverageKey":{"filePath":"README.md","family":"security","category":"workflow-supply-chain"},"inputFingerprint":"ad4b790fffbb6ccd4044ce37dbd1fc03b8331046683dc80c6b4a7bb5e09beaf0","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-6a915bae8068edad035026b2fde7db2577ecc430912af89412c39d639b5c2659","stage":"file_analysis","coverageKey":{"filePath":"pkg/legacy.py","family":"performance","category":"frontend-layout-animation"},"inputFingerprint":"0878d65f7a345d61f3694a8c330c78f6b96efd9659995852c55a2648d5487797","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-06eb7c0b95c37ffd0512d62b032721978fe326239447ab157a8710a0a3b62f3b","stage":"file_analysis","coverageKey":{"filePath":"pkg/legacy.py","family":"performance","category":"micro-optimization"},"inputFingerprint":"44e9a6fb895ac0b565c6a808fc6246db4a823021c76ecc78711ae72ebb524cc1","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-df8f78ef751d9b7e07e4ee759fc5064cc0fad16963ccb5289aa8f3b4eceed10b","stage":"file_analysis","coverageKey":{"filePath":"pkg/legacy.py","family":"quality","category":"complexity"},"inputFingerprint":"96fda844cd8a71bdfe05a6c146118d084c076b6fe0a9cb624575d1ca6e0657b2","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-821f9839dcbc91175abe3eecaef5b5949b8b921c1f68c3e206b82470f09201c2","stage":"file_analysis","coverageKey":{"filePath":"pkg/legacy.py","family":"security","category":"credential-leakage"},"inputFingerprint":"7efe8e6845eade2cb896b40af6566a6e2ee2c269e132a15dce2b060121009396","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-c2480a3cc8df6a3caccc4dfcf404ed932b1467172d7ecf8fc2927b8678cbc9db","stage":"file_analysis","coverageKey":{"filePath":"pkg/legacy.py","family":"security","category":"dangerous-deserialization"},"inputFingerprint":"8fe934caf5b0a300ed1358c5e951a0734b214edfdddb597da6bb7e774c957f5c","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-8078042eb80a130521e9c3205e1b9086b6eb0eebd8530396af11ec5fe01c472d","stage":"file_analysis","coverageKey":{"filePath":"pkg/legacy.py","family":"security","category":"dependency-vulnerability"},"inputFingerprint":"61bb335cc354304d0cb8da4d920ebc25f14fe310283f0cf7cb05537420e30395","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-cad8baf01d531900b2ec424c29d9f67497b7d4b2ef8883ee9c36fe4829538a9b","stage":"file_analysis","coverageKey":{"filePath":"pkg/legacy.py","family":"security","category":"dom-clobbering"},"inputFingerprint":"faffb220352d8ab2807a532caa87fcc89511f2029a2e0e0d8e9a32910222d514","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-21e200f14a8040adc56a6f4762fbee047045078f5ef828ebaaef2423b2581cff","stage":"file_analysis","coverageKey":{"filePath":"pkg/legacy.py","family":"security","category":"workflow-supply-chain"},"inputFingerprint":"4bf1a8d94efcfc0cad75faf1a1bb9608652a10311dea774a21f582084eb23be5","state":"pending","invalidationReason":"file changed or lacks reusable coverage"},{"jobId":"job-95b89e4d320d49a4375577f56b459a7ed442e19781a71afb6a6a638ad1e15040","stage":"mapping","inputFingerprint":"5d261e73f28ef3aa68b19ad53d66823e8f4c607ffea14edb0eedfff6c0d5a70a","state":"pending","invalidationReason":"canonical map inputs changed"},{"jobId":"job-6f0d8444e52c0ee2d2ed97c702dba3e4c0f57640a4df0e194a03fc39c84746a1","stage":"inventory","inputFingerprint":"e3fa64a9413e29cd1267be80ea7c62bcaaacc66f24b4f49bcd4ed32df9f1f58e","state":"pending","invalidationReason":"verify source snapshot after analysis"}],"policyDigest":"df99271c40b089a36f169ccce66e57a07abe648fd4adcb8ad614ba9d7a4030cd","toolDigest":"9f674c2d27af242992eed18247c608bc689c6c5fda5c5fd615cccd6d17390234","modelDigest":"7a59970cc72cd5db029fc1fd16f975041962e432b3b66ca21d6439a1dc888f4a","mapperDigest":"99174070011938cb5ce2a3840e247decfe8e9ad084198e51efad72c1f21cb63f","createdAt":"2026-11-16T14:32:50.690844Z"},"diff":{"changes":[{"kind":"added","current":{"path":"README.md","contentDigest":"eb9c26baee47f19e4993a77bca936d0ff09e355a82d3db79bf154ebff1a80604","eligible":true,"excluded":false}},{"kind":"added","current":{"path":"pkg/legacy.py","language":"python","contentDigest":"161f192ac6e66ae9452d7b23e68a0e512e306c37ce887ea09e387cb348dbb33d","eligible":true,"excluded":false}}],"added":[{"path":"README.md","contentDigest":"eb9c26baee47f19e4993a77bca936d0ff09e355a82d3db79bf154ebff1a80604","eligible":true,"excluded":false},{"path":"pkg/legacy.py","language":"python","contentDigest":"161f192ac6e66ae9452d7b23e68a0e512e306c37ce887ea09e387cb348dbb33d","eligible":true,"excluded":false}],"mappingGaps":[{"path":"README.md","reason":"eligible file has no canonical Clawpatch owner"},{"path":"pkg/legacy.py","reason":"eligible file has no canonical Clawpatch owner"}]},"mappingStatus":"mapped","mappingGaps":[{"path":"README.md","reason":"eligible file has no canonical Clawpatch owner"},{"path":"pkg/legacy.py","reason":"eligible file has no canonical Clawpatch owner"}],"issues":[{"issueId":"issue:quality:01M7JCCWQ4WEZANPJB4SWFWD4S","state":"open","family":"quality","category":"complexity","title":"complexity: `legacy` is too complex (13 \u003e 10)","mechanism":"`legacy` is too complex (13 \u003e 10)","anchor":{"path":"pkg/legacy.py","ruleKey":"quality.ruff.complexity:C901","mechanism":"`legacy` is too complex (13 \u003e 10)","fingerprint":"cbd7fe5ab133c36946cfa32b897bb0a5178912fe4a7dbf51aeb4fb8d314608af"},"originalSeverity":"high","effectiveSeverity":"high","observationIds":["490b669d1adf2592521481608bfd1122538ffbb20087befe78cb902e56320d71"],"files":["pkg/legacy.py"],"history":[{"at":"2026-11-16T14:32:53.220895Z","to":"open","event":"created","actor":"issue-correlation","reason":"created from validated observations","observationIds":["490b669d1adf2592521481608bfd1122538ffbb20087befe78cb902e56320d71"]}],"createdAt":"2026-11-16T14:32:53.220895Z","updatedAt":"2026-11-16T14:32:53.220895Z"}],"adapters":[{"resultId":"821cfe4df943891c386296efbff0954b138387a080028e5615141eb328a4c7ad","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"performance.semgrep.css-layout-height-transition","adapterVersion":"1.182.0","ruleVersion":"scout-semgrep-css-height-transition/v3@sha256:1181a0a5393c91fc63bbe72a8417e00093069179ed93a60eacd4aab5685fb5b8","status":"ineligible","command":"semgrep","startedAt":"2026-11-16T14:32:50.692978Z","finishedAt":"2026-11-16T14:32:50.692995Z","coverage":[{"key":{"filePath":"README.md","family":"performance","category":"frontend-layout-animation"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["821cfe4df943891c386296efbff0954b138387a080028e5615141eb328a4c7ad"]}]},{"resultId":"324419d1feb527d01969d8db133b390290c9e29af1582d5cece8922a34c6550c","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"performance:ruff","adapterVersion":"0.15.8","ruleVersion":"ruff/PERF@0.15.8","status":"completed","command":"ruff","startedAt":"2026-11-16T14:32:50.70065Z","finishedAt":"2026-11-16T14:32:50.741648Z","coverage":[{"key":{"filePath":"README.md","family":"performance","category":"micro-optimization"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["324419d1feb527d01969d8db133b390290c9e29af1582d5cece8922a34c6550c"]}]},{"resultId":"34da78df974ee69b2a647bd81f043cb45632469a4a9f3a4b87cb4e3041260c7c","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"quality.ruff.complexity","adapterVersion":"0.15.8","ruleVersion":"ruff/C90@0.15.8","status":"completed","command":"ruff","startedAt":"2026-11-16T14:32:50.747072Z","finishedAt":"2026-11-16T14:32:50.79133Z","coverage":[{"key":{"filePath":"README.md","family":"quality","category":"complexity"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["34da78df974ee69b2a647bd81f043cb45632469a4a9f3a4b87cb4e3041260c7c"]}]},{"resultId":"96adb201fa2b001d422123839efa44bbaebea438ae422011cc8f4d74c9db71f0","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"security.gitleaks.default-credentials","adapterVersion":"8.30.1","ruleVersion":"gitleaks-default-rules/8.30.1@sha256:e163e53b9e7e8a8511e77271e2b323ed057759542a6d988258afe3a1fa329caf","status":"completed","command":"gitleaks","startedAt":"2026-11-16T14:32:50.797746Z","finishedAt":"2026-11-16T14:32:51.13448Z","coverage":[{"key":{"filePath":"README.md","family":"security","category":"credential-leakage"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["96adb201fa2b001d422123839efa44bbaebea438ae422011cc8f4d74c9db71f0"]}]},{"resultId":"b6b83646fb686a84a9092d38e37dcea40784807de19e52694099bd2d02025f4e","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"security.semgrep.python-unsafe-yaml-load","adapterVersion":"1.182.0","ruleVersion":"scout-semgrep-security/v1@sha256:5395708e0a5f4f593f58d62eb55b8f4a261aeafbdff42979b60bd6646d3df6bb","status":"failed","command":"semgrep","startedAt":"2026-11-16T14:32:51.140719Z","finishedAt":"2026-11-16T14:32:52.338957Z","coverage":[{"key":{"filePath":"README.md","family":"security","category":"dangerous-deserialization"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["b6b83646fb686a84a9092d38e37dcea40784807de19e52694099bd2d02025f4e"]}],"failures":[{"stage":"file_analysis","code":"output_schema","message":"scanner output failed structured validation","retryable":false}]},{"resultId":"20f0d447c397616f354ea06140f305c9c9f2b9ae5e056c6f11d33fe3b17789a2","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"security.semgrep.python-multipart-cve-2024-24762","adapterVersion":"1.182.0","ruleVersion":"scout-semgrep-python-multipart/v1@sha256:9c0a8465c628cda3fb102339cb85ced19343e6cabd567d2f9bc3ba154e5d745a","status":"ineligible","command":"semgrep","startedAt":"2026-11-16T14:32:52.347008Z","finishedAt":"2026-11-16T14:32:52.347034Z","coverage":[{"key":{"filePath":"README.md","family":"security","category":"dependency-vulnerability"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["20f0d447c397616f354ea06140f305c9c9f2b9ae5e056c6f11d33fe3b17789a2"]}]},{"resultId":"c0ca2f45a8ef6a65630f88b219c33aa48d5a1773baa9d14689228728382706db","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"security.semgrep.javascript-current-script-dom-clobbering","adapterVersion":"1.182.0","ruleVersion":"scout-semgrep-current-script/v1@sha256:47d4c1818fa6b3a22c23d6fc1fc8ad5922dfe255a9a32780773e17851a43a457","status":"ineligible","command":"semgrep","startedAt":"2026-11-16T14:32:52.360173Z","finishedAt":"2026-11-16T14:32:52.360203Z","coverage":[{"key":{"filePath":"README.md","family":"security","category":"dom-clobbering"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["c0ca2f45a8ef6a65630f88b219c33aa48d5a1773baa9d14689228728382706db"]}]},{"resultId":"446c946933acc3f5ddad15abe79e9cc274f3a9ee99a9df167e3d34a8ddacd3cc","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"security.semgrep.actions-mutable-ref","adapterVersion":"1.182.0","ruleVersion":"scout-semgrep-actions/v1@sha256:25790a46d68968667f58f0be5fe9d9379858ba2b99017e89f8683723fa0d60fc","status":"ineligible","command":"semgrep","startedAt":"2026-11-16T14:32:52.36453Z","finishedAt":"2026-11-16T14:32:52.364546Z","coverage":[{"key":{"filePath":"README.md","family":"security","category":"workflow-supply-chain"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["446c946933acc3f5ddad15abe79e9cc274f3a9ee99a9df167e3d34a8ddacd3cc"]}]},{"resultId":"821cfe4df943891c386296efbff0954b138387a080028e5615141eb328a4c7ad","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"performance.semgrep.css-layout-height-transition","adapterVersion":"1.182.0","ruleVersion":"scout-semgrep-css-height-transition/v3@sha256:1181a0a5393c91fc63bbe72a8417e00093069179ed93a60eacd4aab5685fb5b8","status":"ineligible","command":"semgrep","startedAt":"2026-11-16T14:32:50.692978Z","finishedAt":"2026-11-16T14:32:50.692995Z","coverage":[{"key":{"filePath":"pkg/legacy.py","family":"performance","category":"frontend-layout-animation"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["821cfe4df943891c386296efbff0954b138387a080028e5615141eb328a4c7ad"]}]},{"resultId":"324419d1feb527d01969d8db133b390290c9e29af1582d5cece8922a34c6550c","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"performance:ruff","adapterVersion":"0.15.8","ruleVersion":"ruff/PERF@0.15.8","status":"completed","command":"ruff","startedAt":"2026-11-16T14:32:50.70065Z","finishedAt":"2026-11-16T14:32:50.741648Z","coverage":[{"key":{"filePath":"pkg/legacy.py","family":"performance","category":"micro-optimization"},"status":"inspected","inspectedRanges":[{"path":"pkg/legacy.py","startLine":1,"endLine":27}],"adapterResultIds":["324419d1feb527d01969d8db133b390290c9e29af1582d5cece8922a34c6550c"]}]},{"resultId":"34da78df974ee69b2a647bd81f043cb45632469a4a9f3a4b87cb4e3041260c7c","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"quality.ruff.complexity","adapterVersion":"0.15.8","ruleVersion":"ruff/C90@0.15.8","status":"completed","command":"ruff","startedAt":"2026-11-16T14:32:50.747072Z","finishedAt":"2026-11-16T14:32:50.79133Z","coverage":[{"key":{"filePath":"pkg/legacy.py","family":"quality","category":"complexity"},"status":"inspected","inspectedRanges":[{"path":"pkg/legacy.py","startLine":1,"endLine":27}],"adapterResultIds":["34da78df974ee69b2a647bd81f043cb45632469a4a9f3a4b87cb4e3041260c7c"],"observationIds":["490b669d1adf2592521481608bfd1122538ffbb20087befe78cb902e56320d71"]}],"observationIds":["490b669d1adf2592521481608bfd1122538ffbb20087befe78cb902e56320d71"]},{"resultId":"96adb201fa2b001d422123839efa44bbaebea438ae422011cc8f4d74c9db71f0","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"security.gitleaks.default-credentials","adapterVersion":"8.30.1","ruleVersion":"gitleaks-default-rules/8.30.1@sha256:e163e53b9e7e8a8511e77271e2b323ed057759542a6d988258afe3a1fa329caf","status":"completed","command":"gitleaks","startedAt":"2026-11-16T14:32:50.797746Z","finishedAt":"2026-11-16T14:32:51.13448Z","coverage":[{"key":{"filePath":"pkg/legacy.py","family":"security","category":"credential-leakage"},"status":"inspected","inspectedRanges":[{"path":"pkg/legacy.py","startLine":1,"endLine":27}],"adapterResultIds":["96adb201fa2b001d422123839efa44bbaebea438ae422011cc8f4d74c9db71f0"]}]},{"resultId":"b6b83646fb686a84a9092d38e37dcea40784807de19e52694099bd2d02025f4e","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"security.semgrep.python-unsafe-yaml-load","adapterVersion":"1.182.0","ruleVersion":"scout-semgrep-security/v1@sha256:5395708e0a5f4f593f58d62eb55b8f4a261aeafbdff42979b60bd6646d3df6bb","status":"failed","command":"semgrep","startedAt":"2026-11-16T14:32:51.140719Z","finishedAt":"2026-11-16T14:32:52.338957Z","coverage":[{"key":{"filePath":"pkg/legacy.py","family":"security","category":"dangerous-deserialization"},"status":"incomplete","reason":"scanner output failed structured validation","adapterResultIds":["b6b83646fb686a84a9092d38e37dcea40784807de19e52694099bd2d02025f4e"]}],"failures":[{"stage":"file_analysis","code":"output_schema","message":"scanner output failed structured validation","retryable":false}]},{"resultId":"20f0d447c397616f354ea06140f305c9c9f2b9ae5e056c6f11d33fe3b17789a2","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"security.semgrep.python-multipart-cve-2024-24762","adapterVersion":"1.182.0","ruleVersion":"scout-semgrep-python-multipart/v1@sha256:9c0a8465c628cda3fb102339cb85ced19343e6cabd567d2f9bc3ba154e5d745a","status":"ineligible","command":"semgrep","startedAt":"2026-11-16T14:32:52.347008Z","finishedAt":"2026-11-16T14:32:52.347034Z","coverage":[{"key":{"filePath":"pkg/legacy.py","family":"security","category":"dependency-vulnerability"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["20f0d447c397616f354ea06140f305c9c9f2b9ae5e056c6f11d33fe3b17789a2"]}]},{"resultId":"c0ca2f45a8ef6a65630f88b219c33aa48d5a1773baa9d14689228728382706db","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"security.semgrep.javascript-current-script-dom-clobbering","adapterVersion":"1.182.0","ruleVersion":"scout-semgrep-current-script/v1@sha256:47d4c1818fa6b3a22c23d6fc1fc8ad5922dfe255a9a32780773e17851a43a457","status":"ineligible","command":"semgrep","startedAt":"2026-11-16T14:32:52.360173Z","finishedAt":"2026-11-16T14:32:52.360203Z","coverage":[{"key":{"filePath":"pkg/legacy.py","family":"security","category":"dom-clobbering"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["c0ca2f45a8ef6a65630f88b219c33aa48d5a1773baa9d14689228728382706db"]}]},{"resultId":"446c946933acc3f5ddad15abe79e9cc274f3a9ee99a9df167e3d34a8ddacd3cc","runId":"run-1a432f3e697055f1b1f141656181bd28","adapter":"security.semgrep.actions-mutable-ref","adapterVersion":"1.182.0","ruleVersion":"scout-semgrep-actions/v1@sha256:25790a46d68968667f58f0be5fe9d9379858ba2b99017e89f8683723fa0d60fc","status":"ineligible","command":"semgrep","startedAt":"2026-11-16T14:32:52.36453Z","finishedAt":"2026-11-16T14:32:52.364546Z","coverage":[{"key":{"filePath":"pkg/legacy.py","family":"security","category":"workflow-supply-chain"},"status":"not_applicable","reason":"adapter language or extension is ineligible","adapterResultIds":["446c946933acc3f5ddad15abe79e9cc274f3a9ee99a9df167e3d34a8ddacd3cc"]}]}],"gate":{"status":"incomplete","exitCode":2,"profile":"report","comparison":"none","blocking":[],"reasons":["security failed: scanner output failed structured validation"]},"health":[{"lane":"guardrails","mode":"blocking-eligible","requires":"none","required":false,"status":"skipped","units":0,"reason":"lane did not run"},{"lane":"delta","mode":"report","requires":"tool","required":false,"status":"skipped","units":0,"reason":"lane did not run"},{"lane":"security","mode":"blocking-eligible","requires":"tool","required":true,"status":"failed","units":10,"reason":"scanner output failed structured validation"},{"lane":"quality","mode":"report","requires":"tool","required":false,"status":"ran","units":2},{"lane":"architecture","mode":"report","requires":"tool","required":false,"status":"skipped","units":0,"reason":"no eligible inputs"},{"lane":"performance","mode":"report","requires":"tool","required":false,"status":"ran","units":4},{"lane":"contextual","mode":"report","requires":"model-cli","required":false,"status":"skipped","units":0,"reason":"no eligible inputs"},{"lane":"clawpatch-review","mode":"report","requires":"model-cli","required":false,"status":"skipped","units":0,"reason":"no eligible inputs"},{"lane":"measures","mode":"signal","requires":"tool","required":false,"status":"ran","units":1},{"lane":"history","mode":"signal","requires":"none","required":false,"status":"ran","units":1},{"lane":"association","mode":"signal","requires":"decision-egress","required":false,"status":"skipped","units":0,"reason":"disabled"},{"lane":"association-fallback","mode":"signal","requires":"model-cli","required":false,"status":"skipped","units":0,"reason":"disabled"},{"lane":"decisions","mode":"signal","requires":"decision-egress","required":false,"status":"skipped","units":0,"reason":"decisions not enabled"}],"would_block":[],"ranking":{"method":"deterministic (decisions not enabled)","mode":"deterministic","reason":"decisions not enabled","rank_formula_version":"jev-ordinal-p/v1@aaee42e03e2136180f99ca7cfaf69caa83ebe13b427de3be2affb344892897b8","baseline_version":"severity-x-changed-in-pr-x-path-role/v1;changed=1-outside-pr;ties=issue-id+weights:5c812db37273c653+path-role:path-role/v1","items":[]},"pendingAreas":[],"associations":[],"associationGuard":{"generation":null,"windowMerges":[],"fallbackRate":{"numerator":0,"denominator":0,"value":0,"measured":false,"reason":"insufficient_clusters"},"pendingNewRate":{"numerator":0,"denominator":0,"value":0,"measured":false,"reason":"insufficient_clusters"},"catalogueStale":false}}}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "Commit": "54ca8ac5eff314aefa2deeebe1b8ef964d6c74d6",
+    "Parent": "",
+    "Attempts": 1,
+    "Changed": true
+  }
+}
+--- FAIL: TestDiffGateScenario (6.54s)
+    diff_scenario_test.go:190: (a) report profile: exit 2 gate {Status:incomplete Profile:report Blocking:[] Overrides:[]}
+--- FAIL: TestDiffReportsGuardrailErosion (8.96s)
+    guardrails_diff_test.go:44: report profile must not gate: exit 2
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "changed": true,
+    "decisions": {
+      "egressAcknowledged": true,
+      "enabled": true,
+      "maxCostUsd": 0.5,
+      "maxPerRun": 2000,
+      "model": "jev-2026-10-01"
+    },
+    "modelCli": {
+      "lanes": [
+        "contextual"
+      ],
+      "provider": "claude"
+    },
+    "next": "commit .scout/policy.yaml, add the scout-guardian workflow, then run a full default-branch run to publish the baseline",
+    "path": ".scout/policy.yaml",
+    "profile": "report"
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "changed": true,
+    "decisions": {
+      "egressAcknowledged": false,
+      "enabled": false,
+      "maxCostUsd": 0.5,
+      "maxPerRun": 2000,
+      "model": ""
+    },
+    "modelCli": {
+      "lanes": null,
+      "provider": ""
+    },
+    "next": "commit .scout/policy.yaml, add the scout-guardian workflow, then run a full default-branch run to publish the baseline",
+    "path": ".scout/policy.yaml",
+    "profile": "report"
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "changed": true,
+    "decisions": {
+      "egressAcknowledged": true,
+      "enabled": true,
+      "maxCostUsd": 0.5,
+      "maxPerRun": 2000,
+      "model": "jev-2026-10-01"
+    },
+    "modelCli": {
+      "lanes": null,
+      "provider": ""
+    },
+    "next": "commit .scout/policy.yaml, add the scout-guardian workflow, then run a full default-branch run to publish the baseline",
+    "path": ".scout/policy.yaml",
+    "profile": "guardian"
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "changed": false,
+    "decisions": {
+      "egressAcknowledged": true,
+      "enabled": true,
+      "maxCostUsd": 0.5,
+      "maxPerRun": 2000,
+      "model": "jev-2026-10-01"
+    },
+    "modelCli": {
+      "lanes": null,
+      "provider": ""
+    },
+    "next": "commit .scout/policy.yaml, add the scout-guardian workflow, then run a full default-branch run to publish the baseline",
+    "path": ".scout/policy.yaml",
+    "profile": "guardian"
+  }
+}
+scout: invalid policy: decisions.egress_acknowledged must be true when decisions.enabled is true
+scout: invalid policy: decisions.egress_acknowledged must be true when decisions.enabled is true
+scout: invalid policy: model_cli.provider "gemini" must be "claude" or "codex"
+scout: invalid policy: model_cli.lanes: unknown lane "nope"
+scout: invalid policy: decisions.model "jev-latest" is an alias; pin an exact model id
+scout: invalid policy: decisions.model "typesafe/jev-preview" is an alias; pin an exact model id
+scout: invalid policy: decisions.model "typesafe/jev-1.14" is an alias; pin an exact model id
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "changed": true,
+    "decisions": {
+      "egressAcknowledged": true,
+      "enabled": true,
+      "maxCostUsd": 0.5,
+      "maxPerRun": 2000,
+      "model": "jev-2026-10-01"
+    },
+    "modelCli": {
+      "lanes": [
+        "contextual"
+      ],
+      "provider": "codex"
+    },
+    "next": "commit .scout/policy.yaml, add the scout-guardian workflow, then run a full default-branch run to publish the baseline",
+    "path": ".scout/policy.yaml",
+    "profile": "report"
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "changed": true,
+    "decisions": {
+      "egressAcknowledged": true,
+      "enabled": true,
+      "maxCostUsd": 0.5,
+      "maxPerRun": 2000,
+      "model": "typesafe/jev-1.14-20261014"
+    },
+    "modelCli": {
+      "lanes": null,
+      "provider": ""
+    },
+    "next": "commit .scout/policy.yaml, add the scout-guardian workflow, then run a full default-branch run to publish the baseline",
+    "path": ".scout/policy.yaml",
+    "profile": "report"
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "changed": false,
+    "decisions": {
+      "egressAcknowledged": true,
+      "enabled": true,
+      "maxCostUsd": 0.5,
+      "maxPerRun": 2000,
+      "model": "jev-2026-10-01"
+    },
+    "modelCli": {
+      "lanes": null,
+      "provider": ""
+    },
+    "next": "commit .scout/policy.yaml, add the scout-guardian workflow, then run a full default-branch run to publish the baseline",
+    "path": ".scout/policy.yaml",
+    "profile": "report"
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "changed": true,
+    "decisions": {
+      "egressAcknowledged": true,
+      "enabled": true,
+      "maxCostUsd": 0.5,
+      "maxPerRun": 2000,
+      "model": "typesafe/jev-1.14-20261014"
+    },
+    "modelCli": {
+      "lanes": null,
+      "provider": ""
+    },
+    "next": "commit .scout/policy.yaml, add the scout-guardian workflow, then run a full default-branch run to publish the baseline",
+    "path": ".scout/policy.yaml",
+    "profile": "report"
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "changed": true,
+    "decisions": {
+      "egressAcknowledged": true,
+      "enabled": true,
+      "maxCostUsd": 0.25,
+      "maxPerRun": 2000,
+      "model": "typesafe/jev-1.14-20261014"
+    },
+    "modelCli": {
+      "lanes": null,
+      "provider": ""
+    },
+    "next": "commit .scout/policy.yaml, add the scout-guardian workflow, then run a full default-branch run to publish the baseline",
+    "path": ".scout/policy.yaml",
+    "profile": "report"
+  }
+}
+unknown Scout command "no-such-command"
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "changed": true,
+    "decisions": {
+      "egressAcknowledged": false,
+      "enabled": false,
+      "maxCostUsd": 0.5,
+      "maxPerRun": 2000,
+      "model": ""
+    },
+    "modelCli": {
+      "lanes": [
+        "contextual",
+        "clawpatch-review"
+      ],
+      "provider": "claude"
+    },
+    "next": "commit .scout/policy.yaml, add the scout-guardian workflow, then run a full default-branch run to publish the baseline",
+    "path": ".scout/policy.yaml",
+    "profile": "report"
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "changed": true,
+    "decisions": {
+      "egressAcknowledged": false,
+      "enabled": false,
+      "maxCostUsd": 0.5,
+      "maxPerRun": 2000,
+      "model": ""
+    },
+    "modelCli": {
+      "lanes": [
+        "contextual"
+      ],
+      "provider": "claude"
+    },
+    "next": "commit .scout/policy.yaml, add the scout-guardian workflow, then run a full default-branch run to publish the baseline",
+    "path": ".scout/policy.yaml",
+    "profile": "report"
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "files": 9,
+    "out": "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/TestPendingAreaAccept1521683566/002"
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "files": 9
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "files": 9,
+    "out": "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/TestPendingAreaAccept1521683566/004"
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "files": 10,
+    "out": "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/TestPendingAreaMerge3242650908/002"
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "files": 10
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "files": 10,
+    "out": "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/TestPendingAreaMerge3242650908/004"
+  }
+}
+scout: policy: resolve .scout/policy.yaml at HEAD: git ls-tree: exit status 128: fatal: not a git repository (or any of the parent directories): .git
+scout: publishing scout/state requires a trusted run (--trusted)
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "Commit": "b5003032cf1cced2d45fca42e899d8acaf1c9c5c",
+    "Parent": "",
+    "Attempts": 1,
+    "Changed": true
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "files": 7
+  }
+}
+scout: restored state from b5003032cf1cced2d45fca42e899d8acaf1c9c5c
+scout: remote has no scout/state branch
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "files": 7,
+    "out": "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/TestExportThenImportCommandsReproduceFiles3648114477/003"
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "files": 7
+  }
+}
+{
+  "status": "complete",
+  "exitCode": 0,
+  "result": {
+    "files": 7,
+    "out": "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/TestExportThenImportCommandsReproduceFiles3648114477/005"
+  }
+}
+FAIL
+FAIL	scout/cmd/scout	105.398s
+?   	scout/evaluation	[no test files]
+?   	scout/evaluation/clawpatch-0.7-compat/loadcheck	[no test files]
+ok  	scout/evaluation/x1-triage-ranking/validation	0.306s
+?   	scout/evaluation/x11-merge-association	[no test files]
+--- FAIL: TestPreparationOwnershipMatchesProductLoader (0.26s)
+    main_test.go:326: preparation helper: exit status 1: Traceback (most recent call last):
+          File "<string>", line 8, in <module>
+            if hashlib.sha256(bootstrap.read_bytes()).hexdigest()!=pins[str(bootstrap)]:
+                                                                   ~~~~^^^^^^^^^^^^^^^^
+        KeyError: '/Users/adamjackson/Projects/work/scout-semgrep/evaluation/x11-merge-association/bootstrap_v6.py'
+FAIL
+FAIL	scout/evaluation/x11-merge-association/frontend	2.124s
+?   	scout/evaluation/x2-area-stability/replay	[no test files]
+?   	scout/evaluation/x2-area-stability/validation/credcheck	[no test files]
+?   	scout/evaluation/x2c-mapper-comparison/jev	[no test files]
+?   	scout/evaluation/x2d-merge-association-pilot/jev	[no test files]
+?   	scout/evaluation/x2d-merge-association-pilot/onboard	[no test files]
+?   	scout/evaluation/x2d-postrun-tuning/axum/pilot/jev	[no test files]
+?   	scout/evaluation/x2d-postrun-tuning/axum/pilot/onboard	[no test files]
+ok  	scout/internal/analyzers	22.174s
+ok  	scout/internal/areas	3.278s
+ok  	scout/internal/artifacts	1.165s
+ok  	scout/internal/association	48.235s
+ok  	scout/internal/baseline	14.298s
+ok  	scout/internal/clawpatch	13.236s
+ok  	scout/internal/contextual	17.246s
+ok  	scout/internal/decisions	1.460s
+ok  	scout/internal/decisions/orderflip	3.765s
+ok  	scout/internal/decisions/thresholds	2.351s
+ok  	scout/internal/domain	3.501s
+ok  	scout/internal/engine	39.917s
+ok  	scout/internal/eval	6.214s
+ok  	scout/internal/guardrails	3.950s
+ok  	scout/internal/history	13.266s
+ok  	scout/internal/importgraph	4.721s
+ok  	scout/internal/inventory	4.944s
+ok  	scout/internal/issues	6.229s
+ok  	scout/internal/measures	10.991s
+?   	scout/internal/modelcli	[no test files]
+ok  	scout/internal/policy	4.723s
+ok  	scout/internal/prmeta	4.126s
+ok  	scout/internal/redact	4.106s
+ok  	scout/internal/sandbox	4.105s
+ok  	scout/internal/shadow	4.257s
+ok  	scout/internal/state	8.804s
+?   	scout/internal/state/statetest	[no test files]
+ok  	scout/internal/toolchain	3.205s
+ok  	scout/internal/web	3.452s
+?   	scout/scripts/gate	[no test files]
+FAIL

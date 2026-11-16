@@ -1,0 +1,91 @@
+=== RUN   TestCorpusReplayKeepsTrueIssuesAndDoesNotFlagFalsePositives
+    corpus_regression_test.go:105: corpus replay: 9/9 true detected, 13/13 false positives unflagged
+--- PASS: TestCorpusReplayKeepsTrueIssuesAndDoesNotFlagFalsePositives (0.00s)
+=== RUN   TestBundledRulesStillDetectCorpusMechanisms
+--- PASS: TestBundledRulesStillDetectCorpusMechanisms (4.95s)
+=== RUN   TestCorpusValidate
+=== RUN   TestCorpusValidate/issue_without_id
+=== RUN   TestCorpusValidate/unsupported_without_reason
+=== RUN   TestCorpusValidate/unknown_assessment_status
+=== RUN   TestCorpusValidate/entry_without_id
+=== RUN   TestCorpusValidate/unpinned_target
+=== RUN   TestCorpusValidate/duplicate_selection
+=== RUN   TestCorpusValidate/unsupported_status,_input_ok
+=== RUN   TestCorpusValidate/unknown_adjudication
+=== RUN   TestCorpusValidate/duplicate_entry_id
+=== RUN   TestCorpusValidate/no_language
+=== RUN   TestCorpusValidate/true_issue_without_path
+=== RUN   TestCorpusValidate/true_issue_without_evidence
+=== RUN   TestCorpusValidate/duplicate_issue_id
+=== RUN   TestCorpusValidate/wrong_schema
+=== RUN   TestCorpusValidate/no_corpus_version
+=== RUN   TestCorpusValidate/unsupported_input,_adjudicated
+--- PASS: TestCorpusValidate (0.00s)
+    --- PASS: TestCorpusValidate/issue_without_id (0.00s)
+    --- PASS: TestCorpusValidate/unsupported_without_reason (0.00s)
+    --- PASS: TestCorpusValidate/unknown_assessment_status (0.00s)
+    --- PASS: TestCorpusValidate/entry_without_id (0.00s)
+    --- PASS: TestCorpusValidate/unpinned_target (0.00s)
+    --- PASS: TestCorpusValidate/duplicate_selection (0.00s)
+    --- PASS: TestCorpusValidate/unsupported_status,_input_ok (0.00s)
+    --- PASS: TestCorpusValidate/unknown_adjudication (0.00s)
+    --- PASS: TestCorpusValidate/duplicate_entry_id (0.00s)
+    --- PASS: TestCorpusValidate/no_language (0.00s)
+    --- PASS: TestCorpusValidate/true_issue_without_path (0.00s)
+    --- PASS: TestCorpusValidate/true_issue_without_evidence (0.00s)
+    --- PASS: TestCorpusValidate/duplicate_issue_id (0.00s)
+    --- PASS: TestCorpusValidate/wrong_schema (0.00s)
+    --- PASS: TestCorpusValidate/no_corpus_version (0.00s)
+    --- PASS: TestCorpusValidate/unsupported_input,_adjudicated (0.00s)
+=== RUN   TestLoadCorpusDistinguishesMissingUnreadableAndAvailable
+--- PASS: TestLoadCorpusDistinguishesMissingUnreadableAndAvailable (0.00s)
+=== RUN   TestCompareOutcomesScenarios
+=== RUN   TestCompareOutcomesScenarios/a_normalised_mechanism_and_path_match_meets_parity
+=== RUN   TestCompareOutcomesScenarios/a_missed_reference_issue_fails_parity_and_stays_a_miss
+=== RUN   TestCompareOutcomesScenarios/an_extra_never_satisfies_a_miss
+=== RUN   TestCompareOutcomesScenarios/a_confirmed_false_positive_and_an_unvalidated_observation_are_kept_apart
+=== RUN   TestCompareOutcomesScenarios/observations_sharing_a_stable_key_merge_into_one_match
+=== RUN   TestCompareOutcomesScenarios/a_mechanism_and_behaviour_match_on_another_path_scores_below_a_path_match
+=== RUN   TestCompareOutcomesScenarios/equally_relevant_groups_are_ambiguous_and_make_the_run_incomplete
+=== RUN   TestCompareOutcomesScenarios/a_group_claimed_by_one_reference_cannot_satisfy_another
+=== RUN   TestCompareOutcomesScenarios/an_incomplete_Scout_assessment_is_incomplete_even_when_everything_matches
+=== RUN   TestCompareOutcomesScenarios/an_incompletely_adjudicated_entry_never_meets_parity
+=== RUN   TestCompareOutcomesScenarios/an_unsupported_input_is_not_evaluated
+=== RUN   TestCompareOutcomesScenarios/a_clean_adjudicated_negative_with_no_observations_meets_parity
+=== RUN   TestCompareOutcomesScenarios/a_missing,_unreadable_or_non-matching_corpus_is_never_a_pass
+--- PASS: TestCompareOutcomesScenarios (0.00s)
+    --- PASS: TestCompareOutcomesScenarios/a_normalised_mechanism_and_path_match_meets_parity (0.00s)
+    --- PASS: TestCompareOutcomesScenarios/a_missed_reference_issue_fails_parity_and_stays_a_miss (0.00s)
+    --- PASS: TestCompareOutcomesScenarios/an_extra_never_satisfies_a_miss (0.00s)
+    --- PASS: TestCompareOutcomesScenarios/a_confirmed_false_positive_and_an_unvalidated_observation_are_kept_apart (0.00s)
+    --- PASS: TestCompareOutcomesScenarios/observations_sharing_a_stable_key_merge_into_one_match (0.00s)
+    --- PASS: TestCompareOutcomesScenarios/a_mechanism_and_behaviour_match_on_another_path_scores_below_a_path_match (0.00s)
+    --- PASS: TestCompareOutcomesScenarios/equally_relevant_groups_are_ambiguous_and_make_the_run_incomplete (0.00s)
+    --- PASS: TestCompareOutcomesScenarios/a_group_claimed_by_one_reference_cannot_satisfy_another (0.00s)
+    --- PASS: TestCompareOutcomesScenarios/an_incomplete_Scout_assessment_is_incomplete_even_when_everything_matches (0.00s)
+    --- PASS: TestCompareOutcomesScenarios/an_incompletely_adjudicated_entry_never_meets_parity (0.00s)
+    --- PASS: TestCompareOutcomesScenarios/an_unsupported_input_is_not_evaluated (0.00s)
+    --- PASS: TestCompareOutcomesScenarios/a_clean_adjudicated_negative_with_no_observations_meets_parity (0.00s)
+    --- PASS: TestCompareOutcomesScenarios/a_missing,_unreadable_or_non-matching_corpus_is_never_a_pass (0.00s)
+=== RUN   TestCompareOutcomesRejectsInvalidRequests
+=== RUN   TestCompareOutcomesRejectsInvalidRequests/no_revision
+=== RUN   TestCompareOutcomesRejectsInvalidRequests/unknown_assessment
+=== RUN   TestCompareOutcomesRejectsInvalidRequests/incomplete_without_cause
+=== RUN   TestCompareOutcomesRejectsInvalidRequests/observation_without_id
+=== RUN   TestCompareOutcomesRejectsInvalidRequests/validated_observation_without_evidence
+=== RUN   TestCompareOutcomesRejectsInvalidRequests/no_repository
+=== RUN   TestCompareOutcomesRejectsInvalidRequests/no_language
+=== RUN   TestCompareOutcomesRejectsInvalidRequests/no_family
+=== RUN   TestCompareOutcomesRejectsInvalidRequests/observation_unknown_adjudication
+--- PASS: TestCompareOutcomesRejectsInvalidRequests (0.00s)
+    --- PASS: TestCompareOutcomesRejectsInvalidRequests/no_revision (0.00s)
+    --- PASS: TestCompareOutcomesRejectsInvalidRequests/unknown_assessment (0.00s)
+    --- PASS: TestCompareOutcomesRejectsInvalidRequests/incomplete_without_cause (0.00s)
+    --- PASS: TestCompareOutcomesRejectsInvalidRequests/observation_without_id (0.00s)
+    --- PASS: TestCompareOutcomesRejectsInvalidRequests/validated_observation_without_evidence (0.00s)
+    --- PASS: TestCompareOutcomesRejectsInvalidRequests/no_repository (0.00s)
+    --- PASS: TestCompareOutcomesRejectsInvalidRequests/no_language (0.00s)
+    --- PASS: TestCompareOutcomesRejectsInvalidRequests/no_family (0.00s)
+    --- PASS: TestCompareOutcomesRejectsInvalidRequests/observation_unknown_adjudication (0.00s)
+PASS
+ok  	scout/internal/eval	5.223s

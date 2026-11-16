@@ -1,0 +1,27 @@
+Python 3.14.10
+1.182.0
+
+A new version of Semgrep is available. See https://semgrep.dev/docs/upgrading
+Traceback (most recent call last):
+  File "/Users/adamjackson/.local/share/uv/python/cpython-3.14.10-macos-aarch64-none/lib/python3.14/importlib/metadata/__init__.py", line 407, in from_name
+    return next(iter(cls.discover(name=name)))
+StopIteration
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import importlib.metadata as m; print("\n".join(f"{p}=={m.version(p)}" for p in ["semgrep","setuptools","protobuf","opentelemetry-api","opentelemetry-instrumentation"]))
+                                          ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 1, in <genexpr>
+    import importlib.metadata as m; print("\n".join(f"{p}=={m.version(p)}" for p in ["semgrep","setuptools","protobuf","opentelemetry-api","opentelemetry-instrumentation"]))
+                                                            ~~~~~~~~~^^^
+  File "/Users/adamjackson/.local/share/uv/python/cpython-3.14.10-macos-aarch64-none/lib/python3.14/importlib/metadata/__init__.py", line 987, in version
+    return distribution(distribution_name).version
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/.local/share/uv/python/cpython-3.14.10-macos-aarch64-none/lib/python3.14/importlib/metadata/__init__.py", line 960, in distribution
+    return Distribution.from_name(distribution_name)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/adamjackson/.local/share/uv/python/cpython-3.14.10-macos-aarch64-none/lib/python3.14/importlib/metadata/__init__.py", line 409, in from_name
+    raise PackageNotFoundError(name)
+importlib.metadata.PackageNotFoundError: No package metadata was found for semgrep

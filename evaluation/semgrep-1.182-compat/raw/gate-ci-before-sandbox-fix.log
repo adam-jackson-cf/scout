@@ -1,0 +1,26 @@
+All checks passed!
+11 files already formatted
+Success: no issues found in 10 source files
+Success: no issues found in 1 source file
+Checking formatting...
+All matched files use Prettier code style!
+No vulnerabilities found.
+fast: wallMs=34927.720; passing events=942
+coverage: 666/717 statements (92.887029%)
+FAILED scout/cmd/scout/TestDiffDeltaIsReportOnlyUnderGuardianProfile
+FAILED scout/cmd/scout/TestDiffGateScenario
+FAILED scout/cmd/scout/TestDiffReportsGuardrailErosion
+    delta_scenario_test.go:43: docs-only PR: exit 2 issues []
+--- FAIL: TestDiffDeltaIsReportOnlyUnderGuardianProfile (4.90s)
+    diff_scenario_test.go:190: (a) report profile: exit 2 gate {Status:incomplete Profile:report Blocking:[] Overrides:[]}
+--- FAIL: TestDiffGateScenario (6.44s)
+    guardrails_diff_test.go:44: report profile must not gate: exit 2
+--- FAIL: TestDiffReportsGuardrailErosion (6.70s)
+FAIL
+FAIL	scout/cmd/scout	72.385s
+FAIL scout/cmd/scout
+go test JSON: /private/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/scout-go-test-0hz1mpt6.jsonl
+seam: go-test: repair failed Go test prerequisite
+gate: repair failed prerequisite: Command '['/Users/adamjackson/Projects/work/scout-semgrep/.tools/venv/bin/python', '/Users/adamjackson/Projects/work/scout-semgrep/scripts/gate/tests.py', 'full', '--']' returned non-zero exit status 1.
+
+exit=1
