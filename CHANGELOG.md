@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Check the whole maintained repository at commit, including unstaged and untracked inputs and empty indexes, while preserving partially staged bytes and alternate indexes. Reject escaping source symlinks, run every fast-tier package and checker boundary suite, select all seam packages for unknown ownership, and run strict mypy with normal import following locally and in CI.
 - Consolidate current status, outstanding plan tasks and resume routing in `docs/HANDOFF.md`; completed phase evidence remains pinned in git history.
 - Enforce the Gitleaks rule-pack label's binary version pin and explain mismatched secrets activation versions in readiness output (ADR-011); exact activation matching and blocking eligibility are unchanged.
 - Add ADR-012 schema 14 shadow persistence: immutable scoped PR attempts, finding/accounting links, policy frontiers, gaps, triage and import inputs. Writable schema 13 upgrades preserve unpublished history; read-only schema 13 opens require a writable upgrade. Remove the unauthenticated mutable triage API; legacy event export bytes remain unchanged. Collection, authorization, manifest v2 and readiness evaluation are not enabled by this storage change.

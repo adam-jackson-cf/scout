@@ -7,6 +7,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from inventory import repository_files
+
 ROOT = Path(__file__).resolve().parents[2]
 EXCLUDED_ROOTS = ("evaluation/", "third_party/", ".tools/")
 
@@ -27,28 +29,29 @@ def run(argv: list[str], *, capture: bool = False) -> subprocess.CompletedProces
     )
 
 
-def tracked() -> list[str]:
-    output = run(["git", "ls-files", "-z", "*.py"], capture=True).stdout
-    return [p for p in output.split("\0") if p]
-
-
 def tool(name: str, *args: str) -> int:
     return run([str(ROOT / ".tools/bin" / name), *args]).returncode
 
 
 def main() -> int:
-    mode, paths = sys.argv[1], sys.argv[2:]
+    mode = sys.argv[1]
     if mode not in {"full", "commit"}:
         raise ValueError("unknown mode: " + mode)
-    files = maintained(tracked() if mode == "full" else paths)
+    files = maintained(repository_files())
     if not files:
         return 0
     failed = tool("ruff", "check", "--config", "ruff.toml", *files)
     failed |= tool("ruff", "format", "--config", "ruff.toml", "--check", *files)
-    if mode == "full":
-        failed |= tool(
-            "mypy", "--config-file", "mypy.ini", "--explicit-package-bases", *files
-        )
+    for root in ("scripts/gate/", "internal/association/testdata/gen/"):
+        targets = [name for name in files if name.startswith(root)]
+        if targets:
+            failed |= tool(
+                "mypy",
+                "--config-file",
+                "mypy.ini",
+                "--explicit-package-bases",
+                *targets,
+            )
     return int(failed != 0)
 
 
