@@ -1,6 +1,6 @@
 # Scout features
 
-One document per top user-facing feature of the `scout` CLI. Each document says what the feature delivers, how a user reaches it, how to drive it from this repository with `go run ./cmd/scout`, and which outcome tests or scenario tests prove it.
+One document per top user-facing feature of the `scout` CLI or contributor tooling. Each document says what the feature delivers, how a user reaches it, how to drive it from this repository, and which outcome tests or scenario tests prove it.
 
 This is the product's own feature documentation. It is separate from the feature map Scout builds for the repositories it scans (Clawpatch features and areas, see [lanes.md](../references/lanes.md)).
 
@@ -11,5 +11,6 @@ This is the product's own feature documentation. It is separate from the feature
 | [Onboarding policy](onboarding-policy.md)               | `init`                                               | [init_test.go](../../cmd/scout/init_test.go)                                                                                     |
 | [Shared state baseline](shared-state-baseline.md)       | `export`, `import`, `state publish`, `state restore` | [state_cmds_test.go](../../cmd/scout/state_cmds_test.go)                                                                         |
 | [Code-structure signals](code-structure-signals.md)     | `signals`                                            | [signals_test.go](../../cmd/scout/signals_test.go)                                                                               |
+| [Repository gate](repository-gate.md)                   | `bash scripts/gate.sh`                               | [test_inventory.py](../../scripts/gate/test_inventory.py)                                                                        |
 
 When you add or change user-facing behaviour, update its document here and link the outcome test that proves it. A new feature gets its own document with the same four sections.

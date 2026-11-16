@@ -11,11 +11,14 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
 from typing import Any
+
+from inventory import excluded, repository_files
 
 ROOT = Path.cwd()
 POLICY = ROOT / "scripts/gate/structure.json"
@@ -41,11 +44,6 @@ def run(args: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
 
 def git(*args: str) -> str:
     return run(["git", *args], capture_output=True, env=dict(os.environ)).stdout
-
-
-def paths() -> list[str]:
-    output = git("ls-files", "-z")
-    return [p for p in output.split("\0") if p]
 
 
 def imports(files: list[str]) -> list[dict[str, Any]]:
@@ -89,9 +87,7 @@ def relative_path(name: str) -> str | None:
 
 
 def excluded_source(name: str) -> bool:
-    return name.startswith("evaluation/") or bool(
-        {".tools", ".git", "third_party"} & set(Path(name).parts)
-    )
+    return excluded(name)
 
 
 def path_check(files: list[str], policy: dict[str, Any]) -> None:
@@ -157,10 +153,23 @@ def materialize(destination: Path) -> None:
     )
 
 
-def snapshot_gate(files: list[str]) -> None:
+def snapshot_gate(files: list[str], inventory: list[str]) -> None:
     with tempfile.TemporaryDirectory(prefix="scout-gate-snapshot-") as tmp:
         destination = Path(tmp) / "checkout"
         materialize(destination)
+        # Preserve staged bytes, overlay all other maintained working-tree inputs.
+        staged = set(files)
+        for name in inventory:
+            if name in staged:
+                continue
+            target = destination / name
+            if not (ROOT / name).is_file():
+                target.unlink(missing_ok=True)
+                continue
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if target.is_symlink():
+                target.unlink()
+            shutil.copy2(ROOT / name, target)
         environment = git_environment()
         environment["SCOUT_GATE_SNAPSHOT"] = "1"
         environment["SCOUT_GATE_PATHS_STDIN"] = "1"
@@ -174,7 +183,7 @@ def snapshot_gate(files: list[str]) -> None:
 
 
 def source_checks(files: list[str], mode: str, policy: dict[str, Any]) -> None:
-    # A deleted path has no placement to check; the snapshot holds only staged files.
+    # Deleted paths are inventory entries, but never checker inputs.
     path_check([p for p in files if Path(p).exists()], policy)
     gofiles = [
         p
@@ -190,25 +199,11 @@ def source_checks(files: list[str], mode: str, policy: dict[str, Any]) -> None:
         sys.executable,
         "scripts/gate/python.py",
         "commit" if mode == "commit" else "full",
-        *(
-            [p for p in files if p.endswith(".py") and not excluded_source(p)]
-            if mode == "commit"
-            else []
-        ),
     ])
     run([
         sys.executable,
         "scripts/gate/infrastructure.py",
         mode,
-        *(
-            [
-                p
-                for p in files
-                if Path(p).suffix in {".md", ".yml", ".yaml"} and not excluded_source(p)
-            ]
-            if mode == "commit"
-            else []
-        ),
     ])
 
 
@@ -220,8 +215,7 @@ def commit_gate() -> None:
         ).split("\0")
         if p
     ]
-    if files:
-        snapshot_gate(files)
+    snapshot_gate(files, repository_files())
     run(
         ["gitleaks", "git", "--pre-commit", "--staged", "--no-banner", "--redact", "."],
         env=dict(os.environ),
@@ -244,15 +238,31 @@ def main() -> bool:
     elif mode == "commit" and not os.environ.get("SCOUT_GATE_SNAPSHOT"):
         commit_gate()
     else:
-        files = selected_paths() if mode == "commit" else paths()
+        files = repository_files()
         source_checks(files, mode, policy)
+        if ERRORS:
+            for message in ERRORS:
+                print(message)
+            return True
         run([
             sys.executable,
             str(Path(__file__).resolve().parent / "tests.py"),
             "full" if mode == "ci" else mode,
             "--",
-            *(files if mode == "commit" else []),
+            *(selected_paths() if mode == "commit" else []),
         ])
+        checker_tests = [
+            name
+            for name in files
+            if name.startswith("scripts/gate/test_") and name.endswith(".py")
+        ]
+        checker_environment = {
+            key: value
+            for key, value in git_environment().items()
+            if not key.startswith("SCOUT_GATE_")
+        }
+        for name in checker_tests:
+            run([sys.executable, "-B", name], env=checker_environment)
         if mode == "ci":
             run(["go", "build", "./..."])
             run(["go", "vet", "./..."])

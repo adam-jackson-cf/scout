@@ -9,6 +9,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from inventory import repository_files
+
 ROOT = Path.cwd()
 ERRORS: list[str] = []
 GOVERNED = {
@@ -185,11 +187,7 @@ def main() -> bool:
     mode = sys.argv[1]
     parity(ROOT)
     runner(ROOT)
-    files = (
-        sys.argv[2:]
-        if mode == "commit"
-        else run(["git", "ls-files", "-z"], capture=True).stdout.split("\0")
-    )
+    files = repository_files()
     prettier(files, ROOT)
     if mode == "ci":
         audit(["govulncheck", "-C", "cmd/scout", "-scan=module"])

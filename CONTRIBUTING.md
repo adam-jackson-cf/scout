@@ -104,11 +104,14 @@ The gate's checks live in `scripts/gate/`:
   (`layering`) against `scripts/gate/structure.json`. `imports.go` reads each
   Go file's imports for the `layering` check.
 - `tests.py` runs the Go test tiers declared in `scripts/gate/test-tiers.json`:
-  `fast` packages on every commit and in CI, `seam` packages in CI and on commits
-  that touch them. Every package with tests must declare a tier. The fast tier
-  enforces the declared coverage floor.
-- `python.py` runs pinned Ruff (lint and format check) over maintained Python,
-  and mypy in CI.
+  `fast` packages on every commit (even with an empty index) and in CI. Commits
+  select affected `seam` packages; unknown ownership selects all seam packages.
+  Every package with tests must declare a tier. The fast tier enforces the
+  declared coverage floor. Both modes also run every `scripts/gate/test_*.py`
+  checker boundary suite.
+- `python.py` runs pinned Ruff (lint and format check) and strict mypy over all
+  maintained Python in both modes, including gate scripts and the association
+  fixture generator. Mypy follows imports normally.
 - `infrastructure.py` checks toolchain pin parity (`toolchain-pin`,
   `tool-inventory`, `install-guidance`), the CI workflow (`ci-parity`), Prettier
   formatting of maintained Markdown/YAML (`prettier-pin`, `prettier-format`),
@@ -116,8 +119,15 @@ The gate's checks live in `scripts/gate/`:
 
 Each finding prints as `path: rule: fix`.
 
+Commit checks enumerate tracked and non-ignored untracked files once per checker
+through the shared `scripts/gate/inventory.py`, without walking excluded trees.
+Static checks cover the whole inventory, including unstaged changes and an empty
+index. Escaping source symlinks are rejected; `.tools`, vendor and frozen-study
+trees are not source inputs.
+
 The pre-commit hook transfers the staged index in bulk into an independent shared
-clone, so partially staged files are checked as committed, not as edited. Secret
+clone and overlays other working-tree inputs. Partially staged files are checked
+as committed, not as edited, without modifying local edits. Secret
 scanning uses the original staged index, including Git's alternate index. Deleted
 files do not become formatter inputs. Every snapshot has its own Git directory,
 index, refs and config, and checker/test subprocesses receive no inherited
@@ -125,7 +135,7 @@ index, refs and config, and checker/test subprocesses receive no inherited
 complete fast and seam suite. Failed tests print concise failure blocks and a
 `go test JSON:` path to the full temporary JSON log.
 
-Prettier 3.6.2 checks maintained tracked Markdown/YAML. All `evaluation/**`,
+Prettier 3.6.2 checks maintained tracked and non-ignored untracked Markdown/YAML. All `evaluation/**`,
 `docs/adrs/**`, scanner rule assets under
 `internal/analyzers/rules/**`, governed design and ledger documents, third-party
 code, instruction/migration files and `.codegraph` directories remain excluded.

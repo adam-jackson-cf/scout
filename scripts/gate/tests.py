@@ -10,6 +10,8 @@ import time
 from pathlib import Path
 from typing import Any
 
+from inventory import repository_files
+
 
 def run(
     argv: list[str], *, check: bool = True, timeout: int | None = None
@@ -69,9 +71,11 @@ def coverage_errors(profile: str, policy: dict[str, Any]) -> list[str]:
 
 def tested_packages() -> list[str]:
     return sorted({
-        str(path.parent)
-        for owner in ("cmd", "internal")
-        for path in Path(owner).rglob("*_test.go")
+        str(Path(name).parent)
+        for name in repository_files()
+        if name.startswith(("cmd/", "internal/"))
+        and name.endswith("_test.go")
+        and Path(name).is_file()
     })
 
 
@@ -182,6 +186,13 @@ def main() -> bool:
         (Path(__file__).resolve().parent / "test-tiers.json").read_text()
     )
     errors = tier_errors(tested_packages(), policy)
+    unknown_owner = any(
+        not any(
+            path == owner or path.startswith(owner + "/")
+            for owner in policy["packages"]
+        )
+        for path in args.paths
+    )
     if not errors:
         for tier in ["fast", "seam"]:
             packages = [
@@ -191,6 +202,7 @@ def main() -> bool:
                 and (
                     args.mode == "full"
                     or tier == "fast"
+                    or unknown_owner
                     or affected_package(name, args.paths)
                 )
             ]
