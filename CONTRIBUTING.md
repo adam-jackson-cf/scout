@@ -27,7 +27,7 @@ shasum -a 256 docs/scout-design.html
 ```
 
 The digest must match the SHA-256 of `docs/scout-design.html` signed in the zero-issue final round of the latest ADR that changed the design (now `docs/adrs/2026-11-06-design-restructure/`).
-For what to work on, see `docs/plans/2026-11-06-remaining-work.md`.
+For what to work on, see `docs/HANDOFF.md`.
 
 ## Accounts, external tools and fixture data
 
