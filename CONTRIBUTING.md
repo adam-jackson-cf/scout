@@ -99,10 +99,21 @@ warning-only behavior when the probe fails.
 
 The gate's checks live in `scripts/gate/`:
 
-- `run.py` runs the modes. The `path` mode checks file placement
-  (`owned-path`, `test-placement`) and package dependency direction
-  (`layering`) against `scripts/gate/structure.json`. `imports.go` reads each
-  Go file's imports for the `layering` check.
+- `run.py` checks every maintained path against `scripts/gate/structure.json`.
+  The `path` mode reports structure, naming and test placement using the same
+  policy as commit and CI. Findings give the corrected name or owner destination.
+  Python modules and symbols, Go files and declarations, shell script names and
+  asset names follow explicit patterns. Go imports, local Python imports and
+  shell source edges must follow declared dependency directions; both ends must
+  have an owner mapping. `imports.go` parses Go packages, declarations and imports.
+  Grab-bag folders are refused. Go tests live beside their package with `_test.go`
+  names and a valid `fast` or `seam` mapping in `test-tiers.json`; gate Python
+  boundary tests use `test_*.py` and the seam owner in `structure.json`.
+  Tests are named for behaviour, without ticket, version or date tokens.
+  Fixtures live in their owner's `testdata`; shared state-test support lives in
+  `internal/state/statetest`. Existing runtime assets and catalogue layouts have
+  reasons in the policy. Signed `docs/adrs/**` history, frozen studies and
+  third-party sources keep their original names and are never renamed by checks.
 - `tests.py` runs the Go test tiers declared in `scripts/gate/test-tiers.json`:
   `fast` packages on every commit (even with an empty index) and in CI. Commits
   select affected `seam` packages; unknown ownership selects all seam packages.

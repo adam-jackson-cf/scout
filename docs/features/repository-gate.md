@@ -7,6 +7,12 @@
 - **Staged-byte protection.** Partially staged sources are checked as committed without changing working-tree edits. Deleted sources are not formatter inputs, and an alternate Git index retains its staged bytes.
 - **Source containment.** Tracked and untracked source symlinks targeting files outside the repository are rejected, even when the target exists and is otherwise valid source. The external pinned tool environment is not a source input.
 - **Maintained Python typing.** Commit checks reject type errors in both `scripts/gate` and `internal/association/testdata/gen`. Normal mypy import following checks an imported maintained dependency even when only its caller is an explicit target.
+- **Dependency direction.** Unmapped Go dependency targets and forbidden Python gate-module edges are rejected with the source file, edge and repair. Proof: [test_structure_naming.py](../../scripts/gate/test_structure_naming.py).
+- **Folder placement.** Unmapped locations and grab-bag folder names are rejected with a concrete owner destination. Proof: [test_structure_naming.py](../../scripts/gate/test_structure_naming.py).
+- **Path and symbol naming.** Changed paths and Python symbols follow declared conventions; diagnostics give the corrected name. Proof: [test_structure_naming.py](../../scripts/gate/test_structure_naming.py).
+- **Test-file names.** Tests use their owner's naming pattern without ticket, version or date tokens. Proof: [test_structure_naming.py](../../scripts/gate/test_structure_naming.py).
+- **Test ownership and layout.** Every test has a valid owner and tier; fixtures and shared support stay in their declared layout. Findings name the file and destination or tier-policy repair. Proof: [test_structure_naming.py](../../scripts/gate/test_structure_naming.py).
+- **Changed-path diagnostics.** The `path` command checks structure, naming and test placement, printing one actionable finding per line. Conforming paths and excluded frozen history remain accepted. Proof: [test_structure_naming.py](../../scripts/gate/test_structure_naming.py).
 
 Proved by [test_inventory.py](../../scripts/gate/test_inventory.py): temporary Git repositories exercise the real gate and pinned checkers, with conforming, deletion, partial-staging and alternate-index acceptance controls alongside the refusal canaries.
 
@@ -21,6 +27,7 @@ Proved by [test_inventory.py](../../scripts/gate/test_inventory.py): temporary G
 ```bash
 bash scripts/gate.sh commit
 bash scripts/gate.sh ci
+bash scripts/gate.sh path scripts/gate/run.py internal/domain/types_test.go
 ```
 
 Run the repository-gate boundary canaries independently, without test-result caching:
@@ -28,6 +35,7 @@ Run the repository-gate boundary canaries independently, without test-result cac
 ```bash
 source .tools/activate
 .tools/venv/bin/python -B scripts/gate/test_inventory.py
+.tools/venv/bin/python -B scripts/gate/test_structure_naming.py
 ```
 
 Each test creates and removes its own fixture repository. Subprocesses have bounded timeouts; the fixtures disable Go dependency and toolchain downloads and use the installed tools, not network services.
