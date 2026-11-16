@@ -122,7 +122,14 @@ The gate's checks live in `scripts/gate/`:
   checker boundary suite.
 - `python.py` runs pinned Ruff (lint and format check) and strict mypy over all
   maintained Python in both modes, including gate scripts and the association
-  fixture generator. Mypy follows imports normally.
+  fixture generator. Mypy follows imports normally. `structure.json`'s `python`
+  section declares maintained roots/packages, class limits, canonical test groups,
+  process wrappers, dynamic-import adapters and analyzer ownership/seams. The gate
+  rejects package/import-root drift, oversized classes, deeply nested loops and
+  excessive architectural fanout. Every mypy module override needs evidence in
+  `mypy_overrides`; prefer published stubs or `follow_untyped_imports`.
+  New Ruff ignores and `noqa` comments require an exact suppression key and reason
+  in `ruff_approvals`, compared with the target branch (or fixture parent).
 - `infrastructure.py` checks toolchain pin parity (`toolchain-pin`,
   `tool-inventory`, `install-guidance`), the CI workflow (`ci-parity`), Prettier
   formatting of maintained Markdown/YAML (`prettier-pin`, `prettier-format`),

@@ -13,6 +13,14 @@
 - **Test-file names.** Tests use their owner's naming pattern without ticket, version or date tokens. Proof: [test_structure_naming.py](../../scripts/gate/test_structure_naming.py).
 - **Test ownership and layout.** Every test has a valid owner and tier; fixtures and shared support stay in their declared layout. Findings name the file and destination or tier-policy repair. Proof: [test_structure_naming.py](../../scripts/gate/test_structure_naming.py).
 - **Changed-path diagnostics.** The `path` command checks structure, naming and test placement, printing one actionable finding per line. Conforming paths and excluded frozen history remain accepted. Proof: [test_structure_naming.py](../../scripts/gate/test_structure_naming.py).
+- **Python ownership and naming (PYQ100–107).** Maintained roots, approved kebab-case commands, canonical test groups, restricted name parts, snake-case packages/modules and kebab-case skill names have refusal canaries. Proof: [test_python_policy.py](../../scripts/gate/test_python_policy.py).
+- **Python class and collaborator contracts (PYQ200–203, PYQ210–211, PYQ220–221, PYQ230–231).** Canaries cover the 700-line limit, configured public-method cap, eight constructor parameters, twelve attributes, approved analyzer bases and entrypoints, process wrappers, dynamic-import adapters, named callable aliases and concrete collaborator types. Every refusal must identify the file, rule and repair. Proof: [test_python_policy.py](../../scripts/gate/test_python_policy.py).
+- **Python scalability (PYS250–253).** Canaries cover loop/comprehension nesting above two, analyzer filesystem/process/environment effects outside approved seams, and missing ownership markers. Proof: [test_python_policy.py](../../scripts/gate/test_python_policy.py).
+- **Python architectural fanout.** Distinct non-standard-library imports are capped at ten, or three above 800 non-comment lines; boundary controls preserve standard-library and duplicate-import handling. Proof: [test_python_policy.py](../../scripts/gate/test_python_policy.py).
+- **Python typing policy.** New unchecked maintained packages, package-list/import-root drift, global mypy exceptions and unjustified module overrides have independent refusal canaries. Proof: [test_python_policy.py](../../scripts/gate/test_python_policy.py).
+- **Ruff suppression approval.** New inline `noqa` and `per-file-ignores` entries require approval rather than silently weakening checks. Proof: [test_python_policy.py](../../scripts/gate/test_python_policy.py).
+
+The Python policy checks run over the whole maintained inventory at commit and in CI; conforming boundary controls remain accepted.
 
 Proved by [test_inventory.py](../../scripts/gate/test_inventory.py): temporary Git repositories exercise the real gate and pinned checkers, with conforming, deletion, partial-staging and alternate-index acceptance controls alongside the refusal canaries.
 
@@ -36,6 +44,7 @@ Run the repository-gate boundary canaries independently, without test-result cac
 source .tools/activate
 .tools/venv/bin/python -B scripts/gate/test_inventory.py
 .tools/venv/bin/python -B scripts/gate/test_structure_naming.py
+.tools/venv/bin/python -B scripts/gate/test_python_policy.py
 ```
 
 Each test creates and removes its own fixture repository. Subprocesses have bounded timeouts; the fixtures disable Go dependency and toolchain downloads and use the installed tools, not network services.
