@@ -231,7 +231,6 @@ class StructureNamingCanaries(unittest.TestCase):
         # Historical names are evidence, not maintained naming or placement inputs.
         paths = (
             "evaluation/frozen-v2/helpers/test_issue42_20261116.py",
-            "docs/adrs/2026-11-16-topic/round-1.md",
             "third_party/dependency/helpers/BadName.py",
         )
         for path in paths:

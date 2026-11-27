@@ -334,7 +334,7 @@ def path_check(files: list[str], policy: dict[str, Any]) -> None:
         if relative is None:
             continue
         name = relative
-        if excluded_source(name) or any(name.startswith(p) for p in policy["history"]):
+        if excluded_source(name):
             continue
         if not layout_check(name, policy):
             continue

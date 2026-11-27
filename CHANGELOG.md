@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Retire Scout's ADR records and the council design-review rule (owner direction, R-111). `docs/adrs/` is deleted; the records stay readable at commit `57e14923`. `AGENTS.md` replaces its Design rules with one rule: the running agent makes design choices and surfaces out-of-scope items and changes of approach to the owner. `docs/scout-design.html` drops Appendix B and the per-requirement ADR column; requirement text and product behaviour are unchanged. Experiment rules (council sign-off, preregistration, frozen studies) are unchanged. The repository gate no longer exempts `docs/adrs/` from formatting and naming checks.
 - Upgrade Semgrep to 1.182.0, the last release supporting Intel Macs, with an upstream-compatible hash lock (setuptools 84.1.0 and protobuf 6.33.6); retain OpenTelemetry API 1.37.0 pending its separately tracked owner exception. Permit only `/dev/null` writes alongside private-state writes in the macOS scanner sandbox, matching Linux null-sink access. Compatibility evidence: `evaluation/semgrep-1.182-compat/RESULTS.md`.
 - Enforce native Python ownership, class/collaborator contracts, analyzer seams, loop depth and architectural fanout across maintained sources. Reject mypy package drift and undocumented overrides, and require explicit approval for new Ruff suppressions.
 - Enforce repository ownership, dependency directions, naming and test/fixture placement from the native structure policy. Changed-path checks give concrete corrected names and destinations; immutable decision history keeps its original paths.

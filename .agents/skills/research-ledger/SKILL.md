@@ -19,5 +19,5 @@ description: "USE WHEN a source first justifies a Scout decision or hypothesis a
 
 - Append only: never edit or delete a row; correct an entry by adding a row that names the `R-NNN` it supersedes.
 - The link must resolve; record user direction as type `user` with the conversation date.
-- Cite `R-` IDs in experiment preregistrations and design changes.
+- Cite `R-` IDs in experiment preregistrations.
 - When the source forms a hypothesis, also record it in the hypothesis ledger named in the project's agent instructions.

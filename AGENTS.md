@@ -30,25 +30,13 @@ codebase inertia (H*, HA*, HQ*) are not run here: they belong to inertia-bench
 7. **Superseded studies are kept**, marked superseded at the top of their RESULTS.md with a link to
    the replacement and the reason.
 
-## Design rules
+## Design choices
 
-1. **Innovation council sign-off for design changes.** Any change to Scout's design must be reviewed
-   by the innovation council and signed off with zero issues, iterating until true, before it is
-   adopted. The design is `docs/scout-design.html` (overview, Appendix A requirements, Appendix B
-   ADRs) and the documents it governs: the `docs/adrs/*/ADR.md` summaries, the Met/Fixed status and
-   Design-level rows of `docs/jev-adapter-audit.md`, and `docs/evidence/study-export.md` once it
-   exists.
-2. **Each design change is an ADR** (architecture decision record) in
-   `docs/adrs/<YYYY-MM-DD>-<topic>/`: an `ADR.md` summary (ID `ADR-NNN`, status, decision, what
-   informed it, what it changes, review outcome and signed digests) plus the council rounds as
-   `round-<N>.md`, with the same sign-off requirements as experiments. An `ADR.md` that is itself
-   among the signed files names the folder's final round for the review outcome and digests instead
-   of containing them. IDs are sequential and never reused. An accepted ADR is never edited, except
-   its status line, which the commit adopting a later ADR updates to name the ADRs that supersede or
-   amend it.
-3. Design changes driven by experiment results may only cite experiments that were signed off and
-   run under the experiment rules above or under inertia-bench's rules. Studies run before
-   2026-10-22 that were signed off here (E1b-v2) stay citable (grandfathered).
+1. **The running agent makes design choices.** No ADR record or design council review is required to
+   change Scout's design (`docs/scout-design.html`) or the documents that follow it. The agent surfaces
+   to the owner, before or when it makes them, any item outside the agreed scope and any change to the
+   current approach. Retired decision records stay readable at
+   [`57e14923`](https://github.com/adam-jackson-cf/scout/tree/57e14923/docs/adrs/).
 
 ## Ledgers
 
@@ -61,8 +49,7 @@ codebase inertia (H*, HA*, HQ*) are not run here: they belong to inertia-bench
    in inertia-bench. Product hypotheses (HD*, and any tied to X1–X6, X9–X11) stay live here: record
    state, tests and outcome whenever one is proposed, preregistered, tested, revised or retired.
    Skill: `.agents/skills/hypothesis-ledger/`.
-3. Experiment preregistrations and design changes cite ledger IDs (`R-NNN`, `H-…`) for their sources
-   and hypotheses.
+3. Experiment preregistrations cite ledger IDs (`R-NNN`, `H-…`) for their sources and hypotheses.
 
 ## General
 
@@ -78,7 +65,7 @@ codebase inertia (H*, HA*, HQ*) are not run here: they belong to inertia-bench
 - **Jev labelling.** Labels for any Jev question come from the agent protocol: a blind pass by two
   independent sessions (one `claude -p`, one `codex exec`) following a frozen guide, plus an adjudicating
   session where they disagree. The user does not review each case (user decision 2026-10-23,
-  R-039, ADR-003); these labels stay provenance `agent_reviewed`, never `human`. Labels are
+  R-039); these labels stay provenance `agent_reviewed`, never `human`. Labels are
   appended, never edited; no Jev-versus-label comparison runs outside a signed-off preregistration.
 - Never print, log or commit secrets; use presence checks only.
 - **Model use.** OpenRouter is used only for TypeSafe Jev. Every other model call (Scout lanes, scripts,

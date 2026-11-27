@@ -157,7 +157,6 @@ def prettier(files: list[str], root: Path) -> None:
         and p not in GOVERNED
         and not p.startswith((
             "evaluation/",
-            "docs/adrs/",
             "internal/analyzers/rules/",
             "third_party/",
             ".codegraph/",

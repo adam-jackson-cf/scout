@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// ADR-011 implementation contract: add
+// Gitleaks activation-version implementation contract: add
 //
 //	func (p Policy) ActivationDiagnostic(checkID, ruleVersion string) string
 //
@@ -57,7 +57,7 @@ blocking:
 			}
 			diagnoser, ok := any(p).(adr011ActivationDiagnoser)
 			if !ok {
-				t.Fatal("missing ADR-011 activation diagnostic: policy.Policy must implement ActivationDiagnostic(checkID, ruleVersion string) string for readiness output")
+				t.Fatal("missing Gitleaks activation-version diagnostic: policy.Policy must implement ActivationDiagnostic(checkID, ruleVersion string) string for readiness output")
 			}
 			diagnostic := diagnoser.ActivationDiagnostic(checkID, fullVersion)
 			if tc.want == Active {
