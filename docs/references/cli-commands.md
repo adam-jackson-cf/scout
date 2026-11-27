@@ -117,9 +117,9 @@ infisical run --projectId 052b4c81-b9cc-4694-9019-d131ec3817cc --env dev --silen
   --question merge.which_area --units "$ORDERFLIP_UNITS" --json
 ```
 
-## Shadow readiness (ADR-012)
+## Shadow readiness
 
-This read-only interface implements [ADR-012](../adrs/2026-11-08-shadow-readiness-inputs/ADR.md), independently of the unchanged lane/tool readiness and `--matrix` modes:
+This read-only interface implements the [shadow-readiness decision record](https://github.com/adam-jackson-cf/scout/blob/57e14923/docs/adrs/2026-11-08-shadow-readiness-inputs/ADR.md) (retired; kept at `57e14923`), independently of the unchanged lane/tool readiness and `--matrix` modes:
 
 `scout readiness --shadow --check <id> [--version <exact>] [--as-of <RFC3339>] [--encoding scout.shadow/v1] [--json]`
 
@@ -133,4 +133,4 @@ Apply REQ-78’s lineage and history rules: lineage is the authenticated trusted
 
 as_of≤C evaluates even when reader clock lags: computed ready/not is exit 0 unless current certification is refused under REQ-78, then unmeasured/exit 2 with certification=refused. Unmeasured/no store/no complete containing interval and all evidence refusals (unproven completeness/time, unverifiable attempt order, scoped pending/post-C inputs) exit 2. C<as_of≤reader now exits 2; as_of>max(C,reader now) exits 3. Invalid/unknown explicit version/storage/unsupported schema or canonical encoding exits 3 (v13 requires writable upgrade). Historical status cannot supply activation evidence, even with the same digest. Missing/local/legacy evidence never becomes computed zero.
 
-The implementation PR chooses collection and triage commands. Any triage path must authorize the authenticated original/executing author against the current protected default-tip maintainers/CODEOWNERS at publication, reject non-default/revoked/cross-actor execution and make each logical action idempotent. No workflow_dispatch entry or shadow writer/scan command is adopted here. [CI evidence invariants](ci-integration.md#planned-readiness-evidence-adr-012-implementation-pending) bound that later wiring. Requirement-changing wiring needs its own adopted zero-issue ADR before merge under REQ-161; wiring within existing requirements needs none.
+The implementation PR chooses collection and triage commands. Any triage path must authorize the authenticated original/executing author against the current protected default-tip maintainers/CODEOWNERS at publication, reject non-default/revoked/cross-actor execution and make each logical action idempotent. No workflow_dispatch entry or shadow writer/scan command is adopted here. [CI evidence invariants](ci-integration.md#planned-readiness-evidence-implementation-pending) bound that later wiring. Wiring that changes requirements is a change to the current approach and is surfaced to the owner before merge (REQ-161).

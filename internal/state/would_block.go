@@ -45,7 +45,7 @@ func (s *Store) RecordWouldBlock(ctx context.Context, row domain.WouldBlock) err
 	})
 }
 
-// ListLegacyWouldBlock exposes only the pre-ADR-012 compatibility representation
+// ListLegacyWouldBlock exposes only the pre-schema-14 compatibility representation
 // used by the v1 export codec. Its mutable triage fields are never CI authority;
 // authorized shadow consumers must use ReadShadowLedger instead.
 func (s *Store) ListLegacyWouldBlock(ctx context.Context) ([]domain.WouldBlock, error) {

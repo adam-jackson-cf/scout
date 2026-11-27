@@ -19,14 +19,12 @@ Tool pins live only in `toolchain/versions.env`; when changing an allowed develo
 tool pin, update its package metadata and run `scripts/bootstrap-tools.sh --relock`.
 Scanner and Clawpatch upgrades require their compatibility review.
 
-Build and check the design digest with the toolchain activated:
+Build and test with the toolchain activated:
 
 ```sh
 go build ./... && go vet ./... && go test -count=1 ./...
-shasum -a 256 docs/scout-design.html
 ```
 
-The digest must match the SHA-256 of `docs/scout-design.html` signed in the zero-issue final round of the latest ADR that changed the design (now `docs/adrs/2026-11-06-design-restructure/`).
 For what to work on, see `docs/HANDOFF.md`.
 
 ## Accounts, external tools and fixture data
@@ -112,8 +110,8 @@ The gate's checks live in `scripts/gate/`:
   Tests are named for behaviour, without ticket, version or date tokens.
   Fixtures live in their owner's `testdata`; shared state-test support lives in
   `internal/state/statetest`. Existing runtime assets and catalogue layouts have
-  reasons in the policy. Signed `docs/adrs/**` history, frozen studies and
-  third-party sources keep their original names and are never renamed by checks.
+  reasons in the policy. Frozen studies and third-party sources keep their
+  original names and are never renamed by checks.
 - `tests.py` runs the Go test tiers declared in `scripts/gate/test-tiers.json`:
   `fast` packages on every commit (even with an empty index) and in CI. Commits
   select affected `seam` packages; unknown ownership selects all seam packages.
@@ -154,8 +152,7 @@ complete fast and seam suite. Failed tests print concise failure blocks and a
 `go test JSON:` path to the full temporary JSON log.
 
 Prettier 3.6.2 checks maintained tracked and non-ignored untracked Markdown/YAML. All `evaluation/**`,
-`docs/adrs/**`, scanner rule assets under
-`internal/analyzers/rules/**`, governed design and ledger documents, third-party
+scanner rule assets under `internal/analyzers/rules/**`, the design and ledger documents, third-party
 code, instruction/migration files and `.codegraph` directories remain excluded.
 Markdown fixtures under `internal/**/testdata` are also excluded. Checks never run
 frozen studies. The dependency audit is strict: unavailable tooling/network and

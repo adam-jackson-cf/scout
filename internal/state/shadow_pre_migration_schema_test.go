@@ -1,6 +1,6 @@
 package state
 
-// adr012V13DDL is the genuine schema at e2b94e3c, captured before ADR-012.
+// adr012V13DDL is the genuine schema at e2b94e3c, captured before schema 14.
 // It deliberately does not reference mutable current-schema declarations.
 var adr012V13DDL = []string{
 	`CREATE TABLE metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL)`,

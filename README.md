@@ -76,4 +76,4 @@ Scout runs on pull requests, default-branch pushes, nightly runs and locally. It
 - [docs/references/policy-file.md](docs/references/policy-file.md): the keys in `.scout/policy.yaml` and what `scout init` writes.
 - [docs/references/ci-integration.md](docs/references/ci-integration.md): wiring the reusable guardian workflows into a repository.
 - [docs/references/environment-variables.md](docs/references/environment-variables.md): the environment variables that Scout and its toolchain read.
-- `docs/scout-design.html`: the governed design (ADR-009); `docs/adrs/README.md`: the decision index. `docs/HANDOFF.md`: current state, remaining work and resume route. `AGENTS.md`: project rules, including council sign-off for any design change or experiment.
+- `docs/scout-design.html`: the design (overview and Appendix A requirements). `docs/HANDOFF.md`: current state, remaining work and resume route. `AGENTS.md`: project rules, including council sign-off for experiments and how design choices are surfaced to the owner.

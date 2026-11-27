@@ -20,7 +20,8 @@ import (
 // GitHub uses only authenticated REST responses. Run listing is deliberately
 // not an eligible-event ledger: GitHub cannot attest skipped/unstarted pushes
 // from it, so this adapter cannot yet establish a completeness frontier.
-// Production event capture and action transport require the wiring ADR.
+// Production event capture and action transport are not wired yet; adding
+// them changes the current approach and is surfaced to the owner (REQ-161).
 type GitHub struct {
 	Client                                           *http.Client
 	Endpoint, Repository, RepositoryID, RunID, Token string
