@@ -35,11 +35,11 @@ The upstream release range contains parser/matcher changes and the 1.168 switch 
 
 `go test -count=1 -v ./internal/eval` passes before and after (`raw/corpus-before.log`, `raw/corpus-after.log`). Both replay 9/9 true issues detected and 13/13 false positives unflagged. The live bundled-rule regression also passes both times, including its negative boundaries. This replay is recorded corpus evidence, not a fresh scan of the original remote repositories.
 
-The same single sample takes 5.64105337485671 seconds before and 1.4537107918877155 seconds after (wall clock, `raw/sample-summary.json`). These are one-shot local timings, not a benchmark or a general speed claim; caches/order/machine load are uncontrolled. Live corpus test times are recorded separately in the raw Go logs and are not a performance comparison.
+The same single sample takes 5.64105337485671 seconds before and 1.4537107918877155 seconds after (wall clock, `raw/sample-summary.json`). This is **provisional, n=1 per version**, with no interval, not a measured improvement or a benchmark; caches/order/machine load are uncontrolled. Live corpus test times are recorded separately in the raw Go logs and are not a performance comparison.
 
 ### Paired CLI scenario timing after the GitHub timeout
 
-At the owner's request, run `go test -count=1 -json -p 1 -timeout 600s ./cmd/scout` once per version, without competing test suites. The upgraded branch ran first; baseline ran in a detached `origin/main` worktree at `d1fdcf38` with its own freshly bootstrapped `.tools`, then that scratch worktree was removed. Both pass. Raw `pass` events are `raw/cli-timings-1.100.0.jsonl` and `raw/cli-timings-1.182.0.jsonl`; all matched test deltas are `raw/cli-timing-comparison.json`. These are single sequential local observations, not repeated or randomized measurements.
+At the owner's request, run `go test -count=1 -json -p 1 -timeout 600s ./cmd/scout` once per version, without competing test suites. The upgraded branch ran first; baseline ran in a detached `origin/main` worktree at `d1fdcf38` with its own freshly bootstrapped `.tools`, then that scratch worktree was removed. Both pass. Raw `pass` events are `raw/cli-timings-1.100.0.jsonl` and `raw/cli-timings-1.182.0.jsonl`; all matched test deltas are `raw/cli-timing-comparison.json`. This comparison is **provisional, n=1 per version**, with no interval: single sequential local observations, not repeated or randomized measurements.
 
 | Package/scenario | 1.100.0 seconds | 1.182.0 seconds | Delta seconds |
 |---|---:|---:|---:|
@@ -52,7 +52,7 @@ At the owner's request, run `go test -count=1 -json -p 1 -timeout 600s ./cmd/sco
 | TestAssociationCLIOptionsPolicyAndPushRange | 2.50 | 3.18 | +0.68 |
 | TestModelCLILaneOptedInUsesPolicyProviderNotFirstOnPath | 5.78 | 5.95 | +0.17 |
 
-The final three rows are the largest top-level scenario increases; nested subtests are included in the JSON rather than double-counted here. The principal scanner scenarios improve in this pair. This does not reproduce a Semgrep per-invocation slowdown or establish why the Linux GitHub runs hit the existing 150-second package deadline. No invocation flags, tests or deadlines were changed on the basis of these timings. GitHub CI remains a separate acceptance requirement, not replaced by this local comparison.
+The final three rows are the largest observed top-level scenario increases; nested subtests are included in the JSON rather than double-counted here. The principal scanner scenarios have negative observed deltas in this one pair, not a measured improvement. The pair does not establish a performance change or explain why Linux GitHub runs exceeded the existing 150-second package deadline. No invocation flags, tests or deadlines were changed on the basis of these timings. The CI timeout is pass/fail evidence that the deadline was exceeded, not a performance conclusion; GitHub CI remains a separate acceptance requirement.
 
 ## Dependency outcome and remaining risk
 
@@ -80,3 +80,13 @@ The owner approved allowing writes to exactly `/dev/null` in the macOS profile: 
 The full `go test -count=1 ./...` log also includes the separately confirmed pre-existing X11 frontend absolute-path pin `KeyError`; its signed evidence is untouched. The owner scoped acceptance to the gate's packages plus `./cmd/scout ./internal/...`; `raw/go-test-supported.log` records that command after the null-sink fix. The original full-run log remains `raw/go-test-all.log`.
 
 An initial post-fix CI-gate attempt ran concurrently with the separate supported-package acceptance and hit the existing CLI package timeout (151.252 seconds recorded in `raw/gate-ci-concurrent-timeout.jsonl`). No assertion or timeout was changed. A subsequent gate invocation runs without the competing suite; its output is `raw/gate-ci.log`. These concurrent-run timings are not performance evidence.
+
+### Linux bubblewrap diagnostic
+
+The owner requested a Linux reproduction after GitHub exceeded the package deadline. An independent scratch clone on the NUC, outside `~/.omp`, uses its own bootstrap-installed tools and pinned Go 1.26.11. The host is Linux x86_64 (Omarchy), glibc 2.44 and bubblewrap 0.12.0, not the Ubuntu GitHub runner; identities and installation outputs are in `raw/linux-environment.txt`, `raw/linux-go-identity.txt` and `raw/linux-bootstrap.log`. An initial invocation without the explicit mise Go selection failed before testing and is retained separately.
+
+`go test -count=1 -json -p 1 -timeout 600s -run 'TestDiffGateScenario|TestDiffDelta' ./cmd/scout` passes both requested scenarios: DiffDelta 31.71 seconds, DiffGate 59.36 seconds, package 91.077 seconds (`raw/linux-cli-scenarios.jsonl`). These timings are **provisional, n=1**, with no interval or performance conclusion.
+
+A direct Semgrep YAML sample under the same bubblewrap boundary (`--die-with-parent`, `--unshare-net`, read-only `/`, private writable scanner state, read-only rules, `--unshare-pid`, private `/proc` and `/dev`, scrubbed environment with HOME/TMPDIR set to state) returns the expected findings exit 1, one finding, `errors:[]` and `paths.scanned:[\"sample.py\"]`. Its captured stderr reports a successful scan, without RPC, network or filesystem errors (`raw/linux-sandbox-sample*`). The observed whole-second duration is **provisional, n=1**, not a benchmark. This diagnostic does not reproduce a Linux sandbox hang and does not waive the GitHub deadline failure.
+
+A separate main-branch scratch clone with its own bootstrap-installed 1.100.0 tools also passes the same two scenarios. The sequential Linux comparison is **provisional, n=1 per arm**, without an interval or measured-improvement claim: baseline/upgraded DiffDelta 52.35/31.71 seconds, DiffGate 95.51/59.36 seconds and package 147.856/91.077 seconds. Raw baseline events, clone identity and all paired differences are `raw/linux-cli-baseline-scenarios.jsonl`, `raw/linux-baseline-identity.txt` and `raw/linux-scenario-comparison.json`. This host-specific single pair does not establish a performance change or explain the Ubuntu GitHub deadline failure.
