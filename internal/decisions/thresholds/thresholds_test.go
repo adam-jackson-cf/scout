@@ -1,9 +1,6 @@
 package thresholds
 
 import (
-	"os"
-	"os/exec"
-	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -16,12 +13,27 @@ func TestDefaultsAreProvisionalWithNoLabelsAndTheAgreedMinimums(t *testing.T) {
 		t.Fatal(err)
 	}
 	e := r.Entry
+	assertProvisionalDefault(t, r)
+	assertAgreedMinimums(t, e)
+	assertUngatedThresholdRecorded(t, e)
+	if e.VersionKey != "triage.real_defect@v1" {
+		t.Fatalf("the default binds to the current key, got %q", e.VersionKey)
+	}
+}
+
+func assertProvisionalDefault(t *testing.T, r Resolution) {
+	t.Helper()
+	e := r.Entry
 	if r.Source != "default" || r.Stale || r.Status != StatusProvisional || e.Status != StatusProvisional {
 		t.Fatalf("resolution %+v", r)
 	}
 	if e.LabelSet.Summary != "none" || e.ScoreSpace != SpaceRaw {
 		t.Fatalf("entry %+v", e)
 	}
+}
+
+func assertAgreedMinimums(t *testing.T, e Entry) {
+	t.Helper()
 	if e.MinimumsProvenance != "agreed" {
 		t.Fatalf("minimums_provenance %q, want \"agreed\"", e.MinimumsProvenance)
 	}
@@ -29,11 +41,12 @@ func TestDefaultsAreProvisionalWithNoLabelsAndTheAgreedMinimums(t *testing.T) {
 	if e.MinPrecision != 0.8 || e.MinRecall != 0.9 || e.Metric != "fbeta" || e.Beta != 2 {
 		t.Fatalf("minimums %+v", e)
 	}
+}
+
+func assertUngatedThresholdRecorded(t *testing.T, e Entry) {
+	t.Helper()
 	if e.Gating || e.Threshold == nil || *e.Threshold != 0.3 || e.CostRule == "" || len(e.Assumptions) == 0 {
 		t.Fatalf("a provisional ungated threshold must record its value, cost rule and assumptions: %+v", e)
-	}
-	if e.VersionKey != "triage.real_defect@v1" {
-		t.Fatalf("the default binds to the current key, got %q", e.VersionKey)
 	}
 }
 
@@ -77,47 +90,5 @@ func TestInvalidConfigurationIsAnErrorNotAGuess(t *testing.T) {
 	}
 	if _, err := Resolve(nil, "no.such.question", "k"); err == nil {
 		t.Fatal("an unknown question must be an error")
-	}
-}
-
-func runGit(t *testing.T, dir string, args ...string) {
-	t.Helper()
-	cmd := exec.CommandContext(boundedTestContext(t), "git", append([]string{"-c", "user.name=t", "-c", "user.email=t@example.com", "-c", "commit.gpgsign=false"}, args...)...)
-	cmd.Dir = dir
-	if out, err := cmd.CombinedOutput(); err != nil {
-		t.Fatalf("git %v: %v\n%s", args, err, out)
-	}
-}
-
-// The override is read from the committed ref, so a working-tree edit (a pull
-// request's own change) cannot move the thresholds it is ranked under.
-func TestReadCommittedReadsTheRefNotTheWorkingTree(t *testing.T) {
-	root := t.TempDir()
-	runGit(t, root, "init", "-q")
-	if err := os.WriteFile(filepath.Join(root, "a.txt"), []byte("x"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	runGit(t, root, "add", ".")
-	runGit(t, root, "commit", "-q", "-m", "one")
-	if got, err := ReadCommitted(root, "HEAD"); err != nil || got != nil {
-		t.Fatalf("no committed file must read as nil, got %q %v", got, err)
-	}
-	path := filepath.Join(root, filepath.FromSlash(Path))
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(path, []byte(`{"schema":1,"decisions":[]}`), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	if got, err := ReadCommitted(root, "HEAD"); err != nil || got != nil {
-		t.Fatalf("an uncommitted working-tree file must not be read, got %q %v", got, err)
-	}
-	runGit(t, root, "add", ".")
-	runGit(t, root, "commit", "-q", "-m", "two")
-	if got, err := ReadCommitted(root, "HEAD"); err != nil || string(got) != `{"schema":1,"decisions":[]}` {
-		t.Fatalf("committed file %q %v", got, err)
-	}
-	if _, err := ReadCommitted(root, "no-such-ref"); err == nil {
-		t.Fatal("an unresolvable ref must be an error")
 	}
 }

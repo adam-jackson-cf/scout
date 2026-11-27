@@ -24,12 +24,7 @@ func TestCapabilityMatrixReportsPerRepoAvailability(t *testing.T) {
 	for _, row := range matrix.Rows {
 		rows[row.Capability] = row
 	}
-	review := rows["Semantic review (contextual)"]
-	for _, language := range MatrixLanguages {
-		if cell := review.Cells[language]; cell.State != CellSkipped || cell.Detail != skippedDetail(modelcli.NoCLIReason) {
-			t.Fatalf("%s review = %+v", language, cell)
-		}
-	}
+	assertMatrixReviewSkippedWithoutModelCLI(t, rows["Semantic review (contextual)"])
 	graph := rows["Import graph / cycles; guardrails; rubric"]
 	if graph.Cells["Go"].State != CellAvailable || graph.Cells["Rust"].State != CellPlanned || graph.Cells["C#"].State != CellNotPlanned {
 		t.Fatalf("import graph row: %+v", graph.Cells)
@@ -39,6 +34,21 @@ func TestCapabilityMatrixReportsPerRepoAvailability(t *testing.T) {
 		t.Fatalf("crap without artifact: %+v", crap.Cells["Go"])
 	}
 	deltaWrite(t, root, "coverage/lcov.info", "TN:\n")
+	assertMatrixCrapAvailableWithArtifact(t, root)
+	assertMatrixRenderMarksPresentLanguages(t, matrix.Render())
+}
+
+func assertMatrixReviewSkippedWithoutModelCLI(t *testing.T, review MatrixRow) {
+	t.Helper()
+	for _, language := range MatrixLanguages {
+		if cell := review.Cells[language]; cell.State != CellSkipped || cell.Detail != skippedDetail(modelcli.NoCLIReason) {
+			t.Fatalf("%s review = %+v", language, cell)
+		}
+	}
+}
+
+func assertMatrixCrapAvailableWithArtifact(t *testing.T, root string) {
+	t.Helper()
 	again, err := CapabilityMatrix(context.Background(), Config{}, root)
 	if err != nil {
 		t.Fatal(err)
@@ -48,7 +58,10 @@ func TestCapabilityMatrixReportsPerRepoAvailability(t *testing.T) {
 			t.Fatalf("crap with artifact: %+v", row.Cells["Go"])
 		}
 	}
-	text := matrix.Render()
+}
+
+func assertMatrixRenderMarksPresentLanguages(t *testing.T, text string) {
+	t.Helper()
 	for _, want := range []string{"Go *", "Python *", "CRAP (needs coverage artifact)"} {
 		if !strings.Contains(text, want) {
 			t.Fatalf("render lacks %q:\n%s", want, text)

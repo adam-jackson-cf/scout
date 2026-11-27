@@ -81,9 +81,6 @@ type Family int
 
 const (
 	FamilyTriage Family = iota
-	FamilyRubric
-	FamilyCommit
-	FamilyUnowned
 )
 
 // Unit is one set of independent questions about one thing, asked in one
@@ -96,12 +93,6 @@ type Unit struct {
 	State     json.RawMessage
 	// Baseline is the deterministic baseline score, used to order triage units.
 	Baseline float64
-}
-
-// RubricKey is the stable key of a rubric function unit: changed-file path,
-// then function start line.
-func RubricKey(path string, startLine int) string {
-	return fmt.Sprintf("%s\x00%010d", path, startLine)
 }
 
 // Order puts units in cap order: triage by baseline score descending (ties by
@@ -196,18 +187,7 @@ func Run(ctx context.Context, in RunInput) Outcome {
 	out := Outcome{Total: len(units), Results: make([]UnitResult, 0, len(units))}
 	blind := false
 	for index, unit := range units {
-		reason := ""
-		switch {
-		case index >= cap:
-			reason = "call cap reached"
-		case blind:
-			reason = "billed cost unknown"
-			out.CostCapped = true
-		case out.CostUSD >= costCap:
-			reason = "cost cap reached"
-			out.CostCapped = true
-		}
-		if reason != "" {
+		if reason := out.capReason(index >= cap, blind, costCap); reason != "" {
 			out.Capped++
 			out.Results = append(out.Results, UnitResult{Unit: unit, Status: UnitCapped, Reason: reason})
 			continue
@@ -222,17 +202,35 @@ func Run(ctx context.Context, in RunInput) Outcome {
 				blind = true
 			}
 		}
-		switch result.Status {
-		case UnitAnnotated:
-			out.Annotated++
-		case UnitIncomplete:
-			out.Incomplete++
-		default:
-			out.Failed++
-		}
-		out.Results = append(out.Results, result)
+		out.count(result)
 	}
 	return out
+}
+
+func (o *Outcome) capReason(callCapReached, blind bool, costCap float64) string {
+	switch {
+	case callCapReached:
+		return "call cap reached"
+	case blind:
+		o.CostCapped = true
+		return "billed cost unknown"
+	case o.CostUSD >= costCap:
+		o.CostCapped = true
+		return "cost cap reached"
+	}
+	return ""
+}
+
+func (o *Outcome) count(result UnitResult) {
+	switch result.Status {
+	case UnitAnnotated:
+		o.Annotated++
+	case UnitIncomplete:
+		o.Incomplete++
+	default:
+		o.Failed++
+	}
+	o.Results = append(o.Results, result)
 }
 
 // ask makes the one request of a unit. replied is true when the route

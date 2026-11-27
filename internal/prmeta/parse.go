@@ -80,22 +80,9 @@ func LoadFile(path string) (Result, error) {
 // id, duplicate PR numbers and unparseable timestamps are errors: silently
 // dropping rows would change the measure.
 func Parse(raw []byte, kind, origin string) (Result, error) {
-	var doc Document
-	dec := json.NewDecoder(bytes.NewReader(raw))
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(&doc); err != nil {
-		return Result{}, fmt.Errorf("PR metadata is not a valid %s document: %w", Schema, err)
-	}
-	if dec.More() {
-		return Result{}, errors.New("PR metadata has trailing content")
-	}
-	if doc.Schema != Schema {
-		return Result{}, fmt.Errorf("PR metadata schema %q, want %q", doc.Schema, Schema)
-	}
-	if doc.FetchedAt != "" {
-		if _, err := time.Parse(time.RFC3339, doc.FetchedAt); err != nil {
-			return Result{}, fmt.Errorf("fetched_at: %w", err)
-		}
+	doc, err := decodeDocument(raw)
+	if err != nil {
+		return Result{}, err
 	}
 	sum := sha256.Sum256(raw)
 	res := Result{Source: history.PRSource{
@@ -119,6 +106,27 @@ func Parse(raw []byte, kind, origin string) (Result, error) {
 	}
 	res.Source.Count = len(res.PRs)
 	return res, nil
+}
+
+func decodeDocument(raw []byte) (Document, error) {
+	var doc Document
+	dec := json.NewDecoder(bytes.NewReader(raw))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&doc); err != nil {
+		return Document{}, fmt.Errorf("PR metadata is not a valid %s document: %w", Schema, err)
+	}
+	if dec.More() {
+		return Document{}, errors.New("PR metadata has trailing content")
+	}
+	if doc.Schema != Schema {
+		return Document{}, fmt.Errorf("PR metadata schema %q, want %q", doc.Schema, Schema)
+	}
+	if doc.FetchedAt != "" {
+		if _, err := time.Parse(time.RFC3339, doc.FetchedAt); err != nil {
+			return Document{}, fmt.Errorf("fetched_at: %w", err)
+		}
+	}
+	return doc, nil
 }
 
 func convert(p PR) (history.PR, error) {

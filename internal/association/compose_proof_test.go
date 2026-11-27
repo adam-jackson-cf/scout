@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 
 	"scout/internal/domain"
@@ -18,7 +19,11 @@ func readReplay[T any](t *testing.T, path string) []T {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
 	var out []T
 	s := bufio.NewScanner(f)
 	for s.Scan() {
@@ -34,6 +39,91 @@ func readReplay[T any](t *testing.T, path string) []T {
 	return out
 }
 
+type replayUnit struct {
+	CaseID    string `json:"case_id"`
+	ClusterID string `json:"cluster_id"`
+}
+
+type replayGold struct {
+	CaseID     string   `json:"case_id"`
+	Covered    bool     `json:"covered"`
+	Acceptable []string `json:"acceptable"`
+}
+
+type replayScore struct {
+	Type, Question string
+	CaseID         string `json:"case_id"`
+	Perm           int
+	PTrue          *float64 `json:"p_true"`
+	Choice         string
+	Confidence     float64
+}
+
+type replayTally struct {
+	correct, assigned, unresolved int
+}
+
+func replayScores(scores []replayScore, caseID string) Scores {
+	var in Scores
+	byPerm := map[int]ChoiceScore{}
+	for _, s := range scores {
+		if s.CaseID != caseID || s.Type != "answer" {
+			continue
+		}
+		switch s.Question {
+		case "merge.covered":
+			in.Covered = s.PTrue
+		case "merge.which_area":
+			byPerm[s.Perm] = ChoiceScore{AreaID: s.Choice, Confidence: s.Confidence}
+		}
+	}
+	// Preserve permutation position; an absent required answer remains missing.
+	if p, ok := byPerm[1]; ok {
+		in.Choices = append(in.Choices, p)
+		if p, ok := byPerm[2]; ok {
+			in.Choices = append(in.Choices, p)
+		}
+	}
+	return in
+}
+
+func (tally *replayTally) score(got Composed, g replayGold) {
+	if got.Outcome == "assigned" {
+		tally.assigned++
+		if g.Covered && slices.Contains(g.Acceptable, got.AreaID) {
+			tally.correct++
+		}
+	}
+	if got.Outcome == "unresolved" {
+		tally.unresolved++
+	}
+}
+
+func replayRound(t *testing.T, round int) (replayTally, int) {
+	t.Helper()
+	fixture := func(kind string) string {
+		return filepath.Join("testdata", fmt.Sprintf("replay-r%d-%s.jsonl", round, kind))
+	}
+	units := readReplay[replayUnit](t, fixture("units"))
+	gold := readReplay[replayGold](t, fixture("gold"))
+	scores := readReplay[replayScore](t, fixture("scores"))
+	var tally replayTally
+	for _, u := range units {
+		got := Compose(u.ClusterID, replayScores(scores, u.CaseID), .60, .535)
+		i := slices.IndexFunc(gold, func(g replayGold) bool { return g.CaseID == u.CaseID })
+		if i < 0 {
+			t.Fatalf("fixture lacks gold for %s", u.CaseID)
+		}
+		tally.score(got, gold[i])
+		switch got.Outcome {
+		case "assigned", "none", "unresolved":
+		default:
+			t.Fatalf("unknown output %+v", got)
+		}
+	}
+	return tally, len(units)
+}
+
 // P1 counts assignments against any acceptable gold area, not only primary.
 // As in score_outcome/counts_for, none is resolved, not an abstention.
 func TestAssociationReplay(t *testing.T) {
@@ -43,87 +133,15 @@ func TestAssociationReplay(t *testing.T) {
 		round, correct, assigned, unresolved, n int
 	}{{"round 8", 8, 14, 14, 5, 21}, {"round 9", 9, 8, 10, 1, 23}, {"round 10", 10, 42, 43, 4, 48}} {
 		t.Run(want.name, func(t *testing.T) {
-			fixture := func(kind string) string {
-				return filepath.Join("testdata", fmt.Sprintf("replay-r%d-%s.jsonl", want.round, kind))
-			}
-			units := readReplay[struct {
-				CaseID    string `json:"case_id"`
-				ClusterID string `json:"cluster_id"`
-			}](t, fixture("units"))
-			gold := readReplay[struct {
-				CaseID     string   `json:"case_id"`
-				Covered    bool     `json:"covered"`
-				Acceptable []string `json:"acceptable"`
-			}](t, fixture("gold"))
-			scores := readReplay[struct {
-				Type, Question string
-				CaseID         string `json:"case_id"`
-				Perm           int
-				PTrue          *float64 `json:"p_true"`
-				Choice         string
-				Confidence     float64
-			}](t, fixture("scores"))
-			correct, assigned, unresolved := 0, 0, 0
-			for _, u := range units {
-				var in Scores
-				byPerm := map[int]ChoiceScore{}
-				for _, s := range scores {
-					if s.CaseID != u.CaseID || s.Type != "answer" {
-						continue
-					}
-					switch s.Question {
-					case "merge.covered":
-						in.Covered = s.PTrue
-					case "merge.which_area":
-						byPerm[s.Perm] = ChoiceScore{AreaID: s.Choice, Confidence: s.Confidence}
-					}
-				}
-				// Preserve permutation position; an absent required answer remains missing.
-				if p, ok := byPerm[1]; ok {
-					in.Choices = append(in.Choices, p)
-					if p, ok := byPerm[2]; ok {
-						in.Choices = append(in.Choices, p)
-					}
-				}
-				got := Compose(u.ClusterID, in, .60, .535)
-				var found bool
-				for _, g := range gold {
-					if g.CaseID != u.CaseID {
-						continue
-					}
-					found = true
-					if got.Outcome == "assigned" {
-						assigned++
-						if g.Covered {
-							for _, a := range g.Acceptable {
-								if a == got.AreaID {
-									correct++
-									break
-								}
-							}
-						}
-					}
-					if got.Outcome == "unresolved" {
-						unresolved++
-					}
-					break
-				}
-				if !found {
-					t.Fatalf("fixture lacks gold for %s", u.CaseID)
-				}
-				switch got.Outcome {
-				case "assigned", "none", "unresolved":
-				default:
-					t.Fatalf("unknown output %+v", got)
-				}
-			}
-			if correct != want.correct || assigned != want.assigned || unresolved != want.unresolved || len(units) != want.n {
-				t.Fatalf("got correct/assigned %d/%d unresolved/n %d/%d; want %+v", correct, assigned, unresolved, len(units), want)
+			tally, n := replayRound(t, want.round)
+			correct, assigned, unresolved := tally.correct, tally.assigned, tally.unresolved
+			if correct != want.correct || assigned != want.assigned || unresolved != want.unresolved || n != want.n {
+				t.Fatalf("got correct/assigned %d/%d unresolved/n %d/%d; want %+v", correct, assigned, unresolved, n, want)
 			}
 			totalCorrect += correct
 			totalAssigned += assigned
 			totalUnresolved += unresolved
-			totalN += len(units)
+			totalN += n
 		})
 	}
 	if totalCorrect != 64 || totalAssigned != 67 || totalUnresolved != 10 || totalN != 92 {

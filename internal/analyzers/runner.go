@@ -71,7 +71,7 @@ func (r *Runner) Run(ctx context.Context, root string, selected []domain.File) (
 	if err == nil || len(selected) < 2 || !r.stagesInputs() {
 		return result, found, err
 	}
-	return r.retryUnproven(ctx, root, selected, result, found, err)
+	return r.retryUnproven(ctx, root, selected, batchOutcome{result: result, found: found, err: err})
 }
 
 func (r *Runner) stagesInputs() bool { return r.spec.gitleaks() }
@@ -81,16 +81,47 @@ func (r *Runner) stagesInputs() bool { return r.spec.gitleaks() }
 // observations with the single-file outcome. Timeouts, missing tools and
 // setup failures are not retried. The batch is completed only when every row
 // ends inspected or not applicable.
-func (r *Runner) retryUnproven(ctx context.Context, root string, selected []domain.File, result domain.AdapterResult, found []domain.Observation, batchErr error) (domain.AdapterResult, []domain.Observation, error) {
-	rows := make(map[string]int, len(result.Coverage))
-	for index, row := range result.Coverage {
+type batchOutcome struct {
+	result domain.AdapterResult
+	found  []domain.Observation
+	err    error
+}
+
+func (r *Runner) retryUnproven(ctx context.Context, root string, selected []domain.File, outcome batchOutcome) (domain.AdapterResult, []domain.Observation, error) {
+	result, found, batchErr := outcome.result, outcome.found, outcome.err
+	rows := unprovenRows(result.Coverage)
+	if len(rows) == 0 {
+		return result, found, batchErr
+	}
+	retried, replaced := r.rescanSingly(ctx, root, selected, rows, &result)
+	kept := withoutRetried(found, retried)
+	for _, file := range selected {
+		kept = append(kept, replaced[file.Path]...)
+		delete(replaced, file.Path)
+	}
+	complete := coverageSettled(result.Coverage)
+	linkObservations(result.Coverage, kept)
+	result.Observations = observationIDs(kept)
+	finished := time.Now().UTC()
+	result.FinishedAt = &finished
+	if complete {
+		result.Status, result.Failures = domain.AdapterCompleted, nil
+		return result, kept, nil
+	}
+	return result, kept, batchErr
+}
+
+func unprovenRows(coverage []domain.Coverage) map[string]int {
+	rows := make(map[string]int, len(coverage))
+	for index, row := range coverage {
 		if _, ok := proofReasons[row.Reason]; ok && row.Status == domain.CoverageIncomplete {
 			rows[row.Key.FilePath] = index
 		}
 	}
-	if len(rows) == 0 {
-		return result, found, batchErr
-	}
+	return rows
+}
+
+func (r *Runner) rescanSingly(ctx context.Context, root string, selected []domain.File, rows map[string]int, result *domain.AdapterResult) (map[string]struct{}, map[string][]domain.Observation) {
 	retried := make(map[string]struct{}, len(rows))
 	replaced := make(map[string][]domain.Observation, len(rows))
 	for _, file := range selected {
@@ -111,6 +142,10 @@ func (r *Runner) retryUnproven(ctx context.Context, root string, selected []doma
 		}
 		replaced[file.Path] = observations
 	}
+	return retried, replaced
+}
+
+func withoutRetried(found []domain.Observation, retried map[string]struct{}) []domain.Observation {
 	kept := make([]domain.Observation, 0, len(found))
 	for _, observation := range found {
 		if len(observation.Evidence) > 0 {
@@ -120,145 +155,19 @@ func (r *Runner) retryUnproven(ctx context.Context, root string, selected []doma
 		}
 		kept = append(kept, observation)
 	}
-	for _, file := range selected {
-		kept = append(kept, replaced[file.Path]...)
-		delete(replaced, file.Path)
-	}
-	complete := true
-	for _, row := range result.Coverage {
-		if row.Status != domain.CoverageInspected && row.Status != domain.CoverageNotApplicable {
-			complete = false
-		}
-	}
-	for index := range result.Coverage {
-		var ids []string
-		for _, observation := range kept {
-			if observation.Evidence[0].Location.Path == result.Coverage[index].Key.FilePath {
-				ids = append(ids, observation.ObservationID)
-			}
-		}
-		result.Coverage[index].ObservationIDs = ids
-	}
-	result.Observations = observationIDs(kept)
-	finished := time.Now().UTC()
-	result.FinishedAt = &finished
-	if complete {
-		result.Status, result.Failures = domain.AdapterCompleted, nil
-		return result, kept, nil
-	}
-	return result, kept, batchErr
+	return kept
 }
 
-// runBatch returns all validated, sanitized observations even when the adapter is
-// partial or failed. It never returns raw scanner output in its error value.
-func (r *Runner) runBatch(ctx context.Context, root string, selected []domain.File) (domain.AdapterResult, []domain.Observation, error) {
-	started := time.Now().UTC()
-	resultID := digestID(r.runID, r.spec.ID, started.Format(time.RFC3339Nano))
-	result := r.newResult(resultID, started)
-	root, err := canonicalRoot(root)
-	if err != nil {
-		return r.finish(&result, domain.AdapterFailed, nil, "invalid_root", "assessment root is unavailable"), nil, errors.New("adapter root is unavailable")
-	}
-
-	accepted, coverage, acceptedByPath, eligibleCount, inputErr := r.selectInputs(root, selected, resultID)
-	if len(accepted) == 0 {
-		status, code, message := domain.AdapterNoApplicableInput, "no_applicable_input", "no applicable selected inputs"
-		if inputErr {
-			status, code, message = domain.AdapterPartial, "input_unavailable", "eligible input could not be safely read"
-		} else if len(selected) != 0 && eligibleCount == 0 {
-			status, code, message = domain.AdapterIneligible, "ineligible", "selected inputs are ineligible for this adapter"
+func coverageSettled(coverage []domain.Coverage) bool {
+	for _, row := range coverage {
+		if row.Status != domain.CoverageInspected && row.Status != domain.CoverageNotApplicable {
+			return false
 		}
-		if status == domain.AdapterNoApplicableInput || status == domain.AdapterIneligible {
-			return r.finish(&result, status, coverage, "", ""), nil, nil
-		}
-		return r.finish(&result, status, coverage, code, message), nil, errors.New("adapter input is incomplete")
 	}
+	return true
+}
 
-	state, err := sandbox.NewState("scout-analyzer-")
-	if err != nil {
-		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "private scanner state could not be created")
-		return r.finish(&result, domain.AdapterFailed, coverage, "state", "private scanner state could not be created"), nil, errors.New("adapter state setup failed")
-	}
-	defer os.RemoveAll(state)
-	bundledRules, err := r.materializeBundledRules(state)
-	if err != nil {
-		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "bundled scanner rules could not be materialized")
-		return r.finish(&result, domain.AdapterFailed, coverage, "bundled_rules", "bundled scanner rules could not be materialized"), nil, errors.New("bundled scanner rules unavailable")
-	}
-
-	footprint, err := r.footprint(root)
-	if err != nil {
-		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "declared project footprint is unavailable")
-		return r.finish(&result, domain.AdapterIneligible, coverage, "project_footprint", "declared project footprint is unavailable"), nil, nil
-	}
-	manifest := InputManifest{Version: manifestVersion, Inputs: manifests(accepted), ProjectFootprint: footprint, RuleFiles: r.spec.Rules.Files, ConfigFiles: r.spec.Rules.ConfigFiles, BundledRules: bundledRules.digests}
-	manifestPath, err := r.writeManifest(state, manifest)
-	if err != nil {
-		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "input manifest could not be safely created")
-		return r.finish(&result, domain.AdapterFailed, coverage, "manifest", "input manifest could not be safely created"), nil, errors.New("adapter input manifest failed")
-	}
-	defer os.Remove(manifestPath)
-	if err := sandbox.Available(); err != nil {
-		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "required scanner sandbox is not installed")
-		return r.finish(&result, domain.AdapterMissingTool, coverage, "missing_sandbox", "required scanner sandbox is not installed"), nil, errors.New("required scanner sandbox is not installed")
-	}
-	binary, err := exec.LookPath(r.spec.Binary.Path)
-	if err != nil {
-		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "required scanner binary is not installed")
-		return r.finish(&result, domain.AdapterMissingTool, coverage, "missing_tool", "required scanner binary is not installed"), nil, errors.New("required scanner binary is not installed")
-	}
-	if err := externalScannerBinary(root, binary); err != nil {
-		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "scanner launcher resolves inside the assessed repository")
-		return r.finish(&result, domain.AdapterFailed, coverage, "project_script", "scanner launcher must not come from the assessed repository"), nil, errors.New("project scanner launcher is prohibited")
-	}
-	if err := r.verifyVersion(ctx, root, state, bundledRules.root, binary); err != nil {
-		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "required scanner version is unavailable")
-		return r.finish(&result, domain.AdapterFailed, coverage, "version", "required scanner version is unavailable"), nil, errors.New("required scanner version is unavailable")
-	}
-
-	attested, scanRoot, stageDir := acceptedByPath, root, ""
-	if r.stagesInputs() {
-		var stageErr error
-		if stageDir, attested, stageErr = stageGitleaksInputs(root, state, acceptedByPath); stageErr != nil {
-			coverage = markAcceptedIncomplete(coverage, acceptedByPath, "private input staging failed")
-			return r.finish(&result, domain.AdapterFailed, coverage, "staging", "private input staging failed"), nil, errors.New("adapter input staging failed")
-		}
-		scanRoot = stageDir
-	}
-	args, err := expandArgs(r.spec.Binary.Args, root, manifestPath, manifests(accepted), bundledRules.paths, stageDir)
-	if err != nil {
-		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "declared scanner invocation is invalid")
-		return r.finish(&result, domain.AdapterFailed, coverage, "invocation", "declared scanner invocation is invalid"), nil, errors.New("adapter invocation is invalid")
-	}
-	runContext, cancel := context.WithTimeout(ctx, r.spec.Timeout)
-	defer cancel()
-	stdout, stderr, runErr := r.runCommand(runContext, root, state, bundledRules.root, binary, args)
-	if runContext.Err() == context.DeadlineExceeded {
-		coverage = markAcceptedIncomplete(coverage, acceptedByPath, "scanner timed out")
-		return r.finish(&result, domain.AdapterTimedOut, coverage, "timed_out", "scanner timed out"), nil, errors.New("scanner timed out")
-	}
-	if stdout.Exceeded() || stderr.Exceeded() {
-		coverage = markAcceptedIncomplete(coverage, acceptedByPath, reasonOutputBound)
-		return r.finish(&result, domain.AdapterFailed, coverage, "output_limit", reasonOutputBound), nil, errors.New(reasonOutputBound)
-	}
-
-	parsed, parseErr := parseOutput(r.spec, stdout.Bytes(), scanRoot)
-	if parseErr != nil {
-		coverage = markAcceptedIncomplete(coverage, acceptedByPath, reasonOutputInvalid)
-		return r.finish(&result, domain.AdapterFailed, coverage, "output_schema", reasonOutputInvalid), nil, errors.New(reasonOutputInvalid)
-	}
-	switch r.spec.Attestation {
-	case AttestGitleaksScanLog:
-		attestGitleaksInput(&parsed, attested, stderr.Bytes(), stageDir)
-	case AttestRuffFileListing:
-		r.attestRuffInputs(ctx, root, state, bundledRules.root, binary, args, acceptedByPath, &parsed)
-	}
-	observations, rejected := r.observations(root, acceptedByPath, parsed.findings, started)
-	for path := range rejected {
-		coverage = markPathIncomplete(coverage, path, reasonEvidenceInvalid)
-	}
-	status, code, message := r.resultStatus(runErr, parsed, acceptedByPath, rejected, inputErr)
-	coverage = completeCoverage(coverage, acceptedByPath, parsed, status)
+func linkObservations(coverage []domain.Coverage, observations []domain.Observation) {
 	byPath := make(map[string][]string, len(observations))
 	for _, observation := range observations {
 		path := observation.Evidence[0].Location.Path
@@ -267,7 +176,209 @@ func (r *Runner) runBatch(ctx context.Context, root string, selected []domain.Fi
 	for index := range coverage {
 		coverage[index].ObservationIDs = byPath[coverage[index].Key.FilePath]
 	}
-	result = r.finish(&result, status, coverage, code, message)
+}
+
+type inputSelection struct {
+	accepted      []sourceInput
+	coverage      []domain.Coverage
+	byPath        map[string]sourceInput
+	eligibleCount int
+	inputErr      bool
+	totalBytes    int64
+}
+
+type scanPlan struct {
+	state        string
+	manifestPath string
+	binary       string
+	stageDir     string
+	scanRoot     string
+	rules        materializedRules
+	attested     map[string]sourceInput
+	args         []string
+}
+
+type scanOutput struct {
+	parsed parsedOutput
+	stderr []byte
+	runErr error
+}
+
+type batchFailure struct {
+	status  domain.AdapterStatus
+	code    string
+	reason  string
+	message string
+	err     string
+}
+
+func failure(status domain.AdapterStatus, code, reason, message, err string) *batchFailure {
+	return &batchFailure{status: status, code: code, reason: reason, message: message, err: err}
+}
+
+type batch struct {
+	runner  *Runner
+	root    string
+	started time.Time
+	result  domain.AdapterResult
+	inputs  inputSelection
+	plan    scanPlan
+}
+
+// runBatch returns all validated, sanitized observations even when the adapter is
+// partial or failed. It never returns raw scanner output in its error value.
+func (r *Runner) runBatch(ctx context.Context, root string, selected []domain.File) (domain.AdapterResult, []domain.Observation, error) {
+	started := time.Now().UTC()
+	b := &batch{runner: r, started: started, result: r.newResult(digestID(r.runID, r.spec.ID, started.Format(time.RFC3339Nano)), started)}
+	canonical, err := canonicalRoot(root)
+	if err != nil {
+		return r.finish(&b.result, domain.AdapterFailed, nil, "invalid_root", "assessment root is unavailable"), nil, errors.New("adapter root is unavailable")
+	}
+	b.root = canonical
+	b.inputs = r.selectInputs(canonical, selected, b.result.ResultID)
+	if len(b.inputs.accepted) == 0 {
+		return b.finishWithoutInputs(len(selected))
+	}
+	state, err := sandbox.NewState("scout-analyzer-")
+	if err != nil {
+		return b.fail(failure(domain.AdapterFailed, "state", "private scanner state could not be created", "private scanner state could not be created", "adapter state setup failed"))
+	}
+	b.plan.state = state
+	defer b.removeState()
+	if failed := b.prepareInputs(); failed != nil {
+		return b.fail(failed)
+	}
+	if failed := b.prepareScanner(ctx); failed != nil {
+		return b.fail(failed)
+	}
+	output, failed := b.execute(ctx)
+	if failed != nil {
+		return b.fail(failed)
+	}
+	return b.complete(ctx, output)
+}
+
+func (b *batch) removeState() {
+	if b.plan.manifestPath != "" {
+		_ = os.Remove(b.plan.manifestPath)
+	}
+	_ = os.RemoveAll(b.plan.state)
+}
+
+func (b *batch) finishWithoutInputs(selectedCount int) (domain.AdapterResult, []domain.Observation, error) {
+	status, code, message := domain.AdapterNoApplicableInput, "no_applicable_input", "no applicable selected inputs"
+	if b.inputs.inputErr {
+		status, code, message = domain.AdapterPartial, "input_unavailable", "eligible input could not be safely read"
+	} else if selectedCount != 0 && b.inputs.eligibleCount == 0 {
+		status, code, message = domain.AdapterIneligible, "ineligible", "selected inputs are ineligible for this adapter"
+	}
+	if status == domain.AdapterNoApplicableInput || status == domain.AdapterIneligible {
+		return b.runner.finish(&b.result, status, b.inputs.coverage, "", ""), nil, nil
+	}
+	return b.runner.finish(&b.result, status, b.inputs.coverage, code, message), nil, errors.New("adapter input is incomplete")
+}
+
+func (b *batch) fail(failed *batchFailure) (domain.AdapterResult, []domain.Observation, error) {
+	coverage := markAcceptedIncomplete(b.inputs.coverage, b.inputs.byPath, failed.reason)
+	var err error
+	if failed.err != "" {
+		err = errors.New(failed.err)
+	}
+	return b.runner.finish(&b.result, failed.status, coverage, failed.code, failed.message), nil, err
+}
+
+func (b *batch) prepareInputs() *batchFailure {
+	r := b.runner
+	rules, err := r.materializeBundledRules(b.plan.state)
+	if err != nil {
+		return failure(domain.AdapterFailed, "bundled_rules", "bundled scanner rules could not be materialized", "bundled scanner rules could not be materialized", "bundled scanner rules unavailable")
+	}
+	b.plan.rules = rules
+	footprint, err := r.footprint(b.root)
+	if err != nil {
+		return failure(domain.AdapterIneligible, "project_footprint", "declared project footprint is unavailable", "declared project footprint is unavailable", "")
+	}
+	manifest := InputManifest{Version: manifestVersion, Inputs: manifests(b.inputs.accepted), ProjectFootprint: footprint, RuleFiles: r.spec.Rules.Files, ConfigFiles: r.spec.Rules.ConfigFiles, BundledRules: rules.digests}
+	manifestPath, err := r.writeManifest(b.plan.state, manifest)
+	if err != nil {
+		return failure(domain.AdapterFailed, "manifest", "input manifest could not be safely created", "input manifest could not be safely created", "adapter input manifest failed")
+	}
+	b.plan.manifestPath = manifestPath
+	return nil
+}
+
+func (b *batch) prepareScanner(ctx context.Context) *batchFailure {
+	r := b.runner
+	if err := sandbox.Available(); err != nil {
+		return failure(domain.AdapterMissingTool, "missing_sandbox", "required scanner sandbox is not installed", "required scanner sandbox is not installed", "required scanner sandbox is not installed")
+	}
+	binary, err := exec.LookPath(r.spec.Binary.Path)
+	if err != nil {
+		return failure(domain.AdapterMissingTool, "missing_tool", "required scanner binary is not installed", "required scanner binary is not installed", "required scanner binary is not installed")
+	}
+	if err := externalScannerBinary(b.root, binary); err != nil {
+		return failure(domain.AdapterFailed, "project_script", "scanner launcher resolves inside the assessed repository", "scanner launcher must not come from the assessed repository", "project scanner launcher is prohibited")
+	}
+	if err := r.verifyVersion(ctx, b.root, b.plan.state, b.plan.rules.root, binary); err != nil {
+		return failure(domain.AdapterFailed, "version", "required scanner version is unavailable", "required scanner version is unavailable", "required scanner version is unavailable")
+	}
+	b.plan.binary = binary
+	return b.prepareInvocation()
+}
+
+func (b *batch) prepareInvocation() *batchFailure {
+	r := b.runner
+	b.plan.attested, b.plan.scanRoot = b.inputs.byPath, b.root
+	if r.stagesInputs() {
+		stageDir, attested, err := stageGitleaksInputs(b.root, b.plan.state, b.inputs.byPath)
+		if err != nil {
+			return failure(domain.AdapterFailed, "staging", "private input staging failed", "private input staging failed", "adapter input staging failed")
+		}
+		b.plan.stageDir, b.plan.attested, b.plan.scanRoot = stageDir, attested, stageDir
+	}
+	args, err := expandArgs(r.spec.Binary.Args, invocationValues{root: b.root, manifest: b.plan.manifestPath, inputs: manifests(b.inputs.accepted), bundledRules: b.plan.rules.paths, stageDir: b.plan.stageDir})
+	if err != nil {
+		return failure(domain.AdapterFailed, "invocation", "declared scanner invocation is invalid", "declared scanner invocation is invalid", "adapter invocation is invalid")
+	}
+	b.plan.args = args
+	return nil
+}
+
+func (b *batch) execute(ctx context.Context) (scanOutput, *batchFailure) {
+	r := b.runner
+	runContext, cancel := context.WithTimeout(ctx, r.spec.Timeout)
+	defer cancel()
+	stdout, stderr, runErr := r.runCommand(runContext, b.root, &b.plan, b.plan.args)
+	if runContext.Err() == context.DeadlineExceeded {
+		return scanOutput{}, failure(domain.AdapterTimedOut, "timed_out", "scanner timed out", "scanner timed out", "scanner timed out")
+	}
+	if stdout.Exceeded() || stderr.Exceeded() {
+		return scanOutput{}, failure(domain.AdapterFailed, "output_limit", reasonOutputBound, reasonOutputBound, reasonOutputBound)
+	}
+	parsed, parseErr := parseOutput(r.spec, stdout.Bytes(), b.plan.scanRoot)
+	if parseErr != nil {
+		return scanOutput{}, failure(domain.AdapterFailed, "output_schema", reasonOutputInvalid, reasonOutputInvalid, reasonOutputInvalid)
+	}
+	return scanOutput{parsed: parsed, stderr: stderr.Bytes(), runErr: runErr}, nil
+}
+
+func (b *batch) complete(ctx context.Context, output scanOutput) (domain.AdapterResult, []domain.Observation, error) {
+	r := b.runner
+	switch r.spec.Attestation {
+	case AttestGitleaksScanLog:
+		attestGitleaksInput(&output.parsed, b.plan.attested, output.stderr, b.plan.stageDir)
+	case AttestRuffFileListing:
+		b.attestRuffInputs(ctx, &output.parsed)
+	}
+	observations, rejected := r.observations(b.root, b.inputs.byPath, output.parsed.findings, b.started)
+	coverage := b.inputs.coverage
+	for path := range rejected {
+		coverage = markPathIncomplete(coverage, path, reasonEvidenceInvalid)
+	}
+	status, code, message := r.resultStatus(output.runErr, output.parsed, b.inputs.byPath, rejected, b.inputs.inputErr)
+	coverage = completeCoverage(coverage, b.inputs.byPath, output.parsed, status)
+	linkObservations(coverage, observations)
+	result := r.finish(&b.result, status, coverage, code, message)
 	result.Observations = observationIDs(observations)
 	if status == domain.AdapterCompleted || status == domain.AdapterNoApplicableInput || status == domain.AdapterIneligible {
 		return result, observations, nil
@@ -312,109 +423,123 @@ func canonicalRoot(root string) (string, error) {
 	return resolved, nil
 }
 
-func (r *Runner) selectInputs(root string, selected []domain.File, resultID string) ([]sourceInput, []domain.Coverage, map[string]sourceInput, int, bool) {
-	accepted := make([]sourceInput, 0, len(selected))
-	coverage := make([]domain.Coverage, 0, len(selected))
-	byPath := make(map[string]sourceInput)
-	var total int64
-	eligibleCount, inputErr := 0, false
-	var allowlist []*regexp.Regexp
-	if r.spec.gitleaks() {
-		pack, err := bundledRule(gitleaksDefaultRule)
-		if err == nil {
-			allowlist, err = gitleaksGlobalPathAllowlist(pack)
-		}
-		if err != nil {
-			inputErr = true
-		}
+func (r *Runner) selectInputs(root string, selected []domain.File, resultID string) inputSelection {
+	selection := inputSelection{
+		accepted: make([]sourceInput, 0, len(selected)),
+		coverage: make([]domain.Coverage, 0, len(selected)),
+		byPath:   make(map[string]sourceInput),
 	}
+	allowlist, allowlistErr := r.globalPathAllowlist()
+	selection.inputErr = allowlistErr
 	for _, file := range selected {
 		if err := file.Validate(); err != nil {
-			inputErr = true
+			selection.inputErr = true
 			continue
 		}
 		key := domain.CoverageKey{FilePath: file.Path, Family: r.spec.Family, Category: r.spec.Category}
 		row := domain.Coverage{Key: key, AdapterResultIDs: []string{resultID}}
-		if file.Eligible && !file.Excluded && pathAllowlisted(allowlist, file.Path) {
-			row.Status, row.Reason = domain.CoverageNotApplicable, gitleaksAllowlistReason
-			coverage = append(coverage, row)
-			continue
-		}
-		if !r.spec.Applies(file) {
-			row.Status, row.Reason = domain.CoverageNotApplicable, "adapter language or extension is ineligible"
-			coverage = append(coverage, row)
-			continue
-		}
-		eligibleCount++
-		if _, duplicate := byPath[file.Path]; duplicate {
-			row.Status, row.Reason = domain.CoverageIncomplete, "selected input is duplicated"
-			coverage = append(coverage, row)
-			inputErr = true
-			continue
-		}
-		input, err := fingerprint(root, file.Path, file.Language, r.spec.Inputs.MaxFileBytes)
-		if err != nil {
-			row.Status, row.Reason = domain.CoverageIncomplete, "eligible input is unreadable or exceeds the declared bound"
-			coverage = append(coverage, row)
-			inputErr = true
-			continue
-		}
-		if len(accepted) == r.spec.Inputs.MaxFiles || total > r.spec.Inputs.MaxTotalBytes-input.manifest.Bytes {
-			row.Status, row.Reason = domain.CoverageIncomplete, "eligible input exceeds the declared scan bound"
-			coverage = append(coverage, row)
-			inputErr = true
-			continue
-		}
-		total += input.manifest.Bytes
-		accepted, byPath[file.Path] = append(accepted, input), input
-		coverage = append(coverage, row)
+		row.Status, row.Reason = r.classifyInput(root, file, allowlist, &selection)
+		selection.coverage = append(selection.coverage, row)
 	}
-	return accepted, coverage, byPath, eligibleCount, inputErr
+	return selection
+}
+
+func (r *Runner) globalPathAllowlist() ([]*regexp.Regexp, bool) {
+	if !r.spec.gitleaks() {
+		return nil, false
+	}
+	pack, err := bundledRule(gitleaksDefaultRule)
+	if err != nil {
+		return nil, true
+	}
+	allowlist, err := gitleaksGlobalPathAllowlist(pack)
+	return allowlist, err != nil
+}
+
+func (r *Runner) classifyInput(root string, file domain.File, allowlist []*regexp.Regexp, selection *inputSelection) (domain.CoverageStatus, string) {
+	if file.Eligible && !file.Excluded && pathAllowlisted(allowlist, file.Path) {
+		return domain.CoverageNotApplicable, gitleaksAllowlistReason
+	}
+	if !r.spec.Applies(file) {
+		return domain.CoverageNotApplicable, "adapter language or extension is ineligible"
+	}
+	selection.eligibleCount++
+	if _, duplicate := selection.byPath[file.Path]; duplicate {
+		selection.inputErr = true
+		return domain.CoverageIncomplete, "selected input is duplicated"
+	}
+	input, err := fingerprint(root, file.Path, file.Language, r.spec.Inputs.MaxFileBytes)
+	if err != nil {
+		selection.inputErr = true
+		return domain.CoverageIncomplete, "eligible input is unreadable or exceeds the declared bound"
+	}
+	if len(selection.accepted) == r.spec.Inputs.MaxFiles || selection.totalBytes > r.spec.Inputs.MaxTotalBytes-input.manifest.Bytes {
+		selection.inputErr = true
+		return domain.CoverageIncomplete, "eligible input exceeds the declared scan bound"
+	}
+	selection.totalBytes += input.manifest.Bytes
+	selection.accepted, selection.byPath[file.Path] = append(selection.accepted, input), input
+	return "", ""
 }
 
 func fingerprint(root, path, language string, maximum int64) (sourceInput, error) {
-	if err := validRelativePath(path); err != nil {
+	resolved, err := boundedRegularFile(root, path, maximum)
+	if err != nil {
 		return sourceInput{}, err
+	}
+	digest, size, lines, err := digestFile(resolved, maximum)
+	if err != nil {
+		return sourceInput{}, err
+	}
+	return sourceInput{manifest: ManifestInput{Path: path, Language: language, Digest: digest, Bytes: size, Lines: lines}}, nil
+}
+
+func boundedRegularFile(root, path string, maximum int64) (string, error) {
+	if err := validRelativePath(path); err != nil {
+		return "", err
 	}
 	joined := filepath.Join(root, filepath.FromSlash(path))
 	resolved, err := filepath.EvalSymlinks(joined)
 	if err != nil {
-		return sourceInput{}, err
+		return "", err
 	}
 	relative, err := filepath.Rel(root, resolved)
 	if err != nil || relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
-		return sourceInput{}, errors.New("input escapes root")
+		return "", errors.New("input escapes root")
 	}
 	info, err := os.Stat(resolved)
 	if err != nil || !info.Mode().IsRegular() || info.Size() > maximum {
-		return sourceInput{}, errors.New("input is not a bounded regular file")
+		return "", errors.New("input is not a bounded regular file")
 	}
-	file, err := os.Open(resolved)
+	return resolved, nil
+}
+
+func digestFile(path string, maximum int64) (digest string, size int64, lines int, err error) {
+	file, err := os.Open(path)
 	if err != nil {
-		return sourceInput{}, err
+		return "", 0, 0, err
 	}
-	defer file.Close()
+	defer func() { err = errors.Join(err, file.Close()) }()
 	hash := sha256.New()
-	lines, size := 1, int64(0)
+	lines = 1
 	buffer := make([]byte, 32*1024)
 	for {
 		count, readErr := file.Read(buffer)
 		if count > 0 {
 			size += int64(count)
 			if size > maximum {
-				return sourceInput{}, errors.New("input exceeds bound")
+				return "", 0, 0, errors.New("input exceeds bound")
 			}
 			hash.Write(buffer[:count])
 			lines += bytes.Count(buffer[:count], []byte{'\n'})
 		}
 		if readErr == io.EOF {
-			break
+			return hex.EncodeToString(hash.Sum(nil)), size, lines, nil
 		}
 		if readErr != nil {
-			return sourceInput{}, readErr
+			return "", 0, 0, readErr
 		}
 	}
-	return sourceInput{manifest: ManifestInput{Path: path, Language: language, Digest: hex.EncodeToString(hash.Sum(nil)), Bytes: size, Lines: lines}}, nil
 }
 
 func (r *Runner) footprint(root string) ([]string, error) {
@@ -458,25 +583,7 @@ func (r *Runner) materializeBundledRules(state string) (materializedRules, error
 			result.root = filepath.Join(state, "rules")
 		}
 		path := filepath.Join(result.root, filepath.FromSlash(rulePath))
-		relative, err := filepath.Rel(state, path)
-		if err != nil || relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
-			return materializedRules{}, errors.New("bundled rule escapes private state")
-		}
-		if err := os.MkdirAll(filepath.Dir(path), 0700); err != nil {
-			return materializedRules{}, err
-		}
-		file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
-		if err != nil {
-			return materializedRules{}, err
-		}
-		if _, err := file.Write(content); err != nil {
-			file.Close()
-			return materializedRules{}, err
-		}
-		if err := file.Close(); err != nil {
-			return materializedRules{}, err
-		}
-		if err := os.Chmod(path, 0400); err != nil {
+		if err := writePrivateRule(state, path, content); err != nil {
 			return materializedRules{}, err
 		}
 		sum := sha256.Sum256(content)
@@ -484,6 +591,27 @@ func (r *Runner) materializeBundledRules(state string) (materializedRules, error
 		result.digests = append(result.digests, RuleDigest{Path: rulePath, Digest: hex.EncodeToString(sum[:])})
 	}
 	return result, nil
+}
+
+func writePrivateRule(state, path string, content []byte) error {
+	relative, err := filepath.Rel(state, path)
+	if err != nil || relative == ".." || strings.HasPrefix(relative, ".."+string(filepath.Separator)) {
+		return errors.New("bundled rule escapes private state")
+	}
+	if err := os.MkdirAll(filepath.Dir(path), 0700); err != nil {
+		return err
+	}
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+	if err != nil {
+		return err
+	}
+	if _, err := file.Write(content); err != nil {
+		return errors.Join(err, file.Close())
+	}
+	if err := file.Close(); err != nil {
+		return err
+	}
+	return os.Chmod(path, 0400)
 }
 
 func (r *Runner) writeManifest(state string, manifest InputManifest) (string, error) {
@@ -497,36 +625,36 @@ func (r *Runner) writeManifest(state string, manifest InputManifest) (string, er
 	}
 	path := file.Name()
 	if err := file.Chmod(0600); err != nil {
-		file.Close()
-		os.Remove(path)
-		return "", errors.New("manifest permission change failed")
+		return "", errors.Join(errors.New("manifest permission change failed"), file.Close(), os.Remove(path))
 	}
 	if _, err := file.Write(encoded); err != nil {
-		file.Close()
-		os.Remove(path)
-		return "", errors.New("manifest write failed")
+		return "", errors.Join(errors.New("manifest write failed"), file.Close(), os.Remove(path))
 	}
 	if err := file.Close(); err != nil {
-		os.Remove(path)
-		return "", errors.New("manifest write failed")
+		return "", errors.Join(errors.New("manifest write failed"), os.Remove(path))
 	}
 	return path, nil
 }
 
-func expandArgs(args []string, root, manifest string, inputs []ManifestInput, bundledRules []string, stageDir string) ([]string, error) {
+type invocationValues struct {
+	root         string
+	manifest     string
+	inputs       []ManifestInput
+	bundledRules []string
+	stageDir     string
+}
+
+func expandArgs(args []string, values invocationValues) ([]string, error) {
+	root, manifest, inputs, bundledRules, stageDir := values.root, values.manifest, values.inputs, values.bundledRules, values.stageDir
 	result := make([]string, 0, len(args)+len(inputs)+len(bundledRules))
 	for _, arg := range args {
 		switch arg {
 		case "{input_manifest}":
 			result = append(result, manifest)
 		case "{input_paths}":
-			for _, input := range inputs {
-				result = append(result, input.Path)
-			}
+			result = append(result, relativeInputPaths(inputs)...)
 		case "{absolute_input_paths}":
-			for _, input := range inputs {
-				result = append(result, filepath.Join(root, input.Path))
-			}
+			result = append(result, absoluteInputPaths(root, inputs)...)
 		case "{staged_input_dir}":
 			result = append(result, stageDir)
 		case "{bundled_rule_files}":
@@ -539,6 +667,22 @@ func expandArgs(args []string, root, manifest string, inputs []ManifestInput, bu
 		}
 	}
 	return result, nil
+}
+
+func relativeInputPaths(inputs []ManifestInput) []string {
+	paths := make([]string, 0, len(inputs))
+	for _, input := range inputs {
+		paths = append(paths, input.Path)
+	}
+	return paths
+}
+
+func absoluteInputPaths(root string, inputs []ManifestInput) []string {
+	paths := make([]string, 0, len(inputs))
+	for _, input := range inputs {
+		paths = append(paths, filepath.Join(root, input.Path))
+	}
+	return paths
 }
 
 func (r *Runner) verifyVersion(ctx context.Context, root, state, rulesRoot, binary string) error {
@@ -566,8 +710,8 @@ func (r *Runner) request(root, state, rulesRoot, binary string, args []string) s
 	return sandbox.Request{WorkDir: workDir, State: state, RulesRoot: rulesRoot, Binary: binary, Args: args, StdoutLimit: r.spec.MaxOutput, StderrLimit: r.spec.MaxOutput}
 }
 
-func (r *Runner) runCommand(ctx context.Context, root, state, rulesRoot, binary string, args []string) (*sandbox.Capture, *sandbox.Capture, error) {
-	return sandbox.Run(ctx, r.request(root, state, rulesRoot, binary, args))
+func (r *Runner) runCommand(ctx context.Context, root string, plan *scanPlan, args []string) (*sandbox.Capture, *sandbox.Capture, error) {
+	return sandbox.Run(ctx, r.request(root, plan.state, plan.rules.root, plan.binary, args))
 }
 
 func (r *Runner) observations(root string, inputs map[string]sourceInput, findings []parsedFinding, observed time.Time) ([]domain.Observation, map[string]struct{}) {
@@ -579,44 +723,62 @@ func (r *Runner) observations(root string, inputs map[string]sourceInput, findin
 			rejected[finding.path] = struct{}{}
 			continue
 		}
-		mechanism, uncertainty, quote := "", "", ""
-		severity, confidence := finding.severity, finding.confidence
-		var err error
-		if r.spec.Output.SecretDiagnostics {
-			mechanism, severity, confidence = domain.SecretMechanism, domain.SeverityHigh, domain.ConfidenceMedium
-			quote, err = sanitizeText(finding.quote, maxEvidenceText)
-		} else {
-			mechanism, err = sanitizeText(finding.mechanism, maxEvidenceText)
-			if err == nil {
-				uncertainty, err = sanitizeText(finding.uncertainty, maxEvidenceText)
-			}
-			if err == nil {
-				quote, err = sanitizeText(finding.quote, maxEvidenceText)
-			}
-		}
-		if err != nil || mechanism == "" {
-			rejected[finding.path] = struct{}{}
-			continue
-		}
-		location := domain.SourceRange{Path: finding.path, StartLine: finding.startLine, EndLine: finding.endLine, StartByte: finding.startByte, EndByte: finding.endByte}
-		sourceFindingID := finding.id
-		if r.spec.Output.SecretDiagnostics {
-			// Identity of a secret is a digest of its raw value, computed in memory
-			// here and never stored or logged raw, so a moved secret stays one issue.
-			var digestErr error
-			if sourceFindingID, digestErr = secretDigest(root, finding); digestErr != nil {
-				rejected[finding.path] = struct{}{}
-				continue
-			}
-		}
-		observation := domain.Observation{ObservationID: digestID(r.runID, r.spec.ID, finding.id, finding.ruleID, finding.path, fmt.Sprint(finding.startLine)), RunID: r.runID, Source: r.spec.ID, SourceFindingID: sourceFindingID, Family: r.spec.Family, OriginalCategory: r.spec.Category, RuleID: finding.ruleID, RuleVersion: r.spec.Rules.Version, SourceSeverity: severity, EffectiveSeverity: severity, Confidence: confidence, Mechanism: mechanism, Uncertainty: uncertainty, Evidence: []domain.Evidence{{Location: location, RedactedQuote: quote}}, Validated: true, ObservedAt: observed}
-		if err := observation.Validate(); err != nil {
+		observation, err := r.observation(root, finding, observed)
+		if err != nil {
 			rejected[finding.path] = struct{}{}
 			continue
 		}
 		observations = append(observations, observation)
 	}
 	return observations, rejected
+}
+
+type findingText struct {
+	mechanism   string
+	uncertainty string
+	quote       string
+	severity    domain.Severity
+	confidence  domain.Confidence
+}
+
+func (r *Runner) findingText(finding parsedFinding) (findingText, error) {
+	text := findingText{severity: finding.severity, confidence: finding.confidence}
+	var err error
+	if r.spec.Output.SecretDiagnostics {
+		text.mechanism, text.severity, text.confidence = domain.SecretMechanism, domain.SeverityHigh, domain.ConfidenceMedium
+		text.quote, err = sanitizeText(finding.quote, maxEvidenceText)
+		return text, err
+	}
+	if text.mechanism, err = sanitizeText(finding.mechanism, maxEvidenceText); err != nil {
+		return text, err
+	}
+	if text.uncertainty, err = sanitizeText(finding.uncertainty, maxEvidenceText); err != nil {
+		return text, err
+	}
+	text.quote, err = sanitizeText(finding.quote, maxEvidenceText)
+	return text, err
+}
+
+func (r *Runner) observation(root string, finding parsedFinding, observed time.Time) (domain.Observation, error) {
+	text, err := r.findingText(finding)
+	if err != nil || text.mechanism == "" {
+		return domain.Observation{}, errors.New("finding text failed sanitization")
+	}
+	location := domain.SourceRange{Path: finding.path, StartLine: finding.startLine, EndLine: finding.endLine, StartByte: finding.startByte, EndByte: finding.endByte}
+	sourceFindingID := finding.id
+	if r.spec.Output.SecretDiagnostics {
+		// Identity of a secret is a digest of its raw value, computed in memory
+		// here and never stored or logged raw, so a moved secret stays one issue.
+		var digestErr error
+		if sourceFindingID, digestErr = secretDigest(root, finding); digestErr != nil {
+			return domain.Observation{}, digestErr
+		}
+	}
+	observation := domain.Observation{ObservationID: digestID(r.runID, r.spec.ID, finding.id, finding.ruleID, finding.path, fmt.Sprint(finding.startLine)), RunID: r.runID, Source: r.spec.ID, SourceFindingID: sourceFindingID, Family: r.spec.Family, OriginalCategory: r.spec.Category, RuleID: finding.ruleID, RuleVersion: r.spec.Rules.Version, SourceSeverity: text.severity, EffectiveSeverity: text.severity, Confidence: text.confidence, Mechanism: text.mechanism, Uncertainty: text.uncertainty, Evidence: []domain.Evidence{{Location: location, RedactedQuote: text.quote}}, Validated: true, ObservedAt: observed}
+	if err := observation.Validate(); err != nil {
+		return domain.Observation{}, err
+	}
+	return observation, nil
 }
 
 func validFindingRange(root string, input sourceInput, finding parsedFinding) bool {
@@ -642,6 +804,10 @@ func (r *Runner) resultStatus(runErr error, parsed parsedOutput, inputs map[stri
 	if meaning == ExitPartial || !parsed.success || inputErr || len(rejected) != 0 {
 		return domain.AdapterPartial, "partial", "scanner did not complete all declared inputs"
 	}
+	return inputAccountingStatus(parsed, inputs)
+}
+
+func inputAccountingStatus(parsed parsedOutput, inputs map[string]sourceInput) (domain.AdapterStatus, string, string) {
 	for path := range inputs {
 		if _, errorPath := parsed.processingErrors[path]; errorPath {
 			return domain.AdapterPartial, "processing_error", "scanner reported an input processing error"

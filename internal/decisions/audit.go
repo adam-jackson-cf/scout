@@ -88,12 +88,22 @@ type AuditStore interface {
 	RecordAuditDraw(ctx context.Context, draw domain.AuditDraw) (domain.AuditDraw, error)
 }
 
+type AuditRequest struct {
+	RunID          string
+	FormulaVersion string
+	Units          []AuditUnit
+	Fraction       float64
+	Rand           func() float64
+	Now            time.Time
+}
+
 // DrawAudit makes the independent per-unit Bernoulli draw at each new unit's
 // stored inclusion probability and returns the stored draws of every unit.
 // Units already drawn keep their stored draw and probability. rand returns a
 // uniform value in [0, 1).
-func DrawAudit(ctx context.Context, store AuditStore, runID, formulaVersion string, units []AuditUnit, fraction float64, rand func() float64, now time.Time) ([]domain.AuditDraw, error) {
-	assignments := Assign(units, fraction)
+func DrawAudit(ctx context.Context, store AuditStore, req AuditRequest) ([]domain.AuditDraw, error) {
+	runID, formulaVersion, rand, now := req.RunID, req.FormulaVersion, req.Rand, req.Now
+	assignments := Assign(req.Units, req.Fraction)
 	draws := make([]domain.AuditDraw, 0, len(assignments))
 	for _, assignment := range assignments {
 		if existing, ok, err := store.AuditDraw(ctx, assignment.IssueID, formulaVersion, SamplerVersion); err != nil {

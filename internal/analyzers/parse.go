@@ -79,30 +79,13 @@ func parseOutput(spec Spec, raw []byte, root string) (parsedOutput, error) {
 }
 
 func parseAdapterJSON(spec Spec, raw []byte) (parsedOutput, error) {
-	decoder := json.NewDecoder(bytes.NewReader(raw))
-	decoder.DisallowUnknownFields()
-	var value adapterJSON
-	if err := decoder.Decode(&value); err != nil {
-		return parsedOutput{}, errors.New("malformed adapter JSON output")
-	}
-	if err := ensureJSONEOF(decoder); err != nil {
-		return parsedOutput{}, errors.New("malformed adapter JSON output")
-	}
-	if value.SchemaVersion != spec.Output.SchemaVersion || value.Success == nil {
-		return parsedOutput{}, errors.New("unknown adapter JSON schema")
+	value, err := decodeAdapterJSON(spec, raw)
+	if err != nil {
+		return parsedOutput{}, err
 	}
 	result := parsedOutput{success: *value.Success, processed: make(map[string]struct{}), processingErrors: make(map[string]struct{})}
-	for _, path := range value.ProcessedInputs {
-		if err := validRelativePath(path); err != nil {
-			return parsedOutput{}, errors.New("malformed processed input path")
-		}
-		result.processed[path] = struct{}{}
-	}
-	for _, processError := range value.ProcessingErrors {
-		if err := validRelativePath(processError.Path); err != nil || !safeName(processError.Code) {
-			return parsedOutput{}, errors.New("malformed processing error")
-		}
-		result.processingErrors[processError.Path] = struct{}{}
+	if err := recordAdapterInputs(&result, value); err != nil {
+		return parsedOutput{}, err
 	}
 	for _, finding := range value.Findings {
 		parsed, err := parseAdapterFinding(finding)
@@ -117,6 +100,38 @@ func parseAdapterJSON(spec Spec, raw []byte) (parsedOutput, error) {
 	return result, nil
 }
 
+func decodeAdapterJSON(spec Spec, raw []byte) (adapterJSON, error) {
+	decoder := json.NewDecoder(bytes.NewReader(raw))
+	decoder.DisallowUnknownFields()
+	var value adapterJSON
+	if err := decoder.Decode(&value); err != nil {
+		return adapterJSON{}, errors.New("malformed adapter JSON output")
+	}
+	if err := ensureJSONEOF(decoder); err != nil {
+		return adapterJSON{}, errors.New("malformed adapter JSON output")
+	}
+	if value.SchemaVersion != spec.Output.SchemaVersion || value.Success == nil {
+		return adapterJSON{}, errors.New("unknown adapter JSON schema")
+	}
+	return value, nil
+}
+
+func recordAdapterInputs(result *parsedOutput, value adapterJSON) error {
+	for _, path := range value.ProcessedInputs {
+		if err := validRelativePath(path); err != nil {
+			return errors.New("malformed processed input path")
+		}
+		result.processed[path] = struct{}{}
+	}
+	for _, processError := range value.ProcessingErrors {
+		if err := validRelativePath(processError.Path); err != nil || !safeName(processError.Code) {
+			return errors.New("malformed processing error")
+		}
+		result.processingErrors[processError.Path] = struct{}{}
+	}
+	return nil
+}
+
 func ensureJSONEOF(decoder *json.Decoder) error {
 	var extra any
 	if err := decoder.Decode(&extra); err != io.EOF {
@@ -126,7 +141,7 @@ func ensureJSONEOF(decoder *json.Decoder) error {
 }
 
 func parseAdapterFinding(value adapterFinding) (parsedFinding, error) {
-	if !safeName(value.ID) || !value.Severity.Valid() || value.Severity == domain.SeverityInformational || !value.Confidence.Valid() || value.Mechanism == "" || validRelativePath(value.Path) != nil || value.StartLine <= 0 || value.EndLine < value.StartLine || (value.StartByte == 0) != (value.EndByte == 0) || value.StartByte < 0 || value.EndByte < value.StartByte {
+	if !adapterFindingClassified(value) || !adapterFindingLocated(value) {
 		return parsedFinding{}, errors.New("malformed adapter finding")
 	}
 	ruleID, err := sanitizeIdentifier(value.RuleID)
@@ -134,6 +149,17 @@ func parseAdapterFinding(value adapterFinding) (parsedFinding, error) {
 		return parsedFinding{}, errors.New("malformed adapter finding rule")
 	}
 	return parsedFinding{id: value.ID, ruleID: ruleID, severity: value.Severity, confidence: value.Confidence, mechanism: value.Mechanism, uncertainty: value.Uncertainty, path: value.Path, startLine: value.StartLine, endLine: value.EndLine, startByte: value.StartByte, endByte: value.EndByte, quote: value.Quote}, nil
+}
+
+func adapterFindingClassified(value adapterFinding) bool {
+	return safeName(value.ID) && value.Severity.Valid() && value.Severity != domain.SeverityInformational && value.Confidence.Valid() && value.Mechanism != ""
+}
+
+func adapterFindingLocated(value adapterFinding) bool {
+	if validRelativePath(value.Path) != nil || value.StartLine <= 0 || value.EndLine < value.StartLine {
+		return false
+	}
+	return (value.StartByte == 0) == (value.EndByte == 0) && value.StartByte >= 0 && value.EndByte >= value.StartByte
 }
 
 type sarifLog struct {
@@ -189,10 +215,9 @@ type sarifRegion struct {
 }
 
 func parseSARIF(spec Spec, raw []byte, root string) (parsedOutput, error) {
-	var log sarifLog
-	decoder := json.NewDecoder(bytes.NewReader(raw))
-	if err := decoder.Decode(&log); err != nil || ensureJSONEOF(decoder) != nil || log.Version != spec.Output.SchemaVersion || len(log.Runs) == 0 {
-		return parsedOutput{}, errors.New("malformed or unknown SARIF schema")
+	log, err := decodeSARIF(spec, raw)
+	if err != nil {
+		return parsedOutput{}, err
 	}
 	// SARIF alone cannot attest inputs. Runner additionally requires the
 	// spec's attestation strategy to prove them before completion.
@@ -200,44 +225,68 @@ func parseSARIF(spec Spec, raw []byte, root string) (parsedOutput, error) {
 	result := parsedOutput{success: spec.Output.ProcessedInputsProperty != "" || externallyAttested, processed: make(map[string]struct{}), processingErrors: make(map[string]struct{})}
 	hasInvocation := false
 	for _, run := range log.Runs {
-		if run.Tool.Driver.Name == "" {
-			return parsedOutput{}, errors.New("malformed SARIF tool record")
+		invoked, err := parseSARIFRun(spec, run, root, &result)
+		if err != nil {
+			return parsedOutput{}, err
 		}
-		for _, invocation := range run.Invocations {
-			hasInvocation = true
-			if invocation.ExecutionSuccessful == nil || !*invocation.ExecutionSuccessful || len(invocation.ToolExecutionNotifications) != 0 {
-				result.success = false
-			}
-		}
-		if spec.Output.ProcessedInputsProperty != "" {
-			rawPaths, found := run.Properties[spec.Output.ProcessedInputsProperty]
-			if !found {
-				result.success = false
-			} else {
-				var paths []string
-				if err := json.Unmarshal(rawPaths, &paths); err != nil {
-					return parsedOutput{}, errors.New("malformed SARIF processed inputs")
-				}
-				for _, path := range paths {
-					if err := validRelativePath(path); err != nil {
-						return parsedOutput{}, errors.New("malformed SARIF processed input path")
-					}
-					result.processed[path] = struct{}{}
-				}
-			}
-		}
-		for _, item := range run.Results {
-			finding, err := parseSARIFFinding(spec, item, root)
-			if err != nil {
-				return parsedOutput{}, err
-			}
-			result.findings = append(result.findings, finding)
-		}
+		hasInvocation = hasInvocation || invoked
 	}
 	if !hasInvocation && !externallyAttested {
 		result.success = false
 	}
 	return result, nil
+}
+
+func decodeSARIF(spec Spec, raw []byte) (sarifLog, error) {
+	var log sarifLog
+	decoder := json.NewDecoder(bytes.NewReader(raw))
+	if err := decoder.Decode(&log); err != nil || ensureJSONEOF(decoder) != nil || log.Version != spec.Output.SchemaVersion || len(log.Runs) == 0 {
+		return sarifLog{}, errors.New("malformed or unknown SARIF schema")
+	}
+	return log, nil
+}
+
+func parseSARIFRun(spec Spec, run sarifRun, root string, result *parsedOutput) (bool, error) {
+	if run.Tool.Driver.Name == "" {
+		return false, errors.New("malformed SARIF tool record")
+	}
+	for _, invocation := range run.Invocations {
+		if invocation.ExecutionSuccessful == nil || !*invocation.ExecutionSuccessful || len(invocation.ToolExecutionNotifications) != 0 {
+			result.success = false
+		}
+	}
+	if spec.Output.ProcessedInputsProperty != "" {
+		if err := recordSARIFProcessedInputs(run.Properties, spec.Output.ProcessedInputsProperty, result); err != nil {
+			return false, err
+		}
+	}
+	for _, item := range run.Results {
+		finding, err := parseSARIFFinding(spec, item, root)
+		if err != nil {
+			return false, err
+		}
+		result.findings = append(result.findings, finding)
+	}
+	return len(run.Invocations) != 0, nil
+}
+
+func recordSARIFProcessedInputs(properties map[string]json.RawMessage, property string, result *parsedOutput) error {
+	rawPaths, found := properties[property]
+	if !found {
+		result.success = false
+		return nil
+	}
+	var paths []string
+	if err := json.Unmarshal(rawPaths, &paths); err != nil {
+		return errors.New("malformed SARIF processed inputs")
+	}
+	for _, path := range paths {
+		if err := validRelativePath(path); err != nil {
+			return errors.New("malformed SARIF processed input path")
+		}
+		result.processed[path] = struct{}{}
+	}
+	return nil
 }
 
 func parseSARIFFinding(spec Spec, value sarifResult, root string) (parsedFinding, error) {
@@ -251,30 +300,13 @@ func parseSARIFFinding(spec Spec, value sarifResult, root string) (parsedFinding
 	if !spec.allowsRuleID(ruleID) {
 		return parsedFinding{}, errors.New("SARIF emitted an undeclared rule ID")
 	}
-	path, err := sarifPath(value.Locations[0].PhysicalLocation.ArtifactLocation, root)
+	path, region, endLine, err := sarifFindingRange(value.Locations[0].PhysicalLocation, root)
 	if err != nil {
-		return parsedFinding{}, errors.New("malformed SARIF location")
+		return parsedFinding{}, err
 	}
-	region := value.Locations[0].PhysicalLocation.Region
-	if err := validRelativePath(path); err != nil || region.StartLine <= 0 {
-		return parsedFinding{}, errors.New("malformed SARIF location")
-	}
-	endLine := region.EndLine
-	if endLine == 0 {
-		endLine = region.StartLine
-	}
-	if endLine < region.StartLine || region.CharOffset < 0 || region.CharLength < 0 {
-		return parsedFinding{}, errors.New("malformed SARIF range")
-	}
-	severity := domain.SeverityMedium
-	switch value.Level {
-	case "note", "none":
-		severity = domain.SeverityLow
-	case "warning", "":
-	case "error":
-		severity = domain.SeverityHigh
-	default:
-		return parsedFinding{}, errors.New("unknown SARIF result level")
+	severity, err := sarifSeverity(value.Level)
+	if err != nil {
+		return parsedFinding{}, err
 	}
 	id := value.GUID
 	if id == "" {
@@ -286,46 +318,92 @@ func parseSARIFFinding(spec Spec, value sarifResult, root string) (parsedFinding
 	return parsedFinding{id: id, ruleID: ruleID, severity: severity, confidence: domain.ConfidenceMedium, mechanism: value.Message.Text, path: path, startLine: region.StartLine, endLine: endLine, startColumn: region.StartColumn, endColumn: region.EndColumn}, nil
 }
 
+func sarifFindingRange(location sarifPhysicalLocation, root string) (string, sarifRegion, int, error) {
+	path, err := sarifPath(location.ArtifactLocation, root)
+	if err != nil {
+		return "", sarifRegion{}, 0, errors.New("malformed SARIF location")
+	}
+	region := location.Region
+	if err := validRelativePath(path); err != nil || region.StartLine <= 0 {
+		return "", sarifRegion{}, 0, errors.New("malformed SARIF location")
+	}
+	endLine := region.EndLine
+	if endLine == 0 {
+		endLine = region.StartLine
+	}
+	if endLine < region.StartLine || region.CharOffset < 0 || region.CharLength < 0 {
+		return "", sarifRegion{}, 0, errors.New("malformed SARIF range")
+	}
+	return path, region, endLine, nil
+}
+
+func sarifSeverity(level string) (domain.Severity, error) {
+	switch level {
+	case "note", "none":
+		return domain.SeverityLow, nil
+	case "warning", "":
+		return domain.SeverityMedium, nil
+	case "error":
+		return domain.SeverityHigh, nil
+	default:
+		return "", errors.New("unknown SARIF result level")
+	}
+}
+
 // SARIF producers use repository-relative paths, Semgrep's %SRCROOT% base ID,
 // absolute file URIs, or Gitleaks' absolute URI paths without a scheme.
 // Resolve only paths contained in this scan root; verify source afterward.
 func sarifPath(location sarifArtifactLocation, root string) (string, error) {
-	if location.URIBaseID != "" && location.URIBaseID != "%SRCROOT%" {
-		return "", errors.New("unsupported SARIF URI base")
-	}
-	uri, err := url.Parse(location.URI)
-	if err != nil || uri.RawQuery != "" || uri.Fragment != "" || uri.User != nil {
-		return "", errors.New("malformed SARIF URI")
+	uri, err := parseSARIFURI(location)
+	if err != nil {
+		return "", err
 	}
 	var path string
 	switch uri.Scheme {
 	case "":
-		if uri.Host != "" || uri.Opaque != "" {
-			return "", errors.New("unsupported SARIF URI")
-		}
-		path = strings.TrimPrefix(uri.Path, "./")
-		if filepath.IsAbs(path) {
-			if location.URIBaseID != "" {
-				return "", errors.New("absolute SARIF path has a base ID")
-			}
-			path, err = filepath.Rel(root, path)
-			if err != nil {
-				return "", err
-			}
-		}
+		path, err = schemelessSARIFPath(uri, location, root)
 	case "file":
-		if location.URIBaseID != "" || (uri.Host != "" && uri.Host != "localhost") || uri.Opaque != "" || !filepath.IsAbs(uri.Path) {
-			return "", errors.New("unsupported absolute SARIF URI")
-		}
-		path, err = filepath.Rel(root, uri.Path)
-		if err != nil {
-			return "", err
-		}
+		path, err = fileSARIFPath(uri, location, root)
 	default:
 		return "", errors.New("unsupported SARIF URI scheme")
+	}
+	if err != nil {
+		return "", err
 	}
 	if err := validRelativePath(path); err != nil {
 		return "", err
 	}
 	return path, nil
+}
+
+func parseSARIFURI(location sarifArtifactLocation) (*url.URL, error) {
+	if location.URIBaseID != "" && location.URIBaseID != "%SRCROOT%" {
+		return nil, errors.New("unsupported SARIF URI base")
+	}
+	uri, err := url.Parse(location.URI)
+	if err != nil || uri.RawQuery != "" || uri.Fragment != "" || uri.User != nil {
+		return nil, errors.New("malformed SARIF URI")
+	}
+	return uri, nil
+}
+
+func schemelessSARIFPath(uri *url.URL, location sarifArtifactLocation, root string) (string, error) {
+	if uri.Host != "" || uri.Opaque != "" {
+		return "", errors.New("unsupported SARIF URI")
+	}
+	path := strings.TrimPrefix(uri.Path, "./")
+	if !filepath.IsAbs(path) {
+		return path, nil
+	}
+	if location.URIBaseID != "" {
+		return "", errors.New("absolute SARIF path has a base ID")
+	}
+	return filepath.Rel(root, path)
+}
+
+func fileSARIFPath(uri *url.URL, location sarifArtifactLocation, root string) (string, error) {
+	if location.URIBaseID != "" || (uri.Host != "" && uri.Host != "localhost") || uri.Opaque != "" || !filepath.IsAbs(uri.Path) {
+		return "", errors.New("unsupported absolute SARIF URI")
+	}
+	return filepath.Rel(root, uri.Path)
 }

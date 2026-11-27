@@ -6,14 +6,13 @@ import (
 	"testing"
 
 	"scout/internal/areas"
-	"scout/internal/association"
 	"scout/internal/domain"
 )
 
 func TestSummaryPendingAreasPreserveLaneHealthWithinBound(t *testing.T) {
 	pending := summaryPendingAreas(40)
 	health := summaryPendingHealth(5)
-	text := Summary(domain.Gate{}, Ranking{}, nil, nil, 0, health, pending, association.GuardState{})
+	text := Summary(SummaryInput{Health: health, Pending: pending})
 	if n := strings.Count(text, "\n"); n > 60 {
 		t.Errorf("summary has %d lines, want at most 60", n)
 	}
@@ -40,7 +39,7 @@ func TestSummaryPendingAreasPreserveLaneHealthWithinBound(t *testing.T) {
 
 func TestSummaryPendingAreasSmallListIsComplete(t *testing.T) {
 	pending := summaryPendingAreas(2)
-	text := Summary(domain.Gate{}, Ranking{}, nil, nil, 0, summaryPendingHealth(5), pending, association.GuardState{})
+	text := Summary(SummaryInput{Health: summaryPendingHealth(5), Pending: pending})
 	want := "- `pending-00`: src/area-00.go, src/area-00_test.go\n" +
 		"- `pending-01`: src/area-01.go, src/area-01_test.go\n"
 	if got := summaryPendingBlock(t, text); got != want {

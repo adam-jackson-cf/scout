@@ -28,8 +28,7 @@ func (s *Store) ListIssueObservations(ctx context.Context, issueID string) ([]do
 		if err != nil {
 			return fmt.Errorf("query issue observations: %w", err)
 		}
-		defer rows.Close()
-		for rows.Next() {
+		return scanRows(rows, func(rows *sql.Rows) error {
 			var payload []byte
 			if err := rows.Scan(&payload); err != nil {
 				return fmt.Errorf("scan issue observation: %w", err)
@@ -42,8 +41,8 @@ func (s *Store) ListIssueObservations(ctx context.Context, issueID string) ([]do
 				return fmt.Errorf("stored issue observation is invalid: %w", err)
 			}
 			observations = append(observations, observation)
-		}
-		return rows.Err()
+			return nil
+		})
 	})
 	return observations, err
 }

@@ -1,10 +1,11 @@
+//go:build boundary
+
 package main
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -177,19 +178,9 @@ func cliAssociationEvent(t *testing.T, name, ref, base, head string) {
 
 func cliAssociationAssess(t *testing.T, root, binary string, extra ...string) (domain.LaneHealth, []domain.Association) {
 	t.Helper()
-	reader, writer, err := os.Pipe()
-	if err != nil {
-		t.Fatal(err)
-	}
-	original := os.Stdout
-	os.Stdout = writer
-	defer func() { os.Stdout = original; reader.Close() }()
-	captured := make(chan []byte, 1)
-	go func() { b, _ := io.ReadAll(reader); captured <- b }()
 	args := append([]string{"assess", "--root", root, "--clawpatch", binary, "--json"}, extra...)
-	code := run(boundedTestContext(t), args)
-	writer.Close()
-	raw := <-captured
+	text, code := captureStdout(t, func() int { return run(boundedTestContext(t), args) })
+	raw := []byte(text)
 	var output struct {
 		ExitCode int    `json:"exitCode"`
 		Error    string `json:"error"`
@@ -207,7 +198,7 @@ func cliAssociationAssess(t *testing.T, root, binary string, extra ...string) (d
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer s.Close()
+	defer closeOrFail(t, s)
 	rows, err := s.ListAssociations(context.Background())
 	if err != nil {
 		t.Fatal(err)
@@ -221,37 +212,52 @@ func cliAssociationAssess(t *testing.T, root, binary string, extra ...string) (d
 	return domain.LaneHealth{}, nil
 }
 
+type associationPolicyCase struct {
+	name            string
+	covered, choice float64
+	outcome, reason string
+}
+
+func assertAssociationPolicyCase(t *testing.T, tc associationPolicyCase) {
+	t.Helper()
+	t.Setenv("OPENROUTER_API_KEY", "cli-local-fixture-key")
+	root, base, head, binary := cliAssociationFixture(t, cliAssociationPolicy(true, true, tc.covered, tc.choice))
+	cliAssociationEvent(t, "push", "refs/heads/main", base, head)
+	calls := cliAssociationJev(t)
+	h, rows := cliAssociationAssess(t, root, binary)
+	if h.Status != domain.LaneRan || h.Units != 1 || len(rows) != 1 || calls.Load() == 0 {
+		t.Fatalf("enabled default push: health=%+v rows=%+v calls=%d", h, rows, calls.Load())
+	}
+	a := rows[0]
+	assertPolicyRangeDecision(t, tc, a, head)
+	assertPolicyOutcome(t, tc, a, calls.Load())
+}
+
+func assertPolicyRangeDecision(t *testing.T, tc associationPolicyCase, a domain.Association, head string) {
+	t.Helper()
+	expected := association.Fingerprint{CoveredScore: tc.covered, TChoice: tc.choice, CoveredQuestion: decisions.MergeCovered.Version(cliAssociationModel), ChoiceQuestion: decisions.MergeWhichAreaTextDigest(), JevModel: cliAssociationModel, PromptDigest: association.TerraPromptDigest, FallbackModel: "gpt-6.1-terra"}
+	if a.DecisionDigest != expected.Digest() || a.MergeCommit != head || len(a.Files) != 1 || a.Files[0] != "new/service.py" || a.JevOutcome != tc.outcome || a.Reason != tc.reason {
+		t.Fatalf("policy/range decision: %+v", a)
+	}
+}
+
+func assertPolicyOutcome(t *testing.T, tc associationPolicyCase, a domain.Association, calls int64) {
+	t.Helper()
+	if tc.outcome == "assigned" && (a.Outcome != domain.AssociationAssigned || len(a.AreaIDs) != 1 || a.AreaIDs[0] != "area-0") {
+		t.Fatalf("assignment not persisted: %+v", a)
+	}
+	if tc.outcome == "none" && calls != 1 {
+		t.Fatalf("covered_score should stop before Choice: %d calls", calls)
+	}
+}
+
 func TestAssociationCLIOptionsPolicyAndPushRange(t *testing.T) {
-	for _, tc := range []struct {
-		name            string
-		covered, choice float64
-		outcome, reason string
-	}{
+	for _, tc := range []associationPolicyCase{
 		{name: "covered threshold terminal", covered: .45, choice: .6, outcome: "none", reason: domain.AssociationReasonNoneUnsent},
 		{name: "choice threshold unresolved", covered: .65, choice: .8, outcome: "unresolved", reason: domain.AssociationReasonBelowTChoice},
 		{name: "choice threshold assigned", covered: .65, choice: .6, outcome: "assigned"},
 	} {
-		t.Run(tc.name, func(t *testing.T) {
-			t.Setenv("OPENROUTER_API_KEY", "cli-local-fixture-key")
-			root, base, head, binary := cliAssociationFixture(t, cliAssociationPolicy(true, true, tc.covered, tc.choice))
-			cliAssociationEvent(t, "push", "refs/heads/main", base, head)
-			calls := cliAssociationJev(t)
-			h, rows := cliAssociationAssess(t, root, binary)
-			if h.Status != domain.LaneRan || h.Units != 1 || len(rows) != 1 || calls.Load() == 0 {
-				t.Fatalf("enabled default push: health=%+v rows=%+v calls=%d", h, rows, calls.Load())
-			}
-			a := rows[0]
-			expected := association.Fingerprint{CoveredScore: tc.covered, TChoice: tc.choice, CoveredQuestion: decisions.MergeCovered.Version(cliAssociationModel), ChoiceQuestion: decisions.MergeWhichAreaTextDigest(), JevModel: cliAssociationModel, PromptDigest: association.TerraPromptDigest, FallbackModel: "gpt-6.1-terra"}
-			if a.DecisionDigest != expected.Digest() || a.MergeCommit != head || len(a.Files) != 1 || a.Files[0] != "new/service.py" || a.JevOutcome != tc.outcome || a.Reason != tc.reason {
-				t.Fatalf("policy/range decision: %+v", a)
-			}
-			if tc.outcome == "assigned" && (a.Outcome != domain.AssociationAssigned || len(a.AreaIDs) != 1 || a.AreaIDs[0] != "area-0") {
-				t.Fatalf("assignment not persisted: %+v", a)
-			}
-			if tc.outcome == "none" && calls.Load() != 1 {
-				t.Fatalf("covered_score should stop before Choice: %d calls", calls.Load())
-			}
-		})
+		t.Run(tc.name, func(t *testing.T) { assertAssociationPolicyCase(t, tc) })
 	}
 }
 

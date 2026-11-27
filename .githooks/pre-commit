@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+top="$(git rev-parse --show-toplevel)"
+cd "$top"
+exec go run ./tools/gate commit

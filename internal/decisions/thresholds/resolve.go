@@ -10,6 +10,7 @@ package thresholds
 
 import (
 	"bytes"
+	"context"
 	_ "embed"
 	"encoding/json"
 	"errors"
@@ -17,6 +18,7 @@ import (
 	"math"
 	"os/exec"
 	"strings"
+	"time"
 )
 
 // Path is the repository-relative override file.
@@ -73,6 +75,15 @@ type File struct {
 }
 
 func (e Entry) validate() error {
+	for _, check := range []func() error{e.validateKinds, e.validateBounds, e.validateReadiness, e.validateRequired} {
+		if err := check(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (e Entry) validateKinds() error {
 	switch {
 	case e.QuestionID == "":
 		return errors.New("entry requires a question_id")
@@ -80,14 +91,32 @@ func (e Entry) validate() error {
 		return fmt.Errorf("%s: status %q must be provisional or ready", e.QuestionID, e.Status)
 	case e.ScoreSpace != SpaceRaw && e.ScoreSpace != SpacePlatt:
 		return fmt.Errorf("%s: score_space %q must be raw or platt", e.QuestionID, e.ScoreSpace)
+	}
+	return nil
+}
+
+func (e Entry) validateBounds() error {
+	switch {
 	case !unit(e.MinPrecision) || !unit(e.MinRecall) || e.MinPrecision == 0 || e.MinRecall == 0:
 		return fmt.Errorf("%s: minimums must be in (0, 1]", e.QuestionID)
 	case e.Threshold != nil && !unit(*e.Threshold):
 		return fmt.Errorf("%s: threshold must be in [0, 1]", e.QuestionID)
+	}
+	return nil
+}
+
+func (e Entry) validateReadiness() error {
+	switch {
 	case e.Gating && e.Threshold == nil:
 		return fmt.Errorf("%s: a gating entry requires a threshold", e.QuestionID)
 	case e.Status == StatusReady && (e.Threshold == nil || e.LabelSet.Summary == "" || e.LabelSet.Summary == "none"):
 		return fmt.Errorf("%s: a ready entry requires a threshold and a label set", e.QuestionID)
+	}
+	return nil
+}
+
+func (e Entry) validateRequired() error {
+	switch {
 	case e.Metric == "" || e.LabelSet.Summary == "" || e.CostRule == "" || e.MinimumsProvenance == "":
 		return fmt.Errorf("%s: metric, label_set, cost_rule and minimums_provenance are required", e.QuestionID)
 	}
@@ -190,8 +219,12 @@ func ReadCommitted(repoRoot, ref string) ([]byte, error) {
 	return data, nil
 }
 
+const gitTimeout = 30 * time.Second
+
 func git(dir string, args ...string) ([]byte, error) {
-	cmd := exec.Command("git", args...)
+	ctx, cancel := context.WithTimeout(context.Background(), gitTimeout)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "git", args...)
 	cmd.Dir = dir
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr

@@ -94,82 +94,106 @@ func Rework(ctx context.Context, repo string, commits []Commit, o Options) ([]do
 	fixed, trailing := Windows(commits[0].Time, end, o.window())
 	wins := append(append([]Window(nil), fixed...), trailing)
 
-	cache := map[string][]removedLine{}
-	removed := func(hash string) ([]removedLine, error) {
-		if r, ok := cache[hash]; ok {
-			return r, nil
-		}
-		diff, err := runGit(ctx, repo, "diff", "-U0", "--no-renames", hash+"^", hash)
-		if err != nil {
-			return nil, err
-		}
-		var res []removedLine
-		byPath := parseRemoved(string(diff))
-		paths := make([]string, 0, len(byPath))
-		for p := range byPath {
-			paths = append(paths, p)
-		}
-		sort.Strings(paths)
-		for _, p := range paths {
-			if !o.eligible(p) {
-				continue
-			}
-			origins, err := blameOrigins(ctx, repo, hash+"^", p, byPath[p])
-			if err != nil {
-				return nil, err
-			}
-			for _, og := range origins {
-				res = append(res, removedLine{p, og})
-			}
-		}
-		cache[hash] = res
-		return res, nil
-	}
-
-	parents := map[string]int{}
+	rc := &reworkCounter{ctx: ctx, repo: repo, o: o, cache: map[string][]removedLine{}, parents: map[string]int{}}
 	for _, c := range commits {
-		parents[c.Hash] = c.Parents
+		rc.parents[c.Hash] = c.Parents
 	}
 	var sigs []domain.Signal
 	for _, sc := range o.Scopes {
 		for _, w := range wins {
-			inWindow := map[string]bool{} // 39-char prefixes of repo-wide changes in the window
-			for _, c := range changes {
-				if w.has(c.t) {
-					inWindow[c.hash[:39]] = true
-				}
-			}
-			sw := newScopeWindow(sc, w, changes, o, end)
-			sig := sw.base("scout.rework@1")
-			num, den := 0, 0
-			for _, it := range sw.items {
-				if parents[it.c.hash] == 0 {
-					continue // root commit has no parent to blame
-				}
-				rl, err := removed(it.c.hash)
-				if err != nil {
-					return nil, err
-				}
-				for _, l := range rl {
-					if !sc.Contains(l.path) {
-						continue
-					}
-					den++
-					if inWindow[l.origin] {
-						num++
-					}
-				}
-			}
-			if den == 0 {
-				sigs = append(sigs, markMissing(sig, "unmeasured", "no removed lines in scope in window"))
-				continue
-			}
-			sig = setValue(sig, float64(num)/float64(den), float64(num), float64(den))
-			if len(sw.items) < MinChanges {
-				sig = markMissing(sig, "insufficient", fmt.Sprintf("%d changes < %d", len(sw.items), MinChanges))
+			sig, err := rc.windowSignal(newScopeWindow(sc, w, changes, o, end), changes)
+			if err != nil {
+				return nil, err
 			}
 			sigs = append(sigs, sig)
 		}
 	}
 	return sigs, nil
+}
+
+type reworkCounter struct {
+	ctx     context.Context
+	repo    string
+	o       Options
+	cache   map[string][]removedLine
+	parents map[string]int
+}
+
+func (rc *reworkCounter) removed(hash string) ([]removedLine, error) {
+	if r, ok := rc.cache[hash]; ok {
+		return r, nil
+	}
+	diff, err := runGit(rc.ctx, rc.repo, "diff", "-U0", "--no-renames", hash+"^", hash)
+	if err != nil {
+		return nil, err
+	}
+	var res []removedLine
+	byPath := parseRemoved(string(diff))
+	paths := make([]string, 0, len(byPath))
+	for p := range byPath {
+		paths = append(paths, p)
+	}
+	sort.Strings(paths)
+	for _, p := range paths {
+		if !rc.o.eligible(p) {
+			continue
+		}
+		origins, err := blameOrigins(rc.ctx, rc.repo, hash+"^", p, byPath[p])
+		if err != nil {
+			return nil, err
+		}
+		for _, og := range origins {
+			res = append(res, removedLine{p, og})
+		}
+	}
+	rc.cache[hash] = res
+	return res, nil
+}
+
+func windowChangePrefixes(w Window, changes []change) map[string]bool {
+	inWindow := map[string]bool{} // 39-char prefixes of repo-wide changes in the window
+	for _, c := range changes {
+		if w.has(c.t) {
+			inWindow[c.hash[:39]] = true
+		}
+	}
+	return inWindow
+}
+
+func (rc *reworkCounter) count(sw *scopeWindow, inWindow map[string]bool) (num, den int, err error) {
+	for _, it := range sw.items {
+		if rc.parents[it.c.hash] == 0 {
+			continue // root commit has no parent to blame
+		}
+		rl, err := rc.removed(it.c.hash)
+		if err != nil {
+			return 0, 0, err
+		}
+		for _, l := range rl {
+			if !sw.sc.Contains(l.path) {
+				continue
+			}
+			den++
+			if inWindow[l.origin] {
+				num++
+			}
+		}
+	}
+	return num, den, nil
+}
+
+func (rc *reworkCounter) windowSignal(sw *scopeWindow, changes []change) (domain.Signal, error) {
+	sig := sw.base("scout.rework@1")
+	num, den, err := rc.count(sw, windowChangePrefixes(sw.w, changes))
+	if err != nil {
+		return domain.Signal{}, err
+	}
+	if den == 0 {
+		return markMissing(sig, "unmeasured", "no removed lines in scope in window"), nil
+	}
+	sig = setValue(sig, float64(num)/float64(den), float64(num), float64(den))
+	if len(sw.items) < MinChanges {
+		sig = markMissing(sig, "insufficient", fmt.Sprintf("%d changes < %d", len(sw.items), MinChanges))
+	}
+	return sig, nil
 }

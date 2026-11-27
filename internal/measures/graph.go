@@ -23,6 +23,24 @@ func graphConfigFile(p string) bool {
 // cycleMass computes scout.cycle_mass@1 for every scope over the eligible
 // population, or an `unmeasured` row per scope when the graph cannot be built.
 func cycleMass(root string, in Input, eligible []domain.File, allFiles []domain.File, buildFailure string) []domain.Signal {
+	inputs := cycleMassScopes(in, eligible)
+	var signals []domain.Signal
+	if buildFailure == "" {
+		graph, err := importgraph.Build(importgraph.Options{Root: root, Files: graphFiles(eligible, allFiles)})
+		if err == nil {
+			signals = importgraph.Signals(graph, inputs, in.Snapshot)
+		} else {
+			buildFailure = "import graph extraction failed: " + err.Error()
+		}
+	}
+	if signals == nil {
+		signals = unmeasuredCycleMass(in, inputs, buildFailure)
+	}
+	setRunScope(signals, in.RunScope)
+	return signals
+}
+
+func cycleMassScopes(in Input, eligible []domain.File) []importgraph.ScopeInput {
 	eligibleSet := make(map[string]bool, len(eligible))
 	for _, file := range eligible {
 		eligibleSet[file.Path] = true
@@ -42,42 +60,42 @@ func cycleMass(root string, in Input, eligible []domain.File, allFiles []domain.
 				population = append(population, candidateByPath[p])
 			}
 		}
-		paths := make([]string, len(population))
-		for i, file := range population {
-			paths[i] = file.Path
-		}
-		inputs = append(inputs, importgraph.ScopeInput{Kind: scope.Kind, Anchor: scope.Anchor, Paths: paths, PopulationDigest: PopulationDigest(population)})
+		inputs = append(inputs, importgraph.ScopeInput{Kind: scope.Kind, Anchor: scope.Anchor, Paths: filePaths(population), PopulationDigest: PopulationDigest(population)})
 	}
+	return inputs
+}
 
-	var signals []domain.Signal
-	if buildFailure == "" {
-		files := []string{}
-		for _, file := range eligible {
+func filePaths(files []domain.File) []string {
+	paths := make([]string, len(files))
+	for i, file := range files {
+		paths[i] = file.Path
+	}
+	return paths
+}
+
+func graphFiles(eligible []domain.File, allFiles []domain.File) []string {
+	files := []string{}
+	for _, file := range eligible {
+		files = append(files, file.Path)
+	}
+	for _, file := range allFiles {
+		if !file.Excluded && graphConfigFile(file.Path) {
 			files = append(files, file.Path)
 		}
-		for _, file := range allFiles {
-			if !file.Excluded && graphConfigFile(file.Path) {
-				files = append(files, file.Path)
-			}
-		}
-		sort.Strings(files)
-		graph, err := importgraph.Build(importgraph.Options{Root: root, Files: files})
-		if err == nil {
-			signals = importgraph.Signals(graph, inputs, in.Snapshot)
-		} else {
-			buildFailure = "import graph extraction failed: " + err.Error()
-		}
 	}
-	if signals == nil {
-		for _, input := range inputs {
-			signals = append(signals, domain.Signal{
-				MetricID: MetricCycleMass, Version: metricVersion, ScopeKind: input.Kind, ScopeAnchor: input.Anchor,
-				Snapshot: in.Snapshot, PopulationDigest: input.PopulationDigest,
-				ToolDigest: importgraph.ToolDigest, ConfigDigest: importgraph.ConfigDigest,
-				Missing: domain.SignalUnmeasured, MissingReason: buildFailure, Claim: domain.ClaimDescriptive,
-			})
-		}
+	sort.Strings(files)
+	return files
+}
+
+func unmeasuredCycleMass(in Input, inputs []importgraph.ScopeInput, reason string) []domain.Signal {
+	var signals []domain.Signal
+	for _, input := range inputs {
+		signals = append(signals, domain.Signal{
+			MetricID: MetricCycleMass, Version: metricVersion, ScopeKind: input.Kind, ScopeAnchor: input.Anchor,
+			Snapshot: in.Snapshot, PopulationDigest: input.PopulationDigest,
+			ToolDigest: importgraph.ToolDigest, ConfigDigest: importgraph.ConfigDigest,
+			Missing: domain.SignalUnmeasured, MissingReason: reason, Claim: domain.ClaimDescriptive,
+		})
 	}
-	setRunScope(signals, in.RunScope)
 	return signals
 }

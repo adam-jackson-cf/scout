@@ -1,7 +1,8 @@
+//go:build boundary
+
 package main
 
 import (
-	"os/exec"
 	"testing"
 
 	"scout/internal/policy"
@@ -12,11 +13,7 @@ import (
 // the scoped/justified counterparts in the same PR are not reported as
 // blocking-eligible findings.
 func TestDiffReportsGuardrailErosion(t *testing.T) {
-	for _, tool := range []string{"ruff", "gitleaks", "semgrep"} {
-		if _, err := exec.LookPath(tool); err != nil {
-			t.Skipf("%s is not installed (source .tools/activate)", tool)
-		}
-	}
+	requireTools(t, "ruff", "gitleaks", "semgrep")
 	t.Setenv("SCOUT_CLAWPATCH_BINARY", pinnedClawpatch(t))
 
 	root := t.TempDir()

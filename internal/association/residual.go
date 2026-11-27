@@ -1,6 +1,10 @@
 package association
 
-import "sort"
+import (
+	"sort"
+
+	"scout/internal/domain"
+)
 
 // Kind is how a merge changed a file.
 type Kind string
@@ -70,69 +74,95 @@ type Result struct {
 // changes. inTree reports whether a path exists in the parent tree (variant
 // siblings must exist there).
 func Classify(changes []Change, own Ownership, inTree func(string) bool) Result {
-	r := Result{Counts: map[string]int{}}
-	owned := func(p string) bool { return len(own.AreaOwners(p)) > 0 }
-	heur := func(p string) bool { return !owned(p) && own.HeuristicOnly(p) }
-	pooled := func(p string) bool { return !owned(p) && len(own.PendingAreas(p)) > 0 }
-	residual := func(m Member) {
-		if heur(m.Path) {
-			r.Counts["heuristic_only"]++
-			m.HeuristicOnly = true
-		}
-		r.Residual = append(r.Residual, m)
+	c := classifier{r: Result{Counts: map[string]int{}}, own: own, inTree: inTree}
+	for _, change := range changes {
+		c.classify(change)
 	}
-	for _, c := range changes {
-		if c.Kind == Deleted {
-			r.Counts["deleted"]++
-			r.Deleted = append(r.Deleted, c.Path)
-			continue
-		}
-		if why := excludedReason(c.Path); why != "" {
-			r.Counts["excluded:"+why]++
-			continue
-		}
-		switch c.Kind {
-		case Modified:
-			switch {
-			case owned(c.Path):
-				r.Counts["modified_owned"]++
-			case heur(c.Path): // rule (f): decided whether added, moved or modified
-				residual(Member{Path: c.Path, Kind: string(Modified)})
-			default:
-				r.Counts["modified_unowned"]++
-				if pooled(c.Path) {
-					r.Counts["modified_unowned:pooled"]++
-				} else {
-					r.Counts["modified_unowned:never_owned"]++
-				}
-				r.CoverageGaps = append(r.CoverageGaps, c.Path)
-			}
-		case Renamed:
-			switch {
-			case c.Empty:
-				r.Counts["renamed_empty_trap"]++
-				residual(Member{Path: c.Path, Kind: string(Renamed), Old: c.OldPath, Empty: true})
-			case owned(c.OldPath):
-				r.Counts["renamed_inherit"]++
-				r.Inherited = append(r.Inherited, Inherited{Path: c.Path, Rule: "rename", From: c.OldPath, Areas: sortedCopy(own.AreaOwners(c.OldPath))})
-			case pooled(c.OldPath):
-				r.Counts["renamed_pooled"]++
-				r.PendingMoves = append(r.PendingMoves, PendingMove{Old: c.OldPath, New: c.Path, Pending: sortedCopy(own.PendingAreas(c.OldPath))})
-			default:
-				r.Counts["renamed_unowned"]++
-				residual(Member{Path: c.Path, Kind: string(Renamed), Old: c.OldPath})
-			}
-		default: // Added
-			if from, areas := variantOwners(c.Path, own, inTree); len(areas) > 0 {
-				r.Counts["variant_inherit"]++
-				r.Inherited = append(r.Inherited, Inherited{Path: c.Path, Rule: "variant", From: from, Areas: areas})
-				continue
-			}
-			r.Counts["residual_added"]++
-			residual(Member{Path: c.Path, Kind: string(Added), Empty: c.Empty})
-		}
+	return c.r
+}
+
+type classifier struct {
+	r      Result
+	own    Ownership
+	inTree func(string) bool
+}
+
+func (k *classifier) owned(p string) bool { return len(k.own.AreaOwners(p)) > 0 }
+
+func (k *classifier) heur(p string) bool { return !k.owned(p) && k.own.HeuristicOnly(p) }
+
+func (k *classifier) pooled(p string) bool { return !k.owned(p) && len(k.own.PendingAreas(p)) > 0 }
+
+func (k *classifier) residual(m Member) {
+	if k.heur(m.Path) {
+		k.r.Counts["heuristic_only"]++
+		m.HeuristicOnly = true
 	}
-	return r
+	k.r.Residual = append(k.r.Residual, m)
+}
+
+func (k *classifier) classify(c Change) {
+	if c.Kind == Deleted {
+		k.r.Counts["deleted"]++
+		k.r.Deleted = append(k.r.Deleted, c.Path)
+		return
+	}
+	if why := excludedReason(c.Path); why != "" {
+		k.r.Counts["excluded:"+why]++
+		return
+	}
+	switch c.Kind {
+	case Modified:
+		k.modified(c)
+	case Renamed:
+		k.renamed(c)
+	default: // Added
+		k.added(c)
+	}
+}
+
+func (k *classifier) modified(c Change) {
+	switch {
+	case k.owned(c.Path):
+		k.r.Counts["modified_owned"]++
+	case k.heur(c.Path):
+		k.residual(Member{Path: c.Path, Kind: string(Modified)})
+	default:
+		k.r.Counts["modified_unowned"]++
+		if k.pooled(c.Path) {
+			k.r.Counts["modified_unowned:pooled"]++
+		} else {
+			k.r.Counts["modified_unowned:never_owned"]++
+		}
+		k.r.CoverageGaps = append(k.r.CoverageGaps, c.Path)
+	}
+}
+
+func (k *classifier) renamed(c Change) {
+	switch {
+	case c.Empty:
+		k.r.Counts["renamed_empty_trap"]++
+		k.residual(Member{Path: c.Path, Kind: string(Renamed), Old: c.OldPath, Empty: true})
+	case k.owned(c.OldPath):
+		k.r.Counts["renamed_inherit"]++
+		k.r.Inherited = append(k.r.Inherited, Inherited{Path: c.Path, Rule: domain.InheritedRename, From: c.OldPath, Areas: sortedCopy(k.own.AreaOwners(c.OldPath))})
+	case k.pooled(c.OldPath):
+		k.r.Counts["renamed_pooled"]++
+		k.r.PendingMoves = append(k.r.PendingMoves, PendingMove{Old: c.OldPath, New: c.Path, Pending: sortedCopy(k.own.PendingAreas(c.OldPath))})
+	default:
+		k.r.Counts["renamed_unowned"]++
+		k.residual(Member{Path: c.Path, Kind: string(Renamed), Old: c.OldPath})
+	}
+}
+
+func (k *classifier) added(c Change) {
+	if from, areas := variantOwners(c.Path, k.own, k.inTree); len(areas) > 0 {
+		k.r.Counts["variant_inherit"]++
+		k.r.Inherited = append(k.r.Inherited, Inherited{Path: c.Path, Rule: domain.InheritedVariant, From: from, Areas: areas})
+		return
+	}
+	k.r.Counts["residual_added"]++
+	k.residual(Member{Path: c.Path, Kind: string(Added), Empty: c.Empty})
 }
 
 // variantOwners returns the owners of owned files with the same variant-sibling

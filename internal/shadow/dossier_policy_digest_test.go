@@ -3,10 +3,10 @@ package shadow
 import (
 	"bytes"
 	"fmt"
-	"scout/internal/domain"
-	"strings"
 	"testing"
 	"time"
+
+	"scout/internal/domain"
 )
 
 // Each proof owns its fixtures so it can be overlaid and compiled alone.
@@ -67,51 +67,9 @@ func p21Same(t *testing.T, a, b Report) {
 		t.Fatalf("historical dossier changed: %s / %s", ad, bd)
 	}
 }
-func p21Event(l *domain.ShadowLedger, f domain.PRRunFact, id, verdict string, day int) {
-	e := domain.ProviderPREvent{EventID: id, RepositoryID: f.ID.RepositoryID, Scope: domain.ShadowScopeCI, PRNumber: f.PRNumber, HeadCommit: f.HeadCommit, HeadTree: f.HeadTree, MergeBase: f.MergeBase, CheckID: f.CheckID, RuleVersion: f.RuleVersion, IssueID: id, EventAt: f.StartedAt, RecordedAt: f.RecordedAt}
-	l.Events = append(l.Events, e)
-	l.Links = append(l.Links, domain.PRRunEventLink{AttemptID: f.ID, Scope: domain.ShadowScopeCI, EventID: id})
-	if verdict != "" {
-		l.Triage = append(l.Triage, domain.ShadowTriage{ActionID: fmt.Sprint(day + 100), EventID: id, RepositoryID: "repo", Scope: domain.ShadowScopeCI, Verdict: verdict, Actor: "maintainer", PolicyRevision: "protected1", TriagedAt: p21Day(day), RecordedAt: p21Stamp(day)})
-	}
-}
-func p21Advance(l *domain.ShadowLedger, day int) {
-	f := l.Frontiers[len(l.Frontiers)-1]
-	f.CompleteThrough = p21Day(day)
-	l.Frontiers = append(l.Frontiers, f)
-	for i := range l.Intervals {
-		l.Intervals[i].Through = p21Day(day)
-	}
-}
-func p21Veto(t *testing.T, r Report, word string) {
-	t.Helper()
-	if r.Dossier.Ready || !strings.Contains(strings.ToLower(r.Dossier.Reason), word) {
-		t.Fatalf("ready=%v reason=%q; want %s veto", r.Dossier.Ready, r.Dossier.Reason, word)
-	}
-}
 
 func TestADR012DossierHistoricalPolicyAndDigest(t *testing.T) {
-	t.Run("canonical-decision-fields", func(t *testing.T) {
-		original := p21Eval(t, p21Ledger(), p21Query(), 0)
-		_, digest := p21Canonical(t, original)
-		for _, field := range []string{"reason", "ready", "counts", "version"} {
-			changed := original
-			switch field {
-			case "reason":
-				changed.Dossier.Reason = "different immutable reason"
-			case "ready":
-				changed.Dossier.Ready = !changed.Dossier.Ready
-			case "counts":
-				changed.Dossier.Stats.PRRuns++
-			case "version":
-				changed.Dossier.RuleVersion = "2"
-			}
-			_, other := p21Canonical(t, changed)
-			if other == digest {
-				t.Fatalf("digest omitted %s", field)
-			}
-		}
-	})
+	t.Run("canonical-decision-fields", p21CanonicalDecisionFieldsChangeDigest)
 
 	l := p21Ledger()
 	q := p21Query()
@@ -164,4 +122,26 @@ func TestADR012DossierHistoricalPolicyAndDigest(t *testing.T) {
 	l.Publications = append(l.Publications, extra)
 	p21Same(t, before, p21Eval(t, l, q, 0))
 
+}
+
+func p21CanonicalDecisionFieldsChangeDigest(t *testing.T) {
+	original := p21Eval(t, p21Ledger(), p21Query(), 0)
+	_, digest := p21Canonical(t, original)
+	for _, field := range []string{"reason", "ready", "counts", "version"} {
+		changed := original
+		switch field {
+		case "reason":
+			changed.Dossier.Reason = "different immutable reason"
+		case "ready":
+			changed.Dossier.Ready = !changed.Dossier.Ready
+		case "counts":
+			changed.Dossier.Stats.PRRuns++
+		case "version":
+			changed.Dossier.RuleVersion = "2"
+		}
+		_, other := p21Canonical(t, changed)
+		if other == digest {
+			t.Fatalf("digest omitted %s", field)
+		}
+	}
 }

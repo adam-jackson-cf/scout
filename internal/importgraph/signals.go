@@ -39,6 +39,20 @@ func digestPaths(paths []string) string {
 // nodes follow their file; a Go package-directory node follows the scope owning
 // most of its files (ties: lowest scope index).
 func nodeScopes(g *Graph, scopes []ScopeInput) map[string]int {
+	fileScope := fileScopes(scopes)
+	dirVotes := scopeVotesByDir(fileScope)
+	out := make(map[string]int, len(g.Nodes))
+	for _, n := range g.Nodes {
+		if i, ok := fileScope[n]; ok {
+			out[n] = i
+			continue
+		}
+		out[n] = majorityScope(dirVotes[n])
+	}
+	return out
+}
+
+func fileScopes(scopes []ScopeInput) map[string]int {
 	fileScope := map[string]int{}
 	for i, s := range scopes {
 		for _, p := range s.Paths {
@@ -47,6 +61,10 @@ func nodeScopes(g *Graph, scopes []ScopeInput) map[string]int {
 			}
 		}
 	}
+	return fileScope
+}
+
+func scopeVotesByDir(fileScope map[string]int) map[string]map[int]int {
 	dirVotes := map[string]map[int]int{}
 	for p, i := range fileScope {
 		d := path.Dir(p)
@@ -55,21 +73,17 @@ func nodeScopes(g *Graph, scopes []ScopeInput) map[string]int {
 		}
 		dirVotes[d][i]++
 	}
-	out := make(map[string]int, len(g.Nodes))
-	for _, n := range g.Nodes {
-		if i, ok := fileScope[n]; ok {
-			out[n] = i
-			continue
+	return dirVotes
+}
+
+func majorityScope(votes map[int]int) int {
+	best, bestN := -1, 0
+	for i, c := range votes {
+		if c > bestN || c == bestN && i < best {
+			best, bestN = i, c
 		}
-		best, bestN := -1, 0
-		for i, c := range dirVotes[n] {
-			if c > bestN || c == bestN && i < best {
-				best, bestN = i, c
-			}
-		}
-		out[n] = best
 	}
-	return out
+	return best
 }
 
 // Signals returns scout.cycle_mass@1 per scope at snapshot. Edges are
@@ -78,104 +92,125 @@ func nodeScopes(g *Graph, scopes []ScopeInput) map[string]int {
 // edge are `insufficient` (ratio undefined), never 0.
 func Signals(g *Graph, scopes []ScopeInput, snapshot string) []domain.Signal {
 	owner := nodeScopes(g, scopes)
-	crossComp := map[int]bool{}
-	{
-		seen := map[int]map[int]bool{}
-		for n, c := range components(g) {
-			if seen[c] == nil {
-				seen[c] = map[int]bool{}
-			}
-			seen[c][owner[n]] = true
-			crossComp[c] = len(seen[c]) > 1
-		}
-	}
 	comp := components(g)
-	supported := strings.Join(g.Languages, ",")
-
+	c := signalContext{
+		g: g, owner: owner, comp: comp, crossComp: crossScopeComponents(comp, owner),
+		supported: strings.Join(g.Languages, ","), snapshot: snapshot,
+	}
 	out := make([]domain.Signal, 0, len(scopes))
 	for si, sc := range scopes {
-		all := sc.Kind == domain.SignalScopeRepository && len(sc.Paths) == 0
-		in := func(n string) bool { return all || owner[n] == si }
-		pop := sc.PopulationDigest
-		if pop == "" {
-			if all {
-				pop = digestPaths(g.Nodes)
-			} else {
-				pop = digestPaths(sc.Paths)
-			}
-		}
-		sig := domain.Signal{
-			MetricID: "scout.cycle_mass", Version: 1,
-			ScopeKind: sc.Kind, ScopeAnchor: sc.Anchor, Snapshot: snapshot,
-			PopulationDigest: pop, ToolDigest: ToolDigest, ConfigDigest: ConfigDigest,
-			Claim: domain.ClaimDescriptive,
-		}
-		nodes := 0
-		for _, n := range g.Nodes {
-			if in(n) {
-				nodes++
-			}
-		}
-		if nodes == 0 {
-			sig.Missing = domain.SignalUnmeasured
-			sig.MissingReason = "no Go, Python or TypeScript/JS source in scope (import graph supports: go, python, typescript)"
-			out = append(out, sig)
-			continue
-		}
-		var internal, cyc, typeOnly, unres int
-		for _, e := range g.Edges {
-			if in(e.From) {
-				internal++
-				if c, ok := comp[e.From]; ok {
-					if c2, ok2 := comp[e.To]; ok2 && c == c2 {
-						cyc++
-					}
-				}
-			}
-		}
-		for _, e := range g.TypeOnlyEdges {
-			if in(e.From) {
-				typeOnly++
-			}
-		}
-		for _, u := range g.Unresolved {
-			if in(u.From) {
-				unres++
-			}
-		}
-		skipped := 0
-		for _, k := range g.Skipped {
-			if in(k.From) {
-				skipped++
-			}
-		}
-		touched := map[int]bool{}
-		for n, c := range comp {
-			if crossComp[c] && in(n) {
-				touched[c] = true
-			}
-		}
-		cross := len(touched)
-		sig.Detail = map[string]any{
-			"nodes":                 nodes,
-			"cross_boundary_cycles": cross,
-			"unresolved_imports":    unres,
-			"skipped_inputs":        skipped,
-			"type_only_edges":       typeOnly,
-			"languages_supported":   supported,
-		}
-		if internal == 0 {
-			sig.Missing = domain.SignalInsufficient
-			sig.MissingReason = "no internal import edges in scope; ratio undefined"
-			out = append(out, sig)
-			continue
-		}
-		sig.Numerator = domain.Float(float64(cyc))
-		sig.Denominator = domain.Float(float64(internal))
-		sig.Value = domain.Float(float64(cyc) / float64(internal))
-		out = append(out, sig)
+		out = append(out, c.scopeSignal(si, sc))
 	}
 	return out
+}
+
+func crossScopeComponents(comp map[string]int, owner map[string]int) map[int]bool {
+	crossComp := map[int]bool{}
+	seen := map[int]map[int]bool{}
+	for n, c := range comp {
+		if seen[c] == nil {
+			seen[c] = map[int]bool{}
+		}
+		seen[c][owner[n]] = true
+		crossComp[c] = len(seen[c]) > 1
+	}
+	return crossComp
+}
+
+type signalContext struct {
+	g         *Graph
+	owner     map[string]int
+	comp      map[string]int
+	crossComp map[int]bool
+	supported string
+	snapshot  string
+}
+
+func (c signalContext) scopeSignal(si int, sc ScopeInput) domain.Signal {
+	all := sc.Kind == domain.SignalScopeRepository && len(sc.Paths) == 0
+	in := func(n string) bool { return all || c.owner[n] == si }
+	sig := domain.Signal{
+		MetricID: "scout.cycle_mass", Version: 1,
+		ScopeKind: sc.Kind, ScopeAnchor: sc.Anchor, Snapshot: c.snapshot,
+		PopulationDigest: populationDigest(sc, all, c.g.Nodes), ToolDigest: ToolDigest, ConfigDigest: ConfigDigest,
+		Claim: domain.ClaimDescriptive,
+	}
+	nodes := countWhere(c.g.Nodes, in)
+	if nodes == 0 {
+		sig.Missing = domain.SignalUnmeasured
+		sig.MissingReason = "no Go, Python or TypeScript/JS source in scope (import graph supports: go, python, typescript)"
+		return sig
+	}
+	internal, cyc := c.cycleEdges(in)
+	sig.Detail = map[string]any{
+		"nodes":                 nodes,
+		"cross_boundary_cycles": c.crossBoundaryCycles(in),
+		"unresolved_imports":    countWhere(c.g.Unresolved, func(u Unresolved) bool { return in(u.From) }),
+		"skipped_inputs":        countWhere(c.g.Skipped, func(k Skipped) bool { return in(k.From) }),
+		"type_only_edges":       countWhere(c.g.TypeOnlyEdges, func(e Edge) bool { return in(e.From) }),
+		"languages_supported":   c.supported,
+	}
+	if internal == 0 {
+		sig.Missing = domain.SignalInsufficient
+		sig.MissingReason = "no internal import edges in scope; ratio undefined"
+		return sig
+	}
+	sig.Numerator = domain.Float(float64(cyc))
+	sig.Denominator = domain.Float(float64(internal))
+	sig.Value = domain.Float(float64(cyc) / float64(internal))
+	return sig
+}
+
+func populationDigest(sc ScopeInput, all bool, nodes []string) string {
+	if sc.PopulationDigest != "" {
+		return sc.PopulationDigest
+	}
+	if all {
+		return digestPaths(nodes)
+	}
+	return digestPaths(sc.Paths)
+}
+
+func countWhere[T any](items []T, keep func(T) bool) int {
+	n := 0
+	for _, item := range items {
+		if keep(item) {
+			n++
+		}
+	}
+	return n
+}
+
+func (c signalContext) cycleEdges(in func(string) bool) (internal, cyc int) {
+	for _, e := range c.g.Edges {
+		if !in(e.From) {
+			continue
+		}
+		internal++
+		if c.inOneCycle(e) {
+			cyc++
+		}
+	}
+	return internal, cyc
+}
+
+func (c signalContext) inOneCycle(e Edge) bool {
+	from, ok := c.comp[e.From]
+	if !ok {
+		return false
+	}
+	to, ok := c.comp[e.To]
+	return ok && from == to
+}
+
+func (c signalContext) crossBoundaryCycles(in func(string) bool) int {
+	touched := map[int]bool{}
+	for n, comp := range c.comp {
+		if c.crossComp[comp] && in(n) {
+			touched[comp] = true
+		}
+	}
+	return len(touched)
 }
 
 // components returns the strongly-connected-component id of every node that is

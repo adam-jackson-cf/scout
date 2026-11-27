@@ -46,8 +46,7 @@ func (s *Store) ListAssociations(ctx context.Context) ([]domain.Association, err
 		if err != nil {
 			return fmt.Errorf("list associations: %w", err)
 		}
-		defer rows.Close()
-		for rows.Next() {
+		return scanRows(rows, func(rows *sql.Rows) error {
 			var payload []byte
 			if err := rows.Scan(&payload); err != nil {
 				return fmt.Errorf("scan association: %w", err)
@@ -57,8 +56,8 @@ func (s *Store) ListAssociations(ctx context.Context) ([]domain.Association, err
 				return err
 			}
 			result = append(result, record)
-		}
-		return rows.Err()
+			return nil
+		})
 	})
 	return result, err
 }

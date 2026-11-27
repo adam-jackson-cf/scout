@@ -70,6 +70,35 @@ type DeltaReport struct {
 // never a delta (REQ-125).
 func ComputeDeltas(ctx context.Context, root, mergeBase string, changed []string, tools measures.Tools) DeltaReport {
 	report := DeltaReport{Issues: []DeltaIssue{}}
+	changedProd := deltaChangedProduction(root, changed)
+	if len(changedProd) == 0 {
+		return report
+	}
+	headPop, basePop, err := deltaPopulations(ctx, root, mergeBase, changedProd)
+	if err != nil {
+		report.Unmeasured = append(report.Unmeasured, "delta rules: "+err.Error())
+		return report
+	}
+	tmp, err := os.MkdirTemp("", "scout-delta-")
+	if err != nil {
+		report.Unmeasured = append(report.Unmeasured, "delta rules: "+err.Error())
+		return report
+	}
+	defer func() { _ = os.RemoveAll(tmp) }()
+	extracted, err := extractBlobs(ctx, root, mergeBase, basePop, tmp)
+	if err != nil {
+		report.Unmeasured = append(report.Unmeasured, "delta rules: base content: "+err.Error())
+		return report
+	}
+
+	run := deltaRun{root: root, baseRoot: tmp, mergeBase: mergeBase, changedProd: changedProd, extracted: extracted, tools: tools, report: &report}
+	report.Issues = append(report.Issues, run.ccDeltas(ctx)...)
+	report.Issues = append(report.Issues, run.dupDeltas(ctx, headPop)...)
+	sortDeltaIssues(report.Issues)
+	return report
+}
+
+func deltaChangedProduction(root string, changed []string) map[string]bool {
 	changedProd := map[string]bool{}
 	for _, path := range changed {
 		if measures.IsProductionSource(path) {
@@ -78,38 +107,27 @@ func ComputeDeltas(ctx context.Context, root, mergeBase string, changed []string
 			}
 		}
 	}
-	if len(changedProd) == 0 {
-		return report
-	}
+	return changedProd
+}
+
+func deltaPopulations(ctx context.Context, root, mergeBase string, changedProd map[string]bool) ([]string, []string, error) {
 	headPop, err := deltaHeadPopulation(ctx, root, changedProd)
 	if err != nil {
-		report.Unmeasured = append(report.Unmeasured, "delta rules: "+err.Error())
-		return report
+		return nil, nil, err
 	}
 	basePop, err := deltaBasePopulation(ctx, root, mergeBase)
 	if err != nil {
-		report.Unmeasured = append(report.Unmeasured, "delta rules: "+err.Error())
-		return report
+		return nil, nil, err
 	}
 	if len(headPop) > deltaMaxFiles || len(basePop) > deltaMaxFiles {
 		headPop, basePop = sortedKeys(changedProd), sortedKeys(changedProd)
 	}
-	tmp, err := os.MkdirTemp("", "scout-delta-")
-	if err != nil {
-		report.Unmeasured = append(report.Unmeasured, "delta rules: "+err.Error())
-		return report
-	}
-	defer os.RemoveAll(tmp)
-	extracted, err := extractBlobs(ctx, root, mergeBase, basePop, tmp)
-	if err != nil {
-		report.Unmeasured = append(report.Unmeasured, "delta rules: base content: "+err.Error())
-		return report
-	}
+	return headPop, basePop, nil
+}
 
-	report.Issues = append(report.Issues, ccDeltas(ctx, root, tmp, mergeBase, changedProd, extracted, tools, &report)...)
-	report.Issues = append(report.Issues, dupDeltas(ctx, root, tmp, mergeBase, changedProd, headPop, extracted, tools, &report)...)
-	sort.Slice(report.Issues, func(i, j int) bool {
-		a, b := report.Issues[i], report.Issues[j]
+func sortDeltaIssues(issues []DeltaIssue) {
+	sort.Slice(issues, func(i, j int) bool {
+		a, b := issues[i], issues[j]
 		if a.Path != b.Path {
 			return a.Path < b.Path
 		}
@@ -118,66 +136,101 @@ func ComputeDeltas(ctx context.Context, root, mergeBase string, changed []string
 		}
 		return a.Rule < b.Rule
 	})
-	return report
 }
 
-func ccDeltas(ctx context.Context, root, baseRoot, mergeBase string, changedProd map[string]bool, extracted map[string]bool, tools measures.Tools, report *DeltaReport) []DeltaIssue {
-	headPaths := sortedKeys(changedProd)
-	var basePaths []string
-	for _, path := range headPaths {
-		if extracted[path] {
-			basePaths = append(basePaths, path)
-		}
-	}
+type deltaRun struct {
+	root, baseRoot, mergeBase string
+	changedProd               map[string]bool
+	extracted                 map[string]bool
+	tools                     measures.Tools
+	report                    *DeltaReport
+}
+
+func (r deltaRun) ccDeltas(ctx context.Context) []DeltaIssue {
+	basePaths := ccDeltaPaths(r.changedProd, r.extracted)
 	if len(basePaths) == 0 {
 		return nil
 	}
-	head, err := tools.RunLizard(ctx, root, basePaths)
+	head, err := r.tools.RunLizard(ctx, r.root, basePaths)
 	if err != nil {
-		report.Unmeasured = append(report.Unmeasured, DeltaCCRule+": lizard: "+err.Error())
+		r.report.Unmeasured = append(r.report.Unmeasured, DeltaCCRule+": lizard: "+err.Error())
 		return nil
 	}
-	base, err := tools.RunLizard(ctx, baseRoot, basePaths)
+	base, err := r.tools.RunLizard(ctx, r.baseRoot, basePaths)
 	if err != nil {
-		report.Unmeasured = append(report.Unmeasured, DeltaCCRule+": lizard: "+err.Error())
+		r.report.Unmeasured = append(r.report.Unmeasured, DeltaCCRule+": lizard: "+err.Error())
 		return nil
 	}
 	var out []DeltaIssue
 	for _, path := range basePaths {
-		hm, hok := head[path]
-		bm, bok := base[path]
-		// A file outside the eligible population on either side is a
-		// population change, not a delta.
-		if !hok || !bok || hm.NLOC < measures.MinFileNLOC || bm.NLOC < measures.MinFileNLOC {
+		out = append(out, ccFileDeltas(path, head, base, r.mergeBase)...)
+	}
+	return out
+}
+
+func ccDeltaPaths(changedProd map[string]bool, extracted map[string]bool) []string {
+	var basePaths []string
+	for _, path := range sortedKeys(changedProd) {
+		if extracted[path] {
+			basePaths = append(basePaths, path)
+		}
+	}
+	return basePaths
+}
+
+func ccMeasuredPair(path string, head, base map[string]measures.FileMeasure) (measures.FileMeasure, measures.FileMeasure, bool) {
+	hm, hok := head[path]
+	bm, bok := base[path]
+	// A file outside the eligible population on either side is a
+	// population change, not a delta.
+	if !hok || !bok || hm.NLOC < measures.MinFileNLOC || bm.NLOC < measures.MinFileNLOC {
+		return hm, bm, false
+	}
+	return hm, bm, true
+}
+
+func ccFileDeltas(path string, head, base map[string]measures.FileMeasure, mergeBase string) []DeltaIssue {
+	hm, bm, ok := ccMeasuredPair(path, head, base)
+	if !ok {
+		return nil
+	}
+	baseCC, baseDup := functionCC(bm.Functions)
+	headCC, headDup := functionCC(hm.Functions)
+	var out []DeltaIssue
+	for _, name := range sortedFunctionNames(headCC) {
+		if baseDup[name] || headDup[name] {
+			continue // ambiguous overloads cannot be matched
+		}
+		b, ok := baseCC[name]
+		if !ok {
 			continue
 		}
-		baseCC, baseDup := functionCC(bm.Functions)
-		headCC, headDup := functionCC(hm.Functions)
-		names := make([]string, 0, len(headCC))
-		for name := range headCC {
-			names = append(names, name)
-		}
-		sort.Strings(names)
-		for _, name := range names {
-			if baseDup[name] || headDup[name] {
-				continue // ambiguous overloads cannot be matched
-			}
-			b, ok := baseCC[name]
-			if !ok {
-				continue
-			}
-			h := headCC[name]
-			if b.CC <= measures.HighCC && h.CC > measures.HighCC {
-				out = append(out, DeltaIssue{
-					ID: deltaID(DeltaCCRule, path, name, ""), Rule: deltaRule(DeltaCCRule), Claim: domain.ClaimDescriptive, Mode: deltaMode,
-					Family: domain.FamilyQuality, Path: path, Function: name, Line: h.Line,
-					Title: fmt.Sprintf("function %s cyclomatic complexity %d → %d crosses %d", name, b.CC, h.CC, measures.HighCC),
-					Base:  b.CC, Head: h.CC, Threshold: measures.HighCC, BaseRev: mergeBase,
-				})
-			}
+		if issue, crossed := ccCrossing(path, name, b, headCC[name], mergeBase); crossed {
+			out = append(out, issue)
 		}
 	}
 	return out
+}
+
+func sortedFunctionNames(byName map[string]measures.Function) []string {
+	names := make([]string, 0, len(byName))
+	for name := range byName {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
+}
+
+func ccCrossing(path, name string, b, h measures.Function, mergeBase string) (DeltaIssue, bool) {
+	if b.CC > measures.HighCC || h.CC <= measures.HighCC {
+		return DeltaIssue{}, false
+	}
+	return DeltaIssue{
+		ID: deltaID(DeltaCCRule, path, name, ""), Rule: deltaRule(DeltaCCRule), Claim: domain.ClaimDescriptive, Mode: deltaMode,
+		Family: domain.FamilyQuality, Path: path, Function: name, Line: h.Line,
+		Title: fmt.Sprintf("function %s cyclomatic complexity %d → %d crosses %d", name, b.CC, h.CC, measures.HighCC),
+		Base:  b.CC, Head: h.CC, Threshold: measures.HighCC, BaseRev: mergeBase,
+	}, true
 }
 
 func functionCC(functions []measures.Function) (map[string]measures.Function, map[string]bool) {
@@ -192,69 +245,90 @@ func functionCC(functions []measures.Function) (map[string]measures.Function, ma
 	return byName, dup
 }
 
-func dupDeltas(ctx context.Context, root, baseRoot, mergeBase string, changedProd map[string]bool, headPop []string, extracted map[string]bool, tools measures.Tools, report *DeltaReport) []DeltaIssue {
+func (r deltaRun) dupDeltas(ctx context.Context, headPop []string) []DeltaIssue {
+	headClones, err := r.tools.RunJscpd(ctx, r.root, headPop)
+	if err != nil {
+		r.report.Unmeasured = append(r.report.Unmeasured, DeltaDupRule+": jscpd: "+err.Error())
+		return nil
+	}
+	baseClones, err := r.tools.RunJscpd(ctx, r.baseRoot, deltaExtractedPaths(r.extracted))
+	if err != nil {
+		r.report.Unmeasured = append(r.report.Unmeasured, DeltaDupRule+": jscpd: "+err.Error())
+		return nil
+	}
+	counts := countDeltaClones(baseClones, headClones, r.changedProd)
+	return counts.issues(r.changedProd, r.mergeBase)
+}
+
+func deltaExtractedPaths(extracted map[string]bool) []string {
 	var basePop []string
 	for path := range extracted {
 		basePop = append(basePop, path)
 	}
 	sort.Strings(basePop)
-	headClones, err := tools.RunJscpd(ctx, root, headPop)
-	if err != nil {
-		report.Unmeasured = append(report.Unmeasured, DeltaDupRule+": jscpd: "+err.Error())
-		return nil
+	return basePop
+}
+
+func cloneDeltaKey(c measures.Clone) string {
+	a, b := c.A.Path, c.B.Path
+	if b < a {
+		a, b = b, a
 	}
-	baseClones, err := tools.RunJscpd(ctx, baseRoot, basePop)
-	if err != nil {
-		report.Unmeasured = append(report.Unmeasured, DeltaDupRule+": jscpd: "+err.Error())
-		return nil
-	}
-	key := func(c measures.Clone) string {
-		a, b := c.A.Path, c.B.Path
-		if b < a {
-			a, b = b, a
-		}
-		return a + "\x00" + b
-	}
-	baseCount := map[string]int{}
+	return a + "\x00" + b
+}
+
+type cloneDeltaCounts struct {
+	base  map[string]int
+	head  map[string]int
+	first map[string]measures.Clone
+}
+
+func countDeltaClones(baseClones, headClones []measures.Clone, changedProd map[string]bool) cloneDeltaCounts {
+	counts := cloneDeltaCounts{base: map[string]int{}, head: map[string]int{}, first: map[string]measures.Clone{}}
 	for _, clone := range baseClones {
-		baseCount[key(clone)]++
+		counts.base[cloneDeltaKey(clone)]++
 	}
-	headCount := map[string]int{}
-	first := map[string]measures.Clone{}
 	for _, clone := range headClones {
 		if !changedProd[clone.A.Path] && !changedProd[clone.B.Path] {
 			continue
 		}
-		k := key(clone)
-		headCount[k]++
-		if _, ok := first[k]; !ok {
-			first[k] = clone
+		k := cloneDeltaKey(clone)
+		counts.head[k]++
+		if _, ok := counts.first[k]; !ok {
+			counts.first[k] = clone
 		}
 	}
-	keys := make([]string, 0, len(headCount))
-	for k := range headCount {
+	return counts
+}
+
+func (c cloneDeltaCounts) issues(changedProd map[string]bool, mergeBase string) []DeltaIssue {
+	keys := make([]string, 0, len(c.head))
+	for k := range c.head {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 	var out []DeltaIssue
 	for _, k := range keys {
-		if headCount[k] <= baseCount[k] {
+		if c.head[k] <= c.base[k] {
 			continue
 		}
-		clone := first[k]
-		mine, other := clone.A, clone.B
-		if !changedProd[mine.Path] {
-			mine, other = other, mine
-		}
-		lines := mine.End - mine.Start + 1
-		out = append(out, DeltaIssue{
-			ID: deltaID(DeltaDupRule, mine.Path, "", other.Path), Rule: deltaRule(DeltaDupRule), Claim: domain.ClaimDescriptive, Mode: deltaMode,
-			Family: domain.FamilyQuality, Path: mine.Path, Line: mine.Start, Partner: other.Path,
-			Title: fmt.Sprintf("clone added: %s duplicates %s (%d lines)", mine.Path, other.Path, lines),
-			Base:  baseCount[k], Head: headCount[k], BaseRev: mergeBase,
-		})
+		out = append(out, cloneDeltaIssue(c.first[k], changedProd, c.base[k], c.head[k], mergeBase))
 	}
 	return out
+}
+
+func cloneDeltaIssue(clone measures.Clone, changedProd map[string]bool, baseCount, headCount int, mergeBase string) DeltaIssue {
+	mine, other := clone.A, clone.B
+	if !changedProd[mine.Path] {
+		mine, other = other, mine
+	}
+	lines := mine.End - mine.Start + 1
+	return DeltaIssue{
+		ID: deltaID(DeltaDupRule, mine.Path, "", other.Path), Rule: deltaRule(DeltaDupRule), Claim: domain.ClaimDescriptive, Mode: deltaMode,
+		Family: domain.FamilyQuality, Path: mine.Path, Line: mine.Start, Partner: other.Path,
+		Title: fmt.Sprintf("clone added: %s duplicates %s (%d lines)", mine.Path, other.Path, lines),
+		Base:  baseCount, Head: headCount, BaseRev: mergeBase,
+	}
 }
 
 func deltaRule(name string) string { return name + "@" + strconv.Itoa(deltaRuleVersion) }
@@ -331,46 +405,7 @@ func extractBlobs(ctx context.Context, root, rev string, paths []string, dir str
 	if err := cmd.Start(); err != nil {
 		return nil, err
 	}
-	reader := bufio.NewReader(stdout)
-	var readErr error
-	for _, path := range paths {
-		header, err := reader.ReadString('\n')
-		if err != nil {
-			readErr = err
-			break
-		}
-		fields := strings.Fields(header)
-		if len(fields) != 3 { // "<spec> missing" or ambiguous
-			continue
-		}
-		size, err := strconv.Atoi(fields[2])
-		if err != nil {
-			readErr = err
-			break
-		}
-		if fields[1] != "blob" || size > deltaMaxBlob {
-			if _, err := io.CopyN(io.Discard, reader, int64(size)+1); err != nil {
-				readErr = err
-				break
-			}
-			continue
-		}
-		content := make([]byte, size+1)
-		if _, err := io.ReadFull(reader, content); err != nil {
-			readErr = err
-			break
-		}
-		target := filepath.Join(dir, filepath.FromSlash(path))
-		if err := os.MkdirAll(filepath.Dir(target), 0o700); err != nil {
-			readErr = err
-			break
-		}
-		if err := os.WriteFile(target, content[:size], 0o600); err != nil {
-			readErr = err
-			break
-		}
-		extracted[path] = true
-	}
+	readErr := readBlobBatch(bufio.NewReader(stdout), paths, dir, extracted)
 	if readErr != nil {
 		_ = cmd.Process.Kill()
 	}
@@ -379,6 +414,54 @@ func extractBlobs(ctx context.Context, root, rev string, paths []string, dir str
 		return nil, readErr
 	}
 	return extracted, nil
+}
+
+func readBlobBatch(reader *bufio.Reader, paths []string, dir string, extracted map[string]bool) error {
+	for _, path := range paths {
+		written, err := readBlob(reader, path, dir)
+		if err != nil {
+			return err
+		}
+		if written {
+			extracted[path] = true
+		}
+	}
+	return nil
+}
+
+func readBlob(reader *bufio.Reader, path, dir string) (bool, error) {
+	header, err := reader.ReadString('\n')
+	if err != nil {
+		return false, err
+	}
+	fields := strings.Fields(header)
+	if len(fields) != 3 { // "<spec> missing" or ambiguous
+		return false, nil
+	}
+	size, err := strconv.Atoi(fields[2])
+	if err != nil {
+		return false, err
+	}
+	if fields[1] != "blob" || size > deltaMaxBlob {
+		_, err := io.CopyN(io.Discard, reader, int64(size)+1)
+		return false, err
+	}
+	content := make([]byte, size+1)
+	if _, err := io.ReadFull(reader, content); err != nil {
+		return false, err
+	}
+	if err := writeDeltaBlob(dir, path, content[:size]); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func writeDeltaBlob(dir, path string, content []byte) error {
+	target := filepath.Join(dir, filepath.FromSlash(path))
+	if err := os.MkdirAll(filepath.Dir(target), 0o700); err != nil {
+		return err
+	}
+	return os.WriteFile(target, content, 0o600)
 }
 
 // deltaLane promotes each delta to a ledger observation through the ordinary

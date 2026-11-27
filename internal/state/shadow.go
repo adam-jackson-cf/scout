@@ -16,6 +16,21 @@ import (
 // RecordPRRun stages immutable final assessment material. It cannot create
 // publication stamps or completeness; only ApplyShadowPublication can do that.
 func (s *Store) RecordPRRun(ctx context.Context, fact domain.PRRunFact, events []domain.ProviderPREvent, links []domain.PRRunEventLink) error {
+	if err := rejectStampedPending(fact, events); err != nil {
+		return err
+	}
+	return s.withTransaction(ctx, func(tx *sql.Tx) error {
+		if err := storeShadowFact(ctx, tx, fact, false); err != nil {
+			return err
+		}
+		if err := storePendingEventsTx(ctx, tx, fact, events); err != nil {
+			return err
+		}
+		return storePendingLinksTx(ctx, tx, fact, links)
+	})
+}
+
+func rejectStampedPending(fact domain.PRRunFact, events []domain.ProviderPREvent) error {
 	if fact.RecordedAt != nil {
 		return errors.New("pending fact cannot carry recorded_at")
 	}
@@ -24,28 +39,31 @@ func (s *Store) RecordPRRun(ctx context.Context, fact domain.PRRunFact, events [
 			return errors.New("pending event cannot carry recorded_at")
 		}
 	}
-	return s.withTransaction(ctx, func(tx *sql.Tx) error {
-		if err := storeShadowFact(ctx, tx, fact, false); err != nil {
+	return nil
+}
+
+func storePendingEventsTx(ctx context.Context, tx *sql.Tx, fact domain.PRRunFact, events []domain.ProviderPREvent) error {
+	for _, event := range events {
+		if event.RepositoryID != fact.ID.RepositoryID || event.Scope != fact.Scope {
+			return errors.New("event repository/scope differs from attempt")
+		}
+		if err := storeShadowEvent(ctx, tx, event, false); err != nil {
 			return err
 		}
-		for _, event := range events {
-			if event.RepositoryID != fact.ID.RepositoryID || event.Scope != fact.Scope {
-				return errors.New("event repository/scope differs from attempt")
-			}
-			if err := storeShadowEvent(ctx, tx, event, false); err != nil {
-				return err
-			}
+	}
+	return nil
+}
+
+func storePendingLinksTx(ctx context.Context, tx *sql.Tx, fact domain.PRRunFact, links []domain.PRRunEventLink) error {
+	for _, link := range links {
+		if link.AttemptID.RepositoryID != fact.ID.RepositoryID || link.Scope != fact.Scope {
+			return errors.New("link repository/scope differs from attempt")
 		}
-		for _, link := range links {
-			if link.AttemptID.RepositoryID != fact.ID.RepositoryID || link.Scope != fact.Scope {
-				return errors.New("link repository/scope differs from attempt")
-			}
-			if err := storeShadowLink(ctx, tx, link); err != nil {
-				return err
-			}
+		if err := storeShadowLink(ctx, tx, link); err != nil {
+			return err
 		}
-		return nil
-	})
+	}
+	return nil
 }
 
 // ReadShadowLedger returns a single consistent snapshot, including pending facts.
@@ -53,12 +71,12 @@ func (s *Store) RecordPRRun(ctx context.Context, fact domain.PRRunFact, events [
 // from the existence of a row. No frontier means collection is unmeasured.
 func (s *Store) ReadShadowLedger(ctx context.Context) (domain.ShadowLedger, error) {
 	var ledger domain.ShadowLedger
-	err := s.withRead(ctx, func(db *sql.DB) error {
+	err := s.withRead(ctx, func(db *sql.DB) (err error) {
 		tx, err := db.BeginTx(ctx, &sql.TxOptions{ReadOnly: true})
 		if err != nil {
 			return err
 		}
-		defer tx.Rollback()
+		defer rollbackUnlessDone(&err, tx)
 		if err := readShadowLedgerTx(ctx, tx, &ledger); err != nil {
 			return err
 		}
@@ -105,33 +123,73 @@ func (s *Store) ApplyShadowPublication(ctx context.Context, p domain.ShadowPubli
 }
 
 func applyShadowPublication(ctx context.Context, tx *sql.Tx, p domain.ShadowPublication) error {
+	replayed, err := publicationReplayTx(ctx, tx, p)
+	if err != nil || replayed {
+		return err
+	}
+	parent, err := publicationParentTx(ctx, tx, p)
+	if err != nil {
+		return err
+	}
+	if err := insertShadowJSON(ctx, tx, shadowRow{"shadow_publications", []string{"repository_id", "publication_id", "parent_id", "recorded_at"}, []any{p.RepositoryID, p.ID, parent, p.RecordedAt.UnixMilli()}}, p); err != nil {
+		return err
+	}
+	if err := storePublicationRecordsTx(ctx, tx, p); err != nil {
+		return err
+	}
+	if err := storePublicationTriageTx(ctx, tx, p); err != nil {
+		return err
+	}
+	if err := storePublicationCompletenessTx(ctx, tx, p); err != nil {
+		return err
+	}
+	return recordShadowInputs(ctx, tx, p.Inputs)
+}
+
+func publicationReplayTx(ctx context.Context, tx *sql.Tx, p domain.ShadowPublication) (bool, error) {
 	if p.ID == "" || p.RepositoryID == "" || !shadowTime(p.RecordedAt) {
-		return errors.New("publication identity and UTC millisecond stamp required")
+		return false, errors.New("publication identity and UTC millisecond stamp required")
 	}
 	// Check exact replay before checking current parent: retries cannot reopen a
 	// completed action or require the old parent still to be the latest tip.
 	var existing []byte
 	err := tx.QueryRowContext(ctx, `SELECT payload FROM shadow_publications WHERE repository_id=? AND publication_id=?`, p.RepositoryID, p.ID).Scan(&existing)
 	if err == nil {
-		return equalShadowJSON(existing, p)
+		return true, equalShadowJSON(existing, p)
 	}
 	if !errors.Is(err, sql.ErrNoRows) {
-		return err
+		return false, err
 	}
+	return false, nil
+}
+
+func publicationParentTx(ctx context.Context, tx *sql.Tx, p domain.ShadowPublication) (sql.NullString, error) {
 	var parent sql.NullString
-	if p.ParentID != "" {
-		parent = sql.NullString{String: p.ParentID, Valid: true}
-		var stamp int64
-		if err := tx.QueryRowContext(ctx, `SELECT recorded_at FROM shadow_publications WHERE repository_id=? AND publication_id=?`, p.RepositoryID, p.ParentID).Scan(&stamp); err != nil {
-			return fmt.Errorf("publication parent: %w", err)
-		}
-		if p.RecordedAt.UnixMilli() <= stamp {
-			return errors.New("publication stamp must increase")
-		}
+	if p.ParentID == "" {
+		return parent, nil
 	}
-	if err := insertShadowJSON(ctx, tx, "shadow_publications", []string{"repository_id", "publication_id", "parent_id", "recorded_at"}, []any{p.RepositoryID, p.ID, parent, p.RecordedAt.UnixMilli()}, p); err != nil {
+	parent = sql.NullString{String: p.ParentID, Valid: true}
+	var stamp int64
+	if err := tx.QueryRowContext(ctx, `SELECT recorded_at FROM shadow_publications WHERE repository_id=? AND publication_id=?`, p.RepositoryID, p.ParentID).Scan(&stamp); err != nil {
+		return parent, fmt.Errorf("publication parent: %w", err)
+	}
+	if p.RecordedAt.UnixMilli() <= stamp {
+		return parent, errors.New("publication stamp must increase")
+	}
+	return parent, nil
+}
+
+func storePublicationRecordsTx(ctx context.Context, tx *sql.Tx, p domain.ShadowPublication) error {
+	if err := storePublicationFactsTx(ctx, tx, p); err != nil {
 		return err
 	}
+	if err := storePublicationEventsTx(ctx, tx, p); err != nil {
+		return err
+	}
+	return storePublicationLinksTx(ctx, tx, p)
+}
+
+func storePublicationFactsTx(ctx context.Context, tx *sql.Tx, p domain.ShadowPublication) error {
 	for _, f := range p.Facts {
 		if f.Scope != domain.ShadowScopeCI || f.ID.RepositoryID != p.RepositoryID || !sameShadowStamp(f.RecordedAt, p.RecordedAt) {
 			return errors.New("publication fact requires CI repository and publication stamp")
@@ -140,6 +198,10 @@ func applyShadowPublication(ctx context.Context, tx *sql.Tx, p domain.ShadowPubl
 			return err
 		}
 	}
+	return nil
+}
+
+func storePublicationEventsTx(ctx context.Context, tx *sql.Tx, p domain.ShadowPublication) error {
 	for _, e := range p.Events {
 		if e.Scope != domain.ShadowScopeCI || e.RepositoryID != p.RepositoryID || !sameShadowStamp(e.RecordedAt, p.RecordedAt) {
 			return errors.New("publication event requires CI repository and publication stamp")
@@ -148,6 +210,10 @@ func applyShadowPublication(ctx context.Context, tx *sql.Tx, p domain.ShadowPubl
 			return err
 		}
 	}
+	return nil
+}
+
+func storePublicationLinksTx(ctx context.Context, tx *sql.Tx, p domain.ShadowPublication) error {
 	for _, link := range p.Links {
 		if link.Scope != domain.ShadowScopeCI || link.AttemptID.RepositoryID != p.RepositoryID {
 			return errors.New("publication link repository/scope mismatch")
@@ -156,81 +222,110 @@ func applyShadowPublication(ctx context.Context, tx *sql.Tx, p domain.ShadowPubl
 			return err
 		}
 	}
+	return nil
+}
+
+func storePublicationTriageTx(ctx context.Context, tx *sql.Tx, p domain.ShadowPublication) error {
 	seen := make(map[string]bool, len(p.Triage))
 	for _, row := range p.Triage {
 		if seen[row.EventID] {
 			return errors.New("only one triage row per event per publication")
 		}
 		seen[row.EventID] = true
-		// Look for immutable collisions first, including attempted provenance edits.
-		var old []byte
-		err := tx.QueryRowContext(ctx, `SELECT payload FROM would_block_triage WHERE scope=? AND repository_id=? AND action_id=?`, row.Scope, row.RepositoryID, row.ActionID).Scan(&old)
-		if err == nil {
-			if err := equalShadowJSON(old, row); err != nil {
-				return err
-			}
-			return fmt.Errorf("triage action already published: %w", ErrImmutable)
-		}
-		if !errors.Is(err, sql.ErrNoRows) {
-			return err
-		}
-		if row.Scope != domain.ShadowScopeCI || row.RepositoryID != p.RepositoryID || row.ActionID == "" || row.EventID == "" || row.Actor == "" || row.PolicyRevision == "" || !domain.ValidTriage(row.Verdict) || !shadowTime(row.TriagedAt) || !sameShadowStamp(row.RecordedAt, p.RecordedAt) {
-			return errors.New("invalid authorized triage provenance")
-		}
-		if err := rejectUnsafePersistence(row.Actor); err != nil {
-			return err
-		}
-		if err := rejectUnsafePersistence(row.Reason); err != nil {
-			return err
-		}
-		if err := insertShadowJSON(ctx, tx, "would_block_triage", []string{"scope", "repository_id", "action_id", "event_id", "publication_id"}, []any{row.Scope, row.RepositoryID, row.ActionID, row.EventID, p.ID}, row); err != nil {
+		if err := storePublicationTriageRowTx(ctx, tx, p, row); err != nil {
 			return err
 		}
 	}
+	return nil
+}
+
+func storePublicationTriageRowTx(ctx context.Context, tx *sql.Tx, p domain.ShadowPublication, row domain.ShadowTriage) error {
+	// Look for immutable collisions first, including attempted provenance edits.
+	var old []byte
+	err := tx.QueryRowContext(ctx, `SELECT payload FROM would_block_triage WHERE scope=? AND repository_id=? AND action_id=?`, row.Scope, row.RepositoryID, row.ActionID).Scan(&old)
+	if err == nil {
+		if err := equalShadowJSON(old, row); err != nil {
+			return err
+		}
+		return fmt.Errorf("triage action already published: %w", ErrImmutable)
+	}
+	if !errors.Is(err, sql.ErrNoRows) {
+		return err
+	}
+	if !validPublicationTriage(p, row) {
+		return errors.New("invalid authorized triage provenance")
+	}
+	if err := rejectUnsafePersistence(row.Actor); err != nil {
+		return err
+	}
+	if err := rejectUnsafePersistence(row.Reason); err != nil {
+		return err
+	}
+	return insertShadowJSON(ctx, tx, shadowRow{"would_block_triage", []string{"scope", "repository_id", "action_id", "event_id", "publication_id"}, []any{row.Scope, row.RepositoryID, row.ActionID, row.EventID, p.ID}}, row)
+}
+
+func validPublicationTriage(p domain.ShadowPublication, row domain.ShadowTriage) bool {
+	return row.Scope == domain.ShadowScopeCI && row.RepositoryID == p.RepositoryID && row.ActionID != "" && row.EventID != "" && row.Actor != "" && row.PolicyRevision != "" && domain.ValidTriage(row.Verdict) && shadowTime(row.TriagedAt) && sameShadowStamp(row.RecordedAt, p.RecordedAt)
+}
+
+func storePublicationCompletenessTx(ctx context.Context, tx *sql.Tx, p domain.ShadowPublication) error {
 	for _, f := range p.Frontiers {
-		if f.RepositoryID != p.RepositoryID || f.CheckID == "" || f.RuleVersion == "" || f.PolicyRevision == "" || f.MinDays < 0 || f.MinObservations < 0 || !shadowTime(f.CompleteThrough) {
-			return errors.New("invalid frontier policy")
-		}
-		keys := []string{"repository_id", "check_id", "rule_version", "complete_through"}
-		values := []any{f.RepositoryID, f.CheckID, f.RuleVersion, f.CompleteThrough.UnixMilli()}
-		old, err := shadowPayload(ctx, tx, "shadow_frontiers", keys, values)
-		if err == nil {
-			if err := equalShadowJSON(old, f); err != nil {
-				return err
-			}
-			continue
-		}
-		if !errors.Is(err, sql.ErrNoRows) {
-			return err
-		}
-		var latest sql.NullInt64
-		if err := tx.QueryRowContext(ctx, `SELECT max(complete_through) FROM shadow_frontiers WHERE repository_id=? AND check_id=? AND rule_version=?`, f.RepositoryID, f.CheckID, f.RuleVersion).Scan(&latest); err != nil {
-			return err
-		}
-		if latest.Valid && f.CompleteThrough.UnixMilli() <= latest.Int64 {
-			return errors.New("frontier must strictly increase")
-		}
-		if err := insertShadowJSON(ctx, tx, "shadow_frontiers", keys, values, f); err != nil {
+		if err := storePublicationFrontierTx(ctx, tx, p, f); err != nil {
 			return err
 		}
 	}
 	for _, g := range p.GapPoints {
-		if g.RepositoryID != p.RepositoryID || g.ID == "" || g.CheckID == "" || g.Reason == "" || !shadowTime(g.At) || !sameShadowStamp(g.RecordedAt, p.RecordedAt) {
+		if !validPublicationGapPoint(p, g) {
 			return errors.New("invalid gap point")
 		}
-		if err := insertShadowJSON(ctx, tx, "shadow_gap_points", []string{"repository_id", "point_id"}, []any{g.RepositoryID, g.ID}, g); err != nil {
+		if err := insertShadowJSON(ctx, tx, shadowRow{"shadow_gap_points", []string{"repository_id", "point_id"}, []any{g.RepositoryID, g.ID}}, g); err != nil {
 			return err
 		}
 	}
 	for _, i := range p.Intervals {
-		if i.RepositoryID != p.RepositoryID || i.ID == "" || i.CheckID == "" || i.RuleVersion == "" || !shadowTime(i.After) || !shadowTime(i.Through) || !i.Through.After(i.After) {
+		if !validPublicationInterval(p, i) {
 			return errors.New("invalid complete interval")
 		}
-		if err := insertShadowJSON(ctx, tx, "shadow_intervals", []string{"repository_id", "interval_id"}, []any{i.RepositoryID, i.ID}, i); err != nil {
+		if err := insertShadowJSON(ctx, tx, shadowRow{"shadow_intervals", []string{"repository_id", "interval_id"}, []any{i.RepositoryID, i.ID}}, i); err != nil {
 			return err
 		}
 	}
-	return recordShadowInputs(ctx, tx, p.Inputs)
+	return nil
+}
+
+func validPublicationGapPoint(p domain.ShadowPublication, g domain.ShadowGapPoint) bool {
+	return g.RepositoryID == p.RepositoryID && g.ID != "" && g.CheckID != "" && g.Reason != "" && shadowTime(g.At) && sameShadowStamp(g.RecordedAt, p.RecordedAt)
+}
+
+func validPublicationInterval(p domain.ShadowPublication, i domain.ShadowInterval) bool {
+	return i.RepositoryID == p.RepositoryID && i.ID != "" && i.CheckID != "" && i.RuleVersion != "" && shadowTime(i.After) && shadowTime(i.Through) && i.Through.After(i.After)
+}
+
+func validPublicationFrontier(p domain.ShadowPublication, f domain.ShadowFrontier) bool {
+	return f.RepositoryID == p.RepositoryID && f.CheckID != "" && f.RuleVersion != "" && f.PolicyRevision != "" && f.MinDays >= 0 && f.MinObservations >= 0 && shadowTime(f.CompleteThrough)
+}
+
+func storePublicationFrontierTx(ctx context.Context, tx *sql.Tx, p domain.ShadowPublication, f domain.ShadowFrontier) error {
+	if !validPublicationFrontier(p, f) {
+		return errors.New("invalid frontier policy")
+	}
+	keys := []string{"repository_id", "check_id", "rule_version", "complete_through"}
+	values := []any{f.RepositoryID, f.CheckID, f.RuleVersion, f.CompleteThrough.UnixMilli()}
+	old, err := shadowPayload(ctx, tx, "shadow_frontiers", keys, values)
+	if err == nil {
+		return equalShadowJSON(old, f)
+	}
+	if !errors.Is(err, sql.ErrNoRows) {
+		return err
+	}
+	var latest sql.NullInt64
+	if err := tx.QueryRowContext(ctx, `SELECT max(complete_through) FROM shadow_frontiers WHERE repository_id=? AND check_id=? AND rule_version=?`, f.RepositoryID, f.CheckID, f.RuleVersion).Scan(&latest); err != nil {
+		return err
+	}
+	if latest.Valid && f.CompleteThrough.UnixMilli() <= latest.Int64 {
+		return errors.New("frontier must strictly increase")
+	}
+	return insertShadowJSON(ctx, tx, shadowRow{"shadow_frontiers", keys, values}, f)
 }
 
 func shadowTime(t time.Time) bool {
@@ -269,16 +364,32 @@ func validateShadowFact(f domain.PRRunFact) error {
 	if err := validateAttempt(f.ID); err != nil {
 		return err
 	}
-	if !validShadowScope(f.Scope) || !shadowDecimal(f.PRNumber) || f.HeadCommit == "" || f.HeadTree == "" || f.BaseCommit == "" || f.CheckID == "" || f.RuleVersion == "" || f.Status == "" || f.Comparison == "" || f.Inspection == "" || !shadowTime(f.CreatedAt) || !shadowTime(f.StartedAt) || !shadowTime(f.FinishedAt) || f.StartedAt.Before(f.CreatedAt) || f.FinishedAt.Before(f.StartedAt) {
+	if !validFactCohort(f) || !validFactOutcome(f) {
 		return errors.New("invalid final PR run fact")
 	}
-	if f.RecordedAt != nil && (f.Scope != domain.ShadowScopeCI || !shadowTime(*f.RecordedAt)) {
+	if !validShadowStamp(f.Scope, f.RecordedAt) {
 		return errors.New("invalid fact stamp/scope")
 	}
-	if f.Scope == domain.ShadowScopeCI && (f.Pins.Scout == "" || f.Pins.Tools == "" || f.Pins.Catalogue == "" || f.Pins.Policy == "" || f.Pins.Recipe == "") {
+	if f.Scope == domain.ShadowScopeCI && !pinnedRecipe(f.Pins) {
 		return errors.New("CI fact requires pinned recipe provenance")
 	}
 	return nil
+}
+
+func validFactCohort(f domain.PRRunFact) bool {
+	return validShadowScope(f.Scope) && shadowDecimal(f.PRNumber) && f.HeadCommit != "" && f.HeadTree != "" && f.BaseCommit != "" && f.CheckID != "" && f.RuleVersion != ""
+}
+
+func validFactOutcome(f domain.PRRunFact) bool {
+	return f.Status != "" && f.Comparison != "" && f.Inspection != "" && shadowTime(f.CreatedAt) && shadowTime(f.StartedAt) && shadowTime(f.FinishedAt) && !f.StartedAt.Before(f.CreatedAt) && !f.FinishedAt.Before(f.StartedAt)
+}
+
+func validShadowStamp(scope domain.ShadowScope, recordedAt *time.Time) bool {
+	return recordedAt == nil || (scope == domain.ShadowScopeCI && shadowTime(*recordedAt))
+}
+
+func pinnedRecipe(pins domain.ShadowPins) bool {
+	return pins.Scout != "" && pins.Tools != "" && pins.Catalogue != "" && pins.Policy != "" && pins.Recipe != ""
 }
 
 func storeShadowFact(ctx context.Context, tx *sql.Tx, f domain.PRRunFact, publish bool) error {
@@ -312,21 +423,25 @@ func storeShadowFact(ctx context.Context, tx *sql.Tx, f domain.PRRunFact, publis
 		if !publish {
 			return errors.New("only publication may stamp facts")
 		}
-		return updateShadowStamp(ctx, tx, "pr_run_facts", keys, values, f)
+		return updateShadowStamp(ctx, tx, shadowRow{"pr_run_facts", keys, values}, f)
 	}
 	if !errors.Is(err, sql.ErrNoRows) {
 		return err
 	}
-	return insertShadowJSON(ctx, tx, "pr_run_facts", keys, values, f)
+	return insertShadowJSON(ctx, tx, shadowRow{"pr_run_facts", keys, values}, f)
 }
 func validateShadowEvent(e domain.ProviderPREvent) error {
-	if !validShadowScope(e.Scope) || e.EventID == "" || e.RepositoryID == "" || !shadowDecimal(e.PRNumber) || e.HeadCommit == "" || e.HeadTree == "" || e.MergeBase == "" || e.CheckID == "" || e.IssueID == "" || e.RuleVersion == "" || !shadowTime(e.EventAt) {
+	if !validEventCohort(e) || e.CheckID == "" || e.IssueID == "" || e.RuleVersion == "" || !shadowTime(e.EventAt) {
 		return errors.New("invalid provider event")
 	}
-	if e.RecordedAt != nil && (e.Scope != domain.ShadowScopeCI || !shadowTime(*e.RecordedAt)) {
+	if !validShadowStamp(e.Scope, e.RecordedAt) {
 		return errors.New("invalid event stamp/scope")
 	}
 	return nil
+}
+
+func validEventCohort(e domain.ProviderPREvent) bool {
+	return validShadowScope(e.Scope) && e.EventID != "" && e.RepositoryID != "" && shadowDecimal(e.PRNumber) && e.HeadCommit != "" && e.HeadTree != "" && e.MergeBase != ""
 }
 
 func storeShadowEvent(ctx context.Context, tx *sql.Tx, e domain.ProviderPREvent, publish bool) error {
@@ -360,12 +475,12 @@ func storeShadowEvent(ctx context.Context, tx *sql.Tx, e domain.ProviderPREvent,
 		if !publish {
 			return errors.New("only publication may stamp events")
 		}
-		return updateShadowStamp(ctx, tx, "shadow_events", keys, values, e)
+		return updateShadowStamp(ctx, tx, shadowRow{"shadow_events", keys, values}, e)
 	}
 	if !errors.Is(err, sql.ErrNoRows) {
 		return err
 	}
-	return insertShadowJSON(ctx, tx, "shadow_events", keys, values, e)
+	return insertShadowJSON(ctx, tx, shadowRow{"shadow_events", keys, values}, e)
 }
 func storeShadowLink(ctx context.Context, tx *sql.Tx, link domain.PRRunEventLink) error {
 	if err := validateAttempt(link.AttemptID); err != nil {
@@ -390,10 +505,14 @@ func storeShadowLink(ctx context.Context, tx *sql.Tx, link domain.PRRunEventLink
 	if err := json.Unmarshal(b, &f); err != nil {
 		return err
 	}
-	if f.PRNumber != e.PRNumber || f.HeadTree != e.HeadTree || f.MergeBase != e.MergeBase || f.CheckID != e.CheckID || f.RuleVersion != e.RuleVersion {
+	if !sameLinkCohort(f, e) {
 		return errors.New("event link differs from attempt cohort/observation")
 	}
-	return insertShadowJSON(ctx, tx, "pr_run_events", []string{"scope", "repository_id", "attempt_id", "check_id", "event_id"}, []any{link.Scope, link.AttemptID.RepositoryID, shadowAttemptKey(link.AttemptID), e.CheckID, link.EventID}, link)
+	return insertShadowJSON(ctx, tx, shadowRow{"pr_run_events", []string{"scope", "repository_id", "attempt_id", "check_id", "event_id"}, []any{link.Scope, link.AttemptID.RepositoryID, shadowAttemptKey(link.AttemptID), e.CheckID, link.EventID}}, link)
+}
+
+func sameLinkCohort(f domain.PRRunFact, e domain.ProviderPREvent) bool {
+	return f.PRNumber == e.PRNumber && f.HeadTree == e.HeadTree && f.MergeBase == e.MergeBase && f.CheckID == e.CheckID && f.RuleVersion == e.RuleVersion
 }
 
 // Table/column names below are exclusively package-owned constants, never input.
@@ -413,7 +532,15 @@ func equalShadowJSON(old []byte, value any) error {
 	}
 	return nil
 }
-func insertShadowJSON(ctx context.Context, tx *sql.Tx, table string, keys []string, values []any, value any) error {
+
+type shadowRow struct {
+	table  string
+	keys   []string
+	values []any
+}
+
+func insertShadowJSON(ctx context.Context, tx *sql.Tx, row shadowRow, value any) error {
+	table, keys, values := row.table, row.keys, row.values
 	b, err := json.Marshal(value)
 	if err != nil {
 		return err
@@ -441,7 +568,8 @@ func insertShadowJSON(ctx context.Context, tx *sql.Tx, table string, keys []stri
 	}
 	return nil
 }
-func updateShadowStamp(ctx context.Context, tx *sql.Tx, table string, keys []string, values []any, value any) error {
+func updateShadowStamp(ctx context.Context, tx *sql.Tx, row shadowRow, value any) error {
+	table, keys, values := row.table, row.keys, row.values
 	b, err := json.Marshal(value)
 	if err != nil {
 		return err
@@ -457,8 +585,7 @@ func readShadowRows[T any](ctx context.Context, tx *sql.Tx, table, order string,
 	if err != nil {
 		return err
 	}
-	defer rows.Close()
-	for rows.Next() {
+	return scanRows(rows, func(rows *sql.Rows) error {
 		var b []byte
 		var value T
 		if err := rows.Scan(&b); err != nil {
@@ -468,6 +595,6 @@ func readShadowRows[T any](ctx context.Context, tx *sql.Tx, table, order string,
 			return fmt.Errorf("decode %s: %w", table, err)
 		}
 		*out = append(*out, value)
-	}
-	return rows.Err()
+		return nil
+	})
 }

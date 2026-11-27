@@ -10,12 +10,19 @@ import (
 )
 
 func TestSignalsAreAppendOnlyFilterableAndLatestPerScope(t *testing.T) {
-	ctx := context.Background()
 	store, err := Open(t.TempDir())
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer store.Close()
+	defer closeOrFail(t, store)
+	checkSignalsAppendOnly(t, store)
+	checkSignalHistoryFilters(t, store)
+	checkUnmeasuredSignalStored(t, store)
+}
+
+func checkSignalsAppendOnly(t *testing.T, store *Store) {
+	t.Helper()
+	ctx := context.Background()
 	first := testSignals()
 	if err := store.RecordSignals(ctx, first); err != nil {
 		t.Fatal(err)
@@ -38,7 +45,11 @@ func TestSignalsAreAppendOnlyFilterableAndLatestPerScope(t *testing.T) {
 			t.Fatalf("append-only violated: value %v", *signal.Value)
 		}
 	}
+}
 
+func checkSignalHistoryFilters(t *testing.T, store *Store) {
+	t.Helper()
+	ctx := context.Background()
 	// A later snapshot of the same scope and metric appends.
 	later := testSignals()[1]
 	later.Snapshot, later.Value = "def456", domain.Float(5)
@@ -56,9 +67,12 @@ func TestSignalsAreAppendOnlyFilterableAndLatestPerScope(t *testing.T) {
 	if other, _ := store.ListSignals(ctx, SignalFilter{MetricID: "scout.cc@2"}); len(other) != 0 {
 		t.Fatal("metric version filter matched another version")
 	}
+}
 
+func checkUnmeasuredSignalStored(t *testing.T, store *Store) {
+	t.Helper()
 	// Missingness survives storage: unmeasured carries no numbers.
-	crap, err := store.ListSignals(ctx, SignalFilter{MetricID: "scout.crap"})
+	crap, err := store.ListSignals(context.Background(), SignalFilter{MetricID: "scout.crap"})
 	if err != nil || len(crap) != 1 || crap[0].Missing != domain.SignalUnmeasured || crap[0].Value != nil || crap[0].Numerator != nil {
 		t.Fatalf("crap = %+v, %v", crap, err)
 	}
@@ -70,7 +84,7 @@ func TestSignalValidationRejectsMissingMasqueradingAsMeasured(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer store.Close()
+	defer closeOrFail(t, store)
 	good := testSignals()[1]
 	for name, mutate := range map[string]func(*domain.Signal){
 		"measured without value": func(s *domain.Signal) { s.Value = nil },
@@ -95,11 +109,18 @@ func TestSignalValidationRejectsMissingMasqueradingAsMeasured(t *testing.T) {
 func TestExportCarriesSignalsPerMetricAndManifestListsThem(t *testing.T) {
 	ctx := context.Background()
 	store := seedLedger(t, ctx, t.TempDir())
-	defer store.Close()
+	defer closeOrFail(t, store)
 	files, err := store.Export(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
+	checkSignalFilesExported(t, files)
+	checkManifestListsSignals(t, files[ExportManifest])
+	checkSignalsImportAndAbsence(t, files)
+}
+
+func checkSignalFilesExported(t *testing.T, files map[string][]byte) {
+	t.Helper()
 	for _, path := range []string{ExportSignalsDir + "scout.cc@1.jsonl", ExportSignalsDir + "scout.crap@1.jsonl", ExportSignalsDir + "scout.changes@1.jsonl"} {
 		if len(files[path]) == 0 {
 			t.Fatalf("export lacks %s", path)
@@ -108,13 +129,17 @@ func TestExportCarriesSignalsPerMetricAndManifestListsThem(t *testing.T) {
 	if bytes.Contains(files[ExportSignalsDir+"scout.cc@1.jsonl"], []byte(`\u003c`)) {
 		t.Fatal("signal export must not HTML-escape")
 	}
+}
+
+func checkManifestListsSignals(t *testing.T, data []byte) {
+	t.Helper()
 	var manifest struct {
 		Absent []string `json:"absent"`
 		Files  []struct {
 			Path string `json:"path"`
 		} `json:"files"`
 	}
-	if err := json.Unmarshal(files[ExportManifest], &manifest); err != nil {
+	if err := json.Unmarshal(data, &manifest); err != nil {
 		t.Fatal(err)
 	}
 	listed := false
@@ -129,14 +154,18 @@ func TestExportCarriesSignalsPerMetricAndManifestListsThem(t *testing.T) {
 			t.Fatal("manifest reports signals absent while present")
 		}
 	}
+}
 
+func checkSignalsImportAndAbsence(t *testing.T, files map[string][]byte) {
+	t.Helper()
+	ctx := context.Background()
 	// Import restores the ledger including signals, and a store without
 	// signals still reports them absent.
 	target, err := Open(t.TempDir())
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer target.Close()
+	defer closeOrFail(t, target)
 	if err := target.Import(ctx, files); err != nil {
 		t.Fatal(err)
 	}
@@ -148,7 +177,7 @@ func TestExportCarriesSignalsPerMetricAndManifestListsThem(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer empty.Close()
+	defer closeOrFail(t, empty)
 	bare, err := empty.Export(ctx)
 	if err != nil {
 		t.Fatal(err)

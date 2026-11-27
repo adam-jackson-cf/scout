@@ -92,24 +92,54 @@ type DiffResult struct {
 // marks only canonical feature inputs or explicit dependency edges as affected.
 func Diff(input DiffInput) (DiffResult, error) {
 	result := DiffResult{}
-	previous, err := indexedFiles(input.PreviousFiles)
+	indexes, err := indexDiffInput(input)
 	if err != nil {
-		return result, fmt.Errorf("previous index: %w", err)
-	}
-	current, err := indexedFiles(input.CurrentFiles)
-	if err != nil {
-		return result, fmt.Errorf("current index: %w", err)
-	}
-	priorFeatures, featureErr := indexedFeatures(input.PreviousFeatures)
-	currentFeatures, currentFeatureErr := indexedFeatures(input.CurrentFeatures)
-	if featureErr != nil || currentFeatureErr != nil {
-		return result, errors.Join(featureErr, currentFeatureErr)
+		return result, err
 	}
 
 	if err := validateDependencies(input.Dependencies); err != nil {
 		return result, err
 	}
 
+	added, removed := diffFileSets(&result, indexes.previous, indexes.current)
+	renamedOld, renamedNew := detectRenames(removed, added)
+	recordAddedFiles(&result, added, renamedNew)
+	recordRemovedFiles(&result, removed, renamedOld)
+	diffFeatures(&result, indexes.priorFeatures, indexes.currentFeatures)
+
+	changedPaths := changedPaths(result)
+	applyDependencyClosure(&result, input.Dependencies, changedPaths)
+	result.MappingGaps = append(result.MappingGaps, mappingGaps(input.CurrentFiles, input.CurrentFeatures)...)
+	result.AffectedFeatureIDs = invalidatedIDs(result.Invalidations)
+	sortDiff(&result)
+	return result, nil
+}
+
+type diffIndexes struct {
+	previous        map[string]domain.File
+	current         map[string]domain.File
+	priorFeatures   map[string]domain.Feature
+	currentFeatures map[string]domain.Feature
+}
+
+func indexDiffInput(input DiffInput) (diffIndexes, error) {
+	previous, err := indexedFiles(input.PreviousFiles)
+	if err != nil {
+		return diffIndexes{}, fmt.Errorf("previous index: %w", err)
+	}
+	current, err := indexedFiles(input.CurrentFiles)
+	if err != nil {
+		return diffIndexes{}, fmt.Errorf("current index: %w", err)
+	}
+	priorFeatures, featureErr := indexedFeatures(input.PreviousFeatures)
+	currentFeatures, currentFeatureErr := indexedFeatures(input.CurrentFeatures)
+	if featureErr != nil || currentFeatureErr != nil {
+		return diffIndexes{}, errors.Join(featureErr, currentFeatureErr)
+	}
+	return diffIndexes{previous: previous, current: current, priorFeatures: priorFeatures, currentFeatures: currentFeatures}, nil
+}
+
+func diffFileSets(result *DiffResult, previous, current map[string]domain.File) ([]domain.File, []domain.File) {
 	var added, removed []domain.File
 	for path, now := range current {
 		old, exists := previous[path]
@@ -120,8 +150,8 @@ func Diff(input DiffInput) (DiffResult, error) {
 		if changedFile(old, now) {
 			result.Modified = append(result.Modified, now)
 			result.Changes = append(result.Changes, FileChange{Kind: ChangeModified, Current: filePointer(now), Previous: filePointer(old)})
-			addLinkedInvalidations(&result, now, "canonical file input changed", now.Path)
-			addLinkedInvalidations(&result, old, "canonical file input changed", now.Path)
+			addLinkedInvalidations(result, now, "canonical file input changed", now.Path)
+			addLinkedInvalidations(result, old, "canonical file input changed", now.Path)
 		}
 	}
 	for path, old := range previous {
@@ -129,38 +159,45 @@ func Diff(input DiffInput) (DiffResult, error) {
 			removed = append(removed, old)
 		}
 	}
+	return added, removed
+}
 
-	renamedOld, renamedNew := detectRenames(removed, added)
+func recordAddedFiles(result *DiffResult, added []domain.File, renamedNew map[string]domain.File) {
 	for _, now := range added {
 		if old, exists := renamedNew[now.Path]; exists {
 			now.PreviousPath = old.Path
 			result.Renamed = append(result.Renamed, now)
 			result.Changes = append(result.Changes, FileChange{Kind: ChangeRenamed, Current: filePointer(now), Previous: filePointer(old)})
-			addLinkedInvalidations(&result, now, "canonical file input renamed", now.Path)
-			addLinkedInvalidations(&result, old, "canonical file input renamed", old.Path)
+			addLinkedInvalidations(result, now, "canonical file input renamed", now.Path)
+			addLinkedInvalidations(result, old, "canonical file input renamed", old.Path)
 			continue
 		}
 		result.Added = append(result.Added, now)
 		result.Changes = append(result.Changes, FileChange{Kind: ChangeAdded, Current: filePointer(now)})
-		addLinkedInvalidations(&result, now, "canonical file input added", now.Path)
+		addLinkedInvalidations(result, now, "canonical file input added", now.Path)
 	}
+}
+
+func recordRemovedFiles(result *DiffResult, removed []domain.File, renamedOld map[string]domain.File) {
 	for _, old := range removed {
 		if _, exists := renamedOld[old.Path]; exists {
 			continue
 		}
 		result.Removed = append(result.Removed, old)
 		result.Changes = append(result.Changes, FileChange{Kind: ChangeRemoved, Previous: filePointer(old)})
-		addLinkedInvalidations(&result, old, "canonical file input removed", old.Path)
+		addLinkedInvalidations(result, old, "canonical file input removed", old.Path)
 	}
+}
 
+func diffFeatures(result *DiffResult, priorFeatures, currentFeatures map[string]domain.Feature) {
 	for id, feature := range currentFeatures {
 		previousFeature, existed := priorFeatures[id]
 		if !existed {
-			addInvalidation(&result, FeatureInvalidation{FeatureID: id, Reason: "new canonical Clawpatch feature"})
+			addInvalidation(result, FeatureInvalidation{FeatureID: id, Reason: "new canonical Clawpatch feature"})
 			continue
 		}
 		if FeatureFingerprint(feature) != FeatureFingerprint(previousFeature) {
-			addInvalidation(&result, FeatureInvalidation{FeatureID: id, Reason: "canonical feature inputs changed"})
+			addInvalidation(result, FeatureInvalidation{FeatureID: id, Reason: "canonical feature inputs changed"})
 		}
 	}
 	for id := range priorFeatures {
@@ -168,13 +205,6 @@ func Diff(input DiffInput) (DiffResult, error) {
 			result.MappingGaps = append(result.MappingGaps, MappingGap{FeatureID: id, Reason: gapFeatureRemoved})
 		}
 	}
-
-	changedPaths := changedPaths(result)
-	applyDependencyClosure(&result, input.Dependencies, changedPaths)
-	result.MappingGaps = append(result.MappingGaps, mappingGaps(input.CurrentFiles, input.CurrentFeatures)...)
-	result.AffectedFeatureIDs = invalidatedIDs(result.Invalidations)
-	sortDiff(&result)
-	return result, nil
 }
 
 // FeatureFingerprint hashes only substantive canonical fields. It intentionally

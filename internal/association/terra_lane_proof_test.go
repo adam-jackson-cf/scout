@@ -1,3 +1,5 @@
+//go:build boundary
+
 package association
 
 import (
@@ -39,12 +41,27 @@ func terraLaneFixture(t *testing.T, n int, mode string) (string, *state.Store, L
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { s.Close() })
+	t.Cleanup(func() {
+		if err := s.Close(); err != nil {
+			t.Error(err)
+		}
+	})
 	if err := s.ReplaceAreas(context.Background(), terraCatalogue()); err != nil {
 		t.Fatal(err)
 	}
 	calls := new(atomic.Int64)
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(terraJevHandler(t, root, mode, calls))
+	t.Cleanup(server.Close)
+	cfg := policy.DefaultMapping().Association
+	cfg.Enabled = true
+	cfg.Fallback = terraConfig()
+	cfg.MaxPendingPerRun = 10
+	opts := LaneOptions{Base: base, Head: head, RunID: "current", Mapping: cfg, FallbackConsent: true, Config: decisions.Config{Enabled: true, Model: policy.DefaultModel, MaxPerRun: 100, MaxCostUSD: 1, EgressAcknowledged: true}, Eligibility: decisions.Eligibility{Enabled: true, HasKey: true, EgressAllowed: true}, Client: &decisions.Client{Endpoint: server.URL, Key: "fixture-local", MaxAttempts: 1}, Fingerprint: proofFingerprint()}
+	return root, s, opts, calls
+}
+func terraJevHandler(t *testing.T, root, mode string, calls *atomic.Int64) http.HandlerFunc {
+	t.Helper()
+	return func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
 		if mode == "failure" {
 			http.Error(w, "fixture", 400)
@@ -76,15 +93,10 @@ func terraLaneFixture(t *testing.T, n int, mode string) (string, *state.Store, L
 				answers[key] = map[string]any{"type": "choice", "choice": "a", "confidence": .51, "probabilities": map[string]float64{"a": .51, "b": .49}}
 			}
 		}
-		json.NewEncoder(w).Encode(map[string]any{"model": policy.DefaultModel, "answers": answers, "usage": map[string]any{"cost": .00001, "input_tokens": 10, "output_tokens": 2}})
-	}))
-	t.Cleanup(server.Close)
-	cfg := policy.DefaultMapping().Association
-	cfg.Enabled = true
-	cfg.Fallback = terraConfig()
-	cfg.MaxPendingPerRun = 10
-	opts := LaneOptions{Base: base, Head: head, RunID: "current", Mapping: cfg, FallbackConsent: true, Config: decisions.Config{Enabled: true, Model: policy.DefaultModel, MaxPerRun: 100, MaxCostUSD: 1, EgressAcknowledged: true}, Eligibility: decisions.Eligibility{Enabled: true, HasKey: true, EgressAllowed: true}, Client: &decisions.Client{Endpoint: server.URL, Key: "fixture-local", MaxAttempts: 1}, Fingerprint: proofFingerprint()}
-	return root, s, opts, calls
+		if err := json.NewEncoder(w).Encode(map[string]any{"model": policy.DefaultModel, "answers": answers, "usage": map[string]any{"cost": .00001, "input_tokens": 10, "output_tokens": 2}}); err != nil {
+			t.Error(err)
+		}
+	}
 }
 func executeTerraLane(t *testing.T, root string, s *state.Store, o LaneOptions) ([]domain.LaneHealth, []domain.Association) {
 	t.Helper()
@@ -194,13 +206,8 @@ func TestTerraAttemptCap(t *testing.T) {
 		t.Fatalf("calls=%d cap=%d rows=%+v", terraCallCount(t, dir), capped, rows)
 	}
 }
-func TestTerraPendingCap(t *testing.T) {
-	root, s, o, _ := terraLaneFixture(t, 3, "none")
-	o.Mapping.MaxPendingPerRun = 1
-	dir := fakeTerra(t, terraNew(), terraDiagnostic(), "")
-	enableTerraGit(t, dir)
-	_, rows := executeTerraLane(t, root, s, o)
-	pending, capped := 0, 0
+func countPendingRows(t *testing.T, rows []domain.Association) (pending, capped int) {
+	t.Helper()
 	for _, r := range rows {
 		if r.Outcome == domain.AssociationPendingNew {
 			pending++
@@ -212,6 +219,10 @@ func TestTerraPendingCap(t *testing.T) {
 			capped++
 		}
 	}
+	return pending, capped
+}
+func countStoredPending(t *testing.T, s *state.Store) int {
+	t.Helper()
 	aa, err := s.ListAreas(context.Background())
 	if err != nil {
 		t.Fatal(err)
@@ -225,6 +236,16 @@ func TestTerraPendingCap(t *testing.T) {
 			}
 		}
 	}
+	return stored
+}
+func TestTerraPendingCap(t *testing.T) {
+	root, s, o, _ := terraLaneFixture(t, 3, "none")
+	o.Mapping.MaxPendingPerRun = 1
+	dir := fakeTerra(t, terraNew(), terraDiagnostic(), "")
+	enableTerraGit(t, dir)
+	_, rows := executeTerraLane(t, root, s, o)
+	pending, capped := countPendingRows(t, rows)
+	stored := countStoredPending(t, s)
 	if pending != 1 || stored != 1 || capped != 2 {
 		t.Fatalf("pending=%d stored=%d cap=%d rows=%+v", pending, stored, capped, rows)
 	}

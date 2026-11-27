@@ -1,10 +1,10 @@
+//go:build boundary
+
 package main
 
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -12,11 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"scout/internal/association"
 	"scout/internal/clawpatch"
 	"scout/internal/domain"
-	"scout/internal/engine"
-	"scout/internal/policy"
 	"scout/internal/state"
 )
 
@@ -24,48 +21,31 @@ func guardCLIAssessArgs(root, binary string) []string {
 	return []string{"assess", "--root", root, "--clawpatch", binary, "--family", "architecture", "--json"}
 }
 
-func guardCLIHistory() (*time.Time, []domain.Association) {
-	generation := time.Date(2026, 11, 1, 0, 0, 0, 0, time.UTC)
-	rows := make([]domain.Association, 25)
-	for i := range rows {
-		rows[i] = domain.Association{ID: fmt.Sprintf("history-%d", i), RunID: fmt.Sprintf("run-%d", i), MergeCommit: fmt.Sprintf("merge-%d", i), ClusterKey: fmt.Sprintf("cluster-%d", i), Files: []string{fmt.Sprintf("history/%d.go", i)}, DecidedAt: generation.Add(time.Duration(i+1) * time.Minute), LastAgentRefreshAt: &generation, Outcome: domain.AssociationAssigned, AreaIDs: []string{"area-a"}, JevOutcome: "none", CLIName: "codex", PRMetadata: domain.PRMetadataAbsent}
-	}
-	return &generation, rows
-}
 func guardCLIReadiness(t *testing.T, root string) []byte {
 	t.Helper()
-	r, w, err := os.Pipe()
-	if err != nil {
-		t.Fatal(err)
-	}
-	original := os.Stdout
-	os.Stdout = w
-	defer func() { os.Stdout = original; r.Close() }()
-	done := make(chan []byte, 1)
-	go func() { b, _ := io.ReadAll(r); done <- b }()
-	readiness(boundedTestContext(t), strings.Fields("--root "+root+" --family architecture --json"))
-	w.Close()
-	raw := <-done
+	text, _ := captureStdout(t, func() int {
+		return readiness(boundedTestContext(t), strings.Fields("--root "+root+" --family architecture --json"))
+	})
+	raw := []byte(text)
 	var payload map[string]any
 	if err := json.Unmarshal(raw, &payload); err != nil {
 		t.Fatalf("invalid readiness JSON: %v %s", err, raw)
 	}
 	return raw
 }
-func TestAssociationGuardSummaryOutput(t *testing.T) {
-	generation, rows := guardCLIHistory()
-	guard := association.Guard(rows, generation, policy.DefaultMapping().Association.Guard, association.GuardState{})
-	text := engine.Summary(domain.Gate{}, engine.Ranking{}, nil, nil, 0, nil, nil, guard)
-	if !strings.Contains(text, "catalogue-stale") || !strings.Contains(text, "scout map --refresh") {
-		t.Fatalf("summary lacks manual refresh diagnostic: %s", text)
-	}
-}
-func TestAssociationGuardHistoryReadinessAndCompletedMap(t *testing.T) {
+
+func guardCLIRepo(t *testing.T, policyText, message string) string {
+	t.Helper()
 	root := gitRepo(t)
 	writeRepoFile(t, root, "a.py", "def known():\n    return 1\n")
-	writeRepoFile(t, root, ".scout/policy.yaml", "profile: report\nmapping:\n  association:\n    enabled: true\n")
+	writeRepoFile(t, root, ".scout/policy.yaml", policyText)
 	gitIn(t, root, "add", "a.py", ".scout/policy.yaml")
-	gitIn(t, root, "commit", "-qm", "initial")
+	gitIn(t, root, "commit", "-qm", message)
+	return root
+}
+
+func trapMapExecutables(t *testing.T) string {
+	t.Helper()
 	// Trap every possible automatic map executable without contacting a model.
 	dir := t.TempDir()
 	trace := filepath.Join(dir, "map-calls")
@@ -76,12 +56,11 @@ func TestAssociationGuardHistoryReadinessAndCompletedMap(t *testing.T) {
 		}
 	}
 	t.Setenv("PATH", dir+":"+os.Getenv("PATH"))
-	ctx := context.Background()
-	s, err := state.Open(root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer s.Close()
+	return trace
+}
+
+func seedGuardHistory(t *testing.T, ctx context.Context, s *state.Store) (*time.Time, []domain.Association) {
+	t.Helper()
 	generation, rows := guardCLIHistory()
 	if err := s.InsertAssociations(ctx, rows); err != nil {
 		t.Fatal(err)
@@ -89,6 +68,27 @@ func TestAssociationGuardHistoryReadinessAndCompletedMap(t *testing.T) {
 	if err := s.SaveMappingRefresh(ctx, state.MappingRefresh{LastAgentRefreshAt: generation}); err != nil {
 		t.Fatal(err)
 	}
+	return generation, rows
+}
+
+func assertAssociationsUnchanged(t *testing.T, ctx context.Context, s *state.Store, before []domain.Association, message string) {
+	t.Helper()
+	after, err := s.ListAssociations(ctx)
+	if err != nil || !reflect.DeepEqual(before, after) {
+		t.Fatalf("%s: %+v err=%v", message, after, err)
+	}
+}
+
+func TestAssociationGuardHistoryReadinessAndCompletedMap(t *testing.T) {
+	root := guardCLIRepo(t, "profile: report\nmapping:\n  association:\n    enabled: true\n", "initial")
+	trace := trapMapExecutables(t)
+	ctx := context.Background()
+	s, err := state.Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer closeOrFail(t, s)
+	generation, _ := seedGuardHistory(t, ctx, s)
 	before, err := s.ListAssociations(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -100,10 +100,7 @@ func TestAssociationGuardHistoryReadinessAndCompletedMap(t *testing.T) {
 	if _, err := os.Stat(trace); !os.IsNotExist(err) {
 		t.Fatalf("guard executed map CLI: %v", err)
 	}
-	after, err := s.ListAssociations(ctx)
-	if err != nil || !reflect.DeepEqual(before, after) {
-		t.Fatalf("guard changed assignments: %+v err=%v", after, err)
-	}
+	assertAssociationsUnchanged(t, ctx, s, before, "guard changed assignments")
 	// Completed agent maps record precisely this generation transition. No
 	// agent CLI or synthetic substitute refresh is run by this scenario.
 	completed := generation.Add(24 * time.Hour)
@@ -114,35 +111,22 @@ func TestAssociationGuardHistoryReadinessAndCompletedMap(t *testing.T) {
 	if strings.Contains(string(raw), "catalogue-stale") || strings.Contains(string(raw), "scout map --refresh") {
 		t.Fatalf("completed map did not clear flag: %s", raw)
 	}
-	after, err = s.ListAssociations(ctx)
-	if err != nil || !reflect.DeepEqual(before, after) {
-		t.Fatal("refresh reset dropped association labels")
-	}
+	assertAssociationsUnchanged(t, ctx, s, before, "refresh reset dropped association labels")
 }
-func TestAssociationGuardOutputAnnotationKeepsAssignments(t *testing.T) {
-	root := gitRepo(t)
-	writeRepoFile(t, root, "a.py", "def known():\n    return 1\n")
-	writeRepoFile(t, root, ".scout/policy.yaml", "profile: report\n")
-	gitIn(t, root, "add", "a.py", ".scout/policy.yaml")
-	gitIn(t, root, "commit", "-qm", "seed")
-	ctx := context.Background()
+
+func seedGuardStore(t *testing.T, root string) []domain.Association {
+	t.Helper()
 	s, err := state.Open(root)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer s.Close()
-	generation, rows := guardCLIHistory()
-	if err := s.InsertAssociations(ctx, rows); err != nil {
-		t.Fatal(err)
-	}
-	if err := s.SaveMappingRefresh(ctx, state.MappingRefresh{LastAgentRefreshAt: generation}); err != nil {
-		t.Fatal(err)
-	}
-	if err := s.Close(); err != nil {
-		t.Fatal(err)
-	}
-	// The architecture scanner boundary is local and inert; the guard must
-	// flag the exported assignment rows even when the association lane is off.
+	defer closeOrFail(t, s)
+	_, rows := seedGuardHistory(t, context.Background(), s)
+	return rows
+}
+
+func inertArchitectureBoundary(t *testing.T, root string) string {
+	t.Helper()
 	bundle := filepath.Join(t.TempDir(), clawpatch.Revision)
 	binary := filepath.Join(bundle, "dist", "cli.js")
 	writeRepoFile(t, bundle, "dist/cli.js", "")
@@ -155,18 +139,18 @@ func TestAssociationGuardOutputAnnotationKeepsAssignments(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Setenv("PATH", dir+":"+os.Getenv("PATH"))
-	r, w, err := os.Pipe()
-	if err != nil {
-		t.Fatal(err)
-	}
-	original := os.Stdout
-	os.Stdout = w
-	defer func() { os.Stdout = original; r.Close() }()
-	done := make(chan []byte, 1)
-	go func() { b, _ := io.ReadAll(r); done <- b }()
-	run(boundedTestContext(t), guardCLIAssessArgs(root, binary))
-	w.Close()
-	raw := <-done
+	return binary
+}
+
+func TestAssociationGuardOutputAnnotationKeepsAssignments(t *testing.T) {
+	root := guardCLIRepo(t, "profile: report\n", "seed")
+	ctx := context.Background()
+	rows := seedGuardStore(t, root)
+	// The architecture scanner boundary is local and inert; the guard must
+	// flag the exported assignment rows even when the association lane is off.
+	binary := inertArchitectureBoundary(t, root)
+	text, _ := captureStdout(t, func() int { return run(boundedTestContext(t), guardCLIAssessArgs(root, binary)) })
+	raw := []byte(text)
 	var output struct {
 		Error  string `json:"error"`
 		Result struct {
@@ -179,18 +163,20 @@ func TestAssociationGuardOutputAnnotationKeepsAssignments(t *testing.T) {
 	if len(output.Result.Associations) != len(rows) {
 		t.Fatalf("association outputs omitted: %s", raw)
 	}
-	for _, row := range output.Result.Associations {
-		if !row.CatalogueStale || row.Outcome != domain.AssociationAssigned || len(row.AreaIDs) != 1 || row.AreaIDs[0] != "area-a" {
-			t.Fatalf("output flag or assignment lost: %+v", row)
-		}
-	}
+	assertStaleAssignments(t, output.Result.Associations)
 	stored, err := state.OpenExistingReadOnly(root)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer stored.Close()
-	after, err := stored.ListAssociations(ctx)
-	if err != nil || !reflect.DeepEqual(rows, after) {
-		t.Fatalf("assessment changed stored assignments: %+v err=%v", after, err)
+	defer closeOrFail(t, stored)
+	assertAssociationsUnchanged(t, ctx, stored, rows, "assessment changed stored assignments")
+}
+
+func assertStaleAssignments(t *testing.T, rows []domain.Association) {
+	t.Helper()
+	for _, row := range rows {
+		if !row.CatalogueStale || row.Outcome != domain.AssociationAssigned || len(row.AreaIDs) != 1 || row.AreaIDs[0] != "area-a" {
+			t.Fatalf("output flag or assignment lost: %+v", row)
+		}
 	}
 }

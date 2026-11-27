@@ -18,10 +18,6 @@ import (
 	"scout/internal/state"
 )
 
-// LaneDecisions is the decisions lane id in health. It is optional: its
-// health never changes the exit code.
-const LaneDecisions = decisions.LaneID
-
 // BaselineFormulaID names the deterministic ranking baseline
 // (`rule weight × changed-in-PR × path role`). `changed-in-PR` is 1 outside PR
 // runs and ties break by issue id; both are part of this id.
@@ -63,10 +59,8 @@ type RankingInput struct {
 	// came from); nil uses the embedded provisional defaults. An error is a
 	// disclosed deterministic fallback.
 	ReadThresholds func() ([]byte, error)
-	// Rand draws the audit sample; nil uses crypto/rand.
-	Rand          func() float64
-	Now           func() time.Time
-	AuditFraction float64
+	Now            func() time.Time
+	AuditFraction  float64
 }
 
 // DeterministicRanking is the baseline ranking with a disclosed reason, for
@@ -118,7 +112,35 @@ func RankingOf(ctx context.Context, in RankingInput) (Ranking, domain.LaneHealth
 		Enabled: in.Policy.Enabled, Model: in.Policy.Model, MaxPerRun: in.Policy.MaxPerRun, MaxCostUSD: in.Policy.MaxCostUSD, EgressAcknowledged: in.Policy.EgressAcknowledged,
 	}
 	formula := decisions.LaunchFormula()
-	formulaVersion := formula.Version(cfg.Model)
+	reason, ok, resolution := rankingEligibility(in, cfg)
+	store, closeStore, err := in.openStore()
+	if err != nil {
+		return Ranking{}, domain.LaneHealth{}, err
+	}
+	defer closeStore()
+	run := rankingRun{in: in, cfg: cfg, formula: formula, formulaVersion: formula.Version(cfg.Model), resolution: resolution, store: store, now: rankingClock(in.Now)}
+
+	var result rankingResult
+	if !ok {
+		result.ranking, result.ranked = baselineRanking(in.Issues, reason)
+		result.health = decisions.SkippedHealth(reason)
+	} else if result, err = run.jev(ctx); err != nil {
+		return Ranking{}, domain.LaneHealth{}, err
+	}
+	ranking := result.ranking
+	ranking.RankFormulaVersion = run.formulaVersion
+	ranking.BaselineVersion = BaselineVersion().String()
+	if ok {
+		discloseJevRanking(&ranking, resolution, result.outcome)
+	}
+
+	if err := run.record(ctx, result, ranking.BaselineVersion, ok); err != nil {
+		return Ranking{}, domain.LaneHealth{}, err
+	}
+	return ranking, result.health, nil
+}
+
+func rankingEligibility(in RankingInput, cfg decisions.Config) (string, bool, thresholds.Resolution) {
 	eligibility := decisions.Eligibility{Enabled: cfg.Enabled, HasKey: in.Key != "", EgressAllowed: cfg.EgressAcknowledged && !in.NoEgress, Fork: in.Fork}
 	reason, ok := eligibility.Skip()
 	var resolution thresholds.Resolution
@@ -131,124 +153,156 @@ func RankingOf(ctx context.Context, in RankingInput) (Ranking, domain.LaneHealth
 		// Thresholds are configuration, never literals: the record in force is
 		// bound to the triage question's current version key. A file that is
 		// unreadable or invalid is a disclosed fallback, not a guess.
-		var override []byte
 		var err error
-		if in.ReadThresholds != nil {
-			override, err = in.ReadThresholds()
-		}
-		if err == nil {
-			resolution, err = thresholds.Resolve(override, decisions.TriageRealDefect.ID, decisions.TriageRealDefect.Version(cfg.Model))
-		}
+		resolution, err = rankingThresholds(in, cfg)
 		if err != nil {
 			reason, ok = "thresholds invalid: "+err.Error(), false
 		}
 	}
-	store, closeStore, err := in.openStore()
+	return reason, ok, resolution
+}
+
+func rankingThresholds(in RankingInput, cfg decisions.Config) (thresholds.Resolution, error) {
+	var override []byte
+	var err error
+	if in.ReadThresholds != nil {
+		override, err = in.ReadThresholds()
+	}
 	if err != nil {
-		return Ranking{}, domain.LaneHealth{}, err
+		return thresholds.Resolution{}, err
 	}
-	defer closeStore()
-	now := in.Now
+	return thresholds.Resolve(override, decisions.TriageRealDefect.ID, decisions.TriageRealDefect.Version(cfg.Model))
+}
+
+func rankingClock(now func() time.Time) func() time.Time {
 	if now == nil {
-		now = func() time.Time { return time.Now().UTC() }
+		return func() time.Time { return time.Now().UTC() }
 	}
+	return now
+}
 
-	var ranking Ranking
-	var ranked []decisions.Ranked
-	var health domain.LaneHealth
-	var outcome decisions.Outcome
-	results := map[string]decisions.UnitResult{}
-	if !ok {
-		ranking, ranked = baselineRanking(in.Issues, reason)
-		health = decisions.SkippedHealth(reason)
-	} else {
-		var questionVersions []string
-		for _, q := range formula.Questions {
-			questionVersions = append(questionVersions, q.Version(cfg.Model))
-		}
-		if store != nil {
-			if _, err := store.MarkAnnotationsStale(ctx, questionVersions); err != nil {
-				return Ranking{}, domain.LaneHealth{}, err
-			}
-		}
-		units := make([]decisions.Unit, 0, len(in.Issues))
-		for _, item := range rankable(in.Issues) {
-			evidence, err := in.evidence(ctx, store, item)
-			if err != nil {
-				return Ranking{}, domain.LaneHealth{}, fmt.Errorf("evidence for %s: %w", item.IssueID, err)
-			}
-			encoded, err := decisions.BuildState(evidence)
-			if err != nil {
-				return Ranking{}, domain.LaneHealth{}, fmt.Errorf("state for %s: %w", item.IssueID, err)
-			}
-			units = append(units, decisions.Unit{Family: decisions.FamilyTriage, Key: item.IssueID, IssueID: item.IssueID, Questions: []decisions.Question{decisions.TriageRealDefect}, State: encoded, Baseline: item.RankingScore})
-		}
-		client := in.Client
-		if client == nil {
-			client = &decisions.Client{Endpoint: cfg.Endpoint, Key: in.Key}
-		}
-		var sink decisions.Sink
-		if store != nil {
-			sink = store
-		}
-		outcome = decisions.Run(ctx, decisions.RunInput{Config: cfg, Client: client, RunID: in.RunID, Units: units, Sink: sink, Now: now})
-		outcome.ThresholdsStale = resolution.Stale
-		health = outcome.Health()
-		items := make([]decisions.Item, 0, len(outcome.Results))
-		baselines := map[string]domain.AttributedIssue{}
-		for _, item := range in.Issues {
-			baselines[item.IssueID] = item
-		}
-		for _, result := range outcome.Results {
-			results[result.Unit.IssueID] = result
-			mode, text := outcome.Disclosure(result)
-			item := decisions.Item{IssueID: result.Unit.IssueID, Baseline: result.Unit.Baseline, Mode: mode, Disclosure: text}
-			if len(result.Annotations) > 0 {
-				item.Answers = map[string]float64{}
-				for _, annotation := range result.Annotations {
-					item.Answers[annotation.QuestionID] = annotation.Probability
-				}
-			}
-			items = append(items, item)
-		}
-		ranked = decisions.Rank(formula, items)
-		ranking = jevRanking(outcome, ranked, results, baselines)
+func discloseJevRanking(ranking *Ranking, resolution thresholds.Resolution, outcome decisions.Outcome) {
+	ranking.Thresholds = resolution.Status
+	if resolution.Stale {
+		ranking.Thresholds += " (stale: version key changed)"
 	}
-	ranking.RankFormulaVersion = formulaVersion
-	ranking.BaselineVersion = BaselineVersion().String()
-	if ok {
-		ranking.Thresholds = resolution.Status
-		if resolution.Stale {
-			ranking.Thresholds += " (stale: version key changed)"
-		}
-		if outcome.Annotated > 0 {
-			ranking.JevQuality = "insufficient"
-		}
+	if outcome.Annotated > 0 {
+		ranking.JevQuality = "insufficient"
 	}
+}
 
-	if store != nil {
-		for _, r := range ranked {
-			record := domain.RankingRecord{
-				RunID: in.RunID, IssueID: r.IssueID, Mode: r.Mode, Disclosure: r.Disclosure, BaselineScore: r.Baseline,
-				BaselineVersion: ranking.BaselineVersion, RankFormulaVersion: formulaVersion, RankPosition: r.Position, CreatedAt: now(),
-			}
-			if result, found := results[r.IssueID]; found && len(result.Annotations) > 0 {
-				if annotation, weighted := formulaAnnotation(formula, result.Annotations); weighted {
-					p := annotation.Probability
-					record.Probability, record.QuestionVersion = &p, annotation.QuestionVersion
-				}
-			}
-			if err := store.RecordRanking(ctx, record); err != nil {
-				return Ranking{}, domain.LaneHealth{}, err
-			}
-		}
-		if ok && in.Trigger == domain.TriggerNightly {
-			if err := in.drawAudit(ctx, store, formulaVersion, ranked, now()); err != nil {
-				return Ranking{}, domain.LaneHealth{}, err
-			}
+type rankingRun struct {
+	in             RankingInput
+	cfg            decisions.Config
+	formula        decisions.Formula
+	formulaVersion string
+	resolution     thresholds.Resolution
+	store          *state.Store
+	now            func() time.Time
+}
+
+type rankingResult struct {
+	ranking Ranking
+	ranked  []decisions.Ranked
+	health  domain.LaneHealth
+	outcome decisions.Outcome
+	results map[string]decisions.UnitResult
+}
+
+func (r rankingRun) jev(ctx context.Context) (rankingResult, error) {
+	var questionVersions []string
+	for _, q := range r.formula.Questions {
+		questionVersions = append(questionVersions, q.Version(r.cfg.Model))
+	}
+	if r.store != nil {
+		if _, err := r.store.MarkAnnotationsStale(ctx, questionVersions); err != nil {
+			return rankingResult{}, err
 		}
 	}
-	return ranking, health, nil
+	units, err := r.units(ctx)
+	if err != nil {
+		return rankingResult{}, err
+	}
+	client := r.in.Client
+	if client == nil {
+		client = &decisions.Client{Endpoint: r.cfg.Endpoint, Key: r.in.Key}
+	}
+	var sink decisions.Sink
+	if r.store != nil {
+		sink = r.store
+	}
+	outcome := decisions.Run(ctx, decisions.RunInput{Config: r.cfg, Client: client, RunID: r.in.RunID, Units: units, Sink: sink, Now: r.now})
+	outcome.ThresholdsStale = r.resolution.Stale
+	result := rankingResult{outcome: outcome, health: outcome.Health(), results: map[string]decisions.UnitResult{}}
+	baselines := map[string]domain.AttributedIssue{}
+	for _, item := range r.in.Issues {
+		baselines[item.IssueID] = item
+	}
+	result.ranked = decisions.Rank(r.formula, jevRankingItems(outcome, result.results))
+	result.ranking = jevRanking(outcome, result.ranked, result.results, baselines)
+	return result, nil
+}
+
+func (r rankingRun) units(ctx context.Context) ([]decisions.Unit, error) {
+	units := make([]decisions.Unit, 0, len(r.in.Issues))
+	for _, item := range rankable(r.in.Issues) {
+		evidence, err := r.in.evidence(ctx, r.store, item)
+		if err != nil {
+			return nil, fmt.Errorf("evidence for %s: %w", item.IssueID, err)
+		}
+		encoded, err := decisions.BuildState(evidence)
+		if err != nil {
+			return nil, fmt.Errorf("state for %s: %w", item.IssueID, err)
+		}
+		units = append(units, decisions.Unit{Family: decisions.FamilyTriage, Key: item.IssueID, IssueID: item.IssueID, Questions: []decisions.Question{decisions.TriageRealDefect}, State: encoded, Baseline: item.RankingScore})
+	}
+	return units, nil
+}
+
+func jevRankingItems(outcome decisions.Outcome, results map[string]decisions.UnitResult) []decisions.Item {
+	items := make([]decisions.Item, 0, len(outcome.Results))
+	for _, result := range outcome.Results {
+		results[result.Unit.IssueID] = result
+		mode, text := outcome.Disclosure(result)
+		item := decisions.Item{IssueID: result.Unit.IssueID, Baseline: result.Unit.Baseline, Mode: mode, Disclosure: text}
+		if len(result.Annotations) > 0 {
+			item.Answers = map[string]float64{}
+			for _, annotation := range result.Annotations {
+				item.Answers[annotation.QuestionID] = annotation.Probability
+			}
+		}
+		items = append(items, item)
+	}
+	return items
+}
+
+func (r rankingRun) record(ctx context.Context, result rankingResult, baselineVersion string, ok bool) error {
+	if r.store == nil {
+		return nil
+	}
+	for _, ranked := range result.ranked {
+		if err := r.store.RecordRanking(ctx, r.rankingRecord(ranked, result.results, baselineVersion)); err != nil {
+			return err
+		}
+	}
+	if ok && r.in.Trigger == domain.TriggerNightly {
+		return r.in.drawAudit(ctx, r.store, r.formulaVersion, result.ranked, r.now())
+	}
+	return nil
+}
+
+func (r rankingRun) rankingRecord(ranked decisions.Ranked, results map[string]decisions.UnitResult, baselineVersion string) domain.RankingRecord {
+	record := domain.RankingRecord{
+		RunID: r.in.RunID, IssueID: ranked.IssueID, Mode: ranked.Mode, Disclosure: ranked.Disclosure, BaselineScore: ranked.Baseline,
+		BaselineVersion: baselineVersion, RankFormulaVersion: r.formulaVersion, RankPosition: ranked.Position, CreatedAt: r.now(),
+	}
+	if result, found := results[ranked.IssueID]; found && len(result.Annotations) > 0 {
+		if annotation, weighted := formulaAnnotation(r.formula, result.Annotations); weighted {
+			p := annotation.Probability
+			record.Probability, record.QuestionVersion = &p, annotation.QuestionVersion
+		}
+	}
+	return record
 }
 
 // formulaAnnotation is the annotation of the highest-weighted question of the
@@ -271,16 +325,7 @@ func formulaAnnotation(formula decisions.Formula, annotations []domain.Annotatio
 func jevRanking(outcome decisions.Outcome, ranked []decisions.Ranked, results map[string]decisions.UnitResult, issues map[string]domain.AttributedIssue) Ranking {
 	ranking := Ranking{Items: make([]RankingItem, 0, len(ranked))}
 	for _, r := range ranked {
-		item := RankingItem{IssueID: r.IssueID, Position: r.Position, Reason: issues[r.IssueID].RankingReason, Mode: r.Mode, Ranking: r.Disclosure, BaselineScore: r.Baseline}
-		if r.Mode == domain.RankingModeDeterministic {
-			score := r.Score
-			item.Score = &score
-		}
-		if annotation, weighted := formulaAnnotation(decisions.LaunchFormula(), results[r.IssueID].Annotations); weighted {
-			item.QuestionVersion = annotation.QuestionVersion
-			item.Reason = "jev P(real_defect), ordinal; baseline " + issues[r.IssueID].RankingReason
-		}
-		ranking.Items = append(ranking.Items, item)
+		ranking.Items = append(ranking.Items, jevRankingItem(r, results, issues))
 	}
 	jev := decisions.JevDisclosure
 	if outcome.ThresholdsStale {
@@ -290,13 +335,7 @@ func jevRanking(outcome decisions.Outcome, ranked []decisions.Ranked, results ma
 	case outcome.Total == 0:
 		ranking.Mode, ranking.Method, ranking.Reason = domain.RankingModeDeterministic, "deterministic (no units)", "no units"
 	case outcome.Annotated == 0:
-		reason := outcome.Results[0].Reason
-		for _, result := range outcome.Results {
-			if result.Status != decisions.UnitCapped {
-				reason = result.Reason
-				break
-			}
-		}
+		reason := firstUncappedReason(outcome)
 		ranking.Mode, ranking.Method, ranking.Reason = domain.RankingModeDeterministic, "deterministic ("+reason+")", reason
 	case outcome.Annotated == outcome.Total:
 		ranking.Mode, ranking.Method = domain.RankingModeJev, jev
@@ -312,6 +351,30 @@ func jevRanking(outcome decisions.Outcome, ranked []decisions.Ranked, results ma
 		ranking.Method = jev + "; " + strings.Join(rest, "; ")
 	}
 	return ranking
+}
+
+func jevRankingItem(r decisions.Ranked, results map[string]decisions.UnitResult, issues map[string]domain.AttributedIssue) RankingItem {
+	item := RankingItem{IssueID: r.IssueID, Position: r.Position, Reason: issues[r.IssueID].RankingReason, Mode: r.Mode, Ranking: r.Disclosure, BaselineScore: r.Baseline}
+	if r.Mode == domain.RankingModeDeterministic {
+		score := r.Score
+		item.Score = &score
+	}
+	if annotation, weighted := formulaAnnotation(decisions.LaunchFormula(), results[r.IssueID].Annotations); weighted {
+		item.QuestionVersion = annotation.QuestionVersion
+		item.Reason = "jev P(real_defect), ordinal; baseline " + issues[r.IssueID].RankingReason
+	}
+	return item
+}
+
+func firstUncappedReason(outcome decisions.Outcome) string {
+	reason := outcome.Results[0].Reason
+	for _, result := range outcome.Results {
+		if result.Status != decisions.UnitCapped {
+			reason = result.Reason
+			break
+		}
+	}
+	return reason
 }
 
 func (in RankingInput) openStore() (*state.Store, func(), error) {
@@ -375,17 +438,14 @@ func (in RankingInput) drawAudit(ctx context.Context, store *state.Store, formul
 	// DrawAudit takes a bare draw function, so a failed random source is
 	// carried out of the closure and returned: the draw never silently skips.
 	var sourceErr error
-	draw := in.Rand
-	if draw == nil {
-		draw = func() float64 {
-			value, err := secureFloat()
-			if err != nil {
-				sourceErr = errors.Join(sourceErr, err)
-			}
-			return value
+	draw := func() float64 {
+		value, err := secureFloat()
+		if err != nil {
+			sourceErr = errors.Join(sourceErr, err)
 		}
+		return value
 	}
-	_, err := decisions.DrawAudit(ctx, store, in.RunID, formulaVersion, units, fraction, draw, now)
+	_, err := decisions.DrawAudit(ctx, store, decisions.AuditRequest{RunID: in.RunID, FormulaVersion: formulaVersion, Units: units, Fraction: fraction, Rand: draw, Now: now})
 	return errors.Join(err, sourceErr)
 }
 

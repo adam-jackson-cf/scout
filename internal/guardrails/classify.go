@@ -29,13 +29,19 @@ func langOf(p string) lang {
 }
 
 func isTestPath(p string, l lang) bool {
-	base := path.Base(p)
-	lower := strings.ToLower(p)
+	return inTestDir(strings.ToLower(p)) || isTestBase(path.Base(p), l)
+}
+
+func inTestDir(lower string) bool {
 	for _, seg := range strings.Split(path.Dir(lower), "/") {
 		if seg == "tests" || seg == "test" || seg == "__tests__" {
 			return true
 		}
 	}
+	return false
+}
+
+func isTestBase(base string, l lang) bool {
 	switch l {
 	case langGo:
 		return strings.HasSuffix(base, "_test.go")

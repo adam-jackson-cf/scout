@@ -35,64 +35,81 @@ func NewStoreOwnership(ctx context.Context, store *state.Store, features []domai
 		heuristic: make(map[string]bool),
 		siblings:  make(map[SiblingKey][]string),
 	}
+	active := own.addCatalogue(catalogue)
+	for _, row := range rows {
+		own.addLabel(row, active)
+	}
+	own.addHeuristic(features)
+	own.normalise()
+	return own, nil
+}
+
+func (o *storeOwnership) addCatalogue(catalogue []areas.Area) map[string]bool {
 	active := make(map[string]bool, len(catalogue))
 	for _, area := range catalogue {
 		switch {
 		case area.Active():
 			active[area.ScoutAreaID] = true
 			for _, path := range area.FileSet {
-				own.owners[path] = append(own.owners[path], area.ScoutAreaID)
+				o.owners[path] = append(o.owners[path], area.ScoutAreaID)
 			}
 		case area.Status == areas.StatusPending && area.RetiredSnapshot == "":
 			for _, path := range area.FileSet {
-				own.pending[path] = append(own.pending[path], area.ScoutAreaID)
+				o.pending[path] = append(o.pending[path], area.ScoutAreaID)
 			}
 		}
 	}
-	for _, row := range rows {
-		if row.Superseded {
+	return active
+}
+
+func (o *storeOwnership) addLabel(row domain.Association, active map[string]bool) {
+	if row.Superseded {
+		return
+	}
+	var ids []string
+	switch row.Outcome {
+	case domain.AssociationAssigned:
+		ids = row.AreaIDs
+	case domain.AssociationInherited:
+		ids = row.InheritedAreaIDs
+	default:
+		return
+	}
+	for _, id := range ids {
+		if !active[id] {
 			continue
 		}
-		var ids []string
-		switch row.Outcome {
-		case domain.AssociationAssigned:
-			ids = row.AreaIDs
-		case domain.AssociationInherited:
-			ids = row.InheritedAreaIDs
-		default:
-			continue
-		}
-		for _, id := range ids {
-			if !active[id] {
-				continue
-			}
-			for _, path := range row.Files {
-				own.owners[path] = append(own.owners[path], id)
-			}
+		for _, path := range row.Files {
+			o.owners[path] = append(o.owners[path], id)
 		}
 	}
+}
+
+func (o *storeOwnership) addHeuristic(features []domain.Feature) {
 	for _, feature := range features {
 		if areas.IsAgent(feature) {
 			continue
 		}
 		for _, ref := range feature.OwnedFiles {
-			own.heuristic[ref.Path] = true
+			o.heuristic[ref.Path] = true
 		}
 	}
-	for path, ids := range own.owners {
+}
+
+func (o *storeOwnership) normalise() {
+	for path, ids := range o.owners {
 		sort.Strings(ids)
-		own.owners[path] = slices.Compact(ids)
+		o.owners[path] = slices.Compact(ids)
 		key := SiblingKeyOf(path)
-		own.siblings[key] = append(own.siblings[key], path)
+		o.siblings[key] = append(o.siblings[key], path)
 	}
-	for path, ids := range own.pending {
+	for path, ids := range o.pending {
 		sort.Strings(ids)
-		own.pending[path] = slices.Compact(ids)
+		o.pending[path] = slices.Compact(ids)
 	}
-	for _, paths := range own.siblings {
+	for _, paths := range o.siblings {
 		sort.Strings(paths)
 	}
-	return own, nil
 }
 
 func (o *storeOwnership) AreaOwners(path string) []string { return o.owners[path] }

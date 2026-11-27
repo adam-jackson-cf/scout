@@ -55,8 +55,7 @@ func (s *Store) ListLegacyWouldBlock(ctx context.Context) ([]domain.WouldBlock, 
 		if err != nil {
 			return fmt.Errorf("query would_block: %w", err)
 		}
-		defer result.Close()
-		for result.Next() {
+		return scanRows(result, func(result *sql.Rows) error {
 			var row domain.WouldBlock
 			var attribution string
 			var recorded int64
@@ -71,8 +70,8 @@ func (s *Store) ListLegacyWouldBlock(ctx context.Context) ([]domain.WouldBlock, 
 				row.TriagedAt = &at
 			}
 			rows = append(rows, row)
-		}
-		return result.Err()
+			return nil
+		})
 	})
 	return rows, err
 }

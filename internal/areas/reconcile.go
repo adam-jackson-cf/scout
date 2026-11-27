@@ -110,20 +110,34 @@ type Report struct {
 // Clawpatch ID; an unmatched feature becomes a new area; an unmatched active
 // area whose every file is heuristic-owned retires. prev is not modified.
 func Reconcile(prev []Area, agentFeatures []domain.Feature, heuristicOwned func(path string) bool, cfg Config) ([]Area, Report) {
-	threshold := cfg.threshold()
 	next := make([]Area, len(prev))
 	for i, area := range prev {
 		next[i] = cloneArea(area)
 	}
+	features := agentFeatureSets(agentFeatures)
+	candidates := matchCandidates(next, features, cfg.threshold())
 
-	type candidate struct {
-		area, feature int
-		jaccard       float64
-	}
-	type featureSet struct {
-		feature domain.Feature
-		files   []string
-	}
+	var report Report
+	areaTaken, featureTaken := applyMatches(next, features, candidates, &report)
+	retireUnmatched(next, areaTaken, heuristicOwned, cfg.Snapshot, &report)
+	next = createUnmatched(next, features, featureTaken, cfg.Snapshot, &report)
+
+	sort.Slice(next, func(i, j int) bool { return next[i].ScoutAreaID < next[j].ScoutAreaID })
+	sortReport(&report)
+	return next, report
+}
+
+type candidate struct {
+	area, feature int
+	jaccard       float64
+}
+
+type featureSet struct {
+	feature domain.Feature
+	files   []string
+}
+
+func agentFeatureSets(agentFeatures []domain.Feature) []featureSet {
 	var features []featureSet
 	for _, feature := range agentFeatures {
 		if !IsAgent(feature) {
@@ -134,7 +148,10 @@ func Reconcile(prev []Area, agentFeatures []domain.Feature, heuristicOwned func(
 		}
 	}
 	sort.Slice(features, func(i, j int) bool { return features[i].feature.FeatureID < features[j].feature.FeatureID })
+	return features
+}
 
+func matchCandidates(next []Area, features []featureSet, threshold float64) []candidate {
 	var candidates []candidate
 	for ai, area := range next {
 		if !area.Active() {
@@ -156,10 +173,12 @@ func Reconcile(prev []Area, agentFeatures []domain.Feature, heuristicOwned func(
 		}
 		return features[a.feature].feature.FeatureID < features[b.feature].feature.FeatureID
 	})
+	return candidates
+}
 
-	var report Report
-	areaTaken := make([]bool, len(next))
-	featureTaken := make([]bool, len(features))
+func applyMatches(next []Area, features []featureSet, candidates []candidate, report *Report) (areaTaken, featureTaken []bool) {
+	areaTaken = make([]bool, len(next))
+	featureTaken = make([]bool, len(features))
 	for _, c := range candidates {
 		if areaTaken[c.area] || featureTaken[c.feature] {
 			continue
@@ -176,20 +195,25 @@ func Reconcile(prev []Area, agentFeatures []domain.Feature, heuristicOwned func(
 		}
 		report.Matched = append(report.Matched, Match{ScoutAreaID: area.ScoutAreaID, FeatureID: feature.feature.FeatureID, Jaccard: c.jaccard})
 	}
+	return areaTaken, featureTaken
+}
 
+func retireUnmatched(next []Area, areaTaken []bool, heuristicOwned func(path string) bool, snapshot string, report *Report) {
 	for ai := range next {
 		area := &next[ai]
 		if !area.Active() || areaTaken[ai] {
 			continue
 		}
 		if area.AcceptedBy == "" && area.AcceptedAt == nil && fullyOwned(area.FileSet, heuristicOwned) {
-			area.RetiredSnapshot = cfg.Snapshot
+			area.RetiredSnapshot = snapshot
 			report.Retired = append(report.Retired, area.ScoutAreaID)
 		} else {
 			report.Kept = append(report.Kept, area.ScoutAreaID)
 		}
 	}
+}
 
+func createUnmatched(next []Area, features []featureSet, featureTaken []bool, snapshot string, report *Report) []Area {
 	used := make(map[string]bool, len(next))
 	for _, area := range next {
 		used[area.ScoutAreaID] = true
@@ -199,50 +223,41 @@ func Reconcile(prev []Area, agentFeatures []domain.Feature, heuristicOwned func(
 			continue
 		}
 		area := Area{
-			ScoutAreaID:       mintID(cfg.Snapshot, feature.feature.FeatureID, feature.files, used),
+			ScoutAreaID:       mintID(snapshot, feature.feature.FeatureID, feature.files, used),
 			Title:             feature.feature.Title,
 			Summary:           feature.feature.Summary,
 			FileSet:           feature.files,
 			Origin:            OriginAgent,
-			FirstSeenSnapshot: cfg.Snapshot,
+			FirstSeenSnapshot: snapshot,
 			ClawpatchIDs:      []string{feature.feature.FeatureID},
 		}
 		used[area.ScoutAreaID] = true
 		next = append(next, area)
 		report.Created = append(report.Created, area.ScoutAreaID)
 	}
+	return next
+}
 
-	sort.Slice(next, func(i, j int) bool { return next[i].ScoutAreaID < next[j].ScoutAreaID })
+func sortReport(report *Report) {
 	sort.Slice(report.Matched, func(i, j int) bool { return report.Matched[i].ScoutAreaID < report.Matched[j].ScoutAreaID })
 	sort.Strings(report.Created)
 	sort.Strings(report.Retired)
 	sort.Strings(report.Kept)
-	return next, report
 }
 
 // Supersede marks proposals and decisions whose surviving files are all covered
 // by active agent-map area file sets. It never changes the input payloads.
 func Supersede(prev []Area, records []domain.Association, exists func(string) bool) ([]Area, []domain.Association) {
-	covered := make(map[string]bool)
+	covered := make(coverage)
 	next := make([]Area, len(prev))
 	for i, area := range prev {
 		next[i] = cloneArea(area)
 		if area.Active() {
-			for _, path := range area.FileSet {
-				covered[path] = true
-			}
+			covered.add(area.FileSet)
 		}
-	}
-	allCovered := func(files []string) bool {
-		for _, path := range files {
-			if (exists == nil || exists(path)) && !covered[path] {
-				return false
-			}
-		}
-		return true
 	}
 	for i := range next {
-		if next[i].Status == StatusPending && allCovered(next[i].FileSet) {
+		if next[i].Status == StatusPending && covered.all(next[i].FileSet, exists) {
 			next[i].Status = StatusSuperseded
 		}
 	}
@@ -252,9 +267,26 @@ func Supersede(prev []Area, records []domain.Association, exists func(string) bo
 		out[i].Files = append([]string(nil), record.Files...)
 		out[i].AreaIDs = append([]string(nil), record.AreaIDs...)
 		out[i].InheritedAreaIDs = append([]string(nil), record.InheritedAreaIDs...)
-		out[i].Superseded = record.Superseded || allCovered(record.Files)
+		out[i].Superseded = record.Superseded || covered.all(record.Files, exists)
 	}
 	return next, out
+}
+
+type coverage map[string]bool
+
+func (covered coverage) add(files []string) {
+	for _, path := range files {
+		covered[path] = true
+	}
+}
+
+func (covered coverage) all(files []string, exists func(string) bool) bool {
+	for _, path := range files {
+		if (exists == nil || exists(path)) && !covered[path] {
+			return false
+		}
+	}
+	return true
 }
 
 // FeatureFiles is the sorted, de-duplicated owned-file set of a feature.

@@ -11,7 +11,7 @@ import (
 
 // CheckPrerequisites verifies the declared executable, isolation runtime and
 // exact scanner version without invoking analysis or writing assessed source.
-func (r *Runner) CheckPrerequisites(ctx context.Context, root string) error {
+func (r *Runner) CheckPrerequisites(ctx context.Context, root string) (err error) {
 	canonical, err := canonicalRoot(root)
 	if err != nil {
 		return errors.New("assessment root unavailable")
@@ -30,7 +30,7 @@ func (r *Runner) CheckPrerequisites(ctx context.Context, root string) error {
 	if err != nil {
 		return errors.New("scanner private state unavailable")
 	}
-	defer os.RemoveAll(state)
+	defer func() { err = errors.Join(err, os.RemoveAll(state)) }()
 	if err := r.verifyVersion(ctx, canonical, state, "", binary); err != nil {
 		return errors.New("required scanner version unavailable")
 	}

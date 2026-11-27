@@ -35,7 +35,11 @@ func newHarness(t *testing.T) *harness {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { store.Close() })
+	t.Cleanup(func() {
+		if err := store.Close(); err != nil {
+			t.Error(err)
+		}
+	})
 	return &harness{t: t, ctx: context.Background(), store: store}
 }
 
@@ -81,7 +85,7 @@ func (h *harness) run(findings []finding, coverage map[string]domain.CoverageSta
 		}
 		run.Coverage = append(run.Coverage, row)
 	}
-	statetest.SeedRun(h.t, h.ctx, h.store, plan, run, observations, nil)
+	statetest.SeedRun(h.t, h.ctx, h.store, statetest.Seed{Plan: plan, Run: run, Observations: observations})
 	issues, err := Correlate(h.ctx, h.store, run, observations, opts...)
 	if err != nil {
 		h.t.Fatal(err)
@@ -193,7 +197,7 @@ func TestEvidenceDriftKeepsDisposition(t *testing.T) {
 		t.Run("symbol="+symbol, func(t *testing.T) {
 			h := newHarness(t)
 			created := h.run([]finding{{path: "a.go", symbol: symbol, quote: "eval(x)", line: 10}}, covered("a.go"))[0]
-			if _, err := h.store.TriageIssue(h.ctx, created.IssueID, domain.IssueAccepted, "owner", "accepted risk", "human", "reviewed"); err != nil {
+			if _, err := h.store.TriageIssue(h.ctx, state.Triage{IssueID: created.IssueID, State: domain.IssueAccepted, Owner: "owner", DispositionReason: "accepted risk", Actor: "human", Reason: "reviewed"}); err != nil {
 				t.Fatal(err)
 			}
 			drifted := h.run([]finding{{path: "a.go", symbol: symbol, quote: "eval(x, y)", line: 12}}, covered("a.go"))[0]
@@ -241,21 +245,14 @@ func TestResolveOnlyAfterRelevantCheckThenRegress(t *testing.T) {
 	// Absence from skipped, incomplete, reused or unrelated coverage never resolves.
 	for _, status := range []domain.CoverageStatus{domain.CoverageSkipped, domain.CoverageIncomplete, domain.CoverageReused} {
 		h.run(nil, map[string]domain.CoverageStatus{"a.go": status})
-		if state := h.load(id).State; state != domain.IssueOpen {
-			t.Fatalf("%s coverage changed state to %q", status, state)
-		}
+		requireStillOpen(t, h, id, fmt.Sprintf("%s coverage", status))
 	}
 	h.run(nil, covered("other.go"))
-	if state := h.load(id).State; state != domain.IssueOpen {
-		t.Fatalf("unrelated coverage changed state to %q", state)
-	}
+	requireStillOpen(t, h, id, "unrelated coverage")
 
 	// The code is deleted and the file is successfully re-inspected.
 	h.run(nil, covered("a.go"))
-	resolved := h.load(id)
-	if resolved.State != domain.IssueResolved || resolved.Verification == nil || !hasEvent(resolved, domain.EventResolved) {
-		t.Fatalf("not resolved after relevant successful check: %#v", resolved)
-	}
+	requireResolvedByCheck(t, h.load(id))
 
 	// The code is re-introduced: the same durable ID regresses.
 	back := h.run([]finding{{path: "a.go", quote: "eval(x)", line: 7}}, covered("a.go"))[0]
@@ -265,6 +262,20 @@ func TestResolveOnlyAfterRelevantCheckThenRegress(t *testing.T) {
 	}
 	if len(h.all()) != 1 {
 		t.Fatal("regression created a second issue")
+	}
+}
+
+func requireStillOpen(t *testing.T, h *harness, id, coverage string) {
+	t.Helper()
+	if state := h.load(id).State; state != domain.IssueOpen {
+		t.Fatalf("%s changed state to %q", coverage, state)
+	}
+}
+
+func requireResolvedByCheck(t *testing.T, resolved domain.Issue) {
+	t.Helper()
+	if resolved.State != domain.IssueResolved || resolved.Verification == nil || !hasEvent(resolved, domain.EventResolved) {
+		t.Fatalf("not resolved after relevant successful check: %#v", resolved)
 	}
 }
 
@@ -286,9 +297,14 @@ func TestAmbiguousCandidatesAreNeverMerged(t *testing.T) {
 	if len(newcomer.AmbiguousWith) != 2 || !hasEvent(newcomer, domain.EventAmbiguous) || newcomer.State != domain.IssueOpen {
 		t.Fatalf("new issue lacks ambiguous_with: %#v", newcomer)
 	}
+	requireOriginalsReferenceAmbiguity(t, h, originals, newcomer.IssueID)
+}
+
+func requireOriginalsReferenceAmbiguity(t *testing.T, h *harness, originals []string, newcomerID string) {
+	t.Helper()
 	for _, id := range originals {
 		original := h.load(id)
-		if original.State != domain.IssueOpen || len(original.AmbiguousWith) != 1 || original.AmbiguousWith[0] != newcomer.IssueID {
+		if original.State != domain.IssueOpen || len(original.AmbiguousWith) != 1 || original.AmbiguousWith[0] != newcomerID {
 			t.Fatalf("original issue %s must stay open and reference the ambiguity: %#v", id, original)
 		}
 	}

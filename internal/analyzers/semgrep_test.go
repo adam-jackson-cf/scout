@@ -9,10 +9,7 @@ import (
 func TestSemgrepJSONAccountsForScannedCleanAndFindingInputs(t *testing.T) {
 	spec := specForTest(t, "security.semgrep.python-unsafe-yaml-load")
 	raw := []byte(`{"version":"1.182.0","results":[{"check_id":"private.rules.scout.security.python.yaml-unsafe-load","path":"src/unsafe.py","start":{"line":4},"end":{"line":4},"extra":{"message":"unsafe YAML load","severity":"ERROR"}}],"errors":[],"paths":{"scanned":["src/unsafe.py","src/safe.py"]}}`)
-	parsed, err := parseOutput(spec, raw, "/tmp/fixture")
-	if err != nil {
-		t.Fatal(err)
-	}
+	parsed := parseSemgrepFixture(t, spec, raw)
 	if !parsed.success || len(parsed.processed) != 2 || len(parsed.findings) != 1 {
 		t.Fatalf("expected complete per-input accounting, got %+v", parsed)
 	}
@@ -21,24 +18,27 @@ func TestSemgrepJSONAccountsForScannedCleanAndFindingInputs(t *testing.T) {
 	}
 
 	incomplete := []byte(`{"version":"1.182.0","results":[],"errors":[{"type":"ParseError"}],"paths":{"scanned":["src/unsafe.py"]}}`)
-	withError, err := parseOutput(spec, incomplete, "/tmp/fixture")
-	if err != nil {
-		t.Fatal(err)
-	}
+	withError := parseSemgrepFixture(t, spec, incomplete)
 	if withError.success {
 		t.Fatal("scanner-reported error must not establish complete coverage")
 	}
 
 	omitted := []byte(`{"version":"1.182.0","results":[],"errors":[],"paths":{"scanned":["src/unsafe.py"]}}`)
-	partial, err := parseOutput(spec, omitted, "/tmp/fixture")
-	if err != nil {
-		t.Fatal(err)
-	}
+	partial := parseSemgrepFixture(t, spec, omitted)
 	inputs := map[string]sourceInput{"src/unsafe.py": {}, "src/safe.py": {}}
 	status, _, _ := (&Runner{spec: spec}).resultStatus(nil, partial, inputs, nil, false)
 	if status != domain.AdapterPartial {
 		t.Fatalf("omitted declared input must be partial, got %s", status)
 	}
+}
+
+func parseSemgrepFixture(t *testing.T, spec Spec, raw []byte) parsedOutput {
+	t.Helper()
+	parsed, err := parseOutput(spec, raw, "/tmp/fixture")
+	if err != nil {
+		t.Fatal(err)
+	}
+	return parsed
 }
 
 func TestWorkflowRuleDoesNotClaimUnrelatedYAMLCoverage(t *testing.T) {

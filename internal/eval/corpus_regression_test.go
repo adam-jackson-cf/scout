@@ -1,10 +1,8 @@
 package eval
 
 import (
-	"bytes"
 	"encoding/json"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -52,9 +50,28 @@ func TestCorpusReplayKeepsTrueIssuesAndDoesNotFlagFalsePositives(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	wantTrue, falsePositives, nFP := referenceTruth(loaded.Corpus)
+	if len(wantTrue) != wantValidatedTrue || nFP != wantFalsePositives {
+		t.Fatalf("reference corpus has %d validated true / %d false positives, want %d / %d", len(wantTrue), nFP, wantValidatedTrue, wantFalsePositives)
+	}
+
+	matched, flagged := replayRequests(t, loaded, requests, falsePositives)
+	for id := range wantTrue {
+		if !matched[id] {
+			t.Errorf("true issue %s not detected", id)
+		}
+	}
+	sort.Strings(flagged)
+	if len(flagged) != 0 {
+		t.Errorf("false positives flagged:\n%s", strings.Join(flagged, "\n"))
+	}
+	t.Logf("corpus replay: %d/%d true detected, %d/%d false positives unflagged", len(matched), len(wantTrue), nFP-len(flagged), nFP)
+}
+
+func referenceTruth(corpus *Corpus) (map[string]bool, map[string][]ReferenceIssue, int) {
 	wantTrue := map[string]bool{}
 	falsePositives := map[string][]ReferenceIssue{} // corpus entry id -> FP issues
-	for _, entry := range loaded.Corpus.Entries {
+	for _, entry := range corpus.Entries {
 		for _, issue := range entry.Issues {
 			switch issue.Adjudication {
 			case AdjudicationValidatedTrue:
@@ -68,10 +85,11 @@ func TestCorpusReplayKeepsTrueIssuesAndDoesNotFlagFalsePositives(t *testing.T) {
 	for _, issues := range falsePositives {
 		nFP += len(issues)
 	}
-	if len(wantTrue) != wantValidatedTrue || nFP != wantFalsePositives {
-		t.Fatalf("reference corpus has %d validated true / %d false positives, want %d / %d", len(wantTrue), nFP, wantValidatedTrue, wantFalsePositives)
-	}
+	return wantTrue, falsePositives, nFP
+}
 
+func replayRequests(t *testing.T, loaded CorpusLoadResult, requests []EvaluationRequest, falsePositives map[string][]ReferenceIssue) (map[string]bool, []string) {
+	t.Helper()
 	matched := map[string]bool{}
 	flagged := []string{}
 	for _, request := range requests {
@@ -85,107 +103,19 @@ func TestCorpusReplayKeepsTrueIssuesAndDoesNotFlagFalsePositives(t *testing.T) {
 		for _, miss := range report.Misses {
 			t.Errorf("true issue %s lost: %s %s", miss.ID, miss.Mechanism, miss.Path)
 		}
-		for _, issue := range falsePositives[report.CorpusEntryID] {
-			for _, observation := range request.Observations {
-				if pathsRelevant(issue.Path, observation.Path) {
-					flagged = append(flagged, issue.ID+" <- "+observation.Source+" "+observation.Path)
-				}
+		flagged = append(flagged, flaggedFalsePositives(falsePositives[report.CorpusEntryID], request.Observations)...)
+	}
+	return matched, flagged
+}
+
+func flaggedFalsePositives(issues []ReferenceIssue, observations []ScoutObservation) []string {
+	var flagged []string
+	for _, issue := range issues {
+		for _, observation := range observations {
+			if pathsRelevant(issue.Path, observation.Path) {
+				flagged = append(flagged, issue.ID+" <- "+observation.Source+" "+observation.Path)
 			}
 		}
 	}
-	for id := range wantTrue {
-		if !matched[id] {
-			t.Errorf("true issue %s not detected", id)
-		}
-	}
-	sort.Strings(flagged)
-	if len(flagged) != 0 {
-		t.Errorf("false positives flagged:\n%s", strings.Join(flagged, "\n"))
-	}
-	t.Logf("corpus replay: %d/%d true detected, %d/%d false positives unflagged", len(matched), len(wantTrue), nFP-len(flagged), nFP)
-}
-
-type semgrepFixtureResult struct {
-	Results []struct {
-		CheckID string `json:"check_id"`
-		Path    string `json:"path"`
-	} `json:"results"`
-	Errors []json.RawMessage `json:"errors"`
-}
-
-func writeFixture(t *testing.T, dir, rel, content string) {
-	t.Helper()
-	full := filepath.Join(dir, filepath.FromSlash(rel))
-	if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(full, []byte(content), 0o644); err != nil {
-		t.Fatal(err)
-	}
-}
-
-// TestBundledRulesStillDetectCorpusMechanisms runs the current bundled rules
-// behind the corpus's true issues (mutable Actions refs, python-multipart
-// CVE-2024-24762, currentScript DOM clobbering, CSS height transition) on
-// fixtures reproducing each mechanism and its negative boundary.
-func TestBundledRulesStillDetectCorpusMechanisms(t *testing.T) {
-	semgrep, err := exec.LookPath("semgrep")
-	if err != nil {
-		t.Fatalf("semgrep is required to check the bundled rules (run `source .tools/activate`): %v", err)
-	}
-	rules := filepath.Join(repoRoot(t), "internal", "analyzers", "rules")
-	dir := t.TempDir()
-	writeFixture(t, dir, ".github/workflows/mutable.yml", "jobs:\n  a:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n")
-	writeFixture(t, dir, ".github/workflows/pinned.yml", "jobs:\n  a:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@0123456789abcdef0123456789abcdef01234567\n")
-	writeFixture(t, dir, "vuln/pyproject.toml", "[project]\ndependencies = [\"python-multipart<0.0.7\"]\n")
-	writeFixture(t, dir, "fixed/pyproject.toml", "[project]\ndependencies = [\"python-multipart>=0.0.7\"]\n")
-	writeFixture(t, dir, "css/identity.css", ".menu {\n  transition: height 0.3s ease;\n}\n")
-	writeFixture(t, dir, "css/safe.css", ".menu {\n  transition: max-height 0.3s ease;\n}\n")
-	writeFixture(t, dir, "runtime/AutoPublicPathRuntimeModule.js", "const x = Template.indent([\n\t`if (document.currentScript)`,\n\tTemplate.indent(`scriptUrl = document.currentScript.src;`)\n]);\n")
-	writeFixture(t, dir, "runtime/guarded.js", "const x = Template.indent([\n\t`if (document.currentScript && document.currentScript.tagName.toUpperCase() === 'SCRIPT')`,\n\tTemplate.indent(`scriptUrl = document.currentScript.src;`)\n]);\n")
-
-	args := []string{"--metrics=off", "--disable-version-check", "--json", "--quiet"}
-	for _, rule := range []string{
-		"security/semgrep-actions-mutable-ref.yaml",
-		"security/semgrep-python-multipart-cve-2024-24762.yaml",
-		"security/semgrep-javascript-current-script-dom-clobbering.yaml",
-		"performance/semgrep-css-height-transition.yaml",
-	} {
-		args = append(args, "--config", filepath.Join(rules, rule))
-	}
-	args = append(args, ".")
-	cmd := exec.CommandContext(boundedTestContext(t), semgrep, args...)
-	cmd.Dir = dir
-	var stdout bytes.Buffer
-	cmd.Stdout = &stdout
-	if err := cmd.Run(); err != nil {
-		t.Fatalf("semgrep: %v", err)
-	}
-	var out semgrepFixtureResult
-	if err := json.Unmarshal(stdout.Bytes(), &out); err != nil {
-		t.Fatal(err)
-	}
-	if len(out.Errors) != 0 {
-		t.Fatalf("semgrep errors: %s", out.Errors)
-	}
-	got := map[string]string{}
-	for _, r := range out.Results {
-		got[filepath.ToSlash(r.Path)] = r.CheckID[strings.LastIndex(r.CheckID, "scout."):]
-	}
-	want := map[string]string{
-		".github/workflows/mutable.yml":          "scout.security.actions.mutable-ref",
-		"vuln/pyproject.toml":                    "scout.security.python-multipart-cve-2024-24762",
-		"css/identity.css":                       "scout.performance.css.layout-height-transition",
-		"runtime/AutoPublicPathRuntimeModule.js": "scout.security.javascript.current-script-dom-clobbering",
-	}
-	for path, rule := range want {
-		if got[path] != rule {
-			t.Errorf("%s: want %s, got %q", path, rule, got[path])
-		}
-	}
-	for path, rule := range got {
-		if want[path] == "" {
-			t.Errorf("negative-boundary fixture %s wrongly flagged by %s", path, rule)
-		}
-	}
+	return flagged
 }

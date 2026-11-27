@@ -75,36 +75,35 @@ func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	switch {
-	case r.URL.Path == "/":
+	if r.URL.Path == "/" {
 		h.dashboard(w, r)
-	case r.URL.Path == "/issues":
-		h.issueList(w, r, false)
-	case r.URL.Path == "/features":
-		h.features(w, r, false)
-	case r.URL.Path == "/runs/latest":
-		h.runLatest(w, r, false)
-	case issueEvidencePath(r.URL.Path, "/issues/"):
-		h.issueEvidence(w, r, strings.TrimPrefix(r.URL.Path, "/issues/"), false)
-	case strings.HasPrefix(r.URL.Path, "/issues/"):
-		h.issue(w, r, strings.TrimPrefix(r.URL.Path, "/issues/"), false)
-	case strings.HasPrefix(r.URL.Path, "/runs/"):
-		h.run(w, r, strings.TrimPrefix(r.URL.Path, "/runs/"), false)
-	case r.URL.Path == "/api/issues":
-		h.issueList(w, r, true)
-	case r.URL.Path == "/api/features":
-		h.features(w, r, true)
-	case r.URL.Path == "/api/runs/latest":
-		h.runLatest(w, r, true)
-	case issueEvidencePath(r.URL.Path, "/api/issues/"):
-		h.issueEvidence(w, r, strings.TrimPrefix(r.URL.Path, "/api/issues/"), true)
-	case strings.HasPrefix(r.URL.Path, "/api/issues/"):
-		h.issue(w, r, strings.TrimPrefix(r.URL.Path, "/api/issues/"), true)
-	case strings.HasPrefix(r.URL.Path, "/api/runs/"):
-		h.run(w, r, strings.TrimPrefix(r.URL.Path, "/api/runs/"), true)
-	default:
-		h.writeError(w, http.StatusNotFound, "route not found")
+		return
 	}
+	if h.serveRoutes(w, r, "", false) || h.serveRoutes(w, r, "/api", true) {
+		return
+	}
+	h.writeError(w, http.StatusNotFound, "route not found")
+}
+
+func (h handler) serveRoutes(w http.ResponseWriter, r *http.Request, base string, asJSON bool) bool {
+	path := r.URL.Path
+	switch {
+	case path == base+"/issues":
+		h.issueList(w, r, asJSON)
+	case path == base+"/features":
+		h.features(w, r, asJSON)
+	case path == base+"/runs/latest":
+		h.runLatest(w, r, asJSON)
+	case issueEvidencePath(path, base+"/issues/"):
+		h.issueEvidence(w, r, strings.TrimPrefix(path, base+"/issues/"), asJSON)
+	case strings.HasPrefix(path, base+"/issues/"):
+		h.issue(w, r, strings.TrimPrefix(path, base+"/issues/"), asJSON)
+	case strings.HasPrefix(path, base+"/runs/"):
+		h.run(w, r, strings.TrimPrefix(path, base+"/runs/"), asJSON)
+	default:
+		return false
+	}
+	return true
 }
 
 func (h handler) dashboard(w http.ResponseWriter, r *http.Request) {
@@ -199,6 +198,15 @@ func (h handler) issueEvidence(w http.ResponseWriter, r *http.Request, suffix st
 		h.writeStoreError(w, err)
 		return
 	}
+	view := issueEvidence{Issue: issue, Run: run, Observations: linkedObservations(issue, observations)}
+	if asJSON {
+		h.writeJSON(w, http.StatusOK, view)
+		return
+	}
+	h.writeHTML(w, "Issue evidence "+issue.IssueID, view, nil)
+}
+
+func linkedObservations(issue domain.Issue, observations []domain.Observation) []domain.Observation {
 	linked := make(map[string]struct{}, len(issue.ObservationIDs))
 	for _, observationID := range issue.ObservationIDs {
 		linked[observationID] = struct{}{}
@@ -209,12 +217,7 @@ func (h handler) issueEvidence(w http.ResponseWriter, r *http.Request, suffix st
 			evidence = append(evidence, observation)
 		}
 	}
-	view := issueEvidence{Issue: issue, Run: run, Observations: evidence}
-	if asJSON {
-		h.writeJSON(w, http.StatusOK, view)
-		return
-	}
-	h.writeHTML(w, "Issue evidence "+issue.IssueID, view, nil)
+	return evidence
 }
 
 func (h handler) run(w http.ResponseWriter, r *http.Request, runID string, asJSON bool) {
@@ -339,11 +342,15 @@ func validRouteID(value string) bool {
 		return false
 	}
 	for _, r := range value {
-		if !(r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || r >= '0' && r <= '9' || r == '-' || r == '_' || r == '.' || r == ':') {
+		if !validRouteRune(r) {
 			return false
 		}
 	}
 	return true
+}
+
+func validRouteRune(r rune) bool {
+	return r >= 'a' && r <= 'z' || r >= 'A' && r <= 'Z' || r >= '0' && r <= '9' || strings.ContainsRune("-_.:", r)
 }
 
 func sanitize(value any) (any, error) {

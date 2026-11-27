@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"gopkg.in/yaml.v3"
+
 	"scout/internal/domain"
 	"scout/internal/policy"
 )
@@ -31,18 +32,22 @@ type githubHTTPError int
 
 func (e githubHTTPError) Error() string { return fmt.Sprintf("GitHub API HTTP %d", e) }
 
-func (g GitHub) get(ctx context.Context, path string, out any) error {
+func (g GitHub) endpoint() (string, error) {
 	endpoint := g.Endpoint
 	if endpoint == "" {
 		endpoint = "https://api.github.com"
 	}
 	u, err := url.Parse(endpoint)
 	if err != nil || u.Host == "" {
-		return fmt.Errorf("invalid GitHub API endpoint")
+		return "", fmt.Errorf("invalid GitHub API endpoint")
 	}
 	if g.Token == "" {
-		return fmt.Errorf("GitHub authentication required")
+		return "", fmt.Errorf("GitHub authentication required")
 	}
+	return endpoint, nil
+}
+
+func (g GitHub) client() http.Client {
 	client := g.Client
 	if client == nil {
 		client = &http.Client{Timeout: 30 * time.Second}
@@ -50,6 +55,15 @@ func (g GitHub) get(ctx context.Context, path string, out any) error {
 	// Never forward authentication through redirects, including a caller client.
 	bounded := *client
 	bounded.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
+	return bounded
+}
+
+func (g GitHub) get(ctx context.Context, path string, out any) (err error) {
+	endpoint, err := g.endpoint()
+	if err != nil {
+		return err
+	}
+	bounded := g.client()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, strings.TrimRight(endpoint, "/")+path, nil)
 	if err != nil {
 		return fmt.Errorf("invalid GitHub API request")
@@ -61,7 +75,11 @@ func (g GitHub) get(ctx context.Context, path string, out any) error {
 	if err != nil {
 		return fmt.Errorf("GitHub API transport unavailable")
 	}
-	defer res.Body.Close()
+	defer func() {
+		if closeErr := res.Body.Close(); closeErr != nil && err == nil {
+			err = fmt.Errorf("GitHub API response close failed")
+		}
+	}()
 	if res.StatusCode != http.StatusOK {
 		return githubHTTPError(res.StatusCode)
 	}
@@ -118,6 +136,29 @@ func (g GitHub) Enumerate(ctx context.Context, req CollectionRequest) (Collectio
 	}
 	return CollectionSnapshot{RepositoryID: r.ID.String(), Selector: req.Selector, ListingCapped: true, EnumerationError: "GitHub Actions run listing does not attest complete PR-event or attempt enumeration"}, nil
 }
+
+type githubWriterRun struct {
+	ID         json.Number `json:"id"`
+	HeadSHA    string      `json:"head_sha"`
+	HeadBranch string      `json:"head_branch"`
+	Actor      struct {
+		Login string `json:"login"`
+	} `json:"actor"`
+	TriggeringActor struct {
+		Login string `json:"login"`
+	} `json:"triggering_actor"`
+	Repository struct {
+		ID json.Number `json:"id"`
+	} `json:"repository"`
+	HeadRepository struct {
+		ID json.Number `json:"id"`
+	} `json:"head_repository"`
+}
+
+func (run githubWriterRun) provenanceComplete(g GitHub) bool {
+	return run.ID.String() == g.RunID && run.Repository.ID.String() == g.RepositoryID && run.HeadRepository.ID.String() == g.RepositoryID && run.Actor.Login != "" && run.TriggeringActor.Login != "" && run.HeadSHA != ""
+}
+
 func (g GitHub) AuthenticateWriter(ctx context.Context) (WriterIdentity, error) {
 	path, r, err := g.repository(ctx)
 	if err != nil {
@@ -126,27 +167,11 @@ func (g GitHub) AuthenticateWriter(ctx context.Context) (WriterIdentity, error) 
 	if g.RunID == "" {
 		return WriterIdentity{}, fmt.Errorf("writer run identity required")
 	}
-	var run struct {
-		ID         json.Number `json:"id"`
-		HeadSHA    string      `json:"head_sha"`
-		HeadBranch string      `json:"head_branch"`
-		Actor      struct {
-			Login string `json:"login"`
-		} `json:"actor"`
-		TriggeringActor struct {
-			Login string `json:"login"`
-		} `json:"triggering_actor"`
-		Repository struct {
-			ID json.Number `json:"id"`
-		} `json:"repository"`
-		HeadRepository struct {
-			ID json.Number `json:"id"`
-		} `json:"head_repository"`
-	}
+	var run githubWriterRun
 	if err := g.get(ctx, path+"/actions/runs/"+url.PathEscape(g.RunID), &run); err != nil {
 		return WriterIdentity{}, err
 	}
-	if run.ID.String() != g.RunID || run.Repository.ID.String() != g.RepositoryID || run.HeadRepository.ID.String() != g.RepositoryID || run.Actor.Login == "" || run.TriggeringActor.Login == "" || run.HeadSHA == "" {
+	if !run.provenanceComplete(g) {
 		return WriterIdentity{}, fmt.Errorf("writer run provenance incomplete")
 	}
 	var branch struct {
@@ -211,19 +236,26 @@ func (g GitHub) ProtectedTip(ctx context.Context, id string) (ProtectedPolicy, e
 	if err := yaml.Unmarshal(raw, &declared); err != nil {
 		return ProtectedPolicy{}, err
 	}
-	var owners []byte
-	for _, file := range []string{".github/CODEOWNERS", "CODEOWNERS", "docs/CODEOWNERS"} {
-		owners, err = g.content(ctx, path, file, branch.Commit.SHA)
-		if err == nil {
-			break
-		}
-		var status githubHTTPError
-		if !errors.As(err, &status) || status != http.StatusNotFound {
-			return ProtectedPolicy{}, err
-		}
+	owners, err := g.codeowners(ctx, path, branch.Commit.SHA)
+	if err != nil {
+		return ProtectedPolicy{}, err
 	}
 	return ProtectedPolicy{RepositoryID: id, Revision: branch.Commit.SHA, Maintainers: declared.Maintainers, CODEOWNERS: string(owners), MinDays: parsed.Shadow().MinDays, MinObservations: parsed.Shadow().MinPRRuns, Authenticated: true}, nil
 }
+func (g GitHub) codeowners(ctx context.Context, path, revision string) ([]byte, error) {
+	for _, file := range []string{".github/CODEOWNERS", "CODEOWNERS", "docs/CODEOWNERS"} {
+		owners, err := g.content(ctx, path, file, revision)
+		if err == nil {
+			return owners, nil
+		}
+		var status githubHTTPError
+		if !errors.As(err, &status) || status != http.StatusNotFound {
+			return nil, err
+		}
+	}
+	return nil, nil
+}
+
 func (g GitHub) ancestor(ctx context.Context, path, base, head string) (bool, error) {
 	if base == "" || head == "" {
 		return false, fmt.Errorf("ancestry endpoints required")

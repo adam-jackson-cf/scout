@@ -100,6 +100,13 @@ type Association struct {
 
 // Validate checks the invariants a stored record must hold.
 func (a Association) Validate() error {
+	if err := a.validateIdentity(); err != nil {
+		return err
+	}
+	return a.validateOutcome()
+}
+
+func (a Association) validateIdentity() error {
 	switch {
 	case a.ID == "" || a.RunID == "" || a.MergeCommit == "" || a.DecidedAt.IsZero():
 		return errors.New("association requires id, run id, merge commit and decision time")
@@ -108,6 +115,10 @@ func (a Association) Validate() error {
 	case a.PRMetadata != PRMetadataAbsent && a.PRMetadata != PRMetadataPresent:
 		return fmt.Errorf("association %q: pr_metadata %q is not absent or present", a.ID, a.PRMetadata)
 	}
+	return nil
+}
+
+func (a Association) validateOutcome() error {
 	switch a.Outcome {
 	case AssociationAssigned:
 		if len(a.AreaIDs) == 0 {

@@ -1,11 +1,11 @@
+//go:build boundary
+
 package engine
 
 import (
 	"context"
 	"fmt"
-	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	"testing"
 	"time"
@@ -19,11 +19,11 @@ func requireDeltaTools(t *testing.T) {
 	t.Helper()
 	for _, binary := range []string{"lizard", "jscpd", "node", "git"} {
 		if _, err := exec.LookPath(binary); err != nil {
-			t.Skipf("%s is not on PATH (source .tools/activate)", binary)
+			t.Fatalf("%s is not on PATH (source .tools/activate)", binary)
 		}
 	}
 	if err := sandbox.Available(); err != nil {
-		t.Skip("scanner sandbox is not available")
+		t.Fatal("scanner sandbox is not available")
 	}
 }
 
@@ -35,17 +35,6 @@ func deltaGit(t *testing.T, root string, args ...string) string {
 		t.Fatalf("git %v: %v\n%s", args, err, out)
 	}
 	return strings.TrimSpace(string(out))
-}
-
-func deltaWrite(t *testing.T, root, name, content string) {
-	t.Helper()
-	path := filepath.Join(root, filepath.FromSlash(name))
-	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
-		t.Fatal(err)
-	}
-	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
-		t.Fatal(err)
-	}
 }
 
 // branchy returns a Python function with exactly `branches` decision points
@@ -100,12 +89,27 @@ func TestDeltaCCCrossingIsOneDescriptiveReportOnlyIssueOnChangedFilesOnly(t *tes
 		t.Fatalf("want exactly one delta, got %+v", report.Issues)
 	}
 	issue := report.Issues[0]
+	assertDeltaCCIssueIdentity(t, issue)
+	assertDeltaCCIssueEvidence(t, issue, base)
+	assertDeltaCCObservation(t, issue, base)
+}
+
+func assertDeltaCCIssueIdentity(t *testing.T, issue DeltaIssue) {
+	t.Helper()
 	if issue.Claim != domain.ClaimDescriptive || issue.Mode != "report-only" || issue.Rule != "delta.cc-threshold@1" {
 		t.Fatalf("identity: %+v", issue)
 	}
+}
+
+func assertDeltaCCIssueEvidence(t *testing.T, issue DeltaIssue, base string) {
+	t.Helper()
 	if issue.Path != "wide.py" || issue.Function == "" || issue.Base != 9 || issue.Head != 14 || issue.Threshold != 10 || issue.BaseRev != base {
 		t.Fatalf("evidence: %+v", issue)
 	}
+}
+
+func assertDeltaCCObservation(t *testing.T, issue DeltaIssue, base string) {
+	t.Helper()
 	obs := issue.observation("run-1", time.Unix(0, 0))
 	if err := obs.Validate(); err != nil {
 		t.Fatal(err)

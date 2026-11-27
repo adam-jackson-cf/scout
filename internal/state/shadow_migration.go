@@ -32,20 +32,18 @@ func migrateLegacyShadowTriage(ctx context.Context, tx *sql.Tx) error {
 		return err
 	}
 	var legacy []domain.ShadowTriage
-	for rows.Next() {
+	err = scanRows(rows, func(rows *sql.Rows) error {
 		var row domain.ShadowTriage
 		var at int64
 		if err := rows.Scan(&row.EventID, &row.Verdict, &row.Actor, &row.Reason, &at); err != nil {
-			rows.Close()
 			return err
 		}
 		row.ActionID = "legacy:" + row.EventID
 		row.Scope = domain.ShadowScopeLegacy
 		row.TriagedAt = time.UnixMilli(at).UTC()
 		legacy = append(legacy, row)
-	}
-	err = rows.Err()
-	rows.Close()
+		return nil
+	})
 	if err != nil {
 		return err
 	}
@@ -53,10 +51,10 @@ func migrateLegacyShadowTriage(ctx context.Context, tx *sql.Tx) error {
 		// Historical rows lack provider repository/PR identity. Empty legacy-only
 		// identity preserves that absence rather than forging authenticated facts.
 		event := domain.ProviderPREvent{EventID: row.EventID, Scope: domain.ShadowScopeLegacy}
-		if err := insertShadowJSON(ctx, tx, "shadow_events", []string{"scope", "repository_id", "event_id"}, []any{row.Scope, "", row.EventID}, event); err != nil {
+		if err := insertShadowJSON(ctx, tx, shadowRow{"shadow_events", []string{"scope", "repository_id", "event_id"}, []any{row.Scope, "", row.EventID}}, event); err != nil {
 			return err
 		}
-		if err := insertShadowJSON(ctx, tx, "would_block_triage", []string{"scope", "repository_id", "action_id", "event_id"}, []any{row.Scope, "", row.ActionID, row.EventID}, row); err != nil {
+		if err := insertShadowJSON(ctx, tx, shadowRow{"would_block_triage", []string{"scope", "repository_id", "action_id", "event_id"}, []any{row.Scope, "", row.ActionID, row.EventID}}, row); err != nil {
 			return err
 		}
 	}

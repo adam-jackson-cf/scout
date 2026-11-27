@@ -10,7 +10,7 @@ import (
 
 func shadowTree(t *testing.T, l domain.ShadowLedger) Tree {
 	t.Helper()
-	tree := ledger(t, "2026-11-08T00:00:00Z")
+	tree := issueLedger(t, "2026-11-08T00:00:00Z")
 	files, err := state.EncodeShadow(l, domain.ShadowInputs{})
 	if err != nil {
 		t.Fatal(err)
@@ -36,6 +36,18 @@ func TestMergeShadowStagesWithoutStamping(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	assertSourceStagedAsPending(t, merged, destination, source)
+	replay, err := MergeState(merged, local)
+	if err != nil || !reflect.DeepEqual(replay, merged) {
+		t.Fatalf("merge replay changed history: %v", err)
+	}
+	if !reflect.DeepEqual(destination, beforeCurrent) || !reflect.DeepEqual(source, beforeLocal) {
+		t.Fatal("merge mutated caller history")
+	}
+}
+
+func assertSourceStagedAsPending(t *testing.T, merged Tree, destination, source domain.ShadowLedger) {
+	t.Helper()
 	got, inputs, err := state.DecodeShadow(merged)
 	if err != nil {
 		t.Fatal(err)
@@ -45,13 +57,6 @@ func TestMergeShadowStagesWithoutStamping(t *testing.T) {
 	}
 	if len(inputs.PendingImports) != 1 || inputs.PendingImports[0].History == nil || !reflect.DeepEqual(*inputs.PendingImports[0].History, source) {
 		t.Fatal("pure merge lost pending source history")
-	}
-	replay, err := MergeState(merged, local)
-	if err != nil || !reflect.DeepEqual(replay, merged) {
-		t.Fatalf("merge replay changed history: %v", err)
-	}
-	if !reflect.DeepEqual(destination, beforeCurrent) || !reflect.DeepEqual(source, beforeLocal) {
-		t.Fatal("merge mutated caller history")
 	}
 }
 

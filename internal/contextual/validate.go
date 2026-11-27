@@ -39,7 +39,13 @@ type modelFinding struct {
 	Severity     json.RawMessage `json:"severity"`
 }
 
-func validateModelResponse(request ReviewRequest, raw []byte, manifest Manifest, source []promptSource, model, promptVersion string) (ReviewResult, error) {
+type answerProvenance struct {
+	model         string
+	promptVersion string
+}
+
+func validateModelResponse(request ReviewRequest, raw []byte, manifest Manifest, source []promptSource, provenance answerProvenance) (ReviewResult, error) {
+	model, promptVersion := provenance.model, provenance.promptVersion
 	response, err := decodeModelResponse(raw)
 	if err != nil {
 		return emptyResult(request), err
@@ -48,35 +54,16 @@ func validateModelResponse(request ReviewRequest, raw []byte, manifest Manifest,
 	if err != nil {
 		return emptyResult(request), err
 	}
-	if (status == domain.CoverageNotApplicable || status == domain.CoverageRequiresManualVerification) && strings.TrimSpace(response.Reason) == "" {
-		return emptyResult(request), errors.New("model answer requires a reason for non-covered status")
-	}
-	if len(response.Inspected) == 0 {
-		return emptyResult(request), errors.New("model answer has no inspected source rows")
-	}
-	if strings.TrimSpace(response.DeterministicBlindSpot) == "" {
-		return emptyResult(request), errors.New("model answer has no deterministic blind-spot judgment")
+	if err := checkResponseJudgments(status, response); err != nil {
+		return emptyResult(request), err
 	}
 	known := sourceByPath(source)
-	inspected := make([]domain.SourceRange, 0, len(response.Inspected))
-	for _, citation := range response.Inspected {
-		resolved, err := validateCitation(citation, manifest, known)
-		if err != nil {
-			return emptyResult(request), fmt.Errorf("model inspected row: %w", err)
-		}
-		inspected = appendUniqueRange(inspected, resolved)
+	inspected, err := resolveInspected(response.Inspected, manifest, known)
+	if err != nil {
+		return emptyResult(request), err
 	}
-	if len(inspected) == 0 {
-		return emptyResult(request), errors.New("model answer has no valid inspected source rows")
-	}
-	if status == domain.CoverageFlagged && len(response.Findings) == 0 {
-		return emptyResult(request), errors.New("flagged model answer has no findings")
-	}
-	if status == domain.CoverageCovered && len(response.Findings) != 0 {
-		return emptyResult(request), errors.New("covered model answer cannot contain findings")
-	}
-	if status == domain.CoverageNotApplicable && len(response.Findings) != 0 {
-		return emptyResult(request), errors.New("not-applicable model answer cannot contain findings")
+	if err := checkFindingCount(status, len(response.Findings)); err != nil {
+		return emptyResult(request), err
 	}
 
 	redactor := secretRedactor{}
@@ -91,9 +78,69 @@ func validateModelResponse(request ReviewRequest, raw []byte, manifest Manifest,
 		Metadata: &ReviewMetadata{DeterministicBlindSpot: redactor.redact(strings.TrimSpace(response.DeterministicBlindSpot))},
 	}
 	result.Coverage.OmittedPaths = validOmittedPaths(response.Omissions, manifest)
+	evidence := evidenceContext{manifest: manifest, sources: known, model: model, promptVersion: promptVersion, redactor: redactor}
+	if failures := addFindings(&result, request, response.Findings, evidence); len(failures) != 0 {
+		return result, errors.Join(failures...)
+	}
+	if err := result.Coverage.Validate(); err != nil {
+		return result, fmt.Errorf("validated contextual coverage: %w", err)
+	}
+	return result, nil
+}
+
+type evidenceContext struct {
+	manifest      Manifest
+	sources       map[string]promptSource
+	model         string
+	promptVersion string
+	redactor      secretRedactor
+}
+
+func checkResponseJudgments(status domain.CoverageStatus, response modelResponse) error {
+	if (status == domain.CoverageNotApplicable || status == domain.CoverageRequiresManualVerification) && strings.TrimSpace(response.Reason) == "" {
+		return errors.New("model answer requires a reason for non-covered status")
+	}
+	if len(response.Inspected) == 0 {
+		return errors.New("model answer has no inspected source rows")
+	}
+	if strings.TrimSpace(response.DeterministicBlindSpot) == "" {
+		return errors.New("model answer has no deterministic blind-spot judgment")
+	}
+	return nil
+}
+
+func resolveInspected(citations []modelCitation, manifest Manifest, known map[string]promptSource) ([]domain.SourceRange, error) {
+	inspected := make([]domain.SourceRange, 0, len(citations))
+	for _, citation := range citations {
+		resolved, err := validateCitation(citation, manifest, known)
+		if err != nil {
+			return nil, fmt.Errorf("model inspected row: %w", err)
+		}
+		inspected = appendUniqueRange(inspected, resolved)
+	}
+	if len(inspected) == 0 {
+		return nil, errors.New("model answer has no valid inspected source rows")
+	}
+	return inspected, nil
+}
+
+func checkFindingCount(status domain.CoverageStatus, findings int) error {
+	if status == domain.CoverageFlagged && findings == 0 {
+		return errors.New("flagged model answer has no findings")
+	}
+	if status == domain.CoverageCovered && findings != 0 {
+		return errors.New("covered model answer cannot contain findings")
+	}
+	if status == domain.CoverageNotApplicable && findings != 0 {
+		return errors.New("not-applicable model answer cannot contain findings")
+	}
+	return nil
+}
+
+func addFindings(result *ReviewResult, request ReviewRequest, findings []modelFinding, evidence evidenceContext) []error {
 	var failures []error
-	for _, finding := range response.Findings {
-		observation, err := validatedObservation(request, finding, manifest, known, model, promptVersion, redactor)
+	for _, finding := range findings {
+		observation, err := validatedObservation(request, finding, evidence)
 		if err != nil {
 			failures = append(failures, err)
 			continue
@@ -103,15 +150,9 @@ func validateModelResponse(request ReviewRequest, raw []byte, manifest Manifest,
 		if result.Metadata.ReproductionByObservationID == nil {
 			result.Metadata.ReproductionByObservationID = make(map[string]string)
 		}
-		result.Metadata.ReproductionByObservationID[observation.ObservationID] = redactor.redact(strings.TrimSpace(finding.Reproduction))
+		result.Metadata.ReproductionByObservationID[observation.ObservationID] = evidence.redactor.redact(strings.TrimSpace(finding.Reproduction))
 	}
-	if len(failures) != 0 {
-		return result, errors.Join(failures...)
-	}
-	if err := result.Coverage.Validate(); err != nil {
-		return result, fmt.Errorf("validated contextual coverage: %w", err)
-	}
-	return result, nil
+	return failures
 }
 
 func emptyResult(request ReviewRequest) ReviewResult {
@@ -155,7 +196,7 @@ func sourceByPath(sources []promptSource) map[string]promptSource {
 }
 
 func validateCitation(citation modelCitation, manifest Manifest, sources map[string]promptSource) (domain.SourceRange, error) {
-	if citation.Path == "" || citation.StartLine < 1 || citation.EndLine < citation.StartLine || strings.TrimSpace(citation.Quote) == "" {
+	if !citation.wellFormed() {
 		return domain.SourceRange{}, errors.New("citation requires path, line range, and quote")
 	}
 	source, exists := sources[citation.Path]
@@ -168,12 +209,23 @@ func validateCitation(citation modelCitation, manifest Manifest, sources map[str
 	if !containsExactLineQuote(source.Text, citation.StartLine-source.StartLine+1, citation.EndLine-source.StartLine+1, citation.Quote) {
 		return domain.SourceRange{}, errors.New("citation quote does not match the source snapshot range")
 	}
+	if !manifestInspects(manifest, citation) {
+		return domain.SourceRange{}, errors.New("citation range is absent from inspected manifest")
+	}
+	return domain.SourceRange{Path: citation.Path, StartLine: citation.StartLine, EndLine: citation.EndLine}, nil
+}
+
+func (citation modelCitation) wellFormed() bool {
+	return citation.Path != "" && citation.StartLine >= 1 && citation.EndLine >= citation.StartLine && strings.TrimSpace(citation.Quote) != ""
+}
+
+func manifestInspects(manifest Manifest, citation modelCitation) bool {
 	for _, entry := range manifest.Inspected {
 		if entry.Range.Path == citation.Path && citation.StartLine >= entry.Range.StartLine && citation.EndLine <= entry.Range.EndLine {
-			return domain.SourceRange{Path: citation.Path, StartLine: citation.StartLine, EndLine: citation.EndLine}, nil
+			return true
 		}
 	}
-	return domain.SourceRange{}, errors.New("citation range is absent from inspected manifest")
+	return false
 }
 
 func containsExactLineQuote(content string, start, end int, quote string) bool {
@@ -224,7 +276,8 @@ func adapterResultIDs(results []domain.AdapterResult) []string {
 	return ids
 }
 
-func validatedObservation(request ReviewRequest, finding modelFinding, manifest Manifest, sources map[string]promptSource, model, promptVersion string, redactor secretRedactor) (domain.Observation, error) {
+func validatedObservation(request ReviewRequest, finding modelFinding, evidence evidenceContext) (domain.Observation, error) {
+	manifest, sources, model, promptVersion, redactor := evidence.manifest, evidence.sources, evidence.model, evidence.promptVersion, evidence.redactor
 	if strings.TrimSpace(finding.Mechanism) == "" {
 		return domain.Observation{}, errors.New("finding has no mechanism")
 	}
@@ -268,56 +321,75 @@ func severityFor(family domain.Family, raw json.RawMessage) (domain.Severity, er
 	}
 	switch family {
 	case domain.FamilySecurity:
-		var value struct {
-			Impact     int `json:"impact"`
-			Likelihood int `json:"likelihood"`
-		}
-		if err := decodeStrictJSON(raw, &value); err != nil || value.Impact < 1 || value.Impact > 5 || value.Likelihood < 1 || value.Likelihood > 5 {
-			return "", errors.New("security severity requires impact and likelihood from 1 through 5")
-		}
-		score := value.Impact * value.Likelihood
-		switch {
-		case score == 1:
-			return domain.SeverityInformational, nil
-		case score <= 5:
-			return domain.SeverityLow, nil
-		case score <= 11:
-			return domain.SeverityMedium, nil
-		case score <= 19:
-			return domain.SeverityHigh, nil
-		default:
-			return domain.SeverityCritical, nil
-		}
+		return securitySeverity(raw)
 	case domain.FamilyArchitecture:
-		var value struct {
-			ChangeRisk string `json:"changeRisk"`
-			Boundary   string `json:"boundary"`
-		}
-		if err := decodeStrictJSON(raw, &value); err != nil {
-			return "", errors.New("architecture severity is invalid")
-		}
-		return matrixSeverity(value.ChangeRisk, value.Boundary, architectureMatrix, architectureColumns)
+		return architectureSeverity(raw)
 	case domain.FamilyQuality:
-		var value struct {
-			ChangeRisk string `json:"changeRisk"`
-			Scope      string `json:"scope"`
-		}
-		if err := decodeStrictJSON(raw, &value); err != nil {
-			return "", errors.New("quality severity is invalid")
-		}
-		return matrixSeverity(value.ChangeRisk, value.Scope, qualityMatrix, qualityColumns)
+		return qualitySeverity(raw)
 	case domain.FamilyPerformance:
-		var value struct {
-			OperationalRisk string `json:"operationalRisk"`
-			Frequency       string `json:"frequency"`
-		}
-		if err := decodeStrictJSON(raw, &value); err != nil {
-			return "", errors.New("performance severity is invalid")
-		}
-		return matrixSeverity(value.OperationalRisk, value.Frequency, performanceMatrix, performanceColumns)
+		return performanceSeverity(raw)
 	default:
 		return "", errors.New("contextual finding family is unsupported")
 	}
+}
+
+func securitySeverity(raw json.RawMessage) (domain.Severity, error) {
+	var value struct {
+		Impact     int `json:"impact"`
+		Likelihood int `json:"likelihood"`
+	}
+	if err := decodeStrictJSON(raw, &value); err != nil || value.Impact < 1 || value.Impact > 5 || value.Likelihood < 1 || value.Likelihood > 5 {
+		return "", errors.New("security severity requires impact and likelihood from 1 through 5")
+	}
+	return securityScoreSeverity(value.Impact * value.Likelihood), nil
+}
+
+func securityScoreSeverity(score int) domain.Severity {
+	switch {
+	case score == 1:
+		return domain.SeverityInformational
+	case score <= 5:
+		return domain.SeverityLow
+	case score <= 11:
+		return domain.SeverityMedium
+	case score <= 19:
+		return domain.SeverityHigh
+	default:
+		return domain.SeverityCritical
+	}
+}
+
+func architectureSeverity(raw json.RawMessage) (domain.Severity, error) {
+	var value struct {
+		ChangeRisk string `json:"changeRisk"`
+		Boundary   string `json:"boundary"`
+	}
+	if err := decodeStrictJSON(raw, &value); err != nil {
+		return "", errors.New("architecture severity is invalid")
+	}
+	return matrixSeverity(value.ChangeRisk, value.Boundary, architectureMatrix, architectureColumns)
+}
+
+func qualitySeverity(raw json.RawMessage) (domain.Severity, error) {
+	var value struct {
+		ChangeRisk string `json:"changeRisk"`
+		Scope      string `json:"scope"`
+	}
+	if err := decodeStrictJSON(raw, &value); err != nil {
+		return "", errors.New("quality severity is invalid")
+	}
+	return matrixSeverity(value.ChangeRisk, value.Scope, qualityMatrix, qualityColumns)
+}
+
+func performanceSeverity(raw json.RawMessage) (domain.Severity, error) {
+	var value struct {
+		OperationalRisk string `json:"operationalRisk"`
+		Frequency       string `json:"frequency"`
+	}
+	if err := decodeStrictJSON(raw, &value); err != nil {
+		return "", errors.New("performance severity is invalid")
+	}
+	return matrixSeverity(value.OperationalRisk, value.Frequency, performanceMatrix, performanceColumns)
 }
 
 func decodeStrictJSON(raw json.RawMessage, destination any) error {

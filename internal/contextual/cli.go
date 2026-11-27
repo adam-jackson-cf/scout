@@ -57,26 +57,23 @@ func codexArgs(model, lastMessage string) []string {
 
 // run executes the CLI once and returns the model's raw answer text, which the
 // caller parses strictly, with the model the CLI reports it resolved to.
-func (c *Client) run(parent context.Context, cli modelcli.Name, binary string, prompt []byte) ([]byte, ModelRecord, error) {
+func (c *Client) run(parent context.Context, cli modelcli.Name, binary string, prompt []byte) (answer []byte, record ModelRecord, err error) {
 	ctx, cancel := context.WithTimeout(parent, c.config.Timeout)
 	defer cancel()
 	workdir, err := os.MkdirTemp("", "scout-model-cli-")
 	if err != nil {
 		return nil, ModelRecord{}, err
 	}
-	defer os.RemoveAll(workdir)
+	defer func() {
+		if removeErr := os.RemoveAll(workdir); removeErr != nil && err == nil {
+			answer, record, err = nil, ModelRecord{}, fmt.Errorf("remove model CLI workdir: %w", removeErr)
+		}
+	}()
 
-	var args []string
-	var stdin []byte
 	lastMessage := filepath.Join(workdir, "last-message.txt")
-	switch cli {
-	case modelcli.Claude:
-		args, stdin = claudeArgs(c.config.Model), prompt
-	case modelcli.Codex:
-		args = codexArgs(c.config.Model, lastMessage)
-		stdin = append(append([]byte(reviewInstructions), '\n', '\n'), prompt...)
-	default:
-		return nil, ModelRecord{}, fmt.Errorf("unsupported model CLI %q", cli)
+	args, stdin, err := c.invocation(cli, prompt, lastMessage)
+	if err != nil {
+		return nil, ModelRecord{}, err
 	}
 	command := exec.CommandContext(ctx, binary, args...)
 	command.Dir = workdir
@@ -98,19 +95,34 @@ func (c *Client) run(parent context.Context, cli modelcli.Name, binary string, p
 	case modelcli.Claude:
 		return parseClaude(stdout.Bytes())
 	default:
-		answer, err := os.ReadFile(lastMessage)
-		if err != nil {
-			return nil, ModelRecord{}, errors.New("codex produced no final message")
-		}
-		if len(bytes.TrimSpace(answer)) == 0 {
-			return nil, ModelRecord{}, errors.New("codex final message is empty")
-		}
-		model, ok := codexModel(stdout.Bytes(), stderr.Bytes())
-		if !ok {
-			return nil, ModelRecord{}, errors.New("codex did not report the model that answered")
-		}
-		return answer, ModelRecord{CLI: string(cli), ResolvedModel: model}, nil
+		return readCodexAnswer(cli, lastMessage, stdout.Bytes(), stderr.Bytes())
 	}
+}
+
+func (c *Client) invocation(cli modelcli.Name, prompt []byte, lastMessage string) ([]string, []byte, error) {
+	switch cli {
+	case modelcli.Claude:
+		return claudeArgs(c.config.Model), prompt, nil
+	case modelcli.Codex:
+		return codexArgs(c.config.Model, lastMessage), append(append([]byte(reviewInstructions), '\n', '\n'), prompt...), nil
+	default:
+		return nil, nil, fmt.Errorf("unsupported model CLI %q", cli)
+	}
+}
+
+func readCodexAnswer(cli modelcli.Name, lastMessage string, stdout, stderr []byte) ([]byte, ModelRecord, error) {
+	answer, err := os.ReadFile(lastMessage)
+	if err != nil {
+		return nil, ModelRecord{}, errors.New("codex produced no final message")
+	}
+	if len(bytes.TrimSpace(answer)) == 0 {
+		return nil, ModelRecord{}, errors.New("codex final message is empty")
+	}
+	model, ok := codexModel(stdout, stderr)
+	if !ok {
+		return nil, ModelRecord{}, errors.New("codex did not report the model that answered")
+	}
+	return answer, ModelRecord{CLI: string(cli), ResolvedModel: model}, nil
 }
 
 // parseClaude reads `claude -p --output-format json`: one result object whose

@@ -76,12 +76,13 @@ func Run(ctx context.Context, asker Asker, q decisions.Question, model string, u
 		return Report{}, err
 	}
 	report := Report{QuestionID: q.ID, Version: q.Version(model), Model: model, Units: len(units), Reports: make([]UnitReport, 0, len(units))}
+	ask := flipAsk{asker: asker, q: q, model: model}
 	for _, unit := range units {
 		orderA := q.RealisedOrder(unit.ID)
 		orderB := reverse(orderA)
 		one := UnitReport{ID: unit.ID, OrderA: orderA, OrderB: orderB}
-		a, errA := askIn(ctx, asker, q, model, unit, orderA)
-		b, errB := askIn(ctx, asker, q, model, unit, orderB)
+		a, errA := ask.in(ctx, unit, orderA)
+		b, errB := ask.in(ctx, unit, orderB)
 		one.CostUSD = a.CostUSD + b.CostUSD
 		report.CostUSD += one.CostUSD
 		if err := errors.Join(errA, errB); err != nil {
@@ -112,10 +113,16 @@ func Run(ctx context.Context, asker Asker, q decisions.Question, model string, u
 	return report, nil
 }
 
-func askIn(ctx context.Context, asker Asker, q decisions.Question, model string, unit Unit, order []string) (decisions.Reply, error) {
-	fixed := q
+type flipAsk struct {
+	asker Asker
+	q     decisions.Question
+	model string
+}
+
+func (f flipAsk) in(ctx context.Context, unit Unit, order []string) (decisions.Reply, error) {
+	fixed := f.q
 	fixed.Order = decisions.OptionOrderRule{Rule: decisions.OrderFixed, Options: order}
-	reply, err := asker.Ask(ctx, []decisions.Question{fixed}, model, unit.ID, unit.State)
+	reply, err := f.asker.Ask(ctx, []decisions.Question{fixed}, f.model, unit.ID, unit.State)
 	if err != nil {
 		return reply, err
 	}

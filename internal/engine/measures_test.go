@@ -1,3 +1,5 @@
+//go:build boundary
+
 package engine
 
 import (
@@ -23,39 +25,54 @@ func gitRun(t *testing.T, dir string, args ...string) {
 	}
 }
 
-func TestMeasuresLanesRecordSignalsPerScopeAndReportHealth(t *testing.T) {
-	if _, err := exec.LookPath("lizard"); err != nil {
-		t.Skip("lizard is not on PATH (source .tools/activate)")
+func openEngineTestStore(t *testing.T, root string) *state.Store {
+	t.Helper()
+	store, err := state.Open(root)
+	if err != nil {
+		t.Fatal(err)
 	}
-	ctx := context.Background()
-	root := t.TempDir()
+	t.Cleanup(func() {
+		if err := store.Close(); err != nil {
+			t.Error(err)
+		}
+	})
+	return store
+}
+
+func requireLizardOnPath(t *testing.T) {
+	t.Helper()
+	if _, err := exec.LookPath("lizard"); err != nil {
+		t.Fatal("lizard is not on PATH (source .tools/activate)")
+	}
+}
+
+func busyPythonModule() string {
 	var module strings.Builder
 	module.WriteString("def busy(x):\n    total = 0\n")
 	for i := range 11 {
 		module.WriteString("    if x == " + string(rune('a'+i)) + ":\n        total += 1\n")
 	}
 	module.WriteString("    return total\n")
+	return module.String()
+}
+
+func measuresBusyRepo(t *testing.T) string {
+	t.Helper()
+	root := t.TempDir()
 	if err := os.MkdirAll(filepath.Join(root, "pkg", "core"), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(root, "pkg", "core", "busy.py"), []byte(module.String()), 0o644); err != nil {
+	if err := os.WriteFile(filepath.Join(root, "pkg", "core", "busy.py"), []byte(busyPythonModule()), 0o644); err != nil {
 		t.Fatal(err)
 	}
 	gitRun(t, root, "init", "--quiet")
 	gitRun(t, root, "add", ".")
 	gitRun(t, root, "commit", "--quiet", "-m", "init")
+	return root
+}
 
-	store, err := state.Open(root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer store.Close()
-	scan, err := inventory.Scan(ctx, root, inventory.ScanOptions{Scope: domain.Scope{Kind: domain.ScopeRepository, SelectedFamilies: []domain.Family{domain.FamilyQuality}}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	options := Options{Scope: domain.Scope{Kind: domain.ScopeRepository}, Measures: &MeasuresOptions{History: true}}
-	health := runMeasuresLanes(ctx, store, root, scan, nil, options)
+func assertMeasuresAndHistoryLanesRan(t *testing.T, health []domain.LaneHealth) {
+	t.Helper()
 	byLane := map[string]domain.LaneHealth{}
 	for _, h := range health {
 		byLane[h.Lane] = h
@@ -66,10 +83,10 @@ func TestMeasuresLanesRecordSignalsPerScopeAndReportHealth(t *testing.T) {
 	if h := byLane[LaneHistory]; h.Status != domain.LaneRan || h.Units != 1 {
 		t.Fatalf("history lane = %+v", h)
 	}
-	signals, err := store.ListSignals(ctx, state.SignalFilter{ScopeAnchor: "pkg/core"})
-	if err != nil {
-		t.Fatal(err)
-	}
+}
+
+func assertScopeMetricsShareThePopulation(t *testing.T, signals []domain.Signal) {
+	t.Helper()
 	metrics := map[string]domain.Signal{}
 	for _, signal := range signals {
 		if signal.Window == "" {
@@ -86,9 +103,18 @@ func TestMeasuresLanesRecordSignalsPerScopeAndReportHealth(t *testing.T) {
 			t.Fatalf("%s missing or carries another population digest: %+v", metric, signal)
 		}
 	}
-	if metrics[measures.MetricCrap].Missing != domain.SignalUnmeasured {
+	assertCrapUnmeasuredWithoutArtifact(t, metrics[measures.MetricCrap])
+}
+
+func assertCrapUnmeasuredWithoutArtifact(t *testing.T, crap domain.Signal) {
+	t.Helper()
+	if crap.Missing != domain.SignalUnmeasured {
 		t.Fatal("scout.crap must be unmeasured")
 	}
+}
+
+func assertHistoryRecordedWindowedSignals(t *testing.T, signals []domain.Signal) {
+	t.Helper()
 	history := 0
 	for _, signal := range signals {
 		if signal.Window != "" {
@@ -98,12 +124,45 @@ func TestMeasuresLanesRecordSignalsPerScopeAndReportHealth(t *testing.T) {
 	if history == 0 {
 		t.Fatal("history lane recorded no windowed signals for the scope")
 	}
+}
+
+func TestMeasuresLanesRecordSignalsPerScopeAndReportHealth(t *testing.T) {
+	requireLizardOnPath(t)
+	ctx := context.Background()
+	root := measuresBusyRepo(t)
+
+	store := openEngineTestStore(t, root)
+	scan, err := inventory.Scan(ctx, root, inventory.ScanOptions{Scope: domain.Scope{Kind: domain.ScopeRepository, SelectedFamilies: []domain.Family{domain.FamilyQuality}}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	options := Options{Scope: domain.Scope{Kind: domain.ScopeRepository}, Measures: &MeasuresOptions{History: true}}
+	health := runMeasuresLanes(ctx, measuresLaneInput{store: store, root: root, current: scan, options: options})
+	assertMeasuresAndHistoryLanesRan(t, health)
+	signals, err := store.ListSignals(ctx, state.SignalFilter{ScopeAnchor: "pkg/core"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertScopeMetricsShareThePopulation(t, signals)
+	assertHistoryRecordedWindowedSignals(t, signals)
 
 	// A PR run restricted to changed files measures only those files.
 	options.Measures = &MeasuresOptions{Only: []string{"does/not/exist.py"}}
-	if h := runMeasuresLanes(ctx, store, root, scan, nil, options); len(h) != 1 || h[0].Status != domain.LaneSkipped {
+	if h := runMeasuresLanes(ctx, measuresLaneInput{store: store, root: root, current: scan, options: options}); len(h) != 1 || h[0].Status != domain.LaneSkipped {
 		t.Fatalf("changed-files run with nothing to measure = %+v", h)
 	}
+}
+
+func isBareHexDigest(s string) bool {
+	if len(s) != 64 {
+		return false
+	}
+	for _, r := range s {
+		if (r < '0' || r > '9') && (r < 'a' || r > 'f') {
+			return false
+		}
+	}
+	return true
 }
 
 // Every signal of the measures, import-graph and history lanes carries bare
@@ -118,18 +177,14 @@ func TestAllLaneSignalsCarryBareHexDigests(t *testing.T) {
 	gitRun(t, root, "init", "--quiet")
 	gitRun(t, root, "add", ".")
 	gitRun(t, root, "commit", "--quiet", "-m", "init")
-	store, err := state.Open(root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer store.Close()
+	store := openEngineTestStore(t, root)
 	scan, err := inventory.Scan(ctx, root, inventory.ScanOptions{Scope: domain.Scope{Kind: domain.ScopeRepository, SelectedFamilies: []domain.Family{domain.FamilyQuality}}})
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Missing scanners: measures signals are unmeasured but must still carry digests.
 	options := Options{Scope: domain.Scope{Kind: domain.ScopeRepository}, Measures: &MeasuresOptions{History: true, Tools: measures.Tools{Lizard: "scout-no-lizard", Jscpd: "scout-no-jscpd"}}}
-	runMeasuresLanes(ctx, store, root, scan, nil, options)
+	runMeasuresLanes(ctx, measuresLaneInput{store: store, root: root, current: scan, options: options})
 	signals, err := store.ListSignals(ctx, state.SignalFilter{})
 	if err != nil {
 		t.Fatal(err)
@@ -138,7 +193,7 @@ func TestAllLaneSignalsCarryBareHexDigests(t *testing.T) {
 	for _, signal := range signals {
 		prefixes[strings.SplitN(signal.MetricID, ".", 2)[1]] = true
 		for name, digest := range map[string]string{"population": signal.PopulationDigest, "tool": signal.ToolDigest, "config": signal.ConfigDigest} {
-			if !domain.IsDigest(digest) {
+			if !isBareHexDigest(digest) {
 				t.Fatalf("%s %s digest %q is not 64 lowercase hex", signal.ID(), name, digest)
 			}
 		}

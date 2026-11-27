@@ -28,9 +28,9 @@ func seedLedger(t *testing.T, ctx context.Context, root string) *Store {
 	run := domain.Run{RunID: "run-1", PlanID: "plan-1", Snapshot: snapshot, Scope: scope, State: domain.RunComplete, StartedAt: now, FinishedAt: &finished}
 	var observations []domain.Observation
 	for _, id := range []string{"obs-1", "obs-2", "obs-3", "obs-4", "obs-5", "obs-6"} {
-		observations = append(observations, legacyObservation(id, "run-1", id+".go", "", "eval("+id+")", now))
+		observations = append(observations, legacyObservation(id, "run-1", legacyEvidence{id + ".go", "", "eval(" + id + ")"}, now))
 	}
-	seedRun(t, ctx, store, plan, run, observations, nil)
+	seedRun(t, ctx, store, runSeed{plan, run, observations, nil})
 	issue := func(id, observation string, state domain.IssueState, events ...domain.IssueHistoryEntry) domain.Issue {
 		history := []domain.IssueHistoryEntry{{At: now, To: domain.IssueOpen, Event: domain.EventCreated, Reason: "first observed"}}
 		return domain.Issue{
@@ -92,7 +92,18 @@ func testSignals() []domain.Signal {
 func TestExportImportExportIsByteIdentical(t *testing.T) {
 	ctx := context.Background()
 	source := seedLedger(t, ctx, t.TempDir())
-	defer source.Close()
+	defer closeOrFail(t, source)
+	first := checkDeterministicExport(t, source)
+	target := checkReexportIdentical(t, first)
+
+	// Dispositions and audit history survive the round trip.
+	checkIssuesSurviveImport(t, source, target)
+	checkWouldBlockTriageSurvivesImport(t, target)
+}
+
+func checkDeterministicExport(t *testing.T, source *Store) map[string][]byte {
+	t.Helper()
+	ctx := context.Background()
 	first, err := source.Export(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -101,14 +112,7 @@ func TestExportImportExportIsByteIdentical(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	for path, data := range first {
-		if !bytes.Equal(data, again[path]) {
-			t.Fatalf("export of %s is not deterministic", path)
-		}
-		if bytes.Contains(data, []byte("\r")) || (len(data) > 0 && data[len(data)-1] != '\n') {
-			t.Fatalf("%s is not LF-terminated JSON lines", path)
-		}
-	}
+	checkExportLines(t, first, again)
 	if got := len(SplitLines(first[ExportIssues])); got != 6 {
 		t.Fatalf("issues.jsonl has %d rows, want 6", got)
 	}
@@ -118,16 +122,25 @@ func TestExportImportExportIsByteIdentical(t *testing.T) {
 	if bytes.Contains(first[ExportIssues], []byte(`\u003c`)) {
 		t.Fatal("export must not HTML-escape")
 	}
+	return first
+}
 
-	target, err := Open(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
+func checkExportLines(t *testing.T, first, again map[string][]byte) {
+	t.Helper()
+	for path, data := range first {
+		if !bytes.Equal(data, again[path]) {
+			t.Fatalf("export of %s is not deterministic", path)
+		}
+		if bytes.Contains(data, []byte("\r")) || (len(data) > 0 && data[len(data)-1] != '\n') {
+			t.Fatalf("%s is not LF-terminated JSON lines", path)
+		}
 	}
-	defer target.Close()
-	if err := target.Import(ctx, first); err != nil {
-		t.Fatal(err)
-	}
-	second, err := target.Export(ctx)
+}
+
+func checkReexportIdentical(t *testing.T, first map[string][]byte) *Store {
+	t.Helper()
+	target := importedStore(t, first)
+	second, err := target.Export(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -139,8 +152,12 @@ func TestExportImportExportIsByteIdentical(t *testing.T) {
 			t.Fatalf("re-export of %s differs:\n%s\n---\n%s", path, data, second[path])
 		}
 	}
+	return target
+}
 
-	// Dispositions and audit history survive the round trip.
+func checkIssuesSurviveImport(t *testing.T, source, target *Store) {
+	t.Helper()
+	ctx := context.Background()
 	want, err := source.ListIssues(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -150,12 +167,20 @@ func TestExportImportExportIsByteIdentical(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !reflect.DeepEqual(got.History, issue.History) || got.State != issue.State || got.DispositionReason != issue.DispositionReason ||
-			got.Owner != issue.Owner || !reflect.DeepEqual(got.AmbiguousWith, issue.AmbiguousWith) || !reflect.DeepEqual(got.Verification, issue.Verification) {
+		if !sameImportedDisposition(got, issue) {
 			t.Fatalf("issue %s did not survive import:\nwant %+v\ngot  %+v", issue.IssueID, issue, got)
 		}
 	}
-	rows, err := target.ListLegacyWouldBlock(ctx)
+}
+
+func sameImportedDisposition(got, issue domain.Issue) bool {
+	return reflect.DeepEqual(got.History, issue.History) && got.State == issue.State && got.DispositionReason == issue.DispositionReason &&
+		got.Owner == issue.Owner && reflect.DeepEqual(got.AmbiguousWith, issue.AmbiguousWith) && reflect.DeepEqual(got.Verification, issue.Verification)
+}
+
+func checkWouldBlockTriageSurvivesImport(t *testing.T, target *Store) {
+	t.Helper()
+	rows, err := target.ListLegacyWouldBlock(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -175,7 +200,7 @@ func TestExportImportExportIsByteIdentical(t *testing.T) {
 func TestImportedIssueUpdatesKeepOpaqueObservationReferences(t *testing.T) {
 	ctx := context.Background()
 	source := seedLedger(t, ctx, t.TempDir())
-	defer source.Close()
+	defer closeOrFail(t, source)
 	files, err := source.Export(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -184,12 +209,12 @@ func TestImportedIssueUpdatesKeepOpaqueObservationReferences(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer target.Close()
+	defer closeOrFail(t, target)
 	if err := target.Import(ctx, files); err != nil {
 		t.Fatal(err)
 	}
 	id := "issue:security:a"
-	if _, err := target.TriageIssue(ctx, id, domain.IssueWontFix, "team-a", "accepted", "maintainer", "triage after restore"); err != nil {
+	if _, err := target.TriageIssue(ctx, Triage{IssueID: id, State: domain.IssueWontFix, Owner: "team-a", DispositionReason: "accepted", Actor: "maintainer", Reason: "triage after restore"}); err != nil {
 		t.Fatalf("update of imported issue: %v", err)
 	}
 	got, err := target.LoadIssue(ctx, id)
@@ -208,7 +233,7 @@ func TestImportedIssueUpdatesKeepOpaqueObservationReferences(t *testing.T) {
 func TestExportManifestCarriesBaseIdentity(t *testing.T) {
 	ctx := context.Background()
 	store := seedLedger(t, ctx, t.TempDir())
-	defer store.Close()
+	defer closeOrFail(t, store)
 	files, err := store.Export(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -225,7 +250,7 @@ func TestExportManifestCarriesBaseIdentity(t *testing.T) {
 func TestImportRefusesNonFreshStoreAndTamperedExport(t *testing.T) {
 	ctx := context.Background()
 	source := seedLedger(t, ctx, t.TempDir())
-	defer source.Close()
+	defer closeOrFail(t, source)
 	files, err := source.Export(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -242,7 +267,7 @@ func TestImportRefusesNonFreshStoreAndTamperedExport(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer fresh.Close()
+	defer closeOrFail(t, fresh)
 	if err := fresh.Import(ctx, tampered); err == nil {
 		t.Fatal("import accepted an export that does not match its manifest")
 	}

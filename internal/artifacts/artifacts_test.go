@@ -108,6 +108,13 @@ func TestLoadAttachesProvenanceAndOnlyMatchedCoverageIsUsable(t *testing.T) {
 	if len(result.Failures) != 0 || len(result.Artifacts) != 3 {
 		t.Fatalf("result = %+v", result)
 	}
+	assertLoadedProvenance(t, result)
+	assertMatchedMerge(t, result)
+	assertOtherCommitUnmatched(t, root)
+}
+
+func assertLoadedProvenance(t *testing.T, result Result) {
+	t.Helper()
 	byKind := map[string]Artifact{}
 	for _, a := range result.Artifacts {
 		byKind[a.Kind] = a
@@ -119,11 +126,18 @@ func TestLoadAttachesProvenanceAndOnlyMatchedCoverageIsUsable(t *testing.T) {
 	if c := byKind[KindCobertura]; c.RevisionMatch != MatchMismatch || c.Producer != "cobertura-tool" {
 		t.Fatalf("cobertura provenance = %+v", c.Provenance)
 	}
-	j := byKind[KindJUnit]
+	assertJUnitArtifact(t, byKind[KindJUnit])
+}
+
+func assertJUnitArtifact(t *testing.T, j Artifact) {
+	t.Helper()
 	if j.RevisionMatch != MatchMatch || j.Tests == nil || j.Tests.Tests != 5 || j.Coverage != nil {
 		t.Fatalf("junit = %+v", j)
 	}
+}
 
+func assertMatchedMerge(t *testing.T, result Result) {
+	t.Helper()
 	merged := result.MatchedCoverage()
 	if merged.Digest == "" || len(merged.Sources) != 1 || merged.Sources[0] != "ci/coverage.lcov" || merged.Reason != "" {
 		t.Fatalf("merged = %+v", merged)
@@ -131,7 +145,10 @@ func TestLoadAttachesProvenanceAndOnlyMatchedCoverageIsUsable(t *testing.T) {
 	if merged.Lines["pkg/a.py"][2] != 5 {
 		t.Fatalf("merged lines = %v", merged.Lines)
 	}
+}
 
+func assertOtherCommitUnmatched(t *testing.T, root string) {
+	t.Helper()
 	// Same artifacts against another commit: nothing matches, with a reason.
 	other := Load(root, []Spec{{Path: "ci/*.lcov"}}, domain.Snapshot{Revision: strings.Repeat("a", 40)}).MatchedCoverage()
 	if other.Lines != nil || other.Digest != "" || !strings.Contains(other.Reason, "no coverage artifact matches") {

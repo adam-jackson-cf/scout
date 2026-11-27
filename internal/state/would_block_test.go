@@ -13,7 +13,7 @@ func TestLegacyWouldBlockIsIdempotentAndPreservesExportTriage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer store.Close()
+	defer closeOrFail(t, store)
 	row := domain.WouldBlock{ID: "wb-1", HeadRevision: "h", BaseRevision: "b", IssueID: "issue:security:1", CheckID: "security.secrets.github-pat", Attribution: domain.AttributionIntroduced, Profile: "report"}
 	for range 2 {
 		if err := store.RecordWouldBlock(ctx, row); err != nil {
@@ -27,7 +27,12 @@ func TestLegacyWouldBlockIsIdempotentAndPreservesExportTriage(t *testing.T) {
 	if err := store.RecordWouldBlock(ctx, row); err != nil {
 		t.Fatal(err)
 	}
-	rows, err := store.ListLegacyWouldBlock(ctx)
+	checkLegacyTriagePreserved(t, store)
+}
+
+func checkLegacyTriagePreserved(t *testing.T, store *Store) {
+	t.Helper()
+	rows, err := store.ListLegacyWouldBlock(context.Background())
 	if err != nil || len(rows) != 1 {
 		t.Fatalf("rows = %d, %v; want one idempotent row", len(rows), err)
 	}

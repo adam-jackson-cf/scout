@@ -1,8 +1,11 @@
+//go:build boundary
+
 package shadow
 
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -19,7 +22,7 @@ type p10Provider struct {
 	url    string
 }
 
-func (p p10Provider) get(ctx context.Context, path string, dst any) error {
+func (p p10Provider) get(ctx context.Context, path string, dst any) (err error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, p.url+path, nil)
 	if err != nil {
 		return err
@@ -28,7 +31,7 @@ func (p p10Provider) get(ctx context.Context, path string, dst any) error {
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer func() { err = errors.Join(err, res.Body.Close()) }()
 	if res.StatusCode != http.StatusOK {
 		return fmt.Errorf("provider HTTP %d", res.StatusCode)
 	}
@@ -114,78 +117,90 @@ func p10Points(t *testing.T, b domain.ShadowBatch, want ...string) {
 
 func TestADR012CompletenessBoundsAndLag(t *testing.T) {
 	for _, field := range []string{"ProviderTime", "EventCompleteThrough", "AttemptCompleteThrough", "EnumerationProof", "TimeProof", "LagJustification"} {
-		t.Run("missing_"+field, func(t *testing.T) {
-			s := p10Snapshot(t)
-			delete(s, field)
-			b, err := p10Collect(t, s)
-			if err == nil && b.Complete {
-				t.Fatalf("missing %s certified complete: %+v", field, b)
-			}
-		})
+		t.Run("missing_"+field, func(t *testing.T) { p10MissingFieldIsIncomplete(t, field) })
 	}
 	for _, field := range []string{"Complete", "PagesComplete"} {
-		t.Run(field, func(t *testing.T) {
-			s := p10Snapshot(t)
-			s[field] = false
-			s["ListingCapped"] = true
-			b, err := p10Collect(t, s)
-			if err == nil && b.Complete {
-				t.Fatal("capped/omitted page certified complete")
-			}
-		})
+		t.Run(field, func(t *testing.T) { p10CappedPageIsIncomplete(t, field) })
 	}
-	t.Run("lagged_bound_recovers", func(t *testing.T) {
-		s := p10Snapshot(t)
-		s["EventCompleteThrough"] = "2026-11-01T10:00:00Z"
-		s["AttemptCompleteThrough"] = "2026-11-01T10:00:00Z"
-		b, err := p10Collect(t, s)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if b.CompleteThrough.After(time.Date(2026, 11, 1, 9, 59, 0, 0, time.UTC)) {
-			t.Fatalf("ignored bound minus lag: %s", b.CompleteThrough)
-		}
-		b, err = p10Collect(t, p10Snapshot(t))
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !b.Complete || !b.CompleteThrough.Equal(time.Date(2026, 11, 1, 11, 59, 0, 0, time.UTC)) {
-			t.Fatalf("quiet complete bounds did not recover: %+v", b)
-		}
-	})
-	t.Run("all_started_attempts_discharged", func(t *testing.T) {
-		s := p10Snapshot(t)
-		a := s["Attempts"].([]any)[0].(map[string]any)
-		a["Terminal"] = false
-		a["Fact"].(map[string]any)["FinishedAt"] = "0001-01-01T00:00:00Z"
-		b, err := p10Collect(t, s)
-		if err != nil {
-			t.Fatal(err)
-		}
-		p10Points(t, b, "2026-11-01T10:00:00Z", "2026-11-01T10:02:00Z")
-		if len(b.Ledger.Facts) != 0 {
-			t.Fatal("nonterminal attempt became final")
-		}
-	})
-	t.Run("no_silent_obligation_removal", func(t *testing.T) {
-		s := p10Snapshot(t)
-		s["Attempts"] = []any{}
-		b, err := p10Collect(t, s)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if len(b.Inputs.Obligations) != 1 {
-			t.Fatal("omitted run erased eligible population")
-		}
-		p10Points(t, b, "2026-11-01T10:00:00Z")
-	})
-	t.Run("enumeration_attestation_failure", func(t *testing.T) {
-		s := p10Snapshot(t)
-		s["EnumerationError"] = "withheld page 2"
-		s["Complete"] = false
-		b, err := p10Collect(t, s)
-		if err == nil && b.Complete {
-			t.Fatal("enumeration failure became complete")
-		}
-	})
+	t.Run("lagged_bound_recovers", p10LaggedBoundRecovers)
+	t.Run("all_started_attempts_discharged", p10AllStartedAttemptsDischarged)
+	t.Run("no_silent_obligation_removal", p10NoSilentObligationRemoval)
+	t.Run("enumeration_attestation_failure", p10EnumerationAttestationFailure)
+}
+
+func p10MissingFieldIsIncomplete(t *testing.T, field string) {
+	s := p10Snapshot(t)
+	delete(s, field)
+	b, err := p10Collect(t, s)
+	if err == nil && b.Complete {
+		t.Fatalf("missing %s certified complete: %+v", field, b)
+	}
+}
+
+func p10CappedPageIsIncomplete(t *testing.T, field string) {
+	s := p10Snapshot(t)
+	s[field] = false
+	s["ListingCapped"] = true
+	b, err := p10Collect(t, s)
+	if err == nil && b.Complete {
+		t.Fatal("capped/omitted page certified complete")
+	}
+}
+
+func p10LaggedBoundRecovers(t *testing.T) {
+	s := p10Snapshot(t)
+	s["EventCompleteThrough"] = "2026-11-01T10:00:00Z"
+	s["AttemptCompleteThrough"] = "2026-11-01T10:00:00Z"
+	b, err := p10Collect(t, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if b.CompleteThrough.After(time.Date(2026, 11, 1, 9, 59, 0, 0, time.UTC)) {
+		t.Fatalf("ignored bound minus lag: %s", b.CompleteThrough)
+	}
+	b, err = p10Collect(t, p10Snapshot(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !b.Complete || !b.CompleteThrough.Equal(time.Date(2026, 11, 1, 11, 59, 0, 0, time.UTC)) {
+		t.Fatalf("quiet complete bounds did not recover: %+v", b)
+	}
+}
+
+func p10AllStartedAttemptsDischarged(t *testing.T) {
+	s := p10Snapshot(t)
+	a := s["Attempts"].([]any)[0].(map[string]any)
+	a["Terminal"] = false
+	a["Fact"].(map[string]any)["FinishedAt"] = "0001-01-01T00:00:00Z"
+	b, err := p10Collect(t, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	p10Points(t, b, "2026-11-01T10:00:00Z", "2026-11-01T10:02:00Z")
+	if len(b.Ledger.Facts) != 0 {
+		t.Fatal("nonterminal attempt became final")
+	}
+}
+
+func p10NoSilentObligationRemoval(t *testing.T) {
+	s := p10Snapshot(t)
+	s["Attempts"] = []any{}
+	b, err := p10Collect(t, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(b.Inputs.Obligations) != 1 {
+		t.Fatal("omitted run erased eligible population")
+	}
+	p10Points(t, b, "2026-11-01T10:00:00Z")
+}
+
+func p10EnumerationAttestationFailure(t *testing.T) {
+	s := p10Snapshot(t)
+	s["EnumerationError"] = "withheld page 2"
+	s["Complete"] = false
+	b, err := p10Collect(t, s)
+	if err == nil && b.Complete {
+		t.Fatal("enumeration failure became complete")
+	}
 }

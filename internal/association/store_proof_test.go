@@ -17,7 +17,11 @@ func proofStore(t *testing.T) *state.Store {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Cleanup(func() { s.Close() })
+	t.Cleanup(func() {
+		if err := s.Close(); err != nil {
+			t.Error(err)
+		}
+	})
 	return s
 }
 func proofRecord(id, path string) domain.Association {
@@ -34,10 +38,9 @@ func areaFixtures(values ...areas.Area) []areas.Area {
 func ownershipFeatures() []domain.Feature {
 	return []domain.Feature{{Source: "heuristic", OwnedFiles: []domain.FeatureFileRef{{Path: "heuristic.go"}}}, {Source: areas.AgentSource, OwnedFiles: []domain.FeatureFileRef{{Path: "agent-only.go"}}}}
 }
-func staleProof(t *testing.T, change func(*Fingerprint), want bool) {
+func seedStaleProof(t *testing.T, s *state.Store) (Fingerprint, domain.Association) {
 	t.Helper()
 	ctx := context.Background()
-	s := proofStore(t)
 	old := proofFingerprint()
 	if err := s.ReplaceAreas(ctx, []areas.Area{{ScoutAreaID: "a", Origin: areas.OriginAgent, FileSet: []string{"mapped.go"}}}); err != nil {
 		t.Fatal(err)
@@ -47,6 +50,13 @@ func staleProof(t *testing.T, change func(*Fingerprint), want bool) {
 	if err := s.InsertAssociations(ctx, []domain.Association{a}); err != nil {
 		t.Fatal(err)
 	}
+	return old, a
+}
+func staleProof(t *testing.T, change func(*Fingerprint), want bool) {
+	t.Helper()
+	ctx := context.Background()
+	s := proofStore(t)
+	old, a := seedStaleProof(t, s)
 	next := old
 	change(&next)
 	if err := MarkStale(ctx, s, next); err != nil {
@@ -68,11 +78,16 @@ func staleProof(t *testing.T, change func(*Fingerprint), want bool) {
 	if got := own.AreaOwners("associated.go"); !reflect.DeepEqual(got, []string{"a"}) {
 		t.Fatalf("stale labels lost: %v", got)
 	}
+	assertStaleRepeat(t, s, next, want)
+}
+func assertStaleRepeat(t *testing.T, s *state.Store, next Fingerprint, want bool) {
+	t.Helper()
+	ctx := context.Background()
 	// Applying the same fingerprint again never clears a stale label or adds rows.
 	if err := MarkStale(ctx, s, next); err != nil {
 		t.Fatal(err)
 	}
-	rows, err = s.ListAssociations(ctx)
+	rows, err := s.ListAssociations(ctx)
 	if err != nil || len(rows) != 1 || rows[0].Stale != want {
 		t.Fatalf("repeat mutation rows=%+v err=%v", rows, err)
 	}
@@ -117,9 +132,9 @@ func TestAssociationCatalogueDoesNotStale(t *testing.T) {
 	}
 }
 
-func TestAssociationStoreOwnership(t *testing.T) {
+func seedOwnershipStore(t *testing.T, s *state.Store) {
+	t.Helper()
 	ctx := context.Background()
-	s := proofStore(t)
 	aa := areaFixtures(
 		areas.Area{ScoutAreaID: "a", Origin: areas.OriginAgent, FileSet: []string{"mapped.go"}},
 		areas.Area{ScoutAreaID: "b", Origin: areas.OriginAgent, FileSet: []string{"other.go"}},
@@ -130,10 +145,8 @@ func TestAssociationStoreOwnership(t *testing.T) {
 	if err := s.ReplaceAreas(ctx, aa); err != nil {
 		t.Fatal(err)
 	}
-	before, err := s.ListAreas(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
+}
+func ownershipRecords() []domain.Association {
 	assigned := proofRecord("assigned", "svc/item.py")
 	assigned.Stale = true
 	inherited := proofRecord("inherited", "svc/item_alt.py")
@@ -146,14 +159,10 @@ func TestAssociationStoreOwnership(t *testing.T) {
 	dead.Superseded = true
 	invalid := proofRecord("inactive-target", "inactive.go")
 	invalid.AreaIDs = []string{"pending", "retired", "superseded"}
-	if err := s.InsertAssociations(ctx, []domain.Association{assigned, inherited, dead, invalid}); err != nil {
-		t.Fatal(err)
-	}
-	features := ownershipFeatures()
-	own, err := NewStoreOwnership(ctx, s, features)
-	if err != nil {
-		t.Fatal(err)
-	}
+	return []domain.Association{assigned, inherited, dead, invalid}
+}
+func assertStoreOwners(t *testing.T, own Ownership) {
+	t.Helper()
 	for _, tc := range []struct {
 		name, path string
 		want       []string
@@ -171,6 +180,9 @@ func TestAssociationStoreOwnership(t *testing.T) {
 			t.Errorf("AreaOwners(%s)=%v want %v", tc.path, got, tc.want)
 		}
 	}
+}
+func assertStorePoolAndSiblings(t *testing.T, own Ownership) {
+	t.Helper()
 	if got := own.PendingAreas("pool.go"); !reflect.DeepEqual(got, []string{"pending"}) {
 		t.Fatalf("pending pool %v", got)
 	}
@@ -187,6 +199,26 @@ func TestAssociationStoreOwnership(t *testing.T) {
 	if !found {
 		t.Fatalf("association-owned sibling omitted: %v", got)
 	}
+}
+
+func TestAssociationStoreOwnership(t *testing.T) {
+	ctx := context.Background()
+	s := proofStore(t)
+	seedOwnershipStore(t, s)
+	before, err := s.ListAreas(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := s.InsertAssociations(ctx, ownershipRecords()); err != nil {
+		t.Fatal(err)
+	}
+	features := ownershipFeatures()
+	own, err := NewStoreOwnership(ctx, s, features)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertStoreOwners(t, own)
+	assertStorePoolAndSiblings(t, own)
 	// Neither labels nor derived ownership are written into agent-map FileSets.
 	after, err := s.ListAreas(ctx)
 	if err != nil || !reflect.DeepEqual(after, before) {

@@ -22,6 +22,7 @@ import (
 	"scout/internal/domain"
 	"scout/internal/engine"
 	"scout/internal/issues"
+	"scout/internal/policy"
 	"scout/internal/prmeta"
 	"scout/internal/state"
 	"scout/internal/web"
@@ -29,7 +30,6 @@ import (
 
 const (
 	exitComplete    = 0
-	exitGate        = 1
 	exitPartial     = 2
 	exitUnavailable = 3
 )
@@ -109,9 +109,25 @@ func emit(flags *commonFlags, status string, code int, result any, err error) in
 			fmt.Fprintln(os.Stderr, "scout:", marshalErr)
 			return exitUnavailable
 		}
-		fmt.Fprintln(os.Stdout, string(encoded))
+		if _, writeErr := fmt.Fprintln(os.Stdout, string(encoded)); writeErr != nil {
+			return exitUnavailable
+		}
 	}
 	return code
+}
+
+func printStdout(text string, code int) int {
+	if _, err := fmt.Fprint(os.Stdout, text); err != nil {
+		fmt.Fprintln(os.Stderr, "scout:", sanitized(err.Error()))
+		return exitUnavailable
+	}
+	return code
+}
+
+func closeStore(store *state.Store) {
+	if err := store.Close(); err != nil {
+		fmt.Fprintln(os.Stderr, "scout: close state store:", sanitized(err.Error()))
+	}
 }
 
 // commands is the dispatch table; the usage line is generated from it.
@@ -218,66 +234,91 @@ func scopeOptions(kind string, paths []string, from, to string, families []strin
 	return scope, scope.Validate()
 }
 
-func assess(ctx context.Context, args []string) int {
-	set := flag.NewFlagSet("assess", flag.ContinueOnError)
-	flags := common(set)
-	var full, authorized, fork, noEgress bool
-	var kind, from, to string
-	var paths, excludes, families stringsFlag
-	set.BoolVar(&full, "full", false, "force full rescan")
-	set.BoolVar(&authorized, "allow-egress", false, "authorize source egress for providers")
-	set.BoolVar(&fork, "fork", false, "fork run: association never calls Jev")
-	set.BoolVar(&noEgress, "no-egress", false, "forbid association Jev calls even when consented")
-	set.StringVar(&kind, "scope", "repository", "repository|subpath|staged|commit_range|paths")
-	set.StringVar(&from, "from", "", "commit-range start")
-	set.StringVar(&to, "to", "", "commit-range end")
-	set.Var(&paths, "path", "selected relative path (repeatable)")
-	set.Var(&excludes, "exclude", "excluded relative path (repeatable)")
-	set.Var(&families, "family", "selected family (repeatable)")
-	var prMetadata, prRepo string
-	var fetchPRs bool
-	set.StringVar(&prMetadata, "pr-metadata", "", "merged-PR metadata JSON (scout.pr-metadata@1) for pr_effort, batch_size, dispersion")
-	set.BoolVar(&fetchPRs, "fetch-pr-metadata", false, "fetch merged-PR metadata from GitHub (needs GITHUB_TOKEN with pull-requests: read and --pr-repo)")
-	set.StringVar(&prRepo, "pr-repo", "", "owner/name for --fetch-pr-metadata")
-	var artifactPaths stringsFlag
-	var artifactRevision, artifactProducer string
-	set.Var(&artifactPaths, "artifact", "coverage (LCOV, Cobertura XML) or JUnit XML file or glob, relative to the repository (repeatable); CRAP needs a revision-matched coverage artifact")
-	set.StringVar(&artifactRevision, "artifact-revision", "", "commit the --artifact files were produced at, for artifacts without a "+artifacts.SidecarSuffix+" provenance file")
-	set.StringVar(&artifactProducer, "artifact-producer", "", "producer name recorded for --artifact files without a sidecar")
-	if !parse(set, args, flags) {
-		return exitUnavailable
+type assessFlags struct {
+	full, authorized, fork, noEgress, fetchPRs                             bool
+	kind, from, to, prMetadata, prRepo, artifactRevision, artifactProducer string
+	paths, excludes, families, artifactPaths                               stringsFlag
+}
+
+func registerAssessFlags(set *flag.FlagSet) *assessFlags {
+	opts := &assessFlags{}
+	set.BoolVar(&opts.full, "full", false, "force full rescan")
+	set.BoolVar(&opts.authorized, "allow-egress", false, "authorize source egress for providers")
+	set.BoolVar(&opts.fork, "fork", false, "fork run: association never calls Jev")
+	set.BoolVar(&opts.noEgress, "no-egress", false, "forbid association Jev calls even when consented")
+	set.StringVar(&opts.kind, "scope", "repository", "repository|subpath|staged|commit_range|paths")
+	set.StringVar(&opts.from, "from", "", "commit-range start")
+	set.StringVar(&opts.to, "to", "", "commit-range end")
+	set.Var(&opts.paths, "path", "selected relative path (repeatable)")
+	set.Var(&opts.excludes, "exclude", "excluded relative path (repeatable)")
+	set.Var(&opts.families, "family", "selected family (repeatable)")
+	set.StringVar(&opts.prMetadata, "pr-metadata", "", "merged-PR metadata JSON (scout.pr-metadata@1) for pr_effort, batch_size, dispersion")
+	set.BoolVar(&opts.fetchPRs, "fetch-pr-metadata", false, "fetch merged-PR metadata from GitHub (needs GITHUB_TOKEN with pull-requests: read and --pr-repo)")
+	set.StringVar(&opts.prRepo, "pr-repo", "", "owner/name for --fetch-pr-metadata")
+	set.Var(&opts.artifactPaths, "artifact", "coverage (LCOV, Cobertura XML) or JUnit XML file or glob, relative to the repository (repeatable); CRAP needs a revision-matched coverage artifact")
+	set.StringVar(&opts.artifactRevision, "artifact-revision", "", "commit the --artifact files were produced at, for artifacts without a "+artifacts.SidecarSuffix+" provenance file")
+	set.StringVar(&opts.artifactProducer, "artifact-producer", "", "producer name recorded for --artifact files without a sidecar")
+	return opts
+}
+
+func (opts *assessFlags) measures(scope domain.Scope) (*engine.MeasuresOptions, error) {
+	measureOpts := &engine.MeasuresOptions{History: scope.Kind == domain.ScopeRepository}
+	if opts.prMetadata != "" && opts.fetchPRs {
+		return nil, errors.New("--pr-metadata and --fetch-pr-metadata are mutually exclusive")
 	}
-	scope, err := scopeOptions(kind, paths, from, to, families)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
+	if opts.prMetadata != "" || opts.fetchPRs {
+		measureOpts.PRMetadata = &engine.PRMetadataOptions{File: opts.prMetadata, Fetch: prmeta.FetchOptions{Enabled: opts.fetchPRs, Repo: opts.prRepo, Token: os.Getenv("GITHUB_TOKEN")}}
 	}
-	cfg, err := engineConfig(flags, authorized)
+	for _, path := range opts.artifactPaths {
+		measureOpts.Artifacts = append(measureOpts.Artifacts, artifacts.Spec{Path: path, Revision: opts.artifactRevision, Producer: opts.artifactProducer})
+	}
+	return measureOpts, nil
+}
+
+func assessInputs(flags *commonFlags, opts *assessFlags) (engine.Config, policy.Policy, engine.Options, error) {
+	scope, err := scopeOptions(opts.kind, opts.paths, opts.from, opts.to, opts.families)
 	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
+		return engine.Config{}, policy.Policy{}, engine.Options{}, err
+	}
+	cfg, err := engineConfig(flags, opts.authorized)
+	if err != nil {
+		return engine.Config{}, policy.Policy{}, engine.Options{}, err
 	}
 	pol, err := headPolicy(flags.root)
 	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
+		return engine.Config{}, policy.Policy{}, engine.Options{}, err
 	}
-	associationOpts, trigger, err := associationOptions(pol, from, to, fork, noEgress)
+	associationOpts, trigger, err := associationOptions(pol, opts.from, opts.to, opts.fork, opts.noEgress)
+	if err != nil {
+		return engine.Config{}, policy.Policy{}, engine.Options{}, err
+	}
+	measureOpts, err := opts.measures(scope)
+	if err != nil {
+		return engine.Config{}, policy.Policy{}, engine.Options{}, err
+	}
+	return cfg, pol, engine.Options{Scope: scope, ForceFull: opts.full, Exclusions: opts.excludes, Trigger: trigger, Measures: measureOpts, Association: &associationOpts}, nil
+}
+
+func assess(ctx context.Context, args []string) int {
+	set := flag.NewFlagSet("assess", flag.ContinueOnError)
+	flags := common(set)
+	opts := registerAssessFlags(set)
+	if !parse(set, args, flags) {
+		return exitUnavailable
+	}
+	cfg, pol, engineOpts, err := assessInputs(flags, opts)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	measureOpts := &engine.MeasuresOptions{History: scope.Kind == domain.ScopeRepository}
-	if prMetadata != "" && fetchPRs {
-		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("--pr-metadata and --fetch-pr-metadata are mutually exclusive"))
-	}
-	if prMetadata != "" || fetchPRs {
-		measureOpts.PRMetadata = &engine.PRMetadataOptions{File: prMetadata, Fetch: prmeta.FetchOptions{Enabled: fetchPRs, Repo: prRepo, Token: os.Getenv("GITHUB_TOKEN")}}
-	}
-	for _, path := range artifactPaths {
-		measureOpts.Artifacts = append(measureOpts.Artifacts, artifacts.Spec{Path: path, Revision: artifactRevision, Producer: artifactProducer})
-	}
-	result, err := engine.Assess(ctx, cfg, engine.Options{Scope: scope, ForceFull: full, Exclusions: excludes, Trigger: trigger, Measures: measureOpts, Association: &associationOpts})
+	result, err := engine.Assess(ctx, cfg, engineOpts)
 	if err != nil {
 		unavailable := engine.UnavailableReport(err)
 		return emit(flags, unavailable.Gate.Status, unavailable.Gate.ExitCode, unavailable, err)
 	}
+	return emitAssessment(ctx, flags, pol, result)
+}
+
+func emitAssessment(ctx context.Context, flags *commonFlags, pol policy.Policy, result engine.Result) int {
 	verdict := assessGate(pol, result)
 	ranking, health, err := rankAssessment(ctx, flags, pol, result, verdict)
 	if err != nil {
@@ -320,14 +361,7 @@ func readiness(ctx context.Context, args []string) int {
 	if shadowOpts.enabled {
 		return readinessShadow(ctx, flags, shadowOpts, set)
 	}
-	var shadowOnly bool
-	set.Visit(func(f *flag.Flag) {
-		switch f.Name {
-		case "check", "version", "as-of", "encoding":
-			shadowOnly = true
-		}
-	})
-	if shadowOnly {
+	if shadowOnlyFlagGiven(set) {
 		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("--check, --version, --as-of and --encoding require --shadow"))
 	}
 	scope, err := scopeOptions(kind, paths, from, to, families)
@@ -345,11 +379,7 @@ func readiness(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	checks := make([]capability, len(assessmentReadiness.Capabilities))
-	for index, check := range assessmentReadiness.Capabilities {
-		reason := capabilityReason(check)
-		checks[index] = capability{Name: check.Name, Required: check.Required, Ready: check.Ready, Reason: reason}
-	}
+	checks := readinessCapabilities(assessmentReadiness.Capabilities)
 	report := struct {
 		Ready        bool         `json:"ready"`
 		Capabilities []capability `json:"capabilities"`
@@ -361,56 +391,103 @@ func readiness(ctx context.Context, args []string) int {
 	return emit(flags, "complete", exitComplete, report, nil)
 }
 
+func shadowOnlyFlagGiven(set *flag.FlagSet) bool {
+	var shadowOnly bool
+	set.Visit(func(f *flag.Flag) {
+		switch f.Name {
+		case "check", "version", "as-of", "encoding":
+			shadowOnly = true
+		}
+	})
+	return shadowOnly
+}
+
+func readinessCapabilities(capabilities []engine.Capability) []capability {
+	checks := make([]capability, len(capabilities))
+	for index, check := range capabilities {
+		reason := capabilityReason(check)
+		checks[index] = capability{Name: check.Name, Required: check.Required, Ready: check.Ready, Reason: reason}
+	}
+	return checks
+}
+
 func openStore(flags *commonFlags) (*state.Store, error) { return state.Open(flags.root) }
+
+type issueFilter struct {
+	status, minSeverity, family, file, feature, runID string
+}
+
+func (f issueFilter) validate() error {
+	if f.status != "" && !domain.IssueState(f.status).Valid() {
+		return errors.New("invalid issue state")
+	}
+	if f.minSeverity != "" && !domain.Severity(f.minSeverity).Valid() {
+		return errors.New("invalid severity")
+	}
+	if f.family != "" && !domain.Family(f.family).Valid() {
+		return errors.New("invalid family")
+	}
+	return nil
+}
+
+func (f issueFilter) matchesIssue(issue domain.Issue) bool {
+	if f.status != "" && string(issue.State) != f.status || f.minSeverity != "" && issue.EffectiveSeverity.Rank() < domain.Severity(f.minSeverity).Rank() {
+		return false
+	}
+	if f.file != "" && !slices.Contains(issue.Files, f.file) || f.feature != "" && !slices.Contains(issue.FeatureIDs, f.feature) {
+		return false
+	}
+	return true
+}
+
+func filterIssues(ctx context.Context, store *state.Store, all []domain.Issue, f issueFilter) ([]domain.Issue, error) {
+	filtered := make([]domain.Issue, 0, len(all))
+	for _, issue := range all {
+		if !f.matchesIssue(issue) {
+			continue
+		}
+		if f.runID != "" || f.family != "" {
+			observations, loadErr := store.ListIssueObservations(ctx, issue.IssueID)
+			if loadErr != nil {
+				return nil, loadErr
+			}
+			if !hasMatchingObservation(observations, f.runID, domain.Family(f.family)) {
+				continue
+			}
+		}
+		filtered = append(filtered, issue)
+	}
+	return filtered, nil
+}
+
 func listIssues(ctx context.Context, args []string) int {
 	set := flag.NewFlagSet("issues", flag.ContinueOnError)
 	flags := common(set)
-	var status, minSeverity, family, file, feature, runID string
-	set.StringVar(&status, "status", "", "issue state")
-	set.StringVar(&minSeverity, "min-severity", "", "minimum severity")
-	set.StringVar(&family, "family", "", "observation family")
-	set.StringVar(&file, "file", "", "relative file")
-	set.StringVar(&feature, "feature", "", "feature ID")
-	set.StringVar(&runID, "run", "", "observation run ID")
+	var filter issueFilter
+	set.StringVar(&filter.status, "status", "", "issue state")
+	set.StringVar(&filter.minSeverity, "min-severity", "", "minimum severity")
+	set.StringVar(&filter.family, "family", "", "observation family")
+	set.StringVar(&filter.file, "file", "", "relative file")
+	set.StringVar(&filter.feature, "feature", "", "feature ID")
+	set.StringVar(&filter.runID, "run", "", "observation run ID")
 	if !parse(set, args, flags) {
 		return exitUnavailable
 	}
-	if status != "" && !domain.IssueState(status).Valid() {
-		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("invalid issue state"))
-	}
-	if minSeverity != "" && !domain.Severity(minSeverity).Valid() {
-		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("invalid severity"))
-	}
-	if family != "" && !domain.Family(family).Valid() {
-		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("invalid family"))
+	if err := filter.validate(); err != nil {
+		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
 	store, err := openStore(flags)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	defer store.Close()
+	defer closeStore(store)
 	all, err := store.ListIssues(ctx)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	filtered := make([]domain.Issue, 0, len(all))
-	for _, issue := range all {
-		if status != "" && string(issue.State) != status || minSeverity != "" && issue.EffectiveSeverity.Rank() < domain.Severity(minSeverity).Rank() {
-			continue
-		}
-		if file != "" && !slices.Contains(issue.Files, file) || feature != "" && !slices.Contains(issue.FeatureIDs, feature) {
-			continue
-		}
-		if runID != "" || family != "" {
-			observations, loadErr := store.ListIssueObservations(ctx, issue.IssueID)
-			if loadErr != nil {
-				return emit(flags, "unavailable", exitUnavailable, nil, loadErr)
-			}
-			if !hasMatchingObservation(observations, runID, domain.Family(family)) {
-				continue
-			}
-		}
-		filtered = append(filtered, issue)
+	filtered, err := filterIssues(ctx, store, all, filter)
+	if err != nil {
+		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
 	return emit(flags, "complete", exitComplete, filtered, nil)
 }
@@ -442,7 +519,7 @@ func showIssue(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	defer store.Close()
+	defer closeStore(store)
 	issue, err := store.LoadIssue(ctx, id)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
@@ -522,7 +599,7 @@ func coverage(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	defer store.Close()
+	defer closeStore(store)
 	var run domain.Run
 	if runID == "" {
 		run, err = store.LatestRecordedRun(ctx)
@@ -561,67 +638,95 @@ func requireAuthorization(authorized bool, actor, reason string) (string, string
 	}
 	return safeActor, safeReason, nil
 }
+
+type triageFlags struct {
+	id, status, actor, reason, owner, disposition, runID, artifactID string
+	authorized                                                       bool
+}
+
+type triageRequest struct {
+	id                                                   string
+	desired                                              domain.IssueState
+	owner, disposition, actor, reason, runID, artifactID string
+	needsEvidence                                        bool
+}
+
+func triageNeedsEvidence(desired domain.IssueState, disposition, runID, artifactID string) (bool, error) {
+	needsEvidence := desired == domain.IssueFalsePositive || desired == domain.IssueWontFix
+	if needsEvidence && (disposition == "" || runID == "" || artifactID == "") {
+		return true, errors.New("false-positive and won't-fix triage require disposition, run, and sanitized artifact evidence")
+	}
+	if !needsEvidence && (runID != "" || artifactID != "") {
+		return false, errors.New("evidence run and artifact apply only to false-positive or won't-fix triage")
+	}
+	return needsEvidence, nil
+}
+
+func (f triageFlags) request() (triageRequest, error) {
+	safeActor, safeReason, err := requireAuthorization(f.authorized, f.actor, f.reason)
+	if err != nil {
+		return triageRequest{}, err
+	}
+	desired := domain.IssueState(f.status)
+	if f.id == "" || !desired.Valid() || desired == domain.IssueResolved {
+		return triageRequest{}, errors.New("issue ID and non-resolved valid state required")
+	}
+	safeOwner, err := issues.SanitizeText(f.owner)
+	if err != nil {
+		return triageRequest{}, err
+	}
+	safeDisposition, err := issues.SanitizeText(f.disposition)
+	if err != nil {
+		return triageRequest{}, err
+	}
+	needsEvidence, err := triageNeedsEvidence(desired, safeDisposition, f.runID, f.artifactID)
+	if err != nil {
+		return triageRequest{}, err
+	}
+	return triageRequest{id: f.id, desired: desired, owner: safeOwner, disposition: safeDisposition, actor: safeActor, reason: safeReason, runID: f.runID, artifactID: f.artifactID, needsEvidence: needsEvidence}, nil
+}
+
+func applyTriage(ctx context.Context, store *state.Store, req triageRequest) (domain.Issue, error) {
+	if !req.needsEvidence {
+		return store.TriageIssue(ctx, state.Triage{IssueID: req.id, State: req.desired, Owner: req.owner, DispositionReason: req.disposition, Actor: req.actor, Reason: req.reason})
+	}
+	run, err := store.LoadRun(ctx, req.runID)
+	if err != nil {
+		return domain.Issue{}, err
+	}
+	artifact, err := artifactInRun(run, req.artifactID)
+	if err != nil {
+		return domain.Issue{}, err
+	}
+	return store.TriageIssueWithEvidence(ctx, state.Triage{IssueID: req.id, State: req.desired, Owner: req.owner, DispositionReason: req.disposition, Actor: req.actor, Reason: req.reason}, []domain.SafeArtifactRef{artifact})
+}
+
 func triage(ctx context.Context, args []string) int {
 	set := flag.NewFlagSet("triage", flag.ContinueOnError)
 	flags := common(set)
-	var id, status, actor, reason, owner, disposition, runID, artifactID string
-	var authorized bool
-	set.StringVar(&id, "id", "", "issue ID")
-	set.StringVar(&status, "state", "", "investigating|accepted|false_positive|wont_fix")
-	set.StringVar(&actor, "actor", "", "human actor")
-	set.StringVar(&reason, "reason", "", "audit reason")
-	set.StringVar(&owner, "owner", "", "owner")
-	set.StringVar(&disposition, "disposition", "", "contradictory or scope evidence for false positive/won't fix")
-	set.StringVar(&runID, "run", "", "run containing cited disposition evidence")
-	set.StringVar(&artifactID, "artifact", "", "sanitized evidence artifact ID in run")
-	set.BoolVar(&authorized, "authorize", false, "explicitly authorize triage mutation")
+	var opts triageFlags
+	set.StringVar(&opts.id, "id", "", "issue ID")
+	set.StringVar(&opts.status, "state", "", "investigating|accepted|false_positive|wont_fix")
+	set.StringVar(&opts.actor, "actor", "", "human actor")
+	set.StringVar(&opts.reason, "reason", "", "audit reason")
+	set.StringVar(&opts.owner, "owner", "", "owner")
+	set.StringVar(&opts.disposition, "disposition", "", "contradictory or scope evidence for false positive/won't fix")
+	set.StringVar(&opts.runID, "run", "", "run containing cited disposition evidence")
+	set.StringVar(&opts.artifactID, "artifact", "", "sanitized evidence artifact ID in run")
+	set.BoolVar(&opts.authorized, "authorize", false, "explicitly authorize triage mutation")
 	if !parse(set, args, flags) {
 		return exitUnavailable
 	}
-	safeActor, safeReason, err := requireAuthorization(authorized, actor, reason)
+	req, err := opts.request()
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	desired := domain.IssueState(status)
-	if id == "" || !desired.Valid() || desired == domain.IssueResolved {
-		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("issue ID and non-resolved valid state required"))
-	}
-	safeOwner, err := issues.SanitizeText(owner)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	safeDisposition, err := issues.SanitizeText(disposition)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	needsEvidence := desired == domain.IssueFalsePositive || desired == domain.IssueWontFix
-	if needsEvidence && (safeDisposition == "" || runID == "" || artifactID == "") {
-		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("false-positive and won't-fix triage require disposition, run, and sanitized artifact evidence"))
-	}
-	if !needsEvidence && (runID != "" || artifactID != "") {
-		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("evidence run and artifact apply only to false-positive or won't-fix triage"))
 	}
 	store, err := openStore(flags)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	defer store.Close()
-	if needsEvidence {
-		run, loadErr := store.LoadRun(ctx, runID)
-		if loadErr != nil {
-			return emit(flags, "unavailable", exitUnavailable, nil, loadErr)
-		}
-		artifact, artifactErr := artifactInRun(run, artifactID)
-		if artifactErr != nil {
-			return emit(flags, "unavailable", exitUnavailable, nil, artifactErr)
-		}
-		issue, triageErr := store.TriageIssueWithEvidence(ctx, id, desired, safeOwner, safeDisposition, safeActor, safeReason, []domain.SafeArtifactRef{artifact})
-		if triageErr != nil {
-			return emit(flags, "unavailable", exitUnavailable, nil, triageErr)
-		}
-		return emit(flags, "complete", exitComplete, issue, nil)
-	}
-	issue, err := store.TriageIssue(ctx, id, desired, safeOwner, safeDisposition, safeActor, safeReason)
+	defer closeStore(store)
+	issue, err := applyTriage(ctx, store, req)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
@@ -638,6 +743,43 @@ func artifactInRun(run domain.Run, artifactID string) (domain.SafeArtifactRef, e
 	}
 	return domain.SafeArtifactRef{}, errors.New("artifact is not in run")
 }
+
+var errLoopbackOnly = errors.New("web server accepts only loopback listeners")
+
+func requireLoopback(address string) error {
+	host, _, err := net.SplitHostPort(address)
+	if err != nil {
+		return err
+	}
+	if host != "localhost" {
+		ip := net.ParseIP(host)
+		if ip == nil || !ip.IsLoopback() {
+			return errLoopbackOnly
+		}
+	}
+	return nil
+}
+
+func listenLoopback(address string) (net.Listener, error) {
+	listener, err := net.Listen("tcp", address)
+	if err != nil {
+		return nil, err
+	}
+	if tcp, ok := listener.Addr().(*net.TCPAddr); !ok || !tcp.IP.IsLoopback() {
+		_ = listener.Close()
+		return nil, errLoopbackOnly
+	}
+	return listener, nil
+}
+
+func announceServing(flags *commonFlags, address string) error {
+	if flags.json {
+		return json.NewEncoder(os.Stdout).Encode(outcome{Status: "serving", ExitCode: exitComplete, Result: map[string]string{"address": address}})
+	}
+	_, err := fmt.Fprintln(os.Stdout, "Scout read-only web:", address)
+	return err
+}
+
 func serve(ctx context.Context, args []string) int {
 	set := flag.NewFlagSet("serve", flag.ContinueOnError)
 	flags := common(set)
@@ -646,28 +788,17 @@ func serve(ctx context.Context, args []string) int {
 	if !parse(set, args, flags) {
 		return exitUnavailable
 	}
-	host, _, err := net.SplitHostPort(address)
-	if err != nil {
+	if err := requireLoopback(address); err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	if host != "localhost" {
-		ip := net.ParseIP(host)
-		if ip == nil || !ip.IsLoopback() {
-			return emit(flags, "unavailable", exitUnavailable, nil, errors.New("web server accepts only loopback listeners"))
-		}
 	}
 	store, err := state.OpenExistingReadOnly(flags.root)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	defer store.Close()
-	listener, err := net.Listen("tcp", address)
+	defer closeStore(store)
+	listener, err := listenLoopback(address)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	if tcp, ok := listener.Addr().(*net.TCPAddr); !ok || !tcp.IP.IsLoopback() {
-		_ = listener.Close()
-		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("web server accepts only loopback listeners"))
 	}
 	server := &http.Server{Handler: web.New(store), ReadHeaderTimeout: 5 * time.Second}
 	stopped, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
@@ -678,12 +809,8 @@ func serve(ctx context.Context, args []string) int {
 		defer cancel()
 		_ = server.Shutdown(shutdown)
 	}()
-	if flags.json {
-		if encodeErr := json.NewEncoder(os.Stdout).Encode(outcome{Status: "serving", ExitCode: exitComplete, Result: map[string]string{"address": listener.Addr().String()}}); encodeErr != nil {
-			return emit(flags, "unavailable", exitUnavailable, nil, encodeErr)
-		}
-	} else {
-		fmt.Fprintln(os.Stdout, "Scout read-only web:", listener.Addr().String())
+	if err := announceServing(flags, listener.Addr().String()); err != nil {
+		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
 	err = server.Serve(listener)
 	if err != nil && !errors.Is(err, http.ErrServerClosed) {

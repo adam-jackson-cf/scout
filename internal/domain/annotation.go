@@ -96,17 +96,5 @@ type AuditDraw struct {
 
 // Dispositions are recorded with the view they were made in.
 const (
-	ViewCLI   = "cli"
-	ViewAudit = "audit"
+	ViewCLI = "cli"
 )
-
-// DispositionContext records, for one human disposition, the view it was made
-// in, whether the annotation was visible, and the versions then current.
-type DispositionContext struct {
-	IssueID            string    `json:"issueId"`
-	At                 time.Time `json:"at"`
-	View               string    `json:"view"`
-	AnnotationVisible  bool      `json:"annotationVisible"`
-	RankFormulaVersion string    `json:"rankFormulaVersion,omitempty"`
-	BaselineVersion    string    `json:"baselineVersion,omitempty"`
-}

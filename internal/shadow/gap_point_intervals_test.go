@@ -3,10 +3,10 @@ package shadow
 import (
 	"bytes"
 	"fmt"
-	"scout/internal/domain"
-	"strings"
 	"testing"
 	"time"
+
+	"scout/internal/domain"
 )
 
 // Each proof owns its fixtures so it can be overlaid and compiled alone.
@@ -67,26 +67,12 @@ func p16Same(t *testing.T, a, b Report) {
 		t.Fatalf("historical dossier changed: %s / %s", ad, bd)
 	}
 }
-func p16Event(l *domain.ShadowLedger, f domain.PRRunFact, id, verdict string, day int) {
-	e := domain.ProviderPREvent{EventID: id, RepositoryID: f.ID.RepositoryID, Scope: domain.ShadowScopeCI, PRNumber: f.PRNumber, HeadCommit: f.HeadCommit, HeadTree: f.HeadTree, MergeBase: f.MergeBase, CheckID: f.CheckID, RuleVersion: f.RuleVersion, IssueID: id, EventAt: f.StartedAt, RecordedAt: f.RecordedAt}
-	l.Events = append(l.Events, e)
-	l.Links = append(l.Links, domain.PRRunEventLink{AttemptID: f.ID, Scope: domain.ShadowScopeCI, EventID: id})
-	if verdict != "" {
-		l.Triage = append(l.Triage, domain.ShadowTriage{ActionID: fmt.Sprint(day + 100), EventID: id, RepositoryID: "repo", Scope: domain.ShadowScopeCI, Verdict: verdict, Actor: "maintainer", PolicyRevision: "protected1", TriagedAt: p16Day(day), RecordedAt: p16Stamp(day)})
-	}
-}
 func p16Advance(l *domain.ShadowLedger, day int) {
 	f := l.Frontiers[len(l.Frontiers)-1]
 	f.CompleteThrough = p16Day(day)
 	l.Frontiers = append(l.Frontiers, f)
 	for i := range l.Intervals {
 		l.Intervals[i].Through = p16Day(day)
-	}
-}
-func p16Veto(t *testing.T, r Report, word string) {
-	t.Helper()
-	if r.Dossier.Ready || !strings.Contains(strings.ToLower(r.Dossier.Reason), word) {
-		t.Fatalf("ready=%v reason=%q; want %s veto", r.Dossier.Ready, r.Dossier.Reason, word)
 	}
 }
 

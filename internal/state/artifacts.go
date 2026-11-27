@@ -25,18 +25,9 @@ func (s *Store) StoreArtifact(ctx context.Context, raw []byte, contentType strin
 	if s.readOnly {
 		return domain.SafeArtifactRef{}, errors.New("state store is read-only")
 	}
-	if sanitize == nil {
-		return domain.SafeArtifactRef{}, errors.New("artifact sanitizer is required")
-	}
-	if contentType == "" || strings.ContainsAny(contentType, "\x00\r\n") {
-		return domain.SafeArtifactRef{}, errors.New("artifact content type is invalid")
-	}
-	safe, err := sanitize(raw)
+	safe, err := sanitizeArtifact(raw, contentType, sanitize)
 	if err != nil {
-		return domain.SafeArtifactRef{}, fmt.Errorf("sanitize artifact: %w", err)
-	}
-	if err := rejectUnsafePersistence(string(safe)); err != nil {
-		return domain.SafeArtifactRef{}, fmt.Errorf("sanitized artifact: %w", err)
+		return domain.SafeArtifactRef{}, err
 	}
 	digestBytes := sha256.Sum256(safe)
 	digest := hex.EncodeToString(digestBytes[:])
@@ -71,6 +62,23 @@ func (s *Store) StoreArtifact(ctx context.Context, raw []byte, contentType strin
 	return ref, nil
 }
 
+func sanitizeArtifact(raw []byte, contentType string, sanitize ArtifactSanitizer) ([]byte, error) {
+	if sanitize == nil {
+		return nil, errors.New("artifact sanitizer is required")
+	}
+	if contentType == "" || strings.ContainsAny(contentType, "\x00\r\n") {
+		return nil, errors.New("artifact content type is invalid")
+	}
+	safe, err := sanitize(raw)
+	if err != nil {
+		return nil, fmt.Errorf("sanitize artifact: %w", err)
+	}
+	if err := rejectUnsafePersistence(string(safe)); err != nil {
+		return nil, fmt.Errorf("sanitized artifact: %w", err)
+	}
+	return safe, nil
+}
+
 // LoadArtifact returns a previously sanitized artifact after checking its digest.
 func (s *Store) LoadArtifact(ctx context.Context, ref domain.SafeArtifactRef) ([]byte, error) {
 	if err := ref.Validate(); err != nil {
@@ -81,20 +89,31 @@ func (s *Store) LoadArtifact(ctx context.Context, ref domain.SafeArtifactRef) ([
 	if s.closed {
 		return nil, errors.New("state store is closed")
 	}
-	var artifactID, contentType string
-	if err := s.db.QueryRowContext(ctx, `SELECT artifact_id, content_type FROM artifacts WHERE digest = ?`, ref.Digest).Scan(&artifactID, &contentType); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, fmt.Errorf("artifact %q: %w", ref.ArtifactID, ErrNotFound)
-		}
-		return nil, fmt.Errorf("load artifact metadata: %w", err)
-	}
-	if artifactID != ref.ArtifactID || contentType != ref.ContentType {
-		return nil, errors.New("artifact reference does not match recorded metadata")
+	if err := s.checkArtifactMetadata(ctx, ref); err != nil {
+		return nil, err
 	}
 	path, err := s.artifactPath(ref.Digest)
 	if err != nil {
 		return nil, err
 	}
+	return readArtifactFile(path, ref)
+}
+
+func (s *Store) checkArtifactMetadata(ctx context.Context, ref domain.SafeArtifactRef) error {
+	var artifactID, contentType string
+	if err := s.db.QueryRowContext(ctx, `SELECT artifact_id, content_type FROM artifacts WHERE digest = ?`, ref.Digest).Scan(&artifactID, &contentType); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return fmt.Errorf("artifact %q: %w", ref.ArtifactID, ErrNotFound)
+		}
+		return fmt.Errorf("load artifact metadata: %w", err)
+	}
+	if artifactID != ref.ArtifactID || contentType != ref.ContentType {
+		return errors.New("artifact reference does not match recorded metadata")
+	}
+	return nil
+}
+
+func readArtifactFile(path string, ref domain.SafeArtifactRef) ([]byte, error) {
 	if err := rejectSymlink(path); err != nil {
 		return nil, err
 	}
@@ -130,25 +149,32 @@ func writeContentAddressed(path string, content []byte) error {
 		return err
 	}
 	if existing, err := os.Open(path); err == nil {
-		defer existing.Close()
-		hash := sha256.New()
-		if _, err := io.Copy(hash, existing); err != nil {
-			return fmt.Errorf("verify existing artifact: %w", err)
-		}
-		if hex.EncodeToString(hash.Sum(nil)) != filepath.Base(filepath.Dir(path))+filepath.Base(path) {
-			return errors.New("existing artifact conflicts with its content address")
-		}
-		return nil
+		return verifyExistingArtifact(path, existing)
 	} else if !errors.Is(err, os.ErrNotExist) {
 		return fmt.Errorf("inspect artifact path: %w", err)
 	}
+	return publishArtifact(path, content)
+}
 
+func verifyExistingArtifact(path string, existing *os.File) (err error) {
+	defer closeJoin(&err, existing)
+	hash := sha256.New()
+	if _, err := io.Copy(hash, existing); err != nil {
+		return fmt.Errorf("verify existing artifact: %w", err)
+	}
+	if hex.EncodeToString(hash.Sum(nil)) != filepath.Base(filepath.Dir(path))+filepath.Base(path) {
+		return errors.New("existing artifact conflicts with its content address")
+	}
+	return nil
+}
+
+func publishArtifact(path string, content []byte) error {
 	temporary, err := os.CreateTemp(filepath.Dir(path), ".artifact-*")
 	if err != nil {
 		return fmt.Errorf("create artifact temporary file: %w", err)
 	}
 	temporaryPath := temporary.Name()
-	defer os.Remove(temporaryPath)
+	defer func() { _ = os.Remove(temporaryPath) }()
 	if err := temporary.Chmod(0o600); err != nil {
 		_ = temporary.Close()
 		return fmt.Errorf("secure artifact temporary file: %w", err)

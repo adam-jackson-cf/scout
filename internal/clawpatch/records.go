@@ -51,20 +51,9 @@ func loadFeatures(stateDir string) ([]domain.Feature, error) {
 		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".json") {
 			continue
 		}
-		info, err := entry.Info()
+		feature, err := readFeatureRecord(featuresDir, entry)
 		if err != nil {
-			return nil, fmt.Errorf("inspect Clawpatch feature record %q: %w", entry.Name(), err)
-		}
-		if !info.Mode().IsRegular() {
-			return nil, fmt.Errorf("Clawpatch feature record is not a regular file: %q", entry.Name())
-		}
-		raw, err := os.ReadFile(filepath.Join(featuresDir, entry.Name()))
-		if err != nil {
-			return nil, fmt.Errorf("read Clawpatch feature record %q: %w", entry.Name(), err)
-		}
-		feature, err := DecodeFeature(raw)
-		if err != nil {
-			return nil, fmt.Errorf("decode Clawpatch feature record %q: %w", entry.Name(), err)
+			return nil, err
 		}
 		if _, duplicate := seen[feature.FeatureID]; duplicate {
 			return nil, fmt.Errorf("duplicate canonical Clawpatch feature ID %q", feature.FeatureID)
@@ -73,6 +62,25 @@ func loadFeatures(stateDir string) ([]domain.Feature, error) {
 		features = append(features, feature)
 	}
 	return features, nil
+}
+
+func readFeatureRecord(featuresDir string, entry fs.DirEntry) (domain.Feature, error) {
+	info, err := entry.Info()
+	if err != nil {
+		return domain.Feature{}, fmt.Errorf("inspect Clawpatch feature record %q: %w", entry.Name(), err)
+	}
+	if !info.Mode().IsRegular() {
+		return domain.Feature{}, fmt.Errorf("clawpatch feature record is not a regular file: %q", entry.Name())
+	}
+	raw, err := os.ReadFile(filepath.Join(featuresDir, entry.Name()))
+	if err != nil {
+		return domain.Feature{}, fmt.Errorf("read Clawpatch feature record %q: %w", entry.Name(), err)
+	}
+	feature, err := DecodeFeature(raw)
+	if err != nil {
+		return domain.Feature{}, fmt.Errorf("decode Clawpatch feature record %q: %w", entry.Name(), err)
+	}
+	return feature, nil
 }
 
 // DecodeFeature validates one schema-v1 canonical record without reconstructing

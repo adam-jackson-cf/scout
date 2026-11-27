@@ -7,6 +7,7 @@ import (
 	_ "embed"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -25,9 +26,6 @@ const TerraPromptDigest = "ca24fd764b745dbcb261a1aa6a0d740710809e82a13a8a103e55b
 
 //go:embed terra_prompt.txt
 var terraPrompt string
-
-// TerraPrompt returns the exact pilot prompt bytes.
-func TerraPrompt() string { return terraPrompt }
 
 // TerraAnswer is the validated placement of a residual cluster.
 type TerraAnswer struct {
@@ -59,7 +57,7 @@ var terraVersion = regexp.MustCompile(`(?m)^OpenAI Codex\s+(\S+)`)
 func (d *TerraDecider) Decide(ctx context.Context, input json.RawMessage, catalogue []areas.Area) (TerraAnswer, error) {
 	sum := sha256.Sum256([]byte(terraPrompt))
 	if hex.EncodeToString(sum[:]) != TerraPromptDigest {
-		return TerraAnswer{}, fmt.Errorf("Terra prompt digest mismatch")
+		return TerraAnswer{}, errors.New("association: Terra prompt digest mismatch")
 	}
 	_, executable, err := modelcli.Detect("codex")
 	if err != nil {
@@ -79,12 +77,16 @@ func (d *TerraDecider) Decide(ctx context.Context, input json.RawMessage, catalo
 	return TerraAnswer{}, err
 }
 
-func (d *TerraDecider) invoke(ctx context.Context, executable string, input json.RawMessage, catalogue []areas.Area) (TerraAnswer, error) {
+func (d *TerraDecider) invoke(ctx context.Context, executable string, input json.RawMessage, catalogue []areas.Area) (answer TerraAnswer, err error) {
 	dir, err := os.MkdirTemp("", "scout-terra-")
 	if err != nil {
 		return TerraAnswer{}, err
 	}
-	defer os.RemoveAll(dir)
+	defer func() {
+		if removeErr := os.RemoveAll(dir); removeErr != nil {
+			answer, err = TerraAnswer{}, errors.Join(err, removeErr)
+		}
+	}()
 	// Keep the answer outside the working directory so codex starts in an empty directory.
 	answerPath := filepath.Join(dir, "answer")
 	work := filepath.Join(dir, "work")
@@ -92,6 +94,21 @@ func (d *TerraDecider) invoke(ctx context.Context, executable string, input json
 		return TerraAnswer{}, err
 	}
 	d.raw = ""
+	if err := d.run(ctx, executable, work, answerPath, input); err != nil {
+		return TerraAnswer{}, err
+	}
+	raw, err := os.ReadFile(answerPath)
+	if err != nil {
+		return TerraAnswer{}, err
+	}
+	d.raw = string(raw)
+	if err := json.Unmarshal(raw, &answer); err != nil {
+		return TerraAnswer{}, fmt.Errorf("association: Terra answer: %w", err)
+	}
+	return validTerraAnswer(answer, catalogue)
+}
+
+func (d *TerraDecider) run(ctx context.Context, executable, work, answerPath string, input json.RawMessage) error {
 	callCtx, cancel := context.WithTimeout(ctx, d.config.Timeout)
 	defer cancel()
 	cmd := exec.CommandContext(callCtx, executable, "exec", "-m", d.config.Model, "-c", "model_reasoning_effort="+d.config.Effort, "-s", "read-only", "--ephemeral", "--ignore-user-config", "--ignore-rules", "--skip-git-repo-check", "-C", work, "-o", answerPath, "-")
@@ -99,8 +116,22 @@ func (d *TerraDecider) invoke(ctx context.Context, executable string, input json
 	cmd.Stdin = strings.NewReader(terraPrompt + "\n=== STATE (JSON) ===\n" + string(input) + "\n")
 	var diagnostic bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &diagnostic, &diagnostic
-	err = cmd.Run()
+	err := cmd.Run()
 	both := diagnostic.String()
+	d.recordDiagnostic(both)
+	if err != nil {
+		return fmt.Errorf("association: Terra process failed: %w", err)
+	}
+	if terraCommand.MatchString(both) {
+		return errors.New("association: Terra executed a command")
+	}
+	if d.model != d.config.Model || d.effort != d.config.Effort {
+		return errors.New("association: Terra model/effort mismatch")
+	}
+	return nil
+}
+
+func (d *TerraDecider) recordDiagnostic(both string) {
 	d.model, d.effort, d.version = "", "", ""
 	if m := terraModel.FindStringSubmatch(both); m != nil {
 		d.model = m[1]
@@ -111,36 +142,28 @@ func (d *TerraDecider) invoke(ctx context.Context, executable string, input json
 	if m := terraVersion.FindStringSubmatch(both); m != nil {
 		d.version = m[1]
 	}
-	if err != nil {
-		return TerraAnswer{}, fmt.Errorf("Terra process failed: %w", err)
-	}
-	if terraCommand.MatchString(both) {
-		return TerraAnswer{}, fmt.Errorf("Terra executed a command")
-	}
-	if d.model != d.config.Model || d.effort != d.config.Effort {
-		return TerraAnswer{}, fmt.Errorf("Terra model/effort mismatch")
-	}
-	raw, err := os.ReadFile(answerPath)
-	if err != nil {
-		return TerraAnswer{}, err
-	}
-	d.raw = string(raw)
-	var answer TerraAnswer
-	if err := json.Unmarshal(raw, &answer); err != nil {
-		return TerraAnswer{}, fmt.Errorf("Terra answer: %w", err)
-	}
+}
+
+func validTerraAnswer(answer TerraAnswer, catalogue []areas.Area) (TerraAnswer, error) {
 	switch answer.Decision {
 	case "existing":
-		for _, area := range catalogue {
-			if area.Active() && area.ScoutAreaID != "" && area.ScoutAreaID == answer.AreaID {
-				return answer, nil
-			}
+		if knownTerraArea(catalogue, answer.AreaID) {
+			return answer, nil
 		}
-		return TerraAnswer{}, fmt.Errorf("Terra returned unknown area")
+		return TerraAnswer{}, errors.New("association: Terra returned unknown area")
 	case "new":
 		if strings.TrimSpace(answer.NewTitle) != "" && strings.TrimSpace(answer.NewSummary) != "" {
 			return answer, nil
 		}
 	}
 	return TerraAnswer{}, fmt.Errorf("invalid Terra answer")
+}
+
+func knownTerraArea(catalogue []areas.Area, id string) bool {
+	for _, area := range catalogue {
+		if area.Active() && area.ScoutAreaID != "" && area.ScoutAreaID == id {
+			return true
+		}
+	}
+	return false
 }

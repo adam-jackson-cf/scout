@@ -1,0 +1,43 @@
+version: '2'
+run:
+  tests: true
+  build-tags:
+    - boundary
+    - deferred
+linters:
+  default: standard
+  enable:
+    - funlen
+    - forbidigo
+    - gocyclo
+    - nolintlint
+    - revive
+  settings:
+    funlen:
+      lines: -1
+      statements: 50
+    forbidigo:
+      forbid:
+        - pattern: ^exec\.Command$
+          msg: use exec.CommandContext with a deadline so a hung process cannot stall the run
+    gocyclo:
+      min-complexity: 10
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+    revive:
+      rules:
+        - name: argument-limit
+          arguments:
+            - 5
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - scout

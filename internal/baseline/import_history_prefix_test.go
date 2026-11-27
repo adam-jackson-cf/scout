@@ -1,14 +1,17 @@
+//go:build boundary
+
 package baseline
 
 import (
 	"encoding/json"
 	"os/exec"
 	"reflect"
-	"scout/internal/domain"
-	"scout/internal/state"
 	"strings"
 	"testing"
 	"time"
+
+	"scout/internal/domain"
+	"scout/internal/state"
 )
 
 func p05Git(t *testing.T, dir string, args ...string) string {
@@ -71,100 +74,114 @@ func TestADR012ImportWholeHistoryPrefix(t *testing.T) {
 	source := p05Ledger()
 	dst := source
 	proof := domain.ChainProof{RepositoryID: "repo", StateRef: "refs/heads/scout/state", GenesisCommit: "genesis", SourceTip: "source-tip", DestinationTip: "destination-tip", Authenticated: true, DestinationAncestor: true}
-	for _, tc := range []struct {
-		name     string
-		change   func(*domain.ShadowLedger, *domain.ChainProof)
-		preserve bool
-	}{
+	for _, tc := range []historyPrefixCase{
 		{"authenticated_exact_history", func(*domain.ShadowLedger, *domain.ChainProof) {}, true},
 		{"missing_ancestry", func(_ *domain.ShadowLedger, p *domain.ChainProof) { p.DestinationAncestor = false }, false},
 		{"missing_genesis", func(_ *domain.ShadowLedger, p *domain.ChainProof) { p.GenesisCommit = "" }, false},
 		{"fork_restored_claimed_chain", func(_ *domain.ShadowLedger, p *domain.ChainProof) { p.Authenticated = false }, false},
 		{"nonempty_without_C", func(d *domain.ShadowLedger, _ *domain.ChainProof) { d.Frontiers = nil; d.Publications = nil }, false},
 	} {
-		t.Run(tc.name, func(t *testing.T) {
-			var d domain.ShadowLedger
-			raw, _ := json.Marshal(dst)
-			p05Decode(t, string(raw), &d)
-			p := proof
-			tc.change(&d, &p)
-			plan, err := PlanShadowImport(d, source, p)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if plan.BytePreserving != tc.preserve {
-				t.Fatalf("whole-history adoption=%v want %v", plan.BytePreserving, tc.preserve)
-			}
-			if tc.preserve {
-				if !reflect.DeepEqual(plan.Adopt, source) {
-					t.Fatal("same-lineage adoption rewrote post-C history")
-				}
-			} else if len(plan.Pending.Facts) != 1 {
-				t.Fatal("cross-lineage path dropped post-C fact")
-			}
-		})
+		t.Run(tc.name, func(t *testing.T) { checkHistoryPrefixCase(t, tc, dst, source, proof) })
 	}
-	t.Run("destination_only_post_C_correction", func(t *testing.T) {
-		d := p05Ledger()
-		at := d.Publications[0].RecordedAt.Add(time.Millisecond)
-		row := domain.ShadowTriage{ActionID: "repo:1000", EventID: "event", RepositoryID: "repo", Scope: domain.ShadowScopeCI, Verdict: domain.TriageNotWarranted, Actor: "alice", Reason: "correction", PolicyRevision: "current-policy", TriagedAt: at, RecordedAt: &at}
-		d.Triage = []domain.ShadowTriage{row}
-		d.Publications = append(d.Publications, domain.ShadowPublication{ID: "correction", ParentID: "genesis", RepositoryID: "repo", RecordedAt: at, Triage: d.Triage})
-		plan, err := PlanShadowImport(d, source, proof)
-		if err != nil {
-			t.Fatal(err)
+	t.Run("destination_only_post_C_correction", func(t *testing.T) { checkDestinationOnlyCorrection(t, source, proof) })
+	t.Run("fast_forward_all_rows", func(t *testing.T) { checkFastForwardAllRows(t, dst, proof) })
+	t.Run("chain_proof_uses_actual_fetched_parent", func(t *testing.T) { checkChainProofUsesFetchedParent(t, dst, source, proof) })
+}
+
+type historyPrefixCase struct {
+	name     string
+	change   func(*domain.ShadowLedger, *domain.ChainProof)
+	preserve bool
+}
+
+func checkHistoryPrefixCase(t *testing.T, tc historyPrefixCase, dst, source domain.ShadowLedger, proof domain.ChainProof) {
+	t.Helper()
+	var d domain.ShadowLedger
+	raw, _ := json.Marshal(dst)
+	p05Decode(t, string(raw), &d)
+	p := proof
+	tc.change(&d, &p)
+	plan, err := PlanShadowImport(d, source, p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if plan.BytePreserving != tc.preserve {
+		t.Fatalf("whole-history adoption=%v want %v", plan.BytePreserving, tc.preserve)
+	}
+	if tc.preserve {
+		if !reflect.DeepEqual(plan.Adopt, source) {
+			t.Fatal("same-lineage adoption rewrote post-C history")
 		}
-		if plan.BytePreserving {
-			t.Fatal("destination post-C correction ignored")
+	} else if len(plan.Pending.Facts) != 1 {
+		t.Fatal("cross-lineage path dropped post-C fact")
+	}
+}
+
+func checkDestinationOnlyCorrection(t *testing.T, source domain.ShadowLedger, proof domain.ChainProof) {
+	t.Helper()
+	d := p05Ledger()
+	at := d.Publications[0].RecordedAt.Add(time.Millisecond)
+	row := domain.ShadowTriage{ActionID: "repo:1000", EventID: "event", RepositoryID: "repo", Scope: domain.ShadowScopeCI, Verdict: domain.TriageNotWarranted, Actor: "alice", Reason: "correction", PolicyRevision: "current-policy", TriagedAt: at, RecordedAt: &at}
+	d.Triage = []domain.ShadowTriage{row}
+	d.Publications = append(d.Publications, domain.ShadowPublication{ID: "correction", ParentID: "genesis", RepositoryID: "repo", RecordedAt: at, Triage: d.Triage})
+	plan, err := PlanShadowImport(d, source, proof)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if plan.BytePreserving {
+		t.Fatal("destination post-C correction ignored")
+	}
+}
+
+func checkFastForwardAllRows(t *testing.T, dst domain.ShadowLedger, proof domain.ChainProof) {
+	t.Helper()
+	src := p05Ledger()
+	at := src.Publications[0].RecordedAt.Add(time.Millisecond)
+	row := domain.ShadowTriage{ActionID: "repo:1000", EventID: "event", RepositoryID: "repo", Scope: domain.ShadowScopeCI, Verdict: domain.TriageWarranted, Actor: "alice", PolicyRevision: "policy", TriagedAt: at, RecordedAt: &at}
+	src.Triage = []domain.ShadowTriage{row}
+	src.Publications = append(src.Publications, domain.ShadowPublication{ID: "second", ParentID: "genesis", RepositoryID: "repo", RecordedAt: at, Triage: src.Triage})
+	plan, err := PlanShadowImport(dst, src, proof)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !plan.BytePreserving || !reflect.DeepEqual(plan.Adopt, src) {
+		t.Fatal("post-C rows lost")
+	}
+}
+
+func checkChainProofUsesFetchedParent(t *testing.T, dst, source domain.ShadowLedger, proof domain.ChainProof) {
+	t.Helper()
+	_, opts := p05Remote(t)
+	ctx := boundedTestContext(t)
+	seed, err := Publish(ctx, opts[0], func(parent Parent) (Tree, error) {
+		if parent.Commit != "" {
+			t.Fatal("unexpected genesis parent")
 		}
+		return p05Tree(t, dst), nil
 	})
-	t.Run("fast_forward_all_rows", func(t *testing.T) {
-		src := p05Ledger()
-		at := src.Publications[0].RecordedAt.Add(time.Millisecond)
-		row := domain.ShadowTriage{ActionID: "repo:1000", EventID: "event", RepositoryID: "repo", Scope: domain.ShadowScopeCI, Verdict: domain.TriageWarranted, Actor: "alice", PolicyRevision: "policy", TriagedAt: at, RecordedAt: &at}
-		src.Triage = []domain.ShadowTriage{row}
-		src.Publications = append(src.Publications, domain.ShadowPublication{ID: "second", ParentID: "genesis", RepositoryID: "repo", RecordedAt: at, Triage: src.Triage})
-		plan, err := PlanShadowImport(dst, src, proof)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = Publish(ctx, opts[0], func(parent Parent) (Tree, error) {
+		if parent.Commit != seed.Commit {
+			t.Fatalf("claimed parent instead of fetched parent: %s", parent.Commit)
+		}
+		current, _, err := state.DecodeShadow(parent.Tree)
 		if err != nil {
-			t.Fatal(err)
+			return nil, err
 		}
-		if !plan.BytePreserving || !reflect.DeepEqual(plan.Adopt, src) {
-			t.Fatal("post-C rows lost")
+		p := proof
+		p.DestinationTip = parent.Commit
+		plan, err := PlanShadowImport(current, source, p)
+		if err != nil {
+			return nil, err
 		}
+		if !plan.BytePreserving {
+			t.Fatal("proven identical parent refused")
+		}
+		return parent.Tree, nil
 	})
-	t.Run("chain_proof_uses_actual_fetched_parent", func(t *testing.T) {
-		_, opts := p05Remote(t)
-		ctx := boundedTestContext(t)
-		seed, err := Publish(ctx, opts[0], func(parent Parent) (Tree, error) {
-			if parent.Commit != "" {
-				t.Fatal("unexpected genesis parent")
-			}
-			return p05Tree(t, dst), nil
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
-		_, err = Publish(ctx, opts[0], func(parent Parent) (Tree, error) {
-			if parent.Commit != seed.Commit {
-				t.Fatalf("claimed parent instead of fetched parent: %s", parent.Commit)
-			}
-			current, _, err := state.DecodeShadow(parent.Tree)
-			if err != nil {
-				return nil, err
-			}
-			p := proof
-			p.DestinationTip = parent.Commit
-			plan, err := PlanShadowImport(current, source, p)
-			if err != nil {
-				return nil, err
-			}
-			if !plan.BytePreserving {
-				t.Fatal("proven identical parent refused")
-			}
-			return parent.Tree, nil
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
-	})
+	if err != nil {
+		t.Fatal(err)
+	}
 }

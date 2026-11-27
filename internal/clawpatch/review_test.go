@@ -70,6 +70,19 @@ func TestCoverageFromReviewMarksDefaultFindingCapIncomplete(t *testing.T) {
 }
 
 func TestLoadReviewObservationsFiltersPriorRuns(t *testing.T) {
+	root, stateDir := writeFeatureWithFindingsFromTwoRuns(t)
+
+	observations, err := loadReviewObservations(root, stateDir, "feature", "current-run")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(observations) != 1 || observations[0].SourceFindingID != "current" {
+		t.Fatalf("prior-run findings were attributed to the current review: %+v", observations)
+	}
+}
+
+func writeFeatureWithFindingsFromTwoRuns(t *testing.T) (string, string) {
+	t.Helper()
 	root := t.TempDir()
 	if err := os.MkdirAll(filepath.Join(root, "src"), 0o700); err != nil {
 		t.Fatal(err)
@@ -93,14 +106,7 @@ func TestLoadReviewObservationsFiltersPriorRuns(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-
-	observations, err := loadReviewObservations(root, stateDir, "feature", "current-run")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(observations) != 1 || observations[0].SourceFindingID != "current" {
-		t.Fatalf("prior-run findings were attributed to the current review: %+v", observations)
-	}
+	return root, stateDir
 }
 
 func TestReviewFindingCapReadsCanonicalConfiguration(t *testing.T) {

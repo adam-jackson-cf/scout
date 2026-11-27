@@ -177,60 +177,81 @@ func looseKey(issue domain.Issue) string {
 // drift). A match to a resolved base issue, or a head issue already marked
 // regressed, is `regressed`. Without a baseline every issue is `unknown`.
 func Attribute(head, base []domain.Issue, comparison domain.Comparison) map[string]domain.Attribution {
-	out := make(map[string]domain.Attribution, len(head))
 	if comparison == domain.ComparisonNone {
-		for _, issue := range head {
-			out[issue.IssueID] = domain.AttributionUnknown
-		}
-		return out
+		return unknownAttributions(head)
 	}
-	taken := make([]bool, len(base))
-	matched := map[string]int{}
-	pair := func(key func(domain.Issue) string, secretOnlyExact bool) {
-		index := map[string][]int{}
-		for i, b := range base {
-			if !taken[i] {
-				index[key(b)] = append(index[key(b)], i)
-			}
-		}
-		for _, issue := range head {
-			if _, done := matched[issue.IssueID]; done {
-				continue
-			}
-			if secretOnlyExact && issue.Anchor.Secret {
-				continue
-			}
-			list := index[key(issue)]
-			if len(list) == 0 {
-				continue
-			}
-			// Prefer a live base issue so a resolved twin does not mask debt.
-			pick := 0
-			for n, i := range list {
-				if base[i].State != domain.IssueResolved {
-					pick = n
-					break
-				}
-			}
-			taken[list[pick]] = true
-			matched[issue.IssueID] = list[pick]
-			index[key(issue)] = append(list[:pick:pick], list[pick+1:]...)
-		}
-	}
-	pair(exactKey, false)
-	pair(looseKey, true)
+	pairing := attributionPairing{head: head, base: base, taken: make([]bool, len(base)), matched: map[string]int{}}
+	pairing.pair(exactKey, false)
+	pairing.pair(looseKey, true)
+	out := make(map[string]domain.Attribution, len(head))
 	for _, issue := range head {
-		i, found := matched[issue.IssueID]
-		switch {
-		case found && base[i].State == domain.IssueResolved, !found && issue.State == domain.IssueRegressed:
-			out[issue.IssueID] = domain.AttributionRegressed
-		case found:
-			out[issue.IssueID] = domain.AttributionPreExisting
-		default:
-			out[issue.IssueID] = domain.AttributionIntroduced
-		}
+		out[issue.IssueID] = pairing.attributionOf(issue)
 	}
 	return out
+}
+
+func unknownAttributions(head []domain.Issue) map[string]domain.Attribution {
+	out := make(map[string]domain.Attribution, len(head))
+	for _, issue := range head {
+		out[issue.IssueID] = domain.AttributionUnknown
+	}
+	return out
+}
+
+type attributionPairing struct {
+	head    []domain.Issue
+	base    []domain.Issue
+	taken   []bool
+	matched map[string]int
+}
+
+func (p *attributionPairing) pair(key func(domain.Issue) string, secretOnlyExact bool) {
+	index := map[string][]int{}
+	for i, b := range p.base {
+		if !p.taken[i] {
+			index[key(b)] = append(index[key(b)], i)
+		}
+	}
+	for _, issue := range p.head {
+		if _, done := p.matched[issue.IssueID]; done {
+			continue
+		}
+		if secretOnlyExact && issue.Anchor.Secret {
+			continue
+		}
+		list := index[key(issue)]
+		if len(list) == 0 {
+			continue
+		}
+		pick := preferLiveBase(p.base, list)
+		p.taken[list[pick]] = true
+		p.matched[issue.IssueID] = list[pick]
+		index[key(issue)] = append(list[:pick:pick], list[pick+1:]...)
+	}
+}
+
+func preferLiveBase(base []domain.Issue, list []int) int {
+	// Prefer a live base issue so a resolved twin does not mask debt.
+	pick := 0
+	for n, i := range list {
+		if base[i].State != domain.IssueResolved {
+			pick = n
+			break
+		}
+	}
+	return pick
+}
+
+func (p *attributionPairing) attributionOf(issue domain.Issue) domain.Attribution {
+	i, found := p.matched[issue.IssueID]
+	switch {
+	case found && p.base[i].State == domain.IssueResolved, !found && issue.State == domain.IssueRegressed:
+		return domain.AttributionRegressed
+	case found:
+		return domain.AttributionPreExisting
+	default:
+		return domain.AttributionIntroduced
+	}
 }
 
 func dispositioned(state domain.IssueState) bool {
@@ -272,78 +293,135 @@ func Evaluate(in GateInput) GateOutput {
 	gate := domain.Gate{Profile: profile, Comparison: in.Comparison, Blocking: []string{}}
 	attribution := Attribute(in.Head, in.Base, in.Comparison)
 	var candidates []int
-	gapHits := map[domain.Family]int{}
-	gapReason := map[domain.Family]string{}
+	gaps := gateBaseGapTally{hits: map[domain.Family]int{}, reason: map[domain.Family]string{}}
 	for _, issue := range in.Head {
-		path := issuePath(issue)
 		fact := in.Facts[issue.IssueID]
-		att := attribution[issue.IssueID]
-		if reason, gap := in.BaseGaps[issue.Family]; gap && att == domain.AttributionIntroduced && !strings.HasPrefix(fact.CheckID, "guardrails.") {
-			// Guardrails findings come from the base tree diff, not a base lane scan.
-			att = domain.AttributionUnknown
-			gapHits[issue.Family]++
-			gapReason[issue.Family] = reason
-		}
-		item := domain.AttributedIssue{
-			IssueID: issue.IssueID, CheckID: fact.CheckID, RuleVersion: fact.RuleVersion, Path: path, Title: issue.Title,
-			Severity: issue.EffectiveSeverity, State: issue.State, Attribution: att, ChangedInPR: in.Changed[path],
-		}
-		weight := float64(issue.EffectiveSeverity.Rank())
-		changed := 1.0
-		if item.ChangedInPR {
-			changed = 2
-		}
-		item.RankingScore = weight * changed * pathRole(path)
-		item.RankingReason = fmt.Sprintf("severity %.0f x changed-in-pr %.0f x path-role %.1f", weight, changed, pathRole(path))
-		status := in.Policy.CheckStatus(fact.CheckID, fact.RuleVersion)
-		item.CheckStatus = string(status)
+		att := gaps.attribution(in.BaseGaps, issue, fact, attribution[issue.IssueID])
+		item := gateIssueItem(in, issue, fact, att)
 		if att == domain.AttributionPreExisting {
 			out.Pre++
 		}
-		if (att == domain.AttributionIntroduced || att == domain.AttributionRegressed) && !dispositioned(issue.State) && issue.Claim == "" {
-			switch status {
-			case policy.Active, policy.ActiveProvisional:
-				item.Blocking = true
-			case policy.Shadow:
-				item.WouldBlock = true
-			}
-			if item.Blocking || item.WouldBlock {
-				candidates = append(candidates, len(out.Issues))
-			}
+		if item.Blocking || item.WouldBlock {
+			candidates = append(candidates, len(out.Issues))
 		}
 		out.Issues = append(out.Issues, item)
 	}
 	// Overrides: only a maintainer's request takes effect; verdicts are kept.
-	if len(in.Overrides) > 0 {
-		ok, why := in.Policy.AcceptOverride(in.OverrideActor, in.Codeowners)
-		for _, request := range in.Overrides {
-			result := domain.OverrideResult{CheckID: request.CheckID, Actor: in.OverrideActor, Accepted: ok, Reason: why}
-			if request.All {
-				result.CheckID = "*"
-			}
-			if ok {
-				for _, index := range candidates {
-					item := &out.Issues[index]
-					if !request.All && item.CheckID != request.CheckID {
-						continue
-					}
-					if item.Overridden {
-						continue
-					}
-					item.Overridden, item.Blocking, item.WouldBlock = true, false, false
-					result.IssueIDs = append(result.IssueIDs, item.IssueID)
-					out.Accepted = append(out.Accepted, Acceptance{IssueID: item.IssueID, CheckID: item.CheckID, Actor: in.OverrideActor, Reason: request.Reason, Ref: request.Ref})
-				}
-			}
-			gate.Overrides = append(gate.Overrides, result)
+	gate.Overrides = applyGateOverrides(in, &out, candidates)
+	sortGateIssues(out.Issues)
+	gated := collectGateVerdicts(in, &out, &gate)
+	incomplete, reasons := Incomplete(in.Lanes)
+	gate.Reasons = append(append(gate.Reasons, reasons...), in.Banners...)
+	gate.Reasons = append(gate.Reasons, gaps.reasons()...)
+	if in.Unavailable != nil {
+		gate.Reasons = append(gate.Reasons, "unavailable: "+in.Unavailable.Error())
+	}
+	gate.ExitCode = ExitCode(in.Unavailable != nil, incomplete, gated)
+	gate.Status = StatusOf(gate.ExitCode)
+	out.Gate = gate
+	return out
+}
+
+type gateBaseGapTally struct {
+	hits   map[domain.Family]int
+	reason map[domain.Family]string
+}
+
+func (t gateBaseGapTally) attribution(gaps BaseGaps, issue domain.Issue, fact CheckFact, att domain.Attribution) domain.Attribution {
+	if reason, gap := gaps[issue.Family]; gap && att == domain.AttributionIntroduced && !strings.HasPrefix(fact.CheckID, "guardrails.") {
+		// Guardrails findings come from the base tree diff, not a base lane scan.
+		att = domain.AttributionUnknown
+		t.hits[issue.Family]++
+		t.reason[issue.Family] = reason
+	}
+	return att
+}
+
+func (t gateBaseGapTally) reasons() []string {
+	families := make([]string, 0, len(t.hits))
+	for family := range t.hits {
+		families = append(families, string(family))
+	}
+	sort.Strings(families)
+	var reasons []string
+	for _, family := range families {
+		reasons = append(reasons, fmt.Sprintf("%s; %d %s finding(s) not in base are attributed unknown, not introduced", t.reason[domain.Family(family)], t.hits[domain.Family(family)], family))
+	}
+	return reasons
+}
+
+func gateIssueItem(in GateInput, issue domain.Issue, fact CheckFact, att domain.Attribution) domain.AttributedIssue {
+	path := issuePath(issue)
+	item := domain.AttributedIssue{
+		IssueID: issue.IssueID, CheckID: fact.CheckID, RuleVersion: fact.RuleVersion, Path: path, Title: issue.Title,
+		Severity: issue.EffectiveSeverity, State: issue.State, Attribution: att, ChangedInPR: in.Changed[path],
+	}
+	weight := float64(issue.EffectiveSeverity.Rank())
+	changed := 1.0
+	if item.ChangedInPR {
+		changed = 2
+	}
+	item.RankingScore = weight * changed * pathRole(path)
+	item.RankingReason = fmt.Sprintf("severity %.0f x changed-in-pr %.0f x path-role %.1f", weight, changed, pathRole(path))
+	status := in.Policy.CheckStatus(fact.CheckID, fact.RuleVersion)
+	item.CheckStatus = string(status)
+	if (att == domain.AttributionIntroduced || att == domain.AttributionRegressed) && !dispositioned(issue.State) && issue.Claim == "" {
+		switch status {
+		case policy.Active, policy.ActiveProvisional:
+			item.Blocking = true
+		case policy.Shadow:
+			item.WouldBlock = true
 		}
 	}
-	sort.SliceStable(out.Issues, func(i, j int) bool {
-		if out.Issues[i].RankingScore != out.Issues[j].RankingScore {
-			return out.Issues[i].RankingScore > out.Issues[j].RankingScore
+	return item
+}
+
+func applyGateOverrides(in GateInput, out *GateOutput, candidates []int) []domain.OverrideResult {
+	if len(in.Overrides) == 0 {
+		return nil
+	}
+	var results []domain.OverrideResult
+	ok, why := in.Policy.AcceptOverride(in.OverrideActor, in.Codeowners)
+	for _, request := range in.Overrides {
+		result := domain.OverrideResult{CheckID: request.CheckID, Actor: in.OverrideActor, Accepted: ok, Reason: why}
+		if request.All {
+			result.CheckID = "*"
 		}
-		return out.Issues[i].IssueID < out.Issues[j].IssueID
+		if ok {
+			result.IssueIDs = applyGateOverride(in.OverrideActor, request, out, candidates)
+		}
+		results = append(results, result)
+	}
+	return results
+}
+
+func applyGateOverride(actor string, request OverrideRequest, out *GateOutput, candidates []int) []string {
+	var issueIDs []string
+	for _, index := range candidates {
+		item := &out.Issues[index]
+		if !request.All && item.CheckID != request.CheckID {
+			continue
+		}
+		if item.Overridden {
+			continue
+		}
+		item.Overridden, item.Blocking, item.WouldBlock = true, false, false
+		issueIDs = append(issueIDs, item.IssueID)
+		out.Accepted = append(out.Accepted, Acceptance{IssueID: item.IssueID, CheckID: item.CheckID, Actor: actor, Reason: request.Reason, Ref: request.Ref})
+	}
+	return issueIDs
+}
+
+func sortGateIssues(issues []domain.AttributedIssue) {
+	sort.SliceStable(issues, func(i, j int) bool {
+		if issues[i].RankingScore != issues[j].RankingScore {
+			return issues[i].RankingScore > issues[j].RankingScore
+		}
+		return issues[i].IssueID < issues[j].IssueID
 	})
+}
+
+func collectGateVerdicts(in GateInput, out *GateOutput, gate *domain.Gate) bool {
 	gated := false
 	for _, item := range out.Issues {
 		if item.Blocking {
@@ -354,27 +432,11 @@ func Evaluate(in GateInput) GateOutput {
 			out.WouldBlock = append(out.WouldBlock, domain.WouldBlock{
 				ID: domain.ShadowEventID(in.BaseRevision, in.HeadRevision, item.CheckID, item.IssueID, item.RuleVersion), HeadRevision: in.HeadRevision, BaseRevision: in.BaseRevision,
 				IssueID: item.IssueID, CheckID: item.CheckID, RuleVersion: item.RuleVersion, Path: item.Path, Attribution: item.Attribution,
-				Profile: profile, Triage: domain.TriageUndecided,
+				Profile: gate.Profile, Triage: domain.TriageUndecided,
 			})
 		}
 	}
-	incomplete, reasons := Incomplete(in.Lanes)
-	gate.Reasons = append(append(gate.Reasons, reasons...), in.Banners...)
-	families := make([]string, 0, len(gapHits))
-	for family := range gapHits {
-		families = append(families, string(family))
-	}
-	sort.Strings(families)
-	for _, family := range families {
-		gate.Reasons = append(gate.Reasons, fmt.Sprintf("%s; %d %s finding(s) not in base are attributed unknown, not introduced", gapReason[domain.Family(family)], gapHits[domain.Family(family)], family))
-	}
-	if in.Unavailable != nil {
-		gate.Reasons = append(gate.Reasons, "unavailable: "+in.Unavailable.Error())
-	}
-	gate.ExitCode = ExitCode(in.Unavailable != nil, incomplete, gated)
-	gate.Status = StatusOf(gate.ExitCode)
-	out.Gate = gate
-	return out
+	return gated
 }
 
 // Ranking is the ranking of introduced and regressed findings and its
@@ -418,30 +480,68 @@ const (
 	summaryPendingLimit    = 8
 )
 
+type SummaryInput struct {
+	Gate        domain.Gate
+	Ranking     Ranking
+	Issues      []domain.AttributedIssue
+	WouldBlock  []domain.WouldBlock
+	PreExisting int
+	Health      []domain.LaneHealth
+	Pending     []areas.Area
+	Guard       association.GuardState
+}
+
 // Summary renders the Markdown PR summary, never longer than 60 lines.
-func Summary(gate domain.Gate, ranking Ranking, issues []domain.AttributedIssue, wouldBlock []domain.WouldBlock, pre int, health []domain.LaneHealth, pending []areas.Area, guard association.GuardState) string {
-	var lines []string
-	add := func(format string, args ...any) { lines = append(lines, fmt.Sprintf(format, args...)) }
-	add("## Scout — %s (exit %d)", gate.Status, gate.ExitCode)
-	add("")
-	add("Profile `%s`; comparison `%s`; ranking: %s.", gate.Profile, gate.Comparison, ranking.Method)
+func Summary(in SummaryInput) string {
+	gate, ranking, issues, wouldBlock, pre, health, pending, guard := in.Gate, in.Ranking, in.Issues, in.WouldBlock, in.PreExisting, in.Health, in.Pending, in.Guard
+	w := &summaryWriter{}
+	w.add("## Scout — %s (exit %d)", gate.Status, gate.ExitCode)
+	w.add("")
+	w.add("Profile `%s`; comparison `%s`; ranking: %s.", gate.Profile, gate.Comparison, ranking.Method)
 	if guard.CatalogueStale {
-		add("> catalogue-stale: %s", oneLine(guard.Recommendation))
+		w.add("> catalogue-stale: %s", oneLine(guard.Recommendation))
 	}
-	if len(pending) > 0 {
-		add("")
-		add("### Pending areas")
-		for index, area := range pending {
-			if index == summaryPendingLimit {
-				add("- … %d more", len(pending)-index)
-				break
-			}
-			add("- `%s`: %s", area.ScoutAreaID, strings.Join(area.FileSet, ", "))
-		}
-	}
+	w.pendingAreas(pending)
 	for _, reason := range gate.Reasons {
-		add("> %s", oneLine(reason))
+		w.add("> %s", oneLine(reason))
 	}
+	unknown := w.changedIssues(issues)
+	w.wouldBlock(wouldBlock, gate.Overrides)
+	w.add("")
+	w.add("Pre-existing: %d. Unknown attribution: %d.", pre, unknown)
+	w.add("")
+	w.laneHealth(health)
+	lines := w.lines
+	if len(lines) > summaryLimit {
+		lines = append(lines[:summaryLimit-1], "… summary truncated; see scout-assessment.json")
+	}
+	return strings.Join(lines, "\n") + "\n"
+}
+
+type summaryWriter struct {
+	lines []string
+}
+
+func (w *summaryWriter) add(format string, args ...any) {
+	w.lines = append(w.lines, fmt.Sprintf(format, args...))
+}
+
+func (w *summaryWriter) pendingAreas(pending []areas.Area) {
+	if len(pending) == 0 {
+		return
+	}
+	w.add("")
+	w.add("### Pending areas")
+	for index, area := range pending {
+		if index == summaryPendingLimit {
+			w.add("- … %d more", len(pending)-index)
+			break
+		}
+		w.add("- `%s`: %s", area.ScoutAreaID, strings.Join(area.FileSet, ", "))
+	}
+}
+
+func summaryPartition(issues []domain.AttributedIssue) ([]domain.AttributedIssue, int) {
 	var changed []domain.AttributedIssue
 	unknown := 0
 	for _, item := range issues {
@@ -452,76 +552,88 @@ func Summary(gate domain.Gate, ranking Ranking, issues []domain.AttributedIssue,
 			unknown++
 		}
 	}
-	add("")
-	add("### Introduced / regressed (%d)", len(changed))
+	return changed, unknown
+}
+
+func (w *summaryWriter) changedIssues(issues []domain.AttributedIssue) int {
+	changed, unknown := summaryPartition(issues)
+	w.add("")
+	w.add("### Introduced / regressed (%d)", len(changed))
 	if len(changed) == 0 {
-		add("None.")
+		w.add("None.")
 	}
 	for index, item := range changed {
 		if index == summaryIssueLimit {
-			add("- … %d more (see scout-assessment.json)", len(changed)-index)
+			w.add("- … %d more (see scout-assessment.json)", len(changed)-index)
 			break
 		}
-		flag := ""
-		switch {
-		case item.Blocking:
-			flag = " **blocks**"
-		case item.Overridden:
-			flag = " overridden"
-		case item.WouldBlock:
-			flag = " would block"
-		case item.Claim != "":
-			flag = " (" + string(item.Claim) + ", report-only)"
-		}
-		add("- `%s` %s `%s` %s [%s]%s", item.CheckID, item.Attribution, item.Path, oneLine(item.Title), item.Severity, flag)
+		w.add("- `%s` %s `%s` %s [%s]%s", item.CheckID, item.Attribution, item.Path, oneLine(item.Title), item.Severity, summaryIssueFlag(item))
 	}
-	add("")
-	add("### Would block if activated (%d)", len(wouldBlock))
+	return unknown
+}
+
+func summaryIssueFlag(item domain.AttributedIssue) string {
+	switch {
+	case item.Blocking:
+		return " **blocks**"
+	case item.Overridden:
+		return " overridden"
+	case item.WouldBlock:
+		return " would block"
+	case item.Claim != "":
+		return " (" + string(item.Claim) + ", report-only)"
+	}
+	return ""
+}
+
+func (w *summaryWriter) wouldBlock(wouldBlock []domain.WouldBlock, overrides []domain.OverrideResult) {
+	w.add("")
+	w.add("### Would block if activated (%d)", len(wouldBlock))
 	if len(wouldBlock) == 0 {
-		add("None.")
+		w.add("None.")
 	}
 	for index, row := range wouldBlock {
 		if index == summaryWouldBlockLimit {
-			add("- … %d more", len(wouldBlock)-index)
+			w.add("- … %d more", len(wouldBlock)-index)
 			break
 		}
-		add("- `%s` in `%s` (triage: %s)", row.CheckID, row.Path, row.Triage)
+		w.add("- `%s` in `%s` (triage: %s)", row.CheckID, row.Path, row.Triage)
 	}
-	for _, override := range gate.Overrides {
+	for _, override := range overrides {
 		verdict := "rejected"
 		if override.Accepted {
 			verdict = "accepted"
 		}
-		add("- override `%s` by `%s`: %s (%s)", override.CheckID, override.Actor, verdict, oneLine(override.Reason))
+		w.add("- override `%s` by `%s`: %s (%s)", override.CheckID, override.Actor, verdict, oneLine(override.Reason))
 	}
-	add("")
-	add("Pre-existing: %d. Unknown attribution: %d.", pre, unknown)
-	add("")
-	add("### Lane health")
-	add("| lane | mode | required | status |")
-	add("|---|---|---|---|")
+}
+
+func (w *summaryWriter) laneHealth(health []domain.LaneHealth) {
+	w.add("### Lane health")
+	w.add("| lane | mode | required | status |")
+	w.add("|---|---|---|---|")
 	for _, h := range health {
 		if h.Lane == LaneAssociation {
-			status := string(h.Status)
-			switch h.Status {
-			case domain.LaneRan:
-				status = fmt.Sprintf("ran (%d)", h.Units)
-			case domain.LaneSkipped:
-				status = "skipped (" + oneLine(h.Reason) + ")"
-			}
-			add("| %s | %s | %t | %s |", h.Lane, h.Mode, h.Required, status)
+			w.associationLaneRow(h)
 			continue
 		}
 		reason := ""
 		if h.Reason != "" {
 			reason = " — " + oneLine(h.Reason)
 		}
-		add("| %s | %s | %t | %s%s |", h.Lane, h.Mode, h.Required, h.Status, reason)
+		w.add("| %s | %s | %t | %s%s |", h.Lane, h.Mode, h.Required, h.Status, reason)
 	}
-	if len(lines) > summaryLimit {
-		lines = append(lines[:summaryLimit-1], "… summary truncated; see scout-assessment.json")
+}
+
+func (w *summaryWriter) associationLaneRow(h domain.LaneHealth) {
+	status := string(h.Status)
+	switch h.Status {
+	case domain.LaneRan:
+		status = fmt.Sprintf("ran (%d)", h.Units)
+	case domain.LaneSkipped:
+		status = "skipped (" + oneLine(h.Reason) + ")"
 	}
-	return strings.Join(lines, "\n") + "\n"
+	w.add("| %s | %s | %t | %s |", h.Lane, h.Mode, h.Required, status)
 }
 
 func oneLine(value string) string {

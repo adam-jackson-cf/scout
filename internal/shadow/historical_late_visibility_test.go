@@ -3,10 +3,11 @@ package shadow
 import (
 	"bytes"
 	"fmt"
-	"scout/internal/domain"
 	"strings"
 	"testing"
 	"time"
+
+	"scout/internal/domain"
 )
 
 // Each proof owns its fixtures so it can be overlaid and compiled alone.

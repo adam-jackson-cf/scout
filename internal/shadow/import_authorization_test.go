@@ -2,8 +2,9 @@ package shadow
 
 import (
 	"encoding/json"
-	"scout/internal/domain"
 	"testing"
+
+	"scout/internal/domain"
 )
 
 // Shadow half of P05: pending/cross-lineage imports cannot adopt authority.

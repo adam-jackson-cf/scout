@@ -178,7 +178,7 @@ func TestJSONParityWithProduct(t *testing.T) {
 				t.Fatalf("merge %d change %d differs: got %+v, product %+v", i, j, actual, c)
 			}
 		}
-		results, err := association.Run(context.Background(), association.Repo{Dir: req.Repo}, m.Parent, m.SHA, expectedOwnership{paths: req.Heuristic[m.SHA]}, nil)
+		results, err := association.Run(context.Background(), association.RunInput{Repo: association.Repo{Dir: req.Repo}, Base: m.Parent, Head: m.SHA, Own: expectedOwnership{paths: req.Heuristic[m.SHA]}})
 		if err != nil || len(results) != 1 {
 			t.Fatalf("product Run: results %d, error %v", len(results), err)
 		}

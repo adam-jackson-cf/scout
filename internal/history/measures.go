@@ -36,14 +36,6 @@ type Scope struct {
 	Contains func(path string) bool
 }
 
-// PrefixScope is a directory scope; an empty prefix contains every path.
-func PrefixScope(kind, anchor, prefix string) Scope {
-	p := strings.TrimSuffix(prefix, "/")
-	return Scope{Kind: kind, Anchor: anchor, Contains: func(path string) bool {
-		return p == "" || path == p || strings.HasPrefix(path, p+"/")
-	}}
-}
-
 // FileSetScope is a scope over an explicit file set.
 func FileSetScope(kind, anchor string, files []string) Scope {
 	set := make(map[string]bool, len(files))
@@ -282,7 +274,6 @@ type scopeWindow struct {
 	o     Options
 	end   time.Time
 	items []swItem
-	allIn []change // every repo-wide change in window (for amplification scope counts)
 }
 
 type swItem struct {
@@ -388,14 +379,30 @@ func (s *scopeWindow) amplification() domain.Signal {
 	return withDetail(sig, map[string]any{"p50_files": percentile(files, 50), "p50_scopes": percentile(scopes, 50)})
 }
 
-func (s *scopeWindow) followUp(all []change) domain.Signal {
-	sig := s.base("scout.follow_up_rate@1")
+func changeTimesByFile(all []change) map[string][]time.Time {
 	perFile := map[string][]time.Time{}
 	for _, c := range all {
 		for _, f := range c.files {
 			perFile[f.Path] = append(perFile[f.Path], c.t)
 		}
 	}
+	return perFile
+}
+
+func followedWithin(it swItem, perFile map[string][]time.Time, horizon time.Duration) bool {
+	for _, f := range it.inScope {
+		for _, t := range perFile[f.Path] {
+			if t.After(it.c.t) && !t.After(it.c.t.Add(horizon)) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (s *scopeWindow) followUp(all []change) domain.Signal {
+	sig := s.base("scout.follow_up_rate@1")
+	perFile := changeTimesByFile(all)
 	horizon := time.Duration(FollowUpDays) * 24 * time.Hour
 	num, den := 0, 0
 	for _, it := range s.items {
@@ -403,17 +410,7 @@ func (s *scopeWindow) followUp(all []change) domain.Signal {
 			continue // incomplete 7-day observation
 		}
 		den++
-		followed := false
-	outer:
-		for _, f := range it.inScope {
-			for _, t := range perFile[f.Path] {
-				if t.After(it.c.t) && !t.After(it.c.t.Add(horizon)) {
-					followed = true
-					break outer
-				}
-			}
-		}
-		if followed {
+		if followedWithin(it, perFile, horizon) {
 			num++
 		}
 	}
@@ -458,27 +455,37 @@ func (s *scopeWindow) hotspot() domain.Signal {
 	if s.o.Files == nil {
 		return markMissing(sig, "unmeasured", "no per-file complexity supplied")
 	}
+	nloc := s.scopeNLOC()
+	if nloc == 0 {
+		return markMissing(sig, "unmeasured", "scope has no measured NLOC")
+	}
+	paths, cc, missing := s.touchWeightedCC()
+	sig = setValue(sig, cc/float64(nloc), cc, float64(nloc))
+	return withDetail(sig, map[string]any{"touched_files": len(paths), "touched_files_without_cc": missing})
+}
+
+func (s *scopeWindow) scopeNLOC() int {
+	nloc := 0
+	for p, m := range s.o.Files {
+		if s.sc.Contains(p) && s.o.eligible(p) {
+			nloc += m.NLOC
+		}
+	}
+	return nloc
+}
+
+func (s *scopeWindow) touchWeightedCC() (paths []string, cc float64, missing int) {
 	touches := map[string]int{}
 	for _, it := range s.items {
 		for _, f := range it.inScope {
 			touches[f.Path]++
 		}
 	}
-	nloc, cc := 0, 0.0
-	for p, m := range s.o.Files {
-		if s.sc.Contains(p) && s.o.eligible(p) {
-			nloc += m.NLOC
-		}
-	}
-	if nloc == 0 {
-		return markMissing(sig, "unmeasured", "scope has no measured NLOC")
-	}
-	paths := make([]string, 0, len(touches))
+	paths = make([]string, 0, len(touches))
 	for p := range touches {
 		paths = append(paths, p)
 	}
 	sort.Strings(paths)
-	missing := 0
 	for _, p := range paths {
 		m, ok := s.o.Files[p]
 		if !ok {
@@ -487,8 +494,7 @@ func (s *scopeWindow) hotspot() domain.Signal {
 		}
 		cc += m.CC * math.Log1p(float64(touches[p]))
 	}
-	sig = setValue(sig, cc/float64(nloc), cc, float64(nloc))
-	return withDetail(sig, map[string]any{"touched_files": len(paths), "touched_files_without_cc": missing})
+	return paths, cc, missing
 }
 
 // dispersion: git part is p90/p50 of churn; the PR part rides in prSignals'

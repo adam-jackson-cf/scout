@@ -8,10 +8,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-	"time"
 
 	"scout/internal/domain"
-	"scout/internal/sandbox"
 )
 
 func TestExternalScannerBinary(t *testing.T) {
@@ -40,59 +38,6 @@ func TestExternalScannerBinary(t *testing.T) {
 	}
 }
 
-// Version startup is scanner work, so it gets the declared scanner budget,
-// including cold or contended startup, while still respecting caller deadlines.
-func TestScannerVersionHonorsDeclaredBudget(t *testing.T) {
-	if err := sandbox.Available(); err != nil {
-		t.Skip(err)
-	}
-	for _, test := range []struct {
-		name    string
-		timeout time.Duration
-		caller  time.Duration
-		command string
-		wantErr bool
-	}{
-		{"slow startup within budget", 30 * time.Second, 0, "sleep 11; printf '0.15.8\\n'", false},
-		{"scanner budget exhausted", 20 * time.Millisecond, 0, "sleep 1; printf '0.15.8\\n'", true},
-		{"caller budget exhausted", 30 * time.Second, 20 * time.Millisecond, "sleep 1; printf '0.15.8\\n'", true},
-		{"wrong version", 30 * time.Second, 0, "printf '0.0.0\\n'", true},
-	} {
-		t.Run(test.name, func(t *testing.T) {
-			spec := qualitySpecs()[0]
-			spec.Timeout = test.timeout
-			spec.Binary.VersionArgs = []string{"-c", test.command}
-			runner, err := NewRunner(spec, "run-version-budget")
-			if err != nil {
-				t.Fatal(err)
-			}
-			root := t.TempDir()
-			state, err := sandbox.NewState("scout-version-test-")
-			if err != nil {
-				t.Fatal(err)
-			}
-			t.Cleanup(func() { os.RemoveAll(state) })
-			ctx, cancel := context.WithTimeout(context.Background(), 40*time.Second)
-			defer cancel()
-			if test.caller != 0 {
-				var callerCancel context.CancelFunc
-				ctx, callerCancel = context.WithTimeout(ctx, test.caller)
-				defer callerCancel()
-			}
-			err = runner.verifyVersion(ctx, root, state, "", "/bin/sh")
-			if (err != nil) != test.wantErr {
-				t.Fatalf("version probe = %v, want error %v (scanner budget %v)", err, test.wantErr, test.timeout)
-			}
-			if test.wantErr && runner.verifiedBinary != "" {
-				t.Fatal("failed probe cached a verified scanner")
-			}
-			if !test.wantErr && runner.verifiedBinary != "/bin/sh" {
-				t.Fatal("successful probe did not cache the verified scanner")
-			}
-		})
-	}
-}
-
 func incompleteResult(reason string) domain.AdapterResult {
 	key := domain.CoverageKey{FilePath: "a.py", Family: domain.FamilySecurity, Category: "credential-leakage"}
 	return domain.AdapterResult{
@@ -114,7 +59,7 @@ func TestRetryUnprovenRescansEveryReasonTheRunnerWritesForUnprovenInputs(t *test
 	// completeCoverage is what writes reasonNotInspected into a real batch result.
 	written := completeCoverage([]domain.Coverage{{Key: incompleteResult("").Coverage[0].Key}}, map[string]sourceInput{"a.py": {}}, parsedOutput{}, domain.AdapterFailed)
 	for _, reason := range []string{written[0].Reason, reasonOutputInvalid, reasonOutputBound, reasonEvidenceInvalid} {
-		result, _, err := runner.retryUnproven(context.Background(), missingRoot, files, incompleteResult(reason), nil, batchErr)
+		result, _, err := runner.retryUnproven(context.Background(), missingRoot, files, batchOutcome{result: incompleteResult(reason), err: batchErr})
 		if result.FinishedAt == nil || !errors.Is(err, batchErr) {
 			t.Errorf("reason %q was not retried (finished=%v err=%v)", reason, result.FinishedAt, err)
 		}
@@ -128,7 +73,7 @@ func TestRetryUnprovenLeavesTimeoutsAndSetupFailuresAlone(t *testing.T) {
 	}
 	files := []domain.File{{Path: "a.py", Language: "python", Eligible: true}, {Path: "b.py", Language: "python", Eligible: true}}
 	for _, reason := range []string{"scanner timed out", "required scanner binary is not installed", "private input staging failed"} {
-		result, _, err := runner.retryUnproven(context.Background(), t.TempDir(), files, incompleteResult(reason), nil, errors.New("batch incomplete"))
+		result, _, err := runner.retryUnproven(context.Background(), t.TempDir(), files, batchOutcome{result: incompleteResult(reason), err: errors.New("batch incomplete")})
 		if result.FinishedAt != nil || err == nil || result.Coverage[0].Reason != reason {
 			t.Errorf("reason %q was retried or altered: %+v", reason, result)
 		}

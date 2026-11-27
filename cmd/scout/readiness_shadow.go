@@ -29,8 +29,7 @@ func registerShadowFlags(set *flag.FlagSet) *shadowFlags {
 	return flags
 }
 
-func readinessShadow(ctx context.Context, flags *commonFlags, opts *shadowFlags, set *flag.FlagSet) int {
-	query := shadow.Query{CheckID: opts.check, RuleVersion: opts.version, EncodingVersion: opts.encoding, Now: time.Now().UTC()}
+func shadowFlagError(set *flag.FlagSet) error {
 	var inputErr error
 	set.Visit(func(f *flag.Flag) {
 		switch f.Name {
@@ -43,26 +42,74 @@ func readinessShadow(ctx context.Context, flags *commonFlags, opts *shadowFlags,
 			inputErr = fmt.Errorf("--%s cannot be combined with --shadow", f.Name)
 		}
 	})
-	if inputErr != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, inputErr)
-	}
+	return inputErr
+}
+
+func shadowQuery(opts *shadowFlags) (shadow.Query, string, error) {
+	query := shadow.Query{CheckID: opts.check, RuleVersion: opts.version, EncodingVersion: opts.encoding, Now: time.Now().UTC()}
 	if opts.check == "" {
-		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("--shadow requires --check"))
+		return query, "", errors.New("--shadow requires --check")
 	}
 	if err := policy.ValidateEligibleID(opts.check); err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
+		return query, "", err
 	}
 	if opts.encoding != shadow.EncodingVersion {
-		return emit(flags, "unavailable", exitUnavailable, nil, fmt.Errorf("unsupported shadow encoding %q", opts.encoding))
+		return query, "", fmt.Errorf("unsupported shadow encoding %q", opts.encoding)
 	}
 	mode := "current_window"
 	if opts.asOf != "" {
 		cutoff, err := time.Parse(time.RFC3339Nano, opts.asOf)
 		if err != nil {
-			return emit(flags, "unavailable", exitUnavailable, nil, fmt.Errorf("invalid --as-of: %w", err))
+			return query, "", fmt.Errorf("invalid --as-of: %w", err)
 		}
 		query.AsOf = &cutoff
 		mode = "historical_reproduction"
+	}
+	return query, mode, nil
+}
+
+type shadowResult struct {
+	QueryMode     string              `json:"queryMode"`
+	Dossier       json.RawMessage     `json:"dossier"`
+	DossierDigest string              `json:"dossierDigest"`
+	Live          shadow.LiveEnvelope `json:"live"`
+}
+
+func evaluateShadow(ledger domain.ShadowLedger, query shadow.Query, mode string) (shadowResult, int, error) {
+	var err error
+	query.RepositoryID, err = shadowRepository(ledger)
+	if err != nil {
+		return shadowResult{}, exitUnavailable, err
+	}
+	report, err := shadow.Evaluate(ledger, query)
+	if err != nil {
+		return shadowResult{}, exitUnavailable, err
+	}
+	dossier, digest, err := shadow.CanonicalDossier(report.Dossier)
+	if err != nil {
+		return shadowResult{}, exitUnavailable, err
+	}
+	return shadowResult{mode, dossier, digest, report.Live}, report.ExitCode, nil
+}
+
+func shadowStatus(code int) string {
+	switch code {
+	case exitPartial:
+		return "unmeasured"
+	case exitUnavailable:
+		return "unavailable"
+	default:
+		return "complete"
+	}
+}
+
+func readinessShadow(ctx context.Context, flags *commonFlags, opts *shadowFlags, set *flag.FlagSet) int {
+	if inputErr := shadowFlagError(set); inputErr != nil {
+		return emit(flags, "unavailable", exitUnavailable, nil, inputErr)
+	}
+	query, mode, err := shadowQuery(opts)
+	if err != nil {
+		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
 	store, err := state.OpenExistingReadOnly(flags.root)
 	if errors.Is(err, state.ErrNotFound) {
@@ -76,61 +123,39 @@ func readinessShadow(ctx context.Context, flags *commonFlags, opts *shadowFlags,
 	if err := errors.Join(readErr, closeErr); err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	query.RepositoryID, err = shadowRepository(ledger)
+	result, code, err := evaluateShadow(ledger, query, mode)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	report, err := shadow.Evaluate(ledger, query)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	dossier, digest, err := shadow.CanonicalDossier(report.Dossier)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	result := struct {
-		QueryMode     string              `json:"queryMode"`
-		Dossier       json.RawMessage     `json:"dossier"`
-		DossierDigest string              `json:"dossierDigest"`
-		Live          shadow.LiveEnvelope `json:"live"`
-	}{mode, dossier, digest, report.Live}
-	status := "complete"
-	if report.ExitCode == exitPartial {
-		status = "unmeasured"
-	} else if report.ExitCode == exitUnavailable {
-		status = "unavailable"
-	}
-	return emit(flags, status, report.ExitCode, result, nil)
+	return emit(flags, shadowStatus(code), code, result, nil)
 }
 
 // The persisted provider identity, not a working-tree remote or network lookup,
 // selects the repository. Never silently combine independent repositories.
 func shadowRepository(ledger domain.ShadowLedger) (string, error) {
-	var repository string
-	accept := func(id string) error {
-		if repository != "" && id != "" && id != repository {
-			return errors.New("shadow store contains multiple repository identities")
-		}
-		if id != "" {
-			repository = id
-		}
-		return nil
-	}
+	var ids []string
 	for _, publication := range ledger.Publications {
-		if err := accept(publication.RepositoryID); err != nil {
-			return "", err
-		}
+		ids = append(ids, publication.RepositoryID)
 	}
 	for _, frontier := range ledger.Frontiers {
-		if err := accept(frontier.RepositoryID); err != nil {
-			return "", err
-		}
+		ids = append(ids, frontier.RepositoryID)
 	}
 	for _, fact := range ledger.Facts {
 		if fact.Scope == domain.ShadowScopeCI {
-			if err := accept(fact.ID.RepositoryID); err != nil {
-				return "", err
-			}
+			ids = append(ids, fact.ID.RepositoryID)
+		}
+	}
+	return singleRepository(ids)
+}
+
+func singleRepository(ids []string) (string, error) {
+	var repository string
+	for _, id := range ids {
+		if repository != "" && id != "" && id != repository {
+			return "", errors.New("shadow store contains multiple repository identities")
+		}
+		if id != "" {
+			repository = id
 		}
 	}
 	return repository, nil

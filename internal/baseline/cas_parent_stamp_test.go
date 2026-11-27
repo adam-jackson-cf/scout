@@ -1,14 +1,16 @@
+//go:build boundary
+
 package baseline
 
 import (
-	"encoding/json"
 	"os/exec"
 	"reflect"
-	"scout/internal/domain"
-	"scout/internal/state"
 	"strings"
 	"testing"
 	"time"
+
+	"scout/internal/domain"
+	"scout/internal/state"
 )
 
 func p11Git(t *testing.T, dir string, args ...string) string {
@@ -46,12 +48,6 @@ func p11Tree(t *testing.T, l domain.ShadowLedger) Tree {
 	files[state.ExportCoverageSummary] = []byte("{}\n")
 	files[state.ExportManifest] = state.RenderManifest(state.ManifestMeta{RepositoryID: "repo", WouldBlock: state.WouldBlockPresent}, files)
 	return Tree(files)
-}
-func p11Decode(t *testing.T, raw string, dst any) {
-	t.Helper()
-	if err := json.Unmarshal([]byte(raw), dst); err != nil {
-		t.Fatal(err)
-	}
 }
 func p11Ledger() domain.ShadowLedger {
 	at := time.Date(2026, 11, 1, 10, 0, 0, 0, time.UTC)

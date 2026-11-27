@@ -82,19 +82,8 @@ func (r *Refresher) Run(ctx context.Context, run RefreshRun) (RefreshOutcome, er
 
 func (r *Refresher) refresh(ctx context.Context, record state.MappingRefresh) (RefreshOutcome, error) {
 	mapped, err := r.Mapper.Map(ctx, true, clawpatch.MapSourceAgent)
-	out := RefreshOutcome{Status: RefreshIncomplete, Reason: mapped.Reason, Map: &mapped, ExplorationIncomplete: mapped.ExplorationIncomplete}
-	switch {
-	case mapped.Status == clawpatch.MapSkipped:
-		out.Status = RefreshSkipped
-		return out, nil
-	case err != nil || mapped.Status == clawpatch.MapBlocked:
-		out.Status = RefreshBlocked
-		if err != nil {
-			out.Reason = err.Error()
-		}
-		return out, nil
-	case mapped.ExplorationIncomplete || mapped.Source != clawpatch.MapSourceAgent || len(mapped.Features) == 0:
-		out.ExplorationIncomplete = true
+	out, settled := unreconciledRefresh(mapped, err)
+	if settled {
 		return out, nil
 	}
 	if r.Reconcile != nil {
@@ -109,4 +98,23 @@ func (r *Refresher) refresh(ctx context.Context, record state.MappingRefresh) (R
 	}
 	out.Status, out.Reason = RefreshDone, ""
 	return out, nil
+}
+
+func unreconciledRefresh(mapped clawpatch.MapResult, err error) (RefreshOutcome, bool) {
+	out := RefreshOutcome{Status: RefreshIncomplete, Reason: mapped.Reason, Map: &mapped, ExplorationIncomplete: mapped.ExplorationIncomplete}
+	switch {
+	case mapped.Status == clawpatch.MapSkipped:
+		out.Status = RefreshSkipped
+		return out, true
+	case err != nil || mapped.Status == clawpatch.MapBlocked:
+		out.Status = RefreshBlocked
+		if err != nil {
+			out.Reason = err.Error()
+		}
+		return out, true
+	case mapped.ExplorationIncomplete || mapped.Source != clawpatch.MapSourceAgent || len(mapped.Features) == 0:
+		out.ExplorationIncomplete = true
+		return out, true
+	}
+	return out, false
 }

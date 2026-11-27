@@ -16,7 +16,7 @@ func mappingAreas(ctx context.Context, flags *commonFlags) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	defer store.Close()
+	defer closeStore(store)
 	list, err := store.ListAreas(ctx)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)

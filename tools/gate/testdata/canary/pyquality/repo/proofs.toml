@@ -1,0 +1,22 @@
+schema = 1
+
+[scope]
+mode = "whole"
+
+[python_quality]
+maintained_roots = ["src", "bin", "tests"]
+script_roots = ["bin"]
+script_names = ["run-report.py"]
+test_roots = ["tests"]
+test_groups = ["unit"]
+generic_name_allowlist = []
+class_max_lines = 700
+class_max_init_args = 8
+class_max_instance_attributes = 12
+subprocess_wrappers = { "src/runner.py" = ["run_tool"] }
+dynamic_import_adapters = ["src/loader.py"]
+contract_files = ["src/contract.py", "src/contract_any.py", "src/contract_callable.py"]
+max_loop_depth = 2
+fanout_max = 10
+large_module_nloc = 800
+large_module_fanout_max = 3

@@ -16,11 +16,19 @@ type TB interface {
 	Fatalf(format string, args ...any)
 }
 
+type Seed struct {
+	Plan         domain.Plan
+	Run          domain.Run
+	Observations []domain.Observation
+	Files        []domain.File
+}
+
 // SeedRun persists plan and run the way an assessment does: one planned job
 // carries every observation and failure, the run's coverage is written when it
 // begins, and the run is then finished with files as its inventory. A run
 // without a finish time is finished now.
-func SeedRun(tb TB, ctx context.Context, store *state.Store, plan domain.Plan, run domain.Run, observations []domain.Observation, files []domain.File) {
+func SeedRun(tb TB, ctx context.Context, store *state.Store, seed Seed) {
+	plan, run, observations, files := seed.Plan, seed.Run, seed.Observations, seed.Files
 	tb.Helper()
 	job := domain.Job{JobID: "seed", Stage: domain.StageFileAnalysis, InputFingerprint: "seed", State: domain.JobCompleted}
 	plan.Jobs = append(append([]domain.Job(nil), plan.Jobs...), job)

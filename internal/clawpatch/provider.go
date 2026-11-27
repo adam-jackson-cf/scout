@@ -43,7 +43,7 @@ func (c *Client) resolveProvider() (string, error) {
 	case "":
 		return "", errors.New("no Clawpatch provider configured: set model_cli.provider to codex or claude")
 	default:
-		return "", fmt.Errorf("Clawpatch provider %q is not allowed: only codex and claude are supported", configured)
+		return "", fmt.Errorf("clawpatch provider %q is not allowed: only codex and claude are supported", configured)
 	}
 }
 

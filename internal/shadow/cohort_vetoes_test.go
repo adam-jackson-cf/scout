@@ -1,12 +1,12 @@
 package shadow
 
 import (
-	"bytes"
 	"fmt"
-	"scout/internal/domain"
 	"strings"
 	"testing"
 	"time"
+
+	"scout/internal/domain"
 )
 
 // Each proof owns its fixtures so it can be overlaid and compiled alone.
@@ -48,39 +48,12 @@ func p17Eval(t *testing.T, l domain.ShadowLedger, q Query, code int) Report {
 	}
 	return r
 }
-func p17Canonical(t *testing.T, r Report) ([]byte, string) {
-	t.Helper()
-	b, d, e := CanonicalDossier(r.Dossier)
-	if e != nil {
-		t.Fatal(e)
-	}
-	if len(b) == 0 || d == "" {
-		t.Fatal("empty canonical dossier or digest")
-	}
-	return b, d
-}
-func p17Same(t *testing.T, a, b Report) {
-	t.Helper()
-	ab, ad := p17Canonical(t, a)
-	bb, bd := p17Canonical(t, b)
-	if !bytes.Equal(ab, bb) || ad != bd {
-		t.Fatalf("historical dossier changed: %s / %s", ad, bd)
-	}
-}
 func p17Event(l *domain.ShadowLedger, f domain.PRRunFact, id, verdict string, day int) {
 	e := domain.ProviderPREvent{EventID: id, RepositoryID: f.ID.RepositoryID, Scope: domain.ShadowScopeCI, PRNumber: f.PRNumber, HeadCommit: f.HeadCommit, HeadTree: f.HeadTree, MergeBase: f.MergeBase, CheckID: f.CheckID, RuleVersion: f.RuleVersion, IssueID: id, EventAt: f.StartedAt, RecordedAt: f.RecordedAt}
 	l.Events = append(l.Events, e)
 	l.Links = append(l.Links, domain.PRRunEventLink{AttemptID: f.ID, Scope: domain.ShadowScopeCI, EventID: id})
 	if verdict != "" {
 		l.Triage = append(l.Triage, domain.ShadowTriage{ActionID: fmt.Sprint(day + 100), EventID: id, RepositoryID: "repo", Scope: domain.ShadowScopeCI, Verdict: verdict, Actor: "maintainer", PolicyRevision: "protected1", TriagedAt: p17Day(day), RecordedAt: p17Stamp(day)})
-	}
-}
-func p17Advance(l *domain.ShadowLedger, day int) {
-	f := l.Frontiers[len(l.Frontiers)-1]
-	f.CompleteThrough = p17Day(day)
-	l.Frontiers = append(l.Frontiers, f)
-	for i := range l.Intervals {
-		l.Intervals[i].Through = p17Day(day)
 	}
 }
 func p17Veto(t *testing.T, r Report, word string) {
@@ -94,59 +67,63 @@ func TestADR012CohortWideVetoes(t *testing.T) {
 
 	for _, verdict := range []string{"not_warranted", ""} {
 		for _, position := range []string{"prior-interval", "at-gap", "nonrepresentative"} {
-			t.Run(verdict+"/"+position, func(t *testing.T) {
-				l := p17Ledger()
-				old := p17Fact("100", 5)
-				if position == "at-gap" {
-					old.StartedAt = p17Day(10)
-				}
-				if position == "nonrepresentative" {
-					old.PRNumber = l.Facts[0].PRNumber
-					old.HeadTree = l.Facts[0].HeadTree
-					newer := old
-					newer.ID.RunID = "101"
-					newer.StartedAt = p17Day(15)
-					l.Facts = append(l.Facts, newer)
-				}
-				l.Facts = append(l.Facts, old)
-				p17Event(&l, old, "old-event", verdict, 16)
-				l.GapPoints = []domain.ShadowGapPoint{{ID: "gap", RepositoryID: "repo", CheckID: old.CheckID, At: p17Day(10), RecordedAt: p17Stamp(11)}}
-				for i := 0; i < 5; i++ {
-					l.Facts[i].StartedAt = p17Day(11 + i)
-				}
-				word := verdict
-				if word == "" {
-					word = "undecided"
-				}
-				r := p17Eval(t, l, p17Query(), 0)
-				p17Veto(t, r, word)
-			})
+			t.Run(verdict+"/"+position, func(t *testing.T) { p17CheckCohortVeto(t, verdict, position) })
 		}
 	}
 	for _, outside := range []string{"repository", "check", "version", "local", "legacy"} {
-		t.Run("exclude-"+outside, func(t *testing.T) {
-			l := p17Ledger()
-			f := p17Fact("100", 2)
-			switch outside {
-			case "repository":
-				f.ID.RepositoryID = "other"
-			case "check":
-				f.CheckID = "other"
-			case "version":
-				f.RuleVersion = "other"
-			case "local":
-				f.Scope = domain.ShadowScopeLocal
-			case "legacy":
-				f.Scope = domain.ShadowScopeLegacy
-			}
-			l.Facts = append(l.Facts, f)
-			p17Event(&l, f, "foreign", "", 3)
-			q := p17Query()
-			q.RuleVersion = "1"
-			if !p17Eval(t, l, q, 0).Dossier.Ready {
-				t.Fatal("foreign evidence vetoed cohort")
-			}
-		})
+		t.Run("exclude-"+outside, func(t *testing.T) { p17CheckForeignEvidenceExcluded(t, outside) })
 	}
 
+}
+
+func p17CheckCohortVeto(t *testing.T, verdict, position string) {
+	l := p17Ledger()
+	old := p17Fact("100", 5)
+	if position == "at-gap" {
+		old.StartedAt = p17Day(10)
+	}
+	if position == "nonrepresentative" {
+		old.PRNumber = l.Facts[0].PRNumber
+		old.HeadTree = l.Facts[0].HeadTree
+		newer := old
+		newer.ID.RunID = "101"
+		newer.StartedAt = p17Day(15)
+		l.Facts = append(l.Facts, newer)
+	}
+	l.Facts = append(l.Facts, old)
+	p17Event(&l, old, "old-event", verdict, 16)
+	l.GapPoints = []domain.ShadowGapPoint{{ID: "gap", RepositoryID: "repo", CheckID: old.CheckID, At: p17Day(10), RecordedAt: p17Stamp(11)}}
+	for i := 0; i < 5; i++ {
+		l.Facts[i].StartedAt = p17Day(11 + i)
+	}
+	word := verdict
+	if word == "" {
+		word = "undecided"
+	}
+	r := p17Eval(t, l, p17Query(), 0)
+	p17Veto(t, r, word)
+}
+
+func p17CheckForeignEvidenceExcluded(t *testing.T, outside string) {
+	l := p17Ledger()
+	f := p17Fact("100", 2)
+	switch outside {
+	case "repository":
+		f.ID.RepositoryID = "other"
+	case "check":
+		f.CheckID = "other"
+	case "version":
+		f.RuleVersion = "other"
+	case "local":
+		f.Scope = domain.ShadowScopeLocal
+	case "legacy":
+		f.Scope = domain.ShadowScopeLegacy
+	}
+	l.Facts = append(l.Facts, f)
+	p17Event(&l, f, "foreign", "", 3)
+	q := p17Query()
+	q.RuleVersion = "1"
+	if !p17Eval(t, l, q, 0).Dossier.Ready {
+		t.Fatal("foreign evidence vetoed cohort")
+	}
 }

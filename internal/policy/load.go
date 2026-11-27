@@ -34,6 +34,7 @@ package policy
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"os/exec"
@@ -99,7 +100,6 @@ type Policy struct {
 	profile     string
 	shadow      ShadowConfig
 	activations map[string]Activation
-	order       []string
 	maintainers map[string]bool
 	decisions   Decisions
 	modelCLI    ModelCLI
@@ -126,15 +126,6 @@ func (p Policy) Profile() string { return p.profile }
 // Shadow returns the effective shadow window.
 func (p Policy) Shadow() ShadowConfig { return p.shadow }
 
-// Activations returns the activation entries in file order.
-func (p Policy) Activations() []Activation {
-	out := make([]Activation, 0, len(p.order))
-	for _, id := range p.order {
-		out = append(out, p.activations[id])
-	}
-	return out
-}
-
 // Load reads .scout/policy.yaml from baseRef (never the working tree). An
 // empty baseRef or a file absent at baseRef yields Default. A ref that does
 // not resolve is an error.
@@ -160,8 +151,12 @@ func Load(repoRoot, baseRef string) (Policy, error) {
 	return p, nil
 }
 
+const gitTimeout = 30 * time.Second
+
 func git(dir string, args ...string) ([]byte, error) {
-	cmd := exec.Command("git", args...)
+	ctx, cancel := context.WithTimeout(context.Background(), gitTimeout)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "git", args...)
 	cmd.Dir = dir
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
@@ -235,55 +230,94 @@ func Parse(data []byte) (Policy, error) {
 	if err := dec.Decode(&raw); err != nil {
 		return Policy{}, fmt.Errorf("invalid policy: %w", err)
 	}
-	switch raw.Profile {
-	case "":
-	case ProfileReport, ProfileGuardian:
-		p.profile = raw.Profile
-	default:
-		return Policy{}, fmt.Errorf("invalid policy: profile %q must be %q or %q", raw.Profile, ProfileReport, ProfileGuardian)
+	if err := p.apply(&raw); err != nil {
+		return Policy{}, err
 	}
-	if s := raw.Blocking.Shadow; s != nil {
-		if s.MinDays < 0 || s.MinPRRuns < 0 {
-			return Policy{}, errors.New("invalid policy: blocking.shadow values must not be negative")
-		}
-		if s.MinDays > 0 {
-			p.shadow.MinDays = s.MinDays
-		}
-		if s.MinPRRuns > 0 {
-			p.shadow.MinPRRuns = s.MinPRRuns
-		}
+	return p, nil
+}
+
+func (p *Policy) apply(raw *rawPolicy) error {
+	if err := p.applyProfile(raw.Profile); err != nil {
+		return err
 	}
-	for i, a := range raw.Blocking.Checks {
-		if err := validateActivation(a); err != nil {
-			return Policy{}, fmt.Errorf("invalid policy: blocking[%d] (%q): %w", i, a.ID, err)
-		}
-		if _, dup := p.activations[a.ID]; dup {
-			return Policy{}, fmt.Errorf("invalid policy: blocking[%d]: duplicate id %q", i, a.ID)
-		}
-		p.activations[a.ID] = a
-		p.order = append(p.order, a.ID)
+	if err := p.applyShadow(raw.Blocking.Shadow); err != nil {
+		return err
 	}
-	for i, m := range raw.Maintainers {
-		k := normalizeActor(m)
-		if k == "" {
-			return Policy{}, fmt.Errorf("invalid policy: maintainers[%d] is empty", i)
-		}
-		p.maintainers[k] = true
+	if err := p.applyActivations(raw.Blocking.Checks); err != nil {
+		return err
+	}
+	if err := p.applyMaintainers(raw.Maintainers); err != nil {
+		return err
 	}
 	if raw.History != nil {
 		p.HistoryBots = append([]string(nil), raw.History.Bots...)
 	}
+	return p.applySections(raw)
+}
+
+func (p *Policy) applyProfile(profile string) error {
+	switch profile {
+	case "":
+	case ProfileReport, ProfileGuardian:
+		p.profile = profile
+	default:
+		return fmt.Errorf("invalid policy: profile %q must be %q or %q", profile, ProfileReport, ProfileGuardian)
+	}
+	return nil
+}
+
+func (p *Policy) applyShadow(s *ShadowConfig) error {
+	if s == nil {
+		return nil
+	}
+	if s.MinDays < 0 || s.MinPRRuns < 0 {
+		return errors.New("invalid policy: blocking.shadow values must not be negative")
+	}
+	if s.MinDays > 0 {
+		p.shadow.MinDays = s.MinDays
+	}
+	if s.MinPRRuns > 0 {
+		p.shadow.MinPRRuns = s.MinPRRuns
+	}
+	return nil
+}
+
+func (p *Policy) applyActivations(checks []Activation) error {
+	for i, a := range checks {
+		if err := validateActivation(a); err != nil {
+			return fmt.Errorf("invalid policy: blocking[%d] (%q): %w", i, a.ID, err)
+		}
+		if _, dup := p.activations[a.ID]; dup {
+			return fmt.Errorf("invalid policy: blocking[%d]: duplicate id %q", i, a.ID)
+		}
+		p.activations[a.ID] = a
+	}
+	return nil
+}
+
+func (p *Policy) applyMaintainers(maintainers []string) error {
+	for i, m := range maintainers {
+		k := normalizeActor(m)
+		if k == "" {
+			return fmt.Errorf("invalid policy: maintainers[%d] is empty", i)
+		}
+		p.maintainers[k] = true
+	}
+	return nil
+}
+
+func (p *Policy) applySections(raw *rawPolicy) error {
 	var err error
 	if p.decisions, err = parseDecisions(raw.Decisions); err != nil {
-		return Policy{}, fmt.Errorf("invalid policy: %w", err)
+		return fmt.Errorf("invalid policy: %w", err)
 	}
 	if p.modelCLI, err = parseModelCLI(raw.ModelCLI); err != nil {
-		return Policy{}, fmt.Errorf("invalid policy: %w", err)
+		return fmt.Errorf("invalid policy: %w", err)
 	}
 	if p.mapping, err = parseMapping(raw.Mapping); err != nil {
-		return Policy{}, fmt.Errorf("invalid policy: %w", err)
+		return fmt.Errorf("invalid policy: %w", err)
 	}
-	return p, nil
+	return nil
 }
 
 func validateActivation(a Activation) error {
@@ -293,14 +327,25 @@ func validateActivation(a Activation) error {
 	if strings.TrimSpace(a.Version) == "" {
 		return errors.New("version is required")
 	}
-	if a.ActivatedAt == "" {
+	if err := validateActivatedAt(a.ActivatedAt); err != nil {
+		return err
+	}
+	return validateEvidence(a)
+}
+
+func validateActivatedAt(activatedAt string) error {
+	if activatedAt == "" {
 		return errors.New("activated_at is required")
 	}
-	if _, err := time.Parse(time.RFC3339, a.ActivatedAt); err != nil {
-		if _, err2 := time.Parse("2006-01-02", a.ActivatedAt); err2 != nil {
-			return fmt.Errorf("activated_at %q is not RFC 3339 or YYYY-MM-DD", a.ActivatedAt)
+	if _, err := time.Parse(time.RFC3339, activatedAt); err != nil {
+		if _, err2 := time.Parse("2006-01-02", activatedAt); err2 != nil {
+			return fmt.Errorf("activated_at %q is not RFC 3339 or YYYY-MM-DD", activatedAt)
 		}
 	}
+	return nil
+}
+
+func validateEvidence(a Activation) error {
 	if e := a.Evidence; e != nil {
 		if e.WouldBlock < 0 || e.Warranted < 0 || e.WindowDays < 0 || e.PRRuns < 0 {
 			return errors.New("evidence counts must not be negative")

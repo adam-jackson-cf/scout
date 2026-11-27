@@ -3,18 +3,12 @@ package association
 import (
 	"compress/gzip"
 	"encoding/json"
+	"fmt"
 	"os"
 	"reflect"
 	"sort"
 	"testing"
 )
-
-// The fixtures are generated read-only from the recorded X2d pilot inputs by
-// testdata/gen/gen_parity.py (see its docstring to regenerate). Each stored
-// commit carries the pilot's result (`pilot`, asserted equal to the recorded
-// units by the generator) and the same front end with the two rules Scout does
-// not port neutralised (`expected`, the design's Scout result). Cases where the
-// two differ are the intentional differences pinned in intentionalDifferences.
 
 type fxResult struct {
 	Counts   map[string]int `json:"counts"`
@@ -67,37 +61,20 @@ type fxRepo struct {
 
 // fixtureOwnership is the round-start membership: owners, heuristic-only files
 // and the pool (a pending area with id "pool").
-type fixtureOwnership struct {
-	owners map[string][]string
-	heur   map[string]bool
-	pool   map[string]bool
-	sibs   map[SiblingKey][]string
-}
-
-func newFixtureOwnership(r fxRound) *fixtureOwnership {
-	o := &fixtureOwnership{owners: r.Owners, heur: map[string]bool{}, pool: map[string]bool{}, sibs: map[SiblingKey][]string{}}
+func newFixtureOwnership(r fxRound) *storeOwnership {
+	o := &storeOwnership{owners: r.Owners, pending: map[string][]string{}, heuristic: map[string]bool{}, siblings: map[SiblingKey][]string{}}
 	for _, p := range r.HeuristicOnly {
-		o.heur[p] = true
+		o.heuristic[p] = true
 	}
 	for _, p := range r.Pool {
-		o.pool[p] = true
+		o.pending[p] = []string{"pool"}
 	}
 	for p := range r.Owners {
 		k := SiblingKeyOf(p)
-		o.sibs[k] = append(o.sibs[k], p)
+		o.siblings[k] = append(o.siblings[k], p)
 	}
 	return o
 }
-
-func (o *fixtureOwnership) AreaOwners(p string) []string { return o.owners[p] }
-func (o *fixtureOwnership) PendingAreas(p string) []string {
-	if o.pool[p] {
-		return []string{"pool"}
-	}
-	return nil
-}
-func (o *fixtureOwnership) HeuristicOnly(p string) bool        { return o.heur[p] }
-func (o *fixtureOwnership) SiblingFiles(k SiblingKey) []string { return o.sibs[k] }
 
 func loadFixture(t *testing.T, name string) fxRepo {
 	t.Helper()
@@ -105,7 +82,11 @@ func loadFixture(t *testing.T, name string) fxRepo {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
 	zr, err := gzip.NewReader(f)
 	if err != nil {
 		t.Fatal(err)
@@ -178,7 +159,7 @@ func TestParityWithPilot(t *testing.T) {
 					}
 				}
 				// Scout's result must be the expected one (for parity cases that is the pilot's own result).
-				compareResult(t, name, r.Round, c.SHA, got, c.Expected)
+				compareResult(t, fmt.Sprintf("%s round %d %s", name, r.Round, c.SHA), got, c.Expected)
 			}
 		}
 		t.Logf("%s: %d cases compared (interesting commits of %d first-parent commits), %d identical to the pilot, %d intentional differences %v",
@@ -226,26 +207,9 @@ func join(s []string) string {
 
 func summarise(sha string, r Result) summary {
 	live, inert := BuildClusters(sha, r.Residual)
-	s := summary{Counts: map[string]int{}}
-	for k, v := range r.Counts {
-		s.Counts[k] = v
-	}
-	s.Counts["inert_clusters"] = len(inert)
-	s.Counts["residual_clusters"] = len(live)
-	for k, v := range s.Counts {
-		if v == 0 {
-			delete(s.Counts, k)
-		}
-	}
+	s := summary{Counts: summaryCounts(r.Counts, len(inert), len(live))}
 	for _, c := range live {
-		var heur []string
-		for _, m := range c.Members {
-			if m.HeuristicOnly {
-				heur = append(heur, m.Path)
-			}
-		}
-		sort.Strings(heur)
-		s.Clusters = append(s.Clusters, c.ID+"|"+c.Dir+"|"+c.Stem+"|"+join(c.Files)+"|"+join(c.Kinds)+"|"+join(heur))
+		s.Clusters = append(s.Clusters, clusterLine(c))
 	}
 	for _, c := range inert {
 		s.Inert = append(s.Inert, c.Dir+"|"+c.Stem+"|"+join(c.Files))
@@ -257,19 +221,51 @@ func summarise(sha string, r Result) summary {
 	for _, c := range capd {
 		s.Capped = append(s.Capped, c.ID)
 	}
+	s.Resolved = resolvedLines(r)
+	return s
+}
+
+func summaryCounts(counts map[string]int, inert, live int) map[string]int {
+	out := map[string]int{}
+	for k, v := range counts {
+		out[k] = v
+	}
+	out["inert_clusters"] = inert
+	out["residual_clusters"] = live
+	for k, v := range out {
+		if v == 0 {
+			delete(out, k)
+		}
+	}
+	return out
+}
+
+func clusterLine(c Cluster) string {
+	var heur []string
+	for _, m := range c.Members {
+		if m.HeuristicOnly {
+			heur = append(heur, m.Path)
+		}
+	}
+	sort.Strings(heur)
+	return c.ID + "|" + c.Dir + "|" + c.Stem + "|" + join(c.Files) + "|" + join(c.Kinds) + "|" + join(heur)
+}
+
+func resolvedLines(r Result) []string {
+	var resolved []string
 	for _, in := range r.Inherited {
 		old := ""
 		if in.Rule == "rename" {
 			old = in.From
 		}
 		rule := map[string]string{"rename": "c", "variant": "d"}[in.Rule]
-		s.Resolved = append(s.Resolved, in.Path+"|"+rule+"|"+join(in.Areas)+"|"+old+"|false")
+		resolved = append(resolved, in.Path+"|"+rule+"|"+join(in.Areas)+"|"+old+"|false")
 	}
 	for _, pm := range r.PendingMoves {
-		s.Resolved = append(s.Resolved, pm.New+"|c|[]|"+pm.Old+"|true")
+		resolved = append(resolved, pm.New+"|c|[]|"+pm.Old+"|true")
 	}
-	sort.Strings(s.Resolved)
-	return s
+	sort.Strings(resolved)
+	return resolved
 }
 
 func fixtureSummary(f fxResult) summary {
@@ -308,12 +304,12 @@ func fixtureSummary(f fxResult) summary {
 	return s
 }
 
-func compareResult(t *testing.T, repo string, round int, sha string, got summary, want fxResult) {
+func compareResult(t *testing.T, label string, got summary, want fxResult) {
 	t.Helper()
 	w := fixtureSummary(want)
 	// The pilot also counts rules with no Scout equivalent or no Scout count; compare the shared names.
 	if !reflect.DeepEqual(norm(got), norm(w)) {
-		t.Errorf("%s round %d %s:\n got  %+v\n want %+v", repo, round, sha, got, w)
+		t.Errorf("%s:\n got  %+v\n want %+v", label, got, w)
 	}
 }
 

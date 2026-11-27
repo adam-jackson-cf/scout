@@ -16,13 +16,29 @@ Tool pins live only in `toolchain/versions.env`; when changing an allowed develo
 tool pin, update its package metadata and run `scripts/bootstrap-tools.sh --relock`.
 Scanner and Clawpatch upgrades require their compatibility review.
 
-Build and test with the toolchain activated:
+Install the commit hook once per clone (agent machines included); it runs the
+repository gate on every commit and blocks on any finding:
 
 ```sh
-go build ./... && go vet ./... && go test -count=1 ./...
+git config core.hooksPath .githooks
 ```
 
-For what to work on, see `docs/HANDOFF.md`.
+Run the gate by hand with the toolchain activated. `commit` judges staged changes;
+`ci` judges the branch against a base, as the required `gate` CI job does on every
+push and pull request; `--only` and `--path` narrow a run to named checks and paths:
+
+```sh
+go run ./tools/gate commit
+go run ./tools/gate ci --base origin/main
+go run ./tools/gate list
+```
+
+The required `proofs` CI job checks that every claim in `proofs.toml` is enforced
+and that its canaries pass and fail as declared:
+
+```sh
+python3 tools/validate_rule_coverage.py --root .
+```
 
 ## Accounts, external tools and fixture data
 
@@ -53,11 +69,11 @@ committed under `evaluation/x2d-merge-association-pilot/data/`. From the reposit
 root, regenerate the parity fixtures with:
 
 ```sh
-python3 internal/association/testdata/gen/gen_parity.py \
+python3 internal/association/testdata/gen/parity-fixtures.py \
     --fastapi /tmp/scout-x2c-smoke/_src/fastapi --axum /tmp/scout-x2c-smoke/_src/axum
 ```
 
-`gen_parity.py` defaults `--x2d` to that in-repo data path and `--fastapi`/`--axum`
+`parity-fixtures.py` defaults `--x2d` to that in-repo data path and `--fastapi`/`--axum`
 to the clones above. The post-run scripts in `evaluation/x2d-postrun-tuning/`
 (`run_window.sh`, `run_jev.sh`, `run_partB.sh`) are frozen; their digests are in
 `FROZEN-8-10.md`. Their old-machine defaults remain: `X2D_WORKTREE` is
@@ -74,4 +90,3 @@ export X2D_SRC=/tmp/scout-x2c-smoke/_src/fastapi
 ```
 
 The pilot's files at `8c7148c` are frozen (experiment rule 5); do not edit them.
-

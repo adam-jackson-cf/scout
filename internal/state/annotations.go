@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"sort"
 	"strings"
 	"time"
 
@@ -31,13 +30,6 @@ type dispositionViewKey struct{}
 type dispositionView struct {
 	view    string
 	visible bool
-}
-
-// WithDispositionView tags dispositions recorded under ctx with the view they
-// are made in and whether the annotation was visible to the maintainer. A
-// disposition recorded without it is stored as view "cli", annotation hidden.
-func WithDispositionView(ctx context.Context, view string, annotationVisible bool) context.Context {
-	return context.WithValue(ctx, dispositionViewKey{}, dispositionView{view: view, visible: annotationVisible})
 }
 
 // RecordAnnotations persists a unit's annotations in one transaction: all rows
@@ -80,34 +72,6 @@ func (s *Store) RecordAnnotations(ctx context.Context, annotations []domain.Anno
 		}
 		return nil
 	})
-}
-
-// ListAnnotations returns the annotations of one issue, oldest first, with
-// Stale reflecting the current stale flag.
-func (s *Store) ListAnnotations(ctx context.Context, issueID string) ([]domain.Annotation, error) {
-	out := []domain.Annotation{}
-	err := s.withRead(ctx, func(db *sql.DB) error {
-		rows, err := db.QueryContext(ctx, `SELECT payload, stale FROM annotations WHERE issue_id = ? ORDER BY created_at, annotation_id`, issueID)
-		if err != nil {
-			return fmt.Errorf("query annotations: %w", err)
-		}
-		defer rows.Close()
-		for rows.Next() {
-			var payload []byte
-			var stale int
-			if err := rows.Scan(&payload, &stale); err != nil {
-				return fmt.Errorf("scan annotation: %w", err)
-			}
-			var annotation domain.Annotation
-			if err := decode(payload, &annotation); err != nil {
-				return err
-			}
-			annotation.Stale = stale != 0
-			out = append(out, annotation)
-		}
-		return rows.Err()
-	})
-	return out, err
 }
 
 // MarkAnnotationsStale flags every annotation whose question version is not
@@ -166,44 +130,6 @@ func (s *Store) RecordRanking(ctx context.Context, record domain.RankingRecord) 
 	})
 }
 
-// ListRankings returns the ranking records of one run in rank order.
-func (s *Store) ListRankings(ctx context.Context, runID string) ([]domain.RankingRecord, error) {
-	out := []domain.RankingRecord{}
-	err := s.withRead(ctx, func(db *sql.DB) error {
-		rows, err := db.QueryContext(ctx, `SELECT payload FROM ranking_records WHERE run_id = ?`, runID)
-		if err != nil {
-			return fmt.Errorf("query rankings: %w", err)
-		}
-		defer rows.Close()
-		for rows.Next() {
-			var payload []byte
-			if err := rows.Scan(&payload); err != nil {
-				return fmt.Errorf("scan ranking: %w", err)
-			}
-			var record domain.RankingRecord
-			if err := decode(payload, &record); err != nil {
-				return err
-			}
-			out = append(out, record)
-		}
-		return rows.Err()
-	})
-	if err != nil {
-		return nil, err
-	}
-	sortRankings(out)
-	return out, nil
-}
-
-func sortRankings(rows []domain.RankingRecord) {
-	sort.SliceStable(rows, func(i, j int) bool {
-		if rows[i].RankPosition != rows[j].RankPosition {
-			return rows[i].RankPosition < rows[j].RankPosition
-		}
-		return rows[i].IssueID < rows[j].IssueID
-	})
-}
-
 // AuditDraw returns the stored draw for (issue, formula, sampler), if any.
 func (s *Store) AuditDraw(ctx context.Context, issueID, formulaVersion, samplerVersion string) (domain.AuditDraw, bool, error) {
 	var draw domain.AuditDraw
@@ -230,11 +156,8 @@ func (s *Store) RecordAuditDraw(ctx context.Context, draw domain.AuditDraw) (dom
 	if s.readOnly {
 		return draw, errors.New("state store is read-only")
 	}
-	if draw.IssueID == "" || draw.FormulaVersion == "" || draw.SamplerVersion == "" || draw.RunID == "" {
-		return draw, errors.New("audit draw requires issue, run, formula version and sampler version")
-	}
-	if draw.InclusionProbability <= 0 || draw.InclusionProbability > 1 {
-		return draw, errors.New("audit draw inclusion probability must be in (0, 1]")
+	if err := validateAuditDraw(draw); err != nil {
+		return draw, err
 	}
 	if draw.CreatedAt.IsZero() {
 		draw.CreatedAt = time.Now().UTC()
@@ -258,55 +181,14 @@ func (s *Store) RecordAuditDraw(ctx context.Context, draw domain.AuditDraw) (dom
 	return stored, err
 }
 
-// ListAuditDraws returns every stored draw in issue order.
-func (s *Store) ListAuditDraws(ctx context.Context) ([]domain.AuditDraw, error) {
-	out := []domain.AuditDraw{}
-	err := s.withRead(ctx, func(db *sql.DB) error {
-		rows, err := db.QueryContext(ctx, `SELECT payload FROM audit_draws ORDER BY issue_id, formula_version, sampler_version`)
-		if err != nil {
-			return fmt.Errorf("query audit draws: %w", err)
-		}
-		defer rows.Close()
-		for rows.Next() {
-			var payload []byte
-			if err := rows.Scan(&payload); err != nil {
-				return fmt.Errorf("scan audit draw: %w", err)
-			}
-			var draw domain.AuditDraw
-			if err := decode(payload, &draw); err != nil {
-				return err
-			}
-			out = append(out, draw)
-		}
-		return rows.Err()
-	})
-	return out, err
-}
-
-// ListDispositionContexts returns the view context of every disposition of an
-// issue, oldest first.
-func (s *Store) ListDispositionContexts(ctx context.Context, issueID string) ([]domain.DispositionContext, error) {
-	out := []domain.DispositionContext{}
-	err := s.withRead(ctx, func(db *sql.DB) error {
-		rows, err := db.QueryContext(ctx, `SELECT issue_id, at, view, annotation_visible, rank_formula_version, baseline_version FROM disposition_contexts WHERE issue_id = ? ORDER BY id`, issueID)
-		if err != nil {
-			return fmt.Errorf("query disposition contexts: %w", err)
-		}
-		defer rows.Close()
-		for rows.Next() {
-			var row domain.DispositionContext
-			var at int64
-			var visible int
-			if err := rows.Scan(&row.IssueID, &at, &row.View, &visible, &row.RankFormulaVersion, &row.BaselineVersion); err != nil {
-				return fmt.Errorf("scan disposition context: %w", err)
-			}
-			row.At = time.UnixMilli(at).UTC()
-			row.AnnotationVisible = visible != 0
-			out = append(out, row)
-		}
-		return rows.Err()
-	})
-	return out, err
+func validateAuditDraw(draw domain.AuditDraw) error {
+	if draw.IssueID == "" || draw.FormulaVersion == "" || draw.SamplerVersion == "" || draw.RunID == "" {
+		return errors.New("audit draw requires issue, run, formula version and sampler version")
+	}
+	if draw.InclusionProbability <= 0 || draw.InclusionProbability > 1 {
+		return errors.New("audit draw inclusion probability must be in (0, 1]")
+	}
+	return nil
 }
 
 // recordDispositionContextTx stores the view context of a disposition inside

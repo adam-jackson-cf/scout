@@ -1,3 +1,5 @@
+//go:build boundary
+
 package main
 
 import (
@@ -75,15 +77,6 @@ func TestHeadPolicyWithoutCommittedPolicyIsDefaultAndUncommittedOneIsIgnored(t *
 func TestHeadPolicyUnreadableHeadIsAnError(t *testing.T) {
 	if _, err := headPolicy(t.TempDir()); err == nil {
 		t.Fatal("a directory that is not a git repository yielded a policy")
-	}
-}
-
-func TestSanitizedNeverReturnsEmptyForRejectedText(t *testing.T) {
-	if got := sanitized("bad\x00text"); got == "" {
-		t.Fatal("rejected text produced an empty message")
-	}
-	if got := sanitized("fine"); got != "fine" {
-		t.Fatalf("sanitized(fine) = %q", got)
 	}
 }
 

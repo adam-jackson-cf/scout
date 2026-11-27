@@ -1,0 +1,3 @@
+package auditlog
+
+func Store() {}

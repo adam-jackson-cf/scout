@@ -73,8 +73,7 @@ func (s *Store) ListResumablePlans(ctx context.Context) ([]domain.Plan, error) {
 		if err != nil {
 			return fmt.Errorf("query resumable plans: %w", err)
 		}
-		defer rows.Close()
-		for rows.Next() {
+		return scanRows(rows, func(rows *sql.Rows) error {
 			var payload []byte
 			if err := rows.Scan(&payload); err != nil {
 				return fmt.Errorf("scan resumable plan: %w", err)
@@ -87,8 +86,8 @@ func (s *Store) ListResumablePlans(ctx context.Context) ([]domain.Plan, error) {
 				return fmt.Errorf("stored resumable plan is invalid: %w", err)
 			}
 			plans = append(plans, plan)
-		}
-		return rows.Err()
+			return nil
+		})
 	})
 	return plans, err
 }
@@ -118,8 +117,7 @@ func (s *Store) LoadObservations(ctx context.Context, runID string) ([]domain.Ob
 		if err != nil {
 			return fmt.Errorf("query observations: %w", err)
 		}
-		defer rows.Close()
-		for rows.Next() {
+		return scanRows(rows, func(rows *sql.Rows) error {
 			var payload []byte
 			if err := rows.Scan(&payload); err != nil {
 				return fmt.Errorf("scan observation: %w", err)
@@ -135,8 +133,8 @@ func (s *Store) LoadObservations(ctx context.Context, runID string) ([]domain.Ob
 				return errors.New("stored observation run ID does not match query")
 			}
 			observations = append(observations, observation)
-		}
-		return rows.Err()
+			return nil
+		})
 	})
 	return observations, err
 }
@@ -201,8 +199,7 @@ func (s *Store) ListIssues(ctx context.Context, states ...domain.IssueState) ([]
 		if err != nil {
 			return fmt.Errorf("query issues: %w", err)
 		}
-		defer rows.Close()
-		for rows.Next() {
+		return scanRows(rows, func(rows *sql.Rows) error {
 			var payload []byte
 			if err := rows.Scan(&payload); err != nil {
 				return fmt.Errorf("scan issue: %w", err)
@@ -215,44 +212,56 @@ func (s *Store) ListIssues(ctx context.Context, states ...domain.IssueState) ([]
 				return fmt.Errorf("stored issue is invalid: %w", err)
 			}
 			issues = append(issues, issue)
-		}
-		return rows.Err()
+			return nil
+		})
 	})
 	return issues, err
+}
+
+type Triage struct {
+	IssueID           string
+	State             domain.IssueState
+	Owner             string
+	DispositionReason string
+	Actor             string
+	Reason            string
 }
 
 // TriageIssue records an explicit human disposition change and audit entry.
 // False-positive dispositions require contradictory evidence through
 // TriageIssueWithEvidence.
-func (s *Store) TriageIssue(ctx context.Context, issueID string, state domain.IssueState, owner, dispositionReason, actor, reason string) (domain.Issue, error) {
-	if state == domain.IssueFalsePositive {
+func (s *Store) TriageIssue(ctx context.Context, t Triage) (domain.Issue, error) {
+	if t.State == domain.IssueFalsePositive {
 		return domain.Issue{}, errors.New("false-positive disposition requires contradictory evidence")
 	}
-	return s.transitionIssue(ctx, issueID, state, actor, reason, nil, func(issue *domain.Issue) error {
-		issue.Owner = owner
-		issue.DispositionReason = dispositionReason
-		return nil
-	})
+	return s.transitionIssue(ctx, issueTransition{issueID: t.IssueID, state: t.State, owner: t.Owner, dispositionReason: t.DispositionReason, actor: t.Actor, reason: t.Reason})
 }
 
 // TriageIssueWithEvidence records a human disposition with immutable,
 // sanitized contradictory or scope evidence. False-positive disposition cannot
 // be inferred from silence or a skipped scan.
-func (s *Store) TriageIssueWithEvidence(ctx context.Context, issueID string, state domain.IssueState, owner, dispositionReason, actor, reason string, evidence []domain.SafeArtifactRef) (domain.Issue, error) {
-	if state != domain.IssueFalsePositive && state != domain.IssueWontFix {
+func (s *Store) TriageIssueWithEvidence(ctx context.Context, t Triage, evidence []domain.SafeArtifactRef) (domain.Issue, error) {
+	if t.State != domain.IssueFalsePositive && t.State != domain.IssueWontFix {
 		return domain.Issue{}, errors.New("evidence-backed triage is only for false-positive or won't-fix dispositions")
 	}
 	if len(evidence) == 0 {
 		return domain.Issue{}, errors.New("disposition requires contradictory or scope evidence")
 	}
-	return s.transitionIssue(ctx, issueID, state, actor, reason, evidence, func(issue *domain.Issue) error {
-		issue.Owner = owner
-		issue.DispositionReason = dispositionReason
-		return nil
-	})
+	return s.transitionIssue(ctx, issueTransition{issueID: t.IssueID, state: t.State, owner: t.Owner, dispositionReason: t.DispositionReason, actor: t.Actor, reason: t.Reason, artifacts: evidence})
 }
 
-func (s *Store) transitionIssue(ctx context.Context, issueID string, state domain.IssueState, actor, reason string, artifacts []domain.SafeArtifactRef, mutate func(*domain.Issue) error) (domain.Issue, error) {
+type issueTransition struct {
+	issueID           string
+	state             domain.IssueState
+	owner             string
+	dispositionReason string
+	actor             string
+	reason            string
+	artifacts         []domain.SafeArtifactRef
+}
+
+func (s *Store) transitionIssue(ctx context.Context, change issueTransition) (domain.Issue, error) {
+	issueID, state, actor, reason, artifacts := change.issueID, change.state, change.actor, change.reason, change.artifacts
 	if issueID == "" || !state.Valid() || reason == "" {
 		return domain.Issue{}, errors.New("issue ID, valid destination state, and audit reason are required")
 	}
@@ -266,11 +275,8 @@ func (s *Store) transitionIssue(ctx context.Context, issueID string, state domai
 			return fmt.Errorf("issue transition from %q to %q is not allowed", issue.State, state)
 		}
 		previousState := issue.State
-		if mutate != nil {
-			if err := mutate(&issue); err != nil {
-				return err
-			}
-		}
+		issue.Owner = change.owner
+		issue.DispositionReason = change.dispositionReason
 		issue.State = state
 		issue.UpdatedAt = time.Now().UTC()
 		issue.History = append(issue.History, domain.IssueHistoryEntry{At: issue.UpdatedAt, From: previousState, To: state, Event: domain.EventTriaged, Actor: actor, Reason: reason, ArtifactRefs: append([]domain.SafeArtifactRef(nil), artifacts...)})
@@ -302,10 +308,8 @@ func saveIssueTx(ctx context.Context, tx *sql.Tx, issue domain.Issue, create boo
 	if err := ensureIssueArtifactsTx(ctx, tx, issue); err != nil {
 		return err
 	}
-	if issue.State == domain.IssueResolved && issue.Verification != nil && issue.Verification.Reason == domain.ResolutionFileDeleted {
-		if err := fileDeletedTx(ctx, tx, issue.Anchor.Path, issue.Verification.RunID); err != nil {
-			return err
-		}
+	if err := ensureFileDeletedResolutionTx(ctx, tx, issue); err != nil {
+		return err
 	}
 	payload, err := encode(issue)
 	if err != nil {
@@ -313,45 +317,73 @@ func saveIssueTx(ctx context.Context, tx *sql.Tx, issue domain.Issue, create boo
 	}
 	imported := map[string]bool{}
 	if create {
-		if _, err := tx.ExecContext(ctx, `INSERT INTO issues(issue_id, state, updated_at, payload) VALUES (?, ?, ?, ?)`, issue.IssueID, issue.State, unixMillis(issue.UpdatedAt), payload); err != nil {
-			if isUniqueViolation(err) {
-				return fmt.Errorf("issue %q already exists", issue.IssueID)
-			}
-			return fmt.Errorf("create issue: %w", err)
-		}
+		err = insertIssueTx(ctx, tx, issue, payload)
 	} else {
-		var previous []byte
-		if err := tx.QueryRowContext(ctx, `SELECT payload FROM issues WHERE issue_id = ?`, issue.IssueID).Scan(&previous); err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				return fmt.Errorf("issue %q: %w", issue.IssueID, ErrNotFound)
-			}
-			return fmt.Errorf("load stored issue: %w", err)
-		}
-		var stored domain.Issue
-		if err := decode(previous, &stored); err != nil {
-			return fmt.Errorf("decode stored issue: %w", err)
-		}
-		for _, id := range stored.ObservationIDs {
-			imported[id] = true
-		}
-		result, err := tx.ExecContext(ctx, `UPDATE issues SET state = ?, updated_at = ?, payload = ? WHERE issue_id = ?`, issue.State, unixMillis(issue.UpdatedAt), payload, issue.IssueID)
-		if err != nil {
-			return fmt.Errorf("update issue: %w", err)
-		}
-		count, err := result.RowsAffected()
-		if err != nil {
-			return fmt.Errorf("count updated issues: %w", err)
-		}
-		if count != 1 {
-			return fmt.Errorf("issue %q: %w", issue.IssueID, ErrNotFound)
-		}
-		if _, err := tx.ExecContext(ctx, `DELETE FROM issue_observations WHERE issue_id = ?`, issue.IssueID); err != nil {
-			return fmt.Errorf("replace issue observations: %w", err)
-		}
-		if _, err := tx.ExecContext(ctx, `DELETE FROM issue_history WHERE issue_id = ?`, issue.IssueID); err != nil {
-			return fmt.Errorf("replace issue history: %w", err)
-		}
+		imported, err = replaceIssueTx(ctx, tx, issue, payload)
 	}
+	if err != nil {
+		return err
+	}
+	if err := linkIssueObservationsTx(ctx, tx, issue, imported); err != nil {
+		return err
+	}
+	return insertIssueHistoryTx(ctx, tx, issue)
+}
+
+func ensureFileDeletedResolutionTx(ctx context.Context, tx *sql.Tx, issue domain.Issue) error {
+	if issue.State == domain.IssueResolved && issue.Verification != nil && issue.Verification.Reason == domain.ResolutionFileDeleted {
+		return fileDeletedTx(ctx, tx, issue.Anchor.Path, issue.Verification.RunID)
+	}
+	return nil
+}
+
+func insertIssueTx(ctx context.Context, tx *sql.Tx, issue domain.Issue, payload []byte) error {
+	if _, err := tx.ExecContext(ctx, `INSERT INTO issues(issue_id, state, updated_at, payload) VALUES (?, ?, ?, ?)`, issue.IssueID, issue.State, unixMillis(issue.UpdatedAt), payload); err != nil {
+		if isUniqueViolation(err) {
+			return fmt.Errorf("issue %q already exists", issue.IssueID)
+		}
+		return fmt.Errorf("create issue: %w", err)
+	}
+	return nil
+}
+
+func replaceIssueTx(ctx context.Context, tx *sql.Tx, issue domain.Issue, payload []byte) (map[string]bool, error) {
+	imported := map[string]bool{}
+	var previous []byte
+	if err := tx.QueryRowContext(ctx, `SELECT payload FROM issues WHERE issue_id = ?`, issue.IssueID).Scan(&previous); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("issue %q: %w", issue.IssueID, ErrNotFound)
+		}
+		return nil, fmt.Errorf("load stored issue: %w", err)
+	}
+	var stored domain.Issue
+	if err := decode(previous, &stored); err != nil {
+		return nil, fmt.Errorf("decode stored issue: %w", err)
+	}
+	for _, id := range stored.ObservationIDs {
+		imported[id] = true
+	}
+	result, err := tx.ExecContext(ctx, `UPDATE issues SET state = ?, updated_at = ?, payload = ? WHERE issue_id = ?`, issue.State, unixMillis(issue.UpdatedAt), payload, issue.IssueID)
+	if err != nil {
+		return nil, fmt.Errorf("update issue: %w", err)
+	}
+	count, err := result.RowsAffected()
+	if err != nil {
+		return nil, fmt.Errorf("count updated issues: %w", err)
+	}
+	if count != 1 {
+		return nil, fmt.Errorf("issue %q: %w", issue.IssueID, ErrNotFound)
+	}
+	if _, err := tx.ExecContext(ctx, `DELETE FROM issue_observations WHERE issue_id = ?`, issue.IssueID); err != nil {
+		return nil, fmt.Errorf("replace issue observations: %w", err)
+	}
+	if _, err := tx.ExecContext(ctx, `DELETE FROM issue_history WHERE issue_id = ?`, issue.IssueID); err != nil {
+		return nil, fmt.Errorf("replace issue history: %w", err)
+	}
+	return imported, nil
+}
+
+func linkIssueObservationsTx(ctx context.Context, tx *sql.Tx, issue domain.Issue, imported map[string]bool) error {
 	for _, observationID := range uniqueSorted(issue.ObservationIDs) {
 		if _, err := tx.ExecContext(ctx, `INSERT INTO issue_observations(issue_id, observation_id) VALUES (?, ?)`, issue.IssueID, observationID); err != nil {
 			if isForeignKeyViolation(err) {
@@ -367,7 +399,7 @@ func saveIssueTx(ctx context.Context, tx *sql.Tx, issue domain.Issue, create boo
 			return fmt.Errorf("link issue observation: %w", err)
 		}
 	}
-	return insertIssueHistoryTx(ctx, tx, issue)
+	return nil
 }
 
 func insertIssueHistoryTx(ctx context.Context, tx *sql.Tx, issue domain.Issue) error {
@@ -463,12 +495,12 @@ func isForeignKeyViolation(err error) bool {
 
 // verificationCoverageRelevantTx proves the verification run contains a
 // successful re-check of the issue's own file, family and category.
-func verificationCoverageRelevantTx(ctx context.Context, tx *sql.Tx, issue domain.Issue, verification domain.Verification) error {
+func verificationCoverageRelevantTx(ctx context.Context, tx *sql.Tx, issue domain.Issue, verification domain.Verification) (err error) {
 	rows, err := tx.QueryContext(ctx, `SELECT payload FROM coverage WHERE run_id = ? AND status = ?`, verification.RunID, verification.InspectionStatus)
 	if err != nil {
 		return fmt.Errorf("query verification coverage: %w", err)
 	}
-	defer rows.Close()
+	defer closeJoin(&err, rows)
 	for rows.Next() {
 		var payload []byte
 		if err := rows.Scan(&payload); err != nil {

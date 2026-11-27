@@ -26,15 +26,6 @@ type AreaAction struct {
 const ExportAreaActions = ExportDir + "/area_actions.jsonl"
 const metadataAreaActions = "area_actions"
 
-// ListAreaActions returns the append-ordered audit trail.
-func (s *Store) ListAreaActions(ctx context.Context) ([]AreaAction, error) {
-	value, err := s.metadataValue(ctx, metadataAreaActions)
-	if err != nil {
-		return nil, err
-	}
-	return decodeAreaActions([]byte(value))
-}
-
 func decodeAreaActions(data []byte) ([]AreaAction, error) {
 	var actions []AreaAction
 	for _, line := range SplitLines(data) {
@@ -87,16 +78,7 @@ func (s *Store) actOnArea(ctx context.Context, id, targetID, actor, reason strin
 	}
 	var updated areas.Area
 	err := s.withTransaction(ctx, func(tx *sql.Tx) error {
-		load := func(id string) (areas.Area, error) {
-			var payload []byte
-			var a areas.Area
-			if err := tx.QueryRowContext(ctx, `SELECT payload FROM areas WHERE area_id = ?`, id).Scan(&payload); err != nil {
-				return a, fmt.Errorf("area not found: %w", err)
-			}
-			err := decode(payload, &a)
-			return a, err
-		}
-		source, err := load(id)
+		source, err := loadAreaTx(ctx, tx, id)
 		if err != nil {
 			return err
 		}
@@ -108,79 +90,101 @@ func (s *Store) actOnArea(ctx context.Context, id, targetID, actor, reason strin
 		if targetID == "" {
 			source.Status, source.Origin = areas.StatusActive, "association"
 			source.AcceptedBy, source.AcceptedAt = actor, &now
-		} else {
-			target, err := load(targetID)
-			if err != nil {
-				return err
-			}
-			if !target.Active() {
-				return errors.New("merge target is not active")
-			}
-			action.Action, action.TargetAreaID = "merge", targetID
-			source.Status = areas.StatusSuperseded
-			// The pending decision supplies the original run and mapped revision.
-			var provenance domain.Association
-			rows, err := tx.QueryContext(ctx, `SELECT payload FROM associations ORDER BY decided_at, id`)
-			if err != nil {
-				return err
-			}
-			for rows.Next() {
-				var payload []byte
-				if err := rows.Scan(&payload); err != nil {
-					rows.Close()
-					return err
-				}
-				var record domain.Association
-				if err := decode(payload, &record); err != nil {
-					rows.Close()
-					return err
-				}
-				if record.PendingAreaID == id {
-					provenance = record
-				}
-			}
-			rowErr := rows.Err()
-			rows.Close()
-			if rowErr != nil {
-				return rowErr
-			}
-			if provenance.ID == "" {
-				// Restored area labels can predate association-row exports. The
-				// maintainer action is its own run, anchored to the area snapshot.
-				provenance.RunID = "maintainer-merge:" + id + ":" + now.Format(time.RFC3339Nano)
-				provenance.MergeCommit = source.FirstSeenSnapshot
-				provenance.PRMetadata = domain.PRMetadataAbsent
-			}
-			record := domain.Association{ID: "maintainer-merge:" + id + ":" + now.Format(time.RFC3339Nano), RunID: provenance.RunID, DecidedAt: now, LastAgentRefreshAt: provenance.LastAgentRefreshAt, MergeCommit: provenance.MergeCommit, ClusterKey: source.ClusterID, Files: append([]string(nil), source.FileSet...), Outcome: domain.AssociationAssigned, Reason: "maintainer_merge", AreaIDs: []string{targetID}, PRMetadata: provenance.PRMetadata}
-			normalized, err := normalizeAssociations([]domain.Association{record})
-			if err != nil {
-				return err
-			}
-			if err := insertAssociations(ctx, tx, normalized); err != nil {
-				return err
-			}
-		}
-		payload, err := encode(source)
-		if err != nil {
+		} else if err := mergeAreaTx(ctx, tx, &source, &action, targetID); err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `UPDATE areas SET payload = ? WHERE area_id = ?`, payload, id); err != nil {
-			return err
-		}
-		var previous string
-		err = tx.QueryRowContext(ctx, `SELECT value FROM metadata WHERE key = ?`, metadataAreaActions).Scan(&previous)
-		if err != nil && !errors.Is(err, sql.ErrNoRows) {
-			return err
-		}
-		line, err := canonicalRecord(action)
-		if err != nil {
-			return err
-		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`, metadataAreaActions, previous+string(joinLines([][]byte{line}))); err != nil {
+		if err := saveAreaAndActionTx(ctx, tx, id, source, action); err != nil {
 			return err
 		}
 		updated = source
 		return nil
 	})
 	return updated, err
+}
+
+func loadAreaTx(ctx context.Context, tx *sql.Tx, id string) (areas.Area, error) {
+	var payload []byte
+	var a areas.Area
+	if err := tx.QueryRowContext(ctx, `SELECT payload FROM areas WHERE area_id = ?`, id).Scan(&payload); err != nil {
+		return a, fmt.Errorf("area not found: %w", err)
+	}
+	err := decode(payload, &a)
+	return a, err
+}
+
+func mergeAreaTx(ctx context.Context, tx *sql.Tx, source *areas.Area, action *AreaAction, targetID string) error {
+	target, err := loadAreaTx(ctx, tx, targetID)
+	if err != nil {
+		return err
+	}
+	if !target.Active() {
+		return errors.New("merge target is not active")
+	}
+	id, now := action.AreaID, action.At
+	action.Action, action.TargetAreaID = "merge", targetID
+	source.Status = areas.StatusSuperseded
+	// The pending decision supplies the original run and mapped revision.
+	provenance, err := pendingAreaProvenanceTx(ctx, tx, id)
+	if err != nil {
+		return err
+	}
+	if provenance.ID == "" {
+		// Restored area labels can predate association-row exports. The
+		// maintainer action is its own run, anchored to the area snapshot.
+		provenance.RunID = "maintainer-merge:" + id + ":" + now.Format(time.RFC3339Nano)
+		provenance.MergeCommit = source.FirstSeenSnapshot
+		provenance.PRMetadata = domain.PRMetadataAbsent
+	}
+	record := domain.Association{ID: "maintainer-merge:" + id + ":" + now.Format(time.RFC3339Nano), RunID: provenance.RunID, DecidedAt: now, LastAgentRefreshAt: provenance.LastAgentRefreshAt, MergeCommit: provenance.MergeCommit, ClusterKey: source.ClusterID, Files: append([]string(nil), source.FileSet...), Outcome: domain.AssociationAssigned, Reason: "maintainer_merge", AreaIDs: []string{targetID}, PRMetadata: provenance.PRMetadata}
+	normalized, err := normalizeAssociations([]domain.Association{record})
+	if err != nil {
+		return err
+	}
+	return insertAssociations(ctx, tx, normalized)
+}
+
+func pendingAreaProvenanceTx(ctx context.Context, tx *sql.Tx, id string) (domain.Association, error) {
+	var provenance domain.Association
+	rows, err := tx.QueryContext(ctx, `SELECT payload FROM associations ORDER BY decided_at, id`)
+	if err != nil {
+		return provenance, err
+	}
+	err = scanRows(rows, func(rows *sql.Rows) error {
+		var payload []byte
+		if err := rows.Scan(&payload); err != nil {
+			return err
+		}
+		var record domain.Association
+		if err := decode(payload, &record); err != nil {
+			return err
+		}
+		if record.PendingAreaID == id {
+			provenance = record
+		}
+		return nil
+	})
+	return provenance, err
+}
+
+func saveAreaAndActionTx(ctx context.Context, tx *sql.Tx, id string, source areas.Area, action AreaAction) error {
+	payload, err := encode(source)
+	if err != nil {
+		return err
+	}
+	if _, err := tx.ExecContext(ctx, `UPDATE areas SET payload = ? WHERE area_id = ?`, payload, id); err != nil {
+		return err
+	}
+	var previous string
+	err = tx.QueryRowContext(ctx, `SELECT value FROM metadata WHERE key = ?`, metadataAreaActions).Scan(&previous)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return err
+	}
+	line, err := canonicalRecord(action)
+	if err != nil {
+		return err
+	}
+	if _, err := tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`, metadataAreaActions, previous+string(joinLines([][]byte{line}))); err != nil {
+		return err
+	}
+	return nil
 }

@@ -11,6 +11,9 @@ set -euo pipefail
 src="$(cd "$(dirname "$0")/.." && pwd)"
 bash "$src/scripts/ci-sandbox.sh"
 
-SCOUT_TOOLS_DIR="$TOOLCHAIN_DIR/tools" bash "$src/scripts/bootstrap-tools.sh"
-printf 'SCOUT_TOOLS_DIR=%s\n' "$TOOLCHAIN_DIR/tools" >> "$GITHUB_ENV"
-printf '%s\n' "$TOOLCHAIN_DIR/tools/bin" >> "$GITHUB_PATH"
+toolchain_dir="${TOOLCHAIN_DIR:?TOOLCHAIN_DIR must name a directory outside the workspace}"
+github_env="${GITHUB_ENV:?GITHUB_ENV must name the workflow environment file}"
+github_path="${GITHUB_PATH:?GITHUB_PATH must name the workflow path file}"
+SCOUT_TOOLS_DIR="$toolchain_dir/tools" bash "$src/scripts/bootstrap-tools.sh"
+printf 'SCOUT_TOOLS_DIR=%s\n' "$toolchain_dir/tools" >>"$github_env"
+printf '%s\n' "$toolchain_dir/tools/bin" >>"$github_path"

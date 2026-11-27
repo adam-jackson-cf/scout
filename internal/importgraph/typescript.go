@@ -70,39 +70,56 @@ func stripComments(src string) string {
 		c := b[i]
 		switch {
 		case c == '"' || c == '\'' || c == '`':
-			q := c
-			i++
-			for i < len(b) && b[i] != q {
-				if b[i] == '\\' {
-					i++
-				}
-				if q != '`' && i < len(b) && b[i] == '\n' {
-					break
-				}
-				i++
-			}
-			i++
-		case c == '/' && i+1 < len(b) && b[i+1] == '/':
-			for i < len(b) && b[i] != '\n' {
-				b[i] = ' '
-				i++
-			}
-		case c == '/' && i+1 < len(b) && b[i+1] == '*':
-			for i < len(b) && !(b[i] == '*' && i+1 < len(b) && b[i+1] == '/') {
-				if b[i] != '\n' {
-					b[i] = ' '
-				}
-				i++
-			}
-			if i+1 < len(b) {
-				b[i], b[i+1] = ' ', ' '
-			}
-			i += 2
+			i = skipStringLiteral(b, i)
+		case startsWith(b, i, '/', '/'):
+			i = blankLineComment(b, i)
+		case startsWith(b, i, '/', '*'):
+			i = blankBlockComment(b, i)
 		default:
 			i++
 		}
 	}
 	return string(b)
+}
+
+func startsWith(b []byte, i int, first, second byte) bool {
+	return b[i] == first && i+1 < len(b) && b[i+1] == second
+}
+
+func skipStringLiteral(b []byte, i int) int {
+	q := b[i]
+	i++
+	for i < len(b) && b[i] != q {
+		if b[i] == '\\' {
+			i++
+		}
+		if q != '`' && i < len(b) && b[i] == '\n' {
+			break
+		}
+		i++
+	}
+	return i + 1
+}
+
+func blankLineComment(b []byte, i int) int {
+	for i < len(b) && b[i] != '\n' {
+		b[i] = ' '
+		i++
+	}
+	return i
+}
+
+func blankBlockComment(b []byte, i int) int {
+	for i < len(b) && !startsWith(b, i, '*', '/') {
+		if b[i] != '\n' {
+			b[i] = ' '
+		}
+		i++
+	}
+	if i+1 < len(b) {
+		b[i], b[i+1] = ' ', ' '
+	}
+	return i + 2
 }
 
 func parseTS(src string) []tsImport {
@@ -152,70 +169,103 @@ func loadTSConfig(root, file string, seen map[string]bool) (*tsConfig, error) {
 	}
 	seen[file] = true
 	defer delete(seen, file) // seen is the current extends chain: a diamond is not a cycle
-	b, err := readFile(root, file)
+	raw, err := readTSConfigFile(root, file)
 	if err != nil {
 		return nil, err
 	}
-	var raw struct {
-		Extends         json.RawMessage `json:"extends"` // string, or an array (TS 5)
-		CompilerOptions struct {
-			BaseURL *string             `json:"baseUrl"`
-			Paths   map[string][]string `json:"paths"`
-		} `json:"compilerOptions"`
+	extends, err := parseTSExtends(raw.Extends, file)
+	if err != nil {
+		return nil, err
+	}
+	cfg := &tsConfig{dir: dir}
+	for _, e := range extends { // later entries override earlier ones
+		if err := cfg.inherit(root, e, seen); err != nil {
+			return nil, err
+		}
+	}
+	cfg.apply(raw.CompilerOptions)
+	return cfg, nil
+}
+
+type tsConfigFile struct {
+	Extends         json.RawMessage   `json:"extends"`
+	CompilerOptions tsCompilerOptions `json:"compilerOptions"`
+}
+
+type tsCompilerOptions struct {
+	BaseURL *string             `json:"baseUrl"`
+	Paths   map[string][]string `json:"paths"`
+}
+
+func readTSConfigFile(root, file string) (tsConfigFile, error) {
+	var raw tsConfigFile
+	b, err := readFile(root, file)
+	if err != nil {
+		return raw, err
 	}
 	clean := reTrailingComma.ReplaceAllString(stripComments(string(b)), "$1")
 	if err := json.Unmarshal([]byte(clean), &raw); err != nil {
-		return nil, &configError{"tsconfig " + file + " is not valid JSON: " + err.Error()}
+		return raw, &configError{"tsconfig " + file + " is not valid JSON: " + err.Error()}
 	}
-	cfg := &tsConfig{dir: dir}
+	return raw, nil
+}
+
+func parseTSExtends(raw json.RawMessage, file string) ([]string, error) {
+	if len(raw) == 0 {
+		return nil, nil
+	}
+	var one string
+	if json.Unmarshal(raw, &one) == nil {
+		return []string{one}, nil
+	}
 	var extends []string
-	if len(raw.Extends) > 0 {
-		var one string
-		if json.Unmarshal(raw.Extends, &one) == nil {
-			extends = []string{one}
-		} else if err := json.Unmarshal(raw.Extends, &extends); err != nil {
-			return nil, &configError{"tsconfig " + file + " has an unsupported extends value: " + err.Error()}
-		}
+	if err := json.Unmarshal(raw, &extends); err != nil {
+		return nil, &configError{"tsconfig " + file + " has an unsupported extends value: " + err.Error()}
 	}
-	for _, e := range extends { // later entries override earlier ones
-		if !strings.HasPrefix(e, ".") {
-			continue
-		}
-		ext := path.Join(dir, e)
-		if !strings.HasSuffix(ext, ".json") {
-			ext += ".json"
-		}
-		parent, err := loadTSConfig(root, ext, seen)
-		if err != nil {
-			return nil, err
-		}
-		if parent.hasBase {
-			cfg.baseURL, cfg.hasBase = parent.baseURL, true
-		}
-		if parent.paths != nil {
-			cfg.paths, cfg.pathsAt = parent.paths, parent.pathsAt
-		}
+	return extends, nil
+}
+
+func (cfg *tsConfig) inherit(root, e string, seen map[string]bool) error {
+	if !strings.HasPrefix(e, ".") {
+		return nil
 	}
-	if raw.CompilerOptions.BaseURL != nil {
-		cfg.baseURL, cfg.hasBase = path.Join(dir, *raw.CompilerOptions.BaseURL), true
+	ext := path.Join(cfg.dir, e)
+	if !strings.HasSuffix(ext, ".json") {
+		ext += ".json"
 	}
-	if raw.CompilerOptions.Paths != nil {
-		cfg.paths = raw.CompilerOptions.Paths
-		cfg.pathsAt = dir
+	parent, err := loadTSConfig(root, ext, seen)
+	if err != nil {
+		return err
+	}
+	if parent.hasBase {
+		cfg.baseURL, cfg.hasBase = parent.baseURL, true
+	}
+	if parent.paths != nil {
+		cfg.paths, cfg.pathsAt = parent.paths, parent.pathsAt
+	}
+	return nil
+}
+
+func (cfg *tsConfig) apply(opts tsCompilerOptions) {
+	if opts.BaseURL != nil {
+		cfg.baseURL, cfg.hasBase = path.Join(cfg.dir, *opts.BaseURL), true
+	}
+	if opts.Paths != nil {
+		cfg.paths = opts.Paths
+		cfg.pathsAt = cfg.dir
 	}
 	// `paths` targets resolve against baseUrl when one is in effect (even an
 	// inherited `paths` after a child overrides baseUrl), else the defining dir.
 	if cfg.paths != nil && cfg.hasBase {
 		cfg.pathsAt = cfg.baseURL
 	}
-	return cfg, nil
 }
 
 func buildTS(root string, files []string, es *edgeSet) ([]string, error) {
-	fileSet := map[string]bool{}
+	r := &tsResolver{root: root, files: files, fileSet: map[string]bool{}, cfgCache: map[string]*loadedTSConfig{}}
 	var ts []string
 	for _, f := range files {
-		fileSet[f] = true
+		r.fileSet[f] = true
 		if isTSFile(f) {
 			ts = append(ts, f)
 		}
@@ -223,148 +273,177 @@ func buildTS(root string, files []string, es *edgeSet) ([]string, error) {
 	if len(ts) == 0 {
 		return nil, nil
 	}
-	type loaded struct {
-		cfg *tsConfig
-		bad *configError
-	}
-	cfgCache := map[string]*loaded{}
-	var loadErr error
-	// nearest returns the closest tsconfig above f. A config that exists but is
-	// unusable stops the search and is returned as bad.
-	nearest := func(f string) (*tsConfig, *configError) {
-		for d := path.Dir(f); ; d = path.Dir(d) {
-			dd := d
-			if dd == "." {
-				dd = ""
-			}
-			l, ok := cfgCache[dd]
-			if !ok {
-				l = &loaded{}
-				if file := path.Join(dd, "tsconfig.json"); fileSet[file] {
-					cfg, err := loadTSConfig(root, file, map[string]bool{})
-					var ce *configError
-					switch {
-					case errors.As(err, &ce):
-						l.bad = ce
-					case err != nil:
-						loadErr = err
-					default:
-						l.cfg = cfg
-					}
-				}
-				cfgCache[dd] = l
-			}
-			if l.cfg != nil || l.bad != nil {
-				return l.cfg, l.bad
-			}
-			if d == "." || d == "/" {
-				return nil, nil
-			}
-		}
-	}
-	// resolveFile tries p as file or directory index.
-	resolveFile := func(p string) (string, bool) {
-		if isTSFile(p) && fileSet[p] {
-			return p, true
-		}
-		cands := []string{p}
-		for _, pair := range [][2]string{{".js", ".ts"}, {".js", ".tsx"}, {".jsx", ".tsx"}, {".mjs", ".mts"}, {".cjs", ".cts"}} {
-			if strings.HasSuffix(p, pair[0]) {
-				cands = append(cands, strings.TrimSuffix(p, pair[0])+pair[1])
-			}
-		}
-		for _, c := range cands {
-			if isTSFile(c) && fileSet[c] {
-				return c, true
-			}
-		}
-		for _, e := range tsExts {
-			if fileSet[p+e] && isTSFile(p+e) {
-				return p + e, true
-			}
-		}
-		for _, e := range tsExts {
-			ix := path.Join(p, "index"+e)
-			if fileSet[ix] {
-				return ix, true
-			}
-		}
-		return "", false
-	}
-	exists := func(p string) bool { // any repo file/dir at p (assets such as .css/.json)
-		if fileSet[p] {
-			return true
-		}
-		pre := p + "/"
-		i := sort.SearchStrings(files, pre)
-		return i < len(files) && strings.HasPrefix(files[i], pre)
-	}
 	for _, f := range ts {
-		src, err := readFile(root, f)
-		if err != nil {
+		if err := r.addFileEdges(es, f); err != nil {
 			return nil, err
-		}
-		cfg, bad := nearest(f)
-		if loadErr != nil {
-			return nil, loadErr
-		}
-		if bad != nil {
-			es.skip(f, bad.msg)
-		}
-		for _, imp := range parseTS(string(src)) {
-			spec := imp.spec
-			if strings.HasPrefix(spec, ".") {
-				p := path.Join(path.Dir(f), spec)
-				if t, ok := resolveFile(p); ok {
-					es.add(f, t, imp.typeOnly)
-				} else if !exists(p) {
-					es.unres[Unresolved{f, spec}] = true
-				}
-				continue
-			}
-			if cfg != nil {
-				if t, matched, ok := resolveAlias(cfg, spec, resolveFile); matched {
-					if ok {
-						es.add(f, t, imp.typeOnly)
-					} else {
-						es.unres[Unresolved{f, spec}] = true
-					}
-					continue
-				}
-				if cfg.hasBase {
-					if t, ok := resolveFile(path.Join(cfg.baseURL, spec)); ok {
-						es.add(f, t, imp.typeOnly)
-						continue
-					}
-				}
-			}
-			es.ext++
 		}
 	}
 	return ts, nil
 }
 
+type loadedTSConfig struct {
+	cfg *tsConfig
+	bad *configError
+}
+
+type tsResolver struct {
+	root     string
+	files    []string
+	fileSet  map[string]bool
+	cfgCache map[string]*loadedTSConfig
+	loadErr  error
+}
+
+func (r *tsResolver) addFileEdges(es *edgeSet, f string) error {
+	src, err := readFile(r.root, f)
+	if err != nil {
+		return err
+	}
+	cfg, bad := r.nearest(f)
+	if r.loadErr != nil {
+		return r.loadErr
+	}
+	if bad != nil {
+		es.skip(f, bad.msg)
+	}
+	for _, imp := range parseTS(string(src)) {
+		r.addImport(es, f, cfg, imp)
+	}
+	return nil
+}
+
+// nearest returns the closest tsconfig above f. A config that exists but is
+// unusable stops the search and is returned as bad.
+func (r *tsResolver) nearest(f string) (*tsConfig, *configError) {
+	for d := path.Dir(f); ; d = path.Dir(d) {
+		dd := d
+		if dd == "." {
+			dd = ""
+		}
+		l := r.configIn(dd)
+		if l.cfg != nil || l.bad != nil {
+			return l.cfg, l.bad
+		}
+		if d == "." || d == "/" {
+			return nil, nil
+		}
+	}
+}
+
+func (r *tsResolver) configIn(dd string) *loadedTSConfig {
+	if l, ok := r.cfgCache[dd]; ok {
+		return l
+	}
+	l := &loadedTSConfig{}
+	if file := path.Join(dd, "tsconfig.json"); r.fileSet[file] {
+		cfg, err := loadTSConfig(r.root, file, map[string]bool{})
+		var ce *configError
+		switch {
+		case errors.As(err, &ce):
+			l.bad = ce
+		case err != nil:
+			r.loadErr = err
+		default:
+			l.cfg = cfg
+		}
+	}
+	r.cfgCache[dd] = l
+	return l
+}
+
+// resolveFile tries p as file or directory index.
+func (r *tsResolver) resolveFile(p string) (string, bool) {
+	if c, ok := r.firstTSFile(tsRewriteCandidates(p)); ok {
+		return c, true
+	}
+	if c, ok := r.firstTSFile(withSuffixes(p, tsExts)); ok {
+		return c, true
+	}
+	for _, e := range tsExts {
+		ix := path.Join(p, "index"+e)
+		if r.fileSet[ix] {
+			return ix, true
+		}
+	}
+	return "", false
+}
+
+func tsRewriteCandidates(p string) []string {
+	cands := []string{p}
+	for _, pair := range [][2]string{{".js", ".ts"}, {".js", ".tsx"}, {".jsx", ".tsx"}, {".mjs", ".mts"}, {".cjs", ".cts"}} {
+		if strings.HasSuffix(p, pair[0]) {
+			cands = append(cands, strings.TrimSuffix(p, pair[0])+pair[1])
+		}
+	}
+	return cands
+}
+
+func withSuffixes(p string, suffixes []string) []string {
+	out := make([]string, len(suffixes))
+	for i, s := range suffixes {
+		out[i] = p + s
+	}
+	return out
+}
+
+func (r *tsResolver) firstTSFile(cands []string) (string, bool) {
+	for _, c := range cands {
+		if isTSFile(c) && r.fileSet[c] {
+			return c, true
+		}
+	}
+	return "", false
+}
+
+func (r *tsResolver) anyRepoPathAt(p string) bool {
+	if r.fileSet[p] {
+		return true
+	}
+	pre := p + "/"
+	i := sort.SearchStrings(r.files, pre)
+	return i < len(r.files) && strings.HasPrefix(r.files[i], pre)
+}
+
+func (r *tsResolver) addImport(es *edgeSet, f string, cfg *tsConfig, imp tsImport) {
+	if strings.HasPrefix(imp.spec, ".") {
+		p := path.Join(path.Dir(f), imp.spec)
+		if t, ok := r.resolveFile(p); ok {
+			es.add(f, t, imp.typeOnly)
+		} else if !r.anyRepoPathAt(p) {
+			es.unres[Unresolved{f, imp.spec}] = true
+		}
+		return
+	}
+	if cfg != nil && r.addConfigured(es, f, cfg, imp) {
+		return
+	}
+	es.ext++
+}
+
+func (r *tsResolver) addConfigured(es *edgeSet, f string, cfg *tsConfig, imp tsImport) bool {
+	if t, matched, ok := resolveAlias(cfg, imp.spec, r.resolveFile); matched {
+		if ok {
+			es.add(f, t, imp.typeOnly)
+		} else {
+			es.unres[Unresolved{f, imp.spec}] = true
+		}
+		return true
+	}
+	if !cfg.hasBase {
+		return false
+	}
+	t, ok := r.resolveFile(path.Join(cfg.baseURL, imp.spec))
+	if ok {
+		es.add(f, t, imp.typeOnly)
+	}
+	return ok
+}
+
 // resolveAlias matches spec against tsconfig paths (longest literal prefix wins).
 func resolveAlias(cfg *tsConfig, spec string, resolve func(string) (string, bool)) (target string, matched, ok bool) {
-	keys := make([]string, 0, len(cfg.paths))
-	for k := range cfg.paths {
-		keys = append(keys, k)
-	}
-	sort.Slice(keys, func(i, j int) bool {
-		if len(keys[i]) != len(keys[j]) {
-			return len(keys[i]) > len(keys[j])
-		}
-		return keys[i] < keys[j]
-	})
-	for _, k := range keys {
-		var capture string
-		if star := strings.Index(k, "*"); star >= 0 {
-			pre, post := k[:star], k[star+1:]
-			if len(spec) < len(pre)+len(post) || !strings.HasPrefix(spec, pre) || !strings.HasSuffix(spec, post) {
-				continue
-			}
-			capture = spec[len(pre) : len(spec)-len(post)]
-		} else if k != spec {
+	for _, k := range aliasKeys(cfg.paths) {
+		capture, hit := matchAlias(k, spec)
+		if !hit {
 			continue
 		}
 		for _, tpl := range cfg.paths[k] {
@@ -379,4 +458,30 @@ func resolveAlias(cfg *tsConfig, spec string, resolve func(string) (string, bool
 		return "", true, false
 	}
 	return "", false, false
+}
+
+func aliasKeys(paths map[string][]string) []string {
+	keys := make([]string, 0, len(paths))
+	for k := range paths {
+		keys = append(keys, k)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		if len(keys[i]) != len(keys[j]) {
+			return len(keys[i]) > len(keys[j])
+		}
+		return keys[i] < keys[j]
+	})
+	return keys
+}
+
+func matchAlias(k, spec string) (string, bool) {
+	star := strings.Index(k, "*")
+	if star < 0 {
+		return "", k == spec
+	}
+	pre, post := k[:star], k[star+1:]
+	if len(spec) < len(pre)+len(post) || !strings.HasPrefix(spec, pre) || !strings.HasSuffix(spec, post) {
+		return "", false
+	}
+	return spec[len(pre) : len(spec)-len(post)], true
 }

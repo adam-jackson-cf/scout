@@ -1,9 +1,12 @@
+//go:build boundary
+
 package association
 
 import (
 	"context"
 	"testing"
 
+	"scout/internal/areas"
 	"scout/internal/domain"
 )
 
@@ -44,6 +47,12 @@ func TestTerraPendingVisibleToNextMerge(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if !pendingRenamePropagated(t, aa) {
+		t.Fatalf("pending rename not propagated: %+v", aa)
+	}
+}
+func pendingRenamePropagated(t *testing.T, aa []areas.Area) bool {
+	t.Helper()
 	found := false
 	for _, a := range aa {
 		if a.Status != "pending" {
@@ -58,7 +67,5 @@ func TestTerraPendingVisibleToNextMerge(t *testing.T) {
 			}
 		}
 	}
-	if !found {
-		t.Fatalf("pending rename not propagated: %+v", aa)
-	}
+	return found
 }

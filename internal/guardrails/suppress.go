@@ -69,10 +69,6 @@ type Finding struct {
 	Evidence  Evidence `json:"evidence"`
 }
 
-// BlockingEligible reports whether the finding belongs to the allow-listed
-// unscoped check (as opposed to the report-only scoped one).
-func (f Finding) BlockingEligible() bool { return f.CheckID == UnscopedCheckID }
-
 // SuppressAdded returns suppressions on lines added in head vs base. base and
 // head map repo-relative path to content; a path missing from base is a new
 // file. changed restricts the examined paths; empty means every head path.
@@ -152,6 +148,19 @@ type addedLine struct {
 // hunk to provide base evidence.
 func addedLines(base, head []string) []addedLine {
 	// common prefix / suffix
+	pre, suf := commonAffixes(base, head)
+	bm, hm := base[pre:len(base)-suf], head[pre:len(head)-suf]
+	matchedB := make([]bool, len(bm))
+	matchedH := make([]bool, len(hm))
+	if len(bm)*len(hm) <= 4_000_000 {
+		lcsMark(bm, hm, matchedB, matchedH)
+	}
+	// hunks: maximal runs of unmatched lines between matches
+	hunks := unmatchedHunks(matchedB, matchedH, pre)
+	return unmovedAdditions(base, head, hunks)
+}
+
+func commonAffixes(base, head []string) (int, int) {
 	pre := 0
 	for pre < len(base) && pre < len(head) && base[pre] == head[pre] {
 		pre++
@@ -160,35 +169,40 @@ func addedLines(base, head []string) []addedLine {
 	for suf < len(base)-pre && suf < len(head)-pre && base[len(base)-1-suf] == head[len(head)-1-suf] {
 		suf++
 	}
-	bm, hm := base[pre:len(base)-suf], head[pre:len(head)-suf]
-	matchedB := make([]bool, len(bm))
-	matchedH := make([]bool, len(hm))
-	if len(bm)*len(hm) <= 4_000_000 {
-		lcsMark(bm, hm, matchedB, matchedH)
+	return pre, suf
+}
+
+type hunk struct{ bs, hs []int }
+
+func unmatchedRun(matched []bool, i, offset int) ([]int, int) {
+	var run []int
+	for i < len(matched) && !matched[i] {
+		run = append(run, i+offset)
+		i++
 	}
-	// hunks: maximal runs of unmatched lines between matches
-	type hunk struct{ bs, hs []int }
+	return run, i
+}
+
+func unmatchedHunks(matchedB, matchedH []bool, pre int) []hunk {
 	var hunks []hunk
 	bi, hi := 0, 0
-	for bi < len(bm) || hi < len(hm) {
+	for bi < len(matchedB) || hi < len(matchedH) {
 		var h hunk
-		for bi < len(bm) && !matchedB[bi] {
-			h.bs = append(h.bs, bi+pre)
-			bi++
-		}
-		for hi < len(hm) && !matchedH[hi] {
-			h.hs = append(h.hs, hi+pre)
-			hi++
-		}
+		h.bs, bi = unmatchedRun(matchedB, bi, pre)
+		h.hs, hi = unmatchedRun(matchedH, hi, pre)
 		if len(h.bs) > 0 || len(h.hs) > 0 {
 			hunks = append(hunks, h)
 		}
 		// skip matched pair
-		if bi < len(bm) && hi < len(hm) && matchedB[bi] && matchedH[hi] {
+		if bi < len(matchedB) && hi < len(matchedH) && matchedB[bi] && matchedH[hi] {
 			bi++
 			hi++
 		}
 	}
+	return hunks
+}
+
+func unmovedAdditions(base, head []string, hunks []hunk) []addedLine {
 	removed := map[string]int{}
 	for _, h := range hunks {
 		for _, b := range h.bs {
@@ -257,76 +271,120 @@ type lineInfo struct {
 	comments []comment
 }
 
+type lexer struct {
+	l       lang
+	inBlock bool   // /* */ (Go, TS)
+	triple  string // python triple quote delimiter in effect
+	raw     bool   // Go raw string / TS template literal
+}
+
+type lineScan struct {
+	line string
+	i    int
+	code strings.Builder
+	cms  []comment
+}
+
 func lex(l lang, lines []string) []lineInfo {
 	out := make([]lineInfo, len(lines))
-	var (
-		inBlock bool   // /* */ (Go, TS)
-		triple  string // python triple quote delimiter in effect
-		raw     bool   // Go raw string / TS template literal
-	)
+	lx := &lexer{l: l}
 	for li, line := range lines {
-		var code strings.Builder
-		var cms []comment
-		i := 0
-		for i < len(line) {
-			switch {
-			case inBlock:
-				end := strings.Index(line[i:], "*/")
-				if end < 0 {
-					cms = append(cms, comment{line[i:], true})
-					i = len(line)
-				} else {
-					cms = append(cms, comment{line[i : i+end], true})
-					i += end + 2
-					inBlock = false
-				}
-			case triple != "":
-				end := strings.Index(line[i:], triple)
-				if end < 0 {
-					i = len(line)
-				} else {
-					i += end + 3
-					triple = ""
-					code.WriteString("   ")
-				}
-			case raw:
-				end := strings.IndexAny(line[i:], "`")
-				if end < 0 {
-					i = len(line)
-				} else {
-					i += end + 1
-					raw = false
-				}
-			default:
-				c := line[i]
-				switch {
-				case l == langPython && c == '#':
-					cms = append(cms, comment{line[i+1:], false})
-					i = len(line)
-				case l != langPython && c == '/' && i+1 < len(line) && line[i+1] == '/':
-					cms = append(cms, comment{line[i+2:], false})
-					i = len(line)
-				case l != langPython && c == '/' && i+1 < len(line) && line[i+1] == '*':
-					inBlock = true
-					i += 2
-				case l == langPython && (c == '"' || c == '\'') && strings.HasPrefix(line[i:], strings.Repeat(string(c), 3)):
-					triple = strings.Repeat(string(c), 3)
-					i += 3
-				case c == '"' || c == '\'':
-					i = skipString(line, i)
-					code.WriteString(`""`)
-				case l != langPython && c == '`' && (l == langGo || l == langTS):
-					raw = true
-					i++
-				default:
-					code.WriteByte(c)
-					i++
-				}
-			}
+		s := &lineScan{line: line}
+		for s.i < len(s.line) {
+			lx.step(s)
 		}
-		out[li] = lineInfo{code: code.String(), comments: cms}
+		out[li] = lineInfo{code: s.code.String(), comments: s.cms}
 	}
 	return out
+}
+
+func (lx *lexer) step(s *lineScan) {
+	switch {
+	case lx.inBlock:
+		lx.blockComment(s)
+	case lx.triple != "":
+		lx.tripleString(s)
+	case lx.raw:
+		lx.rawString(s)
+	case lx.l == langPython:
+		lx.pythonCode(s)
+	default:
+		lx.cStyleCode(s)
+	}
+}
+
+func (lx *lexer) blockComment(s *lineScan) {
+	end := strings.Index(s.line[s.i:], "*/")
+	if end < 0 {
+		s.cms = append(s.cms, comment{s.line[s.i:], true})
+		s.i = len(s.line)
+	} else {
+		s.cms = append(s.cms, comment{s.line[s.i : s.i+end], true})
+		s.i += end + 2
+		lx.inBlock = false
+	}
+}
+
+func (lx *lexer) tripleString(s *lineScan) {
+	end := strings.Index(s.line[s.i:], lx.triple)
+	if end < 0 {
+		s.i = len(s.line)
+	} else {
+		s.i += end + 3
+		lx.triple = ""
+		s.code.WriteString("   ")
+	}
+}
+
+func (lx *lexer) rawString(s *lineScan) {
+	end := strings.IndexAny(s.line[s.i:], "`")
+	if end < 0 {
+		s.i = len(s.line)
+	} else {
+		s.i += end + 1
+		lx.raw = false
+	}
+}
+
+func (lx *lexer) pythonCode(s *lineScan) {
+	c := s.line[s.i]
+	switch {
+	case c == '#':
+		s.cms = append(s.cms, comment{s.line[s.i+1:], false})
+		s.i = len(s.line)
+	case (c == '"' || c == '\'') && strings.HasPrefix(s.line[s.i:], strings.Repeat(string(c), 3)):
+		lx.triple = strings.Repeat(string(c), 3)
+		s.i += 3
+	default:
+		s.stringOrByte(c)
+	}
+}
+
+func (lx *lexer) cStyleCode(s *lineScan) {
+	c := s.line[s.i]
+	switch {
+	case strings.HasPrefix(s.line[s.i:], "//"):
+		s.cms = append(s.cms, comment{s.line[s.i+2:], false})
+		s.i = len(s.line)
+	case strings.HasPrefix(s.line[s.i:], "/*"):
+		lx.inBlock = true
+		s.i += 2
+	case c == '`' && (lx.l == langGo || lx.l == langTS):
+		lx.raw = true
+		s.i++
+	default:
+		s.stringOrByte(c)
+	}
+}
+
+func (s *lineScan) stringOrByte(c byte) {
+	if c == '"' || c == '\'' {
+		s.i = skipString(s.line, s.i)
+		s.code.WriteString(`""`)
+		return
+	}
+	s.code.WriteByte(c)
+	s.i++
 }
 
 // skipString returns the index after the single-line string starting at i
@@ -362,33 +420,43 @@ func lineHits(l lang, lines []string) [][]hit {
 	infos := lex(l, lines)
 	out := make([][]hit, len(infos))
 	for i, in := range infos {
-		var hs []hit
-		switch l {
-		case langPython:
-			if reNoTypeCheck.MatchString(in.code) {
-				hs = append(hs, hit{"no_type_check", false})
-			}
-			for _, c := range in.comments {
-				hs = append(hs, pythonComment(c.text)...)
-			}
-		case langGo:
-			for _, c := range in.comments {
-				if c.block {
-					continue
-				}
-				if m := reNolint.FindStringSubmatch(c.text); m != nil {
-					scoped := m[1] != "" && m[2] != "" && !nolintHasAll(m[2])
-					hs = append(hs, hit{"nolint", scoped})
-				}
-			}
-		case langTS:
-			for _, c := range in.comments {
-				hs = append(hs, tsComment(c.text)...)
-			}
-		}
-		out[i] = hs
+		out[i] = infoHits(l, in)
 	}
 	return out
+}
+
+func infoHits(l lang, in lineInfo) []hit {
+	var hs []hit
+	switch l {
+	case langPython:
+		if reNoTypeCheck.MatchString(in.code) {
+			hs = append(hs, hit{"no_type_check", false})
+		}
+		for _, c := range in.comments {
+			hs = append(hs, pythonComment(c.text)...)
+		}
+	case langGo:
+		hs = goNolintHits(in.comments)
+	case langTS:
+		for _, c := range in.comments {
+			hs = append(hs, tsComment(c.text)...)
+		}
+	}
+	return hs
+}
+
+func goNolintHits(comments []comment) []hit {
+	var hs []hit
+	for _, c := range comments {
+		if c.block {
+			continue
+		}
+		if m := reNolint.FindStringSubmatch(c.text); m != nil {
+			scoped := m[1] != "" && m[2] != "" && !nolintHasAll(m[2])
+			hs = append(hs, hit{"nolint", scoped})
+		}
+	}
+	return hs
 }
 
 func nolintHasAll(list string) bool {

@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"slices"
 )
 
 // ScoutExcludePattern keeps Scout's own state (.scout/: SQLite, artifacts and
@@ -26,29 +27,47 @@ func (c *Client) ensureScoutExcluded() error {
 		return nil
 	}
 	path := filepath.Join(c.stateDir, "config.json")
+	config, err := readStateConfig(path)
+	if err != nil {
+		return err
+	}
+	exclude, err := stateConfigExclude(config)
+	if err != nil {
+		return err
+	}
+	if slices.Contains(exclude, ScoutExcludePattern) {
+		return nil
+	}
+	return writeStateConfigExclude(path, config, append(exclude, ScoutExcludePattern))
+}
+
+func readStateConfig(path string) (map[string]json.RawMessage, error) {
 	raw, err := os.ReadFile(path)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
-			return errors.New("Clawpatch state config is missing; cannot exclude .scout/ from the inventory")
+			return nil, errors.New("clawpatch state config is missing; cannot exclude .scout/ from the inventory")
 		}
-		return fmt.Errorf("read Clawpatch state config: %w", err)
+		return nil, fmt.Errorf("read Clawpatch state config: %w", err)
 	}
 	var config map[string]json.RawMessage
 	if err := json.Unmarshal(raw, &config); err != nil {
-		return fmt.Errorf("parse Clawpatch state config: %w", err)
+		return nil, fmt.Errorf("parse Clawpatch state config: %w", err)
 	}
+	return config, nil
+}
+
+func stateConfigExclude(config map[string]json.RawMessage) ([]string, error) {
 	var exclude []string
 	if rawExclude, ok := config["exclude"]; ok {
 		if err := json.Unmarshal(rawExclude, &exclude); err != nil {
-			return fmt.Errorf("parse Clawpatch state config exclude: %w", err)
+			return nil, fmt.Errorf("parse Clawpatch state config exclude: %w", err)
 		}
 	}
-	for _, pattern := range exclude {
-		if pattern == ScoutExcludePattern {
-			return nil
-		}
-	}
-	encoded, err := json.Marshal(append(exclude, ScoutExcludePattern))
+	return exclude, nil
+}
+
+func writeStateConfigExclude(path string, config map[string]json.RawMessage, exclude []string) error {
+	encoded, err := json.Marshal(exclude)
 	if err != nil {
 		return err
 	}

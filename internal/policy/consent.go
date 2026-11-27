@@ -100,36 +100,48 @@ func parseDecisions(r *rawDecisions) (Decisions, error) {
 	if r == nil {
 		return d, nil
 	}
-	if r.Provider != "" {
-		if r.Provider != ProviderJev {
-			return Decisions{}, fmt.Errorf("decisions.provider %q must be %q", r.Provider, ProviderJev)
-		}
+	if r.Provider != "" && r.Provider != ProviderJev {
+		return Decisions{}, fmt.Errorf("decisions.provider %q must be %q", r.Provider, ProviderJev)
 	}
+	if err := applyDecisionCaps(&d, r); err != nil {
+		return Decisions{}, err
+	}
+	d.Enabled, d.Model, d.EgressAcknowledged = r.Enabled, strings.TrimSpace(r.Model), r.EgressAcknowledged
+	if err := validateDecisionModel(d); err != nil {
+		return Decisions{}, err
+	}
+	return d, nil
+}
+
+func applyDecisionCaps(d *Decisions, r *rawDecisions) error {
 	if r.MaxCostUSD < 0 || math.IsNaN(r.MaxCostUSD) || math.IsInf(r.MaxCostUSD, 0) {
-		return Decisions{}, errors.New("decisions.max_cost_usd must be a non-negative number")
+		return errors.New("decisions.max_cost_usd must be a non-negative number")
 	}
 	if r.MaxCostUSD > 0 {
 		d.MaxCostUSD = r.MaxCostUSD
 	}
 	if r.MaxPerRun < 0 {
-		return Decisions{}, errors.New("decisions.max_per_run must not be negative")
+		return errors.New("decisions.max_per_run must not be negative")
 	}
 	if r.MaxPerRun > 0 {
 		d.MaxPerRun = r.MaxPerRun
 	}
-	d.Enabled, d.Model, d.EgressAcknowledged = r.Enabled, strings.TrimSpace(r.Model), r.EgressAcknowledged
+	return nil
+}
+
+func validateDecisionModel(d Decisions) error {
 	if d.Model != "" && IsModelAlias(d.Model) {
-		return Decisions{}, fmt.Errorf("decisions.model %q is an alias; pin an exact model id", d.Model)
+		return fmt.Errorf("decisions.model %q is an alias; pin an exact model id", d.Model)
 	}
 	if d.Enabled {
 		if d.Model == "" {
-			return Decisions{}, errors.New("decisions.model is required when decisions.enabled is true")
+			return errors.New("decisions.model is required when decisions.enabled is true")
 		}
 		if !d.EgressAcknowledged {
-			return Decisions{}, errors.New("decisions.egress_acknowledged must be true when decisions.enabled is true")
+			return errors.New("decisions.egress_acknowledged must be true when decisions.enabled is true")
 		}
 	}
-	return d, nil
+	return nil
 }
 
 func parseModelCLI(r *rawModelCLI) (ModelCLI, error) {
@@ -178,120 +190,162 @@ type ConsentUpdate struct {
 // with Parse; on error nothing is returned. When nothing changes the input is
 // returned unchanged, so re-running init is idempotent.
 func ApplyConsent(existing []byte, u ConsentUpdate) ([]byte, bool, error) {
-	if len(bytes.TrimSpace(existing)) != 0 {
-		if _, err := Parse(existing); err != nil {
-			return nil, false, err
-		}
-	}
-	var doc yaml.Node
-	if len(bytes.TrimSpace(existing)) != 0 {
-		if err := yaml.Unmarshal(existing, &doc); err != nil {
-			return nil, false, fmt.Errorf("invalid policy: %w", err)
-		}
-	}
-	if doc.Kind == 0 {
-		doc = yaml.Node{Kind: yaml.DocumentNode, Content: []*yaml.Node{{Kind: yaml.MappingNode, Tag: "!!map"}}}
+	doc, err := consentDocument(existing)
+	if err != nil {
+		return nil, false, err
 	}
 	root := doc.Content[0]
 	if root.Kind != yaml.MappingNode {
 		return nil, false, errors.New("invalid policy: top level must be a mapping")
 	}
-	changed := false
-	set := func(m *yaml.Node, key string, value *yaml.Node) {
-		for i := 0; i+1 < len(m.Content); i += 2 {
-			if m.Content[i].Value == key {
-				if !sameNode(m.Content[i+1], value) {
-					m.Content[i+1] = value
-					changed = true
-				}
-				return
-			}
-		}
-		m.Content = append(m.Content, &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: key}, value)
-		changed = true
-	}
-	section := func(key string) *yaml.Node {
-		for i := 0; i+1 < len(root.Content); i += 2 {
-			if root.Content[i].Value == key {
-				if root.Content[i+1].Kind != yaml.MappingNode {
-					root.Content[i+1] = &yaml.Node{Kind: yaml.MappingNode, Tag: "!!map"}
-					changed = true
-				}
-				return root.Content[i+1]
-			}
-		}
-		m := &yaml.Node{Kind: yaml.MappingNode, Tag: "!!map"}
-		root.Content = append(root.Content, &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: key}, m)
-		changed = true
-		return m
-	}
-	hasKey := func(key string) bool {
-		for i := 0; i+1 < len(root.Content); i += 2 {
-			if root.Content[i].Value == key {
-				return true
-			}
-		}
-		return false
-	}
-	str := func(v string) *yaml.Node { return &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: v} }
-	boolean := func(v bool) *yaml.Node {
-		return &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!bool", Value: fmt.Sprint(v)}
-	}
-
-	switch {
-	case u.Profile != nil:
-		set(root, "profile", str(*u.Profile))
-	case !hasKey("profile"):
-		set(root, "profile", str(ProfileReport))
-	}
-	if u.DecisionsEnabled != nil || u.Model != nil || u.MaxPerRun != nil || u.MaxCostUSD != nil || u.EgressAcknowledged != nil {
-		d := section("decisions")
-		if u.DecisionsEnabled != nil {
-			set(d, "enabled", boolean(*u.DecisionsEnabled))
-			set(d, "provider", str(ProviderJev))
-		}
-		if u.Model != nil {
-			set(d, "model", str(*u.Model))
-		}
-		if u.MaxPerRun != nil {
-			set(d, "max_per_run", &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!int", Value: fmt.Sprint(*u.MaxPerRun)})
-		}
-		if u.MaxCostUSD != nil {
-			set(d, "max_cost_usd", &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!float", Value: strconv.FormatFloat(*u.MaxCostUSD, 'f', -1, 64)})
-		}
-		if u.EgressAcknowledged != nil {
-			set(d, "egress_acknowledged", boolean(*u.EgressAcknowledged))
-		}
-	}
-	if u.ModelCLIProvider != nil || u.ModelCLILanes != nil {
-		m := section("model_cli")
-		if u.ModelCLIProvider != nil {
-			set(m, "provider", str(*u.ModelCLIProvider))
-		}
-		if u.ModelCLILanes != nil {
-			seq := &yaml.Node{Kind: yaml.SequenceNode, Tag: "!!seq", Style: yaml.FlowStyle}
-			for _, l := range *u.ModelCLILanes {
-				seq.Content = append(seq.Content, str(l))
-			}
-			set(m, "lanes", seq)
-		}
-	}
-	if !changed {
+	e := &consentEditor{root: root}
+	e.applyProfile(u.Profile)
+	e.applyDecisions(u)
+	e.applyModelCLI(u)
+	if !e.changed {
 		return existing, false, nil
 	}
+	out, err := encodePolicy(&doc)
+	if err != nil {
+		return nil, false, err
+	}
+	return out, true, nil
+}
+
+func consentDocument(existing []byte) (yaml.Node, error) {
+	var doc yaml.Node
+	if len(bytes.TrimSpace(existing)) != 0 {
+		if _, err := Parse(existing); err != nil {
+			return yaml.Node{}, err
+		}
+		if err := yaml.Unmarshal(existing, &doc); err != nil {
+			return yaml.Node{}, fmt.Errorf("invalid policy: %w", err)
+		}
+	}
+	if doc.Kind == 0 {
+		doc = yaml.Node{Kind: yaml.DocumentNode, Content: []*yaml.Node{{Kind: yaml.MappingNode, Tag: "!!map"}}}
+	}
+	return doc, nil
+}
+
+func encodePolicy(doc *yaml.Node) ([]byte, error) {
 	var buf bytes.Buffer
 	enc := yaml.NewEncoder(&buf)
 	enc.SetIndent(2)
-	if err := enc.Encode(&doc); err != nil {
-		return nil, false, err
+	if err := enc.Encode(doc); err != nil {
+		return nil, err
 	}
 	if err := enc.Close(); err != nil {
-		return nil, false, err
+		return nil, err
 	}
 	if _, err := Parse(buf.Bytes()); err != nil {
-		return nil, false, err
+		return nil, err
 	}
-	return buf.Bytes(), true, nil
+	return buf.Bytes(), nil
+}
+
+type consentEditor struct {
+	root    *yaml.Node
+	changed bool
+}
+
+func (e *consentEditor) set(m *yaml.Node, key string, value *yaml.Node) {
+	for i := 0; i+1 < len(m.Content); i += 2 {
+		if m.Content[i].Value == key {
+			if !sameNode(m.Content[i+1], value) {
+				m.Content[i+1] = value
+				e.changed = true
+			}
+			return
+		}
+	}
+	m.Content = append(m.Content, &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: key}, value)
+	e.changed = true
+}
+
+func (e *consentEditor) section(key string) *yaml.Node {
+	root := e.root
+	for i := 0; i+1 < len(root.Content); i += 2 {
+		if root.Content[i].Value == key {
+			if root.Content[i+1].Kind != yaml.MappingNode {
+				root.Content[i+1] = &yaml.Node{Kind: yaml.MappingNode, Tag: "!!map"}
+				e.changed = true
+			}
+			return root.Content[i+1]
+		}
+	}
+	m := &yaml.Node{Kind: yaml.MappingNode, Tag: "!!map"}
+	root.Content = append(root.Content, &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: key}, m)
+	e.changed = true
+	return m
+}
+
+func (e *consentEditor) hasKey(key string) bool {
+	for i := 0; i+1 < len(e.root.Content); i += 2 {
+		if e.root.Content[i].Value == key {
+			return true
+		}
+	}
+	return false
+}
+
+func strNode(v string) *yaml.Node { return &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!str", Value: v} }
+
+func boolNode(v bool) *yaml.Node {
+	return &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!bool", Value: fmt.Sprint(v)}
+}
+
+func (e *consentEditor) applyProfile(profile *string) {
+	switch {
+	case profile != nil:
+		e.set(e.root, "profile", strNode(*profile))
+	case !e.hasKey("profile"):
+		e.set(e.root, "profile", strNode(ProfileReport))
+	}
+}
+
+func decisionsRequested(u ConsentUpdate) bool {
+	return u.DecisionsEnabled != nil || u.Model != nil || u.MaxPerRun != nil || u.MaxCostUSD != nil || u.EgressAcknowledged != nil
+}
+
+func (e *consentEditor) applyDecisions(u ConsentUpdate) {
+	if !decisionsRequested(u) {
+		return
+	}
+	d := e.section("decisions")
+	if u.DecisionsEnabled != nil {
+		e.set(d, "enabled", boolNode(*u.DecisionsEnabled))
+		e.set(d, "provider", strNode(ProviderJev))
+	}
+	if u.Model != nil {
+		e.set(d, "model", strNode(*u.Model))
+	}
+	if u.MaxPerRun != nil {
+		e.set(d, "max_per_run", &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!int", Value: fmt.Sprint(*u.MaxPerRun)})
+	}
+	if u.MaxCostUSD != nil {
+		e.set(d, "max_cost_usd", &yaml.Node{Kind: yaml.ScalarNode, Tag: "!!float", Value: strconv.FormatFloat(*u.MaxCostUSD, 'f', -1, 64)})
+	}
+	if u.EgressAcknowledged != nil {
+		e.set(d, "egress_acknowledged", boolNode(*u.EgressAcknowledged))
+	}
+}
+
+func (e *consentEditor) applyModelCLI(u ConsentUpdate) {
+	if u.ModelCLIProvider == nil && u.ModelCLILanes == nil {
+		return
+	}
+	m := e.section("model_cli")
+	if u.ModelCLIProvider != nil {
+		e.set(m, "provider", strNode(*u.ModelCLIProvider))
+	}
+	if u.ModelCLILanes != nil {
+		seq := &yaml.Node{Kind: yaml.SequenceNode, Tag: "!!seq", Style: yaml.FlowStyle}
+		for _, l := range *u.ModelCLILanes {
+			seq.Content = append(seq.Content, strNode(l))
+		}
+		e.set(m, "lanes", seq)
+	}
 }
 
 // sameNode reports whether two scalar or flow-sequence nodes carry the same value.

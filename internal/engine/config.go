@@ -2,7 +2,6 @@
 package engine
 
 import (
-	"scout/internal/analyzers"
 	"scout/internal/association"
 	"scout/internal/clawpatch"
 	"scout/internal/contextual"
@@ -22,7 +21,6 @@ type Config struct {
 	// ModelLanes are the model-CLI lanes opted in by policy; any other
 	// model-CLI lane is skipped without invoking a CLI. See ApplyModelCLIPolicy.
 	ModelLanes   []string
-	Registry     *analyzers.Registry
 	Dependencies []inventory.DependencyEdge
 	// AssociationGuard is the committed policy's catalogue refresh guard.
 	AssociationGuard policy.AssociationGuard

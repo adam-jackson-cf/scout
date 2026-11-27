@@ -1,8 +1,11 @@
+//go:build boundary
+
 package shadow
 
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -19,7 +22,7 @@ type p08Provider struct {
 	url    string
 }
 
-func (p p08Provider) get(ctx context.Context, path string, dst any) error {
+func (p p08Provider) get(ctx context.Context, path string, dst any) (err error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, p.url+path, nil)
 	if err != nil {
 		return err
@@ -28,7 +31,7 @@ func (p p08Provider) get(ctx context.Context, path string, dst any) error {
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer func() { err = errors.Join(err, res.Body.Close()) }()
 	if res.StatusCode != http.StatusOK {
 		return fmt.Errorf("provider HTTP %d", res.StatusCode)
 	}

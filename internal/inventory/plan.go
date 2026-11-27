@@ -3,6 +3,7 @@ package inventory
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -56,124 +57,178 @@ type PlanResult struct {
 // it never turns a whole prior run into a single cache entry.
 func Plan(input PlanInput) (PlanResult, error) {
 	result := PlanResult{}
+	if err := validatePlanInput(input); err != nil {
+		return result, err
+	}
+	planner, err := newPlanner(input)
+	if err != nil {
+		return result, err
+	}
+	planner.planMapping()
+	planner.planFiles()
+	result.Diagnostics = planner.planFeatures()
+	result.Omissions = planner.planBaseline()
+	result.Plan = planner.plan()
+	result.Reused = planner.sortedReused()
+	sort.Slice(result.Omissions, func(i, j int) bool {
+		return result.Omissions[i].CoverageKey.String() < result.Omissions[j].CoverageKey.String()
+	})
+	if err := result.Plan.Validate(); err != nil {
+		return result, fmt.Errorf("build plan: %w", err)
+	}
+	return result, nil
+}
+
+func validatePlanInput(input PlanInput) error {
 	if strings.TrimSpace(input.RunID) == "" {
-		return result, errors.New("plan requires run ID")
+		return errors.New("plan requires run ID")
 	}
 	if err := input.Snapshot.Validate(); err != nil {
-		return result, fmt.Errorf("plan snapshot: %w", err)
+		return fmt.Errorf("plan snapshot: %w", err)
 	}
 	if err := input.Scope.Validate(); err != nil {
-		return result, fmt.Errorf("plan scope: %w", err)
+		return fmt.Errorf("plan scope: %w", err)
 	}
 	if input.ScopeDigest == "" {
-		return result, errors.New("plan requires scope digest")
+		return errors.New("plan requires scope digest")
 	}
 	if err := validateDependencies(input.Dependencies); err != nil {
-		return result, fmt.Errorf("plan dependencies: %w", err)
+		return fmt.Errorf("plan dependencies: %w", err)
 	}
 	if err := validateCategories(input.FileCategories, input.Scope.SelectedFamilies); err != nil {
-		return result, err
+		return err
 	}
-	if err := validateCategories(input.FeatureCategories, input.Scope.SelectedFamilies); err != nil {
-		return result, err
-	}
+	return validateCategories(input.FeatureCategories, input.Scope.SelectedFamilies)
+}
 
+type planner struct {
+	input    PlanInput
+	files    map[string]domain.File
+	features map[string]domain.Feature
+	baseline map[string]CachedCoverage
+	jobs     map[string]domain.Job
+	reused   map[string]domain.Coverage
+}
+
+func newPlanner(input PlanInput) (*planner, error) {
 	files, err := indexedFiles(input.Files)
 	if err != nil {
-		return result, fmt.Errorf("plan files: %w", err)
+		return nil, fmt.Errorf("plan files: %w", err)
 	}
 	features, err := indexedFeatures(input.Features)
 	if err != nil {
-		return result, fmt.Errorf("plan features: %w", err)
+		return nil, fmt.Errorf("plan features: %w", err)
 	}
 	if input.ForceFull {
 		input.Baseline = nil
 	}
 	baseline, err := baselineIndex(input.Baseline)
 	if err != nil {
-		return result, fmt.Errorf("plan baseline: %w", err)
+		return nil, fmt.Errorf("plan baseline: %w", err)
 	}
+	return &planner{
+		input:    input,
+		files:    files,
+		features: features,
+		baseline: baseline,
+		jobs:     make(map[string]domain.Job),
+		reused:   make(map[string]domain.Coverage),
+	}, nil
+}
 
-	jobs := make(map[string]domain.Job)
-	reusedCoverage := make(map[string]domain.Coverage)
-	if input.MappingRequired {
-		fingerprint := orderedDigest("mapping", input.Snapshot.WorktreeDigest, input.Snapshot.IgnoreRulesDigest, input.Snapshot.ExclusionsDigest, input.ScopeDigest, input.MapperDigest)
-		addJob(jobs, job(domain.StageMapping, nil, fingerprint, "canonical map inputs changed", domain.JobPending, ""))
+func (p *planner) schedule(key domain.CoverageKey, stage domain.Stage, fingerprint, reason string) {
+	planned, reused := reuseOrSchedule(key, stage, fingerprint, reason, p.baseline)
+	addJob(p.jobs, planned)
+	if reused != nil {
+		recordReused(p.reused, *reused)
 	}
+}
 
-	for _, file := range selectedFiles(input, files, baseline) {
-		if !file.Eligible || file.Excluded || file.ContentDigest == "" {
+func (p *planner) planMapping() {
+	if !p.input.MappingRequired {
+		return
+	}
+	input := p.input
+	fingerprint := orderedDigest("mapping", input.Snapshot.WorktreeDigest, input.Snapshot.IgnoreRulesDigest, input.Snapshot.ExclusionsDigest, input.ScopeDigest, input.MapperDigest)
+	addJob(p.jobs, pendingJob(domain.StageMapping, nil, fingerprint, "canonical map inputs changed"))
+}
+
+func (p *planner) planFiles() {
+	for _, file := range selectedFiles(p.input, p.files, p.baseline) {
+		if !analyzableFile(file) {
 			continue
 		}
-		for family, categories := range input.FileCategories {
+		for family, categories := range p.input.FileCategories {
 			for _, category := range categories {
 				key := domain.CoverageKey{FilePath: file.Path, Family: family, Category: category}
-				fingerprint := fileFingerprint(file, key, input)
-				planned, reused := reuseOrSchedule(key, domain.StageFileAnalysis, fingerprint, "file changed or lacks reusable coverage", baseline)
-				addJob(jobs, planned)
-				if reused != nil {
-					recordReused(reusedCoverage, *reused)
-				}
+				fingerprint := fileFingerprint(file, key, p.input)
+				p.schedule(key, domain.StageFileAnalysis, fingerprint, "file changed or lacks reusable coverage")
 			}
 		}
 	}
+}
 
-	affected := selectedFeatureIDs(input, features, baseline)
-	for _, id := range affected {
-		feature, exists := features[id]
+func (p *planner) planFeatures() []Diagnostic {
+	var diagnostics []Diagnostic
+	for _, id := range selectedFeatureIDs(p.input, p.features, p.baseline) {
+		feature, exists := p.features[id]
 		if !exists {
-			result.Diagnostics = append(result.Diagnostics, Diagnostic{Stage: domain.StagePlanning, Code: "affected_feature_missing", Message: "affected canonical feature is absent from current map", Path: id})
+			diagnostics = append(diagnostics, Diagnostic{Stage: domain.StagePlanning, Code: "affected_feature_missing", Message: "affected canonical feature is absent from current map", Path: id})
 			continue
 		}
-		for family, categories := range input.FeatureCategories {
-			for _, category := range categories {
-				key := domain.CoverageKey{FeatureID: id, Family: family, Category: category}
-				fingerprint := featureFingerprint(feature, files, key, input)
-				planned, reused := reuseOrSchedule(key, domain.StageFeatureAnalysis, fingerprint, "feature affected or lacks reusable coverage", baseline)
-				addJob(jobs, planned)
-				if reused != nil {
-					recordReused(reusedCoverage, *reused)
-				}
-			}
-		}
-		if input.ClawpatchReview {
-			key := domain.CoverageKey{FeatureID: id, Family: domain.FamilyClawpatch, Category: "review"}
-			fingerprint := featureFingerprint(feature, files, key, input)
-			planned, reused := reuseOrSchedule(key, domain.StageClawpatchReview, fingerprint, "feature affected or lacks reusable review", baseline)
-			addJob(jobs, planned)
-			if reused != nil {
-				recordReused(reusedCoverage, *reused)
-			}
+		p.planFeature(id, feature)
+	}
+	return diagnostics
+}
+
+func (p *planner) planFeature(id string, feature domain.Feature) {
+	for family, categories := range p.input.FeatureCategories {
+		for _, category := range categories {
+			key := domain.CoverageKey{FeatureID: id, Family: family, Category: category}
+			fingerprint := featureFingerprint(feature, p.files, key, p.input)
+			p.schedule(key, domain.StageFeatureAnalysis, fingerprint, "feature affected or lacks reusable coverage")
 		}
 	}
+	if p.input.ClawpatchReview {
+		key := domain.CoverageKey{FeatureID: id, Family: domain.FamilyClawpatch, Category: "review"}
+		fingerprint := featureFingerprint(feature, p.files, key, p.input)
+		p.schedule(key, domain.StageClawpatchReview, fingerprint, "feature affected or lacks reusable review")
+	}
+}
 
-	for _, cached := range input.Baseline {
+func (p *planner) planBaseline() []domain.Omission {
+	var omissions []domain.Omission
+	for _, cached := range p.input.Baseline {
 		key := cached.Coverage.Key
-		if !scopeAllowsKey(key, input.Scope) {
+		if !scopeAllowsKey(key, p.input.Scope) {
 			continue
 		}
-		fingerprint, found := fingerprintForKey(key, files, features, input)
+		fingerprint, found := fingerprintForKey(key, p.files, p.features, p.input)
 		if !found {
 			if !cached.Coverage.Status.Accounted() {
-				result.Omissions = append(result.Omissions, domain.Omission{CoverageKey: key, Reason: "unfinished prior unit has no current eligible input"})
+				omissions = append(omissions, domain.Omission{CoverageKey: key, Reason: "unfinished prior unit has no current eligible input"})
 			}
 			continue
 		}
-		reason := "prior coverage was incomplete"
-		if cached.Coverage.Status.Accounted() {
-			reason = "cache inputs changed"
-			if cached.SourceRunID == "" {
-				reason = "cache baseline has no source run ID"
-			}
-		}
-		planned, reused := reuseOrSchedule(key, stageForKey(key), fingerprint, reason, baseline)
-		addJob(jobs, planned)
-		if reused != nil {
-			recordReused(reusedCoverage, *reused)
+		p.schedule(key, stageForKey(key), fingerprint, baselineReason(cached))
+	}
+	return omissions
+}
+
+func baselineReason(cached CachedCoverage) string {
+	reason := "prior coverage was incomplete"
+	if cached.Coverage.Status.Accounted() {
+		reason = "cache inputs changed"
+		if cached.SourceRunID == "" {
+			reason = "cache baseline has no source run ID"
 		}
 	}
+	return reason
+}
 
-	result.Plan = domain.Plan{
+func (p *planner) plan() domain.Plan {
+	input := p.input
+	return domain.Plan{
 		PlanID:       "plan-" + orderedDigest(input.RunID, input.Snapshot.WorktreeDigest, input.ScopeDigest, input.PolicyDigest, input.ToolDigest, input.ModelDigest, input.MapperDigest),
 		RunID:        input.RunID,
 		PolicyDigest: input.PolicyDigest,
@@ -182,20 +237,18 @@ func Plan(input PlanInput) (PlanResult, error) {
 		MapperDigest: input.MapperDigest,
 		Snapshot:     input.Snapshot,
 		Scope:        input.Scope,
-		Jobs:         sortedJobs(jobs),
+		Jobs:         sortedJobs(p.jobs),
 		CreatedAt:    time.Now().UTC(),
 	}
-	for _, coverage := range reusedCoverage {
-		result.Reused = append(result.Reused, coverage)
+}
+
+func (p *planner) sortedReused() []domain.Coverage {
+	var reused []domain.Coverage
+	for _, coverage := range p.reused {
+		reused = append(reused, coverage)
 	}
-	sort.Slice(result.Reused, func(i, j int) bool { return result.Reused[i].Key.String() < result.Reused[j].Key.String() })
-	sort.Slice(result.Omissions, func(i, j int) bool {
-		return result.Omissions[i].CoverageKey.String() < result.Omissions[j].CoverageKey.String()
-	})
-	if err := result.Plan.Validate(); err != nil {
-		return result, fmt.Errorf("build plan: %w", err)
-	}
-	return result, nil
+	sort.Slice(reused, func(i, j int) bool { return reused[i].Key.String() < reused[j].Key.String() })
+	return reused
 }
 
 func validateCategories(categories map[domain.Family][]string, selected []domain.Family) error {
@@ -250,22 +303,42 @@ func selectedFiles(input PlanInput, files map[string]domain.File, baseline map[s
 	// A newly registered category has no baseline row even when source is
 	// unchanged. Schedule that file rather than silently omitting its coverage.
 	for _, file := range files {
-		if !file.Eligible || file.Excluded || file.ContentDigest == "" {
+		if !analyzableFile(file) {
 			continue
 		}
-		for family, categories := range input.FileCategories {
-			for _, category := range categories {
-				key := domain.CoverageKey{FilePath: file.Path, Family: family, Category: category}
-				if _, exists := baseline[key.String()]; !exists {
-					selected[file.Path] = file
-					break
-				}
-			}
-			if _, selectedNow := selected[file.Path]; selectedNow {
-				break
-			}
+		selectUncoveredFile(selected, file, input.FileCategories, baseline)
+	}
+	selectIncompleteFiles(selected, files, baseline)
+	return sortedFiles(selected)
+}
+
+func analyzableFile(file domain.File) bool {
+	return file.Eligible && !file.Excluded && file.ContentDigest != ""
+}
+
+func selectUncoveredFile(selected map[string]domain.File, file domain.File, fileCategories map[domain.Family][]string, baseline map[string]CachedCoverage) {
+	for family, categories := range fileCategories {
+		if fileLacksFamilyCoverage(file.Path, family, categories, baseline) {
+			selected[file.Path] = file
+			break
+		}
+		if _, selectedNow := selected[file.Path]; selectedNow {
+			break
 		}
 	}
+}
+
+func fileLacksFamilyCoverage(path string, family domain.Family, categories []string, baseline map[string]CachedCoverage) bool {
+	for _, category := range categories {
+		key := domain.CoverageKey{FilePath: path, Family: family, Category: category}
+		if _, exists := baseline[key.String()]; !exists {
+			return true
+		}
+	}
+	return false
+}
+
+func selectIncompleteFiles(selected, files map[string]domain.File, baseline map[string]CachedCoverage) {
 	for _, cached := range baseline {
 		if cached.Coverage.Status.Accounted() || cached.Coverage.Key.FilePath == "" {
 			continue
@@ -274,6 +347,9 @@ func selectedFiles(input PlanInput, files map[string]domain.File, baseline map[s
 			selected[file.Path] = file
 		}
 	}
+}
+
+func sortedFiles(selected map[string]domain.File) []domain.File {
 	values := make([]domain.File, 0, len(selected))
 	for _, file := range selected {
 		values = append(values, file)
@@ -290,25 +366,7 @@ func selectedFeatureIDs(input PlanInput, features map[string]domain.Feature, bas
 		}
 	}
 	for id := range features {
-		missing := false
-		for family, categories := range input.FeatureCategories {
-			for _, category := range categories {
-				key := domain.CoverageKey{FeatureID: id, Family: family, Category: category}
-				if _, exists := baseline[key.String()]; !exists {
-					missing = true
-					break
-				}
-			}
-			if missing {
-				break
-			}
-		}
-		if input.ClawpatchReview {
-			key := domain.CoverageKey{FeatureID: id, Family: domain.FamilyClawpatch, Category: "review"}
-			_, exists := baseline[key.String()]
-			missing = missing || !exists
-		}
-		if missing {
+		if featureLacksCoverage(id, input, baseline) {
 			ids = append(ids, id)
 		}
 	}
@@ -320,20 +378,45 @@ func selectedFeatureIDs(input PlanInput, features map[string]domain.Feature, bas
 	return sortedUnique(ids)
 }
 
+func featureLacksCoverage(id string, input PlanInput, baseline map[string]CachedCoverage) bool {
+	missing := false
+	for family, categories := range input.FeatureCategories {
+		for _, category := range categories {
+			key := domain.CoverageKey{FeatureID: id, Family: family, Category: category}
+			if _, exists := baseline[key.String()]; !exists {
+				missing = true
+				break
+			}
+		}
+		if missing {
+			break
+		}
+	}
+	if input.ClawpatchReview {
+		key := domain.CoverageKey{FeatureID: id, Family: domain.FamilyClawpatch, Category: "review"}
+		_, exists := baseline[key.String()]
+		missing = missing || !exists
+	}
+	return missing
+}
+
 func reuseOrSchedule(key domain.CoverageKey, stage domain.Stage, fingerprint, reason string, baseline map[string]CachedCoverage) (domain.Job, *domain.Coverage) {
 	if cached, exists := baseline[key.String()]; exists && cached.Coverage.Status.Accounted() && cached.SourceRunID != "" && cached.InputFingerprint == fingerprint {
 		coverage := cached.Coverage
 		coverage.Status = domain.CoverageReused
 		coverage.ReusedFromRunID = cached.SourceRunID
-		return job(stage, &key, fingerprint, "exact per-unit cache match", domain.JobReused, cached.CacheKey), &coverage
+		reusedJob := pendingJob(stage, &key, fingerprint, "exact per-unit cache match")
+		reusedJob.State = domain.JobReused
+		reusedJob.CacheKey = cached.CacheKey
+		return reusedJob, &coverage
 	}
-	return job(stage, &key, fingerprint, reason, domain.JobPending, ""), nil
+	return pendingJob(stage, &key, fingerprint, reason), nil
 }
 
 func fingerprintForKey(key domain.CoverageKey, files map[string]domain.File, features map[string]domain.Feature, input PlanInput) (string, bool) {
 	if key.FilePath != "" {
 		file, exists := files[key.FilePath]
-		if !exists || !file.Eligible || file.Excluded || file.ContentDigest == "" {
+		if !exists || !analyzableFile(file) {
 			return "", false
 		}
 		return fileFingerprint(file, key, input), true
@@ -403,17 +486,8 @@ func stageForKey(key domain.CoverageKey) domain.Stage {
 }
 
 func scopeAllowsKey(key domain.CoverageKey, scope domain.Scope) bool {
-	if key.Family != domain.FamilyClawpatch && len(scope.SelectedFamilies) != 0 {
-		found := false
-		for _, family := range scope.SelectedFamilies {
-			if family == key.Family {
-				found = true
-				break
-			}
-		}
-		if !found {
-			return false
-		}
+	if !scopeAllowsFamily(key.Family, scope) {
+		return false
 	}
 	if scope.Kind == domain.ScopeRepository || scope.Kind == domain.ScopeStaged || scope.Kind == domain.ScopeCommitRange {
 		return true
@@ -422,7 +496,18 @@ func scopeAllowsKey(key domain.CoverageKey, scope domain.Scope) bool {
 	if path == "" {
 		return true
 	}
-	for _, scopePath := range scope.Paths {
+	return pathInScope(path, scope.Paths)
+}
+
+func scopeAllowsFamily(family domain.Family, scope domain.Scope) bool {
+	if family == domain.FamilyClawpatch || len(scope.SelectedFamilies) == 0 {
+		return true
+	}
+	return slices.Contains(scope.SelectedFamilies, family)
+}
+
+func pathInScope(path string, scopePaths []string) bool {
+	for _, scopePath := range scopePaths {
 		if path == scopePath || strings.HasPrefix(path, scopePath+"/") {
 			return true
 		}
@@ -430,12 +515,12 @@ func scopeAllowsKey(key domain.CoverageKey, scope domain.Scope) bool {
 	return false
 }
 
-func job(stage domain.Stage, key *domain.CoverageKey, fingerprint, reason string, state domain.JobState, cacheKey string) domain.Job {
+func pendingJob(stage domain.Stage, key *domain.CoverageKey, fingerprint, reason string) domain.Job {
 	identity := string(stage) + "\x00" + fingerprint
 	if key != nil {
 		identity += "\x00" + key.String()
 	}
-	return domain.Job{JobID: "job-" + digestStrings([]string{identity}), Stage: stage, CoverageKey: key, InputFingerprint: fingerprint, State: state, InvalidationReason: reason, CacheKey: cacheKey}
+	return domain.Job{JobID: "job-" + digestStrings([]string{identity}), Stage: stage, CoverageKey: key, InputFingerprint: fingerprint, State: domain.JobPending, InvalidationReason: reason}
 }
 
 func addJob(jobs map[string]domain.Job, planned domain.Job) {

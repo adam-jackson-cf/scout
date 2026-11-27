@@ -1,3 +1,5 @@
+//go:build boundary
+
 package engine
 
 import (
@@ -62,8 +64,14 @@ func TestAssessRecordsAScannerBatchFailureOnTheRun(t *testing.T) {
 	if result.Run.State == domain.RunComplete {
 		t.Fatalf("a run whose scanners could not run completed: %+v", result.Run.State)
 	}
+	failed := failedAdapterResultIDs(t, result.Adapters)
+	assertIncompleteScannerCoverageForA(t, result.Run.Coverage, failed)
+}
+
+func failedAdapterResultIDs(t *testing.T, adapters []domain.AdapterResult) map[string]bool {
+	t.Helper()
 	failed := map[string]bool{}
-	for _, adapter := range result.Adapters {
+	for _, adapter := range adapters {
 		if len(adapter.Failures) == 0 {
 			continue
 		}
@@ -75,10 +83,15 @@ func TestAssessRecordsAScannerBatchFailureOnTheRun(t *testing.T) {
 		}
 	}
 	if len(failed) == 0 {
-		t.Fatalf("no adapter result carries the scanner failure: %+v", result.Adapters)
+		t.Fatalf("no adapter result carries the scanner failure: %+v", adapters)
 	}
+	return failed
+}
+
+func assertIncompleteScannerCoverageForA(t *testing.T, coverage []domain.Coverage, failed map[string]bool) {
+	t.Helper()
 	incomplete := 0
-	for _, row := range result.Run.Coverage {
+	for _, row := range coverage {
 		if row.Key.FilePath != "a.py" || row.Key.FeatureID != "" || row.Status != domain.CoverageIncomplete {
 			continue
 		}
@@ -93,6 +106,6 @@ func TestAssessRecordsAScannerBatchFailureOnTheRun(t *testing.T) {
 		}
 	}
 	if incomplete == 0 {
-		t.Fatalf("no incomplete scanner coverage row for a.py: %+v", result.Run.Coverage)
+		t.Fatalf("no incomplete scanner coverage row for a.py: %+v", coverage)
 	}
 }

@@ -125,6 +125,25 @@ func skipConfigPath(p string) bool {
 // Only tools configured in base are examined; a config new in head has no
 // baseline. Findings carry base and head evidence.
 func ConfigChanges(base, head Tree) []Finding {
+	paths := configPaths(base, head)
+	// A tool whose facts vanish from every head config file (file deleted,
+	// unparseable, section removed) has been disabled, not merely edited.
+	headTools := headConfiguredTools(head, paths)
+	var out []Finding
+	for _, p := range paths {
+		name := path.Base(p)
+		for _, kind := range configKinds {
+			if !kind.match(name, p) {
+				continue
+			}
+			out = append(out, kindChanges(kind, p, base, head, headTools)...)
+		}
+	}
+	sortFindings(out)
+	return out
+}
+
+func configPaths(base, head Tree) []string {
 	seen := map[string]bool{}
 	var paths []string
 	for _, t := range []Tree{base, head} {
@@ -136,8 +155,10 @@ func ConfigChanges(base, head Tree) []Finding {
 		}
 	}
 	sort.Strings(paths)
-	// A tool whose facts vanish from every head config file (file deleted,
-	// unparseable, section removed) has been disabled, not merely edited.
+	return paths
+}
+
+func headConfiguredTools(head Tree, paths []string) map[string]bool {
 	headTools := map[string]bool{}
 	for _, p := range paths {
 		for _, kind := range configKinds {
@@ -148,39 +169,33 @@ func ConfigChanges(base, head Tree) []Finding {
 			}
 		}
 	}
+	return headTools
+}
+
+func kindChanges(kind configKind, p string, base, head Tree, headTools map[string]bool) []Finding {
+	bf := kind.extract(base, p)
+	if len(bf) == 0 {
+		return nil
+	}
+	hf := kind.extract(head, p)
+	hc, _ := head.Read(p)
 	var out []Finding
-	for _, p := range paths {
-		name := path.Base(p)
-		for _, kind := range configKinds {
-			if !kind.match(name, p) {
-				continue
-			}
-			bf := kind.extract(base, p)
-			if len(bf) == 0 {
-				continue
-			}
-			hf := kind.extract(head, p)
-			hc, _ := head.Read(p)
-			tools := make([]string, 0, len(bf))
-			for tool := range bf {
-				tools = append(tools, tool)
-			}
-			sort.Strings(tools)
-			for _, tool := range tools {
-				if h := hf[tool]; h != nil {
-					out = append(out, diffFacts(tool, p, bf[tool], h, string(hc))...)
-				} else if !headTools[tool] {
-					out = append(out, Finding{
-						Path: p, Line: 1, CheckID: StrictnessPrefix + tool, Version: StrictnessPrefix + tool + configVersion,
-						Mechanism: "config-removed:" + mechSlug(tool),
-						Evidence:  Evidence{Base: tool + " configuration present", Head: tool + " configuration absent or unparseable"},
-					})
-				}
-			}
+	for _, tool := range sortedKeys(bf) {
+		if h := hf[tool]; h != nil {
+			out = append(out, diffFacts(tool, p, bf[tool], h, string(hc))...)
+		} else if !headTools[tool] {
+			out = append(out, configRemoved(p, tool))
 		}
 	}
-	sortFindings(out)
 	return out
+}
+
+func configRemoved(p, tool string) Finding {
+	return Finding{
+		Path: p, Line: 1, CheckID: StrictnessPrefix + tool, Version: StrictnessPrefix + tool + configVersion,
+		Mechanism: "config-removed:" + mechSlug(tool),
+		Evidence:  Evidence{Base: tool + " configuration present", Head: tool + " configuration absent or unparseable"},
+	}
 }
 
 func sortFindings(out []Finding) {
@@ -238,15 +253,36 @@ func sevName(n int) string {
 	return "error"
 }
 
+type factDiff struct {
+	tool, path, headContent string
+	out                     []Finding
+}
+
+func (d *factDiff) add(check, mech, needle, baseEv, headEv string) {
+	d.out = append(d.out, Finding{
+		Path: d.path, Line: lineOf(d.headContent, needle), CheckID: check + d.tool, Version: check + d.tool + configVersion,
+		Mechanism: mech + ":" + mechSlug(d.tool+":"+needle), Evidence: Evidence{Head: headEv, Base: baseEv},
+	})
+}
+
 func diffFacts(tool, p string, b, h *facts, headContent string) []Finding {
-	var out []Finding
-	add := func(check, mech, needle, baseEv, headEv string) {
-		out = append(out, Finding{
-			Path: p, Line: lineOf(headContent, needle), CheckID: check + tool, Version: check + tool + configVersion,
-			Mechanism: mech + ":" + mechSlug(tool+":"+needle), Evidence: Evidence{Head: headEv, Base: baseEv},
-		})
-	}
+	d := &factDiff{tool: tool, path: p, headContent: headContent}
 	// ignores grew
+	d.ignoresGrew(b, h)
+	// rule severity
+	d.severityLowered(b, h)
+	// boolean strictness
+	d.flagsLowered(b, h)
+	d.thresholdsLowered(b, h)
+	d.levelsLowered(b, h)
+	if !h.unknown {
+		d.enabledRemoved(b, h)
+	}
+	return d.out
+}
+
+func (d *factDiff) ignoresGrew(b, h *facts) {
+	add := d.add
 	setCount := map[string]int{}
 	for k := range b.ignores {
 		set, _, _ := strings.Cut(k, "|")
@@ -261,7 +297,9 @@ func diffFacts(tool, p string, b, h *facts, headContent string) []Finding {
 			fmt.Sprintf("%s: %q absent (%d entries)", set, val, setCount[set]),
 			fmt.Sprintf("%s: +%s", set, val))
 	}
-	// rule severity
+}
+
+func (d *factDiff) severityLowered(b, h *facts) {
 	for _, k := range sortedKeys(b.sev) {
 		bs := b.sev[k]
 		hs, ok := h.sev[k]
@@ -271,14 +309,22 @@ func diffFacts(tool, p string, b, h *facts, headContent string) []Finding {
 			}
 			hs = 0
 		}
-		switch {
-		case bs > 0 && hs == 0:
-			add(IgnoresPrefix, "rule-off", k, fmt.Sprintf("%s: %s", k, sevName(bs)), fmt.Sprintf("%s: %s", k, sevName(hs)))
-		case bs == 2 && hs == 1 && h.warnLowers:
-			add(StrictnessPrefix, "severity", k, fmt.Sprintf("%s: %s", k, sevName(bs)), fmt.Sprintf("%s: %s", k, sevName(hs)))
-		}
+		d.severityChange(k, bs, hs, h.warnLowers)
 	}
-	// boolean strictness
+}
+
+func (d *factDiff) severityChange(k string, bs, hs int, warnLowers bool) {
+	add := d.add
+	switch {
+	case bs > 0 && hs == 0:
+		add(IgnoresPrefix, "rule-off", k, fmt.Sprintf("%s: %s", k, sevName(bs)), fmt.Sprintf("%s: %s", k, sevName(hs)))
+	case bs == 2 && hs == 1 && warnLowers:
+		add(StrictnessPrefix, "severity", k, fmt.Sprintf("%s: %s", k, sevName(bs)), fmt.Sprintf("%s: %s", k, sevName(hs)))
+	}
+}
+
+func (d *factDiff) flagsLowered(b, h *facts) {
+	add := d.add
 	for _, k := range sortedKeys(b.flags) {
 		if b.flags[k] {
 			if hv, ok := h.flags[k]; ok && !hv {
@@ -286,25 +332,34 @@ func diffFacts(tool, p string, b, h *facts, headContent string) []Finding {
 			}
 		}
 	}
+}
+
+func (d *factDiff) thresholdsLowered(b, h *facts) {
+	add := d.add
 	for _, k := range sortedKeys(b.nums) {
 		if hv, ok := h.nums[k]; ok && hv < b.nums[k] {
 			add(StrictnessPrefix, "threshold", k, fmt.Sprintf("%s = %g", k, b.nums[k]), fmt.Sprintf("%s = %g", k, hv))
 		}
 	}
+}
+
+func (d *factDiff) levelsLowered(b, h *facts) {
+	add := d.add
 	for _, k := range sortedKeys(b.ranks) {
 		if hv, ok := h.ranks[k]; ok && hv < b.ranks[k] {
 			add(StrictnessPrefix, "level", k, fmt.Sprintf("%s = %s", k, rankName(b.ranks[k])), fmt.Sprintf("%s = %s", k, rankName(hv)))
 		}
 	}
-	if !h.unknown {
-		for _, k := range sortedKeys(b.enabled) {
-			if !h.enabled[k] {
-				set, val, _ := strings.Cut(k, "|")
-				add(StrictnessPrefix, "enabled-removed", val, fmt.Sprintf("%s: %s enabled", set, val), fmt.Sprintf("%s: %s removed", set, val))
-			}
+}
+
+func (d *factDiff) enabledRemoved(b, h *facts) {
+	add := d.add
+	for _, k := range sortedKeys(b.enabled) {
+		if !h.enabled[k] {
+			set, val, _ := strings.Cut(k, "|")
+			add(StrictnessPrefix, "enabled-removed", val, fmt.Sprintf("%s: %s enabled", set, val), fmt.Sprintf("%s: %s removed", set, val))
 		}
 	}
-	return out
 }
 
 func rankName(n int) string {

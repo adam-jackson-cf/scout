@@ -41,13 +41,22 @@ func TestReconcileMatchesAtThresholdKeepsIDAndUpdatesFileSet(t *testing.T) {
 		t.Fatalf("onboarding areas = %+v", first)
 	}
 	id := first[0].ScoutAreaID
+	assertBelowThresholdCreates(t, first)
+	assertExactThresholdMatches(t, first, id)
+	assertStricterThresholdRejects(t, first)
+}
 
+func assertBelowThresholdCreates(t *testing.T, first []Area) {
+	t.Helper()
 	// {0,1,2,3} vs {2,3,4,5}: intersection 2, union 6 -> 0.33 (below 0.5).
 	below, report := Reconcile(first, []domain.Feature{feature("a2", AgentSource, paths("svc", 2, 6)...)}, nil, Config{Snapshot: "s2"})
 	if len(report.Matched) != 0 || len(report.Created) != 1 || len(below) != 2 {
 		t.Fatalf("below threshold must create a new area: %+v %+v", report, below)
 	}
+}
 
+func assertExactThresholdMatches(t *testing.T, first []Area, id string) {
+	t.Helper()
 	// {0,1,2,3} vs {0,1,2,3,4,5}... 4/6 = 0.67 matches; exactly 0.5: {0,1} vs {0,1,2,3}.
 	exact, report := Reconcile(first, []domain.Feature{feature("a3", AgentSource, paths("svc", 0, 2)...)}, nil, Config{Snapshot: "s2"})
 	if len(report.Matched) != 1 || report.Matched[0].Jaccard != 0.5 || report.Matched[0].ScoutAreaID != id {
@@ -60,9 +69,12 @@ func TestReconcileMatchesAtThresholdKeepsIDAndUpdatesFileSet(t *testing.T) {
 	if len(first[0].FileSet) != 4 {
 		t.Fatal("Reconcile mutated its input")
 	}
+}
 
+func assertStricterThresholdRejects(t *testing.T, first []Area) {
+	t.Helper()
 	// A stricter configured threshold rejects the same pair.
-	_, report = Reconcile(first, []domain.Feature{feature("a3", AgentSource, paths("svc", 0, 2)...)}, nil, Config{Snapshot: "s2", MatchJaccard: 0.6})
+	_, report := Reconcile(first, []domain.Feature{feature("a3", AgentSource, paths("svc", 0, 2)...)}, nil, Config{Snapshot: "s2", MatchJaccard: 0.6})
 	if len(report.Matched) != 0 || len(report.Created) != 1 {
 		t.Fatalf("configured threshold ignored: %+v", report)
 	}
@@ -100,6 +112,12 @@ func TestReconcileHeuristicFeaturesDoNotBecomeAreasAndOwnedAreasRetire(t *testin
 	if len(report.Retired) != 1 || len(report.Kept) != 1 {
 		t.Fatalf("retire only the fully heuristic-owned area: %+v", report)
 	}
+	assertRetiredAndKept(t, next, report)
+	assertRetiredAreaNeverRevived(t, next, owned)
+}
+
+func assertRetiredAndKept(t *testing.T, next []Area, report Report) {
+	t.Helper()
 	retired := find(t, next, report.Retired[0])
 	if retired.Active() || retired.RetiredSnapshot != "s2" || retired.Title != "title a" {
 		t.Fatalf("retired area = %+v", retired)
@@ -107,7 +125,10 @@ func TestReconcileHeuristicFeaturesDoNotBecomeAreasAndOwnedAreasRetire(t *testin
 	if !find(t, next, report.Kept[0]).Active() {
 		t.Fatal("partially unowned area must stay active")
 	}
+}
 
+func assertRetiredAreaNeverRevived(t *testing.T, next []Area, owned func(string) bool) {
+	t.Helper()
 	// A retired area is never matched again; the file set becomes a new area.
 	again, report := Reconcile(next, []domain.Feature{feature("a9", AgentSource, "owned/a.go", "owned/b.go")}, owned, Config{Snapshot: "s3"})
 	if len(report.Matched) != 0 || len(report.Created) != 1 || len(again) != 3 {
@@ -115,46 +136,53 @@ func TestReconcileHeuristicFeaturesDoNotBecomeAreasAndOwnedAreasRetire(t *testin
 	}
 }
 
-func TestReconcileKeepsAreaIDsAcrossAgentIDChurn(t *testing.T) {
-	// A fixture of 6 areas; every refresh gets entirely fresh agent feature IDs
-	// and drifts a file or two (CP07 §5: agent IDs churn, file sets mostly stay).
-	build := func(prefix string, drift int) []domain.Feature {
-		var out []domain.Feature
-		for i := range 6 {
-			files := paths(fmt.Sprintf("mod%d", i), 0, 10)
-			if drift > 0 {
-				files = append(files[drift:], fmt.Sprintf("mod%d/extra.go", i)) // drop `drift` files, add one
-			}
-			out = append(out, feature(fmt.Sprintf("%s-%d", prefix, i), AgentSource, files...))
+// A fixture of 6 areas; every refresh gets entirely fresh agent feature IDs
+// and drifts a file or two (CP07 §5: agent IDs churn, file sets mostly stay).
+func churnFeatures(prefix string, drift int) []domain.Feature {
+	var out []domain.Feature
+	for i := range 6 {
+		files := paths(fmt.Sprintf("mod%d", i), 0, 10)
+		if drift > 0 {
+			files = append(files[drift:], fmt.Sprintf("mod%d/extra.go", i)) // drop `drift` files, add one
 		}
-		return out
+		out = append(out, feature(fmt.Sprintf("%s-%d", prefix, i), AgentSource, files...))
 	}
-	one, _ := Reconcile(nil, build("run1", 0), nil, Config{Snapshot: "s1"})
-	two, report2 := Reconcile(one, build("run2", 1), nil, Config{Snapshot: "s2"})
-	three, report3 := Reconcile(two, build("run3", 2), nil, Config{Snapshot: "s3"})
+	return out
+}
 
-	ids := func(list []Area) []string {
-		var out []string
-		for _, a := range list {
-			out = append(out, a.ScoutAreaID)
-		}
-		return out
+func areaIDs(list []Area) []string {
+	var out []string
+	for _, a := range list {
+		out = append(out, a.ScoutAreaID)
 	}
-	if !reflect.DeepEqual(ids(one), ids(two)) || !reflect.DeepEqual(ids(two), ids(three)) || len(report2.Created)+len(report3.Created) != 0 {
-		t.Fatalf("area IDs churned: %v / %v / %v", ids(one), ids(two), ids(three))
+	return out
+}
+
+func TestReconcileKeepsAreaIDsAcrossAgentIDChurn(t *testing.T) {
+	one, _ := Reconcile(nil, churnFeatures("run1", 0), nil, Config{Snapshot: "s1"})
+	two, report2 := Reconcile(one, churnFeatures("run2", 1), nil, Config{Snapshot: "s2"})
+	three, report3 := Reconcile(two, churnFeatures("run3", 2), nil, Config{Snapshot: "s3"})
+
+	if !reflect.DeepEqual(areaIDs(one), areaIDs(two)) || !reflect.DeepEqual(areaIDs(two), areaIDs(three)) || len(report2.Created)+len(report3.Created) != 0 {
+		t.Fatalf("area IDs churned: %v / %v / %v", areaIDs(one), areaIDs(two), areaIDs(three))
 	}
 	for i := range one {
-		for _, pair := range [][2][]string{{one[i].FileSet, two[i].FileSet}, {two[i].FileSet, three[i].FileSet}} {
-			if j := Jaccard(pair[0], pair[1]); j < 0.8 {
-				t.Fatalf("file-set Jaccard across refreshes = %.2f, want >= 0.8", j)
-			}
-		}
-		if one[i].FirstSeenSnapshot != "s1" || three[i].FirstSeenSnapshot != "s1" {
-			t.Fatal("first-seen snapshot must survive reconciliation")
-		}
+		assertChurnedAreaStable(t, one[i], two[i], three[i])
 	}
 	if reflect.DeepEqual(one[0].ClawpatchIDs, three[0].ClawpatchIDs) {
 		t.Fatal("provenance must follow the latest agent feature IDs")
+	}
+}
+
+func assertChurnedAreaStable(t *testing.T, one, two, three Area) {
+	t.Helper()
+	for _, pair := range [][2][]string{{one.FileSet, two.FileSet}, {two.FileSet, three.FileSet}} {
+		if j := Jaccard(pair[0], pair[1]); j < 0.8 {
+			t.Fatalf("file-set Jaccard across refreshes = %.2f, want >= 0.8", j)
+		}
+	}
+	if one.FirstSeenSnapshot != "s1" || three.FirstSeenSnapshot != "s1" {
+		t.Fatal("first-seen snapshot must survive reconciliation")
 	}
 }
 

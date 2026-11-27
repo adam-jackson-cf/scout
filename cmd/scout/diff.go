@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"os"
 
 	"scout/internal/baseline"
@@ -53,7 +52,7 @@ func diff(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, report.Gate.Status, report.Gate.ExitCode, report, err)
 	}
-	text = engine.Summary(report.Gate, report.Ranking, report.Issues, report.WouldBlock, report.PreExisting, report.Health, report.PendingAreas, report.AssociationGuard)
+	text = engine.Summary(engine.SummaryInput{Gate: report.Gate, Ranking: report.Ranking, Issues: report.Issues, WouldBlock: report.WouldBlock, PreExisting: report.PreExisting, Health: report.Health, Pending: report.PendingAreas, Guard: report.AssociationGuard})
 	if summary != "" {
 		if writeErr := os.WriteFile(summary, []byte(text), 0o644); writeErr != nil {
 			report.Gate.Reasons = append(report.Gate.Reasons, "summary not written: "+writeErr.Error())
@@ -63,8 +62,7 @@ func diff(ctx context.Context, args []string) int {
 		}
 	}
 	if !flags.json {
-		fmt.Fprint(os.Stdout, text)
-		return report.Gate.ExitCode
+		return printStdout(text, report.Gate.ExitCode)
 	}
 	return emit(flags, report.Gate.Status, report.Gate.ExitCode, report, nil)
 }

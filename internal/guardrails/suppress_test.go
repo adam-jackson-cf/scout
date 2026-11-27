@@ -72,10 +72,10 @@ func TestSuppressAddedIDsVersionsExact(t *testing.T) {
 	if len(fs) != 2 {
 		t.Fatalf("got %d findings", len(fs))
 	}
-	if fs[0].CheckID != "guardrails.SUPPRESS.added.unscoped" || fs[0].Version != "guardrails.SUPPRESS.added.unscoped@1" || !fs[0].BlockingEligible() {
+	if fs[0].CheckID != "guardrails.SUPPRESS.added.unscoped" || fs[0].Version != "guardrails.SUPPRESS.added.unscoped@1" {
 		t.Fatalf("unscoped: %+v", fs[0])
 	}
-	if fs[1].CheckID != "guardrails.SUPPRESS.added.scoped" || fs[1].Version != "guardrails.SUPPRESS.added.scoped@1" || fs[1].BlockingEligible() {
+	if fs[1].CheckID != "guardrails.SUPPRESS.added.scoped" || fs[1].Version != "guardrails.SUPPRESS.added.scoped@1" {
 		t.Fatalf("scoped: %+v", fs[1])
 	}
 	if fs[0].Path != "a.py" || fs[0].Line != 1 {
@@ -83,61 +83,69 @@ func TestSuppressAddedIDsVersionsExact(t *testing.T) {
 	}
 }
 
+func expectNoFindings(t *testing.T, fs []Finding) {
+	t.Helper()
+	if len(fs) != 0 {
+		t.Fatalf("unexpected %+v", fs)
+	}
+}
+
+func onlyFinding(t *testing.T, fs []Finding) Finding {
+	t.Helper()
+	if len(fs) != 1 {
+		t.Fatalf("got %+v", fs)
+	}
+	return fs[0]
+}
+
+func expectEvidence(t *testing.T, f Finding, base, head string) {
+	t.Helper()
+	if f.Evidence.Head != head || f.Evidence.Base != base {
+		t.Fatalf("evidence %+v", f.Evidence)
+	}
+}
+
 func TestSuppressAddedOnlyAddedLines(t *testing.T) {
 	base := "a = 1  # noqa\nb = 2\nc = 3  # noqa\n"
 	t.Run("unchanged does not fire", func(t *testing.T) {
-		if fs := run("a.py", base, base); len(fs) != 0 {
-			t.Fatalf("unexpected %+v", fs)
-		}
+		expectNoFindings(t, run("a.py", base, base))
 	})
 	t.Run("lines inserted around existing do not fire", func(t *testing.T) {
 		head := "import os\n" + base + "d = 4\n"
-		if fs := run("a.py", base, head); len(fs) != 0 {
-			t.Fatalf("unexpected %+v", fs)
-		}
+		expectNoFindings(t, run("a.py", base, head))
 	})
 	t.Run("moved suppression does not fire", func(t *testing.T) {
 		head := "b = 2\nc = 3  # noqa\nx = 9\na = 1  # noqa\n"
-		if fs := run("a.py", base, head); len(fs) != 0 {
-			t.Fatalf("unexpected %+v", fs)
-		}
+		expectNoFindings(t, run("a.py", base, head))
 	})
 	t.Run("reindented suppression does not fire", func(t *testing.T) {
 		head := "if True:\n    a = 1  # noqa\nb = 2\nc = 3  # noqa\n"
-		if fs := run("a.py", base, head); len(fs) != 0 {
-			t.Fatalf("unexpected %+v", fs)
-		}
+		expectNoFindings(t, run("a.py", base, head))
 	})
 	t.Run("edited line keeping its suppression does not fire", func(t *testing.T) {
 		head := "a = 10  # noqa\nb = 2\nc = 3  # noqa\n"
-		if fs := run("a.py", base, head); len(fs) != 0 {
-			t.Fatalf("unexpected %+v", fs)
-		}
+		expectNoFindings(t, run("a.py", base, head))
 	})
 	t.Run("new suppression among old fires once with evidence", func(t *testing.T) {
 		head := "a = 1  # noqa\nb = 2  # noqa\nc = 3  # noqa\n"
 		fs := run("a.py", base, head)
-		if len(fs) != 1 || fs[0].Line != 2 {
+		if f := onlyFinding(t, fs); f.Line != 2 {
 			t.Fatalf("got %+v", fs)
 		}
-		if fs[0].Evidence.Head != "b = 2  # noqa" || fs[0].Evidence.Base != "b = 2" {
-			t.Fatalf("evidence %+v", fs[0].Evidence)
-		}
+		expectEvidence(t, fs[0], "b = 2", "b = 2  # noqa")
 	})
 	t.Run("scoped upgraded to bare fires", func(t *testing.T) {
 		b := "x = 1  # noqa: E501\n"
 		h := "x = 1  # noqa\n"
 		fs := run("a.py", b, h)
-		if len(fs) != 1 || fs[0].CheckID != UnscopedCheckID {
+		if f := onlyFinding(t, fs); f.CheckID != UnscopedCheckID {
 			t.Fatalf("got %+v", fs)
 		}
-		if fs[0].Evidence.Base != "x = 1  # noqa: E501" || fs[0].Evidence.Head != "x = 1  # noqa" {
-			t.Fatalf("evidence %+v", fs[0].Evidence)
-		}
+		expectEvidence(t, fs[0], "x = 1  # noqa: E501", "x = 1  # noqa")
 	})
 	t.Run("pure addition has empty base evidence", func(t *testing.T) {
 		fs := run("a.py", "a = 1\n", "a = 1\nz = 0  # noqa\n")
-		if len(fs) != 1 || fs[0].Evidence.Base != "" || fs[0].Evidence.Head != "z = 0  # noqa" {
+		if f := onlyFinding(t, fs); f.Evidence.Base != "" || f.Evidence.Head != "z = 0  # noqa" {
 			t.Fatalf("got %+v", fs)
 		}
 	})

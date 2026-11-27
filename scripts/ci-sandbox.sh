@@ -7,16 +7,23 @@ strict=false
 case "${1:-}" in
   "") ;;
   --strict) strict=true ;;
-  *) printf 'usage: scripts/ci-sandbox.sh [--strict]\n' >&2; exit 2 ;;
+  *)
+    printf 'usage: scripts/ci-sandbox.sh [--strict]\n' >&2
+    exit 2
+    ;;
 esac
-[[ $# -le 1 ]] || { printf 'usage: scripts/ci-sandbox.sh [--strict]\n' >&2; exit 2; }
+[[ $# -le 1 ]] || {
+  printf 'usage: scripts/ci-sandbox.sh [--strict]\n' >&2
+  exit 2
+}
 
-if [[ "$(uname -s)" == Linux ]]; then
+host_os="$(uname -s)"
+if [[ "$host_os" == Linux ]]; then
   sudo apt-get update -qq
   sudo apt-get install -y bubblewrap
   # Ubuntu 24.04 blocks unprivileged user namespaces, which bubblewrap needs.
   # The key is absent on kernels without the AppArmor restriction; the probe decides.
-  sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 > /dev/null 2>&1 || true
+  sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 >/dev/null 2>&1 || true
   if ! bwrap --unshare-user --ro-bind / / true; then
     if [[ "$strict" == true ]]; then
       echo "::error::bubblewrap cannot create user namespaces on this runner; repository gate requires the scanner sandbox" >&2

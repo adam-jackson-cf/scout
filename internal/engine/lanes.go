@@ -146,87 +146,121 @@ func LaneHealthOf(trigger domain.LaneTrigger, run domain.Run, inline []domain.La
 	if trigger == "" {
 		trigger = domain.TriggerPush
 	}
-	type tally struct {
-		units, ran, reused, blocked, incomplete, notApplicable, noCLI int
-		reason                                                        string
+	inputs := laneHealthInputs{tallies: laneCoverageTallies(run.Coverage), drift: sourceDrifted(run.Failures), inline: map[string]domain.LaneHealth{}}
+	for _, h := range inline {
+		inputs.inline[h.Lane] = h
 	}
-	tallies := map[string]*tally{}
-	for _, row := range run.Coverage {
+	out := make([]domain.LaneHealth, 0, len(lanes))
+	for _, lane := range lanes {
+		out = append(out, inputs.row(lane, trigger))
+	}
+	return out
+}
+
+type laneCoverageTally struct {
+	units, ran, reused, blocked, incomplete, notApplicable, noCLI int
+	reason                                                        string
+}
+
+func laneCoverageTallies(coverage []domain.Coverage) map[string]*laneCoverageTally {
+	tallies := map[string]*laneCoverageTally{}
+	for _, row := range coverage {
 		id, ok := laneOfCoverage(row.Key)
 		if !ok {
 			continue
 		}
 		t := tallies[id]
 		if t == nil {
-			t = &tally{}
+			t = &laneCoverageTally{}
 			tallies[id] = t
 		}
-		t.units++
-		switch row.Status {
-		case domain.CoverageReused:
-			t.reused++
-		case domain.CoverageNotApplicable:
-			t.notApplicable++
-		case domain.CoverageBlocked:
-			t.blocked++
-		case domain.CoverageSkipped:
-			if row.Reason == modelcli.NoCLIReason || row.Reason == ReasonNotOptedIn {
-				t.noCLI++
-			} else {
-				t.incomplete++
-			}
-		case domain.CoverageIncomplete, domain.CoverageRequiresManualVerification:
-			t.incomplete++
-		default:
-			t.ran++
-		}
-		if t.reason == "" && row.Reason != "" && !row.Status.Accounted() {
-			t.reason = row.Reason
-		}
+		t.count(row)
 	}
+	return tallies
+}
+
+func (t *laneCoverageTally) count(row domain.Coverage) {
+	t.units++
+	switch row.Status {
+	case domain.CoverageReused:
+		t.reused++
+	case domain.CoverageNotApplicable:
+		t.notApplicable++
+	case domain.CoverageBlocked:
+		t.blocked++
+	case domain.CoverageSkipped:
+		if row.Reason == modelcli.NoCLIReason || row.Reason == ReasonNotOptedIn {
+			t.noCLI++
+		} else {
+			t.incomplete++
+		}
+	case domain.CoverageIncomplete, domain.CoverageRequiresManualVerification:
+		t.incomplete++
+	default:
+		t.ran++
+	}
+	t.noteReason(row)
+}
+
+func (t *laneCoverageTally) noteReason(row domain.Coverage) {
+	if t.reason == "" && row.Reason != "" && !row.Status.Accounted() {
+		t.reason = row.Reason
+	}
+}
+
+func (t *laneCoverageTally) status() domain.LaneStatus {
+	switch {
+	case t.blocked > 0:
+		return domain.LaneBlocked
+	case t.incomplete > 0:
+		return domain.LaneFailed
+	case t.ran > 0:
+		return domain.LaneRan
+	case t.reused > 0:
+		return domain.LaneReused
+	default:
+		return domain.LaneSkipped
+	}
+}
+
+func sourceDrifted(failures []domain.Failure) bool {
 	drift := false
-	for _, failure := range run.Failures {
+	for _, failure := range failures {
 		if failure.Code == failureSourceDrift {
 			drift = true
 		}
 	}
-	inlineBy := map[string]domain.LaneHealth{}
-	for _, h := range inline {
-		inlineBy[h.Lane] = h
+	return drift
+}
+
+type laneHealthInputs struct {
+	inline  map[string]domain.LaneHealth
+	tallies map[string]*laneCoverageTally
+	drift   bool
+}
+
+func (in laneHealthInputs) row(lane Lane, trigger domain.LaneTrigger) domain.LaneHealth {
+	health := domain.LaneHealth{Lane: lane.ID, Mode: lane.Mode, Requires: lane.Requires, Required: lane.Required(trigger)}
+	if h, ok := in.inline[lane.ID]; ok {
+		health.Status, health.Units, health.Reason = h.Status, h.Units, h.Reason
+	} else if t := in.tallies[lane.ID]; t == nil {
+		health.Status, health.Reason = domain.LaneSkipped, laneNotRunReason(lane)
+	} else {
+		health.Units = t.units
+		health.Status = t.status()
+		health.Reason = t.reason
 	}
-	out := make([]domain.LaneHealth, 0, len(lanes))
-	for _, lane := range lanes {
-		health := domain.LaneHealth{Lane: lane.ID, Mode: lane.Mode, Requires: lane.Requires, Required: lane.Required(trigger)}
-		if h, ok := inlineBy[lane.ID]; ok {
-			health.Status, health.Units, health.Reason = h.Status, h.Units, h.Reason
-		} else if t := tallies[lane.ID]; t == nil {
-			if lane.Family == "" && lane.ID != LaneContextual && lane.ID != LaneClawpatchReview {
-				health.Status, health.Reason = domain.LaneSkipped, "lane did not run"
-			} else {
-				health.Status, health.Reason = domain.LaneSkipped, "no eligible inputs"
-			}
-		} else {
-			health.Units = t.units
-			switch {
-			case t.blocked > 0:
-				health.Status = domain.LaneBlocked
-			case t.incomplete > 0:
-				health.Status = domain.LaneFailed
-			case t.ran > 0:
-				health.Status = domain.LaneRan
-			case t.reused > 0:
-				health.Status = domain.LaneReused
-			default:
-				health.Status = domain.LaneSkipped
-			}
-			health.Reason = t.reason
-		}
-		if drift && health.Required && health.Status != domain.LaneSkipped {
-			health.Status, health.Reason = domain.LaneFailed, "source changed during assessment"
-		}
-		out = append(out, health)
+	if in.drift && health.Required && health.Status != domain.LaneSkipped {
+		health.Status, health.Reason = domain.LaneFailed, "source changed during assessment"
 	}
-	return out
+	return health
+}
+
+func laneNotRunReason(lane Lane) string {
+	if lane.Family == "" && lane.ID != LaneContextual && lane.ID != LaneClawpatchReview {
+		return "lane did not run"
+	}
+	return "no eligible inputs"
 }
 
 // Incomplete reports whether a required lane could not run on head. A required
