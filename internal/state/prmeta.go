@@ -39,24 +39,3 @@ func (s *Store) RecordPRMetadataSource(ctx context.Context, src PRMetadataSource
 		return err
 	})
 }
-
-// PRMetadataSources lists recorded sources for a snapshot, oldest first.
-func (s *Store) PRMetadataSources(ctx context.Context, snapshot string) ([]PRMetadataSource, error) {
-	var out []PRMetadataSource
-	err := s.withRead(ctx, func(db *sql.DB) error {
-		rows, err := db.QueryContext(ctx, `SELECT snapshot, kind, origin, digest, fetched_at, prs FROM pr_metadata_sources WHERE snapshot = ? ORDER BY seq`, snapshot)
-		if err != nil {
-			return err
-		}
-		defer rows.Close()
-		for rows.Next() {
-			var r PRMetadataSource
-			if err := rows.Scan(&r.Snapshot, &r.Kind, &r.Origin, &r.Digest, &r.FetchedAt, &r.PRs); err != nil {
-				return err
-			}
-			out = append(out, r)
-		}
-		return rows.Err()
-	})
-	return out, err
-}

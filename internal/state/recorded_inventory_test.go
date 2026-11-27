@@ -17,7 +17,20 @@ func TestPartialRunInventoryServesLifecycleButNotReuseBaseline(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer store.Close()
+	defer closeOrFail(t, store)
+	run := finishPartialFixtureRun(t, store, []domain.File{{Path: "pkg/b.py", Eligible: true}})
+	if _, err := store.LoadLatestInventory(ctx); !errors.Is(err, ErrNotFound) {
+		t.Fatalf("partial inventory became a reuse baseline: %v", err)
+	}
+	got, files, err := store.LoadLatestRecordedInventory(ctx)
+	if err != nil || got.RunID != run.RunID || len(files) != 1 || files[0].Path != "pkg/b.py" {
+		t.Fatalf("recorded inventory = %v %v %v", got.RunID, files, err)
+	}
+}
+
+func finishPartialFixtureRun(t *testing.T, store *Store, files []domain.File) domain.Run {
+	t.Helper()
+	ctx := context.Background()
 	plan, run, _, _, _ := progressFixture("partial")
 	if err := store.SavePlan(ctx, plan); err != nil {
 		t.Fatal(err)
@@ -32,14 +45,8 @@ func TestPartialRunInventoryServesLifecycleButNotReuseBaseline(t *testing.T) {
 	finished := time.Now().UTC()
 	pending.FinishedAt = &finished
 	pending.State = domain.RunPartial
-	if err := store.FinishRun(ctx, pending, []domain.File{{Path: "pkg/b.py", Eligible: true}}); err != nil {
+	if err := store.FinishRun(ctx, pending, files); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := store.LoadLatestInventory(ctx); !errors.Is(err, ErrNotFound) {
-		t.Fatalf("partial inventory became a reuse baseline: %v", err)
-	}
-	got, files, err := store.LoadLatestRecordedInventory(ctx)
-	if err != nil || got.RunID != run.RunID || len(files) != 1 || files[0].Path != "pkg/b.py" {
-		t.Fatalf("recorded inventory = %v %v %v", got.RunID, files, err)
-	}
+	return run
 }

@@ -71,7 +71,7 @@ func TestRenderManifestAlwaysWritesUninspected(t *testing.T) {
 func TestRestoreOfManifestWithoutLaneHealthImportsRecordsButNoIdentifiers(t *testing.T) {
 	ctx := context.Background()
 	source := seedLedger(t, ctx, t.TempDir())
-	defer source.Close()
+	defer closeOrFail(t, source)
 	full, err := source.Export(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -84,7 +84,7 @@ func TestRestoreOfManifestWithoutLaneHealthImportsRecordsButNoIdentifiers(t *tes
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer target.Close()
+	defer closeOrFail(t, target)
 	if err := target.Import(ctx, withoutLaneHealth(t, full)); err != nil {
 		t.Fatalf("restore of a manifest without uninspected failed: %v", err)
 	}
@@ -100,7 +100,7 @@ func TestRestoreOfManifestWithoutLaneHealthImportsRecordsButNoIdentifiers(t *tes
 func TestRestoreOfManifestWithLaneHealthReemitsIdentifiersAndList(t *testing.T) {
 	ctx := context.Background()
 	source := seedLedger(t, ctx, t.TempDir())
-	defer source.Close()
+	defer closeOrFail(t, source)
 	full, err := source.Export(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -119,7 +119,7 @@ func TestRestoreOfManifestWithLaneHealthReemitsIdentifiersAndList(t *testing.T) 
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer target.Close()
+			defer closeOrFail(t, target)
 			if err := target.Import(ctx, input); err != nil {
 				t.Fatal(err)
 			}
@@ -148,7 +148,7 @@ func TestRecordedBaseWithoutLaneHealthIsTreatedAsNone(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			defer store.Close()
+			defer closeOrFail(t, store)
 			if _, err := store.db.ExecContext(ctx, `INSERT INTO metadata(key, value) VALUES (?, ?)`, metadataExportBase, recorded); err != nil {
 				t.Fatal(err)
 			}
@@ -163,22 +163,10 @@ func TestRecordedBaseWithoutLaneHealthIsTreatedAsNone(t *testing.T) {
 // second manifest's records.
 func TestSecondImportReplacesOrClearsTheRecordedBase(t *testing.T) {
 	ctx := context.Background()
-	empty, err := Open(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer empty.Close()
-	zeroIssues, err := empty.Export(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	first := withManifest(t, zeroIssues, func(fields map[string]any) {
-		fields["repositoryId"], fields["revision"], fields["toolDigest"], fields["policyDigest"] = "repository", "first-rev", "first-tool", "first-policy"
-		fields["uninspected"] = []any{}
-	})
+	first := zeroIssueExportWithBase(t)
 
 	source := seedLedger(t, ctx, t.TempDir())
-	defer source.Close()
+	defer closeOrFail(t, source)
 	full, err := source.Export(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -188,7 +176,7 @@ func TestSecondImportReplacesOrClearsTheRecordedBase(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer target.Close()
+	defer closeOrFail(t, target)
 	if err := target.Import(ctx, first); err != nil {
 		t.Fatal(err)
 	}
@@ -207,4 +195,21 @@ func TestSecondImportReplacesOrClearsTheRecordedBase(t *testing.T) {
 	if err := target.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM metadata WHERE key = ?`, metadataExportBase).Scan(&recorded); err != nil || recorded != 0 {
 		t.Fatalf("export_base left behind: %d, %v", recorded, err)
 	}
+}
+
+func zeroIssueExportWithBase(t *testing.T) map[string][]byte {
+	t.Helper()
+	empty, err := Open(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer closeOrFail(t, empty)
+	zeroIssues, err := empty.Export(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	return withManifest(t, zeroIssues, func(fields map[string]any) {
+		fields["repositoryId"], fields["revision"], fields["toolDigest"], fields["policyDigest"] = "repository", "first-rev", "first-tool", "first-policy"
+		fields["uninspected"] = []any{}
+	})
 }

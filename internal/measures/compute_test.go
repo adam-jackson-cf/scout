@@ -153,6 +153,14 @@ func TestPopulationDigestIgnoresNonEligibleFilesAndTracksEligibleOnes(t *testing
 }
 
 func TestMissingnessIsNeverZero(t *testing.T) {
+	assertLizardDownIsUnmeasured(t)
+	assertJscpdFailureKeepsComplexity(t)
+	signals := assertScopesBelowFloorAreInsufficient(t)
+	assertCrapUnmeasuredWithoutCoverage(t, signals)
+}
+
+func assertLizardDownIsUnmeasured(t *testing.T) {
+	t.Helper()
 	// lizard did not run: everything unmeasured, population = candidates.
 	down := fixture()
 	down.Facts = Facts{LizardErr: "lizard is not installed"}
@@ -164,7 +172,10 @@ func TestMissingnessIsNeverZero(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+}
 
+func assertJscpdFailureKeepsComplexity(t *testing.T) {
+	t.Helper()
 	// jscpd failed: duplication unmeasured, complexity still measured.
 	noClones := fixture()
 	noClones.Facts.JscpdErr = "jscpd timed out"
@@ -175,14 +186,17 @@ func TestMissingnessIsNeverZero(t *testing.T) {
 	if find(t, signals, MetricCC, "pkg/sub").Missing != "" {
 		t.Fatal("complexity became unmeasured because jscpd failed")
 	}
+}
 
+func assertScopesBelowFloorAreInsufficient(t *testing.T) []domain.Signal {
+	t.Helper()
 	// A scope whose production files are all below the NLOC floor is
 	// insufficient: not zero and not good. A feature with no production source
 	// at all has nothing to measure and records no signal.
 	empty := fixture()
 	empty.Candidates[2].OwnedFeatureIDs = []string{"S"}
 	empty.Features = append(empty.Features, domain.Feature{FeatureID: "S"}, domain.Feature{FeatureID: "docs-only"})
-	signals = Compute(empty)
+	signals := Compute(empty)
 	for _, metric := range []string{MetricCC, MetricComplexBurden, MetricBurdenDensity, MetricDupPct} {
 		signal := find(t, signals, metric, FeatureAnchor("S"))
 		if signal.Missing != domain.SignalInsufficient || signal.Value != nil {
@@ -194,7 +208,11 @@ func TestMissingnessIsNeverZero(t *testing.T) {
 			t.Fatalf("recorded %s for a scope with no production source", signal.ID())
 		}
 	}
+	return signals
+}
 
+func assertCrapUnmeasuredWithoutCoverage(t *testing.T, signals []domain.Signal) {
+	t.Helper()
 	// CRAP is unmeasured everywhere when the input carries no coverage artifact.
 	for _, signal := range signals {
 		if signal.MetricID == MetricCrap && (signal.Missing != domain.SignalUnmeasured || signal.Value != nil) {
@@ -250,6 +268,12 @@ func TestComputeIsDeterministic(t *testing.T) {
 }
 
 func TestParsersReadScannerReports(t *testing.T) {
+	assertLizardXMLParsed(t)
+	assertJscpdReportParsed(t)
+}
+
+func assertLizardXMLParsed(t *testing.T) {
+	t.Helper()
 	lizard := `<?xml version="1.0" ?><cppncss>
 	<measure type="Function"><labels><label>Nr.</label><label>NCSS</label><label>CCN</label></labels>
 		<item name="Class::run(...) at pkg/a.py:7"><value>1</value><value>16</value><value>12</value></item>
@@ -270,7 +294,10 @@ func TestParsersReadScannerReports(t *testing.T) {
 	if files["pkg/b.py"].NLOC != 8 {
 		t.Fatalf("pkg/b.py = %+v", files["pkg/b.py"])
 	}
+}
 
+func assertJscpdReportParsed(t *testing.T) {
+	t.Helper()
 	// The second pair's secondFile.end (3) precedes its start, as jscpd 4.0.8
 	// sometimes reports; the span comes from start and `lines`.
 	report := `{"duplicates":[{"format":"python","lines":20,"firstFile":{"name":"/repo/pkg/a.py","start":10,"end":29},"secondFile":{"name":"/repo/pkg/c.py","start":1,"end":20}},

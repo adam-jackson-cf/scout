@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"net/url"
 	"os"
@@ -50,19 +51,9 @@ type Store struct {
 
 // Open creates or restores the state database stored beneath root/.scout.
 func Open(root string) (*Store, error) {
-	if root == "" {
-		return nil, errors.New("state root is required")
-	}
-	absoluteRoot, err := filepath.Abs(root)
+	absoluteRoot, err := resolveStateRoot(root)
 	if err != nil {
-		return nil, fmt.Errorf("resolve state root: %w", err)
-	}
-	info, err := os.Stat(absoluteRoot)
-	if err != nil {
-		return nil, fmt.Errorf("stat state root: %w", err)
-	}
-	if !info.IsDir() {
-		return nil, errors.New("state root must be a directory")
+		return nil, err
 	}
 
 	stateDir := filepath.Join(absoluteRoot, ".scout")
@@ -71,19 +62,8 @@ func Open(root string) (*Store, error) {
 	// An existing store's version is read on a read-only connection before
 	// .scout/, artifacts/, the lock or the journal mode are touched, so a store
 	// this build cannot migrate is refused unchanged.
-	if err := rejectSymlink(databasePath); err != nil {
+	if err := rejectUnmigratableStore(databasePath); err != nil {
 		return nil, err
-	}
-	if _, err := os.Lstat(databasePath); err == nil {
-		version, err := readUserVersion(databasePath)
-		if err != nil {
-			return nil, err
-		}
-		if version != 0 && version != schemaVersion && version != reanchorSourceVersion && version != 13 {
-			return nil, unsupportedVersionError(version)
-		}
-	} else if !errors.Is(err, fs.ErrNotExist) {
-		return nil, fmt.Errorf("inspect state database: %w", err)
 	}
 	if err := secureDir(stateDir); err != nil {
 		return nil, fmt.Errorf("create state directory: %w", err)
@@ -101,24 +81,9 @@ func Open(root string) (*Store, error) {
 		return nil, openErr
 	}
 
-	db, err := sql.Open("sqlite", databasePath)
+	db, err := openWritableDatabase(databasePath)
 	if err != nil {
-		return cleanup(fmt.Errorf("open state database: %w", err))
-	}
-	db.SetMaxOpenConns(1)
-	if err := db.Ping(); err != nil {
-		_ = db.Close()
-		return cleanup(fmt.Errorf("ping state database: %w", err))
-	}
-	for _, pragma := range []string{`PRAGMA journal_mode=WAL`, `PRAGMA foreign_keys=ON`, `PRAGMA busy_timeout=5000`} {
-		if _, err := db.Exec(pragma); err != nil {
-			_ = db.Close()
-			return cleanup(fmt.Errorf("configure state database: %w", err))
-		}
-	}
-	if err := os.Chmod(databasePath, 0o600); err != nil && !errors.Is(err, fs.ErrNotExist) {
-		_ = db.Close()
-		return cleanup(fmt.Errorf("secure state database: %w", err))
+		return cleanup(err)
 	}
 	store := &Store{root: absoluteRoot, stateDir: stateDir, artifactsDir: artifactsDir, db: db, lock: lock}
 	if err := store.migrate(context.Background()); err != nil {
@@ -128,52 +93,80 @@ func Open(root string) (*Store, error) {
 	return store, nil
 }
 
+func resolveStateRoot(root string) (string, error) {
+	if root == "" {
+		return "", errors.New("state root is required")
+	}
+	absoluteRoot, err := filepath.Abs(root)
+	if err != nil {
+		return "", fmt.Errorf("resolve state root: %w", err)
+	}
+	info, err := os.Stat(absoluteRoot)
+	if err != nil {
+		return "", fmt.Errorf("stat state root: %w", err)
+	}
+	if !info.IsDir() {
+		return "", errors.New("state root must be a directory")
+	}
+	return absoluteRoot, nil
+}
+
+func rejectUnmigratableStore(databasePath string) error {
+	if err := rejectSymlink(databasePath); err != nil {
+		return err
+	}
+	if _, err := os.Lstat(databasePath); err == nil {
+		version, err := readUserVersion(databasePath)
+		if err != nil {
+			return err
+		}
+		if version != 0 && version != schemaVersion && version != reanchorSourceVersion && version != 13 {
+			return unsupportedVersionError(version)
+		}
+	} else if !errors.Is(err, fs.ErrNotExist) {
+		return fmt.Errorf("inspect state database: %w", err)
+	}
+	return nil
+}
+
+func openWritableDatabase(databasePath string) (*sql.DB, error) {
+	db, err := sql.Open("sqlite", databasePath)
+	if err != nil {
+		return nil, fmt.Errorf("open state database: %w", err)
+	}
+	db.SetMaxOpenConns(1)
+	if err := db.Ping(); err != nil {
+		_ = db.Close()
+		return nil, fmt.Errorf("ping state database: %w", err)
+	}
+	for _, pragma := range []string{`PRAGMA journal_mode=WAL`, `PRAGMA foreign_keys=ON`, `PRAGMA busy_timeout=5000`} {
+		if _, err := db.Exec(pragma); err != nil {
+			_ = db.Close()
+			return nil, fmt.Errorf("configure state database: %w", err)
+		}
+	}
+	if err := os.Chmod(databasePath, 0o600); err != nil && !errors.Is(err, fs.ErrNotExist) {
+		_ = db.Close()
+		return nil, fmt.Errorf("secure state database: %w", err)
+	}
+	return db, nil
+}
+
 // OpenExistingReadOnly opens an existing Scout baseline without creating state,
 // acquiring a writer lock, or applying migrations. It is safe for readiness and
 // query-only surfaces that must not initialize a target repository.
 func OpenExistingReadOnly(root string) (*Store, error) {
-	if root == "" {
-		return nil, errors.New("state root is required")
-	}
-	absoluteRoot, err := filepath.Abs(root)
+	absoluteRoot, err := resolveStateRoot(root)
 	if err != nil {
-		return nil, fmt.Errorf("resolve state root: %w", err)
-	}
-	if info, err := os.Stat(absoluteRoot); err != nil {
-		return nil, fmt.Errorf("stat state root: %w", err)
-	} else if !info.IsDir() {
-		return nil, errors.New("state root must be a directory")
+		return nil, err
 	}
 	stateDir := filepath.Join(absoluteRoot, ".scout")
 	databasePath := filepath.Join(stateDir, "state.sqlite")
 	if err := rejectSymlink(stateDir); err != nil {
 		return nil, err
 	}
-	if err := rejectSymlink(databasePath); err != nil {
+	if err := checkReadOnlyDatabase(databasePath); err != nil {
 		return nil, err
-	}
-	info, err := os.Stat(databasePath)
-	if errors.Is(err, fs.ErrNotExist) {
-		return nil, ErrNotFound
-	}
-	if err != nil {
-		return nil, fmt.Errorf("stat state database: %w", err)
-	}
-	if !info.Mode().IsRegular() {
-		return nil, errors.New("state database must be a regular file")
-	}
-	version, err := readUserVersion(databasePath)
-	if err != nil {
-		return nil, err
-	}
-	switch version {
-	case schemaVersion:
-	case 13:
-		return nil, fmt.Errorf("state schema version 13 requires writable upgrade to version %d; open with a current Scout writer to preserve unpublished history", schemaVersion)
-	case reanchorSourceVersion:
-		return nil, fmt.Errorf("state schema version %d requires writable re-anchor to version %d", version, schemaVersion)
-	default:
-		return nil, unsupportedVersionError(version)
 	}
 	db, err := sql.Open("sqlite", (&url.URL{Scheme: "file", Path: databasePath, RawQuery: "mode=ro"}).String())
 	if err != nil {
@@ -185,6 +178,40 @@ func OpenExistingReadOnly(root string) (*Store, error) {
 		return nil, fmt.Errorf("ping read-only state database: %w", err)
 	}
 	return &Store{root: absoluteRoot, stateDir: stateDir, artifactsDir: filepath.Join(stateDir, "artifacts"), db: db, readOnly: true}, nil
+}
+
+func checkReadOnlyDatabase(databasePath string) error {
+	if err := rejectSymlink(databasePath); err != nil {
+		return err
+	}
+	info, err := os.Stat(databasePath)
+	if errors.Is(err, fs.ErrNotExist) {
+		return ErrNotFound
+	}
+	if err != nil {
+		return fmt.Errorf("stat state database: %w", err)
+	}
+	if !info.Mode().IsRegular() {
+		return errors.New("state database must be a regular file")
+	}
+	version, err := readUserVersion(databasePath)
+	if err != nil {
+		return err
+	}
+	return readOnlyVersionError(version)
+}
+
+func readOnlyVersionError(version int) error {
+	switch version {
+	case schemaVersion:
+		return nil
+	case 13:
+		return fmt.Errorf("state schema version 13 requires writable upgrade to version %d; open with a current Scout writer to preserve unpublished history", schemaVersion)
+	case reanchorSourceVersion:
+		return fmt.Errorf("state schema version %d requires writable re-anchor to version %d", version, schemaVersion)
+	default:
+		return unsupportedVersionError(version)
+	}
 }
 
 // Close releases the database and the exclusive state lock.
@@ -253,38 +280,46 @@ func (s *Store) migrate(ctx context.Context) error {
 		if err := tx.QueryRowContext(ctx, "PRAGMA user_version").Scan(&current); err != nil {
 			return fmt.Errorf("read state schema version: %w", err)
 		}
-		switch current {
-		case schemaVersion:
+		if current == schemaVersion {
 			return nil
-		case 0:
-			if err := execAll(ctx, tx, schemaCurrent); err != nil {
-				return fmt.Errorf("create state schema: %w", err)
-			}
-		case reanchorSourceVersion:
-			if err := backfillPlanJobs(ctx, tx); err != nil {
-				return fmt.Errorf("backfill plan jobs: %w", err)
-			}
-			if err := reanchorIssues(ctx, tx); err != nil {
-				return fmt.Errorf("re-anchor issues: %w", err)
-			}
-			if err := execAll(ctx, tx, schemaAddedAfterV1); err != nil {
-				return fmt.Errorf("create tables added since the v1 schema: %w", err)
-			}
-		case 13:
-			if err := execAll(ctx, tx, schemaShadow); err != nil {
-				return fmt.Errorf("create shadow schema: %w", err)
-			}
-			if err := migrateLegacyShadowTriage(ctx, tx); err != nil {
-				return fmt.Errorf("copy legacy shadow triage: %w", err)
-			}
-		default:
-			return unsupportedVersionError(current)
+		}
+		if err := migrateSchema(ctx, tx, current); err != nil {
+			return err
 		}
 		if _, err := tx.ExecContext(ctx, fmt.Sprintf("PRAGMA user_version=%d", schemaVersion)); err != nil {
 			return fmt.Errorf("record state schema version: %w", err)
 		}
 		return nil
 	})
+}
+
+func migrateSchema(ctx context.Context, tx *sql.Tx, current int) error {
+	switch current {
+	case 0:
+		if err := execAll(ctx, tx, schemaCurrent); err != nil {
+			return fmt.Errorf("create state schema: %w", err)
+		}
+	case reanchorSourceVersion:
+		if err := backfillPlanJobs(ctx, tx); err != nil {
+			return fmt.Errorf("backfill plan jobs: %w", err)
+		}
+		if err := reanchorIssues(ctx, tx); err != nil {
+			return fmt.Errorf("re-anchor issues: %w", err)
+		}
+		if err := execAll(ctx, tx, schemaAddedAfterV1); err != nil {
+			return fmt.Errorf("create tables added since the v1 schema: %w", err)
+		}
+	case 13:
+		if err := execAll(ctx, tx, schemaShadow); err != nil {
+			return fmt.Errorf("create shadow schema: %w", err)
+		}
+		if err := migrateLegacyShadowTriage(ctx, tx); err != nil {
+			return fmt.Errorf("copy legacy shadow triage: %w", err)
+		}
+	default:
+		return unsupportedVersionError(current)
+	}
+	return nil
 }
 
 func execAll(ctx context.Context, tx *sql.Tx, statements []string) error {
@@ -308,18 +343,17 @@ func unsupportedVersionError(version int) error {
 
 // readUserVersion reads PRAGMA user_version of an existing database on a
 // read-only connection: the file is not written and no migration runs.
-func readUserVersion(databasePath string) (int, error) {
+func readUserVersion(databasePath string) (version int, err error) {
 	databaseURL := (&url.URL{Scheme: "file", Path: databasePath, RawQuery: "mode=ro"}).String()
 	db, err := sql.Open("sqlite", databaseURL)
 	if err != nil {
 		return 0, fmt.Errorf("open read-only state database: %w", err)
 	}
-	defer db.Close()
+	defer closeJoin(&err, db)
 	db.SetMaxOpenConns(1)
 	if err := db.Ping(); err != nil {
 		return 0, fmt.Errorf("ping read-only state database: %w", err)
 	}
-	var version int
 	if err := db.QueryRow("PRAGMA user_version").Scan(&version); err != nil {
 		return 0, fmt.Errorf("read state schema version: %w", err)
 	}
@@ -483,9 +517,24 @@ func unixMillis(value time.Time) int64 {
 	return value.UTC().UnixMilli()
 }
 
-func nullUnixMillis(value *time.Time) any {
-	if value == nil {
-		return nil
+func closeJoin(err *error, closer io.Closer) {
+	if closeErr := closer.Close(); closeErr != nil {
+		*err = errors.Join(*err, closeErr)
 	}
-	return unixMillis(*value)
+}
+
+func rollbackUnlessDone(err *error, tx *sql.Tx) {
+	if rollbackErr := tx.Rollback(); rollbackErr != nil && !errors.Is(rollbackErr, sql.ErrTxDone) {
+		*err = errors.Join(*err, rollbackErr)
+	}
+}
+
+func scanRows(rows *sql.Rows, scan func(*sql.Rows) error) (err error) {
+	defer closeJoin(&err, rows)
+	for rows.Next() {
+		if err := scan(rows); err != nil {
+			return err
+		}
+	}
+	return rows.Err()
 }

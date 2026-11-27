@@ -4,7 +4,6 @@ import (
 	"go/parser"
 	"go/token"
 	"path"
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -30,25 +29,43 @@ func parseModulePath(src []byte) string {
 
 // buildGo adds package-level edges. Nodes are package directories ("." root).
 func buildGo(root string, files []string, es *edgeSet) ([]string, error) {
-	var mods []goModule
-	for _, f := range files {
-		if path.Base(f) == "go.mod" {
-			b, err := readFile(root, f)
-			if err != nil {
-				return nil, err
-			}
-			if mp := parseModulePath(b); mp != "" {
-				d := path.Dir(f)
-				if d == "." {
-					d = ""
-				}
-				mods = append(mods, goModule{d, mp})
-			}
+	mods, err := goModules(root, files)
+	if err != nil || len(mods) == 0 {
+		return nil, err
+	}
+	goFiles, pkgs := goSources(files)
+	r := goResolver{mods: mods, byImport: goImportIndex(mods, pkgs)}
+	fset := token.NewFileSet()
+	for _, f := range goFiles {
+		if err := r.addFileEdges(fset, root, f, es); err != nil {
+			return nil, err
 		}
 	}
-	if len(mods) == 0 {
-		return nil, nil
+	return sortedKeys(pkgs), nil
+}
+
+func goModules(root string, files []string) ([]goModule, error) {
+	var mods []goModule
+	for _, f := range files {
+		if path.Base(f) != "go.mod" {
+			continue
+		}
+		b, err := readFile(root, f)
+		if err != nil {
+			return nil, err
+		}
+		if mp := parseModulePath(b); mp != "" {
+			d := path.Dir(f)
+			if d == "." {
+				d = ""
+			}
+			mods = append(mods, goModule{d, mp})
+		}
 	}
+	return mods, nil
+}
+
+func goSources(files []string) ([]string, map[string]bool) {
 	pkgs := map[string]bool{}
 	var goFiles []string
 	for _, f := range files {
@@ -57,56 +74,67 @@ func buildGo(root string, files []string, es *edgeSet) ([]string, error) {
 			pkgs[pkgDir(f)] = true
 		}
 	}
-	// import path -> package dir
+	return goFiles, pkgs
+}
+
+func goImportIndex(mods []goModule, pkgs map[string]bool) map[string]string {
 	byImport := map[string]string{}
 	for p := range pkgs {
 		if m, ok := owner(mods, p); ok {
 			byImport[m.importPath(p)] = p
 		}
 	}
-	fset := token.NewFileSet()
-	for _, f := range goFiles {
-		src, err := readFile(root, f)
-		if err != nil {
-			return nil, err
-		}
-		from := pkgDir(f)
-		af, err := parser.ParseFile(fset, f, src, parser.ImportsOnly)
-		if err != nil {
-			es.skip(from, "go parse error in "+f+": "+err.Error())
-			if af == nil {
-				continue
-			}
-		}
-		for _, imp := range af.Imports {
-			ip, err := strconv.Unquote(imp.Path.Value)
-			if err != nil {
-				es.skip(from, "go import path in "+f+" is not a valid string literal: "+imp.Path.Value)
-				continue
-			}
-			if to, ok := byImport[ip]; ok {
-				es.add(from, to, false)
-				continue
-			}
-			internal := false
-			for _, m := range mods {
-				if ip == m.path || strings.HasPrefix(ip, m.path+"/") {
-					internal = true
-				}
-			}
-			if internal {
-				es.unres[Unresolved{from, ip}] = true
-			} else {
-				es.ext++
-			}
+	return byImport
+}
+
+type goResolver struct {
+	mods     []goModule
+	byImport map[string]string
+}
+
+func (r goResolver) addFileEdges(fset *token.FileSet, root, f string, es *edgeSet) error {
+	src, err := readFile(root, f)
+	if err != nil {
+		return err
+	}
+	from := pkgDir(f)
+	af, err := parser.ParseFile(fset, f, src, parser.ImportsOnly)
+	if err != nil {
+		es.skip(from, "go parse error in "+f+": "+err.Error())
+		if af == nil {
+			return nil
 		}
 	}
-	out := make([]string, 0, len(pkgs))
-	for p := range pkgs {
-		out = append(out, p)
+	for _, imp := range af.Imports {
+		r.addImport(from, f, imp.Path.Value, es)
 	}
-	sort.Strings(out)
-	return out, nil
+	return nil
+}
+
+func (r goResolver) addImport(from, f, literal string, es *edgeSet) {
+	ip, err := strconv.Unquote(literal)
+	if err != nil {
+		es.skip(from, "go import path in "+f+" is not a valid string literal: "+literal)
+		return
+	}
+	if to, ok := r.byImport[ip]; ok {
+		es.add(from, to, false)
+		return
+	}
+	if r.inModule(ip) {
+		es.unres[Unresolved{from, ip}] = true
+	} else {
+		es.ext++
+	}
+}
+
+func (r goResolver) inModule(ip string) bool {
+	for _, m := range r.mods {
+		if ip == m.path || strings.HasPrefix(ip, m.path+"/") {
+			return true
+		}
+	}
+	return false
 }
 
 func pkgDir(f string) string { return path.Dir(f) }

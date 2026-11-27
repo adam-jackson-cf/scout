@@ -3,6 +3,7 @@ package policy
 import (
 	"fmt"
 	"math"
+	"slices"
 	"strings"
 	"time"
 
@@ -142,28 +143,38 @@ func (r *rawAssociation) UnmarshalYAML(n *yaml.Node) error {
 		return fmt.Errorf("mapping.association must be a mapping")
 	}
 	for i := 0; i+1 < len(n.Content); i += 2 {
-		key, value := n.Content[i].Value, n.Content[i+1]
-		switch key {
-		case "enabled":
-			if value.Kind != yaml.ScalarNode || value.Tag != "!!bool" {
-				return fmt.Errorf("mapping.association.enabled must be a boolean")
-			}
-		case "covered_score", "t_choice":
-			if value.Kind != yaml.ScalarNode || (value.Tag != "!!int" && value.Tag != "!!float") {
-				return fmt.Errorf("mapping.association.%s must be a number", key)
-			}
-		case "max_pending_per_run":
-			if value.Kind != yaml.ScalarNode || value.Tag != "!!int" {
-				return fmt.Errorf("mapping.association.max_pending_per_run must be an integer")
-			}
-		case "fallback", "guard":
-			if value.Kind != yaml.MappingNode {
-				return fmt.Errorf("mapping.association.%s must be a mapping", key)
-			}
+		if err := checkAssociationValue(n.Content[i].Value, n.Content[i+1]); err != nil {
+			return err
 		}
 	}
 	type plain rawAssociation
 	return decodeStrict(n, (*plain)(r))
+}
+
+func scalarTagged(n *yaml.Node, tags ...string) bool {
+	return n.Kind == yaml.ScalarNode && slices.Contains(tags, n.Tag)
+}
+
+func checkAssociationValue(key string, value *yaml.Node) error {
+	switch key {
+	case "enabled":
+		if !scalarTagged(value, "!!bool") {
+			return fmt.Errorf("mapping.association.enabled must be a boolean")
+		}
+	case "covered_score", "t_choice":
+		if !scalarTagged(value, "!!int", "!!float") {
+			return fmt.Errorf("mapping.association.%s must be a number", key)
+		}
+	case "max_pending_per_run":
+		if !scalarTagged(value, "!!int") {
+			return fmt.Errorf("mapping.association.max_pending_per_run must be an integer")
+		}
+	case "fallback", "guard":
+		if value.Kind != yaml.MappingNode {
+			return fmt.Errorf("mapping.association.%s must be a mapping", key)
+		}
+	}
+	return nil
 }
 
 func parseMapping(raw *rawMapping) (Mapping, error) {
@@ -179,97 +190,135 @@ func parseMapping(raw *rawMapping) (Mapping, error) {
 		m.AreasMatchJaccard = j
 	}
 	if raw.Association != nil {
-		m.Association.Enabled = raw.Association.Enabled
-		if raw.Association.MaxPendingPerRun != nil {
-			if *raw.Association.MaxPendingPerRun < 0 {
-				return Mapping{}, fmt.Errorf("mapping.association.max_pending_per_run must not be negative")
-			}
-			m.Association.MaxPendingPerRun = *raw.Association.MaxPendingPerRun
-		}
-		if r := raw.Association.Fallback; r != nil {
-			f := &m.Association.Fallback
-			if r.Model != nil {
-				model := strings.TrimSpace(*r.Model)
-				if model == "" || IsModelAlias(model) {
-					return Mapping{}, fmt.Errorf("mapping.association.fallback.model must pin an exact model id")
-				}
-				f.Model = model
-			}
-			if r.Effort != nil {
-				switch *r.Effort {
-				case "minimal", "low", "medium", "high", "xhigh":
-					f.Effort = *r.Effort
-				default:
-					return Mapping{}, fmt.Errorf("mapping.association.fallback.effort %q is unsupported", *r.Effort)
-				}
-			}
-			if r.Timeout != nil {
-				timeout, err := time.ParseDuration(*r.Timeout)
-				if err != nil || timeout <= 0 {
-					return Mapping{}, fmt.Errorf("mapping.association.fallback.timeout must be a positive duration string")
-				}
-				f.Timeout = timeout
-			}
-			if r.MaxPerRun != nil {
-				if *r.MaxPerRun < 0 {
-					return Mapping{}, fmt.Errorf("mapping.association.fallback.max_per_run must not be negative")
-				}
-				f.MaxPerRun = *r.MaxPerRun
-			}
-		}
-		if r := raw.Association.Guard; r != nil {
-			g := &m.Association.Guard
-			for _, count := range []struct {
-				name  string
-				value *int
-				dest  *int
-			}{
-				{"window_merges", r.WindowMerges, &g.WindowMerges},
-				{"min_clusters", r.MinClusters, &g.MinClusters},
-			} {
-				if count.value == nil {
-					continue
-				}
-				if *count.value <= 0 {
-					return Mapping{}, fmt.Errorf("mapping.association.guard.%s must be a positive integer", count.name)
-				}
-				*count.dest = *count.value
-			}
-			for _, threshold := range []struct {
-				name  string
-				value *float64
-				dest  *float64
-			}{
-				{"fallback_rate_max", r.FallbackRateMax, &g.FallbackRateMax},
-				{"pending_new_rate_max", r.PendingNewRateMax, &g.PendingNewRateMax},
-			} {
-				if threshold.value == nil {
-					continue
-				}
-				value := *threshold.value
-				if math.IsNaN(value) || math.IsInf(value, 0) || value < 0 || value > 1 {
-					return Mapping{}, fmt.Errorf("mapping.association.guard.%s %v must be finite and in [0, 1]", threshold.name, value)
-				}
-				*threshold.dest = value
-			}
-		}
-		for _, threshold := range []struct {
-			name  string
-			value *float64
-			dest  *float64
-		}{
-			{"covered_score", raw.Association.CoveredScore, &m.Association.CoveredScore},
-			{"t_choice", raw.Association.TChoice, &m.Association.TChoice},
-		} {
-			if threshold.value == nil {
-				continue
-			}
-			value := *threshold.value
-			if math.IsNaN(value) || math.IsInf(value, 0) || value < 0 || value > 1 {
-				return Mapping{}, fmt.Errorf("mapping.association.%s %v must be finite and in [0, 1]", threshold.name, value)
-			}
-			*threshold.dest = value
+		if err := parseAssociation(raw.Association, &m.Association); err != nil {
+			return Mapping{}, err
 		}
 	}
 	return m, nil
+}
+
+func parseAssociation(raw *rawAssociation, a *Association) error {
+	a.Enabled = raw.Enabled
+	if raw.MaxPendingPerRun != nil {
+		if *raw.MaxPendingPerRun < 0 {
+			return fmt.Errorf("mapping.association.max_pending_per_run must not be negative")
+		}
+		a.MaxPendingPerRun = *raw.MaxPendingPerRun
+	}
+	if r := raw.Fallback; r != nil {
+		if err := parseFallback(r, &a.Fallback); err != nil {
+			return err
+		}
+	}
+	if r := raw.Guard; r != nil {
+		if err := parseGuard(r, &a.Guard); err != nil {
+			return err
+		}
+	}
+	return parseAssociationThresholds(raw, a)
+}
+
+func parseFallback(r *rawAssociationFallback, f *AssociationFallback) error {
+	if err := parseFallbackChoices(r, f); err != nil {
+		return err
+	}
+	return parseFallbackLimits(r, f)
+}
+
+func parseFallbackChoices(r *rawAssociationFallback, f *AssociationFallback) error {
+	if r.Model != nil {
+		model := strings.TrimSpace(*r.Model)
+		if model == "" || IsModelAlias(model) {
+			return fmt.Errorf("mapping.association.fallback.model must pin an exact model id")
+		}
+		f.Model = model
+	}
+	if r.Effort != nil {
+		switch *r.Effort {
+		case "minimal", "low", "medium", "high", "xhigh":
+			f.Effort = *r.Effort
+		default:
+			return fmt.Errorf("mapping.association.fallback.effort %q is unsupported", *r.Effort)
+		}
+	}
+	return nil
+}
+
+func parseFallbackLimits(r *rawAssociationFallback, f *AssociationFallback) error {
+	if r.Timeout != nil {
+		timeout, err := time.ParseDuration(*r.Timeout)
+		if err != nil || timeout <= 0 {
+			return fmt.Errorf("mapping.association.fallback.timeout must be a positive duration string")
+		}
+		f.Timeout = timeout
+	}
+	if r.MaxPerRun != nil {
+		if *r.MaxPerRun < 0 {
+			return fmt.Errorf("mapping.association.fallback.max_per_run must not be negative")
+		}
+		f.MaxPerRun = *r.MaxPerRun
+	}
+	return nil
+}
+
+func outsideUnitInterval(value float64) bool {
+	return math.IsNaN(value) || math.IsInf(value, 0) || value < 0 || value > 1
+}
+
+func parseGuard(r *rawAssociationGuard, g *AssociationGuard) error {
+	for _, count := range []struct {
+		name  string
+		value *int
+		dest  *int
+	}{
+		{"window_merges", r.WindowMerges, &g.WindowMerges},
+		{"min_clusters", r.MinClusters, &g.MinClusters},
+	} {
+		if count.value == nil {
+			continue
+		}
+		if *count.value <= 0 {
+			return fmt.Errorf("mapping.association.guard.%s must be a positive integer", count.name)
+		}
+		*count.dest = *count.value
+	}
+	for _, threshold := range []struct {
+		name  string
+		value *float64
+		dest  *float64
+	}{
+		{"fallback_rate_max", r.FallbackRateMax, &g.FallbackRateMax},
+		{"pending_new_rate_max", r.PendingNewRateMax, &g.PendingNewRateMax},
+	} {
+		if threshold.value == nil {
+			continue
+		}
+		value := *threshold.value
+		if outsideUnitInterval(value) {
+			return fmt.Errorf("mapping.association.guard.%s %v must be finite and in [0, 1]", threshold.name, value)
+		}
+		*threshold.dest = value
+	}
+	return nil
+}
+
+func parseAssociationThresholds(raw *rawAssociation, a *Association) error {
+	for _, threshold := range []struct {
+		name  string
+		value *float64
+		dest  *float64
+	}{
+		{"covered_score", raw.CoveredScore, &a.CoveredScore},
+		{"t_choice", raw.TChoice, &a.TChoice},
+	} {
+		if threshold.value == nil {
+			continue
+		}
+		value := *threshold.value
+		if outsideUnitInterval(value) {
+			return fmt.Errorf("mapping.association.%s %v must be finite and in [0, 1]", threshold.name, value)
+		}
+		*threshold.dest = value
+	}
+	return nil
 }

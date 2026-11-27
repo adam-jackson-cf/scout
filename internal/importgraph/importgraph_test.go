@@ -53,7 +53,7 @@ func TestGoThreePackageCycle(t *testing.T) {
 		"d/d.go":      "package d\nimport _ \"example.com/m/a\"\nimport _ \"example.com/m/missing\"\nimport _ \"github.com/x/y\"\n",
 		"a/a_test.go": "package a\nimport _ \"example.com/m/d\"\n",
 	})
-	res := CycleMass(g, nil)
+	res := cycleMass(g, nil)
 	if res.CycleEdges != 3 || res.InternalEdges != 4 {
 		t.Fatalf("cycle=%d internal=%d, want 3 of 4 (edges %v)", res.CycleEdges, res.InternalEdges, edgeStrings(g.Edges))
 	}
@@ -71,11 +71,11 @@ func TestCrossBoundaryCycleCounted(t *testing.T) {
 		"x/x.go": "package x\nimport _ \"m/y\"\n",
 		"y/y.go": "package y\nimport _ \"m/x\"\n",
 	})
-	same := CycleMass(g, func(string) string { return "s" })
+	same := cycleMass(g, func(string) string { return "s" })
 	if same.CycleEdges != 2 || same.CrossBoundary != 0 {
 		t.Fatalf("same-scope: %+v", same)
 	}
-	cross := CycleMass(g, func(n string) string { return n })
+	cross := cycleMass(g, func(n string) string { return n })
 	if cross.CrossBoundary != 1 {
 		t.Fatalf("cross=%d want 1", cross.CrossBoundary)
 	}
@@ -91,7 +91,7 @@ func TestPythonCycleRelativeAndExternal(t *testing.T) {
 		"pkg/e.py":        "from typing import TYPE_CHECKING\nif TYPE_CHECKING:\n    from .a import A\n",
 		"pkg/doc.py":      "\"\"\"\nimport pkg.a\n\"\"\"\n",
 	})
-	res := CycleMass(g, nil)
+	res := cycleMass(g, nil)
 	got := edgeStrings(g.Edges)
 	want := []string{"pkg/a.py->pkg/b.py", "pkg/b.py->pkg/c.py", "pkg/c.py->pkg/a.py", "pkg/d.py->pkg/a.py"}
 	if !reflect.DeepEqual(got, want) {
@@ -114,7 +114,7 @@ func TestPythonSrcRoot(t *testing.T) {
 		"src/lib/a.py":        "import lib.b\n",
 		"src/lib/b.py":        "from lib import a\n",
 	})
-	if r := CycleMass(g, nil); r.CycleEdges != 2 || r.InternalEdges != 2 {
+	if r := cycleMass(g, nil); r.CycleEdges != 2 || r.InternalEdges != 2 {
 		t.Fatalf("%+v %v", r, edgeStrings(g.Edges))
 	}
 }
@@ -131,7 +131,7 @@ func TestTypeScriptCycleAliasAndTypeOnly(t *testing.T) {
 		"src/t.ts":  "import type { X } from './a';\nimport './missing';\n",
 		"src/x.tsx": "const y = require('./a'); // import z from './zzz'\n",
 	})
-	res := CycleMass(g, nil)
+	res := cycleMass(g, nil)
 	if res.CycleEdges != 3 {
 		t.Fatalf("cycle edges %d, edges=%v", res.CycleEdges, edgeStrings(g.Edges))
 	}
@@ -152,7 +152,7 @@ func TestTypeOnlyCycleIsNotACycle(t *testing.T) {
 		"a.ts": "import type { B } from './b';\n",
 		"b.ts": "import { A } from './a';\n",
 	})
-	if r := CycleMass(g, nil); r.CycleEdges != 0 || r.InternalEdges != 1 || r.TypeOnly != 1 {
+	if r := cycleMass(g, nil); r.CycleEdges != 0 || r.InternalEdges != 1 || r.TypeOnly != 1 {
 		t.Fatalf("%+v", r)
 	}
 }
@@ -171,7 +171,7 @@ func TestDeterministicOutput(t *testing.T) {
 	if got := strings.Join(a.Languages, ","); got != "go,python,typescript" {
 		t.Fatal(got)
 	}
-	if r := CycleMass(a, nil); r.CycleEdges != 6 || r.InternalEdges != 6 {
+	if r := cycleMass(a, nil); r.CycleEdges != 6 || r.InternalEdges != 6 {
 		t.Fatalf("%+v", r)
 	}
 }
@@ -213,7 +213,45 @@ func TestSkippedInputsAreRecordedAndSurfaced(t *testing.T) {
 	if sigs[0].Detail["skipped_inputs"] != len(g.Skipped) || len(g.Skipped) < 4 {
 		t.Fatalf("detail %+v", sigs[0].Detail)
 	}
-	if CycleMass(g, nil).Skipped != len(g.Skipped) {
-		t.Fatal("CycleMass must carry the skipped count")
+	if cycleMass(g, nil).Skipped != len(g.Skipped) {
+		t.Fatal("cycleMass must carry the skipped count")
 	}
+}
+
+type cycleMassResult struct {
+	CycleEdges    int
+	InternalEdges int
+	CrossBoundary int
+	Unresolved    int
+	Skipped       int
+	TypeOnly      int
+}
+
+func cycleMass(g *Graph, scopeOf func(node string) string) cycleMassResult {
+	comp := components(g)
+	res := cycleMassResult{InternalEdges: len(g.Edges), Unresolved: len(g.Unresolved), Skipped: len(g.Skipped), TypeOnly: len(g.TypeOnlyEdges)}
+	for _, e := range g.Edges {
+		f, ok1 := comp[e.From]
+		t, ok2 := comp[e.To]
+		if ok1 && ok2 && f == t {
+			res.CycleEdges++
+		}
+	}
+	scopes := map[int]map[string]bool{}
+	for n, c := range comp {
+		if scopes[c] == nil {
+			scopes[c] = map[string]bool{}
+		}
+		s := ""
+		if scopeOf != nil {
+			s = scopeOf(n)
+		}
+		scopes[c][s] = true
+	}
+	for _, s := range scopes {
+		if len(s) > 1 {
+			res.CrossBoundary++
+		}
+	}
+	return res
 }

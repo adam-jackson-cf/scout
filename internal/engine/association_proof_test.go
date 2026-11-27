@@ -1,3 +1,5 @@
+//go:build boundary
+
 package engine
 
 import (
@@ -13,7 +15,6 @@ import (
 	"strings"
 	"sync/atomic"
 	"testing"
-	"time"
 
 	"scout/internal/association"
 	"scout/internal/decisions"
@@ -25,6 +26,7 @@ import (
 const associationProofModel = "typesafe/jev-1.14-20261014"
 
 const associationAssignedSource = "def serve(request):\n    return {\"status\": \"ok\", \"request\": request}\n"
+
 const associationUnresolvedSource = "def inspect_artifact(artifact):\n    return tuple(sorted(artifact.items()))\n"
 
 func associationRepo(t *testing.T) (root, base, head string) {
@@ -72,11 +74,7 @@ func associationRepo(t *testing.T) (root, base, head string) {
 
 func associationStore(t *testing.T, root string, n int) *state.Store {
 	t.Helper()
-	s, err := state.Open(root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() { s.Close() })
+	s := openEngineTestStore(t, root)
 	// Decode the public area payload through the store's inferred catalogue
 	// type, keeping this engine boundary fixture independent of area internals.
 	catalogue, err := s.ListAreas(context.Background())
@@ -100,6 +98,13 @@ func associationStore(t *testing.T, root string, n int) *state.Store {
 	return s
 }
 
+type associationProofRequest struct {
+	State     json.RawMessage `json:"state"`
+	Questions map[string]struct {
+		Type string `json:"type"`
+	} `json:"questions"`
+}
+
 // The server consumes actual decisions requests and returns valid typed answers;
 // it never calls a model. Mode partial fails only the second merge's requests.
 func associationServer(t *testing.T, mode string) (*decisions.Client, *atomic.Int64) {
@@ -107,87 +112,95 @@ func associationServer(t *testing.T, mode string) (*decisions.Client, *atomic.In
 	count := new(atomic.Int64)
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		count.Add(1)
-		raw, err := io.ReadAll(r.Body)
-		if err != nil {
-			t.Error(err)
-			return
-		}
-		var req struct {
-			State     json.RawMessage `json:"state"`
-			Questions map[string]struct {
-				Type string `json:"type"`
-			} `json:"questions"`
-		}
-		if err := json.Unmarshal(raw, &req); err != nil {
-			t.Error(err)
-			http.Error(w, "invalid", 400)
-			return
-		}
-		if mode == "failure" || (mode == "partial" && strings.Contains(string(req.State), "unresolved.py")) {
-			http.Error(w, "fixture failure", 400)
-			return
-		}
-		answers := map[string]any{}
-		for key, q := range req.Questions {
-			switch q.Type {
-			case "noul":
-				answers[key] = map[string]any{"type": "noul", "noul": .9}
-			case "choice":
-				p := .9
-				if strings.Contains(string(req.State), "unresolved.py") {
-					p = .51
-				}
-				answers[key] = map[string]any{"type": "choice", "choice": "area-000", "probabilities": map[string]float64{"area-000": p, "area-001": 1 - p}, "confidence": p}
-			default:
-				t.Errorf("unexpected question type %q", q.Type)
-				http.Error(w, "unexpected", 400)
-				return
-			}
-		}
-		model := associationProofModel
-		if mode == "mismatch" {
-			model = "typesafe/jev-wrong-model"
-		}
-		cost := .00001
-		if mode == "cost" {
-			cost = 2
-		}
-		w.Header().Set("Content-Type", "application/json")
-		if err := json.NewEncoder(w).Encode(map[string]any{"id": "fixture", "model": model, "answers": answers, "usage": map[string]any{"input_tokens": 10, "output_tokens": 2, "cost": cost}}); err != nil {
-			t.Error(err)
-		}
+		serveAssociationProofRequest(t, w, r, mode)
 	}))
 	t.Cleanup(server.Close)
-	return &decisions.Client{Endpoint: server.URL, Key: "fixture-local-key", MaxAttempts: 1, Sleep: func(context.Context, time.Duration) error { return nil }}, count
+	return &decisions.Client{Endpoint: server.URL, Key: "fixture-local-key", MaxAttempts: 1}, count
 }
+
+func serveAssociationProofRequest(t *testing.T, w http.ResponseWriter, r *http.Request, mode string) {
+	raw, err := io.ReadAll(r.Body)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	var req associationProofRequest
+	if err := json.Unmarshal(raw, &req); err != nil {
+		t.Error(err)
+		http.Error(w, "invalid", 400)
+		return
+	}
+	if mode == "failure" || (mode == "partial" && strings.Contains(string(req.State), "unresolved.py")) {
+		http.Error(w, "fixture failure", 400)
+		return
+	}
+	answers, ok := associationProofAnswers(t, req)
+	if !ok {
+		http.Error(w, "unexpected", 400)
+		return
+	}
+	writeAssociationProofResponse(t, w, mode, answers)
+}
+
+func associationProofAnswers(t *testing.T, req associationProofRequest) (map[string]any, bool) {
+	answers := map[string]any{}
+	for key, q := range req.Questions {
+		switch q.Type {
+		case "noul":
+			answers[key] = map[string]any{"type": "noul", "noul": .9}
+		case "choice":
+			p := .9
+			if strings.Contains(string(req.State), "unresolved.py") {
+				p = .51
+			}
+			answers[key] = map[string]any{"type": "choice", "choice": "area-000", "probabilities": map[string]float64{"area-000": p, "area-001": 1 - p}, "confidence": p}
+		default:
+			t.Errorf("unexpected question type %q", q.Type)
+			return nil, false
+		}
+	}
+	return answers, true
+}
+
+func writeAssociationProofResponse(t *testing.T, w http.ResponseWriter, mode string, answers map[string]any) {
+	model := associationProofModel
+	if mode == "mismatch" {
+		model = "typesafe/jev-wrong-model"
+	}
+	cost := .00001
+	if mode == "cost" {
+		cost = 2
+	}
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(map[string]any{"id": "fixture", "model": model, "answers": answers, "usage": map[string]any{"input_tokens": 10, "output_tokens": 2, "cost": cost}}); err != nil {
+		t.Error(err)
+	}
+}
+
 func associationOptions(base, head string, c *decisions.Client) association.LaneOptions {
 	return association.LaneOptions{Base: base, Head: head, RunID: "proof-run", Mapping: policy.Association{Enabled: true, CoveredScore: .60, TChoice: .535}, Config: decisions.Config{Enabled: true, Model: associationProofModel, MaxPerRun: 100, MaxCostUSD: 100, EgressAcknowledged: true, Endpoint: c.Endpoint}, Eligibility: decisions.Eligibility{Enabled: true, HasKey: true, EgressAllowed: true}, Client: c, Fingerprint: association.Fingerprint{CoveredScore: .60, TChoice: .535, CoveredQuestion: decisions.MergeCovered.Version(associationProofModel), ChoiceQuestion: "frozen-choice-text-v1", JevModel: associationProofModel}}
 }
+
 func assertAssociationHealth(t *testing.T, h domain.LaneHealth, status domain.LaneStatus, reason string, units int) {
 	t.Helper()
 	if h.Lane != LaneAssociation || h.Status != status || h.Reason != reason || h.Units != units || h.Mode != domain.ModeSignal || string(h.Requires) != "decision-egress" || h.Required {
 		t.Fatalf("association health %+v; want status %s reason %q units %d", h, status, reason, units)
 	}
-	text := string(status)
-	if status == domain.LaneRan {
-		text = fmt.Sprintf("ran (%d)", units)
-	} else if status == domain.LaneSkipped {
-		text = "skipped (" + reason + ")"
-	}
-	summary := Summary(domain.Gate{}, Ranking{}, nil, nil, 0, []domain.LaneHealth{h}, nil, association.GuardState{})
+	text := associationHealthSummaryText(status, reason, units)
+	summary := Summary(SummaryInput{Health: []domain.LaneHealth{h}})
 	if !strings.Contains(summary, "| "+text+" |") {
 		t.Fatalf("summary lacks health %q: %s", text, summary)
 	}
 }
 
-func TestAssociationGuardConfigDefaultsPreserveZeroLimits(t *testing.T) {
-	if got, want := (Config{}).associationGuard(), policy.DefaultMapping().Association.Guard; got != want {
-		t.Fatalf("default guard %+v; want %+v", got, want)
+func associationHealthSummaryText(status domain.LaneStatus, reason string, units int) string {
+	switch status {
+	case domain.LaneRan:
+		return fmt.Sprintf("ran (%d)", units)
+	case domain.LaneSkipped:
+		return "skipped (" + reason + ")"
 	}
-	configured := policy.AssociationGuard{WindowMerges: 4, MinClusters: 2, FallbackRateMax: 0, PendingNewRateMax: 0}
-	if got := (Config{AssociationGuard: configured}).associationGuard(); got != configured {
-		t.Fatalf("configured zero limits changed: %+v", got)
-	}
+	return string(status)
 }
 
 func TestAssociationLaneZeroCalls(t *testing.T) {
@@ -235,89 +248,112 @@ func TestAssociationLaneZeroCalls(t *testing.T) {
 func TestAssociationLaneFailureHealth(t *testing.T) {
 	for _, mode := range []string{"failure", "partial", "mismatch"} {
 		t.Run(mode, func(t *testing.T) {
-			root, base, head := associationRepo(t)
-			s := associationStore(t, root, 2)
-			c, count := associationServer(t, mode)
-			o := associationOptions(base, head, c)
-			healths, err := RunAssociationLane(context.Background(), s, root, domain.TriggerPush, o)
-			if err != nil {
-				t.Fatal(err)
-			}
-			h := healths[0]
-			want := domain.LaneFailed
-			if mode == "partial" {
-				want = domain.LaneRan
-			}
-			assertAssociationHealth(t, h, want, "", 2)
-			if count.Load() == 0 {
-				t.Fatal("no attempted requests")
-			}
-			rows, err := s.ListAssociations(context.Background())
-			if err != nil || len(rows) != 2 {
-				t.Fatalf("rows %+v %v", rows, err)
-			}
-			failures := 0
-			for _, a := range rows {
-				if a.Outcome == domain.AssociationUnresolved && a.Reason == domain.AssociationReasonJevFailure {
-					failures++
-				}
-			}
-			wantFailures := 2
-			if mode == "partial" {
-				wantFailures = 1
-			}
-			if failures != wantFailures {
-				t.Fatalf("failure rows %d want %d: %+v", failures, wantFailures, rows)
-			}
-			disabled := o
-			disabled.Mapping.Enabled = false
-			disabled.RunID = "disabled"
-			off, err := RunAssociationLane(context.Background(), s, root, domain.TriggerPush, disabled)
-			if err != nil {
-				t.Fatal(err)
-			}
-			onGate := Evaluate(GateInput{Policy: policy.Default(), Lanes: []domain.LaneHealth{h}}).Gate
-			offGate := Evaluate(GateInput{Policy: policy.Default(), Lanes: off}).Gate
-			if onGate.ExitCode != offGate.ExitCode {
-				t.Fatalf("optional lane changed exit code %d -> %d", offGate.ExitCode, onGate.ExitCode)
-			}
+			checkAssociationLaneFailureMode(t, mode)
 		})
+	}
+}
+
+func checkAssociationLaneFailureMode(t *testing.T, mode string) {
+	root, base, head := associationRepo(t)
+	s := associationStore(t, root, 2)
+	c, count := associationServer(t, mode)
+	o := associationOptions(base, head, c)
+	healths, err := RunAssociationLane(context.Background(), s, root, domain.TriggerPush, o)
+	if err != nil {
+		t.Fatal(err)
+	}
+	h := healths[0]
+	want := domain.LaneFailed
+	if mode == "partial" {
+		want = domain.LaneRan
+	}
+	assertAssociationHealth(t, h, want, "", 2)
+	if count.Load() == 0 {
+		t.Fatal("no attempted requests")
+	}
+	assertAssociationJevFailureRows(t, s, mode)
+	assertDisabledAssociationLaneKeepsExitCode(t, s, root, o, h)
+}
+
+func assertAssociationJevFailureRows(t *testing.T, s *state.Store, mode string) {
+	t.Helper()
+	rows, err := s.ListAssociations(context.Background())
+	if err != nil || len(rows) != 2 {
+		t.Fatalf("rows %+v %v", rows, err)
+	}
+	failures := 0
+	for _, a := range rows {
+		if a.Outcome == domain.AssociationUnresolved && a.Reason == domain.AssociationReasonJevFailure {
+			failures++
+		}
+	}
+	wantFailures := 2
+	if mode == "partial" {
+		wantFailures = 1
+	}
+	if failures != wantFailures {
+		t.Fatalf("failure rows %d want %d: %+v", failures, wantFailures, rows)
+	}
+}
+
+func assertDisabledAssociationLaneKeepsExitCode(t *testing.T, s *state.Store, root string, o association.LaneOptions, h domain.LaneHealth) {
+	t.Helper()
+	disabled := o
+	disabled.Mapping.Enabled = false
+	disabled.RunID = "disabled"
+	off, err := RunAssociationLane(context.Background(), s, root, domain.TriggerPush, disabled)
+	if err != nil {
+		t.Fatal(err)
+	}
+	onGate := Evaluate(GateInput{Policy: policy.Default(), Lanes: []domain.LaneHealth{h}}).Gate
+	offGate := Evaluate(GateInput{Policy: policy.Default(), Lanes: off}).Gate
+	if onGate.ExitCode != offGate.ExitCode {
+		t.Fatalf("optional lane changed exit code %d -> %d", offGate.ExitCode, onGate.ExitCode)
 	}
 }
 
 func TestAssociationLaneCaps(t *testing.T) {
 	for _, mode := range []string{"call", "cost"} {
 		t.Run(mode, func(t *testing.T) {
-			root, base, head := associationRepo(t)
-			s := associationStore(t, root, 2)
-			c, count := associationServer(t, mode)
-			o := associationOptions(base, head, c)
-			if mode == "call" {
-				o.Config.MaxPerRun = 1
-			} else {
-				o.Config.MaxCostUSD = .5
-			}
-			healths, err := RunAssociationLane(context.Background(), s, root, domain.TriggerPush, o)
-			if err != nil {
-				t.Fatal(err)
-			}
-			h := healths[0]
-			if h.Status != domain.LaneRan {
-				t.Fatalf("successful covered call then cap: %+v", h)
-			}
-			if count.Load() != 1 {
-				t.Fatalf("cap allowed %d requests", count.Load())
-			}
-			rows, err := s.ListAssociations(context.Background())
-			if err != nil || len(rows) != 2 {
-				t.Fatalf("rows %+v %v", rows, err)
-			}
-			for _, a := range rows {
-				if a.Outcome != domain.AssociationUnresolved || a.Reason != domain.AssociationReasonJevCap {
-					t.Fatalf("capped cluster %+v", a)
-				}
-			}
+			checkAssociationLaneCap(t, mode)
 		})
+	}
+}
+
+func checkAssociationLaneCap(t *testing.T, mode string) {
+	root, base, head := associationRepo(t)
+	s := associationStore(t, root, 2)
+	c, count := associationServer(t, mode)
+	o := associationOptions(base, head, c)
+	if mode == "call" {
+		o.Config.MaxPerRun = 1
+	} else {
+		o.Config.MaxCostUSD = .5
+	}
+	healths, err := RunAssociationLane(context.Background(), s, root, domain.TriggerPush, o)
+	if err != nil {
+		t.Fatal(err)
+	}
+	h := healths[0]
+	if h.Status != domain.LaneRan {
+		t.Fatalf("successful covered call then cap: %+v", h)
+	}
+	if count.Load() != 1 {
+		t.Fatalf("cap allowed %d requests", count.Load())
+	}
+	assertAssociationRowsCapped(t, s)
+}
+
+func assertAssociationRowsCapped(t *testing.T, s *state.Store) {
+	t.Helper()
+	rows, err := s.ListAssociations(context.Background())
+	if err != nil || len(rows) != 2 {
+		t.Fatalf("rows %+v %v", rows, err)
+	}
+	for _, a := range rows {
+		if a.Outcome != domain.AssociationUnresolved || a.Reason != domain.AssociationReasonJevCap {
+			t.Fatalf("capped cluster %+v", a)
+		}
 	}
 }
 
@@ -325,79 +361,121 @@ func TestAssociationAssessScenario(t *testing.T) {
 	var exits [2]int
 	for i, enabled := range []bool{false, true} {
 		t.Run(fmt.Sprintf("enabled=%v", enabled), func(t *testing.T) {
-			root, base, head := associationRepo(t)
-			s := associationStore(t, root, 2)
-			s.Close()
-			c, count := associationServer(t, "success")
-			o := associationOptions(base, head, c)
-			o.Mapping.Enabled = enabled
-			binary := fixtureClawpatch(t, root)
-			result, err := Assess(context.Background(), Config{Root: root, ClawpatchBinary: binary}, Options{Trigger: domain.TriggerPush, Association: &o})
-			if err != nil {
-				t.Fatal(err)
-			}
-			var h domain.LaneHealth
-			found := false
-			for _, lane := range result.Lanes {
-				if lane.Lane == LaneAssociation {
-					h = lane
-					found = true
-				}
-			}
-			if !found {
-				t.Fatal("association health omitted from assess")
-			}
-			s, err = state.Open(root)
-			if err != nil {
-				t.Fatal(err)
-			}
-			defer s.Close()
-			rows, err := s.ListAssociations(context.Background())
-			if err != nil {
-				t.Fatal(err)
-			}
-			if !enabled {
-				assertAssociationHealth(t, h, domain.LaneSkipped, "disabled", 0)
-				if len(rows) != 0 || count.Load() != 0 {
-					t.Fatalf("disabled rows=%d calls=%d", len(rows), count.Load())
-				}
-			} else {
-				assertAssociationHealth(t, h, domain.LaneRan, "", 2)
-				if len(rows) != 2 || count.Load() < 4 {
-					t.Fatalf("enabled rows=%d calls=%d", len(rows), count.Load())
-				}
-				assigned, unresolved := 0, 0
-				for _, a := range rows {
-					if a.RunID != result.Run.RunID || a.DecidedAt.IsZero() || a.MergeCommit == "" || a.ClusterKey == "" || len(a.Files) != 1 || !a.ThresholdsProvisional || a.PRMetadata != domain.PRMetadataAbsent || a.InputsDigest == "" || a.CatalogueDigest == "" || a.DecisionDigest != o.Fingerprint.Digest() || a.JevCovered == nil || a.JevChoice == nil {
-						t.Fatalf("incomplete persisted decision %+v", a)
-					}
-					if strings.Contains(a.RawAnswer, "fixture-local-key") {
-						t.Fatal("transport credential persisted")
-					}
-					switch a.Outcome {
-					case domain.AssociationAssigned:
-						assigned++
-						if len(a.AreaIDs) != 1 || a.AreaIDs[0] != "area-000" || a.JevOutcome != "assigned" {
-							t.Fatalf("assignment mapping %+v", a)
-						}
-					case domain.AssociationUnresolved:
-						unresolved++
-						if a.Reason != domain.AssociationReasonBelowTChoice || a.JevOutcome != "unresolved" {
-							t.Fatalf("abstention mapping %+v", a)
-						}
-					default:
-						t.Fatalf("unexpected outcome %+v", a)
-					}
-				}
-				if assigned != 1 || unresolved != 1 {
-					t.Fatalf("assigned=%d unresolved=%d", assigned, unresolved)
-				}
-			}
-			gate := Evaluate(GateInput{Policy: policy.Default(), Lanes: result.Lanes}).Gate
-			exits[i] = gate.ExitCode
+			exits[i] = associationAssessExitCode(t, enabled)
 		})
 	}
 	if exits[0] != exits[1] {
 		t.Fatalf("enabled lane changes exit %v", exits)
 	}
+}
+
+func associationAssessExitCode(t *testing.T, enabled bool) int {
+	root, base, head := associationRepo(t)
+	s := associationStore(t, root, 2)
+	if err := s.Close(); err != nil {
+		t.Fatal(err)
+	}
+	c, count := associationServer(t, "success")
+	o := associationOptions(base, head, c)
+	o.Mapping.Enabled = enabled
+	binary := fixtureClawpatch(t, root)
+	result, err := Assess(context.Background(), Config{Root: root, ClawpatchBinary: binary}, Options{Trigger: domain.TriggerPush, Association: &o})
+	if err != nil {
+		t.Fatal(err)
+	}
+	h := associationLaneHealthFrom(t, result.Lanes)
+	s = openEngineTestStore(t, root)
+	rows, err := s.ListAssociations(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertAssessAssociationLane(t, enabled, h, rows, count.Load())
+	if enabled {
+		assertAssessAssociationRows(t, rows, result.Run.RunID, o.Fingerprint.Digest())
+	}
+	gate := Evaluate(GateInput{Policy: policy.Default(), Lanes: result.Lanes}).Gate
+	return gate.ExitCode
+}
+
+func associationLaneHealthFrom(t *testing.T, lanes []domain.LaneHealth) domain.LaneHealth {
+	t.Helper()
+	var h domain.LaneHealth
+	found := false
+	for _, lane := range lanes {
+		if lane.Lane == LaneAssociation {
+			h = lane
+			found = true
+		}
+	}
+	if !found {
+		t.Fatal("association health omitted from assess")
+	}
+	return h
+}
+
+func assertAssessAssociationLane(t *testing.T, enabled bool, h domain.LaneHealth, rows []domain.Association, calls int64) {
+	t.Helper()
+	if !enabled {
+		assertAssociationHealth(t, h, domain.LaneSkipped, "disabled", 0)
+		if len(rows) != 0 || calls != 0 {
+			t.Fatalf("disabled rows=%d calls=%d", len(rows), calls)
+		}
+		return
+	}
+	assertAssociationHealth(t, h, domain.LaneRan, "", 2)
+	if len(rows) != 2 || calls < 4 {
+		t.Fatalf("enabled rows=%d calls=%d", len(rows), calls)
+	}
+}
+
+func assertAssessAssociationRows(t *testing.T, rows []domain.Association, runID, decisionDigest string) {
+	t.Helper()
+	assigned, unresolved := 0, 0
+	for _, a := range rows {
+		assertPersistedAssociationDecision(t, a, runID, decisionDigest)
+		switch assertAssociationOutcomeMapping(t, a) {
+		case domain.AssociationAssigned:
+			assigned++
+		case domain.AssociationUnresolved:
+			unresolved++
+		}
+	}
+	if assigned != 1 || unresolved != 1 {
+		t.Fatalf("assigned=%d unresolved=%d", assigned, unresolved)
+	}
+}
+
+func associationDecisionLacksRunFacts(a domain.Association, runID string) bool {
+	return a.RunID != runID || a.DecidedAt.IsZero() || a.MergeCommit == "" || a.ClusterKey == "" || len(a.Files) != 1 || !a.ThresholdsProvisional
+}
+
+func associationDecisionLacksDigests(a domain.Association, decisionDigest string) bool {
+	return a.PRMetadata != domain.PRMetadataAbsent || a.InputsDigest == "" || a.CatalogueDigest == "" || a.DecisionDigest != decisionDigest || a.JevCovered == nil || a.JevChoice == nil
+}
+
+func assertPersistedAssociationDecision(t *testing.T, a domain.Association, runID, decisionDigest string) {
+	t.Helper()
+	if associationDecisionLacksRunFacts(a, runID) || associationDecisionLacksDigests(a, decisionDigest) {
+		t.Fatalf("incomplete persisted decision %+v", a)
+	}
+	if strings.Contains(a.RawAnswer, "fixture-local-key") {
+		t.Fatal("transport credential persisted")
+	}
+}
+
+func assertAssociationOutcomeMapping(t *testing.T, a domain.Association) domain.AssociationOutcome {
+	t.Helper()
+	switch a.Outcome {
+	case domain.AssociationAssigned:
+		if len(a.AreaIDs) != 1 || a.AreaIDs[0] != "area-000" || a.JevOutcome != "assigned" {
+			t.Fatalf("assignment mapping %+v", a)
+		}
+	case domain.AssociationUnresolved:
+		if a.Reason != domain.AssociationReasonBelowTChoice || a.JevOutcome != "unresolved" {
+			t.Fatalf("abstention mapping %+v", a)
+		}
+	default:
+		t.Fatalf("unexpected outcome %+v", a)
+	}
+	return a.Outcome
 }

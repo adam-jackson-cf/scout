@@ -52,8 +52,12 @@ func guardProofRows(n int, mode string) []domain.Association {
 	}
 	return rows
 }
-func guardProofRate(t *testing.T, got GuardRate, num, den int, measured bool, reason string) {
+func wantRate(num, den int, measured bool, reason string) GuardRate {
+	return GuardRate{Numerator: num, Denominator: den, Measured: measured, Reason: reason}
+}
+func guardProofRate(t *testing.T, got, want GuardRate) {
 	t.Helper()
+	num, den, measured, reason := want.Numerator, want.Denominator, want.Measured, want.Reason
 	if got.Numerator != num || got.Denominator != den || got.Measured != measured || got.Reason != reason {
 		t.Fatalf("rate=%+v want %d/%d measured=%v reason=%q", got, num, den, measured, reason)
 	}
@@ -90,12 +94,12 @@ func TestGuardAvailabilityAndReasons(t *testing.T) {
 			if tc.fallbackDen < 20 {
 				fallbackReason = "insufficient_clusters"
 			}
-			guardProofRate(t, got.FallbackRate, numerator, tc.fallbackDen, tc.fallbackDen >= 20, fallbackReason)
+			guardProofRate(t, got.FallbackRate, wantRate(numerator, tc.fallbackDen, tc.fallbackDen >= 20, fallbackReason))
 			pending := 0
 			if tc.mode == "pending_cap" {
 				pending = 20
 			}
-			guardProofRate(t, got.PendingNewRate, pending, tc.pendingDen, tc.measured, tc.reason)
+			guardProofRate(t, got.PendingNewRate, wantRate(pending, tc.pendingDen, tc.measured, tc.reason))
 		})
 	}
 }
@@ -108,14 +112,14 @@ func TestGuardPartialAvailabilityAndRunEligibility(t *testing.T) {
 	cfg := guardProofConfig()
 	cfg.WindowMerges = 40
 	got := Guard(rows, guardProofGeneration(), cfg, GuardState{})
-	guardProofRate(t, got.FallbackRate, 40, 40, true, "")
-	guardProofRate(t, got.PendingNewRate, 0, 20, true, "")
+	guardProofRate(t, got.FallbackRate, wantRate(40, 40, true, ""))
+	guardProofRate(t, got.PendingNewRate, wantRate(0, 20, true, ""))
 	// A skipped run invalidates even its separate, non-escalated merge.
 	rows[20].RunID = rows[0].RunID
 	rows[20].JevOutcome = "existing"
 	rows[20].CLIName = ""
 	got = Guard(rows, guardProofGeneration(), cfg, GuardState{})
-	guardProofRate(t, got.PendingNewRate, 0, 19, false, "insufficient_clusters")
+	guardProofRate(t, got.PendingNewRate, wantRate(0, 19, false, "insufficient_clusters"))
 }
 func TestGuardMinimumAndThresholdBoundaries(t *testing.T) {
 	cfg := guardProofConfig()
@@ -130,8 +134,8 @@ func TestGuardMinimumAndThresholdBoundaries(t *testing.T) {
 		rows[i].AreaIDs = nil
 	}
 	got := Guard(rows, guardProofGeneration(), cfg, GuardState{})
-	guardProofRate(t, got.FallbackRate, 8, 20, true, "")
-	guardProofRate(t, got.PendingNewRate, 4, 20, true, "")
+	guardProofRate(t, got.FallbackRate, wantRate(8, 20, true, ""))
+	guardProofRate(t, got.PendingNewRate, wantRate(4, 20, true, ""))
 	if got.CatalogueStale {
 		t.Fatal("equal limits are not exceeding (REQ-158)")
 	}
@@ -172,7 +176,7 @@ func TestGuardDecisionOrderAndInheritedExclusion(t *testing.T) {
 	}
 	before := append([]domain.Association(nil), rows...)
 	got := Guard(rows, guardProofGeneration(), guardProofConfig(), GuardState{})
-	guardProofRate(t, got.FallbackRate, 0, 20, true, "")
+	guardProofRate(t, got.FallbackRate, wantRate(0, 20, true, ""))
 	if len(got.WindowMerges) != 20 || got.WindowMerges[0] != "merge-020" || got.WindowMerges[19] != "merge-001" {
 		t.Fatalf("decision ordered window=%v", got.WindowMerges)
 	}
@@ -180,18 +184,22 @@ func TestGuardDecisionOrderAndInheritedExclusion(t *testing.T) {
 		t.Fatal("guard mutated input")
 	}
 }
-func TestGuardGenerationAndHistoricalLatch(t *testing.T) {
+func guardHistoricalTripRows() []domain.Association {
 	rows := guardProofRows(45, "healthy")
 	for i := 0; i < 20; i++ {
 		rows[i].JevOutcome = "none"
 		rows[i].FallbackSkipped = true
 		rows[i].FallbackSkipReason = "no model CLI"
 	}
+	return rows
+}
+func TestGuardGenerationAndHistoricalLatch(t *testing.T) {
+	rows := guardHistoricalTripRows()
 	got := Guard(rows, guardProofGeneration(), guardProofConfig(), GuardState{})
 	if !got.CatalogueStale || got.Recommendation == "" {
 		t.Fatalf("historical trip lost: %+v", got)
 	}
-	guardProofRate(t, got.FallbackRate, 0, 20, true, "")
+	guardProofRate(t, got.FallbackRate, wantRate(0, 20, true, ""))
 	for i := range rows {
 		rows[i].CatalogueDigest = "changed-catalogue"
 	}
@@ -210,12 +218,7 @@ func TestGuardGenerationAndHistoricalLatch(t *testing.T) {
 func TestGuardRestoreReplaysHistoricalTrip(t *testing.T) {
 	ctx := context.Background()
 	source := proofStore(t)
-	rows := guardProofRows(45, "healthy")
-	for i := 0; i < 20; i++ {
-		rows[i].JevOutcome = "none"
-		rows[i].FallbackSkipped = true
-		rows[i].FallbackSkipReason = "no model CLI"
-	}
+	rows := guardHistoricalTripRows()
 	if err := source.InsertAssociations(ctx, rows); err != nil {
 		t.Fatal(err)
 	}
@@ -264,8 +267,8 @@ func TestGuardWholeWindowAndFailedMergeEligibility(t *testing.T) {
 	rows[1].Reason = domain.AssociationReasonTerraFailure
 	rows[1].PendingAreaID = ""
 	got := Guard(rows, guardProofGeneration(), guardProofConfig(), GuardState{})
-	guardProofRate(t, got.FallbackRate, 10, 40, true, "")
-	guardProofRate(t, got.PendingNewRate, 8, 38, true, "")
+	guardProofRate(t, got.FallbackRate, wantRate(10, 40, true, ""))
+	guardProofRate(t, got.PendingNewRate, wantRate(8, 38, true, ""))
 	if len(got.WindowMerges) != 20 {
 		t.Fatalf("clusters consumed merge window: %v", got.WindowMerges)
 	}

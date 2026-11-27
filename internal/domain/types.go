@@ -329,12 +329,26 @@ type Feature struct {
 }
 
 func (f Feature) Validate() error {
+	if err := f.validateIdentity(); err != nil {
+		return err
+	}
+	if err := f.validateRawOriginal(); err != nil {
+		return err
+	}
+	return f.validateReferences()
+}
+
+func (f Feature) validateIdentity() error {
 	if f.SchemaVersion != 1 {
 		return fmt.Errorf("unsupported Clawpatch feature schema version %d", f.SchemaVersion)
 	}
 	if f.FeatureID == "" || f.Kind == "" || f.Source == "" || !f.Confidence.Valid() {
 		return errors.New("feature requires canonical ID, kind, source, and confidence")
 	}
+	return nil
+}
+
+func (f Feature) validateRawOriginal() error {
 	if len(f.RawOriginal) == 0 || !json.Valid(f.RawOriginal) {
 		return errors.New("feature requires valid raw canonical Clawpatch JSON")
 	}
@@ -350,6 +364,10 @@ func (f Feature) Validate() error {
 	if original.SchemaVersion != f.SchemaVersion || original.FeatureID != f.FeatureID || original.Kind != f.Kind || original.Source != f.Source {
 		return errors.New("feature fields must retain the raw canonical Clawpatch identity")
 	}
+	return nil
+}
+
+func (f Feature) validateReferences() error {
 	for _, entrypoint := range f.Entrypoints {
 		if err := entrypoint.Validate(); err != nil {
 			return fmt.Errorf("feature entrypoint: %w", err)
@@ -382,16 +400,20 @@ func (r SourceRange) Validate() error {
 	if err := validateScopedPath(r.Path); err != nil {
 		return fmt.Errorf("source range path: %w", err)
 	}
-	if (r.StartLine == 0) != (r.EndLine == 0) || r.StartLine < 0 || r.EndLine < 0 || r.StartLine > r.EndLine {
+	if invalidBounds(r.StartLine, r.EndLine) {
 		return errors.New("source range has invalid line bounds")
 	}
-	if (r.StartByte == 0) != (r.EndByte == 0) || r.StartByte < 0 || r.EndByte < 0 || r.StartByte > r.EndByte {
+	if invalidBounds(r.StartByte, r.EndByte) {
 		return errors.New("source range has invalid byte bounds")
 	}
 	if r.StartLine == 0 && r.StartByte == 0 && r.Symbol == "" {
 		return errors.New("source range requires a line range, byte range, or symbol")
 	}
 	return nil
+}
+
+func invalidBounds(start, end int) bool {
+	return (start == 0) != (end == 0) || start < 0 || end < 0 || start > end
 }
 
 // SafeArtifactRef must name a sanitized artifact, never raw tool output.
@@ -451,15 +473,33 @@ type Observation struct {
 }
 
 func (o Observation) Validate() error {
+	if err := o.validateIdentity(); err != nil {
+		return err
+	}
+	if err := o.validateClassification(); err != nil {
+		return err
+	}
+	return o.validateEvidence()
+}
+
+func (o Observation) validateIdentity() error {
 	if o.ObservationID == "" || o.RunID == "" || o.Source == "" || o.OriginalCategory == "" || o.Mechanism == "" {
 		return errors.New("observation requires identity, source, category, and mechanism")
 	}
+	return nil
+}
+
+func (o Observation) validateClassification() error {
 	if !o.Family.Valid() || !o.SourceSeverity.Valid() || !o.EffectiveSeverity.Valid() || !o.Confidence.Valid() || !o.Claim.ValidIssueClaim() {
 		return errors.New("observation has invalid family, severity, or confidence")
 	}
 	if o.EffectiveSeverity.Rank() > o.SourceSeverity.Rank() {
 		return errors.New("effective severity cannot exceed immutable source severity")
 	}
+	return nil
+}
+
+func (o Observation) validateEvidence() error {
 	if len(o.Evidence) == 0 {
 		return errors.New("observation requires safe evidence")
 	}
@@ -522,17 +562,8 @@ func (c Coverage) Validate() error {
 	if err := c.Key.Validate(); err != nil {
 		return err
 	}
-	if !c.Status.Valid() {
-		return errors.New("coverage has invalid status")
-	}
-	if (c.Status == CoverageReused) != (c.ReusedFromRunID != "") {
-		return errors.New("reused coverage requires, and only reuse may have, a baseline run ID")
-	}
-	if (c.Status == CoverageInspected || c.Status == CoverageCovered || c.Status == CoverageFlagged) && len(c.InspectedRanges) == 0 {
-		return errors.New("inspected coverage requires inspected ranges")
-	}
-	if (c.Status == CoverageSkipped || c.Status == CoverageBlocked || c.Status == CoverageIncomplete || c.Status == CoverageRequiresManualVerification) && c.Reason == "" {
-		return errors.New("incomplete coverage requires a reason")
+	if err := c.validateStatus(); err != nil {
+		return err
 	}
 	for _, sourceRange := range c.InspectedRanges {
 		if err := sourceRange.Validate(); err != nil {
@@ -545,6 +576,30 @@ func (c Coverage) Validate() error {
 		}
 	}
 	return nil
+}
+
+func (c Coverage) validateStatus() error {
+	if !c.Status.Valid() {
+		return errors.New("coverage has invalid status")
+	}
+	if (c.Status == CoverageReused) != (c.ReusedFromRunID != "") {
+		return errors.New("reused coverage requires, and only reuse may have, a baseline run ID")
+	}
+	if c.Status.requiresInspectedRanges() && len(c.InspectedRanges) == 0 {
+		return errors.New("inspected coverage requires inspected ranges")
+	}
+	if c.Status.requiresReason() && c.Reason == "" {
+		return errors.New("incomplete coverage requires a reason")
+	}
+	return nil
+}
+
+func (s CoverageStatus) requiresInspectedRanges() bool {
+	return s == CoverageInspected || s == CoverageCovered || s == CoverageFlagged
+}
+
+func (s CoverageStatus) requiresReason() bool {
+	return s == CoverageSkipped || s == CoverageBlocked || s == CoverageIncomplete || s == CoverageRequiresManualVerification
 }
 
 type Snapshot struct {
@@ -591,14 +646,8 @@ type Scope struct {
 }
 
 func (s Scope) Validate() error {
-	if !s.Kind.Valid() {
-		return errors.New("scope has invalid kind")
-	}
-	if (s.Kind == ScopeSubpath || s.Kind == ScopePaths) && len(s.Paths) == 0 {
-		return errors.New("path scope requires paths")
-	}
-	if s.Kind == ScopeCommitRange && (s.FromRevision == "" || s.ToRevision == "") {
-		return errors.New("commit range scope requires both revisions")
+	if err := s.validateKind(); err != nil {
+		return err
 	}
 	for _, path := range s.Paths {
 		if err := validateScopedPath(path); err != nil {
@@ -609,6 +658,19 @@ func (s Scope) Validate() error {
 		if !family.Valid() || family == FamilyClawpatch {
 			return errors.New("scope has invalid selected family")
 		}
+	}
+	return nil
+}
+
+func (s Scope) validateKind() error {
+	if !s.Kind.Valid() {
+		return errors.New("scope has invalid kind")
+	}
+	if (s.Kind == ScopeSubpath || s.Kind == ScopePaths) && len(s.Paths) == 0 {
+		return errors.New("path scope requires paths")
+	}
+	if s.Kind == ScopeCommitRange && (s.FromRevision == "" || s.ToRevision == "") {
+		return errors.New("commit range scope requires both revisions")
 	}
 	return nil
 }
@@ -719,6 +781,27 @@ type Run struct {
 }
 
 func (r Run) Validate() error {
+	if err := r.validateHeader(); err != nil {
+		return err
+	}
+	expected, err := r.validateExpectedCoverage()
+	if err != nil {
+		return err
+	}
+	coverage, err := r.validateCoverageRows()
+	if err != nil {
+		return err
+	}
+	if err := r.validateRecords(); err != nil {
+		return err
+	}
+	if r.State == RunComplete {
+		return r.validateComplete(expected, coverage)
+	}
+	return nil
+}
+
+func (r Run) validateHeader() error {
 	if r.RunID == "" || r.PlanID == "" || !r.State.Valid() {
 		return errors.New("run requires IDs and state")
 	}
@@ -728,28 +811,40 @@ func (r Run) Validate() error {
 	if err := r.Scope.Validate(); err != nil {
 		return fmt.Errorf("run scope: %w", err)
 	}
+	return nil
+}
+
+func (r Run) validateExpectedCoverage() (map[string]struct{}, error) {
 	expected := make(map[string]struct{}, len(r.ExpectedCoverage))
 	for _, key := range r.ExpectedCoverage {
 		if err := key.Validate(); err != nil {
-			return fmt.Errorf("expected coverage: %w", err)
+			return nil, fmt.Errorf("expected coverage: %w", err)
 		}
 		encoded := key.String()
 		if _, exists := expected[encoded]; exists {
-			return fmt.Errorf("run repeats expected coverage %q", encoded)
+			return nil, fmt.Errorf("run repeats expected coverage %q", encoded)
 		}
 		expected[encoded] = struct{}{}
 	}
+	return expected, nil
+}
+
+func (r Run) validateCoverageRows() (map[string]Coverage, error) {
 	coverage := make(map[string]Coverage, len(r.Coverage))
 	for _, row := range r.Coverage {
 		if err := row.Validate(); err != nil {
-			return fmt.Errorf("run coverage: %w", err)
+			return nil, fmt.Errorf("run coverage: %w", err)
 		}
 		encoded := row.Key.String()
 		if _, exists := coverage[encoded]; exists {
-			return fmt.Errorf("run repeats coverage %q", encoded)
+			return nil, fmt.Errorf("run repeats coverage %q", encoded)
 		}
 		coverage[encoded] = row
 	}
+	return coverage, nil
+}
+
+func (r Run) validateRecords() error {
 	for _, failure := range r.Failures {
 		if err := failure.Validate(); err != nil {
 			return fmt.Errorf("run failure: %w", err)
@@ -765,19 +860,21 @@ func (r Run) Validate() error {
 			return fmt.Errorf("run artifact: %w", err)
 		}
 	}
-	if r.State == RunComplete {
-		if r.FinishedAt == nil {
-			return errors.New("complete run requires a finish time")
+	return nil
+}
+
+func (r Run) validateComplete(expected map[string]struct{}, coverage map[string]Coverage) error {
+	if r.FinishedAt == nil {
+		return errors.New("complete run requires a finish time")
+	}
+	for encoded := range expected {
+		row, found := coverage[encoded]
+		if !found || !row.Status.Accounted() {
+			return fmt.Errorf("complete run has unaccounted coverage %q", encoded)
 		}
-		for encoded := range expected {
-			row, found := coverage[encoded]
-			if !found || !row.Status.Accounted() {
-				return fmt.Errorf("complete run has unaccounted coverage %q", encoded)
-			}
-		}
-		if len(r.Failures) != 0 || len(r.Omissions) != 0 {
-			return errors.New("complete run cannot retain failures or omissions")
-		}
+	}
+	if len(r.Failures) != 0 || len(r.Omissions) != 0 {
+		return errors.New("complete run cannot retain failures or omissions")
 	}
 	return nil
 }
@@ -806,6 +903,10 @@ func (r AdapterResult) Validate() error {
 	if r.Status == AdapterCompleted && len(r.Failures) != 0 {
 		return errors.New("completed adapter result cannot retain failures")
 	}
+	return r.validateRecords()
+}
+
+func (r AdapterResult) validateRecords() error {
 	for _, coverage := range r.Coverage {
 		if err := coverage.Validate(); err != nil {
 			return fmt.Errorf("adapter coverage: %w", err)
@@ -926,18 +1027,42 @@ type Issue struct {
 }
 
 func (i Issue) Validate() error {
+	if err := i.validateIdentity(); err != nil {
+		return err
+	}
+	if err := i.validateSeverity(); err != nil {
+		return err
+	}
+	if err := i.validateAnchorAndDisposition(); err != nil {
+		return err
+	}
+	if err := i.validateReferences(); err != nil {
+		return err
+	}
+	return i.validateResolution()
+}
+
+func (i Issue) validateIdentity() error {
 	if i.IssueID == "" || i.Title == "" || i.Mechanism == "" || !i.State.Valid() {
 		return errors.New("issue requires identity, title, mechanism, and state")
 	}
 	if !i.Claim.ValidIssueClaim() || (i.Claim == "") != (i.Rule == "") {
 		return errors.New("issue claim and promoting rule must be set together")
 	}
+	return nil
+}
+
+func (i Issue) validateSeverity() error {
 	if !i.OriginalSeverity.Valid() || !i.EffectiveSeverity.Valid() {
 		return errors.New("issue has invalid severity")
 	}
 	if i.EffectiveSeverity.Rank() > i.OriginalSeverity.Rank() {
 		return errors.New("effective severity cannot exceed immutable source severity")
 	}
+	return nil
+}
+
+func (i Issue) validateAnchorAndDisposition() error {
 	// Only a migrated legacy row that could not be anchored (listed as an
 	// ambiguity by the migration) may lack an anchor.
 	if i.Anchor.RuleKey == "" && i.LegacyID == "" {
@@ -949,6 +1074,10 @@ func (i Issue) Validate() error {
 	if (i.State == IssueFalsePositive || i.State == IssueWontFix) && i.DispositionReason == "" {
 		return errors.New("false-positive and won't-fix issues require an explicit disposition")
 	}
+	return nil
+}
+
+func (i Issue) validateReferences() error {
 	for _, path := range i.Files {
 		if err := validateScopedPath(path); err != nil {
 			return fmt.Errorf("issue file: %w", err)
@@ -962,15 +1091,17 @@ func (i Issue) Validate() error {
 			return fmt.Errorf("issue history: %w", err)
 		}
 	}
-	if i.State == IssueResolved {
-		if i.Verification == nil {
-			return errors.New("resolved issue requires verification")
-		}
-		if err := i.Verification.ValidateResolution(); err != nil {
-			return err
-		}
-	}
 	return nil
+}
+
+func (i Issue) validateResolution() error {
+	if i.State != IssueResolved {
+		return nil
+	}
+	if i.Verification == nil {
+		return errors.New("resolved issue requires verification")
+	}
+	return i.Verification.ValidateResolution()
 }
 
 func validateScopedPath(value string) error {

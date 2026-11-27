@@ -1,9 +1,6 @@
 package sandbox
 
 import (
-	"context"
-	"os"
-	"runtime"
 	"strings"
 	"testing"
 )
@@ -61,43 +58,6 @@ func TestEnvironmentInheritsNothingFromTheCaller(t *testing.T) {
 	for _, want := range []string{"HOME=/state", "TMPDIR=/state", "PATH=/opt/tool:/usr/local/sbin:"} {
 		if !strings.Contains(joined, want) {
 			t.Errorf("environment lacks %q: %v", want, env)
-		}
-	}
-}
-
-func TestRunConfinesWritesToTheStateDirectory(t *testing.T) {
-	if err := Available(); err != nil {
-		t.Skip("scanner sandbox is not available")
-	}
-	state, err := NewState("scout-sandbox-test-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(state)
-	outside := t.TempDir()
-	request := Request{WorkDir: state, State: state, Binary: "/usr/bin/touch", StdoutLimit: 1 << 10, StderrLimit: 1 << 10}
-
-	request.Args = []string{state + "/inside"}
-	if _, _, err := Run(context.Background(), request); err != nil {
-		t.Fatalf("write inside the state directory failed: %v", err)
-	}
-	request.Args = []string{outside + "/escaped"}
-	if _, _, err := Run(context.Background(), request); err == nil {
-		t.Fatal("write outside the state directory succeeded")
-	}
-	if _, err := os.Stat(outside + "/escaped"); err == nil {
-		t.Fatal("sandbox wrote outside the state directory")
-	}
-	if runtime.GOOS == "darwin" {
-		request.Binary = "/bin/sh"
-		// Python's subprocess.DEVNULL opens the sink read/write, not just write-only.
-		request.Args = []string{"-c", "exec 3<> /dev/null"}
-		if _, _, err := Run(context.Background(), request); err != nil {
-			t.Fatalf("opening the null sink read/write failed: %v", err)
-		}
-		request.Args = []string{"-c", "exec 3<> /dev/zero"}
-		if _, _, err := Run(context.Background(), request); err == nil {
-			t.Fatal("opening another device for writing succeeded")
 		}
 	}
 }

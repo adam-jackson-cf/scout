@@ -24,497 +24,708 @@ import (
 // Assess persists the plan before file and feature jobs, then commits the run,
 // its source index, observations and issue links. Mapping is canonical Clawpatch
 // work; no Scout code synthesizes a feature ID or edits target source.
-func Assess(ctx context.Context, config Config, options Options) (Result, error) {
-	result := Result{}
+func Assess(ctx context.Context, config Config, options Options) (result Result, err error) {
+	if scopeErr := normalizeAssessScope(&options); scopeErr != nil {
+		return result, scopeErr
+	}
+	registry, err := analyzers.BuiltinRegistry()
+	if err != nil {
+		return result, err
+	}
+	store, err := state.Open(config.Root)
+	if err != nil {
+		return result, err
+	}
+	defer func() {
+		if closeErr := store.Close(); closeErr != nil {
+			err = errors.Join(err, closeErr)
+		}
+	}()
+	run := &assessment{ctx: ctx, config: config, options: options, registry: registry, store: store, root: store.Root()}
+	runErr := run.execute()
+	return run.result, runErr
+}
+
+func normalizeAssessScope(options *Options) error {
 	if options.Scope.Kind == "" {
 		options.Scope.Kind = domain.ScopeRepository
 	}
 	if len(options.Scope.SelectedFamilies) == 0 {
 		options.Scope.SelectedFamilies = DefaultFamilies()
 	}
-	if err := options.Scope.Validate(); err != nil {
-		return result, err
+	return options.Scope.Validate()
+}
+
+type assessDigests struct {
+	tool   string
+	model  string
+	mapper string
+}
+
+type assessScanChunk struct {
+	files   []domain.File
+	ran     bool
+	adapter domain.AdapterResult
+	found   []domain.Observation
+}
+
+type assessment struct {
+	ctx      context.Context
+	config   Config
+	options  Options
+	registry *analyzers.Registry
+	store    *state.Store
+	root     string
+	result   Result
+
+	snapshot         inventory.ScanResult
+	recordedFiles    []domain.File
+	recordedErr      error
+	previousFiles    []domain.File
+	base             baselineState
+	client           *clawpatch.Client
+	previousFeatures []domain.Feature
+	specs            []analyzers.Spec
+	digests          assessDigests
+	resumePlan       *domain.Plan
+	mappingRequired  bool
+	mapErr           error
+	features         []domain.Feature
+
+	current   inventory.ScanResult
+	diff      inventory.DiffResult
+	lifecycle inventory.DiffResult
+	specByKey map[string]analyzers.Spec
+	runID     string
+	plan      inventory.PlanResult
+	finalJob  domain.Job
+
+	run               domain.Run
+	files             map[string]domain.File
+	featureByID       map[string]domain.Feature
+	priorByFeature    map[string][]domain.Observation
+	provider          *contextual.Client
+	observations      []domain.Observation
+	committed         map[string]bool
+	chunkOf           map[string]*assessScanChunk
+	runners           map[string]*analyzers.Runner
+	inventoryFailures []domain.Failure
+	inlineHealth      []domain.LaneHealth
+}
+
+func (a *assessment) execute() error {
+	stages := []func() error{
+		a.scanSnapshot, a.loadBaseline, a.loadMapperInputs, a.mapFeatures, a.diffInventory,
+		a.planJobs, a.beginRun, a.commitMappingJobs, a.analyzeJobs, a.checkFinalSource,
+		a.finishRun, a.correlateIssues, a.runAssociation,
 	}
-	registry := config.Registry
-	if registry == nil {
-		var err error
-		registry, err = analyzers.BuiltinRegistry()
-		if err != nil {
-			return result, err
+	for _, stage := range stages {
+		if err := stage(); err != nil {
+			return err
 		}
 	}
-	store, err := state.Open(config.Root)
+	return nil
+}
+
+func (a *assessment) scanSnapshot() error {
+	snapshot, err := inventory.Scan(a.ctx, a.root, inventory.ScanOptions{Scope: a.options.Scope, Exclusions: a.options.Exclusions})
 	if err != nil {
-		return result, err
+		return err
 	}
-	defer store.Close()
-	root := store.Root()
-	snapshot, err := inventory.Scan(ctx, root, inventory.ScanOptions{Scope: options.Scope, Exclusions: options.Exclusions})
-	if err != nil {
-		return result, err
-	}
-	_, recordedFiles, recordedErr := store.LoadLatestRecordedInventory(ctx)
+	a.snapshot = snapshot
+	return nil
+}
+
+func (a *assessment) loadBaseline() error {
+	_, recordedFiles, recordedErr := a.store.LoadLatestRecordedInventory(a.ctx)
 	if recordedErr != nil && !errors.Is(recordedErr, state.ErrNotFound) {
-		return result, recordedErr
+		return recordedErr
 	}
-	latest, latestErr := store.LatestFinalizedRun(ctx)
+	a.recordedFiles, a.recordedErr = recordedFiles, recordedErr
+	latest, latestErr := a.store.LatestFinalizedRun(a.ctx)
 	first := errors.Is(latestErr, state.ErrNotFound)
 	if latestErr != nil && !first {
-		return result, latestErr
+		return latestErr
 	}
-	var previousFiles []domain.File
 	var previousPlan domain.Plan
 	if !first {
-		previousFiles, err = store.LoadLatestInventory(ctx)
+		previousFiles, err := a.store.LoadLatestInventory(a.ctx)
 		if errors.Is(err, state.ErrNotFound) {
 			first = true
 			previousFiles = nil
 		} else if err != nil {
-			return result, err
+			return err
 		}
-		previousPlan, err = store.LoadPlan(ctx, latest.PlanID)
+		a.previousFiles = previousFiles
+		previousPlan, err = a.store.LoadPlan(a.ctx, latest.PlanID)
 		if err != nil {
-			return result, err
+			return err
 		}
 	}
-	base := baselineState{first: first, run: latest, plan: previousPlan}
-	client, err := clawpatch.New(root, clawpatch.Config{BinaryPath: config.ClawpatchBinary, EgressAuthorized: config.ClawpatchEgressAuthorized, Provider: config.ClawpatchProvider})
+	a.base = baselineState{first: first, run: latest, plan: previousPlan}
+	return nil
+}
+
+func (a *assessment) loadMapperInputs() error {
+	client, err := clawpatch.New(a.root, clawpatch.Config{BinaryPath: a.config.ClawpatchBinary, EgressAuthorized: a.config.ClawpatchEgressAuthorized, Provider: a.config.ClawpatchProvider})
 	if err != nil {
-		return result, err
+		return err
 	}
-	previousFeatures, err := clawpatch.LoadFeatures(client.StateDir())
+	a.client = client
+	a.previousFeatures, err = clawpatch.LoadFeatures(client.StateDir())
 	if err != nil {
-		return result, err
+		return err
 	}
-	specs := registry.Specs()
-	toolDigest, err := json.Marshal(specs)
+	a.specs = a.registry.Specs()
+	toolDigest, err := json.Marshal(a.specs)
 	if err != nil {
-		return result, err
+		return err
 	}
-	modelDigest := digest(config.Provider.Fingerprint())
-	mapperDigest := digest(clawpatch.SafetyFingerprint())
-	var resumePlan *domain.Plan
-	if !options.ForceFull {
-		resumePlan, err = matchingResumablePlan(ctx, store, snapshot.Snapshot, options.Scope, digest(string(toolDigest)), modelDigest, mapperDigest)
+	a.digests = assessDigests{tool: digest(string(toolDigest)), model: digest(a.config.Provider.Fingerprint()), mapper: digest(clawpatch.SafetyFingerprint())}
+	if !a.options.ForceFull {
+		a.resumePlan, err = findResumablePlan(a.ctx, a.store, resumablePlanKey{snapshot: a.snapshot.Snapshot, scope: a.options.Scope, digests: a.digests})
 		if err != nil {
-			return result, err
+			return err
 		}
 	}
-	mappingRequired := needsMapping(options, base, len(previousFeatures), snapshot.Snapshot, mapperDigest)
-	outcome, persistErr := mapBeforeAnalysis(ctx, store, client, snapshot, mappingRequired && resumePlan == nil, digest(string(toolDigest)), modelDigest, mapperDigest)
+	return nil
+}
+
+func (a *assessment) mapFeatures() error {
+	a.mappingRequired = needsMapping(a.options, a.base, len(a.previousFeatures), a.snapshot.Snapshot, a.digests.mapper)
+	outcome, persistErr := mapBeforeAnalysis(a.ctx, a.store, a.client, preMappingRequest{
+		snapshot: a.snapshot, requested: a.mappingRequired && a.resumePlan == nil, digests: a.digests,
+	})
 	if persistErr != nil {
-		return result, persistErr
+		return persistErr
 	}
-	mapped, mapErr := outcome.result, outcome.err
-	result.Map = mapped
-	features := mapped.Features
-	if mapErr != nil && len(features) == 0 {
-		features = previousFeatures
+	mapped := outcome.result
+	a.mapErr = outcome.err
+	a.result.Map = mapped
+	a.features = mapped.Features
+	if a.mapErr != nil && len(a.features) == 0 {
+		a.features = a.previousFeatures
 	}
-	current, err := inventory.Scan(ctx, root, inventory.ScanOptions{Scope: options.Scope, Exclusions: options.Exclusions, Features: features})
+	return nil
+}
+
+func (a *assessment) diffInventory() error {
+	current, err := inventory.Scan(a.ctx, a.root, inventory.ScanOptions{Scope: a.options.Scope, Exclusions: a.options.Exclusions, Features: a.features})
 	if err != nil {
-		return result, err
+		return err
 	}
-	diff, err := inventory.Diff(inventory.DiffInput{PreviousFiles: previousFiles, CurrentFiles: current.Files, PreviousFeatures: previousFeatures, CurrentFeatures: features, Dependencies: config.Dependencies})
+	a.current = current
+	diff, err := inventory.Diff(inventory.DiffInput{PreviousFiles: a.previousFiles, CurrentFiles: current.Files, PreviousFeatures: a.previousFeatures, CurrentFeatures: a.features, Dependencies: a.config.Dependencies})
 	if err != nil {
-		return result, err
+		return err
 	}
-	result.Diff = diff
+	a.diff = diff
+	a.result.Diff = diff
 	// Identity follows renames/deletions against the inventory recorded before
 	// this assessment began (loaded before the mapping preplan writes one).
-	lifecycle := diff
-	if recordedErr == nil {
-		lifecycle, err = inventory.Diff(inventory.DiffInput{PreviousFiles: recordedFiles, CurrentFiles: current.Files})
+	a.lifecycle = diff
+	if a.recordedErr == nil {
+		a.lifecycle, err = inventory.Diff(inventory.DiffInput{PreviousFiles: a.recordedFiles, CurrentFiles: current.Files})
 		if err != nil {
-			return result, err
+			return err
 		}
 	}
-	result.MappingGaps = mergeMappingGaps(diff.MappingGaps, current.MappingGaps)
-	categories, err := selectCategories(specs, options.Scope.SelectedFamilies)
+	a.result.MappingGaps = mergeMappingGaps(diff.MappingGaps, current.MappingGaps)
+	return nil
+}
+
+func (a *assessment) planJobs() error {
+	categories, err := selectCategories(a.specs, a.options.Scope.SelectedFamilies)
 	if err != nil {
-		return result, err
+		return err
 	}
-	specByKey := categories.spec
+	a.specByKey = categories.spec
 	runID, err := newRunID()
 	if err != nil {
-		return result, err
+		return err
 	}
-	if resumePlan != nil {
-		runID = resumePlan.RunID
+	if a.resumePlan != nil {
+		runID = a.resumePlan.RunID
 	}
-	planResult, err := planWork(planInput{
-		runID: runID, current: current, features: features, diff: diff, dependencies: config.Dependencies,
-		categories: categories, base: base, options: options, mappingRequired: mappingRequired,
-		toolDigest: digest(string(toolDigest)), modelDigest: modelDigest, mapperDigest: mapperDigest,
+	a.runID = runID
+	a.plan, err = planWork(planInput{
+		runID: runID, current: a.current, features: a.features, diff: a.diff, dependencies: a.config.Dependencies,
+		categories: categories, base: a.base, options: a.options, mappingRequired: a.mappingRequired,
+		toolDigest: a.digests.tool, modelDigest: a.digests.model, mapperDigest: a.digests.mapper,
 	})
 	if err != nil {
-		return result, err
+		return err
 	}
 	// Source drift is an explicit planned job so its failure is durable too.
-	finalJob := finalInventoryJob(runID, current.Snapshot)
-	planResult.Plan.Jobs = append(planResult.Plan.Jobs, finalJob)
-	if mapErr != nil && !mappingRequired {
-		planResult.Plan.Jobs = append(planResult.Plan.Jobs, domain.Job{
+	a.finalJob = finalInventoryJob(runID, a.current.Snapshot)
+	a.plan.Plan.Jobs = append(a.plan.Plan.Jobs, a.finalJob)
+	if a.mapErr != nil && !a.mappingRequired {
+		a.plan.Plan.Jobs = append(a.plan.Plan.Jobs, domain.Job{
 			JobID: "job-" + digest(runID+"\x00mapping-failure"),
-			Stage: domain.StageMapping, InputFingerprint: mapperDigest,
+			Stage: domain.StageMapping, InputFingerprint: a.digests.mapper,
 			State: domain.JobPending, InvalidationReason: "canonical map could not be read",
 		})
 	}
-	if resumePlan != nil {
-		if planResult.Plan.PlanID != resumePlan.PlanID || !reflect.DeepEqual(planResult.Plan.Jobs, resumePlan.Jobs) {
-			return result, errors.New("interrupted plan no longer matches canonical mapped inputs; a new full assessment is required")
-		}
-		planResult.Plan = *resumePlan
-	} else if err := store.SavePlan(ctx, planResult.Plan); err != nil {
-		return result, err
+	if err := a.adoptPlan(); err != nil {
+		return err
 	}
-	result.Plan = planResult.Plan
+	a.result.Plan = a.plan.Plan
+	return nil
+}
+
+func (a *assessment) adoptPlan() error {
+	if a.resumePlan == nil {
+		return a.store.SavePlan(a.ctx, a.plan.Plan)
+	}
+	if a.plan.Plan.PlanID != a.resumePlan.PlanID || !reflect.DeepEqual(a.plan.Plan.Jobs, a.resumePlan.Jobs) {
+		return errors.New("interrupted plan no longer matches canonical mapped inputs; a new full assessment is required")
+	}
+	a.plan.Plan = *a.resumePlan
+	return nil
+}
+
+func (a *assessment) beginRun() error {
+	a.initRunRecord()
+	prior, err := priorIssueObservations(a.ctx, a.store, a.features)
+	if err != nil {
+		return err
+	}
+	a.priorByFeature = prior
+	a.provider, err = contextual.NewClient(a.config.Provider)
+	if err != nil {
+		return err
+	}
+	a.observations = []domain.Observation{}
+	a.committed = make(map[string]bool)
+	if a.resumePlan == nil {
+		return a.store.BeginRun(a.ctx, a.run)
+	}
+	stored, loadErr := a.store.LoadInProgressRun(a.ctx, a.plan.Plan.PlanID)
+	if loadErr != nil && !errors.Is(loadErr, state.ErrNotFound) {
+		return loadErr
+	}
+	if loadErr != nil {
+		return a.store.BeginRun(a.ctx, a.run)
+	}
+	return a.resumeRun(stored)
+}
+
+func (a *assessment) initRunRecord() {
 	started := time.Now().UTC()
-	run := domain.Run{RunID: runID, PlanID: planResult.Plan.PlanID, Snapshot: current.Snapshot, Scope: current.Scope, State: domain.RunPartial, StartedAt: started, Coverage: append([]domain.Coverage(nil), planResult.Reused...), Omissions: append(append([]domain.Omission(nil), current.Omissions...), planResult.Omissions...)}
-	for _, gap := range result.MappingGaps {
+	current, planResult := a.current, a.plan
+	a.run = domain.Run{RunID: a.runID, PlanID: planResult.Plan.PlanID, Snapshot: current.Snapshot, Scope: current.Scope, State: domain.RunPartial, StartedAt: started, Coverage: append([]domain.Coverage(nil), planResult.Reused...), Omissions: append(append([]domain.Omission(nil), current.Omissions...), planResult.Omissions...)}
+	for _, gap := range a.result.MappingGaps {
 		key := domain.CoverageKey{FilePath: gap.Path, FeatureID: gap.FeatureID, Family: domain.FamilyClawpatch, Category: "mapping"}
 		if key.Validate() == nil {
-			run.Omissions = append(run.Omissions, domain.Omission{CoverageKey: key, Reason: gap.Reason})
+			a.run.Omissions = append(a.run.Omissions, domain.Omission{CoverageKey: key, Reason: gap.Reason})
 		}
 	}
-	files := map[string]domain.File{}
+	a.files = map[string]domain.File{}
 	for _, file := range current.Files {
-		files[file.Path] = file
+		a.files[file.Path] = file
 	}
-	featureByID := map[string]domain.Feature{}
-	for _, feature := range features {
-		featureByID[feature.FeatureID] = feature
+	a.featureByID = map[string]domain.Feature{}
+	for _, feature := range a.features {
+		a.featureByID[feature.FeatureID] = feature
 	}
-	priorByFeature, err := priorIssueObservations(ctx, store, features)
-	if err != nil {
-		return result, err
+}
+
+func (a *assessment) resumeRun(stored domain.Run) error {
+	a.run = stored
+	a.run.ExpectedCoverage = nil
+	observed, observationErr := a.store.LoadObservations(a.ctx, a.runID)
+	if observationErr != nil {
+		return observationErr
 	}
-	provider, err := contextual.NewClient(config.Provider)
-	if err != nil {
-		return result, err
+	a.observations = observed
+	if err := a.reloadAdapters(); err != nil {
+		return err
 	}
-	observations := []domain.Observation{}
-	committed := make(map[string]bool)
-	if resumePlan != nil {
-		stored, loadErr := store.LoadInProgressRun(ctx, planResult.Plan.PlanID)
-		if loadErr != nil && !errors.Is(loadErr, state.ErrNotFound) {
-			return result, loadErr
+	commits, commitErr := a.store.ListRunJobCommits(a.ctx, a.runID)
+	if commitErr != nil {
+		return commitErr
+	}
+	for _, commit := range commits {
+		a.committed[commit.JobID] = true
+	}
+	return nil
+}
+
+func (a *assessment) reloadAdapters() error {
+	for _, ref := range a.run.ArtifactRefs {
+		if ref.ContentType != "application/vnd.scout.adapter+json" {
+			continue
 		}
-		if loadErr == nil {
-			run = stored
-			run.ExpectedCoverage = nil
-			observed, observationErr := store.LoadObservations(ctx, runID)
-			if observationErr != nil {
-				return result, observationErr
-			}
-			observations = observed
-			for _, ref := range run.ArtifactRefs {
-				if ref.ContentType != "application/vnd.scout.adapter+json" {
-					continue
-				}
-				raw, artifactErr := store.LoadArtifact(ctx, ref)
-				if artifactErr != nil {
-					return result, artifactErr
-				}
-				var adapter domain.AdapterResult
-				if err := json.Unmarshal(raw, &adapter); err != nil {
-					return result, err
-				}
-				result.Adapters = append(result.Adapters, adapter)
-			}
-			commits, commitErr := store.ListRunJobCommits(ctx, runID)
-			if commitErr != nil {
-				return result, commitErr
-			}
-			for _, commit := range commits {
-				committed[commit.JobID] = true
-			}
-		} else if err := store.BeginRun(ctx, run); err != nil {
-			return result, err
+		raw, artifactErr := a.store.LoadArtifact(a.ctx, ref)
+		if artifactErr != nil {
+			return artifactErr
 		}
-	} else if err := store.BeginRun(ctx, run); err != nil {
-		return result, err
+		var adapter domain.AdapterResult
+		if err := json.Unmarshal(raw, &adapter); err != nil {
+			return err
+		}
+		a.result.Adapters = append(a.result.Adapters, adapter)
 	}
-	for _, job := range planResult.Plan.Jobs {
-		if job.Stage != domain.StageMapping || job.State == domain.JobReused || committed[job.JobID] {
+	return nil
+}
+
+func (a *assessment) commitMappingJobs() error {
+	for _, job := range a.plan.Plan.Jobs {
+		if job.Stage != domain.StageMapping || job.State == domain.JobReused || a.committed[job.JobID] {
 			continue
 		}
 		commit := state.RunJobCommit{JobID: job.JobID, CommittedAt: time.Now().UTC()}
-		if mapErr != nil {
+		if a.mapErr != nil {
 			failure := mappingBlockedFailure(job.JobID)
 			commit.Failures = []domain.Failure{failure}
-			run.Failures = append(run.Failures, failure)
+			a.run.Failures = append(a.run.Failures, failure)
 		}
-		if err := store.CommitRunJob(ctx, runID, commit); err != nil {
-			return result, fmt.Errorf("persist mapping job %s: %w", job.JobID, err)
+		if err := a.store.CommitRunJob(a.ctx, a.runID, commit); err != nil {
+			return fmt.Errorf("persist mapping job %s: %w", job.JobID, err)
 		}
 	}
+	return nil
+}
+
+func (a *assessment) planScanChunks() {
 	// Pending scanner jobs are grouped per adapter and scanned in bounded
 	// chunks; each job still commits only its own file's results.
-	type scanChunk struct {
-		files   []domain.File
-		ran     bool
-		adapter domain.AdapterResult
-		found   []domain.Observation
+	pendingBySpec, specOrder := a.pendingScanInputs()
+	a.chunkOf = map[string]*assessScanChunk{}
+	a.runners = map[string]*analyzers.Runner{}
+	for _, specID := range specOrder {
+		spec := a.specWithID(specID)
+		for _, batch := range spec.Batches(a.root, pendingBySpec[specID]) {
+			chunk := &assessScanChunk{files: batch}
+			for _, file := range batch {
+				a.chunkOf[domain.CoverageKey{FilePath: file.Path, Family: spec.Family, Category: spec.Category}.String()] = chunk
+			}
+		}
 	}
-	chunkOf := map[string]*scanChunk{}
-	runners := map[string]*analyzers.Runner{}
+}
+
+func (a *assessment) pendingScanInputs() (map[string][]domain.File, []string) {
 	pendingBySpec := map[string][]domain.File{}
 	specOrder := []string{}
-	for _, job := range planResult.Plan.Jobs {
-		if job.CoverageKey == nil || job.State == domain.JobReused || committed[job.JobID] || job.Stage != domain.StageFileAnalysis {
+	for _, job := range a.plan.Plan.Jobs {
+		if job.CoverageKey == nil || job.State == domain.JobReused || a.committed[job.JobID] || job.Stage != domain.StageFileAnalysis {
 			continue
 		}
-		spec, exists := specByKey[categoryKey(job.CoverageKey.Family, job.CoverageKey.Category)]
+		spec, exists := a.specByKey[categoryKey(job.CoverageKey.Family, job.CoverageKey.Category)]
 		if !exists {
 			continue
 		}
 		if _, seen := pendingBySpec[spec.ID]; !seen {
 			specOrder = append(specOrder, spec.ID)
 		}
-		pendingBySpec[spec.ID] = append(pendingBySpec[spec.ID], files[job.CoverageKey.FilePath])
+		pendingBySpec[spec.ID] = append(pendingBySpec[spec.ID], a.files[job.CoverageKey.FilePath])
 	}
-	for _, specID := range specOrder {
-		var spec analyzers.Spec
-		for _, candidate := range specs {
-			if candidate.ID == specID {
-				spec = candidate
-			}
-		}
-		for _, batch := range spec.Batches(root, pendingBySpec[specID]) {
-			chunk := &scanChunk{files: batch}
-			for _, file := range batch {
-				chunkOf[domain.CoverageKey{FilePath: file.Path, Family: spec.Family, Category: spec.Category}.String()] = chunk
-			}
+	return pendingBySpec, specOrder
+}
+
+func (a *assessment) specWithID(specID string) analyzers.Spec {
+	var spec analyzers.Spec
+	for _, candidate := range a.specs {
+		if candidate.ID == specID {
+			spec = candidate
 		}
 	}
-	for _, job := range planResult.Plan.Jobs {
+	return spec
+}
+
+func (a *assessment) analyzeJobs() error {
+	a.planScanChunks()
+	for _, job := range a.plan.Plan.Jobs {
 		if job.CoverageKey == nil || job.State == domain.JobReused {
 			continue
 		}
 		key := *job.CoverageKey
-		run.ExpectedCoverage = append(run.ExpectedCoverage, key)
-		if committed[job.JobID] {
+		a.run.ExpectedCoverage = append(a.run.ExpectedCoverage, key)
+		if a.committed[job.JobID] {
 			continue
 		}
-		coverageStart, observationStart, failureStart := len(run.Coverage), len(observations), len(run.Failures)
-		artifactStart := len(run.ArtifactRefs)
-		switch job.Stage {
-		case domain.StageFileAnalysis:
-			spec, exists := specByKey[categoryKey(key.Family, key.Category)]
-			if !exists {
-				run.Coverage = append(run.Coverage, blocked(key, "no registered scanner for category"))
-				break
-			}
-			chunk := chunkOf[domain.CoverageKey{FilePath: key.FilePath, Family: key.Family, Category: key.Category}.String()]
-			if chunk == nil {
-				run.Coverage = append(run.Coverage, blocked(key, "no scanner batch was planned for this input"))
-				break
-			}
-			if !chunk.ran {
-				runner := runners[spec.ID]
-				if runner == nil {
-					var runnerErr error
-					if runner, runnerErr = registry.Runner(spec.ID, runID); runnerErr != nil {
-						return result, runnerErr
-					}
-					runners[spec.ID] = runner
-				}
-				var runErr error
-				chunk.adapter, chunk.found, runErr = runner.Run(ctx, root, chunk.files)
-				recordScanError(&chunk.adapter, runErr)
-				chunk.ran = true
-			}
-			adapter, found := splitAdapter(chunk.adapter, chunk.found, key)
-			result.Adapters = append(result.Adapters, adapter)
-			run.Coverage = append(run.Coverage, adapter.Coverage...)
-			run.Failures = append(run.Failures, adapter.Failures...)
-			observations = append(observations, found...)
-			if err := storeAdapter(ctx, store, adapter, &run); err != nil {
-				return result, err
-			}
-		case domain.StageFeatureAnalysis:
-			if !config.laneOptedIn(LaneContextual) {
-				run.Coverage = append(run.Coverage, notOptedIn(key))
-				break
-			}
-			reviewed, reviewErr := provider.Review(ctx, contextual.ReviewRequest{
-				Root: root, Snapshot: current.Snapshot.WorktreeDigest, RunID: runID,
-				Feature: featureByID[key.FeatureID], Family: key.Family, Category: key.Category,
-				ToolResults:       relevantAdapters(result.Adapters, featureByID[key.FeatureID], key.Family),
-				PriorObservations: priorByFeature[key.FeatureID],
-			})
-			if reviewErr != nil && reviewed.Coverage.Status != domain.CoverageSkipped && reviewed.Coverage.Status != domain.CoverageBlocked {
-				run.Failures = append(run.Failures, domain.Failure{Stage: domain.StageFeatureAnalysis, Code: "provider_incomplete", Message: "contextual inspection did not complete"})
-			}
-			if reviewed.Coverage.Status == "" {
-				reviewed.Coverage = blocked(key, "contextual inspection returned no coverage")
-			}
-			if err := storeContextualReview(ctx, store, reviewed, &run); err != nil {
-				return result, fmt.Errorf("persist contextual review manifest: %w", err)
-			}
-			run.Coverage = append(run.Coverage, reviewed.Coverage)
-			observations = append(observations, reviewed.Observations...)
-		case domain.StageClawpatchReview:
-			if !config.laneOptedIn(LaneClawpatchReview) {
-				run.Coverage = append(run.Coverage, notOptedIn(key))
-				break
-			}
-			reviewed, reviewErr := client.Review(ctx, []string{key.FeatureID})
-			if reviewErr != nil {
-				run.Failures = append(run.Failures, domain.Failure{Stage: domain.StageClawpatchReview, Code: "review_incomplete", Message: "Clawpatch review did not complete"})
-			}
-			if len(reviewed.Coverage) == 0 {
-				run.Coverage = append(run.Coverage, blocked(key, "Clawpatch review returned no coverage"))
-				break
-			}
-			row := reviewed.Coverage[0]
-			for index := range reviewed.Observations {
-				priorID := reviewed.Observations[index].ObservationID
-				reviewed.Observations[index].RunID = runID
-				reviewed.Observations[index].ObservationID = "clawpatch:" + runID + ":" + priorID
-				for observationIndex, id := range row.ObservationIDs {
-					if id == priorID {
-						row.ObservationIDs[observationIndex] = reviewed.Observations[index].ObservationID
-					}
-				}
-			}
-			run.Coverage = append(run.Coverage, row)
-			if err := storeClawpatchManifests(ctx, store, reviewed.Manifests, &run); err != nil {
-				return result, fmt.Errorf("persist Clawpatch review manifest: %w", err)
-			}
-			observations = append(observations, reviewed.Observations...)
-		default:
-			run.Coverage = append(run.Coverage, blocked(key, "unsupported planned analysis stage"))
-		}
-		if err := store.CommitRunJob(ctx, runID, state.RunJobCommit{
-			JobID: job.JobID, Coverage: run.Coverage[coverageStart:],
-			Observations: observations[observationStart:], Failures: run.Failures[failureStart:],
-			ArtifactRefs: run.ArtifactRefs[artifactStart:],
-			CommittedAt:  time.Now().UTC(),
-		}); err != nil {
-			return result, fmt.Errorf("persist assessment job %s: %w", job.JobID, err)
+		if err := a.analyzeJob(job, key); err != nil {
+			return err
 		}
 	}
-	for _, row := range planResult.Reused {
-		run.ExpectedCoverage = append(run.ExpectedCoverage, row.Key)
+	for _, row := range a.plan.Reused {
+		a.run.ExpectedCoverage = append(a.run.ExpectedCoverage, row.Key)
 	}
-	final, scanErr := inventory.Scan(ctx, root, inventory.ScanOptions{Scope: options.Scope, Exclusions: options.Exclusions, Features: features})
-	var inventoryFailures []domain.Failure
-	if scanErr != nil || final.Snapshot.WorktreeDigest != current.Snapshot.WorktreeDigest {
-		if committed[finalJob.JobID] {
-			return result, errors.New("source changed after the interrupted final inventory check")
+	return nil
+}
+
+func (a *assessment) analyzeJob(job domain.Job, key domain.CoverageKey) error {
+	coverageStart, observationStart, failureStart := len(a.run.Coverage), len(a.observations), len(a.run.Failures)
+	artifactStart := len(a.run.ArtifactRefs)
+	if err := a.runJobStage(job.Stage, key); err != nil {
+		return err
+	}
+	if err := a.store.CommitRunJob(a.ctx, a.runID, state.RunJobCommit{
+		JobID: job.JobID, Coverage: a.run.Coverage[coverageStart:],
+		Observations: a.observations[observationStart:], Failures: a.run.Failures[failureStart:],
+		ArtifactRefs: a.run.ArtifactRefs[artifactStart:],
+		CommittedAt:  time.Now().UTC(),
+	}); err != nil {
+		return fmt.Errorf("persist assessment job %s: %w", job.JobID, err)
+	}
+	return nil
+}
+
+func (a *assessment) runJobStage(stage domain.Stage, key domain.CoverageKey) error {
+	switch stage {
+	case domain.StageFileAnalysis:
+		return a.analyzeFile(key)
+	case domain.StageFeatureAnalysis:
+		return a.reviewFeature(key)
+	case domain.StageClawpatchReview:
+		return a.reviewWithClawpatch(key)
+	default:
+		a.run.Coverage = append(a.run.Coverage, blocked(key, "unsupported planned analysis stage"))
+		return nil
+	}
+}
+
+func (a *assessment) analyzeFile(key domain.CoverageKey) error {
+	spec, exists := a.specByKey[categoryKey(key.Family, key.Category)]
+	if !exists {
+		a.run.Coverage = append(a.run.Coverage, blocked(key, "no registered scanner for category"))
+		return nil
+	}
+	chunk := a.chunkOf[domain.CoverageKey{FilePath: key.FilePath, Family: key.Family, Category: key.Category}.String()]
+	if chunk == nil {
+		a.run.Coverage = append(a.run.Coverage, blocked(key, "no scanner batch was planned for this input"))
+		return nil
+	}
+	if !chunk.ran {
+		if err := a.runScanChunk(spec, chunk); err != nil {
+			return err
 		}
-		failure := domain.Failure{Stage: domain.StageInventory, JobID: finalJob.JobID, Code: failureSourceDrift, Message: "source changed during assessment or could not be rechecked"}
-		inventoryFailures = append(inventoryFailures, failure)
-		run.Failures = append(run.Failures, failure)
 	}
-	var inlineHealth []domain.LaneHealth
-	if !committed[finalJob.JobID] {
-		var inlineObservations []domain.Observation
-		for _, lane := range options.Inline {
-			found, laneErr := lane.Run(ctx, runID)
-			inlineHealth = append(inlineHealth, inlineLaneHealth(lane, found, laneErr))
-			if laneErr == nil {
-				inlineObservations = append(inlineObservations, found.Observations...)
+	adapter, found := splitAdapter(chunk.adapter, chunk.found, key)
+	a.result.Adapters = append(a.result.Adapters, adapter)
+	a.run.Coverage = append(a.run.Coverage, adapter.Coverage...)
+	a.run.Failures = append(a.run.Failures, adapter.Failures...)
+	a.observations = append(a.observations, found...)
+	return storeAdapter(a.ctx, a.store, adapter, &a.run)
+}
+
+func (a *assessment) runScanChunk(spec analyzers.Spec, chunk *assessScanChunk) error {
+	runner := a.runners[spec.ID]
+	if runner == nil {
+		var runnerErr error
+		if runner, runnerErr = a.registry.Runner(spec.ID, a.runID); runnerErr != nil {
+			return runnerErr
+		}
+		a.runners[spec.ID] = runner
+	}
+	var runErr error
+	chunk.adapter, chunk.found, runErr = runner.Run(a.ctx, a.root, chunk.files)
+	recordScanError(&chunk.adapter, runErr)
+	chunk.ran = true
+	return nil
+}
+
+func (a *assessment) reviewFeature(key domain.CoverageKey) error {
+	if !a.config.laneOptedIn(LaneContextual) {
+		a.run.Coverage = append(a.run.Coverage, notOptedIn(key))
+		return nil
+	}
+	reviewed, reviewErr := a.provider.Review(a.ctx, contextual.ReviewRequest{
+		Root: a.root, Snapshot: a.current.Snapshot.WorktreeDigest, RunID: a.runID,
+		Feature: a.featureByID[key.FeatureID], Family: key.Family, Category: key.Category,
+		ToolResults:       relevantAdapters(a.result.Adapters, a.featureByID[key.FeatureID], key.Family),
+		PriorObservations: a.priorByFeature[key.FeatureID],
+	})
+	if reviewErr != nil && reviewed.Coverage.Status != domain.CoverageSkipped && reviewed.Coverage.Status != domain.CoverageBlocked {
+		a.run.Failures = append(a.run.Failures, domain.Failure{Stage: domain.StageFeatureAnalysis, Code: "provider_incomplete", Message: "contextual inspection did not complete"})
+	}
+	if reviewed.Coverage.Status == "" {
+		reviewed.Coverage = blocked(key, "contextual inspection returned no coverage")
+	}
+	if err := storeContextualReview(a.ctx, a.store, reviewed, &a.run); err != nil {
+		return fmt.Errorf("persist contextual review manifest: %w", err)
+	}
+	a.run.Coverage = append(a.run.Coverage, reviewed.Coverage)
+	a.observations = append(a.observations, reviewed.Observations...)
+	return nil
+}
+
+func (a *assessment) reviewWithClawpatch(key domain.CoverageKey) error {
+	if !a.config.laneOptedIn(LaneClawpatchReview) {
+		a.run.Coverage = append(a.run.Coverage, notOptedIn(key))
+		return nil
+	}
+	reviewed, reviewErr := a.client.Review(a.ctx, []string{key.FeatureID})
+	if reviewErr != nil {
+		a.run.Failures = append(a.run.Failures, domain.Failure{Stage: domain.StageClawpatchReview, Code: "review_incomplete", Message: "Clawpatch review did not complete"})
+	}
+	if len(reviewed.Coverage) == 0 {
+		a.run.Coverage = append(a.run.Coverage, blocked(key, "Clawpatch review returned no coverage"))
+		return nil
+	}
+	row := reviewed.Coverage[0]
+	rebindClawpatchObservations(reviewed.Observations, row.ObservationIDs, a.runID)
+	a.run.Coverage = append(a.run.Coverage, row)
+	if err := storeClawpatchManifests(a.ctx, a.store, reviewed.Manifests, &a.run); err != nil {
+		return fmt.Errorf("persist Clawpatch review manifest: %w", err)
+	}
+	a.observations = append(a.observations, reviewed.Observations...)
+	return nil
+}
+
+func rebindClawpatchObservations(observations []domain.Observation, rowIDs []string, runID string) {
+	for index := range observations {
+		priorID := observations[index].ObservationID
+		observations[index].RunID = runID
+		observations[index].ObservationID = "clawpatch:" + runID + ":" + priorID
+		for observationIndex, id := range rowIDs {
+			if id == priorID {
+				rowIDs[observationIndex] = observations[index].ObservationID
 			}
 		}
-		if options.Measures != nil {
-			if len(inventoryFailures) > 0 {
-				inlineHealth = append(inlineHealth, domain.LaneHealth{Lane: LaneMeasures, Status: domain.LaneSkipped, Reason: "source changed during assessment"})
-			} else {
-				inlineHealth = append(inlineHealth, runMeasuresLanes(ctx, store, root, current, features, options)...)
-			}
+	}
+}
+
+func (a *assessment) checkFinalSource() error {
+	final, scanErr := inventory.Scan(a.ctx, a.root, inventory.ScanOptions{Scope: a.options.Scope, Exclusions: a.options.Exclusions, Features: a.features})
+	if scanErr != nil || final.Snapshot.WorktreeDigest != a.current.Snapshot.WorktreeDigest {
+		if a.committed[a.finalJob.JobID] {
+			return errors.New("source changed after the interrupted final inventory check")
 		}
-		observationStart := len(observations)
-		observations = append(observations, inlineObservations...)
-		if err := store.CommitRunJob(ctx, runID, state.RunJobCommit{JobID: finalJob.JobID, Observations: observations[observationStart:], Failures: inventoryFailures, CommittedAt: time.Now().UTC()}); err != nil {
-			return result, fmt.Errorf("persist final source check: %w", err)
+		failure := domain.Failure{Stage: domain.StageInventory, JobID: a.finalJob.JobID, Code: failureSourceDrift, Message: "source changed during assessment or could not be rechecked"}
+		a.inventoryFailures = append(a.inventoryFailures, failure)
+		a.run.Failures = append(a.run.Failures, failure)
+	}
+	if a.committed[a.finalJob.JobID] {
+		return nil
+	}
+	return a.runInlineLanes()
+}
+
+func (a *assessment) runInlineLanes() error {
+	var inlineObservations []domain.Observation
+	for _, lane := range a.options.Inline {
+		found, laneErr := lane.Run(a.ctx, a.runID)
+		a.inlineHealth = append(a.inlineHealth, inlineLaneHealth(lane, found, laneErr))
+		if laneErr == nil {
+			inlineObservations = append(inlineObservations, found.Observations...)
 		}
 	}
+	if a.options.Measures != nil {
+		if len(a.inventoryFailures) > 0 {
+			a.inlineHealth = append(a.inlineHealth, domain.LaneHealth{Lane: LaneMeasures, Status: domain.LaneSkipped, Reason: "source changed during assessment"})
+		} else {
+			a.inlineHealth = append(a.inlineHealth, runMeasuresLanes(a.ctx, measuresLaneInput{store: a.store, root: a.root, current: a.current, features: a.features, options: a.options})...)
+		}
+	}
+	observationStart := len(a.observations)
+	a.observations = append(a.observations, inlineObservations...)
+	if err := a.store.CommitRunJob(a.ctx, a.runID, state.RunJobCommit{JobID: a.finalJob.JobID, Observations: a.observations[observationStart:], Failures: a.inventoryFailures, CommittedAt: time.Now().UTC()}); err != nil {
+		return fmt.Errorf("persist final source check: %w", err)
+	}
+	return nil
+}
+
+func (a *assessment) finishRun() error {
+	settleAssessedRunState(&a.run)
+	finished := time.Now().UTC()
+	a.run.FinishedAt = &finished
+	if err := a.store.FinishRun(a.ctx, a.run, a.current.Files); err != nil {
+		return err
+	}
+	a.result.Run = a.run
+	return nil
+}
+
+func settleAssessedRunState(run *domain.Run) {
 	for _, row := range run.Coverage {
 		if !row.Status.Accounted() {
 			run.State = domain.RunPartial
-			break
+			return
 		}
 	}
 	if len(run.Failures) == 0 && len(run.Omissions) == 0 {
-		complete := true
-		for _, row := range run.Coverage {
-			if !row.Status.Accounted() {
-				complete = false
-				break
-			}
-		}
-		if complete {
-			run.State = domain.RunComplete
-		}
+		run.State = domain.RunComplete
 	}
-	finished := time.Now().UTC()
-	run.FinishedAt = &finished
-	if err := store.FinishRun(ctx, run, current.Files); err != nil {
-		return result, err
-	}
-	result.Run = run
-	renames := make(map[string]string, len(lifecycle.Renamed))
-	for _, renamed := range lifecycle.Renamed {
+}
+
+func (a *assessment) correlateIssues() error {
+	renames := make(map[string]string, len(a.lifecycle.Renamed))
+	for _, renamed := range a.lifecycle.Renamed {
 		renames[renamed.PreviousPath] = renamed.Path
 	}
-	removed := make([]string, 0, len(lifecycle.Removed))
-	for _, file := range lifecycle.Removed {
+	removed := make([]string, 0, len(a.lifecycle.Removed))
+	for _, file := range a.lifecycle.Removed {
 		removed = append(removed, file.Path)
 	}
-	if _, err := issues.Correlate(ctx, store, run, observations, issues.WithRenames(renames), issues.WithDeleted(removed)); err != nil {
-		return result, fmt.Errorf("correlate persisted observations: %w", err)
+	if _, err := issues.Correlate(a.ctx, a.store, a.run, a.observations, issues.WithRenames(renames), issues.WithDeleted(removed)); err != nil {
+		return fmt.Errorf("correlate persisted observations: %w", err)
 	}
-	allIssues, err := store.ListIssues(ctx)
+	allIssues, err := a.store.ListIssues(a.ctx)
 	if err != nil {
-		return result, err
+		return err
 	}
+	a.result.Issues = issuesObservedInRun(allIssues, assessedObservationIDs(a.observations, a.run.Coverage))
+	return nil
+}
+
+func assessedObservationIDs(observations []domain.Observation, coverage []domain.Coverage) map[string]struct{} {
 	observed := make(map[string]struct{})
 	for _, observation := range observations {
 		observed[observation.ObservationID] = struct{}{}
 	}
-	for _, row := range run.Coverage {
+	for _, row := range coverage {
 		for _, id := range row.ObservationIDs {
 			observed[id] = struct{}{}
 		}
 	}
-	result.Issues = make([]domain.Issue, 0)
+	return observed
+}
+
+func issuesObservedInRun(allIssues []domain.Issue, observed map[string]struct{}) []domain.Issue {
+	matched := make([]domain.Issue, 0)
 	for _, issue := range allIssues {
 		for _, id := range issue.ObservationIDs {
 			if _, present := observed[id]; present {
-				result.Issues = append(result.Issues, issue)
+				matched = append(matched, issue)
 				break
 			}
 		}
 	}
+	return matched
+}
+
+func (a *assessment) runAssociation() error {
 	associationOptions := association.LaneOptions{}
-	if options.Association != nil {
-		associationOptions = *options.Association
+	if a.options.Association != nil {
+		associationOptions = *a.options.Association
 	}
-	associationOptions.RunID = run.RunID
-	trigger := options.Trigger
+	associationOptions.RunID = a.run.RunID
+	trigger := a.options.Trigger
 	if trigger == "" {
 		trigger = domain.TriggerPush
 	}
-	associationHealth, associationErr := RunAssociationLane(ctx, store, root, trigger, associationOptions)
+	associationHealth, associationErr := RunAssociationLane(a.ctx, a.store, a.root, trigger, associationOptions)
 	if associationErr != nil {
 		for i := range associationHealth {
 			associationHealth[i].Status = domain.LaneFailed
 			associationHealth[i].Reason = associationErr.Error()
 		}
 	}
-	inlineHealth = append(inlineHealth, associationHealth...)
-	result.Lanes = LaneHealthOf(options.Trigger, result.Run, inlineHealth)
-	result.Associations, result.AssociationGuard, err = associationOutput(ctx, store, config.associationGuard())
-	if err != nil {
-		return result, err
-	}
-	return result, nil
+	a.inlineHealth = append(a.inlineHealth, associationHealth...)
+	a.result.Lanes = LaneHealthOf(a.options.Trigger, a.result.Run, a.inlineHealth)
+	var err error
+	a.result.Associations, a.result.AssociationGuard, err = associationOutput(a.ctx, a.store, a.config.associationGuard())
+	return err
 }
 
-func matchingResumablePlan(ctx context.Context, store *state.Store, snapshot domain.Snapshot, scope domain.Scope, toolDigest, modelDigest, mapperDigest string) (*domain.Plan, error) {
+type resumablePlanKey struct {
+	snapshot domain.Snapshot
+	scope    domain.Scope
+	digests  assessDigests
+}
+
+func findResumablePlan(ctx context.Context, store *state.Store, key resumablePlanKey) (*domain.Plan, error) {
 	if store == nil {
 		return nil, nil
 	}
@@ -522,18 +733,23 @@ func matchingResumablePlan(ctx context.Context, store *state.Store, snapshot dom
 	if err != nil {
 		return nil, err
 	}
+	want := domain.Plan{Snapshot: key.snapshot, Scope: key.scope, PolicyDigest: digest(policyDigestSeed), ToolDigest: key.digests.tool, ModelDigest: key.digests.model, MapperDigest: key.digests.mapper}
 	for index := len(plans) - 1; index >= 0; index-- {
 		plan := plans[index]
 		if len(plan.Jobs) == 1 && plan.Jobs[0].Stage == domain.StageMapping {
 			continue // A mapping preplan has no file or feature jobs to resume.
 		}
-		if plan.Snapshot == snapshot && reflect.DeepEqual(plan.Scope, scope) &&
-			plan.PolicyDigest == digest(policyDigestSeed) && plan.ToolDigest == toolDigest &&
-			plan.ModelDigest == modelDigest && plan.MapperDigest == mapperDigest {
+		if resumablePlanMatches(plan, want) {
 			return &plan, nil
 		}
 	}
 	return nil, nil
+}
+
+func resumablePlanMatches(plan, want domain.Plan) bool {
+	return plan.Snapshot == want.Snapshot && reflect.DeepEqual(plan.Scope, want.Scope) &&
+		plan.PolicyDigest == want.PolicyDigest && plan.ToolDigest == want.ToolDigest &&
+		plan.ModelDigest == want.ModelDigest && plan.MapperDigest == want.MapperDigest
 }
 
 // mapOutcome is a canonical map attempt: err is the mapping failure, which the
@@ -546,8 +762,15 @@ type mapOutcome struct {
 // mapBeforeAnalysis records a mapping-only partial run before an authorized
 // mapper can inspect source. It never becomes a successful scan baseline. The
 // returned error is a persistence failure; the mapping failure is in the outcome.
-func mapBeforeAnalysis(ctx context.Context, store *state.Store, client *clawpatch.Client, snapshot inventory.ScanResult, requested bool, toolDigest, modelDigest, mapperDigest string) (mapOutcome, error) {
-	if !requested {
+type preMappingRequest struct {
+	snapshot  inventory.ScanResult
+	requested bool
+	digests   assessDigests
+}
+
+func mapBeforeAnalysis(ctx context.Context, store *state.Store, client *clawpatch.Client, request preMappingRequest) (mapOutcome, error) {
+	snapshot, digests := request.snapshot, request.digests
+	if !request.requested {
 		mapped, err := client.Map(ctx, false, clawpatch.MapSourceHeuristic)
 		return mapOutcome{result: mapped, err: err}, nil
 	}
@@ -557,15 +780,15 @@ func mapBeforeAnalysis(ctx context.Context, store *state.Store, client *clawpatc
 	}
 	job := domain.Job{
 		JobID: "job-" + digest(runID+"\x00canonical-mapping"), Stage: domain.StageMapping,
-		InputFingerprint: mapperDigest, State: domain.JobPending,
+		InputFingerprint: digests.mapper, State: domain.JobPending,
 		InvalidationReason: "canonical Clawpatch mapping inputs changed",
 	}
 	started := time.Now().UTC()
 	plan := domain.Plan{
 		PlanID: "plan-" + digest(runID+"\x00canonical-mapping"), RunID: runID,
 		Snapshot: snapshot.Snapshot, Scope: snapshot.Scope, Jobs: []domain.Job{job},
-		PolicyDigest: digest(policyDigestSeed), ToolDigest: toolDigest, ModelDigest: modelDigest,
-		MapperDigest: mapperDigest, CreatedAt: started,
+		PolicyDigest: digest(policyDigestSeed), ToolDigest: digests.tool, ModelDigest: digests.model,
+		MapperDigest: digests.mapper, CreatedAt: started,
 	}
 	if err := store.SavePlan(ctx, plan); err != nil {
 		return mapOutcome{}, err
@@ -712,21 +935,11 @@ func priorIssueObservations(ctx context.Context, store *state.Store, features []
 	}
 	featurePaths := make(map[string]map[string]bool, len(features))
 	for _, feature := range features {
-		paths := make(map[string]bool)
-		for _, ref := range feature.OwnedFiles {
-			paths[ref.Path] = true
-		}
-		for _, ref := range feature.ContextFiles {
-			paths[ref.Path] = true
-		}
-		for _, ref := range feature.Tests {
-			paths[ref.Path] = true
-		}
-		featurePaths[feature.FeatureID] = paths
+		featurePaths[feature.FeatureID] = featurePathSet(feature)
 	}
 	prior := make(map[string][]domain.Observation)
 	for _, issue := range issues {
-		if issue.State == domain.IssueResolved || issue.State == domain.IssueFalsePositive || issue.State == domain.IssueWontFix {
+		if issueClosedToReview(issue.State) {
 			continue
 		}
 		rows, err := store.ListIssueObservations(ctx, issue.IssueID)
@@ -738,19 +951,41 @@ func priorIssueObservations(ctx context.Context, store *state.Store, features []
 		}
 		last := rows[len(rows)-1]
 		for id, paths := range featurePaths {
-			relevant := false
-			for _, featureID := range issue.FeatureIDs {
-				relevant = relevant || featureID == id
-			}
-			for _, path := range issue.Files {
-				relevant = relevant || paths[path]
-			}
-			if relevant {
+			if issueTouchesFeature(issue, id, paths) {
 				prior[id] = append(prior[id], last)
 			}
 		}
 	}
 	return prior, nil
+}
+
+func featurePathSet(feature domain.Feature) map[string]bool {
+	paths := make(map[string]bool)
+	for _, ref := range feature.OwnedFiles {
+		paths[ref.Path] = true
+	}
+	for _, ref := range feature.ContextFiles {
+		paths[ref.Path] = true
+	}
+	for _, ref := range feature.Tests {
+		paths[ref.Path] = true
+	}
+	return paths
+}
+
+func issueClosedToReview(issueState domain.IssueState) bool {
+	return issueState == domain.IssueResolved || issueState == domain.IssueFalsePositive || issueState == domain.IssueWontFix
+}
+
+func issueTouchesFeature(issue domain.Issue, featureID string, paths map[string]bool) bool {
+	relevant := false
+	for _, id := range issue.FeatureIDs {
+		relevant = relevant || id == featureID
+	}
+	for _, path := range issue.Files {
+		relevant = relevant || paths[path]
+	}
+	return relevant
 }
 
 func storeContextualReview(ctx context.Context, store *state.Store, reviewed contextual.ReviewResult, run *domain.Run) error {
@@ -797,7 +1032,7 @@ func storeClawpatchManifests(ctx context.Context, store *state.Store, manifests 
 			return nil, err
 		}
 		if len(safe) == 0 {
-			return nil, fmt.Errorf("Clawpatch review manifest is empty")
+			return nil, fmt.Errorf("clawpatch review manifest is empty")
 		}
 		return json.Marshal(safe)
 	})

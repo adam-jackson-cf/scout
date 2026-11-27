@@ -33,7 +33,7 @@ func TestPendingAreaReadOnlyRefuses(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer s.Close()
+	defer closeOrFail(t, s)
 	ctx := context.Background()
 	before, err := s.Export(ctx)
 	if err != nil {

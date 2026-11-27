@@ -9,12 +9,13 @@ import (
 // Ruff's SARIF omits clean inputs. The pinned CLI's --show-files mode uses the
 // same isolated rule selection as the scan and lists every input it accepts.
 // Require an exact match and a successful SARIF scan; neither alone suffices.
-func (r *Runner) attestRuffInputs(ctx context.Context, root, state, rulesRoot, binary string, args []string, inputs map[string]sourceInput, parsed *parsedOutput) {
+func (b *batch) attestRuffInputs(ctx context.Context, parsed *parsedOutput) {
+	args, inputs := b.plan.args, b.inputs.byPath
 	listingArgs := make([]string, len(args)+1)
 	copy(listingArgs, args)
 	listingArgs[len(args)] = "--show-files"
-	stdout, stderr, err := r.runCommand(ctx, root, state, rulesRoot, binary, listingArgs)
-	if err != nil || stdout.Exceeded() || stderr.Exceeded() || !ruffInputsMatch(root, inputs, stdout.Bytes()) {
+	stdout, stderr, err := b.runner.runCommand(ctx, b.root, &b.plan, listingArgs)
+	if err != nil || stdout.Exceeded() || stderr.Exceeded() || !ruffInputsMatch(b.root, inputs, stdout.Bytes()) {
 		parsed.success = false
 		return
 	}
@@ -27,18 +28,30 @@ func ruffInputsMatch(root string, inputs map[string]sourceInput, raw []byte) boo
 	if len(inputs) == 0 || len(raw) == 0 || raw[len(raw)-1] != '\n' {
 		return false
 	}
-	expected := make(map[string]struct{}, len(inputs))
-	for path := range inputs {
-		resolved, err := filepath.EvalSymlinks(filepath.Join(root, path))
-		if err != nil {
-			return false
-		}
-		expected[resolved] = struct{}{}
+	expected, ok := resolvedInputs(root, inputs)
+	if !ok {
+		return false
 	}
 	lines := strings.Split(string(raw[:len(raw)-1]), "\n")
 	if len(lines) != len(expected) {
 		return false
 	}
+	return listingConsumesExactly(lines, expected)
+}
+
+func resolvedInputs(root string, inputs map[string]sourceInput) (map[string]struct{}, bool) {
+	expected := make(map[string]struct{}, len(inputs))
+	for path := range inputs {
+		resolved, err := filepath.EvalSymlinks(filepath.Join(root, path))
+		if err != nil {
+			return nil, false
+		}
+		expected[resolved] = struct{}{}
+	}
+	return expected, true
+}
+
+func listingConsumesExactly(lines []string, expected map[string]struct{}) bool {
 	for _, line := range lines {
 		if !filepath.IsAbs(line) {
 			return false

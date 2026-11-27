@@ -100,8 +100,9 @@ func (t Tools) request(workDir, state, binary string, args []string, extraPath [
 
 // runTool runs binary in the sandbox with workDir as the current directory and
 // returns stdout. Errors never carry scanner output.
-func (t Tools) runTool(ctx context.Context, workDir, state, binary string, args []string, extraPath ...string) ([]byte, error) {
-	request, err := t.request(workDir, state, binary, args, extraPath)
+func (t Tools) runTool(ctx context.Context, call toolCall) ([]byte, error) {
+	binary := call.binary
+	request, err := t.request(call.workDir, call.state, binary, call.args, call.extraPath)
 	if err != nil {
 		return nil, err
 	}
@@ -118,6 +119,11 @@ func (t Tools) runTool(ctx context.Context, workDir, state, binary string, args 
 		return nil, fmt.Errorf("%s output exceeds the bound", filepath.Base(binary))
 	}
 	return stdout.Bytes(), nil
+}
+
+type toolCall struct {
+	workDir, state, binary string
+	args, extraPath        []string
 }
 
 // verifyVersion checks the scanner reports the pinned version.
@@ -154,7 +160,7 @@ type FileMeasure struct {
 }
 
 // RunLizard measures paths (repository-relative) under root.
-func (t Tools) RunLizard(ctx context.Context, root string, paths []string) (map[string]FileMeasure, error) {
+func (t Tools) RunLizard(ctx context.Context, root string, paths []string) (measures map[string]FileMeasure, err error) {
 	if len(paths) == 0 {
 		return map[string]FileMeasure{}, nil
 	}
@@ -162,7 +168,7 @@ func (t Tools) RunLizard(ctx context.Context, root string, paths []string) (map[
 	if err != nil {
 		return nil, err
 	}
-	defer os.RemoveAll(state)
+	defer func() { err = errors.Join(err, os.RemoveAll(state)) }()
 	if err := t.verifyVersion(ctx, t.lizard(), LizardVersion, state); err != nil {
 		return nil, err
 	}
@@ -170,7 +176,7 @@ func (t Tools) RunLizard(ctx context.Context, root string, paths []string) (map[
 	if err := os.WriteFile(list, []byte(strings.Join(paths, "\n")+"\n"), 0o600); err != nil {
 		return nil, err
 	}
-	output, err := t.runTool(ctx, root, state, t.lizard(), []string{"--xml", "-t", "4", "-f", list})
+	output, err := t.runTool(ctx, toolCall{workDir: root, state: state, binary: t.lizard(), args: []string{"--xml", "-t", "4", "-f", list}})
 	if err != nil {
 		return nil, err
 	}
@@ -181,20 +187,37 @@ func (t Tools) RunLizard(ctx context.Context, root string, paths []string) (map[
 // (Nr, NCSS=NLOC, CCN per `name(...) at path:line`) and a File measure
 // (Nr, NCSS=NLOC, CCN, Functions per path).
 func ParseLizardXML(data []byte) (map[string]FileMeasure, error) {
-	var document struct {
-		Measures []struct {
-			Type  string `xml:"type,attr"`
-			Items []struct {
-				Name   string `xml:"name,attr"`
-				Values []int  `xml:"value"`
-			} `xml:"item"`
-		} `xml:"measure"`
-	}
+	var document lizardReport
 	if err := xml.Unmarshal(data, &document); err != nil {
 		return nil, fmt.Errorf("decode lizard report: %w", err)
 	}
+	files, err := lizardFileMeasures(document.Measures)
+	if err != nil {
+		return nil, err
+	}
+	if err := addLizardFunctions(files, document.Measures); err != nil {
+		return nil, err
+	}
+	return files, nil
+}
+
+type lizardReport struct {
+	Measures []lizardMeasure `xml:"measure"`
+}
+
+type lizardMeasure struct {
+	Type  string       `xml:"type,attr"`
+	Items []lizardItem `xml:"item"`
+}
+
+type lizardItem struct {
+	Name   string `xml:"name,attr"`
+	Values []int  `xml:"value"`
+}
+
+func lizardFileMeasures(measures []lizardMeasure) (map[string]FileMeasure, error) {
 	files := map[string]FileMeasure{}
-	for _, measure := range document.Measures {
+	for _, measure := range measures {
 		if measure.Type != "File" {
 			continue
 		}
@@ -205,41 +228,52 @@ func ParseLizardXML(data []byte) (map[string]FileMeasure, error) {
 			files[item.Name] = FileMeasure{Path: item.Name, NLOC: item.Values[1]}
 		}
 	}
-	for _, measure := range document.Measures {
+	return files, nil
+}
+
+func addLizardFunctions(files map[string]FileMeasure, measures []lizardMeasure) error {
+	for _, measure := range measures {
 		if measure.Type != "Function" {
 			continue
 		}
 		for _, item := range measure.Items {
-			if len(item.Values) < 3 {
-				return nil, fmt.Errorf("lizard function item %q is malformed", item.Name)
-			}
-			at := strings.LastIndex(item.Name, " at ")
-			if at < 0 {
-				return nil, fmt.Errorf("lizard function item %q has no location", item.Name)
-			}
-			location := item.Name[at+4:]
-			colon := strings.LastIndex(location, ":")
-			if colon < 0 {
-				return nil, fmt.Errorf("lizard function item %q has no line", item.Name)
-			}
-			var line int
-			if _, err := fmt.Sscanf(location[colon+1:], "%d", &line); err != nil {
-				return nil, fmt.Errorf("lizard function item %q has no line", item.Name)
-			}
-			path := location[:colon]
-			name := item.Name[:at]
-			if paren := strings.Index(name, "("); paren > 0 {
-				name = name[:paren]
+			path, function, err := parseLizardFunction(item)
+			if err != nil {
+				return err
 			}
 			file, ok := files[path]
 			if !ok {
 				continue
 			}
-			file.Functions = append(file.Functions, Function{Name: strings.TrimSpace(name), Line: line, CC: item.Values[2], NLOC: item.Values[1]})
+			file.Functions = append(file.Functions, function)
 			files[path] = file
 		}
 	}
-	return files, nil
+	return nil
+}
+
+func parseLizardFunction(item lizardItem) (string, Function, error) {
+	if len(item.Values) < 3 {
+		return "", Function{}, fmt.Errorf("lizard function item %q is malformed", item.Name)
+	}
+	at := strings.LastIndex(item.Name, " at ")
+	if at < 0 {
+		return "", Function{}, fmt.Errorf("lizard function item %q has no location", item.Name)
+	}
+	location := item.Name[at+4:]
+	colon := strings.LastIndex(location, ":")
+	if colon < 0 {
+		return "", Function{}, fmt.Errorf("lizard function item %q has no line", item.Name)
+	}
+	var line int
+	if _, err := fmt.Sscanf(location[colon+1:], "%d", &line); err != nil {
+		return "", Function{}, fmt.Errorf("lizard function item %q has no line", item.Name)
+	}
+	name := item.Name[:at]
+	if paren := strings.Index(name, "("); paren > 0 {
+		name = name[:paren]
+	}
+	return location[:colon], Function{Name: strings.TrimSpace(name), Line: line, CC: item.Values[2], NLOC: item.Values[1]}, nil
 }
 
 // --- jscpd ----------------------------------------------------------------
@@ -257,7 +291,7 @@ type Clone struct {
 
 // RunJscpd detects clones among paths (repository-relative, already the eligible
 // population) under root and returns them with each file's line count.
-func (t Tools) RunJscpd(ctx context.Context, root string, paths []string) ([]Clone, error) {
+func (t Tools) RunJscpd(ctx context.Context, root string, paths []string) (clones []Clone, err error) {
 	if len(paths) == 0 {
 		return nil, nil
 	}
@@ -265,36 +299,17 @@ func (t Tools) RunJscpd(ctx context.Context, root string, paths []string) ([]Clo
 	if err != nil {
 		return nil, err
 	}
-	defer os.RemoveAll(state)
-	nodeDir := ""
-	if node, err := exec.LookPath("node"); err == nil {
-		nodeDir = filepath.Dir(node)
-	}
-	var extra []string
-	if nodeDir != "" {
-		extra = append(extra, nodeDir)
-	}
+	defer func() { err = errors.Join(err, os.RemoveAll(state)) }()
+	extra := nodeSearchPath()
 	if err := t.verifyVersion(ctx, t.jscpd(), JscpdVersion, state, extra...); err != nil {
 		return nil, err
 	}
-	absolute := make([]string, len(paths))
-	for i, path := range paths {
-		absolute[i] = filepath.Join(root, filepath.FromSlash(path))
-	}
 	output := filepath.Join(state, "report")
-	config, err := json.Marshal(map[string]any{
-		"path": absolute, "minTokens": jscpdMinTokens, "minLines": jscpdMinLines,
-		"maxLines": jscpdMaxLines, "maxSize": jscpdMaxSize, "reporters": []string{"json"},
-		"output": output, "silent": true, "absolute": true, "gitignore": false,
-	})
+	configPath, err := writeJscpdConfig(state, root, paths, output)
 	if err != nil {
 		return nil, err
 	}
-	configPath := filepath.Join(state, "jscpd.json")
-	if err := os.WriteFile(configPath, config, 0o600); err != nil {
-		return nil, err
-	}
-	if _, err := t.runTool(ctx, root, state, t.jscpd(), []string{"--config", configPath}, extra...); err != nil {
+	if _, err := t.runTool(ctx, toolCall{workDir: root, state: state, binary: t.jscpd(), args: []string{"--config", configPath}, extraPath: extra}); err != nil {
 		return nil, err
 	}
 	report, err := os.ReadFile(filepath.Join(output, "jscpd-report.json"))
@@ -302,6 +317,34 @@ func (t Tools) RunJscpd(ctx context.Context, root string, paths []string) ([]Clo
 		return nil, errors.New("jscpd wrote no report")
 	}
 	return ParseJscpdReport(report, root)
+}
+
+func nodeSearchPath() []string {
+	node, err := exec.LookPath("node")
+	if err != nil {
+		return nil
+	}
+	return []string{filepath.Dir(node)}
+}
+
+func writeJscpdConfig(state, root string, paths []string, output string) (string, error) {
+	absolute := make([]string, len(paths))
+	for i, path := range paths {
+		absolute[i] = filepath.Join(root, filepath.FromSlash(path))
+	}
+	config, err := json.Marshal(map[string]any{
+		"path": absolute, "minTokens": jscpdMinTokens, "minLines": jscpdMinLines,
+		"maxLines": jscpdMaxLines, "maxSize": jscpdMaxSize, "reporters": []string{"json"},
+		"output": output, "silent": true, "absolute": true, "gitignore": false,
+	})
+	if err != nil {
+		return "", err
+	}
+	configPath := filepath.Join(state, "jscpd.json")
+	if err := os.WriteFile(configPath, config, 0o600); err != nil {
+		return "", err
+	}
+	return configPath, nil
 }
 
 // ParseJscpdReport reads jscpd's json report; file names are made relative to

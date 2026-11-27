@@ -122,38 +122,7 @@ func openFixtureDB(t *testing.T, root, journalMode string) *sql.DB {
 func describeSchema(t *testing.T, db *sql.DB) []string {
 	t.Helper()
 	rows := func(query string, drop ...string) [][]string {
-		result, err := db.Query(query)
-		if err != nil {
-			t.Fatalf("%s: %v", query, err)
-		}
-		defer result.Close()
-		columns, err := result.Columns()
-		if err != nil {
-			t.Fatal(err)
-		}
-		var out [][]string
-		for result.Next() {
-			values := make([]sql.NullString, len(columns))
-			targets := make([]any, len(columns))
-			for index := range values {
-				targets[index] = &values[index]
-			}
-			if err := result.Scan(targets...); err != nil {
-				t.Fatal(err)
-			}
-			var fields []string
-			for index, value := range values {
-				if slices.Contains(drop, columns[index]) {
-					continue
-				}
-				fields = append(fields, columns[index]+"="+value.String)
-			}
-			out = append(out, fields)
-		}
-		if err := result.Err(); err != nil {
-			t.Fatal(err)
-		}
-		return out
+		return schemaRows(t, db, query, drop...)
 	}
 	var lines []string
 	add := func(prefix string, fields [][]string) {
@@ -180,6 +149,46 @@ func describeSchema(t *testing.T, db *sql.DB) []string {
 	return lines
 }
 
+func schemaRows(t *testing.T, db *sql.DB, query string, drop ...string) [][]string {
+	t.Helper()
+	result, err := db.Query(query)
+	if err != nil {
+		t.Fatalf("%s: %v", query, err)
+	}
+	defer closeOrFail(t, result)
+	columns, err := result.Columns()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var out [][]string
+	for result.Next() {
+		values := make([]sql.NullString, len(columns))
+		targets := make([]any, len(columns))
+		for index := range values {
+			targets[index] = &values[index]
+		}
+		if err := result.Scan(targets...); err != nil {
+			t.Fatal(err)
+		}
+		out = append(out, schemaFields(columns, values, drop))
+	}
+	if err := result.Err(); err != nil {
+		t.Fatal(err)
+	}
+	return out
+}
+
+func schemaFields(columns []string, values []sql.NullString, drop []string) []string {
+	var fields []string
+	for index, value := range values {
+		if slices.Contains(drop, columns[index]) {
+			continue
+		}
+		fields = append(fields, columns[index]+"="+value.String)
+	}
+	return fields
+}
+
 // A re-anchored v1 store (built from the v1 DDL) and a new store have the same
 // schema, so the single current DDL list cannot drift from the migrated shape.
 func TestReanchoredV1StoreHasTheSchemaOfANewStore(t *testing.T) {
@@ -187,7 +196,7 @@ func TestReanchoredV1StoreHasTheSchemaOfANewStore(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer fresh.Close()
+	defer closeOrFail(t, fresh)
 
 	v1 := newV1Store(t)
 	v1.close(t)
@@ -195,29 +204,34 @@ func TestReanchoredV1StoreHasTheSchemaOfANewStore(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer migrated.Close()
+	defer closeOrFail(t, migrated)
 
 	want, got := describeSchema(t, fresh.db), describeSchema(t, migrated.db)
 	if len(want) < 100 {
 		t.Fatalf("schema description looks empty (%d lines)", len(want))
 	}
 	if !slices.Equal(want, got) {
-		for _, line := range want {
-			if !slices.Contains(got, line) {
-				t.Errorf("missing from re-anchored store: %s", line)
-			}
-		}
-		for _, line := range got {
-			if !slices.Contains(want, line) {
-				t.Errorf("only in re-anchored store: %s", line)
-			}
-		}
+		reportSchemaDifference(t, want, got)
 		t.Fatal("re-anchored v1 store differs from a new store")
 	}
 	for _, store := range []*Store{fresh, migrated} {
 		var version int
 		if err := store.db.QueryRow(`PRAGMA user_version`).Scan(&version); err != nil || version != schemaVersion {
 			t.Fatalf("user_version = %d, %v", version, err)
+		}
+	}
+}
+
+func reportSchemaDifference(t *testing.T, want, got []string) {
+	t.Helper()
+	for _, line := range want {
+		if !slices.Contains(got, line) {
+			t.Errorf("missing from re-anchored store: %s", line)
+		}
+	}
+	for _, line := range got {
+		if !slices.Contains(want, line) {
+			t.Errorf("only in re-anchored store: %s", line)
 		}
 	}
 }
@@ -231,7 +245,7 @@ func TestDescribeSchemaSeesIndexColumnAndOrderDrift(t *testing.T) {
 			t.Fatal(err)
 		}
 		db.SetMaxOpenConns(1)
-		defer db.Close()
+		defer closeOrFail(t, db)
 		for _, ddl := range []string{`CREATE TABLE t (a INTEGER, b INTEGER)`, statement} {
 			if _, err := db.Exec(ddl); err != nil {
 				t.Fatal(err)
@@ -265,37 +279,42 @@ func TestOpenRefusesUnsupportedVersionsWithoutTouchingTheStore(t *testing.T) {
 	for _, mode := range []string{"wal", "delete"} {
 		for _, version := range []int{1, 2, 4, 7, 11, 12, schemaVersion + 1, 99} {
 			t.Run(fmt.Sprintf("%s/v%d", mode, version), func(t *testing.T) {
-				root := t.TempDir()
-				path := writeVersionedDB(t, root, version, mode)
-				before, err := os.ReadFile(path)
-				if err != nil {
-					t.Fatal(err)
-				}
-				store, err := Open(root)
-				if err == nil {
-					store.Close()
-					t.Fatalf("Open accepted user_version %d", version)
-				}
-				want := "re-baseline"
-				if version > schemaVersion {
-					want = "newer than supported version"
-				}
-				if !strings.Contains(err.Error(), want) || !strings.Contains(err.Error(), fmt.Sprintf("version %d", version)) {
-					t.Fatalf("error %q does not name version %d and %q", err, version, want)
-				}
-				after, err := os.ReadFile(path)
-				if err != nil {
-					t.Fatal(err)
-				}
-				if !bytes.Equal(before, after) {
-					t.Fatal("refused Open wrote the database file (or changed its journal mode)")
-				}
-				for _, name := range []string{"writer.lock", "artifacts"} {
-					if _, err := os.Stat(filepath.Join(root, ".scout", name)); !errors.Is(err, os.ErrNotExist) {
-						t.Fatalf("refused Open created %s: %v", name, err)
-					}
-				}
+				checkOpenRefusesVersion(t, mode, version)
 			})
+		}
+	}
+}
+
+func checkOpenRefusesVersion(t *testing.T, mode string, version int) {
+	t.Helper()
+	root := t.TempDir()
+	path := writeVersionedDB(t, root, version, mode)
+	before, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	store, err := Open(root)
+	if err == nil {
+		closeOrFail(t, store)
+		t.Fatalf("Open accepted user_version %d", version)
+	}
+	want := "re-baseline"
+	if version > schemaVersion {
+		want = "newer than supported version"
+	}
+	if !strings.Contains(err.Error(), want) || !strings.Contains(err.Error(), fmt.Sprintf("version %d", version)) {
+		t.Fatalf("error %q does not name version %d and %q", err, version, want)
+	}
+	after, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(before, after) {
+		t.Fatal("refused Open wrote the database file (or changed its journal mode)")
+	}
+	for _, name := range []string{"writer.lock", "artifacts"} {
+		if _, err := os.Stat(filepath.Join(root, ".scout", name)); !errors.Is(err, os.ErrNotExist) {
+			t.Fatalf("refused Open created %s: %v", name, err)
 		}
 	}
 }
@@ -314,27 +333,53 @@ func TestOpenAcceptsCurrentAndV1ReanchorVersions(t *testing.T) {
 	if err != nil {
 		t.Fatalf("v1 store (user_version 3) refused: %v", err)
 	}
-	defer migrated.Close()
+	defer closeOrFail(t, migrated)
 }
 
 func TestOpenExistingReadOnlyVersionRules(t *testing.T) {
+	checkReadOnlyRefusesRebaselineVersions(t)
+	checkReadOnlyRefusesNewerAndV1Stores(t)
+
+	writable, err := Open(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := writable.Root()
+	if err := writable.Close(); err != nil {
+		t.Fatal(err)
+	}
+	readOnly, err := OpenExistingReadOnly(root)
+	if err != nil {
+		t.Fatalf("current store refused read-only: %v", err)
+	}
+	defer closeOrFail(t, readOnly)
+	if _, err := readOnly.ListIssues(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func checkReadOnlyRefusesRebaselineVersions(t *testing.T) {
+	t.Helper()
 	for _, version := range []int{1, 2, 4, 7, 11, 12} {
 		root := t.TempDir()
 		writeVersionedDB(t, root, version, "wal")
 		store, err := OpenExistingReadOnly(root)
 		if err == nil {
-			store.Close()
+			closeOrFail(t, store)
 			t.Fatalf("read-only open accepted user_version %d", version)
 		}
 		if !strings.Contains(err.Error(), "re-baseline") || !strings.Contains(err.Error(), fmt.Sprintf("version %d", version)) {
 			t.Fatalf("version %d: %v", version, err)
 		}
 	}
+}
 
+func checkReadOnlyRefusesNewerAndV1Stores(t *testing.T) {
+	t.Helper()
 	root := t.TempDir()
 	writeVersionedDB(t, root, schemaVersion+1, "wal")
 	if store, err := OpenExistingReadOnly(root); err == nil {
-		store.Close()
+		closeOrFail(t, store)
 		t.Fatal("read-only open accepted a newer store")
 	} else if !strings.Contains(err.Error(), "newer than supported version") {
 		t.Fatalf("newer store: %v", err)
@@ -343,26 +388,9 @@ func TestOpenExistingReadOnlyVersionRules(t *testing.T) {
 	v1 := newV1Store(t)
 	v1.close(t)
 	if store, err := OpenExistingReadOnly(v1.root); err == nil {
-		store.Close()
+		closeOrFail(t, store)
 		t.Fatal("read-only open accepted a v1 store")
 	} else if !strings.Contains(err.Error(), "requires writable re-anchor") || strings.Contains(err.Error(), "re-baseline") {
 		t.Fatalf("v1 store: %v", err)
-	}
-
-	writable, err := Open(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-	root = writable.Root()
-	if err := writable.Close(); err != nil {
-		t.Fatal(err)
-	}
-	readOnly, err := OpenExistingReadOnly(root)
-	if err != nil {
-		t.Fatalf("current store refused read-only: %v", err)
-	}
-	defer readOnly.Close()
-	if _, err := readOnly.ListIssues(context.Background()); err != nil {
-		t.Fatal(err)
 	}
 }

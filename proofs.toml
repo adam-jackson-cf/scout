@@ -1,0 +1,1224 @@
+schema = 1
+
+[scope]
+mode = "whole"
+
+[validator]
+status = "proofs"
+file = ".github/workflows/gate.yml"
+ref = "validate_rule_coverage.py --root ."
+
+[hooks]
+check = ["git", "config", "--get", "core.hooksPath"]
+expect = ".githooks"
+
+[[claim]]
+id = "gate.structure"
+rules = ["STRUCT.*"]
+control = ["tools/gate/structure", "tools/gate/pathscope"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "structure", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/structure/compliant"
+violating = "tools/gate/testdata/canary/structure/reversed-import"
+expect = "STRUCT.dependency-direction"
+rule = "STRUCT.dependency-direction"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "structure", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/structure/compliant"
+violating = "tools/gate/testdata/canary/structure/misplaced"
+expect = "STRUCT.folder-placement"
+rule = "STRUCT.folder-placement"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "structure", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/structure/compliant"
+violating = "tools/gate/testdata/canary/structure/sibling-import"
+expect = "STRUCT.sibling-isolation"
+rule = "STRUCT.sibling-isolation"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "structure", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/structure/compliant"
+violating = "tools/gate/testdata/canary/structure/single-reader"
+expect = "STRUCT.tier-readership"
+rule = "STRUCT.tier-readership"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "structure", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/structure/compliant"
+violating = "tools/gate/testdata/canary/structure/single-reader"
+expect = "STRUCT.single-owner-placement"
+rule = "STRUCT.single-owner-placement"
+timeout_seconds = 120
+
+[[claim]]
+id = "gate.prefix"
+rules = ["PREFIX.candidates"]
+control = ["tools/gate/structure/prefix.go", "tools/gate/basediff/scenario"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate/basediff/scenario", "--only", "prefix", "{fixture}"]
+passing = "tools/gate/testdata/canary/prefix/compliant"
+violating = "tools/gate/testdata/canary/prefix/violating"
+expect = "PREFIX.candidates"
+rule = "PREFIX.candidates"
+timeout_seconds = 120
+
+[[claim]]
+id = "gate.rename"
+rules = ["RENAME.residue"]
+control = ["tools/gate/structure/rename.go", "tools/gate/basediff/scenario"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate/basediff/scenario", "--only", "rename", "{fixture}"]
+passing = "tools/gate/testdata/canary/rename/compliant"
+violating = "tools/gate/testdata/canary/rename/violating"
+expect = "RENAME.residue"
+rule = "RENAME.residue"
+timeout_seconds = 120
+
+[[claim]]
+id = "gate.naming"
+rules = ["NAME.*"]
+control = ["tools/gate/naming", "tools/gate/pathscope"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "naming", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/naming/compliant"
+violating = "tools/gate/testdata/canary/naming/repeats-parent"
+expect = "NAME.conventions"
+rule = "NAME.conventions"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "naming", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/naming/compliant"
+violating = "tools/gate/testdata/canary/naming/ticket-test"
+expect = "NAME.test-files"
+rule = "NAME.test-files"
+timeout_seconds = 120
+
+[[claim]]
+id = "gate.skill"
+rules = ["SKILL.metadata"]
+control = ["tools/gate/skill"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "skill", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/skill/compliant"
+violating = "tools/gate/testdata/canary/skill/violating"
+expect = "SKILL.metadata"
+rule = "SKILL.metadata"
+timeout_seconds = 120
+
+[[claim]]
+id = "gate.featuremap"
+rules = ["SURFACE.feature-map"]
+control = ["tools/gate/featuremap"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "featuremap", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/featuremap/compliant"
+violating = "tools/gate/testdata/canary/featuremap/violating"
+expect = "SURFACE.feature-map"
+rule = "SURFACE.feature-map"
+timeout_seconds = 120
+
+[[claim]]
+id = "gate.golden"
+rules = ["TEST.golden-change-record"]
+control = ["tools/gate/basediff"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate/basediff/scenario", "--only", "golden", "{fixture}"]
+passing = "tools/gate/testdata/canary/golden/compliant"
+violating = "tools/gate/testdata/canary/golden/violating"
+expect = "TEST.golden-change-record"
+rule = "TEST.golden-change-record"
+timeout_seconds = 120
+
+[[claim]]
+id = "gate.identity"
+rules = ["TEST.identity-artefacts"]
+control = ["tools/gate/basediff"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate/basediff/scenario", "--only", "identity", "{fixture}"]
+passing = "tools/gate/testdata/canary/identity/compliant"
+violating = "tools/gate/testdata/canary/identity/violating"
+expect = "TEST.identity-artefacts"
+rule = "TEST.identity-artefacts"
+timeout_seconds = 120
+
+[[claim]]
+id = "proofs.validator"
+rules = ["GATE.*"]
+control = ["tools/validate_rule_coverage.py", ".github/CODEOWNERS"]
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "validate_rule_coverage.py --root ."
+status = "proofs"
+
+[[claim.canary]]
+command = ["python3", "tools/validate_rule_coverage.py", "--root", "{fixture}"]
+passing = "tools/gate/testdata/canary/proofs/bound"
+violating = "tools/gate/testdata/canary/proofs/unbound"
+expect = "lacks ref"
+timeout_seconds = 60
+
+[[claim]]
+id = "host.required-checks"
+rules = ["GIT.required-checks"]
+
+[claim.host]
+command = ["gh", "api", "repos/adam-jackson-cf/scout/branches/main/protection"]
+expect = ["\"gate\"", "\"proofs\""]
+
+[[claim]]
+id = "test.evidence"
+rules = ["TEST.placement", "TEST.growth.justified", "TEST.duplicate-path", "TEST.subprocess-timeouts", "TEST.no-self-mocking", "TEST.no-test-hooks", "TEST.no-evasion", "TEST.tier-selectors", "TEST.failure-propagation", "TEST.t1-isolation", "TEST.user-data-guard"]
+control = ["tools/gate/testsource", "tools/gate/testrun"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "test.placement", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/test-placement/compliant"
+violating = "tools/gate/testdata/canary/test-placement/violating"
+expect = "TEST.placement: test file sits in a directory with no package code to own it"
+rule = "TEST.placement"
+timeout_seconds = 60
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "test.growth", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/test-growth/compliant"
+violating = "tools/gate/testdata/canary/test-growth/violating"
+expect = "TEST.growth.justified: new test TestTotal does not name the behaviour it proves"
+rule = "TEST.growth.justified"
+timeout_seconds = 60
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "test.duplicates", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/test-duplicates/compliant"
+violating = "tools/gate/testdata/canary/test-duplicates/violating"
+expect = "TEST.duplicate-path: new test TestTotalAddsEveryValue repeats the call path and assertions of TestTotalSumsTheList"
+rule = "TEST.duplicate-path"
+timeout_seconds = 60
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "test.subprocess-timeouts", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/test-subprocess-timeouts/compliant"
+violating = "tools/gate/testdata/canary/test-subprocess-timeouts/violating"
+expect = "TEST.subprocess-timeouts: exec.Command starts a process with no timeout"
+rule = "TEST.subprocess-timeouts"
+timeout_seconds = 60
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "test.self-mocking", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/test-self-mocking/compliant"
+violating = "tools/gate/testdata/canary/test-self-mocking/violating"
+expect = "TEST.no-self-mocking: test double fakeStore implements owned interface canary/store.Store"
+rule = "TEST.no-self-mocking"
+timeout_seconds = 60
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "test.hooks", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/test-hooks/compliant"
+violating = "tools/gate/testdata/canary/test-hooks/violating"
+expect = "TEST.no-test-hooks: production code reads test-marker environment variable APP_TEST_MODE"
+rule = "TEST.no-test-hooks"
+timeout_seconds = 60
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "test.evasion", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/test-evasion/compliant"
+violating = "tools/gate/testdata/canary/test-evasion/violating"
+expect = "TEST.no-evasion: t.Skip skips the test without an approved exception"
+rule = "TEST.no-evasion"
+timeout_seconds = 60
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "test.tiers", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/test-tiers/compliant"
+violating = "tools/gate/testdata/canary/test-tiers/violating"
+expect = "TEST.tier-selectors: build constraint \"integration\" selects no test tier"
+rule = "TEST.tier-selectors"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "test.tiers", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/test-collection/compliant"
+violating = "tools/gate/testdata/canary/test-collection/violating"
+expect = "TEST.failure-propagation: tier t1 has test files but collects no tests"
+rule = "TEST.failure-propagation"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "test.run", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/test-run/compliant"
+violating = "tools/gate/testdata/canary/test-run/failing"
+expect = "TEST.failure-propagation: TestTotalAddsEveryValue failed in t1"
+rule = "TEST.failure-propagation"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "test.run", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/test-run/compliant"
+violating = "tools/gate/testdata/canary/test-run/t1-process"
+expect = "TEST.t1-isolation: TestTotalIgnoresAFailedProbe was stopped by the T1 guard"
+rule = "TEST.t1-isolation"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "test.run", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/test-user-data/compliant"
+violating = "tools/gate/testdata/canary/test-user-data/violating"
+expect = "TEST.user-data-guard: TestTotalRecordsItsResult tried to write under the real home directory"
+rule = "TEST.user-data-guard"
+timeout_seconds = 120
+
+[[claim]]
+id = "test.budget"
+rules = ["TEST.budget.t1-time", "TEST.budget.per-test-time"]
+control = ["tools/gate/testrun/budget.go", "tools/gate/testrun/probe.go"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "commit", "--only", "test.budget", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/test-budget/compliant"
+violating = "tools/gate/testdata/canary/test-budget/per-test"
+expect = "TEST.budget.per-test-time: TestTotalWaitsForTheSlowSource took"
+rule = "TEST.budget.per-test-time"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "commit", "--only", "test.budget", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/test-budget/compliant"
+violating = "tools/gate/testdata/canary/test-budget/wall"
+expect = "T1: TEST.budget.t1-time: T1 took"
+rule = "TEST.budget.t1-time"
+timeout_seconds = 120
+
+[[claim]]
+id = "tooling.golangci"
+rules = ["GOLANGCI.*"]
+control = [".golangci.yml", "tools/gate/tooling", "toolchain/versions.env", "scripts/bootstrap-tools.sh"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "golangci", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/golangci/compliant"
+violating = "tools/gate/testdata/canary/golangci/violating"
+expect = "GOLANGCI.forbidigo: use of `exec.Command` forbidden"
+timeout_seconds = 120
+
+[[claim]]
+id = "tooling.shellcheck"
+rules = ["SHELLCHECK.*"]
+control = [".shellcheckrc", "tools/gate/tooling", "toolchain/versions.env", "scripts/bootstrap-tools.sh"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "shellcheck", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/shellcheck/compliant.sh"
+violating = "tools/gate/testdata/canary/shellcheck/violating.sh"
+expect = "SHELLCHECK.SC2086"
+timeout_seconds = 60
+
+[[claim]]
+id = "tooling.shfmt"
+rules = ["SHFMT.*"]
+control = [".editorconfig", "tools/gate/tooling", "toolchain/versions.env", "scripts/bootstrap-tools.sh"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "shfmt", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/shfmt/compliant.sh"
+violating = "tools/gate/testdata/canary/shfmt/violating.sh"
+expect = "SHFMT.format"
+timeout_seconds = 60
+
+[[claim]]
+id = "tooling.prettier"
+rules = ["PRETTIER.version"]
+control = [".prettierrc.json", ".prettierignore", "toolchain/node/package.json", "toolchain/node/package-lock.json", "tools/gate/tooling"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "prettier", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/prettier/compliant.md"
+violating = "tools/gate/testdata/canary/prettier/violating.md"
+expect = "PRETTIER.format"
+timeout_seconds = 60
+
+[[claim]]
+id = "tooling.ruff"
+rules = ["RUFF.*"]
+control = ["ruff.toml", "tools/gate/tooling", "toolchain/python-requirements.in", "toolchain/python-requirements.lock"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "ruff", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/ruff/compliant.py"
+violating = "tools/gate/testdata/canary/ruff/violating.py"
+expect = "RUFF.F401: `os` imported but unused"
+timeout_seconds = 60
+
+[[claim]]
+id = "tooling.mypy"
+rules = ["MYPY.*"]
+control = ["mypy.ini", "tools/gate/tooling", "toolchain/python-requirements.in", "toolchain/python-requirements.lock"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "mypy", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/mypy/compliant.py"
+violating = "tools/gate/testdata/canary/mypy/violating.py"
+expect = "MYPY.assignment: Incompatible types in assignment"
+timeout_seconds = 60
+
+[[claim]]
+id = "toolchain.parity"
+rules = ["PARITY.*"]
+control = ["internal/toolchain", "tools/gate/tooling", "toolchain/versions.env", "scripts/bootstrap-tools.sh", "toolchain/node/package.json"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "parity", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/parity/compliant"
+violating = "tools/gate/testdata/canary/parity/violating"
+expect = "PARITY.lock-version: does not lock ruff==0.15.8"
+timeout_seconds = 60
+
+[[claim]]
+id = "supply.dependency-audit"
+rules = ["SECURITY.dependency-audit"]
+control = ["tools/gate/tooling", "toolchain/versions.env", "scripts/bootstrap-tools.sh"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "dependency-audit", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/audit/compliant"
+violating = "tools/gate/testdata/canary/audit/violating"
+expect = "ecosystem=npm package=lodash version=4.17.15 advisory="
+rule = "SECURITY.dependency-audit"
+timeout_seconds = 120
+
+[[claim]]
+id = "test.coverage-ratchet"
+rules = ["TEST.coverage-ratchet"]
+control = [".testcoverage.yml", "tools/gate/tooling", "tools/gate/basediff/scenario"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate/basediff/scenario", "--only", "coverage-ratchet", "{fixture}"]
+passing = "tools/gate/testdata/canary/coverage-ratchet/compliant"
+violating = "tools/gate/testdata/canary/coverage-ratchet/violating"
+expect = "TEST.coverage-ratchet: lowers the override for ^internal/association$ from 85 to 70 without an approval reference"
+rule = "TEST.coverage-ratchet"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate/basediff/scenario", "--only", "coverage-ratchet", "{fixture}"]
+passing = "tools/gate/testdata/canary/coverage-ratchet/compliant"
+violating = "tools/gate/testdata/canary/coverage-ratchet/violating-pragma"
+expect = "TEST.coverage-ratchet: adds a coverage-ignore coverage pragma"
+rule = "TEST.coverage-ratchet"
+timeout_seconds = 120
+
+[[claim]]
+id = "python.quality"
+rules = ["PYQ100", "PYQ101", "PYQ102", "PYQ103", "PYQ104", "PYQ107", "PYQ200", "PYQ202", "PYQ203", "PYQ220", "PYQ221", "PYQ230", "PYQ231", "PYQ299"]
+control = ["tools/gate/pyquality/checks.go", "tools/gate/pyquality/check-python-quality.py", "tools/gate/pyquality/python_source.py", "tools/gate/codeintegrity/repofile/repofile.go"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-quality"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/clean.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/stray/unmapped.py"
+expect = "PYQ100: Python file is outside the maintained roots"
+rule = "PYQ100"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-quality"]
+passing = "tools/gate/testdata/canary/pyquality/repo/bin/run-report.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/bin/run_report_job.py"
+expect = "PYQ101: command script 'run_report_job.py' is not kebab-case"
+rule = "PYQ101"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-quality"]
+passing = "tools/gate/testdata/canary/pyquality/repo/tests/unit/test_clean.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/test_orphan.py"
+expect = "PYQ102: test module is outside the declared test roots"
+rule = "PYQ102"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-quality"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/clean.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/utils/formatting.py"
+expect = "PYQ103: generic directory name 'utils'"
+rule = "PYQ103"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-quality"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/clean.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/helpers.py"
+expect = "PYQ104: generic module name 'helpers'"
+rule = "PYQ104"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-quality"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/clean.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/ReportBuilder.py"
+expect = "PYQ107: Python module 'ReportBuilder.py' is not snake_case"
+rule = "PYQ107"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-quality"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/clean.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/oversized_class.py"
+expect = "PYQ200: class 'Oversized' has 706 lines > 700"
+rule = "PYQ200"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-quality"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/clean.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/wide_constructor.py"
+expect = "PYQ202: constructor of 'Wide' takes 9 parameters > 8"
+rule = "PYQ202"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-quality"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/clean.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/many_attributes.py"
+expect = "PYQ203: class 'Crowded' holds 13 instance attributes > 12"
+rule = "PYQ203"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-quality"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/runner.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/shell_out.py"
+expect = "PYQ220: subprocess call subprocess.run outside an approved wrapper"
+rule = "PYQ220"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-quality"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/loader.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/plugin_loader.py"
+expect = "PYQ221: dynamic import importlib.import_module outside an adapter module"
+rule = "PYQ221"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-quality"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/contract.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/contract_callable.py"
+expect = "PYQ230: contract annotation uses an inline Callable"
+rule = "PYQ230"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-quality"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/contract.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/contract_any.py"
+expect = "PYQ231: contract annotation uses Any as a collaborator boundary"
+rule = "PYQ231"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-quality"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/clean.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/latin1_source.py"
+expect = "PYQ299: could not decode Python source"
+rule = "PYQ299"
+timeout_seconds = 120
+
+[[claim]]
+id = "python.scalability"
+rules = ["PYS000", "PYS250"]
+control = ["tools/gate/pyquality/checks.go", "tools/gate/pyquality/check-python-scalability.py", "tools/gate/pyquality/python_source.py", "tools/gate/codeintegrity/repofile/repofile.go"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-scalability"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/clean.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/broken_syntax.py"
+expect = "PYS000: could not parse Python source"
+rule = "PYS000"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-scalability"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/clean.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/triple_loop.py"
+expect = "PYS250: nested loop depth 3 exceeds 2"
+rule = "PYS250"
+timeout_seconds = 120
+
+[[claim]]
+id = "python.fanout"
+rules = ["FANOUT.general", "FANOUT.large-module"]
+control = ["tools/gate/pyquality/checks.go", "tools/gate/pyquality/check-python-fanout.py", "tools/gate/pyquality/python_source.py", "tools/gate/codeintegrity/repofile/repofile.go"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-fanout"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/clean.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/wide_imports.py"
+expect = "FANOUT.general: 11 architectural imports > 10"
+rule = "FANOUT.general"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/pyquality/repo", "{fixture}", "python-fanout"]
+passing = "tools/gate/testdata/canary/pyquality/repo/src/clean.py"
+violating = "tools/gate/testdata/canary/pyquality/repo/src/large_module.py"
+expect = "FANOUT.large-module: large module of 806 NLOC has 4 architectural imports > 3"
+rule = "FANOUT.large-module"
+timeout_seconds = 120
+
+[[claim]]
+id = "code.comments"
+rules = ["CODE.no-comments"]
+control = ["tools/gate/codeintegrity/checks.go", "tools/gate/codeintegrity/lexer.go", "tools/gate/codeintegrity/syntax.go", "tools/gate/codeintegrity/directive.go", "tools/gate/codeintegrity/golang.go", "tools/gate/codeintegrity/docrule.go", "tools/gate/codeintegrity/inspect-python-source.py", "tools/gate/codeintegrity/repofile/repofile.go"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "code-comments", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/code-comments/compliant"
+violating = "tools/gate/testdata/canary/code-comments/violating/comment.go"
+expect = "CODE.no-comments: added comment \"// explain the helper here\""
+rule = "CODE.no-comments"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "code-comments", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/code-comments/compliant"
+violating = "tools/gate/testdata/canary/code-comments/violating/docstring.py"
+expect = "CODE.no-comments: added comment as a docstring"
+rule = "CODE.no-comments"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "code-comments", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/code-comments/compliant"
+violating = "tools/gate/testdata/canary/code-comments/violating/notes.sh"
+expect = "CODE.no-comments: added comment \"# tell the user\""
+rule = "CODE.no-comments"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "code-comments", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/code-comments/compliant"
+violating = "tools/gate/testdata/canary/code-comments/violating/page.md"
+expect = "CODE.no-comments: added comment \"<!-- remember to update this section -->\""
+rule = "CODE.no-comments"
+timeout_seconds = 120
+
+[[claim]]
+id = "code.placeholders"
+rules = ["CODE.no-placeholder-bodies"]
+control = ["tools/gate/codeintegrity/checks.go", "tools/gate/codeintegrity/inspect-python-source.py", "tools/gate/codeintegrity/repofile/repofile.go"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["go", "run", "./tools/gate", "ci", "--only", "code-placeholders", "--path", "{fixture}"]
+passing = "tools/gate/testdata/canary/code-placeholders/compliant"
+violating = "tools/gate/testdata/canary/code-placeholders/violating/unfinished.py"
+expect = "CODE.no-placeholder-bodies: placeholder body in function \"total\""
+rule = "CODE.no-placeholder-bodies"
+timeout_seconds = 120
+
+[[claim]]
+id = "code.mocks"
+rules = ["CODE.no-product-mocks"]
+control = ["tools/gate/codeintegrity/mocks.go", "tools/gate/codeintegrity/checks.go", "tools/gate/codeintegrity/inspect-python-source.py", "tools/gate/codeintegrity/repofile/repofile.go"]
+
+[[claim.enforced_by]]
+point = "hook"
+file = ".githooks/pre-commit"
+ref = "go run ./tools/gate commit"
+
+[[claim.enforced_by]]
+point = "ci"
+file = ".github/workflows/gate.yml"
+ref = "go run ./tools/gate ci"
+status = "gate"
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/code-mocks/repo", "{fixture}", "code-mocks"]
+passing = "tools/gate/testdata/canary/code-mocks/repo/tests"
+violating = "tools/gate/testdata/canary/code-mocks/repo/src/clock_patch.py"
+expect = "CODE.no-product-mocks: mock library \"unittest.mock\" imported in product code"
+rule = "CODE.no-product-mocks"
+timeout_seconds = 120
+
+[[claim.canary]]
+command = ["sh", "-c", "cd \"$1\" && GIT_CEILING_DIRECTORIES=\"$(dirname \"$(pwd -P)\")\" exec go run scout/tools/gate ci --only \"$3\" --path \"$2\"", "canary", "tools/gate/testdata/canary/code-mocks/repo", "{fixture}", "code-mocks"]
+passing = "tools/gate/testdata/canary/code-mocks/repo/src/billing.py"
+violating = "tools/gate/testdata/canary/code-mocks/repo/src/client.ts"
+expect = "CODE.no-product-mocks: mock call jest.mock() in product code"
+rule = "CODE.no-product-mocks"
+timeout_seconds = 120
+
+[[not_applicable]]
+rule = "TSC.*"
+reason = "No TypeScript or JavaScript is maintained here: no tracked or untracked .ts, .tsx, .mts, .cts, .js, .mjs or .cjs file and no tsconfig or jsconfig outside evaluation/ and tools/gate/testdata/; Clawpatch TypeScript lives in the third_party/clawpatch submodule, which Scout never edits."
+approved_by = "owner, 2026-11-27"
+evidence = { absent = ["*.ts", "*.tsx", "*.mts", "*.cts", "*.js", "*.mjs", "*.cjs", "tsconfig*.json", "*/tsconfig*.json", "jsconfig*.json", "*/jsconfig*.json", ":(exclude)evaluation", ":(exclude)tools/gate/testdata"] }
+
+[[not_applicable]]
+rule = "OXLINT.*"
+reason = "No TypeScript or JavaScript is maintained here: no tracked or untracked .ts, .tsx, .mts, .cts, .js, .mjs or .cjs file and no tsconfig or jsconfig outside evaluation/ and tools/gate/testdata/; Clawpatch TypeScript lives in the third_party/clawpatch submodule, which Scout never edits."
+approved_by = "owner, 2026-11-27"
+evidence = { absent = ["*.ts", "*.tsx", "*.mts", "*.cts", "*.js", "*.mjs", "*.cjs", "tsconfig*.json", "*/tsconfig*.json", "jsconfig*.json", "*/jsconfig*.json", ":(exclude)evaluation", ":(exclude)tools/gate/testdata"] }
+
+[[not_applicable]]
+rule = "PYQ105"
+reason = "No Python packages: no __init__.py outside evaluation/ and tools/gate/testdata/."
+approved_by = "owner, 2026-11-27"
+evidence = { absent = ["__init__.py", "*/__init__.py", ":(exclude)evaluation", ":(exclude)tools/gate/testdata"] }
+
+[[not_applicable]]
+rule = "PYQ106"
+reason = "No Python inside skill directories, so no Python skill directory names to judge."
+approved_by = "owner, 2026-11-27"
+evidence = { absent = [".agents/skills/*.py"] }
+
+[[not_applicable]]
+rule = "PYQ201"
+reason = "Carried by Ruff PLR0904 (max-public-methods = 20 in ruff.toml), the same check under the tool's own rule."
+approved_by = "owner, 2026-11-27"
+evidence = { path = "ruff.toml", contains = "max-public-methods = 20" }
+
+[[not_applicable]]
+rule = "PYQ210"
+reason = "No Python analyzer classes: no class named *Analyzer in maintained Python."
+approved_by = "owner, 2026-11-27"
+evidence = { command = ["sh", "-c", "git grep -q -E 'class [A-Za-z_]*Analyzer' -- '*.py' ':!evaluation' ':!tools/gate/testdata' && echo analyzer-classes-present || echo no-analyzer-classes"], expect = "no-analyzer-classes" }
+
+[[not_applicable]]
+rule = "PYQ211"
+reason = "No Python analyzer classes: no class named *Analyzer in maintained Python."
+approved_by = "owner, 2026-11-27"
+evidence = { command = ["sh", "-c", "git grep -q -E 'class [A-Za-z_]*Analyzer' -- '*.py' ':!evaluation' ':!tools/gate/testdata' && echo analyzer-classes-present || echo no-analyzer-classes"], expect = "no-analyzer-classes" }
+
+[[not_applicable]]
+rule = "PYS251"
+reason = "No analyzer-like Python: Scout's analyzers and engine are Go, and no Python file sits under internal/analyzers/ or internal/engine/."
+approved_by = "owner, 2026-11-27"
+evidence = { absent = ["internal/analyzers/*.py", "internal/engine/*.py"] }
+
+[[not_applicable]]
+rule = "PYS252"
+reason = "No analyzer-like Python: Scout's analyzers and engine are Go, and no Python file sits under internal/analyzers/ or internal/engine/."
+approved_by = "owner, 2026-11-27"
+evidence = { absent = ["internal/analyzers/*.py", "internal/engine/*.py"] }
+
+[[not_applicable]]
+rule = "PYS253"
+reason = "No analyzer-like Python: Scout's analyzers and engine are Go, and no Python file sits under internal/analyzers/ or internal/engine/."
+approved_by = "owner, 2026-11-27"
+evidence = { absent = ["internal/analyzers/*.py", "internal/engine/*.py"] }
+
+[[not_applicable]]
+rule = "TEST.property-seed"
+reason = "No property or fuzz tests: no testing/quick, rapid, gopter or Fuzz functions in owned Go code."
+approved_by = "owner, 2026-11-27"
+evidence = { command = ["sh", "-c", "git grep -q -E 'func Fuzz|testing/quick|pgregory.net/rapid|gopter' -- '*.go' ':!evaluation' ':!third_party' ':!tools/gate/testdata' && echo property-tests-present || echo no-property-tests"], expect = "no-property-tests" }
+
+[[not_applicable]]
+rule = "TEST.mutation-sensitivity"
+reason = "No mutation tool is pinned and no later T3 job exists."
+approved_by = "owner, 2026-11-27"
+evidence = { command = ["sh", "-c", "git grep -q -i -E 'gremlins|go-mutesting|stryker|mutmut' -- toolchain .github/workflows && echo mutation-tool-present || echo no-mutation-tool"], expect = "no-mutation-tool" }
+
+[[not_applicable]]
+rule = "SURFACE.journeys"
+reason = "No lever yet: no tools/lever and no journey files, so there are no journeys to match a pattern or drive a lever."
+approved_by = "owner, 2026-11-27"
+evidence = { absent = ["tools/lever", "*journey*"] }
+
+[[not_applicable]]
+rule = "SURFACE.lever-isolation"
+reason = "No lever yet: no tools/lever and no journey files, so there is no lever to self-test."
+approved_by = "owner, 2026-11-27"
+evidence = { absent = ["tools/lever", "*journey*"] }
+
+[[exception]]
+rule = "TEST.no-test-hooks"
+path = "internal/shadow/collect.go"
+check = "test.hooks:Collect"
+reason = "ADR-012 S3 shadow write path, built and tested but not yet wired; production caller arrives with S6 wiring; review by 2027-02-27"
+approved_by = "owner, 2026-11-27"
+
+[[exception]]
+rule = "TEST.no-test-hooks"
+path = "internal/shadow/authorize.go"
+check = "test.hooks:AuthorizeTriage"
+reason = "ADR-012 S3 shadow write path, built and tested but not yet wired; production caller arrives with S6 wiring; review by 2027-02-27"
+approved_by = "owner, 2026-11-27"
+
+[[exception]]
+rule = "TEST.no-test-hooks"
+path = "internal/shadow/publish.go"
+check = "test.hooks:PreparePublication"
+reason = "ADR-012 S3 shadow write path, built and tested but not yet wired; production caller arrives with S6 wiring; review by 2027-02-27"
+approved_by = "owner, 2026-11-27"
+
+[[exception]]
+rule = "TEST.no-test-hooks"
+path = "internal/state/shadow.go"
+check = "test.hooks:ApplyShadowPublication"
+reason = "ADR-012 S3 shadow write path, built and tested but not yet wired; production caller arrives with S6 wiring; review by 2027-02-27"
+approved_by = "owner, 2026-11-27"
+
+[[exception]]
+rule = "TEST.no-test-hooks"
+path = "internal/state/shadow.go"
+check = "test.hooks:RecordPRRun"
+reason = "ADR-012 S3 shadow write path, built and tested but not yet wired; production caller arrives with S6 wiring; review by 2027-02-27"
+approved_by = "owner, 2026-11-27"
+
+[[exception]]
+rule = "PREFIX.candidates"
+path = "cmd/scout/association*"
+reason = "tier split of existing tests; restructure deferred"
+approved_by = "owner, 2026-11-27"
+
+[[exception]]
+rule = "PREFIX.candidates"
+path = "internal/analyzers/gitleaks*"
+reason = "tier split of existing tests; restructure deferred"
+approved_by = "owner, 2026-11-27"
+
+[[exception]]
+rule = "PREFIX.candidates"
+path = "internal/association/terra*"
+reason = "tier split of existing tests; restructure deferred"
+approved_by = "owner, 2026-11-27"
+
+[[exception]]
+rule = "PREFIX.candidates"
+path = "internal/baseline/merge*"
+reason = "tier split of existing tests; restructure deferred"
+approved_by = "owner, 2026-11-27"
+
+[[exception]]
+rule = "PREFIX.candidates"
+path = "internal/engine/association*"
+reason = "tier split of existing tests; restructure deferred"
+approved_by = "owner, 2026-11-27"
+
+[[exception]]
+rule = "PREFIX.candidates"
+path = "internal/engine/ranking*"
+reason = "tier split of existing tests; restructure deferred"
+approved_by = "owner, 2026-11-27"
+
+[structure]
+import_package = "scout"
+shared_tiers = 2
+prefix_cluster_min = 3
+tiers = [
+  ["internal/decisions/thresholds", "internal/domain", "internal/eval", "internal/guardrails", "internal/modelcli", "internal/policy", "internal/redact", "internal/sandbox", "tools/gate/proof"],
+  ["internal/analyzers", "internal/artifacts", "internal/clawpatch", "internal/contextual", "internal/history", "internal/importgraph", "internal/inventory", "tools/gate/check"],
+  ["internal/measures", "internal/prmeta", "internal/toolchain", "tools/gate/codeintegrity/repofile", "tools/gate/pathscope", "tools/gate/testsource", "tools/gate/basediff/scenario"],
+  ["internal/areas", "tools/gate/*"],
+  ["internal/decisions", "internal/state"],
+  ["internal/association", "internal/baseline", "internal/decisions/orderflip", "internal/shadow", "internal/state/statetest", "internal/web"],
+  ["internal/issues"],
+  ["internal/engine"],
+  ["cmd/scout", "tools/gate"],
+]
+adapter_interfaces = [
+  "scout/internal/decisions.AuditStore",
+  "scout/internal/decisions.Sink",
+  "scout/internal/decisions/orderflip.Asker",
+  "scout/internal/engine.AgentMapper",
+  "scout/internal/shadow.Provider",
+]
+
+[structure.owners]
+".agents/skills/" = "skills"
+".claude/skills" = "skills"
+".editorconfig" = "tooling"
+".githooks/" = "gate"
+".github/CODEOWNERS" = "review"
+".github/workflows/" = "ci"
+".gitignore" = "repo"
+".gitleaksignore" = "secret-scan"
+".gitmodules" = "repo"
+".golangci.yml" = "tooling"
+".prettierignore" = "tooling"
+".prettierrc.json" = "tooling"
+".scout/policy.yaml" = "scout-policy"
+".shellcheckrc" = "tooling"
+".testcoverage.yml" = "tooling"
+"AGENTS.md" = "repo"
+"CHANGELOG.md" = "repo"
+"CLAUDE.md" = "repo"
+"CONTRIBUTING.md" = "repo"
+"README.md" = "repo"
+"cmd/scout/" = "cli"
+"docs/evidence/" = "design"
+"docs/features/" = "feature-map"
+"docs/hypothesis-ledger.md" = "ledgers"
+"docs/jev-adapter-audit.md" = "design"
+"docs/references/" = "reference-docs"
+"docs/research-ledger.md" = "ledgers"
+"docs/scout-design.html" = "design"
+"evaluation/" = "studies"
+"go.mod" = "repo"
+"go.sum" = "repo"
+"internal/analyzers/" = "analyzers"
+"internal/areas/" = "areas"
+"internal/artifacts/" = "artifacts"
+"internal/association/" = "association"
+"internal/baseline/" = "baseline"
+"internal/clawpatch/" = "clawpatch"
+"internal/contextual/" = "contextual"
+"internal/decisions/" = "decisions"
+"internal/decisions/orderflip/" = "decisions-orderflip"
+"internal/decisions/thresholds/" = "decisions-thresholds"
+"internal/domain/" = "domain"
+"internal/engine/" = "engine"
+"internal/eval/" = "eval"
+"internal/guardrails/" = "guardrails"
+"internal/history/" = "history"
+"internal/importgraph/" = "importgraph"
+"internal/inventory/" = "inventory"
+"internal/issues/" = "issues"
+"internal/measures/" = "measures"
+"internal/modelcli/" = "modelcli"
+"internal/policy/" = "policy"
+"internal/prmeta/" = "prmeta"
+"internal/redact/" = "redact"
+"internal/sandbox/" = "sandbox"
+"internal/shadow/" = "shadow"
+"internal/state/" = "state"
+"internal/state/statetest/" = "state-statetest"
+"internal/toolchain/" = "toolchain"
+"internal/web/" = "web"
+"mypy.ini" = "tooling"
+"proofs.toml" = "proofs"
+"ruff.toml" = "tooling"
+"scripts/" = "toolchain"
+"third_party/" = "vendored"
+"toolchain/" = "toolchain"
+"tools/gate/" = "gate"
+"tools/validate_rule_coverage.py" = "proofs"
+
+[layout]
+exclude = ["evaluation/**", "third_party/**", ".tools/**", "tools/gate/testdata/**", "tools/validate_rule_coverage.py"]
+canary_dir = "tools/gate/testdata/canary"
+golden_files = ["internal/association/testdata/parity-*.json.gz", "internal/association/testdata/replay-*-gold.jsonl", "internal/association/testdata/replay-*-scores.jsonl", "internal/association/testdata/replay-*-units.jsonl", "internal/association/testdata/terra-replay.jsonl", "evaluation/reference-v1.json", "evaluation/scout-requests-v2.json", "evaluation/change-cost-v2/**"]
+change_record = "CHANGELOG.md"
+support_dir = "internal/state/statetest"
+fixtures_dir = "testdata"
+
+[layout.skills]
+root = ".agents/skills"
+allowed = ["SKILL.md", "README.md", "references/*.md", "assets/**", "scripts/**"]
+frontmatter_required = ["name", "description"]
+frontmatter_allowed = ["name", "description", "hide", "disable-model-invocation"]
+
+[layout.test_tiers]
+boundary_tag = "boundary"
+deferred_tag = "deferred"
+package_timeout = "300s"
+
+[surface]
+feature_map_path = "docs/features"
+feature_map_index = "README.md"
+lever_command = ["go", "run", "./cmd/scout"]
+
+[identity_artefacts]
+"internal/association/terra_prompt.txt" = "the measured Terra prompt bytes TerraPromptDigest pins"
+"internal/association/terra.go" = "holds TerraPromptDigest, the digest of the measured Terra prompt"
+"scripts/clawpatch-safe.patch" = "hashed by scripts/build-clawpatch.sh, internal/clawpatch/review.go and release.yml"
+"toolchain/checksums.sha256" = "pinned download digests"
+
+[python_quality]
+maintained_roots = ["internal/association/testdata/gen", "tools/gate/codeintegrity", "tools/gate/pyquality"]
+script_roots = ["internal/association/testdata/gen", "tools/gate/codeintegrity", "tools/gate/pyquality"]
+script_names = ["parity-fixtures.py", "inspect-python-source.py", "check-python-quality.py", "check-python-scalability.py", "check-python-fanout.py", "python_source.py"]
+test_roots = []
+test_groups = []
+generic_name_allowlist = []
+class_max_lines = 700
+class_max_init_args = 8
+class_max_instance_attributes = 12
+subprocess_wrappers = {}
+dynamic_import_adapters = ["internal/association/testdata/gen/parity-fixtures.py"]
+contract_files = ["internal/association/testdata/gen/parity-fixtures.py", "tools/gate/pyquality/python_source.py", "tools/gate/pyquality/check-python-quality.py", "tools/gate/pyquality/check-python-scalability.py", "tools/gate/pyquality/check-python-fanout.py", "tools/gate/codeintegrity/inspect-python-source.py"]
+max_loop_depth = 2
+fanout_max = 10
+large_module_nloc = 800
+large_module_fanout_max = 3
+
+[[test_budget.machine]]
+id = "darwin-arm64-apple-m5-pro-go1-26-11"
+wall_limit_s = 120
+per_test_limit_s = 3
+approval = "owner, 2026-11-27 (provisional until the first measure run)"

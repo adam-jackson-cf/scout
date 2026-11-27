@@ -1,8 +1,11 @@
+//go:build boundary
+
 package shadow
 
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -19,7 +22,7 @@ type p07Provider struct {
 	url    string
 }
 
-func (p p07Provider) get(ctx context.Context, path string, dst any) error {
+func (p p07Provider) get(ctx context.Context, path string, dst any) (err error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, p.url+path, nil)
 	if err != nil {
 		return err
@@ -28,7 +31,7 @@ func (p p07Provider) get(ctx context.Context, path string, dst any) error {
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer func() { err = errors.Join(err, res.Body.Close()) }()
 	if res.StatusCode != http.StatusOK {
 		return fmt.Errorf("provider HTTP %d", res.StatusCode)
 	}
@@ -112,12 +115,14 @@ func p07Points(t *testing.T, b domain.ShadowBatch, want ...string) {
 	}
 }
 
+type p07AccountingCase struct {
+	name, change   string
+	wantGap        bool
+	wantAccounting int
+}
+
 func TestADR012EligibilityAndEventAccounting(t *testing.T) {
-	for _, tc := range []struct {
-		name, change   string
-		wantGap        bool
-		wantAccounting int
-	}{
+	for _, tc := range []p07AccountingCase{
 		{"fork_bot_zero_findings", "", false, 1},
 		{"omitted_failing_eligible_PR", "missing", true, 0},
 		{"collector_skipped_unstarted", "skipped", true, 0},
@@ -129,87 +134,99 @@ func TestADR012EligibilityAndEventAccounting(t *testing.T) {
 		{"deferred_deadline", "deferred", true, 0},
 		{"approval_waiting_deadline", "approval", true, 0},
 	} {
-		t.Run(tc.name, func(t *testing.T) {
-			s := p07Snapshot(t)
-			e := s["Events"].([]any)[0].(map[string]any)
-			a := s["Attempts"].([]any)[0].(map[string]any)
-			f := a["Fact"].(map[string]any)
-			switch tc.change {
-			case "missing", "skipped", "closed", "merged", "deferred", "approval":
-				s["Attempts"] = []any{}
-				e["State"] = tc.change
-			case "head":
-				f["HeadCommit"] = "H2"
-			case "pr":
-				f["PRNumber"] = "18"
-			case "early":
-				f["StartedAt"] = "2026-11-01T09:59:59Z"
-			}
-			b, err := p07Collect(t, s)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if len(b.Inputs.Obligations) != 1 {
-				t.Fatalf("eligible event disappeared: %+v", b.Inputs)
-			}
-			if len(b.Inputs.Accounting) != tc.wantAccounting {
-				t.Errorf("accounting=%+v want %d", b.Inputs.Accounting, tc.wantAccounting)
-			}
-			if tc.wantGap {
-				p07Points(t, b, "2026-11-01T10:00:00Z")
-			} else if len(b.Ledger.Facts) != 1 || len(b.Ledger.Events) != 0 {
-				t.Errorf("zero-event fact lost: %+v", b.Ledger)
-			}
-		})
+		t.Run(tc.name, func(t *testing.T) { p07CheckAccounting(t, tc) })
 	}
-	t.Run("waiting_alone_not_gap", func(t *testing.T) {
-		s := p07Snapshot(t)
-		s["Attempts"] = []any{}
-		e := s["Events"].([]any)[0].(map[string]any)
-		e["State"] = "approval_waiting"
-		e["DeadlineAt"] = "2026-11-02T12:00:00Z"
-		b, err := p07Collect(t, s)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if len(b.Ledger.GapPoints) != 0 || !b.CompleteThrough.Before(time.Date(2026, 11, 1, 10, 0, 0, 0, time.UTC)) {
-			t.Fatalf("waiting event must hold C without inventing a gap: %+v", b)
-		}
-	})
+	t.Run("waiting_alone_not_gap", p07WaitingAloneIsNotGap)
 	for _, reason := range []string{"non_default_base", "unreachable_base"} {
-		t.Run(reason, func(t *testing.T) {
-			s := p07Snapshot(t)
-			e := s["Events"].([]any)[0].(map[string]any)
-			if reason == "non_default_base" {
-				e["BaseBranch"] = "release"
-			} else {
-				e["BaseReachable"] = false
-			}
-			b, err := p07Collect(t, s)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if len(b.Ledger.Facts) != 1 || b.Ledger.Facts[0].Status != "not_assessed" || b.Ledger.Facts[0].Comparison != "non_default_base" {
-				t.Fatalf("must disclose excluded base: %+v", b.Ledger)
-			}
-		})
+		t.Run(reason, func(t *testing.T) { p07ExcludedBaseIsDisclosed(t, reason) })
 	}
-	t.Run("selector_not_pin_establishes_population", func(t *testing.T) {
-		a, err := p07Collect(t, p07Snapshot(t))
-		if err != nil {
-			t.Fatal(err)
-		}
-		s := p07Snapshot(t)
-		s["Attempts"].([]any)[0].(map[string]any)["Fact"].(map[string]any)["Pins"].(map[string]any)["Tools"] = "tools-next"
-		b, err := p07Collect(t, s)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if a.Inputs.Obligations[0].Selector != b.Inputs.Obligations[0].Selector {
-			t.Fatal("pin change reset selector")
-		}
-		if a.Inputs.Obligations[0].Selector != "guardian-trigger-v1/collector-v1" {
-			t.Fatal("population selector omitted")
-		}
-	})
+	t.Run("selector_not_pin_establishes_population", p07SelectorNotPinEstablishesPopulation)
+}
+
+func p07ApplyAccountingChange(s map[string]any, change string) {
+	e := s["Events"].([]any)[0].(map[string]any)
+	a := s["Attempts"].([]any)[0].(map[string]any)
+	f := a["Fact"].(map[string]any)
+	switch change {
+	case "missing", "skipped", "closed", "merged", "deferred", "approval":
+		s["Attempts"] = []any{}
+		e["State"] = change
+	case "head":
+		f["HeadCommit"] = "H2"
+	case "pr":
+		f["PRNumber"] = "18"
+	case "early":
+		f["StartedAt"] = "2026-11-01T09:59:59Z"
+	}
+}
+
+func p07CheckAccounting(t *testing.T, tc p07AccountingCase) {
+	s := p07Snapshot(t)
+	p07ApplyAccountingChange(s, tc.change)
+	b, err := p07Collect(t, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(b.Inputs.Obligations) != 1 {
+		t.Fatalf("eligible event disappeared: %+v", b.Inputs)
+	}
+	if len(b.Inputs.Accounting) != tc.wantAccounting {
+		t.Errorf("accounting=%+v want %d", b.Inputs.Accounting, tc.wantAccounting)
+	}
+	if tc.wantGap {
+		p07Points(t, b, "2026-11-01T10:00:00Z")
+	} else if len(b.Ledger.Facts) != 1 || len(b.Ledger.Events) != 0 {
+		t.Errorf("zero-event fact lost: %+v", b.Ledger)
+	}
+}
+
+func p07WaitingAloneIsNotGap(t *testing.T) {
+	s := p07Snapshot(t)
+	s["Attempts"] = []any{}
+	e := s["Events"].([]any)[0].(map[string]any)
+	e["State"] = "approval_waiting"
+	e["DeadlineAt"] = "2026-11-02T12:00:00Z"
+	b, err := p07Collect(t, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(b.Ledger.GapPoints) != 0 || !b.CompleteThrough.Before(time.Date(2026, 11, 1, 10, 0, 0, 0, time.UTC)) {
+		t.Fatalf("waiting event must hold C without inventing a gap: %+v", b)
+	}
+}
+
+func p07ExcludedBaseIsDisclosed(t *testing.T, reason string) {
+	s := p07Snapshot(t)
+	e := s["Events"].([]any)[0].(map[string]any)
+	if reason == "non_default_base" {
+		e["BaseBranch"] = "release"
+	} else {
+		e["BaseReachable"] = false
+	}
+	b, err := p07Collect(t, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(b.Ledger.Facts) != 1 || b.Ledger.Facts[0].Status != "not_assessed" || b.Ledger.Facts[0].Comparison != "non_default_base" {
+		t.Fatalf("must disclose excluded base: %+v", b.Ledger)
+	}
+}
+
+func p07SelectorNotPinEstablishesPopulation(t *testing.T) {
+	a, err := p07Collect(t, p07Snapshot(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	s := p07Snapshot(t)
+	s["Attempts"].([]any)[0].(map[string]any)["Fact"].(map[string]any)["Pins"].(map[string]any)["Tools"] = "tools-next"
+	b, err := p07Collect(t, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if a.Inputs.Obligations[0].Selector != b.Inputs.Obligations[0].Selector {
+		t.Fatal("pin change reset selector")
+	}
+	if a.Inputs.Obligations[0].Selector != "guardian-trigger-v1/collector-v1" {
+		t.Fatal("population selector omitted")
+	}
 }

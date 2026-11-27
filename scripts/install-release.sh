@@ -9,12 +9,18 @@
 # Asset names match .github/workflows/release.yml.
 set -euo pipefail
 
-die() { echo "::error::$*"; exit 3; }
+die() {
+  echo "::error::$*"
+  exit 3
+}
 
 # shellcheck source=scripts/sha256.sh
 . "$(dirname "$0")/sha256.sh"
 
-case "$(uname -s)-$(uname -m)" in
+host_kernel="$(uname -s)"
+host_machine="$(uname -m)"
+host_platform="$host_kernel-$host_machine"
+case "$host_platform" in
   Linux-x86_64) platform=linux-amd64 ;;
   Linux-aarch64 | Linux-arm64) platform=linux-arm64 ;;
   Darwin-x86_64) platform=darwin-amd64 ;;
@@ -22,8 +28,12 @@ case "$(uname -s)-$(uname -m)" in
   *) die 'Unsupported runner platform.' ;;
 esac
 
-base="https://github.com/${RELEASE_REPO}/releases/download/${SCOUT_VERSION}"
-dest="$RUNNER_TEMP/scout-release"
+release_repo="${RELEASE_REPO:?RELEASE_REPO must name owner/name}"
+scout_version="${SCOUT_VERSION:?SCOUT_VERSION must name the release tag}"
+runner_temp="${RUNNER_TEMP:?RUNNER_TEMP must name the install root}"
+github_env="${GITHUB_ENV:?GITHUB_ENV must name the workflow environment file}"
+base="https://github.com/${release_repo}/releases/download/${scout_version}"
+dest="$runner_temp/scout-release"
 mkdir -p "$dest/clawpatch"
 cd "$dest"
 fetch() { curl --fail --silent --show-error --location --retry 3 --output "$1" "$base/$1" || die "download failed for $1."; }
@@ -50,8 +60,9 @@ manifest_sha="$(jq -er .sha256 clawpatch-manifest.json)"
 fetch "$asset"
 fetch "$asset.sha256"
 verify "$asset" "$asset.sha256"
-[[ "$(sha256 "$asset")" == "$manifest_sha" ]] || die 'Clawpatch bundle does not match its manifest.'
+asset_sha="$(sha256 "$asset")"
+[[ "$asset_sha" == "$manifest_sha" ]] || die 'Clawpatch bundle does not match its manifest.'
 tar -xzf "$asset" -C clawpatch
 
-printf 'SCOUT_BIN=%s\n' "$dest/scout-$platform" >> "$GITHUB_ENV"
-printf 'CLAWPATCH_BIN=%s\n' "$dest/clawpatch/$entrypoint" >> "$GITHUB_ENV"
+printf 'SCOUT_BIN=%s\n' "$dest/scout-$platform" >>"$github_env"
+printf 'CLAWPATCH_BIN=%s\n' "$dest/clawpatch/$entrypoint" >>"$github_env"

@@ -13,7 +13,7 @@ import (
 func TestAreasExportImportExportIsByteIdenticalAndLeavesIdentityAlone(t *testing.T) {
 	ctx := context.Background()
 	source := seedLedger(t, ctx, t.TempDir())
-	defer source.Close()
+	defer closeOrFail(t, source)
 
 	before, err := source.Export(ctx)
 	if err != nil {
@@ -22,6 +22,29 @@ func TestAreasExportImportExportIsByteIdenticalAndLeavesIdentityAlone(t *testing
 	if _, ok := before[ExportAreas]; ok {
 		t.Fatal("areas.jsonl must be absent while the store holds no areas")
 	}
+	next := reconcileAreasKeepingIdentity(t, source)
+
+	first, err := source.Export(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := len(SplitLines(first[ExportAreas])); got != 2 {
+		t.Fatalf("areas.jsonl has %d rows, want 2", got)
+	}
+	if bytes.Contains(first[ExportAreas], []byte(`\u003c`)) {
+		t.Fatal("areas export must not HTML-escape")
+	}
+	for _, path := range []string{ExportIssues, ExportDispositions, ExportWouldBlock, ExportCoverageSummary} {
+		if !bytes.Equal(before[path], first[path]) {
+			t.Fatalf("%s changed when only areas changed", path)
+		}
+	}
+	checkAreasRoundTrip(t, first, next)
+}
+
+func reconcileAreasKeepingIdentity(t *testing.T, source *Store) []areas.Area {
+	t.Helper()
+	ctx := context.Background()
 	issuesBefore, err := source.ListIssues(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -50,28 +73,17 @@ func TestAreasExportImportExportIsByteIdenticalAndLeavesIdentityAlone(t *testing
 	if !reflect.DeepEqual(issuesBefore, issuesAfter) || !reflect.DeepEqual(signalsBefore, signalsAfter) {
 		t.Fatal("reconciling areas changed issue identity or signal series keys")
 	}
+	return next
+}
 
-	first, err := source.Export(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if got := len(SplitLines(first[ExportAreas])); got != 2 {
-		t.Fatalf("areas.jsonl has %d rows, want 2", got)
-	}
-	if bytes.Contains(first[ExportAreas], []byte(`\u003c`)) {
-		t.Fatal("areas export must not HTML-escape")
-	}
-	for _, path := range []string{ExportIssues, ExportDispositions, ExportWouldBlock, ExportCoverageSummary} {
-		if !bytes.Equal(before[path], first[path]) {
-			t.Fatalf("%s changed when only areas changed", path)
-		}
-	}
-
+func checkAreasRoundTrip(t *testing.T, first map[string][]byte, next []areas.Area) {
+	t.Helper()
+	ctx := context.Background()
 	target, err := Open(t.TempDir())
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer target.Close()
+	defer closeOrFail(t, target)
 	if err := target.Import(ctx, first); err != nil {
 		t.Fatal(err)
 	}

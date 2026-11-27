@@ -1,3 +1,5 @@
+//go:build boundary
+
 package engine
 
 import (
@@ -6,10 +8,10 @@ import (
 	"strings"
 	"testing"
 
-	"scout/internal/association"
 	"scout/internal/decisions"
 	"scout/internal/decisions/thresholds"
 	"scout/internal/domain"
+	"scout/internal/state/statetest"
 )
 
 func TestJevRankingDisclosesProvisionalThresholdsAndStoresTheStateDigest(t *testing.T) {
@@ -22,7 +24,7 @@ func TestJevRankingDisclosesProvisionalThresholdsAndStoresTheStateDigest(t *test
 	if ranking.Thresholds != thresholds.StatusProvisional || ranking.Method != decisions.JevDisclosure {
 		t.Fatalf("ranking %+v", ranking)
 	}
-	rows, err := store.ListAnnotations(context.Background(), "issue:security:a")
+	rows, err := statetest.Annotations(context.Background(), store, "issue:security:a")
 	if err != nil || len(rows) != 1 || len(rows[0].StateDigest) != 64 {
 		t.Fatalf("annotations %+v err %v", rows, err)
 	}
@@ -93,7 +95,7 @@ func TestSummaryNeverShowsAJevProbability(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	summary := Summary(domain.Gate{Status: "passed"}, ranking, issues, nil, 0, nil, nil, association.GuardState{})
+	summary := Summary(SummaryInput{Gate: domain.Gate{Status: "passed"}, Ranking: ranking, Issues: issues})
 	for _, shown := range []string{"0.2271", "0.9137", "0.6389", "22.7", "91.3", "63.9", "probab", "likelihood", "confidence"} {
 		if strings.Contains(strings.ToLower(summary), shown) {
 			t.Fatalf("summary shows %q:\n%s", shown, summary)

@@ -1,3 +1,5 @@
+//go:build boundary
+
 package engine
 
 import (

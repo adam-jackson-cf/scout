@@ -51,15 +51,30 @@ func median(values []time.Duration) time.Duration {
 // already committed: no plan snapshot decode, no run payload rewrite.
 func TestCommitRunJobCostIsFlatInJobCount(t *testing.T) {
 	jobCount, padding := 5000, 5<<20
-	if testing.Short() {
-		jobCount, padding = 1000, 1<<20
-	}
-	ctx := context.Background()
 	store, err := Open(t.TempDir())
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer store.Close()
+	defer closeOrFail(t, store)
+	plan, run := seedGuardedCostRun(t, store, jobCount, padding)
+
+	bucket := jobCount / 10
+	durations, mallocs := measureCommits(t, store, run.RunID, plan.Jobs, bucket)
+
+	first, last := median(durations[:bucket]), median(durations[jobCount-bucket:])
+	t.Logf("jobs=%d plan padding=%d bytes: median commit first %d = %s, last %d = %s; mallocs first=%d last=%d", jobCount, padding, bucket, first, bucket, last, mallocs[0], mallocs[1])
+	// Tolerance: 3x on median time (scheduler/fsync noise), 1.25x on allocations.
+	if last > 3*first {
+		t.Errorf("per-commit time grew with job count: first bucket %s, last bucket %s", first, last)
+	}
+	if float64(mallocs[1]) > 1.25*float64(mallocs[0]) {
+		t.Errorf("per-commit allocations grew with job count: first bucket %d, last bucket %d", mallocs[0], mallocs[1])
+	}
+}
+
+func seedGuardedCostRun(t *testing.T, store *Store, jobCount, padding int) (domain.Plan, domain.Run) {
+	t.Helper()
+	ctx := context.Background()
 	plan, run := costPlan(jobCount, padding)
 	if err := store.SavePlan(ctx, plan); err != nil {
 		t.Fatal(err)
@@ -77,41 +92,34 @@ func TestCommitRunJobCostIsFlatInJobCount(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+	return plan, run
+}
 
-	bucket := jobCount / 10
+func measureCommits(t *testing.T, store *Store, runID string, jobs []domain.Job, bucket int) ([]time.Duration, [2]uint64) {
+	t.Helper()
+	ctx := context.Background()
+	jobCount := len(jobs)
 	durations := make([]time.Duration, jobCount)
 	var mallocs [2]uint64 // first and last bucket
 	var before, after runtime.MemStats
-	for index, job := range plan.Jobs {
+	windowStarts := map[int]bool{0: true, jobCount - bucket: true}
+	windowEnds := map[int]int{bucket - 1: 0, jobCount - 1: 1}
+	for index, job := range jobs {
 		commit := costCommit(job, index)
-		inFirst, inLast := index < bucket, index >= jobCount-bucket
-		if inFirst && index == 0 || inLast && index == jobCount-bucket {
+		if windowStarts[index] {
 			runtime.ReadMemStats(&before)
 		}
 		started := time.Now()
-		if err := store.CommitRunJob(ctx, run.RunID, commit); err != nil {
+		if err := store.CommitRunJob(ctx, runID, commit); err != nil {
 			t.Fatalf("commit %d: %v", index, err)
 		}
 		durations[index] = time.Since(started)
-		if inFirst && index == bucket-1 {
+		if slot, ok := windowEnds[index]; ok {
 			runtime.ReadMemStats(&after)
-			mallocs[0] = after.Mallocs - before.Mallocs
-		}
-		if inLast && index == jobCount-1 {
-			runtime.ReadMemStats(&after)
-			mallocs[1] = after.Mallocs - before.Mallocs
+			mallocs[slot] = after.Mallocs - before.Mallocs
 		}
 	}
-
-	first, last := median(durations[:bucket]), median(durations[jobCount-bucket:])
-	t.Logf("jobs=%d plan padding=%d bytes: median commit first %d = %s, last %d = %s; mallocs first=%d last=%d", jobCount, padding, bucket, first, bucket, last, mallocs[0], mallocs[1])
-	// Tolerance: 3x on median time (scheduler/fsync noise), 1.25x on allocations.
-	if last > 3*first {
-		t.Errorf("per-commit time grew with job count: first bucket %s, last bucket %s", first, last)
-	}
-	if float64(mallocs[1]) > 1.25*float64(mallocs[0]) {
-		t.Errorf("per-commit allocations grew with job count: first bucket %d, last bucket %d", mallocs[0], mallocs[1])
-	}
+	return durations, mallocs
 }
 
 func BenchmarkCommitRunJob(b *testing.B) {
@@ -120,7 +128,7 @@ func BenchmarkCommitRunJob(b *testing.B) {
 	if err != nil {
 		b.Fatal(err)
 	}
-	defer store.Close()
+	defer closeOrFail(b, store)
 	plan, run := costPlan(b.N, 5<<20)
 	if err := store.SavePlan(ctx, plan); err != nil {
 		b.Fatal(err)
@@ -139,8 +147,14 @@ func BenchmarkCommitRunJob(b *testing.B) {
 
 func finishedRunAfter(t *testing.T, interruptAfter int) domain.Run {
 	t.Helper()
+	store, plan, run := interruptedCostRun(t, t.TempDir(), interruptAfter)
+	defer closeOrFail(t, store)
+	return completeCostRun(t, store, plan, run)
+}
+
+func interruptedCostRun(t *testing.T, root string, interruptAfter int) (*Store, domain.Plan, domain.Run) {
+	t.Helper()
 	ctx := context.Background()
-	root := t.TempDir()
 	plan, run := costPlan(6, 16)
 	reused := domain.Coverage{Key: domain.CoverageKey{FilePath: "reused.go", Family: domain.FamilySecurity, Category: "security:test"}, Status: domain.CoverageInspected, InspectedRanges: []domain.SourceRange{{Path: "reused.go", StartLine: 1, EndLine: 1}}}
 	run.ExpectedCoverage = append(run.ExpectedCoverage, reused.Key)
@@ -170,27 +184,17 @@ func finishedRunAfter(t *testing.T, interruptAfter int) domain.Run {
 			t.Fatal(err)
 		}
 	}
-	defer store.Close()
+	return store, plan, run
+}
+
+func completeCostRun(t *testing.T, store *Store, plan domain.Plan, run domain.Run) domain.Run {
+	t.Helper()
+	ctx := context.Background()
 	resumed, err := store.LoadInProgressRun(ctx, plan.PlanID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	done := map[string]bool{}
-	commits, err := store.ListRunJobCommits(ctx, resumed.RunID)
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, commit := range commits {
-		done[commit.JobID] = true
-	}
-	for index, job := range plan.Jobs {
-		if done[job.JobID] {
-			continue
-		}
-		if err := store.CommitRunJob(ctx, run.RunID, costCommit(job, index)); err != nil {
-			t.Fatal(err)
-		}
-	}
+	commitRemainingCostJobs(t, store, plan, resumed.RunID)
 	pending, err := store.LoadInProgressRun(ctx, plan.PlanID)
 	if err != nil {
 		t.Fatal(err)
@@ -206,6 +210,27 @@ func finishedRunAfter(t *testing.T, interruptAfter int) domain.Run {
 		t.Fatal(err)
 	}
 	return final
+}
+
+func commitRemainingCostJobs(t *testing.T, store *Store, plan domain.Plan, runID string) {
+	t.Helper()
+	ctx := context.Background()
+	done := map[string]bool{}
+	commits, err := store.ListRunJobCommits(ctx, runID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, commit := range commits {
+		done[commit.JobID] = true
+	}
+	for index, job := range plan.Jobs {
+		if done[job.JobID] {
+			continue
+		}
+		if err := store.CommitRunJob(ctx, plan.RunID, costCommit(job, index)); err != nil {
+			t.Fatal(err)
+		}
+	}
 }
 
 func TestInterruptedRunResumesToSameFinalRun(t *testing.T) {
@@ -225,7 +250,7 @@ func TestDuplicateCommitRejectedAndLeavesProgressIntact(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer store.Close()
+	defer closeOrFail(t, store)
 	plan, run := costPlan(2, 16)
 	if err := store.SavePlan(ctx, plan); err != nil {
 		t.Fatal(err)
@@ -256,7 +281,36 @@ func TestDuplicateCommitRejectedAndLeavesProgressIntact(t *testing.T) {
 // (The schema equality of a migrated store is TestReanchoredV1StoreHasTheSchemaOfANewStore.)
 func TestV3StoreMigratesAndResumes(t *testing.T) {
 	ctx := context.Background()
-	root := t.TempDir()
+	store, plan, run, want := partialCostStore(t, t.TempDir())
+	// Build a genuine historical v3 schema, not a current store with its
+	// version rewound (which would accidentally retain newly added tables).
+	v3 := newV1Store(t)
+	writeV3Progress(t, v3, plan, want)
+	v3.close(t)
+	if err := store.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	migrated, err := Open(v3.root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer closeOrFail(t, migrated)
+	got, err := migrated.LoadInProgressRun(ctx, plan.PlanID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("migrated progress differs:\n%#v\n%#v", got, want)
+	}
+	if err := migrated.CommitRunJob(ctx, run.RunID, costCommit(plan.Jobs[2], 2)); err != nil {
+		t.Fatalf("commit after migration: %v", err)
+	}
+}
+
+func partialCostStore(t *testing.T, root string) (*Store, domain.Plan, domain.Run, domain.Run) {
+	t.Helper()
+	ctx := context.Background()
 	store, err := Open(root)
 	if err != nil {
 		t.Fatal(err)
@@ -277,11 +331,13 @@ func TestV3StoreMigratesAndResumes(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// Build a genuine historical v3 schema, not a current store with its
-	// version rewound (which would accidentally retain newly added tables).
-	v3 := newV1Store(t)
+	return store, plan, run, want
+}
+
+func writeV3Progress(t *testing.T, v3 *v1Store, plan domain.Plan, want domain.Run) {
+	t.Helper()
 	v3.insertRun(t, plan, want, nil)
-	if _, err := v3.db.Exec(`UPDATE runs SET finalized=0 WHERE run_id=?`, run.RunID); err != nil {
+	if _, err := v3.db.Exec(`UPDATE runs SET finalized=0 WHERE run_id=?`, want.RunID); err != nil {
 		t.Fatal(err)
 	}
 	for _, coverage := range want.Coverage {
@@ -289,7 +345,7 @@ func TestV3StoreMigratesAndResumes(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := v3.db.Exec(`INSERT INTO coverage VALUES (?, ?, ?, ?)`, run.RunID, coverage.Key.String(), coverage.Status, payload); err != nil {
+		if _, err := v3.db.Exec(`INSERT INTO coverage VALUES (?, ?, ?, ?)`, want.RunID, coverage.Key.String(), coverage.Status, payload); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -299,28 +355,8 @@ func TestV3StoreMigratesAndResumes(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if _, err := v3.db.Exec(`INSERT INTO run_job_commits VALUES (?, ?, ?, ?)`, run.RunID, job.JobID, unixMillis(commit.CommittedAt), payload); err != nil {
+		if _, err := v3.db.Exec(`INSERT INTO run_job_commits VALUES (?, ?, ?, ?)`, want.RunID, job.JobID, unixMillis(commit.CommittedAt), payload); err != nil {
 			t.Fatal(err)
 		}
-	}
-	v3.close(t)
-	if err := store.Close(); err != nil {
-		t.Fatal(err)
-	}
-
-	migrated, err := Open(v3.root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer migrated.Close()
-	got, err := migrated.LoadInProgressRun(ctx, plan.PlanID)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !reflect.DeepEqual(got, want) {
-		t.Fatalf("migrated progress differs:\n%#v\n%#v", got, want)
-	}
-	if err := migrated.CommitRunJob(ctx, run.RunID, costCommit(plan.Jobs[2], 2)); err != nil {
-		t.Fatalf("commit after migration: %v", err)
 	}
 }

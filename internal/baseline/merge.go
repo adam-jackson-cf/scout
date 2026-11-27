@@ -20,24 +20,60 @@ import (
 // together. would_block rows are unioned. The coverage summary is local. The
 // manifest is regenerated for the merged files.
 func MergeState(current, local Tree) (Tree, error) {
+	if err := validateMergeInputs(current, local); err != nil {
+		return nil, err
+	}
+	if len(current) == 0 || len(local) == 0 {
+		return copyNonEmptyTree(current, local), nil
+	}
+	merged := overlayTrees(current, local)
+	issues, dispositions, err := mergeIssues(current, local)
+	if err != nil {
+		return nil, err
+	}
+	merged[state.ExportIssues] = issues
+	merged[state.ExportDispositions] = dispositions
+	wouldBlock, err := mergeWouldBlock(current, local)
+	if err != nil {
+		return nil, err
+	}
+	merged[state.ExportWouldBlock] = wouldBlock
+	if err := mergeSignalFiles(current, local, merged); err != nil {
+		return nil, err
+	}
+	if err := mergeShadow(current, local, merged); err != nil {
+		return nil, err
+	}
+	if err := renderMergedManifest(current, local, merged); err != nil {
+		return nil, err
+	}
+	return merged, nil
+}
+
+func validateMergeInputs(current, local Tree) error {
 	for _, tree := range []Tree{current, local} {
 		if len(tree) != 0 {
 			if _, err := state.ValidateState(tree); err != nil {
-				return nil, err
+				return err
 			}
 		}
 	}
-	if len(current) == 0 || len(local) == 0 {
-		source := current
-		if len(local) != 0 {
-			source = local
-		}
-		out := make(Tree, len(source))
-		for path, data := range source {
-			out[path] = data
-		}
-		return out, nil
+	return nil
+}
+
+func copyNonEmptyTree(current, local Tree) Tree {
+	source := current
+	if len(local) != 0 {
+		source = local
 	}
+	out := make(Tree, len(source))
+	for path, data := range source {
+		out[path] = data
+	}
+	return out
+}
+
+func overlayTrees(current, local Tree) Tree {
 	merged := Tree{}
 	for path, data := range current {
 		merged[path] = data
@@ -45,24 +81,48 @@ func MergeState(current, local Tree) (Tree, error) {
 	for path, data := range local {
 		merged[path] = data
 	}
+	return merged
+}
 
-	localDisp, err := indexRows(local[state.ExportDispositions], true)
+func indexSideRows(side string, data []byte, requireTime bool) (map[string]*row, error) {
+	rows, err := indexRows(data, requireTime)
 	if err != nil {
-		return nil, fmt.Errorf("local %w", err)
+		return nil, fmt.Errorf("%s %w", side, err)
 	}
-	currentDisp, err := indexRows(current[state.ExportDispositions], true)
+	return rows, nil
+}
+
+func mergeIssues(current, local Tree) ([]byte, []byte, error) {
+	localDisp, err := indexSideRows("local", local[state.ExportDispositions], true)
 	if err != nil {
-		return nil, fmt.Errorf("tip %w", err)
+		return nil, nil, err
 	}
-	localIssues, err := indexRows(local[state.ExportIssues], false)
+	currentDisp, err := indexSideRows("tip", current[state.ExportDispositions], true)
 	if err != nil {
-		return nil, fmt.Errorf("local %w", err)
+		return nil, nil, err
 	}
-	currentIssues, err := indexRows(current[state.ExportIssues], false)
+	localIssues, err := indexSideRows("local", local[state.ExportIssues], false)
 	if err != nil {
-		return nil, fmt.Errorf("tip %w", err)
+		return nil, nil, err
+	}
+	currentIssues, err := indexSideRows("tip", current[state.ExportIssues], false)
+	if err != nil {
+		return nil, nil, err
 	}
 
+	var issueOut, dispOut bytes.Buffer
+	for _, id := range unionIssueIDs(localIssues, currentIssues) {
+		issueRow, disp := pickIssueSide(localIssues[id], localDisp[id], currentIssues[id], currentDisp[id])
+		if issueRow == nil || disp == nil {
+			return nil, nil, fmt.Errorf("issue %q lacks an issue or disposition row", id)
+		}
+		issueOut.Write(issueRow.line)
+		dispOut.Write(disp.line)
+	}
+	return issueOut.Bytes(), dispOut.Bytes(), nil
+}
+
+func unionIssueIDs(localIssues, currentIssues map[string]*row) []string {
 	ids := map[string]bool{}
 	for id := range localIssues {
 		ids[id] = true
@@ -75,46 +135,32 @@ func MergeState(current, local Tree) (Tree, error) {
 		sorted = append(sorted, id)
 	}
 	sort.Strings(sorted)
+	return sorted
+}
 
-	var issueOut, dispOut bytes.Buffer
-	for _, id := range sorted {
-		issueRow, disp := localIssues[id], localDisp[id]
-		currentIssue, currentDispRow := currentIssues[id], currentDisp[id]
-		switch {
-		case currentIssue == nil || currentDispRow == nil:
-			// local only
-		case issueRow == nil || disp == nil:
-			issueRow, disp = currentIssue, currentDispRow
-		case currentDispRow.updated.After(disp.updated):
-			issueRow, disp = currentIssue, currentDispRow
-		}
-		if issueRow == nil || disp == nil {
-			return nil, fmt.Errorf("issue %q lacks an issue or disposition row", id)
-		}
-		issueOut.Write(issueRow.line)
-		dispOut.Write(disp.line)
+func pickIssueSide(issueRow, disp, currentIssue, currentDispRow *row) (*row, *row) {
+	switch {
+	case currentIssue == nil || currentDispRow == nil:
+		// local only
+	case issueRow == nil || disp == nil:
+		issueRow, disp = currentIssue, currentDispRow
+	case currentDispRow.updated.After(disp.updated):
+		issueRow, disp = currentIssue, currentDispRow
 	}
-	merged[state.ExportIssues] = issueOut.Bytes()
-	merged[state.ExportDispositions] = dispOut.Bytes()
+	return issueRow, disp
+}
 
+func mergeWouldBlock(current, local Tree) ([]byte, error) {
 	blocks := map[string]*row{}
 	for _, source := range []Tree{current, local} {
 		for number, line := range state.SplitLines(source[state.ExportWouldBlock]) {
-			var fields struct {
-				ID        string `json:"id"`
-				TriagedAt string `json:"triagedAt"`
-			}
-			if err := json.Unmarshal(line, &fields); err != nil || fields.ID == "" {
-				return nil, fmt.Errorf("would_block row %d is not a keyed record", number+1)
-			}
-			triaged, err := parseTime(fields.TriagedAt, true)
+			id, candidate, err := wouldBlockRow(number, line)
 			if err != nil {
-				return nil, fmt.Errorf("would_block row %d has an unparseable triagedAt: %w", number+1, err)
+				return nil, err
 			}
-			candidate := &row{line: append(append([]byte{}, line...), '\n'), updated: triaged}
 			// The later maintainer triage wins; local wins ties (it is visited last).
-			if existing := blocks[fields.ID]; existing == nil || !existing.updated.After(candidate.updated) {
-				blocks[fields.ID] = candidate
+			if existing := blocks[id]; existing == nil || !existing.updated.After(candidate.updated) {
+				blocks[id] = candidate
 			}
 		}
 	}
@@ -127,32 +173,49 @@ func MergeState(current, local Tree) (Tree, error) {
 	for _, id := range keys {
 		blockOut.Write(blocks[id].line)
 	}
-	merged[state.ExportWouldBlock] = blockOut.Bytes()
+	return blockOut.Bytes(), nil
+}
 
+func wouldBlockRow(number int, line []byte) (string, *row, error) {
+	var fields struct {
+		ID        string `json:"id"`
+		TriagedAt string `json:"triagedAt"`
+	}
+	if err := json.Unmarshal(line, &fields); err != nil || fields.ID == "" {
+		return "", nil, fmt.Errorf("would_block row %d is not a keyed record", number+1)
+	}
+	triaged, err := parseTime(fields.TriagedAt, true)
+	if err != nil {
+		return "", nil, fmt.Errorf("would_block row %d has an unparseable triagedAt: %w", number+1, err)
+	}
+	return fields.ID, &row{line: append(append([]byte{}, line...), '\n'), updated: triaged}, nil
+}
+
+func mergeSignalFiles(current, local, merged Tree) error {
 	for path := range merged {
 		if !strings.HasPrefix(path, state.ExportSignalsDir) {
 			continue
 		}
 		unioned, err := unionSignals(current[path], local[path])
 		if err != nil {
-			return nil, fmt.Errorf("%s: %w", path, err)
+			return fmt.Errorf("%s: %w", path, err)
 		}
 		merged[path] = unioned
 	}
+	return nil
+}
 
-	if err := mergeShadow(current, local, merged); err != nil {
-		return nil, err
-	}
+func renderMergedManifest(current, local, merged Tree) error {
 	meta, err := state.ReadManifestMeta(local[state.ExportManifest])
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if currentMeta, err := state.ReadManifestMeta(current[state.ExportManifest]); err == nil && currentMeta.WouldBlock == state.WouldBlockPresent {
 		meta.WouldBlock = state.WouldBlockPresent
 	}
 	delete(merged, state.ExportManifest)
 	merged[state.ExportManifest] = state.RenderManifest(meta, merged)
-	return merged, nil
+	return nil
 }
 
 type row struct {

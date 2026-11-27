@@ -27,7 +27,8 @@ type Coverage struct {
 // CRAP is Savoia and Evans' change-risk score: CC² × (1 − cov)³ + CC.
 func CRAP(cc int, coverage float64) float64 {
 	c := float64(cc)
-	return c*c*math.Pow(1-coverage, 3) + c
+	uncovered := 1 - coverage
+	return c*c*(uncovered*uncovered*uncovered) + c
 }
 
 // functionCoverage is the fraction of instrumented lines covered within the

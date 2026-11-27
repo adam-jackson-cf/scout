@@ -22,19 +22,6 @@ func Digest(parts ...string) string {
 	return hex.EncodeToString(hash.Sum(nil))
 }
 
-// IsDigest reports whether s is a 64-character lowercase hex digest.
-func IsDigest(s string) bool {
-	if len(s) != 64 {
-		return false
-	}
-	for _, r := range s {
-		if !('0' <= r && r <= '9' || 'a' <= r && r <= 'f') {
-			return false
-		}
-	}
-	return true
-}
-
 // SignalClaim is the evidential strength of a signal. Every Phase-3 measure is
 // descriptive: it reports what was observed, never a cause or a verdict.
 type SignalClaim string
@@ -126,6 +113,20 @@ func Float(v float64) *float64 { return &v }
 // Validate rejects records that would make a missing measurement look like a
 // measured one, or that lack the context needed to compare it.
 func (s Signal) Validate() error {
+	if err := s.validateIdentity(); err != nil {
+		return err
+	}
+	switch s.Missing {
+	case SignalMeasured:
+		return s.validateMeasured()
+	case SignalUnmeasured, SignalInsufficient:
+		return s.validateUnmeasured()
+	default:
+		return fmt.Errorf("unknown missingness %q", s.Missing)
+	}
+}
+
+func (s Signal) validateIdentity() error {
 	if s.MetricID == "" || s.Version <= 0 {
 		return errors.New("signal requires a metric ID and a positive version")
 	}
@@ -138,23 +139,25 @@ func (s Signal) Validate() error {
 	if s.ToolDigest == "" || s.ConfigDigest == "" {
 		return errors.New("signal requires tool and config digests")
 	}
-	switch s.Missing {
-	case SignalMeasured:
-		if s.Value == nil || s.Numerator == nil || s.Denominator == nil {
-			return fmt.Errorf("measured signal %s requires numerator, denominator and value", s.ID())
-		}
-		if s.MissingReason != "" {
-			return errors.New("measured signal must not carry a missing reason")
-		}
-	case SignalUnmeasured, SignalInsufficient:
-		if s.Value != nil || s.Numerator != nil || s.Denominator != nil {
-			return fmt.Errorf("%s signal %s must not carry numbers", s.Missing, s.ID())
-		}
-		if s.MissingReason == "" {
-			return fmt.Errorf("%s signal %s requires a reason", s.Missing, s.ID())
-		}
-	default:
-		return fmt.Errorf("unknown missingness %q", s.Missing)
+	return nil
+}
+
+func (s Signal) validateMeasured() error {
+	if s.Value == nil || s.Numerator == nil || s.Denominator == nil {
+		return fmt.Errorf("measured signal %s requires numerator, denominator and value", s.ID())
+	}
+	if s.MissingReason != "" {
+		return errors.New("measured signal must not carry a missing reason")
+	}
+	return nil
+}
+
+func (s Signal) validateUnmeasured() error {
+	if s.Value != nil || s.Numerator != nil || s.Denominator != nil {
+		return fmt.Errorf("%s signal %s must not carry numbers", s.Missing, s.ID())
+	}
+	if s.MissingReason == "" {
+		return fmt.Errorf("%s signal %s requires a reason", s.Missing, s.ID())
 	}
 	return nil
 }

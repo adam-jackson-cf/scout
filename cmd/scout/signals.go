@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"os"
 	"strings"
 
 	"scout/internal/domain"
@@ -30,7 +29,7 @@ func signalsCmd(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	defer store.Close()
+	defer closeStore(store)
 	signals, err := store.ListSignals(ctx, filter)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
@@ -41,10 +40,11 @@ func signalsCmd(ctx context.Context, args []string) int {
 	if flags.json {
 		return emit(flags, "complete", exitComplete, map[string]any{"signals": signals}, nil)
 	}
+	var text strings.Builder
 	for _, signal := range signals {
-		fmt.Fprintln(os.Stdout, signalLine(signal))
+		text.WriteString(signalLine(signal) + "\n")
 	}
-	return exitComplete
+	return printStdout(text.String(), exitComplete)
 }
 
 func signalLine(s domain.Signal) string {

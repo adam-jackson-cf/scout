@@ -45,15 +45,11 @@ type Failure struct {
 
 func (f *Failure) Error() string { return string(f.Kind) + ": " + f.Reason }
 
-// Client calls the decisions route. Sleep and Now exist so tests run with a
-// fake clock; zero values use the real one.
 type Client struct {
 	Endpoint string
 	// Key is the OpenRouter key. It is never logged, stored or put in an error.
 	Key  string
 	HTTP *http.Client
-	// Sleep waits between retries; nil uses a real timer.
-	Sleep func(ctx context.Context, d time.Duration) error
 	// Now reads the clock for HTTP-date Retry-After values; nil uses time.Now.
 	Now func() time.Time
 	// MaxAttempts bounds attempts for 429/529 (default 5).
@@ -101,10 +97,7 @@ type Reply struct {
 	Answers     []Response
 }
 
-func (c *Client) sleep(ctx context.Context, d time.Duration) error {
-	if c.Sleep != nil {
-		return c.Sleep(ctx, d)
-	}
+func sleep(ctx context.Context, d time.Duration) error {
 	timer := time.NewTimer(d)
 	defer timer.Stop()
 	select {
@@ -127,18 +120,8 @@ func (c *Client) now() time.Time {
 // The returned Reply carries billed usage even when the error is a failure of
 // a reply that was received.
 func (c *Client) Ask(ctx context.Context, questions []Question, model, unitID string, state json.RawMessage) (Reply, error) {
-	if len(questions) == 0 {
-		return Reply{}, errors.New("a request needs at least one question")
-	}
-	seen := map[string]bool{}
-	for _, q := range questions {
-		if err := q.Validate(); err != nil {
-			return Reply{}, err
-		}
-		if seen[q.ID] {
-			return Reply{}, fmt.Errorf("question %q is asked twice in one request", q.ID)
-		}
-		seen[q.ID] = true
+	if err := validateBatch(questions); err != nil {
+		return Reply{}, err
 	}
 	if c.Key == "" {
 		return Reply{}, &Failure{Kind: FailNetwork, Reason: "no key"}
@@ -148,6 +131,51 @@ func (c *Client) Ask(ctx context.Context, questions []Question, model, unitID st
 	if err != nil {
 		return Reply{}, &Failure{Kind: FailSchema, Reason: "request is not encodable: " + err.Error()}
 	}
+	endpoint, httpClient := c.transport()
+	policy := c.retryPolicy()
+	started := c.now()
+	for attempt := 1; ; attempt++ {
+		status, header, payload, err := c.post(ctx, httpClient, endpoint, body)
+		if err != nil {
+			return Reply{}, err
+		}
+		switch classifyStatus(status) {
+		case statusOK:
+			reply, err := parseResponse(questions, model, unitID, payload)
+			reply.RequestBody = body
+			reply.Attempts = attempt
+			reply.Latency = c.now().Sub(started)
+			return reply, err
+		case statusNonRetryable:
+			return Reply{}, nonRetryableFailure(status, payload)
+		case statusRetryable:
+			if err := c.backoff(ctx, policy, attempt, status, header); err != nil {
+				return Reply{}, err
+			}
+		default:
+			return Reply{}, &Failure{Kind: FailHTTP, Status: status, Reason: fmt.Sprintf("HTTP %d", status)}
+		}
+	}
+}
+
+func validateBatch(questions []Question) error {
+	if len(questions) == 0 {
+		return errors.New("a request needs at least one question")
+	}
+	seen := map[string]bool{}
+	for _, q := range questions {
+		if err := q.Validate(); err != nil {
+			return err
+		}
+		if seen[q.ID] {
+			return fmt.Errorf("question %q is asked twice in one request", q.ID)
+		}
+		seen[q.ID] = true
+	}
+	return nil
+}
+
+func (c *Client) transport() (string, *http.Client) {
 	endpoint := c.Endpoint
 	if endpoint == "" {
 		endpoint = DefaultEndpoint
@@ -156,55 +184,78 @@ func (c *Client) Ask(ctx context.Context, questions []Question, model, unitID st
 	if httpClient == nil {
 		httpClient = &http.Client{Timeout: 60 * time.Second}
 	}
-	attempts := c.MaxAttempts
-	if attempts <= 0 {
-		attempts = 5
+	return endpoint, httpClient
+}
+
+type retryPolicy struct {
+	attempts int
+	base     time.Duration
+	maxWait  time.Duration
+}
+
+func (c *Client) retryPolicy() retryPolicy {
+	policy := retryPolicy{attempts: c.MaxAttempts, base: c.BaseBackoff, maxWait: c.MaxWait}
+	if policy.attempts <= 0 {
+		policy.attempts = 5
 	}
-	base := c.BaseBackoff
-	if base <= 0 {
-		base = time.Second
+	if policy.base <= 0 {
+		policy.base = time.Second
 	}
-	maxWait := c.MaxWait
-	if maxWait <= 0 {
-		maxWait = time.Minute
+	if policy.maxWait <= 0 {
+		policy.maxWait = time.Minute
 	}
-	started := c.now()
-	for attempt := 1; ; attempt++ {
-		status, header, payload, err := c.post(ctx, httpClient, endpoint, body)
-		if err != nil {
-			return Reply{}, err
-		}
-		switch {
-		case status == http.StatusOK:
-			reply, err := parseResponse(questions, model, unitID, payload)
-			reply.RequestBody = body
-			reply.Attempts = attempt
-			reply.Latency = c.now().Sub(started)
-			return reply, err
-		case status == http.StatusBadRequest || status == http.StatusUnprocessableEntity:
-			reason := fmt.Sprintf("HTTP %d", status)
-			if bytes.Contains(payload, []byte("max_tokens_exceeded")) {
-				reason += " max_tokens_exceeded"
-			}
-			return Reply{}, &Failure{Kind: FailNonRetryable, Status: status, Reason: reason}
-		case status == http.StatusTooManyRequests || status == 529:
-			if attempt >= attempts {
-				return Reply{}, &Failure{Kind: FailRateLimited, Status: status, Reason: fmt.Sprintf("HTTP %d after %d attempts", status, attempt)}
-			}
-			wait := base << (attempt - 1)
-			if retry, ok := retryAfter(header.Get("Retry-After"), c.now()); ok && retry > wait {
-				wait = retry
-			}
-			if wait > maxWait {
-				wait = maxWait
-			}
-			if err := c.sleep(ctx, wait); err != nil {
-				return Reply{}, &Failure{Kind: FailTimeout, Reason: "cancelled while backing off: " + err.Error()}
-			}
-		default:
-			return Reply{}, &Failure{Kind: FailHTTP, Status: status, Reason: fmt.Sprintf("HTTP %d", status)}
-		}
+	return policy
+}
+
+type statusClass int
+
+const (
+	statusOther statusClass = iota
+	statusOK
+	statusNonRetryable
+	statusRetryable
+)
+
+func classifyStatus(status int) statusClass {
+	switch status {
+	case http.StatusOK:
+		return statusOK
+	case http.StatusBadRequest, http.StatusUnprocessableEntity:
+		return statusNonRetryable
+	case http.StatusTooManyRequests, 529:
+		return statusRetryable
+	default:
+		return statusOther
 	}
+}
+
+func nonRetryableFailure(status int, payload []byte) *Failure {
+	reason := fmt.Sprintf("HTTP %d", status)
+	if bytes.Contains(payload, []byte("max_tokens_exceeded")) {
+		reason += " max_tokens_exceeded"
+	}
+	return &Failure{Kind: FailNonRetryable, Status: status, Reason: reason}
+}
+
+func (c *Client) backoff(ctx context.Context, policy retryPolicy, attempt, status int, header http.Header) error {
+	if attempt >= policy.attempts {
+		return &Failure{Kind: FailRateLimited, Status: status, Reason: fmt.Sprintf("HTTP %d after %d attempts", status, attempt)}
+	}
+	if err := sleep(ctx, c.backoffWait(policy, attempt, header)); err != nil {
+		return &Failure{Kind: FailTimeout, Reason: "cancelled while backing off: " + err.Error()}
+	}
+	return nil
+}
+
+func (c *Client) backoffWait(policy retryPolicy, attempt int, header http.Header) time.Duration {
+	wait := policy.base << (attempt - 1)
+	if retry, ok := retryAfter(header.Get("Retry-After"), c.now()); ok && retry > wait {
+		wait = retry
+	}
+	if wait > policy.maxWait {
+		wait = policy.maxWait
+	}
+	return wait
 }
 
 func (c *Client) post(ctx context.Context, client *http.Client, endpoint string, body []byte) (int, http.Header, []byte, error) {
@@ -224,9 +275,8 @@ func (c *Client) post(ctx context.Context, client *http.Client, endpoint string,
 		// transport's and is reduced to its kind.
 		return 0, nil, nil, &Failure{Kind: FailNetwork, Reason: "request failed"}
 	}
-	defer resp.Body.Close()
 	payload, err := io.ReadAll(io.LimitReader(resp.Body, maxResponseBytes))
-	if err != nil {
+	if err := errors.Join(err, resp.Body.Close()); err != nil {
 		return 0, nil, nil, &Failure{Kind: FailNetwork, Reason: "response unreadable"}
 	}
 	return resp.StatusCode, resp.Header, payload, nil
@@ -326,35 +376,52 @@ func parseAnswer(q Question, unitID string, raw json.RawMessage) (Response, erro
 		return Response{}, schemaFailure("answer type %q is not %q", answer.Type, q.Kind)
 	}
 	response := Response{Kind: q.Kind, Answer: raw, OptionOrder: orderFor(q, q.RealisedOrder(unitID))}
+	var err error
 	switch q.Kind {
 	case KindNoul:
-		if answer.Noul == nil || !probability(*answer.Noul) {
-			return Response{}, schemaFailure("noul answer is missing or outside [0, 1]")
-		}
-		response.Probability = *answer.Noul
+		response.Probability, err = noulProbability(answer)
 	case KindScore:
-		if answer.Score == nil || math.IsNaN(*answer.Score) || math.IsInf(*answer.Score, 0) {
-			return Response{}, schemaFailure("score answer is missing or not finite")
-		}
-		response.Probability = *answer.Score
+		response.Probability, err = scoreValue(answer)
 	case KindChoice:
-		if _, ok := q.Criteria[answer.Choice]; !ok {
-			return Response{}, schemaFailure("choice %q is not an option", answer.Choice)
-		}
-		response.Choice = answer.Choice
-		response.Probabilities = answer.Probabilities
-		for option, p := range answer.Probabilities {
-			if _, ok := q.Criteria[option]; !ok || !probability(p) {
-				return Response{}, schemaFailure("choice probabilities are invalid")
-			}
-		}
-		if q.Positive != "" {
-			p, ok := answer.Probabilities[q.Positive]
-			if !ok {
-				return Response{}, schemaFailure("choice answer lacks a probability for %q", q.Positive)
-			}
-			response.Probability = p
-		}
+		err = readChoice(q, answer, &response)
+	}
+	if err != nil {
+		return Response{}, err
 	}
 	return response, nil
+}
+
+func noulProbability(answer wireAnswer) (float64, error) {
+	if answer.Noul == nil || !probability(*answer.Noul) {
+		return 0, schemaFailure("noul answer is missing or outside [0, 1]")
+	}
+	return *answer.Noul, nil
+}
+
+func scoreValue(answer wireAnswer) (float64, error) {
+	if answer.Score == nil || math.IsNaN(*answer.Score) || math.IsInf(*answer.Score, 0) {
+		return 0, schemaFailure("score answer is missing or not finite")
+	}
+	return *answer.Score, nil
+}
+
+func readChoice(q Question, answer wireAnswer, response *Response) error {
+	if _, ok := q.Criteria[answer.Choice]; !ok {
+		return schemaFailure("choice %q is not an option", answer.Choice)
+	}
+	response.Choice = answer.Choice
+	response.Probabilities = answer.Probabilities
+	for option, p := range answer.Probabilities {
+		if _, ok := q.Criteria[option]; !ok || !probability(p) {
+			return schemaFailure("choice probabilities are invalid")
+		}
+	}
+	if q.Positive != "" {
+		p, ok := answer.Probabilities[q.Positive]
+		if !ok {
+			return schemaFailure("choice answer lacks a probability for %q", q.Positive)
+		}
+		response.Probability = p
+	}
+	return nil
 }

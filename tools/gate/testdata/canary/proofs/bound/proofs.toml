@@ -1,0 +1,26 @@
+schema = 1
+
+[scope]
+mode = "whole"
+
+[validator]
+status = "proofs"
+file = "ci.yml"
+ref = "validate_rule_coverage.py"
+
+[[claim]]
+id = "check"
+rules = ["A.rule"]
+control = ["check.py"]
+
+[[claim.enforced_by]]
+point = "ci"
+file = "ci.yml"
+ref = "check.py"
+status = "gate"
+
+[[claim.canary]]
+command = ["python3", "check.py", "{fixture}"]
+passing = "good.txt"
+violating = "bad.txt"
+expect = "A.rule: violation"

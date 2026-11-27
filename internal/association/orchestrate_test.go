@@ -1,3 +1,5 @@
+//go:build boundary
+
 package association
 
 import (
@@ -33,9 +35,12 @@ func write(t *testing.T, dir, rel, content string) {
 
 const body = "package svc\n\nfunc Handle() string {\n\treturn \"one\"\n}\n\nfunc Other() string {\n\treturn \"two\"\n}\n"
 
-// TestRunThreeMerges: merge 1 (a real --no-ff merge) adds a residual file that
-// a stub decision assigns; merge 2 modifies it; merge 3 renames it.
-func TestRunThreeMerges(t *testing.T) {
+type threeMergeRepo struct {
+	dir, base, m1, m2, head string
+}
+
+func newThreeMergeRepo(t *testing.T) threeMergeRepo {
+	t.Helper()
 	dir := t.TempDir()
 	gitIn(t, dir, "init", "-q", "-b", "main")
 	write(t, dir, "README.md", "hi\n")
@@ -61,26 +66,19 @@ func TestRunThreeMerges(t *testing.T) {
 	gitIn(t, dir, "mv", "svc/handler.go", "svc/handlers.go")
 	gitIn(t, dir, "commit", "-q", "-m", "merge 3")
 	head := gitIn(t, dir, "rev-parse", "HEAD")
+	return threeMergeRepo{dir: dir, base: base, m1: m1, m2: m2, head: head}
+}
 
-	repo := Repo{Dir: dir}
-	own := newFixtureOwnership(fxRound{Owners: map[string][]string{"core/known.go": {"A0"}}})
-	var calls []string
-	decide := func(_ context.Context, m Merge, decided []Cluster) ([]Decision, error) {
-		calls = append(calls, m.SHA)
-		out := make([]Decision, len(decided))
-		for i := range out {
-			out[i] = Decision{Owners: []string{"A1"}}
-		}
-		return out, nil
-	}
-
-	res, err := Run(context.Background(), repo, base, head, own, decide)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(res) != 3 || res[0].Merge.SHA != m1 || res[1].Merge.SHA != m2 || res[2].Merge.SHA != head {
+func assertThreeMergeOrder(t *testing.T, fx threeMergeRepo, res []MergeResult) {
+	t.Helper()
+	if len(res) != 3 || res[0].Merge.SHA != fx.m1 || res[1].Merge.SHA != fx.m2 || res[2].Merge.SHA != fx.head {
 		t.Fatalf("merges not first-parent, oldest first: %+v", res)
 	}
+}
+
+func assertThreeMerges(t *testing.T, fx threeMergeRepo, res []MergeResult) {
+	t.Helper()
+	assertThreeMergeOrder(t, fx, res)
 	// merge 1: the markdown file is excluded; svc/handler.go is one decided cluster, assigned by the stub.
 	if len(res[0].Decided) != 1 || !reflect.DeepEqual(res[0].Decided[0].Files, []string{"svc/handler.go"}) || res[0].Counts["excluded:markdown"] != 1 {
 		t.Fatalf("merge 1: %+v", res[0])
@@ -94,6 +92,31 @@ func TestRunThreeMerges(t *testing.T) {
 	if len(res[2].Decided) != 0 || !reflect.DeepEqual(res[2].Inherited, want) {
 		t.Fatalf("merge 3: %+v", res[2])
 	}
+}
+
+// TestRunThreeMerges: merge 1 (a real --no-ff merge) adds a residual file that
+// a stub decision assigns; merge 2 modifies it; merge 3 renames it.
+func TestRunThreeMerges(t *testing.T) {
+	fx := newThreeMergeRepo(t)
+	dir, base, m1, head := fx.dir, fx.base, fx.m1, fx.head
+
+	repo := Repo{Dir: dir}
+	own := newFixtureOwnership(fxRound{Owners: map[string][]string{"core/known.go": {"A0"}}})
+	var calls []string
+	decide := func(_ context.Context, m Merge, decided []Cluster) ([]Decision, error) {
+		calls = append(calls, m.SHA)
+		out := make([]Decision, len(decided))
+		for i := range out {
+			out[i] = Decision{Owners: []string{"A1"}}
+		}
+		return out, nil
+	}
+
+	res, err := Run(context.Background(), RunInput{Repo: repo, Base: base, Head: head, Own: own, Decide: decide})
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertThreeMerges(t, fx, res)
 	if !reflect.DeepEqual(calls, []string{m1}) {
 		t.Fatalf("decider called for %v, want only merge 1", calls)
 	}
@@ -104,7 +127,7 @@ func TestRunThreeMerges(t *testing.T) {
 	write(t, dir, "core/known.go", "package core\n\nvar X = 1\n")
 	gitIn(t, dir, "add", "-A")
 	gitIn(t, dir, "commit", "-q", "-m", "merge 4")
-	res2, err := Run(context.Background(), repo, head, "HEAD", own2, decide)
+	res2, err := Run(context.Background(), RunInput{Repo: repo, Base: head, Head: "HEAD", Own: own2, Decide: decide})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -130,8 +153,8 @@ func TestRunCapAndPendingMove(t *testing.T) {
 	gitIn(t, dir, "add", "-A")
 	gitIn(t, dir, "commit", "-q", "-m", "merge 1")
 
-	own := &fixtureOwnership{owners: map[string][]string{}, heur: map[string]bool{}, pool: map[string]bool{"pool/old.go": true}, sibs: map[SiblingKey][]string{}}
-	res, err := Run(context.Background(), Repo{Dir: dir}, base, "HEAD", own, nil)
+	own := newFixtureOwnership(fxRound{Owners: map[string][]string{}, Pool: []string{"pool/old.go"}})
+	res, err := Run(context.Background(), RunInput{Repo: Repo{Dir: dir}, Base: base, Head: "HEAD", Own: own})
 	if err != nil {
 		t.Fatal(err)
 	}

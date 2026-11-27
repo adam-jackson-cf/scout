@@ -90,33 +90,13 @@ func CapabilityMatrix(ctx context.Context, config Config, root string) (Matrix, 
 		return cells
 	}
 
-	// Row 1: measures, history and security need external tools or git.
-	var missing []string
-	for _, tool := range []string{"lizard", "jscpd", "git"} {
-		if _, err := exec.LookPath(tool); err != nil {
-			missing = append(missing, tool)
-		}
-	}
-	if _, err := os.Stat(filepath.Join(root, ".git")); err != nil {
-		missing = append(missing, "git history (.git)")
-	}
-	row1 := MatrixCell{State: CellAvailable}
-	if len(missing) > 0 {
-		row1 = MatrixCell{State: CellUnavailable, Detail: "missing: " + strings.Join(missing, ", ")}
-	}
+	row1 := matrixToolsCell(root)
 	// Row 2: import graph, guardrails, rubric by priority tier.
 	row2 := map[string]MatrixCell{
 		"Go": {State: CellAvailable, Detail: "P1"}, "Python": {State: CellAvailable, Detail: "P1"}, "TS/JS": {State: CellAvailable, Detail: "P1"},
 		"Rust": {State: CellPlanned, Detail: "P3"}, "Java": {State: CellPlanned, Detail: "P3"}, "C#": {State: CellNotPlanned},
 	}
-	// Row 3: CRAP needs a coverage artifact.
-	row3 := MatrixCell{State: CellWhen, Detail: "no coverage artifact found"}
-	for _, name := range coverageArtifactNames {
-		if info, err := os.Stat(filepath.Join(root, filepath.FromSlash(name))); err == nil && info.Mode().IsRegular() {
-			row3 = MatrixCell{State: CellAvailable, Detail: "artifact " + name}
-			break
-		}
-	}
+	row3 := matrixCoverageCell(root)
 	// Row 4: semantic review needs an opted-in model CLI.
 	row4 := modelReviewCell(config)
 
@@ -127,6 +107,33 @@ func CapabilityMatrix(ctx context.Context, config Config, root string) (Matrix, 
 		{Capability: "Semantic review (contextual)", Cells: all(row4)},
 	}
 	return matrix, nil
+}
+
+// Row 1: measures, history and security need external tools or git.
+func matrixToolsCell(root string) MatrixCell {
+	var missing []string
+	for _, tool := range []string{"lizard", "jscpd", "git"} {
+		if _, err := exec.LookPath(tool); err != nil {
+			missing = append(missing, tool)
+		}
+	}
+	if _, err := os.Stat(filepath.Join(root, ".git")); err != nil {
+		missing = append(missing, "git history (.git)")
+	}
+	if len(missing) > 0 {
+		return MatrixCell{State: CellUnavailable, Detail: "missing: " + strings.Join(missing, ", ")}
+	}
+	return MatrixCell{State: CellAvailable}
+}
+
+// Row 3: CRAP needs a coverage artifact.
+func matrixCoverageCell(root string) MatrixCell {
+	for _, name := range coverageArtifactNames {
+		if info, err := os.Stat(filepath.Join(root, filepath.FromSlash(name))); err == nil && info.Mode().IsRegular() {
+			return MatrixCell{State: CellAvailable, Detail: "artifact " + name}
+		}
+	}
+	return MatrixCell{State: CellWhen, Detail: "no coverage artifact found"}
 }
 
 // skippedDetail turns a "skipped (reason)" lane reason into its reason.

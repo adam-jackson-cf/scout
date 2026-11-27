@@ -1,9 +1,12 @@
+//go:build boundary
+
 package shadow
 
 import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -21,7 +24,7 @@ type p24Provider struct {
 	url    string
 }
 
-func (p p24Provider) get(ctx context.Context, path string, dst any) error {
+func (p p24Provider) get(ctx context.Context, path string, dst any) (err error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, p.url+path, nil)
 	if err != nil {
 		return err
@@ -30,7 +33,7 @@ func (p p24Provider) get(ctx context.Context, path string, dst any) error {
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer func() { err = errors.Join(err, res.Body.Close()) }()
 	if res.StatusCode != http.StatusOK {
 		return fmt.Errorf("provider HTTP %d", res.StatusCode)
 	}
@@ -95,24 +98,6 @@ func p24Snapshot(t *testing.T) map[string]any {
 	p24Decode(t, `{"RepositoryID":"repo","ProviderTime":"2026-11-01T12:00:00Z","Complete":true,"EventCompleteThrough":"2026-11-01T12:00:00Z","AttemptCompleteThrough":"2026-11-01T12:00:00Z","PagesComplete":true,"Selector":"guardian-trigger-v1/collector-v1","Trigger":{"Events":["pull_request"],"BaseBranch":"main","Paths":["**/*.go"]},"Events":[{"ID":"E1","RepositoryID":"repo","Scope":"ci","PRNumber":"17","HeadCommit":"H1","EventAt":"2026-11-01T10:00:00Z","Selector":"guardian-trigger-v1/collector-v1","ProviderProof":"event-ledger-page-1","BaseBranch":"main","BaseReachable":true,"Author":"dependabot[bot]","Fork":true,"State":"open","DeadlineAt":"2026-11-01T11:00:00Z"}],"Attempts":[{"Fact":{"ID":{"RepositoryID":"repo","RunID":"1000","JobID":"2000","Attempt":"1"},"Scope":"ci","PRNumber":"17","HeadCommit":"H1","HeadTree":"tree-H1","BaseCommit":"B","MergeBase":"MB","AssessedRevision":"merge-H1","CheckID":"security:test","RuleVersion":"v1","CreatedAt":"2026-11-01T10:01:00Z","StartedAt":"2026-11-01T10:02:00Z","FinishedAt":"2026-11-01T10:03:00Z","Status":"assessed","Comparison":"comparable","Inspection":"inspected","Pins":{"Scout":"scout","Tools":"tools","Catalogue":"catalogue","Policy":"policy","Recipe":"guardian"}},"AccountedEventIDs":["E1"],"Terminal":true,"DeadlineAt":"2026-11-01T11:00:00Z","Lane":"guardian","ConcurrencyGroup":"guardian-pr-17","PinnedConfigDigest":"config","ExecutedConfigDigest":"config","CancelInProgress":true,"ConfigurationVerified":true}],"EnumerationProof":"complete-event-and-attempt-ledger-not-run-list","TimeProof":"provider-job-clock-ms","LagJustification":"fixture-consistency-contract-v1"}`, &v)
 	return v
 }
-func p24Points(t *testing.T, b domain.ShadowBatch, want ...string) {
-	t.Helper()
-	for _, raw := range want {
-		at, err := time.Parse(time.RFC3339Nano, raw)
-		if err != nil {
-			t.Fatal(err)
-		}
-		found := false
-		for _, point := range b.Ledger.GapPoints {
-			if point.At.Equal(at) {
-				found = true
-			}
-		}
-		if !found {
-			t.Errorf("missing independent obligation point %s: %+v", raw, b.Ledger.GapPoints)
-		}
-	}
-}
 
 // S3 control-plane composition only. Real executable/configuration/symlink and
 // credential isolation belongs to P23/S6, not to this HTTP fixture.
@@ -127,81 +112,93 @@ func TestADR012UntrustedPayloadCannotAuthorizePublication(t *testing.T) {
 		{"stamps_frontier", map[string]any{"RecordedAt": "2099-01-01T00:00:00Z", "Frontiers": []any{map[string]any{"CompleteThrough": "2099-01-01T00:00:00Z"}}}},
 		{"paths_executables", map[string]any{"../../scout": "#!/bin/sh evil", "Files": map[string]any{"policy.yaml": "forged", "scout": "evil"}}},
 	} {
-		t.Run(tc.name, func(t *testing.T) {
-			s := p24Snapshot(t)
-			a := s["Attempts"].([]any)[0].(map[string]any)
-			a["ScannerOutput"] = tc.forged
-			b, err := p24Collect(t, s)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if len(b.Ledger.Facts) != 1 {
-				t.Fatalf("lost bounded own attempt: %+v", b)
-			}
-			f := b.Ledger.Facts[0]
-			if f.ID.RepositoryID != "repo" || f.ID.RunID != "1000" || f.ID.JobID != "2000" || f.ID.Attempt != "1" || f.Pins.Recipe != "guardian" || f.Pins.Scout != "scout" || f.RecordedAt != nil {
-				t.Fatalf("scanner acquired provenance authority: %+v", f)
-			}
-			if len(b.Ledger.Frontiers) != 0 || len(b.Ledger.Triage) != 0 || len(b.AuthorizedTriage) != 0 {
-				t.Fatalf("scanner acquired publication authority: %+v", b)
-			}
-		})
+		t.Run(tc.name, func(t *testing.T) { p24CheckForgedScannerOutput(t, tc.forged) })
 	}
-	t.Run("raw_triage_in_batch_not_authorized", func(t *testing.T) {
-		var auth PublicationAuthorization
-		p24Decode(t, `{"RepositoryID":"repo","ParentCommit":"parent","PublishingJobStartedAt":"2026-11-01T12:00:00Z","CurrentProtectedTip":"protected","Authenticated":true,"SourceReachable":true}`, &auth)
-		b := domain.ShadowBatch{Ledger: domain.ShadowLedger{Triage: []domain.ShadowTriage{{ActionID: "repo:999", EventID: "event", RepositoryID: "repo", Scope: domain.ShadowScopeCI, Actor: "alice", PolicyRevision: "protected", Verdict: domain.TriageWarranted}}}}
-		p, err := PreparePublication(domain.ShadowLedger{}, b, auth)
-		if err == nil && len(p.Triage) != 0 {
-			t.Fatalf("scanner supplied raw authorization accepted: %+v", p)
+	t.Run("raw_triage_in_batch_not_authorized", p24RawTriageInBatchIsNotAuthorized)
+	t.Run("own_status_and_events_residual_risk", p24OwnStatusAndEventsAreLinked)
+	t.Run("readiness_append_preserves_baseline_content", p24ReadinessAppendPreservesBaselineContent)
+}
+
+func p24CheckForgedScannerOutput(t *testing.T, forged map[string]any) {
+	s := p24Snapshot(t)
+	a := s["Attempts"].([]any)[0].(map[string]any)
+	a["ScannerOutput"] = forged
+	b, err := p24Collect(t, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(b.Ledger.Facts) != 1 {
+		t.Fatalf("lost bounded own attempt: %+v", b)
+	}
+	p24AssertNoScannerProvenance(t, b.Ledger.Facts[0])
+	if len(b.Ledger.Frontiers) != 0 || len(b.Ledger.Triage) != 0 || len(b.AuthorizedTriage) != 0 {
+		t.Fatalf("scanner acquired publication authority: %+v", b)
+	}
+}
+
+func p24AssertNoScannerProvenance(t *testing.T, f domain.PRRunFact) {
+	t.Helper()
+	if f.ID.RepositoryID != "repo" || f.ID.RunID != "1000" || f.ID.JobID != "2000" || f.ID.Attempt != "1" || f.Pins.Recipe != "guardian" || f.Pins.Scout != "scout" || f.RecordedAt != nil {
+		t.Fatalf("scanner acquired provenance authority: %+v", f)
+	}
+}
+
+func p24RawTriageInBatchIsNotAuthorized(t *testing.T) {
+	var auth PublicationAuthorization
+	p24Decode(t, `{"RepositoryID":"repo","ParentCommit":"parent","PublishingJobStartedAt":"2026-11-01T12:00:00Z","CurrentProtectedTip":"protected","Authenticated":true,"SourceReachable":true}`, &auth)
+	b := domain.ShadowBatch{Ledger: domain.ShadowLedger{Triage: []domain.ShadowTriage{{ActionID: "repo:999", EventID: "event", RepositoryID: "repo", Scope: domain.ShadowScopeCI, Actor: "alice", PolicyRevision: "protected", Verdict: domain.TriageWarranted}}}}
+	p, err := PreparePublication(domain.ShadowLedger{}, b, auth)
+	if err == nil && len(p.Triage) != 0 {
+		t.Fatalf("scanner supplied raw authorization accepted: %+v", p)
+	}
+}
+
+func p24OwnStatusAndEventsAreLinked(t *testing.T) {
+	s := p24Snapshot(t)
+	a := s["Attempts"].([]any)[0].(map[string]any)
+	a["ScannerOutput"] = map[string]any{"Status": "assessed", "Events": []any{map[string]any{"IssueID": "scanner-claim", "CheckID": "security:test", "RuleVersion": "v1"}}}
+	b, err := p24Collect(t, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(b.Ledger.Events) != 1 || len(b.Ledger.Links) != 1 || b.Ledger.Links[0].AttemptID != b.Ledger.Facts[0].ID {
+		t.Fatalf("own bounded measurement claims not linked: %+v", b.Ledger)
+	}
+}
+
+func p24ReadinessAppendPreservesBaselineContent(t *testing.T) {
+	s := p24Snapshot(t)
+	batch, err := p24Collect(t, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var auth PublicationAuthorization
+	p24Decode(t, `{"RepositoryID":"repo","ParentCommit":"parent","PublishingJobStartedAt":"2026-11-01T12:00:00Z","CurrentProtectedTip":"protected","Authenticated":true,"SourceReachable":true}`, &auth)
+	pub, err := PreparePublication(domain.ShadowLedger{}, batch, auth)
+	if err != nil {
+		t.Fatal(err)
+	}
+	baseline := map[string][]byte{
+		state.ExportIssues:          []byte("{\"issueId\":\"baseline\",\"title\":\"keep\"}\n"),
+		state.ExportDispositions:    []byte("{\"issueId\":\"baseline\",\"state\":\"open\"}\n"),
+		state.ExportWouldBlock:      []byte("{\"legacy\":\"byte-preserved\"}\n"),
+		state.ExportCoverageSummary: []byte("{\"baseline\":\"coverage\"}\n"),
+	}
+	before := map[string][]byte{}
+	for k, v := range baseline {
+		before[k] = append([]byte(nil), v...)
+	}
+	ledger := domain.ShadowLedger{Publications: []domain.ShadowPublication{pub}, Facts: pub.Facts, Events: pub.Events, Links: pub.Links, Triage: pub.Triage, Frontiers: pub.Frontiers, GapPoints: pub.GapPoints, Intervals: pub.Intervals}
+	addition, err := state.EncodeShadow(ledger, pub.Inputs)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for k, v := range addition {
+		baseline[k] = v
+	}
+	for k, v := range before {
+		if !bytes.Equal(baseline[k], v) {
+			t.Fatalf("readiness-only append mutated %s", k)
 		}
-	})
-	t.Run("own_status_and_events_residual_risk", func(t *testing.T) {
-		s := p24Snapshot(t)
-		a := s["Attempts"].([]any)[0].(map[string]any)
-		a["ScannerOutput"] = map[string]any{"Status": "assessed", "Events": []any{map[string]any{"IssueID": "scanner-claim", "CheckID": "security:test", "RuleVersion": "v1"}}}
-		b, err := p24Collect(t, s)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if len(b.Ledger.Events) != 1 || len(b.Ledger.Links) != 1 || b.Ledger.Links[0].AttemptID != b.Ledger.Facts[0].ID {
-			t.Fatalf("own bounded measurement claims not linked: %+v", b.Ledger)
-		}
-	})
-	t.Run("readiness_append_preserves_baseline_content", func(t *testing.T) {
-		s := p24Snapshot(t)
-		batch, err := p24Collect(t, s)
-		if err != nil {
-			t.Fatal(err)
-		}
-		var auth PublicationAuthorization
-		p24Decode(t, `{"RepositoryID":"repo","ParentCommit":"parent","PublishingJobStartedAt":"2026-11-01T12:00:00Z","CurrentProtectedTip":"protected","Authenticated":true,"SourceReachable":true}`, &auth)
-		pub, err := PreparePublication(domain.ShadowLedger{}, batch, auth)
-		if err != nil {
-			t.Fatal(err)
-		}
-		baseline := map[string][]byte{
-			state.ExportIssues:          []byte("{\"issueId\":\"baseline\",\"title\":\"keep\"}\n"),
-			state.ExportDispositions:    []byte("{\"issueId\":\"baseline\",\"state\":\"open\"}\n"),
-			state.ExportWouldBlock:      []byte("{\"legacy\":\"byte-preserved\"}\n"),
-			state.ExportCoverageSummary: []byte("{\"baseline\":\"coverage\"}\n"),
-		}
-		before := map[string][]byte{}
-		for k, v := range baseline {
-			before[k] = append([]byte(nil), v...)
-		}
-		ledger := domain.ShadowLedger{Publications: []domain.ShadowPublication{pub}, Facts: pub.Facts, Events: pub.Events, Links: pub.Links, Triage: pub.Triage, Frontiers: pub.Frontiers, GapPoints: pub.GapPoints, Intervals: pub.Intervals}
-		addition, err := state.EncodeShadow(ledger, pub.Inputs)
-		if err != nil {
-			t.Fatal(err)
-		}
-		for k, v := range addition {
-			baseline[k] = v
-		}
-		for k, v := range before {
-			if !bytes.Equal(baseline[k], v) {
-				t.Fatalf("readiness-only append mutated %s", k)
-			}
-		}
-	})
+	}
 }

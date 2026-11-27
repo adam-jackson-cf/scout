@@ -70,37 +70,14 @@ func insertSignals(ctx context.Context, tx *sql.Tx, signals []domain.Signal) err
 // ListSignals returns signals in deterministic order: metric, scope kind,
 // scope anchor, snapshot, window, tool digest, config digest.
 func (s *Store) ListSignals(ctx context.Context, filter SignalFilter) ([]domain.Signal, error) {
-	type row struct {
-		seq    int64
-		signal domain.Signal
-	}
-	var rows []row
+	var rows []seqSignal
 	err := s.withRead(ctx, func(db *sql.DB) error {
-		query := `SELECT seq, payload FROM signals WHERE 1=1`
-		var args []any
-		add := func(column, value string) {
-			if value != "" {
-				query += ` AND ` + column + ` = ?`
-				args = append(args, value)
-			}
-		}
-		metric := filter.MetricID
-		if metric != "" && !containsVersion(metric) {
-			query += ` AND metric LIKE ? ESCAPE '\'`
-			args = append(args, escapeLike(metric)+"@%")
-		} else {
-			add("metric", metric)
-		}
-		add("scope_kind", filter.ScopeKind)
-		add("scope_anchor", filter.ScopeAnchor)
-		add("snapshot", filter.Snapshot)
-		add("window", filter.Window)
+		query, args := signalQuery(filter)
 		result, err := db.QueryContext(ctx, query, args...)
 		if err != nil {
 			return fmt.Errorf("query signals: %w", err)
 		}
-		defer result.Close()
-		for result.Next() {
+		return scanRows(result, func(result *sql.Rows) error {
 			var seq int64
 			var payload []byte
 			if err := result.Scan(&seq, &payload); err != nil {
@@ -110,30 +87,15 @@ func (s *Store) ListSignals(ctx context.Context, filter SignalFilter) ([]domain.
 			if err := json.Unmarshal(payload, &signal); err != nil {
 				return fmt.Errorf("decode signal: %w", err)
 			}
-			rows = append(rows, row{seq, signal})
-		}
-		return result.Err()
+			rows = append(rows, seqSignal{seq, signal})
+			return nil
+		})
 	})
 	if err != nil {
 		return nil, err
 	}
 	if filter.Latest {
-		newest := map[string]int64{}
-		key := func(signal domain.Signal) string {
-			return signal.ID() + "\x00" + signal.ScopeKind + "\x00" + signal.ScopeAnchor + "\x00" + signal.Window
-		}
-		for _, r := range rows {
-			if r.seq > newest[key(r.signal)] {
-				newest[key(r.signal)] = r.seq
-			}
-		}
-		kept := rows[:0]
-		for _, r := range rows {
-			if r.seq == newest[key(r.signal)] {
-				kept = append(kept, r)
-			}
-		}
-		rows = kept
+		rows = latestSignals(rows)
 	}
 	signals := make([]domain.Signal, len(rows))
 	for i, r := range rows {
@@ -141,6 +103,53 @@ func (s *Store) ListSignals(ctx context.Context, filter SignalFilter) ([]domain.
 	}
 	SortSignals(signals)
 	return signals, nil
+}
+
+type seqSignal struct {
+	seq    int64
+	signal domain.Signal
+}
+
+func signalQuery(filter SignalFilter) (string, []any) {
+	query := `SELECT seq, payload FROM signals WHERE 1=1`
+	var args []any
+	add := func(column, value string) {
+		if value != "" {
+			query += ` AND ` + column + ` = ?`
+			args = append(args, value)
+		}
+	}
+	metric := filter.MetricID
+	if metric != "" && !containsVersion(metric) {
+		query += ` AND metric LIKE ? ESCAPE '\'`
+		args = append(args, escapeLike(metric)+"@%")
+	} else {
+		add("metric", metric)
+	}
+	add("scope_kind", filter.ScopeKind)
+	add("scope_anchor", filter.ScopeAnchor)
+	add("snapshot", filter.Snapshot)
+	add("window", filter.Window)
+	return query, args
+}
+
+func latestSignals(rows []seqSignal) []seqSignal {
+	newest := map[string]int64{}
+	key := func(signal domain.Signal) string {
+		return signal.ID() + "\x00" + signal.ScopeKind + "\x00" + signal.ScopeAnchor + "\x00" + signal.Window
+	}
+	for _, r := range rows {
+		if r.seq > newest[key(r.signal)] {
+			newest[key(r.signal)] = r.seq
+		}
+	}
+	kept := rows[:0]
+	for _, r := range rows {
+		if r.seq == newest[key(r.signal)] {
+			kept = append(kept, r)
+		}
+	}
+	return kept
 }
 
 // SortSignals orders signals by identity (the export order).

@@ -41,7 +41,7 @@ func TestTypeScriptPathsBaseUrlAndTypeOnlySeparated(t *testing.T) {
 	if len(g.Unresolved) != 0 || g.External != 1 {
 		t.Fatalf("unresolved=%v external=%d", g.Unresolved, g.External)
 	}
-	res := CycleMass(g, nil)
+	res := cycleMass(g, nil)
 	// The SCC {main, button, core} holds 4 runtime edges (main<->core, main->button->core);
 	// theme -> button is outside it, and the type-only button -> theme edge is not counted.
 	if res.CycleEdges != 4 || res.InternalEdges != 5 || res.TypeOnly != 1 {

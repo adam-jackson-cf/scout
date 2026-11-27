@@ -29,24 +29,52 @@ func (p *lenient) skipSpace() {
 		case c == ' ' || c == '\t' || c == '\n' || c == '\r':
 			p.i++
 		case strings.HasPrefix(p.s[p.i:], "//"):
-			for p.i < len(p.s) && p.s[p.i] != '\n' {
-				p.i++
-			}
+			p.skipLineComment()
 		case strings.HasPrefix(p.s[p.i:], "/*"):
-			end := strings.Index(p.s[p.i+2:], "*/")
-			if end < 0 {
-				p.i = len(p.s)
-			} else {
-				p.i += end + 4
-			}
+			p.skipBlockComment()
 		default:
 			return
 		}
 	}
 }
 
+func (p *lenient) skipLineComment() {
+	for p.i < len(p.s) && p.s[p.i] != '\n' {
+		p.i++
+	}
+}
+
+func (p *lenient) skipBlockComment() {
+	end := strings.Index(p.s[p.i+2:], "*/")
+	if end < 0 {
+		p.i = len(p.s)
+	} else {
+		p.i += end + 4
+	}
+}
+
 func isIdent(c byte) bool {
-	return c == '_' || c == '$' || c == '-' || c == '+' || c == '.' || c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
+	return isIdentPunct(c) || isAlnum(c)
+}
+
+func isIdentPunct(c byte) bool {
+	return c == '_' || c == '$' || c == '-' || c == '+' || c == '.'
+}
+
+func isAlnum(c byte) bool {
+	return c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z'
+}
+
+func isQuote(c byte) bool {
+	return c == '"' || c == '\'' || c == '`'
+}
+
+func isOpenBracket(c byte) bool {
+	return c == '(' || c == '[' || c == '{'
+}
+
+func isCloseBracket(c byte) bool {
+	return c == ')' || c == ']' || c == '}'
 }
 
 func (p *lenient) str() string {
@@ -95,15 +123,15 @@ func (p *lenient) skipOpaque() {
 	for p.i < len(p.s) {
 		c := p.s[p.i]
 		switch {
-		case c == '"' || c == '\'' || c == '`':
+		case isQuote(c):
 			p.str()
 			continue
-		case strings.HasPrefix(p.s[p.i:], "//") || strings.HasPrefix(p.s[p.i:], "/*"):
+		case p.atComment():
 			p.skipSpace()
 			continue
-		case c == '(' || c == '[' || c == '{':
+		case isOpenBracket(c):
 			depth++
-		case c == ')' || c == ']' || c == '}':
+		case isCloseBracket(c):
 			if depth == 0 {
 				return
 			}
@@ -113,6 +141,10 @@ func (p *lenient) skipOpaque() {
 		}
 		p.i++
 	}
+}
+
+func (p *lenient) atComment() bool {
+	return strings.HasPrefix(p.s[p.i:], "//") || strings.HasPrefix(p.s[p.i:], "/*")
 }
 
 func (p *lenient) value() any {
@@ -126,35 +158,43 @@ func (p *lenient) value() any {
 		return p.object()
 	case c == '[':
 		return p.array()
-	case c == '"' || c == '\'' || c == '`':
+	case isQuote(c):
 		return p.str()
 	case isIdent(c):
-		start := p.i
-		for p.i < len(p.s) && isIdent(p.s[p.i]) {
-			p.i++
-		}
-		tok := p.s[start:p.i]
-		p.skipSpace()
-		if p.i < len(p.s) && !strings.ContainsRune(",]}", rune(p.s[p.i])) && p.s[p.i] != '\n' {
-			p.skipOpaque()
-			return opaque{}
-		}
-		switch tok {
-		case "true":
-			return true
-		case "false":
-			return false
-		case "null":
-			return nil
-		}
-		if f, err := strconv.ParseFloat(strings.ReplaceAll(tok, "_", ""), 64); err == nil {
-			return f
-		}
-		return opaque{}
+		return p.identValue()
 	default:
 		p.skipOpaque()
 		return opaque{}
 	}
+}
+
+func (p *lenient) identToken() string {
+	start := p.i
+	for p.i < len(p.s) && isIdent(p.s[p.i]) {
+		p.i++
+	}
+	return p.s[start:p.i]
+}
+
+func (p *lenient) identValue() any {
+	tok := p.identToken()
+	p.skipSpace()
+	if p.i < len(p.s) && !strings.ContainsRune(",]}", rune(p.s[p.i])) && p.s[p.i] != '\n' {
+		p.skipOpaque()
+		return opaque{}
+	}
+	switch tok {
+	case "true":
+		return true
+	case "false":
+		return false
+	case "null":
+		return nil
+	}
+	if f, err := strconv.ParseFloat(strings.ReplaceAll(tok, "_", ""), 64); err == nil {
+		return f
+	}
+	return opaque{}
 }
 
 func (p *lenient) array() []any {
@@ -208,22 +248,13 @@ func (p *lenient) object() map[string]any {
 			out["..."] = opaque{}
 			continue
 		}
-		var key string
-		switch c := p.s[p.i]; {
-		case c == '"' || c == '\'' || c == '`':
-			key = p.str()
-		case isIdent(c):
-			start := p.i
-			for p.i < len(p.s) && isIdent(p.s[p.i]) {
-				p.i++
-			}
-			key = p.s[start:p.i]
-		default:
+		key, ok := p.objectKey()
+		if !ok {
 			p.fail()
 			return out
 		}
 		p.skipSpace()
-		if p.i >= len(p.s) || (p.s[p.i] != ':' && p.s[p.i] != '=') {
+		if !p.atAssign() {
 			// shorthand property or method: opaque
 			p.skipOpaque()
 			out[key] = opaque{}
@@ -235,6 +266,20 @@ func (p *lenient) object() map[string]any {
 			return out
 		}
 	}
+}
+
+func (p *lenient) objectKey() (string, bool) {
+	switch c := p.s[p.i]; {
+	case isQuote(c):
+		return p.str(), true
+	case isIdent(c):
+		return p.identToken(), true
+	}
+	return "", false
+}
+
+func (p *lenient) atAssign() bool {
+	return p.i < len(p.s) && (p.s[p.i] == ':' || p.s[p.i] == '=')
 }
 
 // parseLenient parses the first JSON/JS value in src (comments, trailing
@@ -428,12 +473,8 @@ func parseTOML(src []byte) (map[string]any, error) {
 		if line == "" {
 			continue
 		}
-		if strings.HasPrefix(line, "[[") && strings.HasSuffix(line, "]]") {
-			cur = tomlTable(root, tomlKeyPath(line[2:len(line)-2]), true)
-			continue
-		}
-		if strings.HasPrefix(line, "[") && strings.HasSuffix(line, "]") {
-			cur = tomlTable(root, tomlKeyPath(line[1:len(line)-1]), false)
+		if tbl, ok := tomlHeader(root, line); ok {
+			cur = tbl
 			continue
 		}
 		eq := topLevelIndex(line, '=')
@@ -442,31 +483,54 @@ func parseTOML(src []byte) (map[string]any, error) {
 		}
 		key := line[:eq]
 		val := strings.TrimSpace(line[eq+1:])
-		if strings.HasPrefix(val, `"""`) || strings.HasPrefix(val, `'''`) {
-			delim := val[:3]
-			text := val[3:]
-			for !strings.Contains(text, delim) && i+1 < len(lines) {
-				i++
-				text += "\n" + lines[i]
-			}
-			if end := strings.Index(text, delim); end >= 0 {
-				text = text[:end]
-			}
-			setTOML(cur, tomlKeyPath(key), text)
-			continue
+		v, last, err := tomlValue(lines, i, val)
+		if err != nil {
+			return nil, err
 		}
-		for bracketDepth(val) > 0 && i+1 < len(lines) {
-			i++
-			val += "\n" + stripTOMLComment(lines[i])
-		}
-		p := &lenient{s: val}
-		v := p.value()
-		if p.err != nil {
-			return nil, p.err
-		}
+		i = last
 		setTOML(cur, tomlKeyPath(key), v)
 	}
 	return root, nil
+}
+
+func tomlHeader(root map[string]any, line string) (map[string]any, bool) {
+	if strings.HasPrefix(line, "[[") && strings.HasSuffix(line, "]]") {
+		return tomlTable(root, tomlKeyPath(line[2:len(line)-2]), true), true
+	}
+	if strings.HasPrefix(line, "[") && strings.HasSuffix(line, "]") {
+		return tomlTable(root, tomlKeyPath(line[1:len(line)-1]), false), true
+	}
+	return nil, false
+}
+
+func tomlValue(lines []string, i int, val string) (any, int, error) {
+	if strings.HasPrefix(val, `"""`) || strings.HasPrefix(val, `'''`) {
+		text, last := tomlMultilineString(lines, i, val)
+		return text, last, nil
+	}
+	for bracketDepth(val) > 0 && i+1 < len(lines) {
+		i++
+		val += "\n" + stripTOMLComment(lines[i])
+	}
+	p := &lenient{s: val}
+	v := p.value()
+	if p.err != nil {
+		return nil, i, p.err
+	}
+	return v, i, nil
+}
+
+func tomlMultilineString(lines []string, i int, val string) (string, int) {
+	delim := val[:3]
+	text := val[3:]
+	for !strings.Contains(text, delim) && i+1 < len(lines) {
+		i++
+		text += "\n" + lines[i]
+	}
+	if end := strings.Index(text, delim); end >= 0 {
+		text = text[:end]
+	}
+	return text, i
 }
 
 func setTOML(tbl map[string]any, path []string, v any) {
@@ -491,16 +555,11 @@ func parseINI(src []byte) map[string]map[string]string {
 	lastKey := ""
 	for _, raw := range strings.Split(strings.ReplaceAll(string(src), "\r\n", "\n"), "\n") {
 		trim := strings.TrimSpace(raw)
-		if trim == "" || strings.HasPrefix(trim, "#") || strings.HasPrefix(trim, ";") {
+		if isINIBlankOrComment(trim) {
 			continue
 		}
-		if strings.HasPrefix(trim, "[") && strings.HasSuffix(trim, "]") {
-			name := strings.TrimSpace(trim[1 : len(trim)-1])
-			sect = out[name]
-			if sect == nil {
-				sect = map[string]string{}
-				out[name] = sect
-			}
+		if name, ok := iniSectionName(trim); ok {
+			sect = iniSection(out, name)
 			lastKey = ""
 			continue
 		}
@@ -519,6 +578,26 @@ func parseINI(src []byte) map[string]map[string]string {
 		sect[lastKey] = strings.TrimSpace(trim[idx+1:])
 	}
 	return out
+}
+
+func isINIBlankOrComment(trim string) bool {
+	return trim == "" || strings.HasPrefix(trim, "#") || strings.HasPrefix(trim, ";")
+}
+
+func iniSectionName(trim string) (string, bool) {
+	if strings.HasPrefix(trim, "[") && strings.HasSuffix(trim, "]") {
+		return strings.TrimSpace(trim[1 : len(trim)-1]), true
+	}
+	return "", false
+}
+
+func iniSection(out map[string]map[string]string, name string) map[string]string {
+	sect := out[name]
+	if sect == nil {
+		sect = map[string]string{}
+		out[name] = sect
+	}
+	return sect
 }
 
 // iniList splits an INI list value on commas, whitespace and newlines.

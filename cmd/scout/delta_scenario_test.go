@@ -1,3 +1,5 @@
+//go:build boundary
+
 package main
 
 import (
@@ -20,12 +22,51 @@ func pyBranchy(name string, branches int) string {
 
 // REQ-180: a PR raising a function CC 9 → 14 yields one descriptive,
 // report-only delta issue and leaves the guardian-profile exit code unchanged.
-func TestDiffDeltaIsReportOnlyUnderGuardianProfile(t *testing.T) {
-	for _, tool := range []string{"ruff", "gitleaks", "semgrep", "lizard", "jscpd"} {
+func requireTools(t *testing.T, tools ...string) {
+	t.Helper()
+	for _, tool := range tools {
 		if _, err := exec.LookPath(tool); err != nil {
-			t.Skipf("%s is not installed (source .tools/activate)", tool)
+			t.Fatalf("%s is not installed (source .tools/activate)", tool)
 		}
 	}
+}
+
+func assertSingleDeltaIssue(t *testing.T, report map[string]any) map[string]any {
+	t.Helper()
+	issues := deltaIssues(t, report)
+	if len(issues) != 1 {
+		t.Fatalf("want one delta issue, got %v", report["issues"])
+	}
+	issue := issues[0].(map[string]any)
+	if issue["claim"] != "descriptive" || issue["checkId"] != "delta.cc-threshold@1" || issue["attribution"] != "introduced" || issue["path"] != "pkg/wide.py" ||
+		issue["blocking"] != false || issue["wouldBlock"] != false || issue["checkStatus"] != "not_eligible" {
+		t.Fatalf("delta issue = %v", issue)
+	}
+	if blocking, _ := report["would_block"].([]any); len(blocking) != 0 {
+		t.Fatalf("delta reached would_block: %v", blocking)
+	}
+	return issue
+}
+
+func assertDeltaRerunMatches(t *testing.T, root, base string, issue map[string]any) {
+	t.Helper()
+	// The ledger holds one claim-bearing issue, and a re-run on the same PR matches it.
+	ledger := ledgerDeltaIssues(t, root)
+	if len(ledger) != 1 || ledger[0]["claim"] != "descriptive" || ledger[0]["rule"] != "delta.cc-threshold@1" {
+		t.Fatalf("ledger delta issues = %v", ledger)
+	}
+	code, report := runDiffJSON(t, root, "--base", base)
+	again := deltaIssues(t, report)
+	if code != 0 || len(again) != 1 || again[0].(map[string]any)["issueId"] != issue["issueId"] {
+		t.Fatalf("re-run: exit %d issues %v, want the same issue %v", code, again, issue["issueId"])
+	}
+	if after := ledgerDeltaIssues(t, root); len(after) != 1 || after[0]["issueId"] != ledger[0]["issueId"] {
+		t.Fatalf("re-run changed the ledger: %v", after)
+	}
+}
+
+func TestDiffDeltaIsReportOnlyUnderGuardianProfile(t *testing.T) {
+	requireTools(t, "ruff", "gitleaks", "semgrep", "lizard", "jscpd")
 	t.Setenv("SCOUT_CLAWPATCH_BINARY", pinnedClawpatch(t))
 	root := t.TempDir()
 	gitIn(t, root, "init", "-q", "-b", "main")
@@ -48,32 +89,8 @@ func TestDiffDeltaIsReportOnlyUnderGuardianProfile(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("delta changed the exit code: %d", code)
 	}
-	issues := deltaIssues(t, report)
-	if len(issues) != 1 {
-		t.Fatalf("want one delta issue, got %v", report["issues"])
-	}
-	issue := issues[0].(map[string]any)
-	if issue["claim"] != "descriptive" || issue["checkId"] != "delta.cc-threshold@1" || issue["attribution"] != "introduced" || issue["path"] != "pkg/wide.py" ||
-		issue["blocking"] != false || issue["wouldBlock"] != false || issue["checkStatus"] != "not_eligible" {
-		t.Fatalf("delta issue = %v", issue)
-	}
-	if blocking, _ := report["would_block"].([]any); len(blocking) != 0 {
-		t.Fatalf("delta reached would_block: %v", blocking)
-	}
-
-	// The ledger holds one claim-bearing issue, and a re-run on the same PR matches it.
-	ledger := ledgerDeltaIssues(t, root)
-	if len(ledger) != 1 || ledger[0]["claim"] != "descriptive" || ledger[0]["rule"] != "delta.cc-threshold@1" {
-		t.Fatalf("ledger delta issues = %v", ledger)
-	}
-	code, report = runDiffJSON(t, root, "--base", base)
-	again := deltaIssues(t, report)
-	if code != 0 || len(again) != 1 || again[0].(map[string]any)["issueId"] != issue["issueId"] {
-		t.Fatalf("re-run: exit %d issues %v, want the same issue %v", code, again, issue["issueId"])
-	}
-	if after := ledgerDeltaIssues(t, root); len(after) != 1 || after[0]["issueId"] != ledger[0]["issueId"] {
-		t.Fatalf("re-run changed the ledger: %v", after)
-	}
+	issue := assertSingleDeltaIssue(t, report)
+	assertDeltaRerunMatches(t, root, base, issue)
 }
 
 // deltaIssues returns the claim-bearing issues of a diff report.

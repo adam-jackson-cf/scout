@@ -165,26 +165,55 @@ func (c *Client) Review(ctx context.Context, featureIDs []string) (ReviewResult,
 	if len(ids) == 0 {
 		return ReviewResult{Status: domain.AdapterNoApplicableInput}, nil
 	}
-	provider, err := c.resolveProvider()
-	if errors.Is(err, modelcli.ErrNoCLI) {
-		return skippedReviewResult(ids), nil
-	}
-	if err != nil {
-		return blockedReviewResult(ids, err.Error()), nil
-	}
-	if !c.egressAuthorized {
-		return blockedReviewResult(ids, "Clawpatch review provider egress is not authorized"), nil
-	}
-	providerArgs, reviewEnv := modelInvocation(provider)
-	if err := c.Init(ctx); err != nil {
-		return blockedReviewResult(ids, err.Error()), err
-	}
-	if err := c.verifyReviewSafetyPatch(); err != nil {
-		return blockedReviewResult(ids, err.Error()), nil
+	invocation, stop, err := c.prepareReview(ctx, ids)
+	if stop != nil {
+		return *stop, err
 	}
 
 	c.mu.Lock()
 	defer c.mu.Unlock()
+	return c.reviewFeaturesLocked(ctx, ids, invocation)
+}
+
+type reviewInvocation struct {
+	providerArgs []string
+	env          []string
+}
+
+type featureReview struct {
+	coverage     domain.Coverage
+	manifest     ReviewManifest
+	observations []domain.Observation
+	partial      bool
+}
+
+func (c *Client) prepareReview(ctx context.Context, ids []string) (reviewInvocation, *ReviewResult, error) {
+	provider, err := c.resolveProvider()
+	if errors.Is(err, modelcli.ErrNoCLI) {
+		skipped := skippedReviewResult(ids)
+		return reviewInvocation{}, &skipped, nil
+	}
+	if err != nil {
+		blocked := blockedReviewResult(ids, err.Error())
+		return reviewInvocation{}, &blocked, nil
+	}
+	if !c.egressAuthorized {
+		blocked := blockedReviewResult(ids, "Clawpatch review provider egress is not authorized")
+		return reviewInvocation{}, &blocked, nil
+	}
+	providerArgs, reviewEnv := modelInvocation(provider)
+	if err := c.Init(ctx); err != nil {
+		blocked := blockedReviewResult(ids, err.Error())
+		return reviewInvocation{}, &blocked, err
+	}
+	if err := c.verifyReviewSafetyPatch(); err != nil {
+		blocked := blockedReviewResult(ids, err.Error())
+		return reviewInvocation{}, &blocked, nil
+	}
+	return reviewInvocation{providerArgs: providerArgs, env: reviewEnv}, nil, nil
+}
+
+func (c *Client) reviewFeaturesLocked(ctx context.Context, ids []string, invocation reviewInvocation) (ReviewResult, error) {
 	features, err := loadFeatures(c.stateDir)
 	if err != nil {
 		return blockedReviewResult(ids, "canonical Clawpatch feature records are unavailable"), err
@@ -193,10 +222,7 @@ func (c *Client) Review(ctx context.Context, featureIDs []string) (ReviewResult,
 	if err != nil {
 		return blockedReviewResult(ids, "Clawpatch review finding cap is unavailable"), err
 	}
-	known := make(map[string]domain.Feature, len(features))
-	for _, feature := range features {
-		known[feature.FeatureID] = feature
-	}
+	known := featuresByID(features)
 
 	result := ReviewResult{Status: domain.AdapterCompleted}
 	for _, id := range ids {
@@ -206,50 +232,67 @@ func (c *Client) Review(ctx context.Context, featureIDs []string) (ReviewResult,
 			result.Status = domain.AdapterPartial
 			continue
 		}
-		output, err := c.invokeEnvLocked(ctx, reviewEnv, append([]string{"review", "--feature", id}, providerArgs...)...)
-		if err != nil {
-			result.Coverage = append(result.Coverage, incompleteCoverage(id, "pinned Clawpatch review did not complete"))
+		review := c.reviewFeatureLocked(ctx, feature, findingCap, invocation)
+		result.Coverage = append(result.Coverage, review.coverage)
+		if review.manifest.FeatureID != "" {
+			result.Manifests = append(result.Manifests, review.manifest)
+		}
+		result.Observations = append(result.Observations, review.observations...)
+		if review.partial {
 			result.Status = domain.AdapterPartial
-			continue
-		}
-		featureResult, err := decodeReviewResponse(output)
-		if err != nil {
-			result.Coverage = append(result.Coverage, incompleteCoverage(id, "pinned Clawpatch review returned invalid JSON"))
-			result.Status = domain.AdapterPartial
-			continue
-		}
-		coverage, manifest, incomplete := coverageFromReview(feature, featureResult, findingCap)
-		result.Coverage = append(result.Coverage, coverage)
-		if manifest.FeatureID != "" {
-			result.Manifests = append(result.Manifests, manifest)
-		}
-		if incomplete {
-			result.Status = domain.AdapterPartial
-		}
-		observations, err := loadReviewObservations(c.root, c.stateDir, id, featureResult.Run)
-		if err != nil {
-			result.Coverage[len(result.Coverage)-1] = markIncompleteReview(result.Coverage[len(result.Coverage)-1], "one or more sanitized Clawpatch findings could not be validated against the snapshot")
-			result.Status = domain.AdapterPartial
-			continue
-		}
-		if len(observations) != featureResult.Findings {
-			result.Coverage[len(result.Coverage)-1] = markIncompleteReview(result.Coverage[len(result.Coverage)-1], "review findings could not be attributed to the reported Clawpatch run")
-			result.Status = domain.AdapterPartial
-		}
-		result.Observations = append(result.Observations, observations...)
-		if len(observations) != 0 && result.Coverage[len(result.Coverage)-1].Status == domain.CoverageInspected {
-			observationIDs := make([]string, 0, len(observations))
-			for _, observation := range observations {
-				observationIDs = append(observationIDs, observation.ObservationID)
-			}
-			result.Coverage[len(result.Coverage)-1].Status = domain.CoverageFlagged
-			result.Coverage[len(result.Coverage)-1].ObservationIDs = observationIDs
 		}
 	}
 	if result.Status == domain.AdapterPartial {
 		result.Reason = "one or more selected Clawpatch reviews were blocked or incomplete"
 	}
 	return result, nil
+}
+
+func featuresByID(features []domain.Feature) map[string]domain.Feature {
+	known := make(map[string]domain.Feature, len(features))
+	for _, feature := range features {
+		known[feature.FeatureID] = feature
+	}
+	return known
+}
+
+func (c *Client) reviewFeatureLocked(ctx context.Context, feature domain.Feature, findingCap int, invocation reviewInvocation) featureReview {
+	id := feature.FeatureID
+	output, err := c.invokeEnvLocked(ctx, invocation.env, append([]string{"review", "--feature", id}, invocation.providerArgs...)...)
+	if err != nil {
+		return featureReview{coverage: incompleteCoverage(id, "pinned Clawpatch review did not complete"), partial: true}
+	}
+	featureResult, err := decodeReviewResponse(output)
+	if err != nil {
+		return featureReview{coverage: incompleteCoverage(id, "pinned Clawpatch review returned invalid JSON"), partial: true}
+	}
+	coverage, manifest, incomplete := coverageFromReview(feature, featureResult, findingCap)
+	review := featureReview{coverage: coverage, manifest: manifest, partial: incomplete}
+	observations, err := loadReviewObservations(c.root, c.stateDir, id, featureResult.Run)
+	if err != nil {
+		review.coverage = markIncompleteReview(review.coverage, "one or more sanitized Clawpatch findings could not be validated against the snapshot")
+		review.partial = true
+		return review
+	}
+	if len(observations) != featureResult.Findings {
+		review.coverage = markIncompleteReview(review.coverage, "review findings could not be attributed to the reported Clawpatch run")
+		review.partial = true
+	}
+	review.observations = observations
+	if len(observations) != 0 && review.coverage.Status == domain.CoverageInspected {
+		review.coverage = flagObservedCoverage(review.coverage, observations)
+	}
+	return review
+}
+
+func flagObservedCoverage(coverage domain.Coverage, observations []domain.Observation) domain.Coverage {
+	observationIDs := make([]string, 0, len(observations))
+	for _, observation := range observations {
+		observationIDs = append(observationIDs, observation.ObservationID)
+	}
+	coverage.Status = domain.CoverageFlagged
+	coverage.ObservationIDs = observationIDs
+	return coverage
 }
 
 func (c *Client) verifyReviewSafetyPatch() error {
@@ -276,109 +319,156 @@ func decodeReviewResponse(raw []byte) (reviewResponse, error) {
 }
 
 func coverageFromReview(feature domain.Feature, response reviewResponse, findingCap int) (domain.Coverage, ReviewManifest, bool) {
+	source, missingReason := featurePromptManifest(feature.FeatureID, response.ReviewManifests)
+	if missingReason != "" {
+		return incompleteCoverage(feature.FeatureID, missingReason), ReviewManifest{}, true
+	}
+	review := newManifestReview(feature.FeatureID, response, findingCap, source)
+	for _, omittedFile := range source.OmittedFiles {
+		review.addOmittedFile(omittedFile)
+	}
+	for _, file := range source.IncludedFiles {
+		review.addIncludedFile(file)
+	}
+	review.accountFeaturePaths(feature)
+	return review.coverage(feature.FeatureID, len(response.Errors) != 0)
+}
+
+func featurePromptManifest(featureID string, manifests []featureReviewManifest) (*reviewPromptManifest, string) {
 	var source *reviewPromptManifest
-	for _, candidate := range response.ReviewManifests {
-		if candidate.FeatureID != feature.FeatureID {
+	for _, candidate := range manifests {
+		if candidate.FeatureID != featureID {
 			continue
 		}
 		if source != nil {
-			return incompleteCoverage(feature.FeatureID, "review returned multiple manifests for one feature"), ReviewManifest{}, true
+			return nil, "review returned multiple manifests for one feature"
 		}
 		manifest := candidate.Manifest
 		source = &manifest
 	}
 	if source == nil {
-		return incompleteCoverage(feature.FeatureID, "review did not return the inspected-file manifest"), ReviewManifest{}, true
+		return nil, "review did not return the inspected-file manifest"
 	}
+	return source, ""
+}
 
-	manifest := ReviewManifest{FeatureID: feature.FeatureID, FindingCount: response.Findings, FindingCap: findingCap}
-	incomplete := len(response.Errors) != 0
+type manifestReview struct {
+	manifest       ReviewManifest
+	incomplete     bool
+	ranges         []domain.SourceRange
+	omitted        []string
+	accountedPaths map[string]struct{}
+}
+
+func newManifestReview(featureID string, response reviewResponse, findingCap int, source *reviewPromptManifest) *manifestReview {
+	review := &manifestReview{
+		manifest:       ReviewManifest{FeatureID: featureID, FindingCount: response.Findings, FindingCap: findingCap},
+		ranges:         make([]domain.SourceRange, 0, len(source.IncludedFiles)),
+		omitted:        make([]string, 0, len(source.OmittedFiles)),
+		accountedPaths: make(map[string]struct{}, len(source.IncludedFiles)+len(source.OmittedFiles)),
+	}
+	limitsValid := applyPromptLimits(&review.manifest, source)
+	review.incomplete = len(response.Errors) != 0 || !limitsValid
+	review.manifest.FindingCapReached = findingCap < 1 || response.Findings >= findingCap
+	review.incomplete = review.incomplete || review.manifest.FindingCapReached
+	return review
+}
+
+func applyPromptLimits(manifest *ReviewManifest, source *reviewPromptManifest) bool {
 	if source.MaxOwnedFiles == nil || source.MaxContextFiles == nil || source.PromptBytes == nil || source.ApproximateTokens == nil {
-		incomplete = true
-	} else {
-		manifest.MaxOwnedFiles = *source.MaxOwnedFiles
-		manifest.MaxContextFiles = *source.MaxContextFiles
-		manifest.PromptBytes = *source.PromptBytes
-		manifest.ApproximateTokens = *source.ApproximateTokens
-		if manifest.MaxOwnedFiles < 1 || manifest.MaxContextFiles < 1 || manifest.PromptBytes < 1 || manifest.ApproximateTokens < 1 {
-			incomplete = true
-		}
+		return false
 	}
-	manifest.FindingCapReached = findingCap < 1 || response.Findings >= findingCap
-	incomplete = incomplete || manifest.FindingCapReached
+	manifest.MaxOwnedFiles = *source.MaxOwnedFiles
+	manifest.MaxContextFiles = *source.MaxContextFiles
+	manifest.PromptBytes = *source.PromptBytes
+	manifest.ApproximateTokens = *source.ApproximateTokens
+	return manifest.MaxOwnedFiles >= 1 && manifest.MaxContextFiles >= 1 && manifest.PromptBytes >= 1 && manifest.ApproximateTokens >= 1
+}
 
-	ranges := make([]domain.SourceRange, 0, len(source.IncludedFiles))
-	omitted := make([]string, 0, len(source.OmittedFiles))
-	accountedPaths := make(map[string]struct{}, len(source.IncludedFiles)+len(source.OmittedFiles))
-	for _, omittedFile := range source.OmittedFiles {
-		manifest.OmittedFiles = append(manifest.OmittedFiles, ReviewOmittedFile{Path: omittedFile.Path, Role: omittedFile.Role, Reason: omittedFile.Reason})
-		if !safeScopedPath(omittedFile.Path) {
-			incomplete = true
-			continue
-		}
-		accountedPaths[omittedFile.Path] = struct{}{}
-		omitted = append(omitted, omittedFile.Path)
-		incomplete = true
+func (r *manifestReview) addOmittedFile(omittedFile reviewOmittedFile) {
+	r.manifest.OmittedFiles = append(r.manifest.OmittedFiles, ReviewOmittedFile(omittedFile))
+	if !safeScopedPath(omittedFile.Path) {
+		r.incomplete = true
+		return
 	}
-	for _, file := range source.IncludedFiles {
-		input := ReviewInputFile{Path: file.Path, Role: file.Role, Truncated: file.Truncated, Readable: file.Readable}
-		if file.Bytes != nil {
-			input.Bytes = *file.Bytes
-		}
-		if file.IncludedBytes != nil {
-			input.IncludedBytes = *file.IncludedBytes
-		}
-		if file.SkippedReason != nil {
-			input.SkippedReason = *file.SkippedReason
-		}
-		manifest.IncludedFiles = append(manifest.IncludedFiles, input)
-		if !safeScopedPath(file.Path) {
-			incomplete = true
-			continue
-		}
-		accountedPaths[file.Path] = struct{}{}
-		if file.Bytes == nil || file.IncludedBytes == nil || !file.Readable || file.Truncated || file.SkippedReason != nil || *file.Bytes < 0 || *file.IncludedBytes < 0 || *file.IncludedBytes > *file.Bytes || len(file.IncludedLineRanges) == 0 {
-			incomplete = true
-			omitted = append(omitted, file.Path)
-			continue
-		}
-		for _, lineRange := range file.IncludedLineRanges {
-			if lineRange.StartLine < 1 || lineRange.EndLine < lineRange.StartLine {
-				incomplete = true
-				continue
-			}
-			location := domain.SourceRange{Path: file.Path, StartLine: lineRange.StartLine, EndLine: lineRange.EndLine}
-			input.Ranges = append(input.Ranges, location)
-			ranges = append(ranges, location)
-		}
-		manifest.IncludedFiles[len(manifest.IncludedFiles)-1] = input
+	r.accountedPaths[omittedFile.Path] = struct{}{}
+	r.omitted = append(r.omitted, omittedFile.Path)
+	r.incomplete = true
+}
+
+func (r *manifestReview) addIncludedFile(file reviewPromptFile) {
+	input := reviewInputFile(file)
+	r.manifest.IncludedFiles = append(r.manifest.IncludedFiles, input)
+	if !safeScopedPath(file.Path) {
+		r.incomplete = true
+		return
 	}
+	r.accountedPaths[file.Path] = struct{}{}
+	if !includedFileComplete(file) {
+		r.incomplete = true
+		r.omitted = append(r.omitted, file.Path)
+		return
+	}
+	for _, lineRange := range file.IncludedLineRanges {
+		if lineRange.StartLine < 1 || lineRange.EndLine < lineRange.StartLine {
+			r.incomplete = true
+			continue
+		}
+		location := domain.SourceRange{Path: file.Path, StartLine: lineRange.StartLine, EndLine: lineRange.EndLine}
+		input.Ranges = append(input.Ranges, location)
+		r.ranges = append(r.ranges, location)
+	}
+	r.manifest.IncludedFiles[len(r.manifest.IncludedFiles)-1] = input
+}
+
+func reviewInputFile(file reviewPromptFile) ReviewInputFile {
+	input := ReviewInputFile{Path: file.Path, Role: file.Role, Truncated: file.Truncated, Readable: file.Readable}
+	if file.Bytes != nil {
+		input.Bytes = *file.Bytes
+	}
+	if file.IncludedBytes != nil {
+		input.IncludedBytes = *file.IncludedBytes
+	}
+	if file.SkippedReason != nil {
+		input.SkippedReason = *file.SkippedReason
+	}
+	return input
+}
+
+func includedFileComplete(file reviewPromptFile) bool {
+	return file.Bytes != nil && file.IncludedBytes != nil && file.Readable && !file.Truncated && file.SkippedReason == nil && *file.Bytes >= 0 && *file.IncludedBytes >= 0 && *file.IncludedBytes <= *file.Bytes && len(file.IncludedLineRanges) != 0
+}
+
+func (r *manifestReview) accountFeaturePaths(feature domain.Feature) {
 	for _, path := range featureReviewPaths(feature) {
-		if _, found := accountedPaths[path]; !found {
-			incomplete = true
-			omitted = append(omitted, path)
+		if _, found := r.accountedPaths[path]; !found {
+			r.incomplete = true
+			r.omitted = append(r.omitted, path)
 		}
 	}
-	if incomplete || len(ranges) == 0 {
+}
+
+func (r *manifestReview) coverage(featureID string, reportedErrors bool) (domain.Coverage, ReviewManifest, bool) {
+	if r.incomplete || len(r.ranges) == 0 {
 		reason := "review manifest omitted, truncated, unreadable, or unattributed work"
-		if len(response.Errors) != 0 {
+		if reportedErrors {
 			reason = "review reported dropped or invalid findings"
-		} else if manifest.FindingCapReached {
+		} else if r.manifest.FindingCapReached {
 			reason = "review reached the configured finding cap"
 		}
 		return domain.Coverage{
-			Key:             reviewCoverageKey(feature.FeatureID),
+			Key:             reviewCoverageKey(featureID),
 			Status:          domain.CoverageIncomplete,
 			Reason:          reason,
-			InspectedRanges: ranges,
-			OmittedPaths:    uniquePaths(omitted),
-		}, manifest, true
+			InspectedRanges: r.ranges,
+			OmittedPaths:    uniquePaths(r.omitted),
+		}, r.manifest, true
 	}
 	return domain.Coverage{
-		Key:             reviewCoverageKey(feature.FeatureID),
+		Key:             reviewCoverageKey(featureID),
 		Status:          domain.CoverageInspected,
-		InspectedRanges: ranges,
-	}, manifest, false
+		InspectedRanges: r.ranges,
+	}, r.manifest, false
 }
 
 func featureReviewPaths(feature domain.Feature) []string {
@@ -468,10 +558,18 @@ func loadRawFinding(stateDir, findingID string) (rawFinding, error) {
 	if err := json.Unmarshal(raw, &finding); err != nil {
 		return rawFinding{}, err
 	}
-	if finding.SchemaVersion != 1 || finding.FindingID != findingID || finding.FeatureID == "" || finding.CreatedByRunID == "" || finding.Title == "" || finding.Category == "" || finding.Reasoning == "" || len(finding.Evidence) == 0 || !finding.Severity.Valid() || !finding.Confidence.Valid() {
+	if !validRawFinding(finding, findingID) {
 		return rawFinding{}, errors.New("invalid Clawpatch finding record")
 	}
 	return finding, nil
+}
+
+func validRawFinding(finding rawFinding, findingID string) bool {
+	return finding.SchemaVersion == 1 && finding.FindingID == findingID && rawFindingHasContent(finding) && finding.Severity.Valid() && finding.Confidence.Valid()
+}
+
+func rawFindingHasContent(finding rawFinding) bool {
+	return finding.FeatureID != "" && finding.CreatedByRunID != "" && finding.Title != "" && finding.Category != "" && finding.Reasoning != "" && len(finding.Evidence) != 0
 }
 
 func observationFromFinding(root, runID string, finding rawFinding) (domain.Observation, error) {
@@ -505,41 +603,14 @@ func observationFromFinding(root, runID string, finding rawFinding) (domain.Obse
 }
 
 func validateRawEvidence(root string, evidence rawEvidence) (domain.SourceRange, error) {
-	if evidence.Path == "" || filepath.IsAbs(evidence.Path) {
-		return domain.SourceRange{}, errors.New("finding has unsafe evidence path")
-	}
-	fullPath := filepath.Join(root, evidence.Path)
-	relativePath, err := filepath.Rel(root, fullPath)
-	if err != nil || relativePath == ".." || strings.HasPrefix(relativePath, ".."+string(filepath.Separator)) {
-		return domain.SourceRange{}, errors.New("finding evidence escapes assessment root")
-	}
-	realRoot, err := filepath.EvalSymlinks(root)
+	relativePath, realPath, err := resolveEvidencePath(root, evidence.Path)
 	if err != nil {
 		return domain.SourceRange{}, err
-	}
-	realPath, err := filepath.EvalSymlinks(fullPath)
-	if err != nil {
-		return domain.SourceRange{}, err
-	}
-	realRelative, err := filepath.Rel(realRoot, realPath)
-	if err != nil || realRelative == ".." || strings.HasPrefix(realRelative, ".."+string(filepath.Separator)) {
-		return domain.SourceRange{}, errors.New("finding evidence resolves outside assessment root")
 	}
 	location := domain.SourceRange{Path: filepath.ToSlash(relativePath)}
 	if evidence.StartLine != nil || evidence.EndLine != nil {
-		if evidence.StartLine == nil || evidence.EndLine == nil || *evidence.StartLine < 1 || *evidence.EndLine < *evidence.StartLine {
-			return domain.SourceRange{}, errors.New("finding has invalid evidence line range")
-		}
-		contents, err := os.ReadFile(realPath)
-		if err != nil {
+		if err := checkEvidenceLines(realPath, evidence); err != nil {
 			return domain.SourceRange{}, err
-		}
-		lines := strings.Split(string(contents), "\n")
-		if *evidence.EndLine > len(lines) {
-			return domain.SourceRange{}, errors.New("finding evidence line range exceeds snapshot")
-		}
-		if evidence.Quote != nil && !strings.Contains(*evidence.Quote, "[SCOUT_REDACTED") && !strings.Contains(compactWhitespace(strings.Join(lines[*evidence.StartLine-1:*evidence.EndLine], "\n")), compactWhitespace(*evidence.Quote)) {
-			return domain.SourceRange{}, errors.New("finding evidence quote does not match snapshot")
 		}
 		location.StartLine = *evidence.StartLine
 		location.EndLine = *evidence.EndLine
@@ -551,6 +622,56 @@ func validateRawEvidence(root string, evidence rawEvidence) (domain.SourceRange,
 		return domain.SourceRange{}, err
 	}
 	return location, nil
+}
+
+func resolveEvidencePath(root, path string) (string, string, error) {
+	if path == "" || filepath.IsAbs(path) {
+		return "", "", errors.New("finding has unsafe evidence path")
+	}
+	fullPath := filepath.Join(root, path)
+	relativePath, err := filepath.Rel(root, fullPath)
+	if err != nil || escapesBase(relativePath) {
+		return "", "", errors.New("finding evidence escapes assessment root")
+	}
+	realRoot, err := filepath.EvalSymlinks(root)
+	if err != nil {
+		return "", "", err
+	}
+	realPath, err := filepath.EvalSymlinks(fullPath)
+	if err != nil {
+		return "", "", err
+	}
+	realRelative, err := filepath.Rel(realRoot, realPath)
+	if err != nil || escapesBase(realRelative) {
+		return "", "", errors.New("finding evidence resolves outside assessment root")
+	}
+	return relativePath, realPath, nil
+}
+
+func escapesBase(relativePath string) bool {
+	return relativePath == ".." || strings.HasPrefix(relativePath, ".."+string(filepath.Separator))
+}
+
+func checkEvidenceLines(realPath string, evidence rawEvidence) error {
+	if evidence.StartLine == nil || evidence.EndLine == nil || *evidence.StartLine < 1 || *evidence.EndLine < *evidence.StartLine {
+		return errors.New("finding has invalid evidence line range")
+	}
+	contents, err := os.ReadFile(realPath)
+	if err != nil {
+		return err
+	}
+	lines := strings.Split(string(contents), "\n")
+	if *evidence.EndLine > len(lines) {
+		return errors.New("finding evidence line range exceeds snapshot")
+	}
+	if !evidenceQuoteMatches(evidence, lines) {
+		return errors.New("finding evidence quote does not match snapshot")
+	}
+	return nil
+}
+
+func evidenceQuoteMatches(evidence rawEvidence, lines []string) bool {
+	return evidence.Quote == nil || strings.Contains(*evidence.Quote, "[SCOUT_REDACTED") || strings.Contains(compactWhitespace(strings.Join(lines[*evidence.StartLine-1:*evidence.EndLine], "\n")), compactWhitespace(*evidence.Quote))
 }
 
 func blockedReviewResult(ids []string, reason string) ReviewResult {
@@ -578,7 +699,7 @@ func uniqueFeatureIDs(featureIDs []string) ([]string, error) {
 	ids := make([]string, 0, len(featureIDs))
 	for _, id := range featureIDs {
 		if id == "" {
-			return nil, errors.New("Clawpatch review requires a canonical feature ID")
+			return nil, errors.New("clawpatch review requires a canonical feature ID")
 		}
 		if _, duplicate := seen[id]; duplicate {
 			return nil, fmt.Errorf("duplicate selected Clawpatch feature ID %q", id)

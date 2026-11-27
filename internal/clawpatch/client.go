@@ -67,55 +67,21 @@ type Client struct {
 // New creates a client without invoking Clawpatch. Init performs the first
 // connection and initialization when Scout owns the state directory.
 func New(root string, config Config) (*Client, error) {
-	absoluteRoot, err := filepath.Abs(root)
+	absoluteRoot, err := resolveAssessmentRoot(root)
 	if err != nil {
-		return nil, fmt.Errorf("resolve assessment root: %w", err)
-	}
-	info, err := os.Stat(absoluteRoot)
-	if err != nil {
-		return nil, fmt.Errorf("stat assessment root: %w", err)
-	}
-	if !info.IsDir() {
-		return nil, fmt.Errorf("assessment root is not a directory: %s", absoluteRoot)
-	}
-	if config.BinaryPath == "" || !filepath.IsAbs(config.BinaryPath) {
-		return nil, errors.New("Clawpatch binary path must be absolute")
-	}
-	binaryPath, err := filepath.EvalSymlinks(config.BinaryPath)
-	if err != nil {
-		return nil, fmt.Errorf("resolve Clawpatch binary: %w", err)
-	}
-	if err := validatePinnedBinaryPath(binaryPath); err != nil {
 		return nil, err
 	}
-
-	stateDir := config.StateDir
-	ownedState := StateDir(absoluteRoot)
-	if stateDir == "" {
-		stateDir = ownedState
+	binaryPath, err := resolvePinnedBinary(config.BinaryPath)
+	if err != nil {
+		return nil, err
 	}
-	if !filepath.IsAbs(stateDir) {
-		return nil, errors.New("Clawpatch state directory must be absolute")
+	stateDir, externalState, err := resolveStateDir(absoluteRoot, config)
+	if err != nil {
+		return nil, err
 	}
-	stateDir = filepath.Clean(stateDir)
-	externalState := stateDir != ownedState
-	if externalState && !config.AllowExternalState {
-		return nil, errors.New("external Clawpatch state requires explicit opt-in")
-	}
-
-	nodePath := config.NodePath
-	if nodePath == "" {
-		nodePath, err = exec.LookPath("node")
-		if err != nil {
-			return nil, fmt.Errorf("locate Node runtime: %w", err)
-		}
-	}
-	if !filepath.IsAbs(nodePath) {
-		return nil, errors.New("Node runtime path must be absolute")
-	}
-	nodeInfo, err := os.Stat(nodePath)
-	if err != nil || !nodeInfo.Mode().IsRegular() || nodeInfo.Mode().Perm()&0o111 == 0 {
-		return nil, errors.New("Node runtime is not an executable file")
+	nodePath, err := resolveNodeRuntime(config.NodePath)
+	if err != nil {
+		return nil, err
 	}
 
 	return &Client{
@@ -127,6 +93,71 @@ func New(root string, config Config) (*Client, error) {
 		egressAuthorized: config.EgressAuthorized,
 		provider:         config.Provider,
 	}, nil
+}
+
+func resolveAssessmentRoot(root string) (string, error) {
+	absoluteRoot, err := filepath.Abs(root)
+	if err != nil {
+		return "", fmt.Errorf("resolve assessment root: %w", err)
+	}
+	info, err := os.Stat(absoluteRoot)
+	if err != nil {
+		return "", fmt.Errorf("stat assessment root: %w", err)
+	}
+	if !info.IsDir() {
+		return "", fmt.Errorf("assessment root is not a directory: %s", absoluteRoot)
+	}
+	return absoluteRoot, nil
+}
+
+func resolvePinnedBinary(configured string) (string, error) {
+	if configured == "" || !filepath.IsAbs(configured) {
+		return "", errors.New("clawpatch binary path must be absolute")
+	}
+	binaryPath, err := filepath.EvalSymlinks(configured)
+	if err != nil {
+		return "", fmt.Errorf("resolve Clawpatch binary: %w", err)
+	}
+	if err := validatePinnedBinaryPath(binaryPath); err != nil {
+		return "", err
+	}
+	return binaryPath, nil
+}
+
+func resolveStateDir(absoluteRoot string, config Config) (string, bool, error) {
+	stateDir := config.StateDir
+	ownedState := StateDir(absoluteRoot)
+	if stateDir == "" {
+		stateDir = ownedState
+	}
+	if !filepath.IsAbs(stateDir) {
+		return "", false, errors.New("clawpatch state directory must be absolute")
+	}
+	stateDir = filepath.Clean(stateDir)
+	externalState := stateDir != ownedState
+	if externalState && !config.AllowExternalState {
+		return "", false, errors.New("external Clawpatch state requires explicit opt-in")
+	}
+	return stateDir, externalState, nil
+}
+
+func resolveNodeRuntime(configured string) (string, error) {
+	nodePath := configured
+	if nodePath == "" {
+		var err error
+		nodePath, err = exec.LookPath("node")
+		if err != nil {
+			return "", fmt.Errorf("locate Node runtime: %w", err)
+		}
+	}
+	if !filepath.IsAbs(nodePath) {
+		return "", errors.New("node runtime path must be absolute")
+	}
+	nodeInfo, err := os.Stat(nodePath)
+	if err != nil || !nodeInfo.Mode().IsRegular() || nodeInfo.Mode().Perm()&0o111 == 0 {
+		return "", errors.New("node runtime is not an executable file")
+	}
+	return nodePath, nil
 }
 
 // Root returns the immutable assessment root.
@@ -195,33 +226,17 @@ func (c *Client) Map(ctx context.Context, inputsChanged bool, source MapSource) 
 		return MapResult{Status: MapBlocked, Reason: err.Error()}, err
 	}
 	if !inputsChanged {
-		features, err := LoadFeatures(c.stateDir)
-		if err != nil {
-			return MapResult{Status: MapBlocked, Source: source, Reason: "canonical Clawpatch records are unavailable"}, err
-		}
-		return MapResult{Status: MapReused, Source: source, Features: features}, nil
+		return c.reuseMap(source)
 	}
 	var agentArgs []string
 	var agentEnv []string
 	if source == MapSourceAgent {
-		provider, err := c.resolveMapProvider()
-		if errors.Is(err, modelcli.ErrNoCLI) {
-			return MapResult{Status: MapSkipped, Source: source, Reason: SkippedNoModelCLI}, nil
+		var stop *MapResult
+		var err error
+		agentArgs, agentEnv, stop, err = c.prepareAgentMap()
+		if stop != nil {
+			return *stop, err
 		}
-		if err != nil {
-			return MapResult{Status: MapBlocked, Source: source, Reason: err.Error()}, err
-		}
-		if !c.egressAuthorized {
-			err := errors.New("Clawpatch mapping provider egress is not authorized")
-			return MapResult{Status: MapBlocked, Source: source, Reason: err.Error()}, err
-		}
-		if err := c.verifyReviewSafetyPatch(); err != nil {
-			return MapResult{Status: MapBlocked, Source: source, Reason: err.Error()}, err
-		}
-		var providerArgs []string
-		providerArgs, agentEnv = modelInvocation(provider, mapEnvironment()...)
-		agentArgs = append([]string{"map", "--source", "agent"}, providerArgs...)
-		agentArgs = append(agentArgs, "--model", mapModel, "--reasoning-effort", mapReasoningEffort)
 	}
 	if err := c.Init(ctx); err != nil {
 		return MapResult{Status: MapBlocked, Source: source, Reason: err.Error()}, err
@@ -231,6 +246,41 @@ func (c *Client) Map(ctx context.Context, inputsChanged bool, source MapSource) 
 	if source == MapSourceHeuristic {
 		return c.mapHeuristicLocked(ctx)
 	}
+	return c.mapAgentLocked(ctx, agentEnv, agentArgs)
+}
+
+func (c *Client) reuseMap(source MapSource) (MapResult, error) {
+	features, err := LoadFeatures(c.stateDir)
+	if err != nil {
+		return MapResult{Status: MapBlocked, Source: source, Reason: "canonical Clawpatch records are unavailable"}, err
+	}
+	return MapResult{Status: MapReused, Source: source, Features: features}, nil
+}
+
+func (c *Client) prepareAgentMap() ([]string, []string, *MapResult, error) {
+	source := MapSourceAgent
+	provider, err := c.resolveMapProvider()
+	if errors.Is(err, modelcli.ErrNoCLI) {
+		return nil, nil, &MapResult{Status: MapSkipped, Source: source, Reason: SkippedNoModelCLI}, nil
+	}
+	if err != nil {
+		return nil, nil, &MapResult{Status: MapBlocked, Source: source, Reason: err.Error()}, err
+	}
+	if !c.egressAuthorized {
+		err := errors.New("clawpatch mapping provider egress is not authorized")
+		return nil, nil, &MapResult{Status: MapBlocked, Source: source, Reason: err.Error()}, err
+	}
+	if err := c.verifyReviewSafetyPatch(); err != nil {
+		return nil, nil, &MapResult{Status: MapBlocked, Source: source, Reason: err.Error()}, err
+	}
+	providerArgs, agentEnv := modelInvocation(provider, mapEnvironment()...)
+	agentArgs := append([]string{"map", "--source", "agent"}, providerArgs...)
+	agentArgs = append(agentArgs, "--model", mapModel, "--reasoning-effort", mapReasoningEffort)
+	return agentArgs, agentEnv, nil, nil
+}
+
+func (c *Client) mapAgentLocked(ctx context.Context, agentEnv, agentArgs []string) (MapResult, error) {
+	source := MapSourceAgent
 	_, agentErr := c.invokeEnvLocked(ctx, agentEnv, agentArgs...)
 	reason := "agent mapping did not complete; heuristic map kept and exploration is incomplete"
 	if agentErr == nil {
@@ -292,7 +342,7 @@ func (c *Client) verifyIdentityLocked(ctx context.Context) error {
 		return fmt.Errorf("verify pinned Clawpatch identity: %w", err)
 	}
 	if strings.TrimSpace(string(output)) != Version {
-		return fmt.Errorf("Clawpatch reports a non-pinned version; expected %s", Version)
+		return fmt.Errorf("clawpatch reports a non-pinned version; expected %s", Version)
 	}
 	c.identityOK = true
 	return nil
@@ -352,10 +402,10 @@ func stderrTail(stderr []byte) string {
 
 func validatePinnedBinaryPath(path string) error {
 	if filepath.Base(path) != "cli.js" || filepath.Base(filepath.Dir(path)) != "dist" {
-		return errors.New("Clawpatch binary must be the pinned dist/cli.js entrypoint")
+		return errors.New("clawpatch binary must be the pinned dist/cli.js entrypoint")
 	}
 	if filepath.Base(filepath.Dir(filepath.Dir(path))) != Revision {
-		return fmt.Errorf("Clawpatch binary must be built from pinned revision %s", Revision)
+		return fmt.Errorf("clawpatch binary must be built from pinned revision %s", Revision)
 	}
 	return nil
 }

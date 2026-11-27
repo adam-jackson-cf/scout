@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"errors"
+
 	"scout/internal/areas"
 	"scout/internal/clawpatch"
 	"scout/internal/domain"
@@ -31,16 +33,9 @@ func pendingAssessmentAreas(ctx context.Context, flags *commonFlags) ([]areas.Ar
 	if err != nil {
 		return nil, err
 	}
-	defer store.Close()
 	all, err := store.ListAreas(ctx)
-	if err != nil {
+	if err = errors.Join(err, store.Close()); err != nil {
 		return nil, err
 	}
-	pending := make([]areas.Area, 0)
-	for _, area := range all {
-		if area.Status == areas.StatusPending {
-			pending = append(pending, area)
-		}
-	}
-	return pending, nil
+	return onlyPendingAreas(all), nil
 }

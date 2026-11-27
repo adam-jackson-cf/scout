@@ -1,3 +1,5 @@
+//go:build boundary
+
 package engine
 
 import (
@@ -13,6 +15,7 @@ import (
 	"scout/internal/measures"
 	"scout/internal/prmeta"
 	"scout/internal/state"
+	"scout/internal/state/statetest"
 )
 
 // runHistory runs the history lane over a one-commit fixture repository with
@@ -31,11 +34,7 @@ func runHistory(t *testing.T, pr *PRMetadataOptions) (domain.LaneHealth, *state.
 	gitRun(t, root, "init", "--quiet")
 	gitRun(t, root, "add", ".")
 	gitRun(t, root, "commit", "--quiet", "-m", "init")
-	store, err := state.Open(root)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() { store.Close() })
+	store := openEngineTestStore(t, root)
 	scan, err := inventory.Scan(ctx, root, inventory.ScanOptions{Scope: domain.Scope{Kind: domain.ScopeRepository, SelectedFamilies: []domain.Family{domain.FamilyQuality}}})
 	if err != nil {
 		t.Fatal(err)
@@ -44,7 +43,7 @@ func runHistory(t *testing.T, pr *PRMetadataOptions) (domain.LaneHealth, *state.
 		History: true, PRMetadata: pr, Tools: measures.Tools{Lizard: "scout-no-lizard", Jscpd: "scout-no-jscpd"},
 	}}
 	var health domain.LaneHealth
-	for _, h := range runMeasuresLanes(ctx, store, root, scan, nil, options) {
+	for _, h := range runMeasuresLanes(ctx, measuresLaneInput{store: store, root: root, current: scan, options: options}) {
 		if h.Lane == LaneHistory {
 			health = h
 		}
@@ -89,8 +88,13 @@ func TestHistoryLaneIngestsPRMetadataFileWithProvenance(t *testing.T) {
 	if prov["kind"] != "file" || prov["digest"] == "" {
 		t.Fatalf("provenance = %v", sig.Detail["provenance"])
 	}
-	srcs, err := store.PRMetadataSources(context.Background(), sig.Snapshot)
-	if err != nil || len(srcs) != 1 || srcs[0].Digest != prov["digest"] || srcs[0].PRs != 5 {
+	assertOneRecordedPRMetadataSource(t, store, sig.Snapshot, prov["digest"])
+}
+
+func assertOneRecordedPRMetadataSource(t *testing.T, store *state.Store, snapshot string, digest any) {
+	t.Helper()
+	srcs, err := statetest.PRMetadataSources(context.Background(), store, snapshot)
+	if err != nil || len(srcs) != 1 || srcs[0].Digest != digest || srcs[0].PRs != 5 {
 		t.Fatalf("recorded sources = %+v, err %v", srcs, err)
 	}
 }

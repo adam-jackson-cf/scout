@@ -1,8 +1,11 @@
+//go:build boundary
+
 package shadow
 
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -19,7 +22,7 @@ type p12Provider struct {
 	url    string
 }
 
-func (p p12Provider) get(ctx context.Context, path string, dst any) error {
+func (p p12Provider) get(ctx context.Context, path string, dst any) (err error) {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, p.url+path, nil)
 	if err != nil {
 		return err
@@ -28,7 +31,7 @@ func (p p12Provider) get(ctx context.Context, path string, dst any) error {
 	if err != nil {
 		return err
 	}
-	defer res.Body.Close()
+	defer func() { err = errors.Join(err, res.Body.Close()) }()
 	if res.StatusCode != http.StatusOK {
 		return fmt.Errorf("provider HTTP %d", res.StatusCode)
 	}
@@ -115,6 +118,34 @@ func p12Points(t *testing.T, b domain.ShadowBatch, want ...string) {
 // S3 write path only: visibility, dossier digest and ready/not-ready recovery
 // are owned by S4, not approximated by a second evaluator here.
 func TestADR012S3DeadlineLateLifecycle(t *testing.T) {
+	s, a := p12TwoEventNonterminalSnapshot(t)
+	batch, err := p12Collect(t, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	p12Points(t, batch, "2026-11-01T09:59:00Z", "2026-11-01T10:01:00Z", "2026-11-01T10:02:00Z")
+	if len(batch.Ledger.Facts) != 0 {
+		t.Fatal("deadline manufactured a terminal final")
+	}
+	var auth PublicationAuthorization
+	p12Decode(t, `{"RepositoryID":"repo","ParentCommit":"parent","PublishingJobStartedAt":"2026-11-01T12:01:00Z","CurrentProtectedTip":"protected","Authenticated":true,"SourceReachable":true}`, &auth)
+	first := p12ReleasedFrontierPublication(t, batch, auth)
+	parent := domain.ShadowLedger{Publications: []domain.ShadowPublication{first}, Frontiers: first.Frontiers, GapPoints: first.GapPoints}
+	p12FinishLate(s, a)
+	later, err := p12Collect(t, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+	auth.PublishingJobStartedAt = time.Date(2026, 11, 1, 12, 3, 0, 0, time.UTC)
+	final, err := PreparePublication(parent, later, auth)
+	if err != nil {
+		t.Fatal(err)
+	}
+	p12AssertLateTerminalStamped(t, final, first)
+}
+
+func p12TwoEventNonterminalSnapshot(t *testing.T) (map[string]any, map[string]any) {
+	t.Helper()
 	s := p12Snapshot(t)
 	e := s["Events"].([]any)[0].(map[string]any)
 	e["EventAt"] = "2026-11-01T09:59:00Z"
@@ -129,16 +160,11 @@ func TestADR012S3DeadlineLateLifecycle(t *testing.T) {
 	a["Terminal"] = false
 	a["AccountedEventIDs"] = []string{"E1", "E2"}
 	a["Fact"].(map[string]any)["FinishedAt"] = "0001-01-01T00:00:00Z"
-	batch, err := p12Collect(t, s)
-	if err != nil {
-		t.Fatal(err)
-	}
-	p12Points(t, batch, "2026-11-01T09:59:00Z", "2026-11-01T10:01:00Z", "2026-11-01T10:02:00Z")
-	if len(batch.Ledger.Facts) != 0 {
-		t.Fatal("deadline manufactured a terminal final")
-	}
-	var auth PublicationAuthorization
-	p12Decode(t, `{"RepositoryID":"repo","ParentCommit":"parent","PublishingJobStartedAt":"2026-11-01T12:01:00Z","CurrentProtectedTip":"protected","Authenticated":true,"SourceReachable":true}`, &auth)
+	return s, a
+}
+
+func p12ReleasedFrontierPublication(t *testing.T, batch domain.ShadowBatch, auth PublicationAuthorization) domain.ShadowPublication {
+	t.Helper()
 	first, err := PreparePublication(domain.ShadowLedger{}, batch, auth)
 	if err != nil {
 		t.Fatal(err)
@@ -146,22 +172,20 @@ func TestADR012S3DeadlineLateLifecycle(t *testing.T) {
 	if len(first.Frontiers) != 1 || !first.Frontiers[0].CompleteThrough.After(time.Date(2026, 11, 1, 10, 2, 0, 0, time.UTC)) {
 		t.Fatalf("deadline failed to release frontier: %+v", first)
 	}
-	parent := domain.ShadowLedger{Publications: []domain.ShadowPublication{first}, Frontiers: first.Frontiers, GapPoints: first.GapPoints}
+	return first
+}
+
+func p12FinishLate(s, a map[string]any) {
 	a["Terminal"] = true
 	a["Fact"].(map[string]any)["FinishedAt"] = "2026-11-01T12:02:00Z"
 	a["ScannerOutput"] = map[string]any{"Status": "assessed", "Events": []any{map[string]any{"IssueID": "late-finding", "CheckID": "security:test", "RuleVersion": "v1"}}}
 	s["ProviderTime"] = "2026-11-01T12:04:00Z"
 	s["EventCompleteThrough"] = "2026-11-01T12:04:00Z"
 	s["AttemptCompleteThrough"] = "2026-11-01T12:04:00Z"
-	later, err := p12Collect(t, s)
-	if err != nil {
-		t.Fatal(err)
-	}
-	auth.PublishingJobStartedAt = time.Date(2026, 11, 1, 12, 3, 0, 0, time.UTC)
-	final, err := PreparePublication(parent, later, auth)
-	if err != nil {
-		t.Fatal(err)
-	}
+}
+
+func p12AssertLateTerminalStamped(t *testing.T, final, first domain.ShadowPublication) {
+	t.Helper()
 	if len(final.Facts) != 1 || final.Facts[0].RecordedAt == nil || !final.Facts[0].RecordedAt.After(first.Frontiers[0].CompleteThrough) {
 		t.Fatalf("late terminal not independently stamped: %+v", final)
 	}

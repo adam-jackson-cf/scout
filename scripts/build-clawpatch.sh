@@ -18,8 +18,14 @@ readonly CLAWPATCH_REVISION CLAWPATCH_VERSION PNPM_VERSION
 readonly SCOUT_REVIEW_SAFETY_PATCH_VERSION="scout-review-sanitize-v3"
 readonly SCOUT_REVIEW_SAFETY_PATCH_SHA256="dc867503f80cdb336681d72c221ec1dea24006f121b4cae56bf0fb284dae6ce3"
 
-[[ "$CLAWPATCH_REVISION" =~ ^[0-9a-f]{40}$ ]] || { printf 'build-clawpatch: third_party/clawpatch is not a registered submodule\n' >&2; exit 1; }
-[[ -n "$CLAWPATCH_VERSION" && -n "$PNPM_VERSION" ]] || { printf 'build-clawpatch: toolchain/versions.env lacks CLAWPATCH_VERSION or PNPM_VERSION\n' >&2; exit 1; }
+[[ "$CLAWPATCH_REVISION" =~ ^[0-9a-f]{40}$ ]] || {
+  printf 'build-clawpatch: third_party/clawpatch is not a registered submodule\n' >&2
+  exit 1
+}
+[[ -n "$CLAWPATCH_VERSION" && -n "$PNPM_VERSION" ]] || {
+  printf 'build-clawpatch: toolchain/versions.env lacks CLAWPATCH_VERSION or PNPM_VERSION\n' >&2
+  exit 1
+}
 
 source_input="${CLAWPATCH_SOURCE:-$repo_root/third_party/clawpatch}"
 output_input="${CLAWPATCH_OUTPUT_DIR:-${SCOUT_TOOLS_DIR:-$repo_root/.tools}/clawpatch}"
@@ -40,7 +46,7 @@ die() {
 }
 
 absolute_directory() {
-  (cd "$1" && pwd -P)
+  (cd "$1" && pwd -P) || die "$2"
 }
 
 source "$script_dir/sha256.sh"
@@ -57,7 +63,7 @@ while (($#)); do
       output_input="$2"
       shift 2
       ;;
-    --help|-h)
+    --help | -h)
       usage
       exit 0
       ;;
@@ -72,9 +78,9 @@ for prerequisite in git node pnpm tar cut; do
   command -v "$prerequisite" >/dev/null 2>&1 || die "required command is unavailable: $prerequisite"
 done
 
-source_dir="$(absolute_directory "$source_input")" || die "source checkout is unavailable: $source_input"
+source_dir="$(absolute_directory "$source_input" "source checkout is unavailable: $source_input")"
 mkdir -p "$output_input" || die "cannot create output directory: $output_input"
-output_root="$(absolute_directory "$output_input")" || die "output directory is unavailable: $output_input"
+output_root="$(absolute_directory "$output_input" "output directory is unavailable: $output_input")"
 
 case "$output_root/" in
   "$source_dir/"*) die "output directory must be outside the Clawpatch source checkout" ;;
@@ -86,13 +92,16 @@ git -C "$source_dir" cat-file -e "$CLAWPATCH_REVISION^{commit}" 2>/dev/null || d
 
 node_version="$(node -p 'process.versions.node')" || die "cannot determine Node version"
 node_major="${node_version%%.*}"
-[[ "$node_major" =~ ^[0-9]+$ ]] && ((node_major >= 22)) || die "Node >=22 is required; found $node_version"
+if ! [[ "$node_major" =~ ^[0-9]+$ ]] || ((node_major < 22)); then
+  die "Node >=22 is required; found $node_version"
+fi
 
 installed_pnpm_version="$(pnpm --version)" || die "cannot determine pnpm version"
 [[ "$installed_pnpm_version" == "$PNPM_VERSION" ]] || die "pnpm $PNPM_VERSION is required; found $installed_pnpm_version"
 
 [[ -f "$safety_patch" ]] || die "review safety patch is unavailable: $safety_patch"
-actual_patch_sha256="$(sha256 "$safety_patch")" || die "cannot checksum review safety patch"
+[[ -r "$safety_patch" ]] || die "cannot checksum review safety patch"
+actual_patch_sha256="$(sha256 "$safety_patch")"
 [[ "$actual_patch_sha256" == "$SCOUT_REVIEW_SAFETY_PATCH_SHA256" ]] || die "review safety patch checksum mismatch"
 
 stage_dir="$(mktemp -d "$output_root/.clawpatch-build.XXXXXX")" || die "cannot create build staging directory"
@@ -135,7 +144,7 @@ built_cli="$build_dir/dist/cli.js"
 chmod 0755 "$built_cli"
 built_version="$("$built_cli" --version)" || die "built CLI failed its identity check"
 [[ "$built_version" == "$CLAWPATCH_VERSION" ]] || die "built CLI reports $built_version, expected $CLAWPATCH_VERSION"
-printf '%s %s\n' "$SCOUT_REVIEW_SAFETY_PATCH_VERSION" "$SCOUT_REVIEW_SAFETY_PATCH_SHA256" > "$build_dir/.scout-review-safety"
+printf '%s %s\n' "$SCOUT_REVIEW_SAFETY_PATCH_VERSION" "$SCOUT_REVIEW_SAFETY_PATCH_SHA256" >"$build_dir/.scout-review-safety"
 
 final_dir="$output_root/$CLAWPATCH_REVISION"
 if [[ -e "$final_dir" || -L "$final_dir" ]]; then

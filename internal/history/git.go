@@ -80,36 +80,9 @@ func parseLog(s string) ([]Commit, error) {
 		if strings.TrimSpace(rec) == "" {
 			continue
 		}
-		nl := strings.IndexByte(rec, '\n')
-		head, body := rec, ""
-		if nl >= 0 {
-			head, body = rec[:nl], rec[nl+1:]
-		}
-		f := strings.Split(head, fieldSp)
-		if len(f) != 5 {
-			return nil, fmt.Errorf("history: malformed log header %q", head)
-		}
-		at, err := strconv.ParseInt(f[3], 10, 64)
+		c, err := parseLogRecord(rec)
 		if err != nil {
-			return nil, fmt.Errorf("history: author time %q: %w", f[3], err)
-		}
-		c := Commit{Hash: f[0], AuthorName: f[1], AuthorEmail: f[2], Time: time.Unix(at, 0).UTC(), Parents: len(strings.Fields(f[4]))}
-		for _, line := range strings.Split(body, "\n") {
-			if line == "" {
-				continue
-			}
-			p := strings.SplitN(line, "\t", 3)
-			if len(p) != 3 {
-				return nil, fmt.Errorf("history: malformed numstat %q", line)
-			}
-			fc := FileChange{Path: p[2]}
-			if p[0] == "-" || p[1] == "-" {
-				fc.Binary = true
-			} else {
-				fc.Added, _ = strconv.Atoi(p[0])
-				fc.Removed, _ = strconv.Atoi(p[1])
-			}
-			c.Files = append(c.Files, fc)
+			return nil, err
 		}
 		commits = append(commits, c)
 	}
@@ -119,6 +92,49 @@ func parseLog(s string) ([]Commit, error) {
 	}
 	sortCommits(commits)
 	return commits, nil
+}
+
+func parseLogRecord(rec string) (Commit, error) {
+	nl := strings.IndexByte(rec, '\n')
+	head, body := rec, ""
+	if nl >= 0 {
+		head, body = rec[:nl], rec[nl+1:]
+	}
+	f := strings.Split(head, fieldSp)
+	if len(f) != 5 {
+		return Commit{}, fmt.Errorf("history: malformed log header %q", head)
+	}
+	at, err := strconv.ParseInt(f[3], 10, 64)
+	if err != nil {
+		return Commit{}, fmt.Errorf("history: author time %q: %w", f[3], err)
+	}
+	c := Commit{Hash: f[0], AuthorName: f[1], AuthorEmail: f[2], Time: time.Unix(at, 0).UTC(), Parents: len(strings.Fields(f[4]))}
+	for _, line := range strings.Split(body, "\n") {
+		if line == "" {
+			continue
+		}
+		fc, err := parseNumstat(line)
+		if err != nil {
+			return Commit{}, err
+		}
+		c.Files = append(c.Files, fc)
+	}
+	return c, nil
+}
+
+func parseNumstat(line string) (FileChange, error) {
+	p := strings.SplitN(line, "\t", 3)
+	if len(p) != 3 {
+		return FileChange{}, fmt.Errorf("history: malformed numstat %q", line)
+	}
+	fc := FileChange{Path: p[2]}
+	if p[0] == "-" || p[1] == "-" {
+		fc.Binary = true
+	} else {
+		fc.Added, _ = strconv.Atoi(p[0])
+		fc.Removed, _ = strconv.Atoi(p[1])
+	}
+	return fc, nil
 }
 
 func sortCommits(cs []Commit) {

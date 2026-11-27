@@ -10,10 +10,7 @@ func TestForceFullReschedulesCachedFile(t *testing.T) {
 	file := domain.File{Path: "main.go", Language: "go", ContentDigest: "abc", Eligible: true}
 	snapshot := domain.Snapshot{RepositoryID: "repository", WorktreeDigest: "worktree", IgnoreRulesDigest: "ignore", ExclusionsDigest: "exclude"}
 	input := PlanInput{ScopeDigest: "scope", RunID: "first", Snapshot: snapshot, Scope: domain.Scope{Kind: domain.ScopeRepository}, Files: []domain.File{file}, Diff: DiffResult{Added: []domain.File{file}}, FileCategories: map[domain.Family][]string{domain.FamilyQuality: {"complexity"}}, ForceFull: true}
-	first, err := Plan(input)
-	if err != nil {
-		t.Fatal(err)
-	}
+	first := mustPlan(t, input)
 	if len(first.Plan.Jobs) != 1 || first.Plan.Jobs[0].State != domain.JobPending {
 		t.Fatalf("initial analysis not scheduled: %+v", first.Plan.Jobs)
 	}
@@ -22,22 +19,25 @@ func TestForceFullReschedulesCachedFile(t *testing.T) {
 	input.ForceFull = false
 	input.Diff = DiffResult{}
 	input.Baseline = []CachedCoverage{{Coverage: domain.Coverage{Key: *job.CoverageKey, Status: domain.CoverageInspected, InspectedRanges: []domain.SourceRange{{Path: file.Path, StartLine: 1, EndLine: 1}}}, SourceRunID: "first", InputFingerprint: job.InputFingerprint}}
-	cached, err := Plan(input)
-	if err != nil {
-		t.Fatal(err)
-	}
+	cached := mustPlan(t, input)
 	if len(cached.Reused) != 1 || cached.Plan.Jobs[0].State != domain.JobReused {
 		t.Fatal("unchanged accounted unit was not reused")
 	}
 	input.RunID = "forced"
 	input.ForceFull = true
-	forced, err := Plan(input)
-	if err != nil {
-		t.Fatal(err)
-	}
+	forced := mustPlan(t, input)
 	if len(forced.Reused) != 0 || len(forced.Plan.Jobs) != 1 || forced.Plan.Jobs[0].State != domain.JobPending {
 		t.Fatal("forced-full analysis reused cached evidence")
 	}
+}
+
+func mustPlan(t *testing.T, input PlanInput) PlanResult {
+	t.Helper()
+	result, err := Plan(input)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return result
 }
 
 func TestNewCategoryIsPlannedWithoutSourceChanges(t *testing.T) {

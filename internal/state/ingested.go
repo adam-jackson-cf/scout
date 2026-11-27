@@ -37,11 +37,8 @@ func (s *Store) RecordIngestedArtifact(ctx context.Context, a IngestedArtifact) 
 	if s.readOnly {
 		return errors.New("state store is read-only")
 	}
-	if a.Snapshot == "" || a.Digest == "" || a.Kind == "" || a.RevisionMatch == "" {
-		return errors.New("ingested artifact requires snapshot, digest, kind and revision match")
-	}
-	if err := rejectUnsafePersistence(string(a.Payload)); err != nil {
-		return fmt.Errorf("ingested artifact payload: %w", err)
+	if err := validateIngestedArtifact(a); err != nil {
+		return err
 	}
 	if a.Payload == nil {
 		a.Payload = []byte{}
@@ -59,6 +56,20 @@ func (s *Store) RecordIngestedArtifact(ctx context.Context, a IngestedArtifact) 
 	if !isUniqueViolation(err) {
 		return fmt.Errorf("record ingested artifact: %w", err)
 	}
+	return s.checkIngestedProvenance(ctx, a)
+}
+
+func validateIngestedArtifact(a IngestedArtifact) error {
+	if a.Snapshot == "" || a.Digest == "" || a.Kind == "" || a.RevisionMatch == "" {
+		return errors.New("ingested artifact requires snapshot, digest, kind and revision match")
+	}
+	if err := rejectUnsafePersistence(string(a.Payload)); err != nil {
+		return fmt.Errorf("ingested artifact payload: %w", err)
+	}
+	return nil
+}
+
+func (s *Store) checkIngestedProvenance(ctx context.Context, a IngestedArtifact) error {
 	var stored IngestedArtifact
 	if err := s.db.QueryRowContext(ctx, `SELECT kind, revision, source, revision_match FROM ingested_artifacts WHERE snapshot = ? AND digest = ?`, a.Snapshot, a.Digest).
 		Scan(&stored.Kind, &stored.Revision, &stored.Source, &stored.RevisionMatch); err != nil {
@@ -68,27 +79,4 @@ func (s *Store) RecordIngestedArtifact(ctx context.Context, a IngestedArtifact) 
 		return fmt.Errorf("ingested artifact %s for snapshot %s is already recorded with different provenance", a.Digest, a.Snapshot)
 	}
 	return nil
-}
-
-// ListIngestedArtifacts returns a snapshot's artifacts ordered by kind, digest.
-func (s *Store) ListIngestedArtifacts(ctx context.Context, snapshot string) ([]IngestedArtifact, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	if s.closed {
-		return nil, errors.New("state store is closed")
-	}
-	rows, err := s.db.QueryContext(ctx, `SELECT snapshot, digest, kind, revision, producer, source, revision_match, reason, payload FROM ingested_artifacts WHERE snapshot = ? ORDER BY kind, digest`, snapshot)
-	if err != nil {
-		return nil, fmt.Errorf("list ingested artifacts: %w", err)
-	}
-	defer rows.Close()
-	var out []IngestedArtifact
-	for rows.Next() {
-		var a IngestedArtifact
-		if err := rows.Scan(&a.Snapshot, &a.Digest, &a.Kind, &a.Revision, &a.Producer, &a.Source, &a.RevisionMatch, &a.Reason, &a.Payload); err != nil {
-			return nil, err
-		}
-		out = append(out, a)
-	}
-	return out, rows.Err()
 }

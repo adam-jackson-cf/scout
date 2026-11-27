@@ -1,15 +1,17 @@
+//go:build boundary
+
 package baseline
 
 import (
 	"context"
-	"encoding/json"
 	"os/exec"
 	"reflect"
-	"scout/internal/domain"
-	"scout/internal/state"
 	"strings"
 	"testing"
 	"time"
+
+	"scout/internal/domain"
+	"scout/internal/state"
 )
 
 func p06Git(t *testing.T, dir string, args ...string) string {
@@ -47,12 +49,6 @@ func p06Tree(t *testing.T, l domain.ShadowLedger) Tree {
 	files[state.ExportCoverageSummary] = []byte("{}\n")
 	files[state.ExportManifest] = state.RenderManifest(state.ManifestMeta{RepositoryID: "repo", WouldBlock: state.WouldBlockPresent}, files)
 	return Tree(files)
-}
-func p06Decode(t *testing.T, raw string, dst any) {
-	t.Helper()
-	if err := json.Unmarshal([]byte(raw), dst); err != nil {
-		t.Fatal(err)
-	}
 }
 func p06Ledger() domain.ShadowLedger {
 	at := time.Date(2026, 11, 1, 10, 0, 0, 0, time.UTC)
@@ -118,51 +114,7 @@ func p06PushUnchecked(t *testing.T, ctx context.Context, o Options, tree Tree, p
 }
 func TestADR012CASCompatibilityGate(t *testing.T) {
 	for _, schema := range []string{"scout.state/v1", "scout.state/v99"} {
-		t.Run(schema, func(t *testing.T) {
-			_, opts := p06Remote(t)
-			ctx := boundedTestContext(t)
-			good := p06Tree(t, p06Ledger())
-			seed, err := p06Publish(t, ctx, opts[0], func(Tree) (Tree, error) { return good, nil })
-			if err != nil {
-				t.Fatal(err)
-			}
-			broken := Tree{}
-			for k, v := range good {
-				broken[k] = append([]byte(nil), v...)
-			}
-			broken[state.ExportManifest] = []byte(strings.Replace(string(good[state.ExportManifest]), "scout.state/v2", schema, 1))
-			calls := 0
-			competitor := ""
-			_, err = p06Publish(t, ctx, opts[0], func(current Tree) (Tree, error) {
-				calls++
-				if calls == 1 {
-					competitor = p06PushUnchecked(t, ctx, opts[1], broken, seed.Commit)
-				}
-				// A caller may replace rather than merge state: the Publish boundary owns
-				// the parent compatibility gate, not just validation of this valid output.
-				next := p06Tree(t, p06Ledger())
-				next[state.ExportCoverageSummary] = []byte("{\"changed\":true}\n")
-				next[state.ExportManifest] = state.RenderManifest(state.ManifestMeta{RepositoryID: "repo", WouldBlock: state.WouldBlockPresent}, next)
-				return next, nil
-			})
-			if err == nil {
-				t.Fatalf("CAS retry overwrote incompatible %s parent; callbacks=%d", schema, calls)
-			}
-			tip, tipErr := remoteTip(ctx, git{dir: opts[0].Repo}, opts[0])
-			if tipErr != nil {
-				t.Fatal(tipErr)
-			}
-			if tip != competitor {
-				t.Fatalf("incompatible parent overwritten: %s want %s", tip, competitor)
-			}
-			if schema == "scout.state/v1" {
-				if !strings.Contains(err.Error(), "last intact v2") || !strings.Contains(err.Error(), "reapply") {
-					t.Fatalf("missing recover-and-reapply remedy: %v", err)
-				}
-			} else if !strings.Contains(err.Error(), "upgrade") {
-				t.Fatalf("missing writer upgrade remedy: %v", err)
-			}
-		})
+		t.Run(schema, func(t *testing.T) { checkCASGateRefusesIncompatibleParent(t, schema) })
 	}
 	t.Run("empty_destination_still_validates_local", func(t *testing.T) {
 		bad := p06Tree(t, domain.ShadowLedger{})
@@ -171,4 +123,56 @@ func TestADR012CASCompatibilityGate(t *testing.T) {
 			t.Fatal("empty destination bypassed manifest validation")
 		}
 	})
+}
+
+func checkCASGateRefusesIncompatibleParent(t *testing.T, schema string) {
+	t.Helper()
+	_, opts := p06Remote(t)
+	ctx := boundedTestContext(t)
+	good := p06Tree(t, p06Ledger())
+	seed, err := p06Publish(t, ctx, opts[0], func(Tree) (Tree, error) { return good, nil })
+	if err != nil {
+		t.Fatal(err)
+	}
+	broken := Tree{}
+	for k, v := range good {
+		broken[k] = append([]byte(nil), v...)
+	}
+	broken[state.ExportManifest] = []byte(strings.Replace(string(good[state.ExportManifest]), "scout.state/v2", schema, 1))
+	calls := 0
+	competitor := ""
+	_, err = p06Publish(t, ctx, opts[0], func(current Tree) (Tree, error) {
+		calls++
+		if calls == 1 {
+			competitor = p06PushUnchecked(t, ctx, opts[1], broken, seed.Commit)
+		}
+		// A caller may replace rather than merge state: the Publish boundary owns
+		// the parent compatibility gate, not just validation of this valid output.
+		next := p06Tree(t, p06Ledger())
+		next[state.ExportCoverageSummary] = []byte("{\"changed\":true}\n")
+		next[state.ExportManifest] = state.RenderManifest(state.ManifestMeta{RepositoryID: "repo", WouldBlock: state.WouldBlockPresent}, next)
+		return next, nil
+	})
+	if err == nil {
+		t.Fatalf("CAS retry overwrote incompatible %s parent; callbacks=%d", schema, calls)
+	}
+	tip, tipErr := remoteTip(ctx, git{dir: opts[0].Repo}, opts[0])
+	if tipErr != nil {
+		t.Fatal(tipErr)
+	}
+	if tip != competitor {
+		t.Fatalf("incompatible parent overwritten: %s want %s", tip, competitor)
+	}
+	assertCASGateRemedy(t, schema, err)
+}
+
+func assertCASGateRemedy(t *testing.T, schema string, err error) {
+	t.Helper()
+	if schema == "scout.state/v1" {
+		if !strings.Contains(err.Error(), "last intact v2") || !strings.Contains(err.Error(), "reapply") {
+			t.Fatalf("missing recover-and-reapply remedy: %v", err)
+		}
+	} else if !strings.Contains(err.Error(), "upgrade") {
+		t.Fatalf("missing writer upgrade remedy: %v", err)
+	}
 }

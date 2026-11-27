@@ -78,21 +78,8 @@ func Candidates(files []domain.File) []domain.File {
 // burden_density, dup_pct and scout.crap (`unmeasured` unless the input
 // carries a revision-matched coverage artifact).
 func Compute(in Input) []domain.Signal {
-	candidateByPath := make(map[string]domain.File, len(in.Candidates))
-	for _, file := range in.Candidates {
-		candidateByPath[file.Path] = file
-	}
 	scopes := BuildScopes(in.Candidates, in.Features)
-	measured := map[string]bool{}
-	for _, file := range MeasuredPopulation(in.Candidates, in.Facts.Lizard) {
-		measured[file.Path] = true
-	}
-	scopesOfFile := map[string]int{}
-	for _, scope := range scopes {
-		for _, path := range scope.Paths {
-			scopesOfFile[path]++
-		}
-	}
+	index := newComputeIndex(in, scopes)
 	configDigest := ConfigDigest()
 
 	var signals []domain.Signal
@@ -100,37 +87,68 @@ func Compute(in Input) []domain.Signal {
 		if len(scope.Paths) == 0 {
 			continue // no production source: nothing to measure, not a measurement gap
 		}
-		view := scopeView{in: in, populationKind: "eligible"}
-		for _, path := range scope.Paths {
-			file := candidateByPath[path]
-			view.members = append(view.members, file)
-			if measured[path] {
-				view.population = append(view.population, file)
-			} else if _, seen := in.Facts.Lizard[path]; !seen && in.Facts.LizardErr == "" {
-				view.unmeasuredFiles++
-			}
-		}
-		// Without lizard the population is undefined; the digest then covers
-		// the candidates and Detail says so.
-		digestFiles := view.population
-		if in.Facts.LizardErr != "" {
-			digestFiles, view.populationKind = view.members, "candidates"
-		}
-		for _, file := range view.population {
-			if scopesOfFile[file.Path] > 1 {
-				view.overlap++
-			}
-		}
-		view.base = domain.Signal{
-			Version: metricVersion, ScopeKind: scope.Kind, ScopeAnchor: scope.Anchor,
-			Snapshot: in.Snapshot, ConfigDigest: configDigest, Claim: domain.ClaimDescriptive,
-			PopulationDigest: PopulationDigest(digestFiles),
-		}
+		view := index.view(in, scope, configDigest)
 		cc, burden, density := view.complexity()
 		signals = append(signals, cc, burden, density, view.duplication(), view.crap())
 	}
 	setRunScope(signals, in.RunScope)
 	return signals
+}
+
+type computeIndex struct {
+	candidateByPath map[string]domain.File
+	measured        map[string]bool
+	scopesOfFile    map[string]int
+}
+
+func newComputeIndex(in Input, scopes []Scope) computeIndex {
+	index := computeIndex{
+		candidateByPath: make(map[string]domain.File, len(in.Candidates)),
+		measured:        map[string]bool{},
+		scopesOfFile:    map[string]int{},
+	}
+	for _, file := range in.Candidates {
+		index.candidateByPath[file.Path] = file
+	}
+	for _, file := range MeasuredPopulation(in.Candidates, in.Facts.Lizard) {
+		index.measured[file.Path] = true
+	}
+	for _, scope := range scopes {
+		for _, path := range scope.Paths {
+			index.scopesOfFile[path]++
+		}
+	}
+	return index
+}
+
+func (index computeIndex) view(in Input, scope Scope, configDigest string) scopeView {
+	view := scopeView{in: in, populationKind: "eligible"}
+	for _, path := range scope.Paths {
+		file := index.candidateByPath[path]
+		view.members = append(view.members, file)
+		if index.measured[path] {
+			view.population = append(view.population, file)
+		} else if _, seen := in.Facts.Lizard[path]; !seen && in.Facts.LizardErr == "" {
+			view.unmeasuredFiles++
+		}
+	}
+	// Without lizard the population is undefined; the digest then covers
+	// the candidates and Detail says so.
+	digestFiles := view.population
+	if in.Facts.LizardErr != "" {
+		digestFiles, view.populationKind = view.members, "candidates"
+	}
+	for _, file := range view.population {
+		if index.scopesOfFile[file.Path] > 1 {
+			view.overlap++
+		}
+	}
+	view.base = domain.Signal{
+		Version: metricVersion, ScopeKind: scope.Kind, ScopeAnchor: scope.Anchor,
+		Snapshot: in.Snapshot, ConfigDigest: configDigest, Claim: domain.ClaimDescriptive,
+		PopulationDigest: PopulationDigest(digestFiles),
+	}
+	return view
 }
 
 // setRunScope records what the run inventory covered in every signal's detail.
@@ -288,33 +306,43 @@ func duplicatedLines(population []domain.File, facts Facts) (duplicated, lines, 
 			continue
 		}
 		pairs++
-		if !(a && b) {
+		if !a || !b {
 			cross++
 		}
-		for _, span := range []Span{clone.A, clone.B} {
-			if in[span.Path] {
-				end := span.End
-				if limit := facts.Lines[span.Path]; end > limit {
-					end = limit
-				}
-				if end >= span.Start {
-					spans[span.Path] = append(spans[span.Path], [2]int{span.Start, end})
-				}
-			}
-		}
+		addClippedSpans(spans, in, facts.Lines, clone)
 	}
 	for _, intervals := range spans {
-		sort.Slice(intervals, func(i, j int) bool { return intervals[i][0] < intervals[j][0] })
-		start, end := intervals[0][0], intervals[0][1]
-		for _, interval := range intervals[1:] {
-			if interval[0] > end+1 {
-				duplicated += end - start + 1
-				start, end = interval[0], interval[1]
-			} else if interval[1] > end {
-				end = interval[1]
-			}
-		}
-		duplicated += end - start + 1
+		duplicated += unionLength(intervals)
 	}
 	return duplicated, lines, pairs, cross
+}
+
+func addClippedSpans(spans map[string][][2]int, in map[string]bool, lines map[string]int, clone Clone) {
+	for _, span := range []Span{clone.A, clone.B} {
+		if !in[span.Path] {
+			continue
+		}
+		end := span.End
+		if limit := lines[span.Path]; end > limit {
+			end = limit
+		}
+		if end >= span.Start {
+			spans[span.Path] = append(spans[span.Path], [2]int{span.Start, end})
+		}
+	}
+}
+
+func unionLength(intervals [][2]int) int {
+	sort.Slice(intervals, func(i, j int) bool { return intervals[i][0] < intervals[j][0] })
+	total := 0
+	start, end := intervals[0][0], intervals[0][1]
+	for _, interval := range intervals[1:] {
+		if interval[0] > end+1 {
+			total += end - start + 1
+			start, end = interval[0], interval[1]
+		} else if interval[1] > end {
+			end = interval[1]
+		}
+	}
+	return total + end - start + 1
 }

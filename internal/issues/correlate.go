@@ -25,9 +25,6 @@ const (
 	maxIssueText     = 4096
 )
 
-// mintID creates the durable issue ID; replaceable only in tests.
-var mintID = func(family domain.Family) string { return domain.NewIssueID(family, time.Now()) }
-
 // Option adjusts one correlation.
 type Option func(*options)
 
@@ -88,34 +85,14 @@ func Correlate(ctx context.Context, store *state.Store, run domain.Run, observat
 	if err := run.Validate(); err != nil {
 		return nil, fmt.Errorf("correlation run: %w", err)
 	}
-	var settings options
-	for _, option := range opts {
-		option(&settings)
-	}
+	settings := applyOptions(opts)
 	occurrences, err := groupOccurrences(run, observations)
 	if err != nil {
 		return nil, err
 	}
-	existing, err := store.ListIssues(ctx)
+	pool, err := loadCandidates(ctx, store, settings.renames)
 	if err != nil {
-		return nil, fmt.Errorf("list durable issues: %w", err)
-	}
-	sort.Slice(existing, func(i, j int) bool {
-		if !existing[i].CreatedAt.Equal(existing[j].CreatedAt) {
-			return existing[i].CreatedAt.Before(existing[j].CreatedAt)
-		}
-		return existing[i].IssueID < existing[j].IssueID
-	})
-	pool := make([]*candidate, 0, len(existing))
-	for _, issue := range existing {
-		if issue.Anchor.RuleKey == "" {
-			continue // migrated legacy row listed as ambiguous; it has nothing to match on
-		}
-		path := issue.Anchor.Path
-		if renamed, found := settings.renames[path]; found {
-			path = renamed
-		}
-		pool = append(pool, &candidate{issue: issue, path: path})
+		return nil, err
 	}
 
 	matched := make([]*candidate, len(occurrences))
@@ -126,23 +103,7 @@ func Correlate(ctx context.Context, store *state.Store, run domain.Run, observat
 
 	result := make([]domain.Issue, 0, len(occurrences))
 	for index, occ := range occurrences {
-		var issue domain.Issue
-		if matched[index] != nil {
-			issue, err = store.RecordIssueMatch(ctx, state.IssueMatch{
-				IssueID: matched[index].issue.IssueID, ObservationIDs: observationIDs(occ), Anchor: occ.anchor,
-				Files: []string{occ.anchor.Path}, FeatureIDs: occ.featureIDs, Drift: drift[index],
-				Actor: correlationActor, Reason: "linked repeated validated observation",
-			})
-		} else {
-			issue, err = createIssue(ctx, store, occ)
-			if err == nil && len(occ.ambiguous) != 0 {
-				for _, peer := range occ.ambiguous {
-					if _, err = store.MarkIssueAmbiguous(ctx, peer, []string{issue.IssueID}, correlationActor); err != nil {
-						break
-					}
-				}
-			}
-		}
+		issue, err := recordOccurrence(ctx, store, occ, matched[index], drift[index])
 		if err != nil {
 			return nil, err
 		}
@@ -154,6 +115,63 @@ func Correlate(ctx context.Context, store *state.Store, run domain.Run, observat
 	return result, nil
 }
 
+func applyOptions(opts []Option) options {
+	var settings options
+	for _, option := range opts {
+		option(&settings)
+	}
+	return settings
+}
+
+func loadCandidates(ctx context.Context, store *state.Store, renames map[string]string) ([]*candidate, error) {
+	existing, err := store.ListIssues(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("list durable issues: %w", err)
+	}
+	sortByCreation(existing)
+	pool := make([]*candidate, 0, len(existing))
+	for _, issue := range existing {
+		if issue.Anchor.RuleKey == "" {
+			continue // migrated legacy row listed as ambiguous; it has nothing to match on
+		}
+		path := issue.Anchor.Path
+		if renamed, found := renames[path]; found {
+			path = renamed
+		}
+		pool = append(pool, &candidate{issue: issue, path: path})
+	}
+	return pool, nil
+}
+
+func sortByCreation(existing []domain.Issue) {
+	sort.Slice(existing, func(i, j int) bool {
+		if !existing[i].CreatedAt.Equal(existing[j].CreatedAt) {
+			return existing[i].CreatedAt.Before(existing[j].CreatedAt)
+		}
+		return existing[i].IssueID < existing[j].IssueID
+	})
+}
+
+func recordOccurrence(ctx context.Context, store *state.Store, occ *occurrence, match *candidate, drift bool) (domain.Issue, error) {
+	if match != nil {
+		return store.RecordIssueMatch(ctx, state.IssueMatch{
+			IssueID: match.issue.IssueID, ObservationIDs: observationIDs(occ), Anchor: occ.anchor,
+			Files: []string{occ.anchor.Path}, FeatureIDs: occ.featureIDs, Drift: drift,
+			Actor: correlationActor, Reason: "linked repeated validated observation",
+		})
+	}
+	issue, err := createIssue(ctx, store, occ)
+	if err != nil {
+		return domain.Issue{}, err
+	}
+	for _, peer := range occ.ambiguous {
+		if _, err := store.MarkIssueAmbiguous(ctx, peer, []string{issue.IssueID}, correlationActor); err != nil {
+			return domain.Issue{}, err
+		}
+	}
+	return issue, nil
+}
+
 // matchExact is ladder step (a): rule + path + symbol + fingerprint. A secret
 // matches by its digest alone so a moved secret stays the same issue.
 func matchExact(occurrences []*occurrence, pool []*candidate, matched []*candidate) {
@@ -163,13 +181,7 @@ func matchExact(occurrences []*occurrence, pool []*candidate, matched []*candida
 				continue
 			}
 			for _, cand := range pool {
-				if cand.taken || cand.held || (cand.issue.State == domain.IssueResolved) != resolvedOK || !sameRule(occ, cand) {
-					continue
-				}
-				if occ.anchor.Secret != cand.issue.Anchor.Secret || occ.anchor.Fingerprint != cand.issue.Anchor.Fingerprint {
-					continue
-				}
-				if !occ.anchor.Secret && (cand.path != occ.anchor.Path || cand.issue.Anchor.Symbol != occ.anchor.Symbol) {
+				if !exactMatch(occ, cand, resolvedOK) {
 					continue
 				}
 				cand.taken, matched[index] = true, cand
@@ -179,6 +191,16 @@ func matchExact(occurrences []*occurrence, pool []*candidate, matched []*candida
 	}
 }
 
+func exactMatch(occ *occurrence, cand *candidate, resolvedOK bool) bool {
+	if cand.taken || cand.held || (cand.issue.State == domain.IssueResolved) != resolvedOK || !sameRule(occ, cand) {
+		return false
+	}
+	if occ.anchor.Secret != cand.issue.Anchor.Secret || occ.anchor.Fingerprint != cand.issue.Anchor.Fingerprint {
+		return false
+	}
+	return occ.anchor.Secret || (cand.path == occ.anchor.Path && cand.issue.Anchor.Symbol == occ.anchor.Symbol)
+}
+
 // matchLadder runs steps (b) and (c) over occurrences left after (a), per
 // bucket. withSymbol selects (b): same symbol, fingerprint changed; otherwise
 // (c): no symbol, exactly one candidate in the file. A bucket with exactly one
@@ -186,6 +208,21 @@ func matchExact(occurrences []*occurrence, pool []*candidate, matched []*candida
 // candidates is ambiguous: the occurrences become new issues linked through
 // ambiguous_with and the candidates are held, never merged or resolved.
 func matchLadder(occurrences []*occurrence, pool []*candidate, matched []*candidate, drift []bool, withSymbol bool) {
+	buckets, order := ladderBuckets(occurrences, matched, withSymbol)
+	for _, key := range order {
+		indexes := buckets[key]
+		first := occurrences[indexes[0]]
+		var candidates []*candidate
+		for _, cand := range pool {
+			if ladderCandidate(cand, first, withSymbol) {
+				candidates = append(candidates, cand)
+			}
+		}
+		settleBucket(occurrences, indexes, candidates, matched, drift)
+	}
+}
+
+func ladderBuckets(occurrences []*occurrence, matched []*candidate, withSymbol bool) (map[string][]int, []string) {
 	buckets := map[string][]int{}
 	var order []string
 	for index, occ := range occurrences {
@@ -198,33 +235,31 @@ func matchLadder(occurrences []*occurrence, pool []*candidate, matched []*candid
 		}
 		buckets[key] = append(buckets[key], index)
 	}
-	for _, key := range order {
-		indexes := buckets[key]
-		first := occurrences[indexes[0]]
-		var candidates []*candidate
-		for _, cand := range pool {
-			if cand.taken || cand.held || cand.issue.State == domain.IssueResolved || cand.issue.Anchor.Secret || cand.path != first.anchor.Path || !sameRule(first, cand) {
-				continue
-			}
-			if withSymbol && cand.issue.Anchor.Symbol != first.anchor.Symbol {
-				continue
-			}
-			candidates = append(candidates, cand)
+	return buckets, order
+}
+
+func ladderCandidate(cand *candidate, first *occurrence, withSymbol bool) bool {
+	if cand.taken || cand.held || cand.issue.State == domain.IssueResolved || cand.issue.Anchor.Secret || cand.path != first.anchor.Path || !sameRule(first, cand) {
+		return false
+	}
+	return !withSymbol || cand.issue.Anchor.Symbol == first.anchor.Symbol
+}
+
+func settleBucket(occurrences []*occurrence, indexes []int, candidates []*candidate, matched []*candidate, drift []bool) {
+	first := occurrences[indexes[0]]
+	switch {
+	case len(candidates) == 0:
+	case len(indexes) == 1 && len(candidates) == 1:
+		candidates[0].taken, matched[indexes[0]] = true, candidates[0]
+		drift[indexes[0]] = candidates[0].issue.Anchor.Fingerprint != first.anchor.Fingerprint
+	default:
+		ids := make([]string, 0, len(candidates))
+		for _, cand := range candidates {
+			cand.held = true
+			ids = append(ids, cand.issue.IssueID)
 		}
-		switch {
-		case len(candidates) == 0:
-		case len(indexes) == 1 && len(candidates) == 1:
-			candidates[0].taken, matched[indexes[0]] = true, candidates[0]
-			drift[indexes[0]] = candidates[0].issue.Anchor.Fingerprint != first.anchor.Fingerprint
-		default:
-			ids := make([]string, 0, len(candidates))
-			for _, cand := range candidates {
-				cand.held = true
-				ids = append(ids, cand.issue.IssueID)
-			}
-			for _, index := range indexes {
-				occurrences[index].ambiguous = ids
-			}
+		for _, index := range indexes {
+			occurrences[index].ambiguous = ids
 		}
 	}
 }
@@ -256,87 +291,86 @@ func scopeIncludes(scope domain.Scope, path string) bool {
 // coverage (and files absent from a partial run) leave the issue open.
 func resolveAbsent(ctx context.Context, store *state.Store, run domain.Run, pool []*candidate, settings options) error {
 	for _, cand := range pool {
-		if !cand.taken && cand.path != cand.issue.Anchor.Path {
-			if err := store.FollowIssueRename(ctx, cand.issue.IssueID, cand.path); err != nil {
-				return fmt.Errorf("follow rename for issue %q: %w", cand.issue.IssueID, err)
-			}
+		if err := followRename(ctx, store, cand); err != nil {
+			return err
 		}
-		switch cand.issue.State {
-		case domain.IssueResolved, domain.IssueFalsePositive, domain.IssueWontFix:
+		if !resolutionCandidate(cand) {
 			continue
 		}
-		if cand.taken || cand.held {
-			continue
-		}
-		if settings.deleted[cand.path] && run.State == domain.RunComplete && scopeIncludes(run.Scope, cand.path) {
-			verification := domain.Verification{RunID: run.RunID, Reason: domain.ResolutionFileDeleted, Relevant: true, FailureModeAbsent: true, VerifiedAt: time.Now().UTC()}
-			if _, err := store.ResolveIssue(ctx, cand.issue.IssueID, verification, "", correlationActor, domain.ResolutionFileDeleted+": file removed in a complete run"); err != nil {
-				return fmt.Errorf("resolve issue %q: %w", cand.issue.IssueID, err)
-			}
-			continue
-		}
-		followed := cand.issue
-		followed.Anchor.Path = cand.path
-		var best *domain.Coverage
-		for index := range run.Coverage {
-			row := &run.Coverage[index]
-			if followed.CoverageRelevant(*row) && (best == nil || best.Status == domain.CoverageFlagged) {
-				best = row
-			}
-		}
-		if best == nil {
-			continue
-		}
-		verification := domain.Verification{RunID: run.RunID, Relevant: true, InspectionStatus: best.Status, FailureModeAbsent: true, VerifiedAt: time.Now().UTC()}
-		if _, err := store.ResolveIssue(ctx, cand.issue.IssueID, verification, cand.path, correlationActor, "failure mode absent after a successful relevant re-check"); err != nil {
-			return fmt.Errorf("resolve issue %q: %w", cand.issue.IssueID, err)
+		if err := resolveCandidate(ctx, store, run, cand, settings); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
+func followRename(ctx context.Context, store *state.Store, cand *candidate) error {
+	if !cand.taken && cand.path != cand.issue.Anchor.Path {
+		if err := store.FollowIssueRename(ctx, cand.issue.IssueID, cand.path); err != nil {
+			return fmt.Errorf("follow rename for issue %q: %w", cand.issue.IssueID, err)
+		}
+	}
+	return nil
+}
+
+func resolutionCandidate(cand *candidate) bool {
+	switch cand.issue.State {
+	case domain.IssueResolved, domain.IssueFalsePositive, domain.IssueWontFix:
+		return false
+	}
+	return !cand.taken && !cand.held
+}
+
+func resolveCandidate(ctx context.Context, store *state.Store, run domain.Run, cand *candidate, settings options) error {
+	if settings.deleted[cand.path] && run.State == domain.RunComplete && scopeIncludes(run.Scope, cand.path) {
+		verification := domain.Verification{RunID: run.RunID, Reason: domain.ResolutionFileDeleted, Relevant: true, FailureModeAbsent: true, VerifiedAt: time.Now().UTC()}
+		if _, err := store.ResolveIssue(ctx, state.Resolution{IssueID: cand.issue.IssueID, Verification: verification, Actor: correlationActor, Reason: domain.ResolutionFileDeleted + ": file removed in a complete run"}); err != nil {
+			return fmt.Errorf("resolve issue %q: %w", cand.issue.IssueID, err)
+		}
+		return nil
+	}
+	followed := cand.issue
+	followed.Anchor.Path = cand.path
+	best := bestCoverage(run, followed)
+	if best == nil {
+		return nil
+	}
+	verification := domain.Verification{RunID: run.RunID, Relevant: true, InspectionStatus: best.Status, FailureModeAbsent: true, VerifiedAt: time.Now().UTC()}
+	if _, err := store.ResolveIssue(ctx, state.Resolution{IssueID: cand.issue.IssueID, Verification: verification, FollowPath: cand.path, Actor: correlationActor, Reason: "failure mode absent after a successful relevant re-check"}); err != nil {
+		return fmt.Errorf("resolve issue %q: %w", cand.issue.IssueID, err)
+	}
+	return nil
+}
+
+func bestCoverage(run domain.Run, followed domain.Issue) *domain.Coverage {
+	var best *domain.Coverage
+	for index := range run.Coverage {
+		row := &run.Coverage[index]
+		if followed.CoverageRelevant(*row) && (best == nil || best.Status == domain.CoverageFlagged) {
+			best = row
+		}
+	}
+	return best
+}
+
+type keyed struct {
+	observation domain.Observation
+	anchor      domain.IssueAnchor
+	mechanism   string
+	category    string
+}
+
 func groupOccurrences(run domain.Run, observations []domain.Observation) ([]*occurrence, error) {
 	featureIDs := featuresByObservation(run)
-	type keyed struct {
-		observation domain.Observation
-		anchor      domain.IssueAnchor
-		mechanism   string
-		category    string
-	}
 	rows := make([]keyed, 0, len(observations))
 	for _, observation := range observations {
-		if err := observation.Validate(); err != nil {
-			return nil, fmt.Errorf("correlation observation %q: %w", observation.ObservationID, err)
+		row, err := keyObservation(run, observation)
+		if err != nil {
+			return nil, err
 		}
-		if observation.RunID != run.RunID {
-			return nil, fmt.Errorf("correlation observation %q belongs to run %q, not %q", observation.ObservationID, observation.RunID, run.RunID)
-		}
-		mechanism, err := SanitizeText(observation.Mechanism)
-		if err != nil || mechanism == "" {
-			return nil, fmt.Errorf("correlation observation %q has unsafe mechanism", observation.ObservationID)
-		}
-		category, err := SanitizeText(observation.OriginalCategory)
-		if err != nil || category == "" {
-			return nil, fmt.Errorf("correlation observation %q has unsafe category", observation.ObservationID)
-		}
-		anchor, ok := domain.AnchorOf(observation)
-		if !ok {
-			return nil, fmt.Errorf("correlation observation %q has no evidence", observation.ObservationID)
-		}
-		rows = append(rows, keyed{observation: observation, anchor: anchor, mechanism: mechanism, category: category})
+		rows = append(rows, row)
 	}
-	sort.SliceStable(rows, func(i, j int) bool {
-		a, b := rows[i].observation.Evidence[0].Location, rows[j].observation.Evidence[0].Location
-		switch {
-		case a.Path != b.Path:
-			return a.Path < b.Path
-		case a.StartLine != b.StartLine:
-			return a.StartLine < b.StartLine
-		case a.StartByte != b.StartByte:
-			return a.StartByte < b.StartByte
-		}
-		return rows[i].observation.ObservationID < rows[j].observation.ObservationID
-	})
+	sortByLocation(rows)
 	byLocation := map[string]*occurrence{}
 	occurrences := make([]*occurrence, 0, len(rows))
 	for _, row := range rows {
@@ -352,6 +386,43 @@ func groupOccurrences(run domain.Run, observations []domain.Observation) ([]*occ
 		occ.featureIDs = sortedUnique(append(occ.featureIDs, featureIDs[row.observation.ObservationID]...))
 	}
 	return occurrences, nil
+}
+
+func keyObservation(run domain.Run, observation domain.Observation) (keyed, error) {
+	if err := observation.Validate(); err != nil {
+		return keyed{}, fmt.Errorf("correlation observation %q: %w", observation.ObservationID, err)
+	}
+	if observation.RunID != run.RunID {
+		return keyed{}, fmt.Errorf("correlation observation %q belongs to run %q, not %q", observation.ObservationID, observation.RunID, run.RunID)
+	}
+	mechanism, err := SanitizeText(observation.Mechanism)
+	if err != nil || mechanism == "" {
+		return keyed{}, fmt.Errorf("correlation observation %q has unsafe mechanism", observation.ObservationID)
+	}
+	category, err := SanitizeText(observation.OriginalCategory)
+	if err != nil || category == "" {
+		return keyed{}, fmt.Errorf("correlation observation %q has unsafe category", observation.ObservationID)
+	}
+	anchor, ok := domain.AnchorOf(observation)
+	if !ok {
+		return keyed{}, fmt.Errorf("correlation observation %q has no evidence", observation.ObservationID)
+	}
+	return keyed{observation: observation, anchor: anchor, mechanism: mechanism, category: category}, nil
+}
+
+func sortByLocation(rows []keyed) {
+	sort.SliceStable(rows, func(i, j int) bool {
+		a, b := rows[i].observation.Evidence[0].Location, rows[j].observation.Evidence[0].Location
+		switch {
+		case a.Path != b.Path:
+			return a.Path < b.Path
+		case a.StartLine != b.StartLine:
+			return a.StartLine < b.StartLine
+		case a.StartByte != b.StartByte:
+			return a.StartByte < b.StartByte
+		}
+		return rows[i].observation.ObservationID < rows[j].observation.ObservationID
+	})
 }
 
 func featuresByObservation(run domain.Run) map[string][]string {
@@ -381,14 +452,7 @@ func observationIDs(occ *occurrence) []string {
 func createIssue(ctx context.Context, store *state.Store, occ *occurrence) (domain.Issue, error) {
 	now := time.Now().UTC()
 	ids := observationIDs(occ)
-	var claim domain.SignalClaim
-	rule := ""
-	for _, observation := range occ.observations {
-		if observation.Claim != "" {
-			claim, rule = observation.Claim, observation.RuleID
-			break
-		}
-	}
+	claim, rule := firstClaim(occ.observations)
 	originalSeverity, effectiveSeverity := domain.SeverityInformational, domain.SeverityInformational
 	uncertainty := ""
 	for _, observation := range occ.observations {
@@ -410,7 +474,7 @@ func createIssue(ctx context.Context, store *state.Store, occ *occurrence) (doma
 		return domain.Issue{}, fmt.Errorf("issue title: %w", err)
 	}
 	issue := domain.Issue{
-		IssueID: mintID(occ.family), State: domain.IssueOpen, Family: occ.family, Category: occ.category,
+		IssueID: domain.NewIssueID(occ.family, time.Now()), State: domain.IssueOpen, Family: occ.family, Category: occ.category,
 		Title: title, Mechanism: occ.mechanism, Anchor: occ.anchor,
 		OriginalSeverity: originalSeverity, EffectiveSeverity: effectiveSeverity, Uncertainty: uncertainty,
 		ObservationIDs: ids, FeatureIDs: append([]string(nil), occ.featureIDs...), Files: []string{occ.anchor.Path},
@@ -426,6 +490,15 @@ func createIssue(ctx context.Context, store *state.Store, occ *occurrence) (doma
 		return domain.Issue{}, fmt.Errorf("create correlated issue %q: %w", issue.IssueID, err)
 	}
 	return issue, nil
+}
+
+func firstClaim(observations []domain.Observation) (domain.SignalClaim, string) {
+	for _, observation := range observations {
+		if observation.Claim != "" {
+			return observation.Claim, observation.RuleID
+		}
+	}
+	return "", ""
 }
 
 func sortedUnique(values []string) []string {

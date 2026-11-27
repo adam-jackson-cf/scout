@@ -17,7 +17,6 @@ import (
 
 	"scout/internal/areas"
 	"scout/internal/association"
-	"scout/internal/decisions"
 	"scout/internal/domain"
 	"scout/internal/guardrails"
 	"scout/internal/issues"
@@ -55,8 +54,6 @@ type DiffConfig struct {
 	Fork bool
 	// NoEgress disables the Jev call for this run even when consented.
 	NoEgress bool
-	// JevClient is a test seam; nil builds the OpenRouter client from JevKey.
-	JevClient *decisions.Client
 	// DeltaTools locates lizard and jscpd for the delta rules; the zero value
 	// finds them on PATH.
 	DeltaTools measures.Tools
@@ -121,81 +118,181 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 		return UnavailableReport(err), err
 	}
 	cfg.Config.Root = root
-	fail := func(err error) (DiffReport, error) { return UnavailableReport(err), err }
+	report, err := diffAtRoot(ctx, cfg)
+	if err != nil {
+		return UnavailableReport(err), err
+	}
+	return report, nil
+}
+
+type diffRevisions struct {
+	headRef   string
+	baseSHA   string
+	headSHA   string
+	mergeBase string
+}
+
+type diffRun struct {
+	ctx        context.Context
+	cfg        DiffConfig
+	rev        diffRevisions
+	pol        policy.Policy
+	changed    []string
+	codeowners []byte
+	head       Result
+	store      *state.Store
+}
+
+func resolveDiffRevisions(ctx context.Context, cfg DiffConfig) (diffRevisions, error) {
+	root := cfg.Config.Root
 	if cfg.BaseRef == "" {
-		return fail(errors.New("--base is required"))
+		return diffRevisions{}, errors.New("--base is required")
 	}
-	headRef := cfg.HeadRef
-	if headRef == "" {
-		headRef = "HEAD"
+	rev := diffRevisions{headRef: cfg.HeadRef}
+	if rev.headRef == "" {
+		rev.headRef = "HEAD"
 	}
-	baseSHA, err := revParse(ctx, root, cfg.BaseRef)
-	if err != nil {
-		return fail(err)
+	var err error
+	if rev.baseSHA, err = revParse(ctx, root, cfg.BaseRef); err != nil {
+		return diffRevisions{}, err
 	}
-	headSHA, err := revParse(ctx, root, headRef)
-	if err != nil {
-		return fail(err)
+	if rev.headSHA, err = revParse(ctx, root, rev.headRef); err != nil {
+		return diffRevisions{}, err
 	}
 	checkedOut, err := revParse(ctx, root, "HEAD")
 	if err != nil {
-		return fail(err)
+		return diffRevisions{}, err
 	}
-	if headSHA != checkedOut {
-		return fail(fmt.Errorf("--head %s is not the checked-out HEAD; check it out so the head scan never touches another tree", headRef))
+	if rev.headSHA != checkedOut {
+		return diffRevisions{}, fmt.Errorf("--head %s is not the checked-out HEAD; check it out so the head scan never touches another tree", rev.headRef)
 	}
-	mbOut, err := git(ctx, root, "merge-base", baseSHA, headSHA)
+	mbOut, err := git(ctx, root, "merge-base", rev.baseSHA, rev.headSHA)
 	if err != nil {
-		return fail(fmt.Errorf("merge base of %s and %s: %w", cfg.BaseRef, headRef, err))
+		return diffRevisions{}, fmt.Errorf("merge base of %s and %s: %w", cfg.BaseRef, rev.headRef, err)
 	}
-	mergeBase := strings.TrimSpace(string(mbOut))
-	pol, err := policy.Load(root, baseSHA)
-	if err != nil {
-		return fail(fmt.Errorf("load policy from base ref: %w", err))
-	}
-	cfg.Config = ApplyModelCLIPolicy(cfg.Config, pol)
-	changed, err := changedFiles(ctx, root, mergeBase)
-	if err != nil {
-		return fail(err)
-	}
-	var codeowners []byte
+	rev.mergeBase = strings.TrimSpace(string(mbOut))
+	return rev, nil
+}
+
+func baseCodeowners(ctx context.Context, root, baseSHA string) []byte {
 	for _, path := range []string{".github/CODEOWNERS", "CODEOWNERS", "docs/CODEOWNERS"} {
 		if out, showErr := git(ctx, root, "show", baseSHA+":"+path); showErr == nil {
-			codeowners = out
-			break
+			return out
 		}
 	}
+	return nil
+}
 
-	guard := guardrailsLane(root, mergeBase, changed)
-	delta := deltaLane(root, mergeBase, changed, cfg.DeltaTools)
+func diffAtRoot(ctx context.Context, cfg DiffConfig) (report DiffReport, err error) {
+	root := cfg.Config.Root
+	rev, err := resolveDiffRevisions(ctx, cfg)
+	if err != nil {
+		return DiffReport{}, err
+	}
+	pol, err := policy.Load(root, rev.baseSHA)
+	if err != nil {
+		return DiffReport{}, fmt.Errorf("load policy from base ref: %w", err)
+	}
+	cfg.Config = ApplyModelCLIPolicy(cfg.Config, pol)
+	changed, err := changedFiles(ctx, root, rev.mergeBase)
+	if err != nil {
+		return DiffReport{}, err
+	}
+	codeowners := baseCodeowners(ctx, root, rev.baseSHA)
+
+	guard := guardrailsLane(root, rev.mergeBase, changed)
+	delta := deltaLane(root, rev.mergeBase, changed, cfg.DeltaTools)
 	headResult, err := Assess(ctx, cfg.Config, Options{Trigger: domain.TriggerPR, Inline: []InlineLane{guard, delta}, Measures: &MeasuresOptions{Only: append([]string{}, changed...)}})
 	if err != nil {
-		return fail(fmt.Errorf("head assessment: %w", err))
+		return DiffReport{}, fmt.Errorf("head assessment: %w", err)
 	}
 	store, err := state.Open(root)
 	if err != nil {
-		return fail(err)
+		return DiffReport{}, err
 	}
-	defer store.Close()
-	plan, err := store.LoadPlan(ctx, headResult.Run.PlanID)
+	defer func() { err = errors.Join(err, store.Close()) }()
+	run := diffRun{ctx: ctx, cfg: cfg, rev: rev, pol: pol, changed: changed, codeowners: codeowners, head: headResult, store: store}
+	return run.report()
+}
+
+func (r diffRun) report() (DiffReport, error) {
+	root := r.cfg.Config.Root
+	plan, err := r.store.LoadPlan(r.ctx, r.head.Run.PlanID)
 	if err != nil {
-		return fail(err)
+		return DiffReport{}, err
 	}
-	// Promoted delta issues are descriptive: they are partitioned out here so
-	// they can never be an input to attribution, the gate or would_block.
-	var headIssues, deltaIssues []domain.Issue
-	for _, issue := range headResult.Issues {
+	headIssues, deltaIssues := partitionDeltaIssues(r.head.Issues)
+	facts, err := r.checkFacts(headIssues)
+	if err != nil {
+		return DiffReport{}, err
+	}
+
+	var banners []string
+	baseIssues, baseGaps, comparison, banners, err := resolveBase(r.ctx, r.cfg, root, r.rev.mergeBase, plan)
+	if err != nil {
+		return DiffReport{}, err
+	}
+
+	changedSet := make(map[string]bool, len(r.changed))
+	for _, path := range r.changed {
+		changedSet[path] = true
+	}
+	overrides := ParseOverrides(r.cfg.OverrideText)
+	output := Evaluate(GateInput{
+		Policy: r.pol, Head: headIssues, Facts: facts, Base: withoutClaimed(baseIssues), Comparison: comparison, Changed: changedSet,
+		Lanes: r.head.Lanes, Overrides: overrides, OverrideActor: r.cfg.OverrideActor, Codeowners: r.codeowners,
+		BaseRevision: r.rev.mergeBase, HeadRevision: r.rev.headSHA, Banners: banners, BaseGaps: baseGaps,
+	})
+	if err := r.recordGateOutput(output); err != nil {
+		return DiffReport{}, err
+	}
+	r.logRejectedOverrides(output)
+	if output.WouldBlock == nil {
+		output.WouldBlock = []domain.WouldBlock{}
+	}
+	changed := r.changed
+	if changed == nil {
+		changed = []string{}
+	}
+	reportIssues := append(output.Issues, deltaAttributed(r.pol, deltaIssues)...)
+	ranking, decisionsHealth, err := RankingOf(r.ctx, RankingInput{
+		Issues: output.Issues, Root: root, RunID: r.head.Run.RunID, Trigger: domain.TriggerPR, Policy: r.pol.Decisions(),
+		Key: r.cfg.JevKey, Fork: r.cfg.Fork, NoEgress: r.cfg.NoEgress, Store: r.store, ReadThresholds: CommittedThresholds(root, r.rev.baseSHA),
+	})
+	if err != nil {
+		return DiffReport{}, fmt.Errorf("ranking: %w", err)
+	}
+	pending, err := r.pendingAreas()
+	if err != nil {
+		return DiffReport{}, err
+	}
+	return DiffReport{
+		Base: r.rev.baseSHA, Head: r.rev.headSHA, MergeBase: r.rev.mergeBase, Comparison: comparison, ComparisonReason: comparisonReason(comparison, banners), Gate: output.Gate, Health: ApplyDecisionsHealth(r.head.Lanes, decisionsHealth),
+		WouldBlock: output.WouldBlock, Ranking: ranking, Issues: reportIssues, PreExisting: output.Pre, Changed: changed,
+		PendingAreas:     pending,
+		AssociationGuard: r.head.AssociationGuard,
+	}, nil
+}
+
+// Promoted delta issues are descriptive: they are partitioned out here so
+// they can never be an input to attribution, the gate or would_block.
+func partitionDeltaIssues(list []domain.Issue) (headIssues, deltaIssues []domain.Issue) {
+	for _, issue := range list {
 		if issue.Claim != "" {
 			deltaIssues = append(deltaIssues, issue)
 		} else {
 			headIssues = append(headIssues, issue)
 		}
 	}
+	return headIssues, deltaIssues
+}
+
+func (r diffRun) checkFacts(headIssues []domain.Issue) (map[string]CheckFact, error) {
 	facts := make(map[string]CheckFact, len(headIssues))
 	for _, issue := range headIssues {
-		observations, listErr := store.ListIssueObservations(ctx, issue.IssueID)
+		observations, listErr := r.store.ListIssueObservations(r.ctx, issue.IssueID)
 		if listErr != nil {
-			return fail(listErr)
+			return nil, listErr
 		}
 		if len(observations) == 0 {
 			continue
@@ -203,67 +300,55 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 		last := observations[len(observations)-1]
 		facts[issue.IssueID] = CheckFact{CheckID: CheckIDOf(last.Source, last.RuleID), RuleVersion: last.RuleVersion}
 	}
+	return facts, nil
+}
 
-	var banners []string
-	baseIssues, baseGaps, comparison, banners, err := resolveBase(ctx, cfg, root, mergeBase, plan, headResult)
-	if err != nil {
-		return fail(err)
-	}
-
-	changedSet := make(map[string]bool, len(changed))
-	for _, path := range changed {
-		changedSet[path] = true
-	}
-	overrides := ParseOverrides(cfg.OverrideText)
-	output := Evaluate(GateInput{
-		Policy: pol, Head: headIssues, Facts: facts, Base: withoutClaimed(baseIssues), Comparison: comparison, Changed: changedSet,
-		Lanes: headResult.Lanes, Overrides: overrides, OverrideActor: cfg.OverrideActor, Codeowners: codeowners,
-		BaseRevision: mergeBase, HeadRevision: headSHA, Banners: banners, BaseGaps: baseGaps,
-	})
+func (r diffRun) recordGateOutput(output GateOutput) error {
 	for index := range output.WouldBlock {
 		output.WouldBlock[index].RecordedAt = time.Now().UTC()
-		if err := store.RecordWouldBlock(ctx, output.WouldBlock[index]); err != nil {
-			return fail(err)
+		if err := r.store.RecordWouldBlock(r.ctx, output.WouldBlock[index]); err != nil {
+			return err
 		}
 	}
 	for _, accepted := range output.Accepted {
-		pr := accepted.Ref
-		if pr == "" {
-			pr = "none"
-		}
-		actor, actorErr := issues.SanitizeText(accepted.Actor)
-		reason, reasonErr := issues.SanitizeText(accepted.Reason)
-		if actorErr != nil || reasonErr != nil || actor == "" || reason == "" {
-			return fail(errors.New("override actor or reason is unsafe to persist"))
-		}
-		if _, err := store.TriageIssue(ctx, accepted.IssueID, domain.IssueAccepted, "", fmt.Sprintf("scout-override pr=%s", pr), actor, reason); err != nil {
-			return fail(fmt.Errorf("record override disposition: %w", err))
+		if err := r.recordAcceptedOverride(accepted); err != nil {
+			return err
 		}
 	}
-	if cfg.Log != nil {
-		for _, override := range output.Gate.Overrides {
-			if !override.Accepted {
-				fmt.Fprintf(cfg.Log, "scout: override for %s by %q rejected: %s\n", override.CheckID, override.Actor, override.Reason)
-			}
+	return nil
+}
+
+func (r diffRun) recordAcceptedOverride(accepted Acceptance) error {
+	pr := accepted.Ref
+	if pr == "" {
+		pr = "none"
+	}
+	actor, actorErr := issues.SanitizeText(accepted.Actor)
+	reason, reasonErr := issues.SanitizeText(accepted.Reason)
+	if actorErr != nil || reasonErr != nil || actor == "" || reason == "" {
+		return errors.New("override actor or reason is unsafe to persist")
+	}
+	if _, err := r.store.TriageIssue(r.ctx, state.Triage{IssueID: accepted.IssueID, State: domain.IssueAccepted, Owner: "", DispositionReason: fmt.Sprintf("scout-override pr=%s", pr), Actor: actor, Reason: reason}); err != nil {
+		return fmt.Errorf("record override disposition: %w", err)
+	}
+	return nil
+}
+
+func (r diffRun) logRejectedOverrides(output GateOutput) {
+	if r.cfg.Log == nil {
+		return
+	}
+	for _, override := range output.Gate.Overrides {
+		if !override.Accepted {
+			_, _ = fmt.Fprintf(r.cfg.Log, "scout: override for %s by %q rejected: %s\n", override.CheckID, override.Actor, override.Reason)
 		}
 	}
-	if output.WouldBlock == nil {
-		output.WouldBlock = []domain.WouldBlock{}
-	}
-	if changed == nil {
-		changed = []string{}
-	}
-	reportIssues := append(output.Issues, deltaAttributed(pol, deltaIssues)...)
-	ranking, decisionsHealth, err := RankingOf(ctx, RankingInput{
-		Issues: output.Issues, Root: root, RunID: headResult.Run.RunID, Trigger: domain.TriggerPR, Policy: pol.Decisions(),
-		Key: cfg.JevKey, Fork: cfg.Fork, NoEgress: cfg.NoEgress, Store: store, Client: cfg.JevClient, ReadThresholds: CommittedThresholds(root, baseSHA),
-	})
+}
+
+func (r diffRun) pendingAreas() ([]areas.Area, error) {
+	allAreas, err := r.store.ListAreas(r.ctx)
 	if err != nil {
-		return fail(fmt.Errorf("ranking: %w", err))
-	}
-	allAreas, err := store.ListAreas(ctx)
-	if err != nil {
-		return fail(err)
+		return nil, err
 	}
 	pending := make([]areas.Area, 0)
 	for _, area := range allAreas {
@@ -271,12 +356,7 @@ func Diff(ctx context.Context, cfg DiffConfig) (DiffReport, error) {
 			pending = append(pending, area)
 		}
 	}
-	return DiffReport{
-		Base: baseSHA, Head: headSHA, MergeBase: mergeBase, Comparison: comparison, ComparisonReason: comparisonReason(comparison, banners), Gate: output.Gate, Health: ApplyDecisionsHealth(headResult.Lanes, decisionsHealth),
-		WouldBlock: output.WouldBlock, Ranking: ranking, Issues: reportIssues, PreExisting: output.Pre, Changed: changed,
-		PendingAreas:     pending,
-		AssociationGuard: headResult.AssociationGuard,
-	}, nil
+	return pending, nil
 }
 
 // withoutClaimed drops rule-promoted issues: a baseline never attributes them.
@@ -338,7 +418,7 @@ func gapsOfLanes(health []domain.LaneHealth) BaseGaps {
 // resolveBase returns the base issues and their coverage gaps: an imported
 // baseline when its digests and revision match head, else a paired scan of the
 // merge-base worktree.
-func resolveBase(ctx context.Context, cfg DiffConfig, root, mergeBase string, headPlan domain.Plan, head Result) ([]domain.Issue, BaseGaps, domain.Comparison, []string, error) {
+func resolveBase(ctx context.Context, cfg DiffConfig, root, mergeBase string, headPlan domain.Plan) ([]domain.Issue, BaseGaps, domain.Comparison, []string, error) {
 	var banners []string
 	if cfg.Baseline != nil {
 		imported, err := cfg.Baseline(ctx)

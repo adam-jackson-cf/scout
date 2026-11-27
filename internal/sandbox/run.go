@@ -27,7 +27,7 @@ type Request struct {
 // environment: provider credentials and user configuration never reach it.
 func Run(ctx context.Context, request Request) (stdout, stderr *Capture, err error) {
 	stdout, stderr = &Capture{limit: request.StdoutLimit}, &Capture{limit: request.StderrLimit}
-	command, err := command(ctx, request.WorkDir, request.State, request.RulesRoot, request.Binary, request.Args)
+	command, err := command(ctx, request)
 	if err != nil {
 		return stdout, stderr, err
 	}
@@ -96,12 +96,10 @@ func NewState(prefix string) (string, error) {
 	}
 	resolved, err := filepath.EvalSymlinks(state)
 	if err != nil {
-		os.RemoveAll(state)
-		return "", err
+		return "", errors.Join(err, os.RemoveAll(state))
 	}
 	if err := os.Chmod(resolved, 0700); err != nil {
-		os.RemoveAll(resolved)
-		return "", err
+		return "", errors.Join(err, os.RemoveAll(resolved))
 	}
 	return resolved, nil
 }
@@ -122,12 +120,24 @@ func VerifyVersion(ctx context.Context, request Request, want string) error {
 // ContainsVersion reports whether output has a whitespace- or punctuation-
 // delimited token equal to version (optionally prefixed by "v").
 func ContainsVersion(output []byte, version string) bool {
-	for _, token := range strings.FieldsFunc(string(output), func(r rune) bool {
-		return !(r == '.' || r == '-' || r == '_' || r == '+' || ('0' <= r && r <= '9') || ('A' <= r && r <= 'Z') || ('a' <= r && r <= 'z'))
-	}) {
+	for _, token := range strings.FieldsFunc(string(output), isVersionSeparator) {
 		if token == version || strings.TrimPrefix(token, "v") == version {
 			return true
 		}
+	}
+	return false
+}
+
+func isVersionSeparator(r rune) bool {
+	return !isVersionRune(r)
+}
+
+func isVersionRune(r rune) bool {
+	switch {
+	case r == '.', r == '-', r == '_', r == '+':
+		return true
+	case '0' <= r && r <= '9', 'A' <= r && r <= 'Z', 'a' <= r && r <= 'z':
+		return true
 	}
 	return false
 }

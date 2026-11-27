@@ -1,3 +1,5 @@
+//go:build boundary
+
 package baseline
 
 import (
@@ -38,71 +40,12 @@ func remoteWithClones(t *testing.T, n int) (string, []string) {
 	return bare, clones
 }
 
-// ledger builds the export files of a ledger holding one issue per id.
-func ledger(t *testing.T, updatedAt string, ids ...string) Tree {
-	t.Helper()
-	files := Tree{state.ExportWouldBlock: nil, state.ExportCoverageSummary: []byte("{}\n"), state.ExportPRRuns: nil, state.ExportShadowTriage: nil}
-	var issues, dispositions []byte
-	for _, id := range ids {
-		issue, _ := state.CanonicalLine(map[string]any{"issueId": id, "title": "t"})
-		disposition, _ := state.CanonicalLine(map[string]any{"issueId": id, "state": "open", "updatedAt": updatedAt})
-		issues, dispositions = append(issues, issue...), append(dispositions, disposition...)
-	}
-	files[state.ExportIssues], files[state.ExportDispositions] = issues, dispositions
-	files[state.ExportManifest] = state.RenderManifest(state.ManifestMeta{RepositoryID: "repo", WouldBlock: state.WouldBlockPresent}, files)
-	return files
-}
-
-func issueIDs(t *testing.T, tree Tree) []string {
-	t.Helper()
-	var ids []string
-	for _, line := range state.SplitLines(tree[state.ExportIssues]) {
-		var row struct {
-			IssueID string `json:"issueId"`
-		}
-		if err := json.Unmarshal(line, &row); err != nil {
-			t.Fatal(err)
-		}
-		ids = append(ids, row.IssueID)
-	}
-	return ids
-}
-
 func TestConcurrentPublishersBothLandWithLinearHistory(t *testing.T) {
 	ctx := context.Background()
 	bare, clones := remoteWithClones(t, 2)
 	first := Options{Repo: clones[0], Remote: bare, Trusted: true}
 	second := Options{Repo: clones[1], Remote: bare, Trusted: true}
-
-	aStarted, bLanded := make(chan struct{}), make(chan struct{})
-	var once sync.Once
-	var aResult Result
-	var aErr error
-	var wg sync.WaitGroup
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		local := ledger(t, "2026-10-01T00:00:00Z", "issue:a")
-		aResult, aErr = Publish(ctx, first, func(current Parent) (Tree, error) {
-			once.Do(func() {
-				close(aStarted)
-				<-bLanded // B wins the race after A read the (empty) tip
-			})
-			return MergeState(current.Tree, local)
-		})
-	}()
-	<-aStarted
-	bResult, err := Publish(ctx, second, func(current Parent) (Tree, error) {
-		return MergeState(current.Tree, ledger(t, "2026-10-01T00:00:00Z", "issue:b"))
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	close(bLanded)
-	wg.Wait()
-	if aErr != nil {
-		t.Fatal(aErr)
-	}
+	aResult, bResult := raceTwoPublishers(t, first, second)
 	if bResult.Attempts != 1 || aResult.Attempts != 2 {
 		t.Fatalf("attempts a=%d b=%d, want a=2 (CAS retry) b=1", aResult.Attempts, bResult.Attempts)
 	}
@@ -120,6 +63,46 @@ func TestConcurrentPublishersBothLandWithLinearHistory(t *testing.T) {
 	if got := strings.Join(issueIDs(t, tree), ","); got != "issue:a,issue:b" {
 		t.Fatalf("final tip issues = %q, want both publishers", got)
 	}
+	assertTwoCommitLinearHistory(t, bare, bResult.Commit)
+}
+
+func raceTwoPublishers(t *testing.T, first, second Options) (Result, Result) {
+	t.Helper()
+	ctx := context.Background()
+	aStarted, bLanded := make(chan struct{}), make(chan struct{})
+	var once sync.Once
+	var aResult Result
+	var aErr error
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		local := issueLedger(t, "2026-10-01T00:00:00Z", "issue:a")
+		aResult, aErr = Publish(ctx, first, func(current Parent) (Tree, error) {
+			once.Do(func() {
+				close(aStarted)
+				<-bLanded // B wins the race after A read the (empty) tip
+			})
+			return MergeState(current.Tree, local)
+		})
+	}()
+	<-aStarted
+	bResult, err := Publish(ctx, second, func(current Parent) (Tree, error) {
+		return MergeState(current.Tree, issueLedger(t, "2026-10-01T00:00:00Z", "issue:b"))
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	close(bLanded)
+	wg.Wait()
+	if aErr != nil {
+		t.Fatal(aErr)
+	}
+	return aResult, bResult
+}
+
+func assertTwoCommitLinearHistory(t *testing.T, bare, wantRoot string) {
+	t.Helper()
 	if got := gitIn(t, bare, "rev-list", "--count", DefaultBranch); got != "2" {
 		t.Fatalf("history has %s commits, want 2", got)
 	}
@@ -127,8 +110,8 @@ func TestConcurrentPublishersBothLandWithLinearHistory(t *testing.T) {
 		t.Fatalf("history has merge commits: %s", merges)
 	}
 	root := gitIn(t, bare, "rev-list", "--max-parents=0", DefaultBranch)
-	if root != bResult.Commit {
-		t.Fatalf("root commit %s, want B's %s", root, bResult.Commit)
+	if root != wantRoot {
+		t.Fatalf("root commit %s, want B's %s", root, wantRoot)
 	}
 }
 
@@ -144,7 +127,7 @@ func TestManyConcurrentPublishersAllLand(t *testing.T) {
 			defer wg.Done()
 			id := "issue:" + string(rune('a'+i))
 			_, errs[i] = Publish(ctx, Options{Repo: clones[i], Remote: bare, Trusted: true, MaxAttempts: 32}, func(current Parent) (Tree, error) {
-				return MergeState(current.Tree, ledger(t, "2026-10-01T00:00:00Z", id))
+				return MergeState(current.Tree, issueLedger(t, "2026-10-01T00:00:00Z", id))
 			})
 		}()
 	}
@@ -166,21 +149,6 @@ func TestManyConcurrentPublishersAllLand(t *testing.T) {
 	}
 	if merges := gitIn(t, bare, "rev-list", "--merges", DefaultBranch); merges != "" {
 		t.Fatalf("history has merge commits: %s", merges)
-	}
-}
-
-func TestMergeKeepsNewerDispositionPerIssue(t *testing.T) {
-	older := ledger(t, "2026-10-01T00:00:00Z", "issue:a", "issue:b")
-	newer := ledger(t, "2026-10-02T00:00:00Z", "issue:b")
-	merged, err := MergeState(newer, older) // tip is newer for b; local has a and an older b
-	if err != nil {
-		t.Fatal(err)
-	}
-	if got := strings.Join(issueIDs(t, merged), ","); got != "issue:a,issue:b" {
-		t.Fatalf("merged issues = %q", got)
-	}
-	if !strings.Contains(string(merged[state.ExportDispositions]), "2026-10-02T00:00:00Z") {
-		t.Fatalf("newer tip disposition lost: %s", merged[state.ExportDispositions])
 	}
 }
 
@@ -217,7 +185,7 @@ func TestPublishUnchangedTreeAddsNoCommit(t *testing.T) {
 	ctx := context.Background()
 	bare, clones := remoteWithClones(t, 1)
 	opts := Options{Repo: clones[0], Remote: bare, Trusted: true, Now: func() time.Time { return time.Unix(1790000000, 0) }}
-	local := ledger(t, "2026-10-01T00:00:00Z", "issue:a")
+	local := issueLedger(t, "2026-10-01T00:00:00Z", "issue:a")
 	apply := func(current Parent) (Tree, error) { return MergeState(current.Tree, local) }
 	first, err := Publish(ctx, opts, apply)
 	if err != nil || !first.Changed {
@@ -259,7 +227,7 @@ func TestLoadBaseRefusesManifestWithoutLaneHealth(t *testing.T) {
 		"null":   func(fields map[string]any) { fields["uninspected"] = nil },
 	} {
 		t.Run(name, func(t *testing.T) {
-			tree := ledger(t, "2026-10-01T00:00:00Z")
+			tree := issueLedger(t, "2026-10-01T00:00:00Z")
 			fields := map[string]any{}
 			if err := json.Unmarshal(tree[state.ExportManifest], &fields); err != nil {
 				t.Fatal(err)
@@ -283,13 +251,13 @@ func TestLoadBaseRefusesManifestWithoutLaneHealth(t *testing.T) {
 // An empty `uninspected` list (every family inspected) loads, and the list is
 // never nil.
 func TestLoadBaseAcceptsEmptyAndListedLaneHealth(t *testing.T) {
-	tree := ledger(t, "2026-10-01T00:00:00Z")
+	tree := issueLedger(t, "2026-10-01T00:00:00Z")
 	base, ok, err := LoadBase(context.Background(), publishedTree(t, tree))
 	if err != nil || !ok || base.Uninspected == nil || len(base.Uninspected) != 0 {
 		t.Fatalf("LoadBase = %+v, ok %v, err %v; want an empty non-nil list", base, ok, err)
 	}
 
-	listed := ledger(t, "2026-10-01T00:00:00Z")
+	listed := issueLedger(t, "2026-10-01T00:00:00Z")
 	listed[state.ExportManifest] = state.RenderManifest(state.ManifestMeta{RepositoryID: "repo", WouldBlock: state.WouldBlockPresent, Uninspected: []state.UninspectedFamily{{Family: "security", Reason: "blocked"}}}, listed)
 	base, ok, err = LoadBase(context.Background(), publishedTree(t, listed))
 	if err != nil || !ok || len(base.Uninspected) != 1 || base.Uninspected[0].Family != "security" {

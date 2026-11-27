@@ -157,22 +157,37 @@ func expand(root, pattern string) ([]string, error) {
 }
 
 func loadOne(root string, roots []string, path string, spec Spec, snapshot domain.Snapshot) (Artifact, error) {
-	info, err := os.Stat(path)
-	if err != nil {
-		return Artifact{}, err
-	}
-	if !info.Mode().IsRegular() {
-		return Artifact{}, errors.New("artifact is not a regular file")
-	}
-	if info.Size() > maxArtifactBytes {
-		return Artifact{}, fmt.Errorf("artifact exceeds %d bytes", maxArtifactBytes)
-	}
-	raw, err := os.ReadFile(path)
+	raw, err := readArtifact(path)
 	if err != nil {
 		return Artifact{}, err
 	}
 	sum := sha256.Sum256(raw)
 	artifact := Artifact{Provenance: Provenance{Source: displayPath(root, path), Digest: hex.EncodeToString(sum[:]), Revision: spec.Revision, Producer: spec.Producer}}
+	if err := applySidecar(&artifact, path); err != nil {
+		return Artifact{}, err
+	}
+	if err := parseArtifact(&artifact, raw, roots); err != nil {
+		return Artifact{}, err
+	}
+	artifact.RevisionMatch, artifact.Reason = MatchRevision(artifact.Revision, snapshot)
+	return artifact, nil
+}
+
+func readArtifact(path string) ([]byte, error) {
+	info, err := os.Stat(path)
+	if err != nil {
+		return nil, err
+	}
+	if !info.Mode().IsRegular() {
+		return nil, errors.New("artifact is not a regular file")
+	}
+	if info.Size() > maxArtifactBytes {
+		return nil, fmt.Errorf("artifact exceeds %d bytes", maxArtifactBytes)
+	}
+	return os.ReadFile(path)
+}
+
+func applySidecar(artifact *Artifact, path string) error {
 	side, err := os.ReadFile(path + SidecarSuffix)
 	switch {
 	case err == nil:
@@ -181,12 +196,17 @@ func loadOne(root string, roots []string, path string, spec Spec, snapshot domai
 			Producer string `json:"producer"`
 		}
 		if err := json.Unmarshal(side, &meta); err != nil {
-			return Artifact{}, fmt.Errorf("provenance sidecar: %w", err)
+			return fmt.Errorf("provenance sidecar: %w", err)
 		}
 		artifact.Revision, artifact.Producer = meta.Revision, meta.Producer
 	case !errors.Is(err, os.ErrNotExist):
-		return Artifact{}, fmt.Errorf("provenance sidecar: %w", err)
+		return fmt.Errorf("provenance sidecar: %w", err)
 	}
+	return nil
+}
+
+func parseArtifact(artifact *Artifact, raw []byte, roots []string) error {
+	var err error
 	switch detect(raw) {
 	case KindLCOV:
 		artifact.Kind = KindLCOV
@@ -200,13 +220,9 @@ func loadOne(root string, roots []string, path string, spec Spec, snapshot domai
 		tests, err = ParseJUnit(raw)
 		artifact.Tests = &tests
 	default:
-		return Artifact{}, errors.New("unrecognized artifact format (expected LCOV, Cobertura XML or JUnit XML)")
+		return errors.New("unrecognized artifact format (expected LCOV, Cobertura XML or JUnit XML)")
 	}
-	if err != nil {
-		return Artifact{}, err
-	}
-	artifact.RevisionMatch, artifact.Reason = MatchRevision(artifact.Revision, snapshot)
-	return artifact, nil
+	return err
 }
 
 func displayPath(root, path string) string {
@@ -295,36 +311,49 @@ func (r Result) MatchedCoverage() Merged {
 		}
 		digests = append(digests, artifact.Digest)
 		sources = append(sources, artifact.Source)
-		for path, perLine := range artifact.Coverage {
-			target := lines[path]
-			if target == nil {
-				target = map[int]int{}
-				lines[path] = target
-			}
-			for line, hits := range perLine {
-				target[line] += hits
-			}
-		}
+		addCoverage(lines, artifact.Coverage)
 	}
 	if len(digests) == 0 {
-		var causes []string
-		if len(reasons) > 0 {
-			causes = append(causes, "no coverage artifact matches the snapshot revision: "+strings.Join(reasons, "; "))
-		}
-		if len(r.Failures) > 0 {
-			parts := make([]string, len(r.Failures))
-			for i, failure := range r.Failures {
-				parts[i] = fmt.Sprintf("%s: %v", failure.Source, failure.Err)
-			}
-			causes = append(causes, "coverage artifact could not be read: "+strings.Join(parts, "; "))
-		}
-		if len(causes) == 0 {
-			causes = []string{"no coverage artifact was provided"}
-		}
-		return Merged{Reason: strings.Join(causes, "; ")}
+		return Merged{Reason: unmatchedReason(reasons, r.Failures)}
 	}
 	sort.Strings(digests)
 	return Merged{Lines: lines, Digest: domain.Digest(digests...), Sources: sources}
+}
+
+func addCoverage(lines, coverage Coverage) {
+	for path, perLine := range coverage {
+		target := lines.file(path)
+		for line, hits := range perLine {
+			target[line] += hits
+		}
+	}
+}
+
+func (c Coverage) file(path string) map[int]int {
+	target := c[path]
+	if target == nil {
+		target = map[int]int{}
+		c[path] = target
+	}
+	return target
+}
+
+func unmatchedReason(reasons []string, failures []Failure) string {
+	var causes []string
+	if len(reasons) > 0 {
+		causes = append(causes, "no coverage artifact matches the snapshot revision: "+strings.Join(reasons, "; "))
+	}
+	if len(failures) > 0 {
+		parts := make([]string, len(failures))
+		for i, failure := range failures {
+			parts[i] = fmt.Sprintf("%s: %v", failure.Source, failure.Err)
+		}
+		causes = append(causes, "coverage artifact could not be read: "+strings.Join(parts, "; "))
+	}
+	if len(causes) == 0 {
+		causes = []string{"no coverage artifact was provided"}
+	}
+	return strings.Join(causes, "; ")
 }
 
 // normalizePath maps a path in an artifact to a repository-relative slash

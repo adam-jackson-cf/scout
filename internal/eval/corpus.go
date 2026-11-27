@@ -104,9 +104,10 @@ func LoadCorpus(path string) (CorpusLoadResult, error) {
 	if err != nil {
 		return CorpusLoadResult{Status: CorpusUnreadable}, fmt.Errorf("open corpus: %w", err)
 	}
-	defer file.Close()
-
 	corpus, err := decodeCorpus(file)
+	if closeErr := file.Close(); err == nil && closeErr != nil {
+		err = fmt.Errorf("close corpus: %w", closeErr)
+	}
 	if err != nil {
 		return CorpusLoadResult{Status: CorpusUnreadable}, err
 	}
@@ -147,49 +148,76 @@ func (c Corpus) Validate() error {
 	selectionKeys := make(map[string]struct{}, len(c.Entries))
 	for entryIndex, entry := range c.Entries {
 		location := fmt.Sprintf("entry %d", entryIndex)
-		if strings.TrimSpace(entry.ID) == "" {
-			return fmt.Errorf("%s: id is required", location)
+		if err := entry.validateIdentity(location, entryIDs); err != nil {
+			return err
 		}
-		if _, duplicate := entryIDs[entry.ID]; duplicate {
-			return fmt.Errorf("%s: duplicate id %q", location, entry.ID)
+		if err := entry.validateSelection(location, selectionKeys); err != nil {
+			return err
 		}
-		entryIDs[entry.ID] = struct{}{}
-		if strings.TrimSpace(entry.Target.Repository) == "" || strings.TrimSpace(entry.Target.Revision) == "" {
-			return fmt.Errorf("%s: pinned target repository and revision are required", location)
+		if err := entry.validateAssessment(location); err != nil {
+			return err
 		}
-		if strings.TrimSpace(entry.Language) == "" || strings.TrimSpace(entry.Family) == "" {
-			return fmt.Errorf("%s: language and family are required", location)
+		if err := entry.validateIssues(location); err != nil {
+			return err
 		}
-		selectionKey := entry.Target.Repository + "\x00" + entry.Target.Revision + "\x00" + entry.Language + "\x00" + entry.Family
-		if _, duplicate := selectionKeys[selectionKey]; duplicate {
-			return fmt.Errorf("%s: duplicate target revision, language, and family", location)
-		}
-		selectionKeys[selectionKey] = struct{}{}
-		if !entry.Input.Supported && strings.TrimSpace(entry.Input.Reason) == "" {
-			return fmt.Errorf("%s: unsupported input requires a reason", location)
-		}
-		switch entry.AdjudicationStatus {
-		case ReferenceAssessmentAdjudicated, ReferenceAssessmentIncomplete, ReferenceAssessmentUnsupported:
-		default:
-			return fmt.Errorf("%s: unknown assessment adjudication status %q", location, entry.AdjudicationStatus)
-		}
-		if entry.AdjudicationStatus == ReferenceAssessmentUnsupported && entry.Input.Supported {
-			return fmt.Errorf("%s: unsupported assessment requires unsupported input", location)
-		}
-		if entry.AdjudicationStatus != ReferenceAssessmentUnsupported && !entry.Input.Supported {
-			return fmt.Errorf("%s: unsupported input requires unsupported assessment", location)
-		}
+	}
+	return nil
+}
 
-		issueIDs := make(map[string]struct{}, len(entry.Issues))
-		for issueIndex, issue := range entry.Issues {
-			if err := issue.validate(fmt.Sprintf("%s issue %d", location, issueIndex)); err != nil {
-				return err
-			}
-			if _, duplicate := issueIDs[issue.ID]; duplicate {
-				return fmt.Errorf("%s: duplicate issue id %q", location, issue.ID)
-			}
-			issueIDs[issue.ID] = struct{}{}
+func (entry CorpusEntry) validateIdentity(location string, entryIDs map[string]struct{}) error {
+	if strings.TrimSpace(entry.ID) == "" {
+		return fmt.Errorf("%s: id is required", location)
+	}
+	if _, duplicate := entryIDs[entry.ID]; duplicate {
+		return fmt.Errorf("%s: duplicate id %q", location, entry.ID)
+	}
+	entryIDs[entry.ID] = struct{}{}
+	return nil
+}
+
+func (entry CorpusEntry) validateSelection(location string, selectionKeys map[string]struct{}) error {
+	if strings.TrimSpace(entry.Target.Repository) == "" || strings.TrimSpace(entry.Target.Revision) == "" {
+		return fmt.Errorf("%s: pinned target repository and revision are required", location)
+	}
+	if strings.TrimSpace(entry.Language) == "" || strings.TrimSpace(entry.Family) == "" {
+		return fmt.Errorf("%s: language and family are required", location)
+	}
+	selectionKey := entry.Target.Repository + "\x00" + entry.Target.Revision + "\x00" + entry.Language + "\x00" + entry.Family
+	if _, duplicate := selectionKeys[selectionKey]; duplicate {
+		return fmt.Errorf("%s: duplicate target revision, language, and family", location)
+	}
+	selectionKeys[selectionKey] = struct{}{}
+	return nil
+}
+
+func (entry CorpusEntry) validateAssessment(location string) error {
+	if !entry.Input.Supported && strings.TrimSpace(entry.Input.Reason) == "" {
+		return fmt.Errorf("%s: unsupported input requires a reason", location)
+	}
+	switch entry.AdjudicationStatus {
+	case ReferenceAssessmentAdjudicated, ReferenceAssessmentIncomplete, ReferenceAssessmentUnsupported:
+	default:
+		return fmt.Errorf("%s: unknown assessment adjudication status %q", location, entry.AdjudicationStatus)
+	}
+	if entry.AdjudicationStatus == ReferenceAssessmentUnsupported && entry.Input.Supported {
+		return fmt.Errorf("%s: unsupported assessment requires unsupported input", location)
+	}
+	if entry.AdjudicationStatus != ReferenceAssessmentUnsupported && !entry.Input.Supported {
+		return fmt.Errorf("%s: unsupported input requires unsupported assessment", location)
+	}
+	return nil
+}
+
+func (entry CorpusEntry) validateIssues(location string) error {
+	issueIDs := make(map[string]struct{}, len(entry.Issues))
+	for issueIndex, issue := range entry.Issues {
+		if err := issue.validate(fmt.Sprintf("%s issue %d", location, issueIndex)); err != nil {
+			return err
 		}
+		if _, duplicate := issueIDs[issue.ID]; duplicate {
+			return fmt.Errorf("%s: duplicate issue id %q", location, issue.ID)
+		}
+		issueIDs[issue.ID] = struct{}{}
 	}
 	return nil
 }

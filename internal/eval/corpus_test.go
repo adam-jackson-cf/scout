@@ -70,13 +70,28 @@ func TestLoadCorpusDistinguishesMissingUnreadableAndAvailable(t *testing.T) {
 	if r, err := LoadCorpus(filepath.Join(dir, "absent.json")); err != nil || r.Status != CorpusMissing {
 		t.Fatalf("absent file: %+v %v", r, err)
 	}
-	write := func(name, content string) string {
-		path := filepath.Join(dir, name)
-		if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
-			t.Fatal(err)
-		}
-		return path
+	write := func(name, content string) string { return writeCorpusFile(t, dir, name, content) }
+	assertMalformedCorporaUnreadable(t, write)
+	r, err := LoadCorpus(write("ok.json", `{"schemaVersion":"scout.eval.corpus/v1","corpusVersion":"1","entries":[]}`))
+	if err != nil || r.Status != CorpusAvailable || r.Corpus == nil {
+		t.Fatalf("valid empty corpus: %+v %v", r, err)
 	}
+	if _, err := LoadCorpus(dir); err == nil || !strings.Contains(err.Error(), "corpus") {
+		t.Fatalf("a directory is unreadable, not missing: %v", err)
+	}
+}
+
+func writeCorpusFile(t *testing.T, dir, name, content string) string {
+	t.Helper()
+	path := filepath.Join(dir, name)
+	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	return path
+}
+
+func assertMalformedCorporaUnreadable(t *testing.T, write func(name, content string) string) {
+	t.Helper()
 	for name, content := range map[string]string{
 		"garbage.json":  "{",
 		"unknown.json":  `{"schemaVersion":"scout.eval.corpus/v1","corpusVersion":"1","entries":[],"extra":1}`,
@@ -86,12 +101,5 @@ func TestLoadCorpusDistinguishesMissingUnreadableAndAvailable(t *testing.T) {
 		if r, err := LoadCorpus(write(name, content)); err == nil || r.Status != CorpusUnreadable {
 			t.Fatalf("%s: want unreadable with an error, got %+v %v", name, r, err)
 		}
-	}
-	r, err := LoadCorpus(write("ok.json", `{"schemaVersion":"scout.eval.corpus/v1","corpusVersion":"1","entries":[]}`))
-	if err != nil || r.Status != CorpusAvailable || r.Corpus == nil {
-		t.Fatalf("valid empty corpus: %+v %v", r, err)
-	}
-	if _, err := LoadCorpus(dir); err == nil || !strings.Contains(err.Error(), "corpus") {
-		t.Fatalf("a directory is unreadable, not missing: %v", err)
 	}
 }

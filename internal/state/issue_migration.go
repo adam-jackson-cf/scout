@@ -33,28 +33,10 @@ func reanchorIssues(ctx context.Context, tx *sql.Tx) error {
 	if _, err := tx.ExecContext(ctx, `PRAGMA defer_foreign_keys = ON`); err != nil {
 		return fmt.Errorf("defer foreign keys: %w", err)
 	}
-	rows, err := tx.QueryContext(ctx, `SELECT issue_id, payload FROM issues ORDER BY issue_id`)
+	legacy, err := legacyIssueRowsTx(ctx, tx)
 	if err != nil {
-		return fmt.Errorf("query legacy issues: %w", err)
-	}
-	type legacyRow struct {
-		id      string
-		payload []byte
-	}
-	var legacy []legacyRow
-	for rows.Next() {
-		var row legacyRow
-		if err := rows.Scan(&row.id, &row.payload); err != nil {
-			rows.Close()
-			return fmt.Errorf("scan legacy issue: %w", err)
-		}
-		legacy = append(legacy, row)
-	}
-	if err := rows.Err(); err != nil {
-		rows.Close()
 		return err
 	}
-	rows.Close()
 
 	migrated := make([]*migratedIssue, 0, len(legacy))
 	now := time.Now().UTC()
@@ -77,54 +59,40 @@ func reanchorIssues(ctx context.Context, tx *sql.Tx) error {
 	return nil
 }
 
-func reanchorIssue(ctx context.Context, tx *sql.Tx, legacyID string, payload []byte, now time.Time) (*migratedIssue, error) {
-	var raw map[string]any
-	if err := json.Unmarshal(payload, &raw); err != nil {
-		return nil, fmt.Errorf("decode legacy issue: %w", err)
+type legacyIssueRow struct {
+	id      string
+	payload []byte
+}
+
+func legacyIssueRowsTx(ctx context.Context, tx *sql.Tx) ([]legacyIssueRow, error) {
+	rows, err := tx.QueryContext(ctx, `SELECT issue_id, payload FROM issues ORDER BY issue_id`)
+	if err != nil {
+		return nil, fmt.Errorf("query legacy issues: %w", err)
 	}
-	if history, ok := raw["history"].([]any); ok {
-		for index, entry := range history {
-			fields, ok := entry.(map[string]any)
-			if !ok {
-				return nil, fmt.Errorf("legacy issue %q: history entry %d is not an object", legacyID, index)
-			}
-			for _, key := range []string{"from", "to"} {
-				if state, _ := fields[key].(string); state == "pending_verification" || state == "unverified" {
-					fields[key] = string(domain.IssueOpen)
-				}
-			}
+	var legacy []legacyIssueRow
+	err = scanRows(rows, func(rows *sql.Rows) error {
+		var row legacyIssueRow
+		if err := rows.Scan(&row.id, &row.payload); err != nil {
+			return fmt.Errorf("scan legacy issue: %w", err)
 		}
-	}
-	delete(raw, "proposedAction")
-	delete(raw, "approvalRef")
-	if state, _ := raw["state"].(string); state == "pending_verification" || state == "unverified" {
-		raw["state"] = string(domain.IssueOpen)
-	}
-	if verification, ok := raw["verification"].(map[string]any); ok {
-		delete(verification, "authorizedChangeRef")
-	}
-	cleaned, err := json.Marshal(raw)
+		legacy = append(legacy, row)
+		return nil
+	})
 	if err != nil {
 		return nil, err
 	}
-	var issue domain.Issue
-	if err := json.Unmarshal(cleaned, &issue); err != nil {
-		return nil, fmt.Errorf("decode legacy issue: %w", err)
-	}
-	idRows, err := tx.QueryContext(ctx, `SELECT observation_id FROM issue_observations WHERE issue_id = ?`, legacyID)
+	return legacy, nil
+}
+
+func reanchorIssue(ctx context.Context, tx *sql.Tx, legacyID string, payload []byte, now time.Time) (*migratedIssue, error) {
+	issue, err := cleanLegacyIssue(legacyID, payload)
 	if err != nil {
-		return nil, fmt.Errorf("query legacy observations: %w", err)
+		return nil, err
 	}
-	var observationIDs []string
-	for idRows.Next() {
-		var id string
-		if err := idRows.Scan(&id); err != nil {
-			idRows.Close()
-			return nil, err
-		}
-		observationIDs = append(observationIDs, id)
+	observationIDs, err := legacyObservationIDsTx(ctx, tx, legacyID)
+	if err != nil {
+		return nil, err
 	}
-	idRows.Close()
 	observations, err := loadObservationsTx(ctx, tx, observationIDs)
 	if err != nil {
 		return nil, err
@@ -132,37 +100,7 @@ func reanchorIssue(ctx context.Context, tx *sql.Tx, legacyID string, payload []b
 	item := &migratedIssue{legacy: legacyID}
 	family := domain.Family(strings.Split(legacyID, ":")[min(1, strings.Count(legacyID, ":"))])
 	if len(observations) != 0 {
-		latest := observations[0]
-		for _, observation := range observations {
-			if observation.ObservedAt.After(latest.ObservedAt) || observation.ObservedAt.Equal(latest.ObservedAt) && observation.ObservationID > latest.ObservationID {
-				latest = observation
-			}
-		}
-		family = latest.Family
-		issue.Family, issue.Category = latest.Family, latest.OriginalCategory
-		anchors := map[domain.IssueAnchor]struct{}{}
-		var primary domain.IssueAnchor
-		var primaryID string
-		for _, observation := range observations {
-			if observation.RunID != latest.RunID {
-				continue
-			}
-			anchor, ok := domain.AnchorOf(observation)
-			if !ok {
-				continue
-			}
-			anchors[anchor] = struct{}{}
-			if primaryID == "" || observation.ObservationID < primaryID {
-				primary, primaryID = anchor, observation.ObservationID
-			}
-		}
-		issue.Anchor = primary
-		if primaryID == "" {
-			item.reasons = append(item.reasons, "no linked observation carries an evidence location to anchor")
-		}
-		if len(anchors) > 1 {
-			item.reasons = append(item.reasons, fmt.Sprintf("legacy issue merged %d distinct occurrences in its latest run", len(anchors)))
-		}
+		family = anchorLegacyIssue(&issue, item, observations)
 	} else {
 		item.reasons = append(item.reasons, "no linked observations to anchor")
 	}
@@ -180,6 +118,115 @@ func reanchorIssue(ctx context.Context, tx *sql.Tx, legacyID string, payload []b
 	issue.History = append(issue.History, domain.IssueHistoryEntry{At: now, From: issue.State, To: issue.State, Event: domain.EventMigrated, Actor: "migration-v5", Reason: "re-anchored from legacy issue " + legacyID})
 	item.issue = issue
 	return item, nil
+}
+
+func cleanLegacyIssue(legacyID string, payload []byte) (domain.Issue, error) {
+	var raw map[string]any
+	if err := json.Unmarshal(payload, &raw); err != nil {
+		return domain.Issue{}, fmt.Errorf("decode legacy issue: %w", err)
+	}
+	if err := openLegacyHistoryStates(raw, legacyID); err != nil {
+		return domain.Issue{}, err
+	}
+	delete(raw, "proposedAction")
+	delete(raw, "approvalRef")
+	if state, _ := raw["state"].(string); isRetiredLegacyState(state) {
+		raw["state"] = string(domain.IssueOpen)
+	}
+	if verification, ok := raw["verification"].(map[string]any); ok {
+		delete(verification, "authorizedChangeRef")
+	}
+	cleaned, err := json.Marshal(raw)
+	if err != nil {
+		return domain.Issue{}, err
+	}
+	var issue domain.Issue
+	if err := json.Unmarshal(cleaned, &issue); err != nil {
+		return domain.Issue{}, fmt.Errorf("decode legacy issue: %w", err)
+	}
+	return issue, nil
+}
+
+func openLegacyHistoryStates(raw map[string]any, legacyID string) error {
+	history, ok := raw["history"].([]any)
+	if !ok {
+		return nil
+	}
+	for index, entry := range history {
+		fields, ok := entry.(map[string]any)
+		if !ok {
+			return fmt.Errorf("legacy issue %q: history entry %d is not an object", legacyID, index)
+		}
+		for _, key := range []string{"from", "to"} {
+			if state, _ := fields[key].(string); isRetiredLegacyState(state) {
+				fields[key] = string(domain.IssueOpen)
+			}
+		}
+	}
+	return nil
+}
+
+func isRetiredLegacyState(state string) bool {
+	return state == "pending_verification" || state == "unverified"
+}
+
+func legacyObservationIDsTx(ctx context.Context, tx *sql.Tx, legacyID string) ([]string, error) {
+	idRows, err := tx.QueryContext(ctx, `SELECT observation_id FROM issue_observations WHERE issue_id = ?`, legacyID)
+	if err != nil {
+		return nil, fmt.Errorf("query legacy observations: %w", err)
+	}
+	var observationIDs []string
+	err = scanRows(idRows, func(idRows *sql.Rows) error {
+		var id string
+		if err := idRows.Scan(&id); err != nil {
+			return err
+		}
+		observationIDs = append(observationIDs, id)
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return observationIDs, nil
+}
+
+func anchorLegacyIssue(issue *domain.Issue, item *migratedIssue, observations []domain.Observation) domain.Family {
+	latest := latestObservation(observations)
+	issue.Family, issue.Category = latest.Family, latest.OriginalCategory
+	anchors := map[domain.IssueAnchor]struct{}{}
+	var primary domain.IssueAnchor
+	var primaryID string
+	for _, observation := range observations {
+		if observation.RunID != latest.RunID {
+			continue
+		}
+		anchor, ok := domain.AnchorOf(observation)
+		if !ok {
+			continue
+		}
+		anchors[anchor] = struct{}{}
+		if primaryID == "" || observation.ObservationID < primaryID {
+			primary, primaryID = anchor, observation.ObservationID
+		}
+	}
+	issue.Anchor = primary
+	if primaryID == "" {
+		item.reasons = append(item.reasons, "no linked observation carries an evidence location to anchor")
+	}
+	if len(anchors) > 1 {
+		item.reasons = append(item.reasons, fmt.Sprintf("legacy issue merged %d distinct occurrences in its latest run", len(anchors)))
+	}
+	return latest.Family
+}
+
+func latestObservation(observations []domain.Observation) domain.Observation {
+	latest := observations[0]
+	for _, observation := range observations {
+		if observation.ObservedAt.After(latest.ObservedAt) || observation.ObservedAt.Equal(latest.ObservedAt) && observation.ObservationID > latest.ObservationID {
+			latest = observation
+		}
+	}
+	return latest
 }
 
 // flagIndistinguishable marks issues that share the full anchor tuple: a later
@@ -233,14 +280,8 @@ func writeMigratedIssue(ctx context.Context, tx *sql.Tx, item *migratedIssue) er
 	if _, err := tx.ExecContext(ctx, `DELETE FROM issue_history WHERE issue_id IN (?, ?)`, item.legacy, issue.IssueID); err != nil {
 		return fmt.Errorf("replace issue history: %w", err)
 	}
-	for ordinal, entry := range issue.History {
-		entryPayload, err := encode(entry)
-		if err != nil {
-			return err
-		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO issue_history(issue_id, ordinal, payload) VALUES (?, ?, ?)`, issue.IssueID, ordinal, entryPayload); err != nil {
-			return fmt.Errorf("save issue history: %w", err)
-		}
+	if err := insertIssueHistoryTx(ctx, tx, issue); err != nil {
+		return err
 	}
 	if len(item.reasons) != 0 {
 		if _, err := tx.ExecContext(ctx, `INSERT INTO issue_migration_ambiguities(issue_id, legacy_id, reason) VALUES (?, ?, ?)`, issue.IssueID, item.legacy, strings.Join(item.reasons, "; ")); err != nil {

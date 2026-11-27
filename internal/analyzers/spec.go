@@ -150,15 +150,32 @@ type ManifestInput struct {
 }
 
 func (s Spec) Validate() error {
+	for _, check := range []func() error{s.validateIdentity, s.validateBinary, s.validateInvocation, s.validateRules, s.validateEligibility, s.validateBounds, s.validateOutput, s.validateExitCodes} {
+		if err := check(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s Spec) validateIdentity() error {
 	if !safeName(s.ID) || !s.Family.Valid() || strings.TrimSpace(s.Category) == "" {
 		return errors.New("adapter spec requires a safe ID, family, and category")
 	}
+	return nil
+}
+
+func (s Spec) validateBinary() error {
 	if strings.TrimSpace(s.Binary.Path) == "" || strings.TrimSpace(s.Binary.Version) == "" || len(s.Binary.VersionArgs) == 0 || len(s.Binary.Args) == 0 {
 		return errors.New("adapter spec requires binary path, exact version, version arguments, and arguments")
 	}
 	if filepath.Base(s.Binary.Path) != s.Binary.Path || !safeName(s.Binary.Path) {
 		return errors.New("adapter binary must be a bare scanner executable, not a project script")
 	}
+	return s.validateVersionInvocation()
+}
+
+func (s Spec) validateVersionInvocation() error {
 	for _, arg := range s.Binary.VersionArgs {
 		if strings.ContainsRune(arg, '\x00') || strings.ContainsAny(arg, "{}") {
 			return errors.New("adapter version arguments cannot contain placeholders or NUL")
@@ -167,20 +184,65 @@ func (s Spec) Validate() error {
 	if strings.TrimSpace(s.Binary.Runtime) != "" && (strings.ContainsRune(s.Binary.Runtime, '\x00') || strings.ContainsAny(s.Binary.Runtime, "\r\n")) {
 		return errors.New("adapter runtime declaration is unsafe")
 	}
-	manifest, paths, absolutePaths, stagedDir, bundledRules := false, false, false, false, false
+	return nil
+}
+
+type invocationPlaceholders struct {
+	manifest, paths, absolutePaths, stagedDir, bundledRules bool
+}
+
+func (s Spec) invocationPlaceholders() (invocationPlaceholders, error) {
+	var found invocationPlaceholders
 	for _, arg := range append(append([]string{}, s.Binary.VersionArgs...), s.Binary.Args...) {
 		if strings.ContainsRune(arg, '\x00') {
-			return errors.New("adapter arguments cannot contain NUL")
+			return invocationPlaceholders{}, errors.New("adapter arguments cannot contain NUL")
 		}
-		manifest = manifest || arg == "{input_manifest}"
-		paths = paths || arg == "{input_paths}"
-		absolutePaths = absolutePaths || arg == "{absolute_input_paths}"
-		stagedDir = stagedDir || arg == "{staged_input_dir}"
-		bundledRules = bundledRules || arg == "{bundled_rule_files}"
+		found.manifest = found.manifest || arg == "{input_manifest}"
+		found.paths = found.paths || arg == "{input_paths}"
+		found.absolutePaths = found.absolutePaths || arg == "{absolute_input_paths}"
+		found.stagedDir = found.stagedDir || arg == "{staged_input_dir}"
+		found.bundledRules = found.bundledRules || arg == "{bundled_rule_files}"
 	}
-	if !manifest && !paths && !absolutePaths && !stagedDir {
+	return found, nil
+}
+
+func (s Spec) validateInvocation() error {
+	found, err := s.invocationPlaceholders()
+	if err != nil {
+		return err
+	}
+	if !found.manifest && !found.paths && !found.absolutePaths && !found.stagedDir {
 		return errors.New("adapter arguments must declare input_manifest or input_paths")
 	}
+	if err := s.validateAttestation(); err != nil {
+		return err
+	}
+	if found.stagedDir != (s.Attestation == AttestGitleaksScanLog) {
+		return errors.New("staged input directory and the Gitleaks attestation must agree")
+	}
+	if s.Binary.PrivateWorkDir && found.paths {
+		return errors.New("private scanner workdir requires absolute input paths")
+	}
+	return s.validateRuleVersion(found)
+}
+
+func (s Spec) validateRuleVersion(found invocationPlaceholders) error {
+	if strings.TrimSpace(s.Rules.Version) == "" {
+		return errors.New("adapter spec requires an exact rule version")
+	}
+	if s.gitleaks() {
+		label, _, ok := strings.Cut(s.Rules.Version, "@")
+		if !ok || label != "gitleaks-default-rules/"+s.Binary.Version {
+			return errors.New("the Gitleaks rule-pack label version must match the pinned binary version")
+		}
+	}
+	if found.bundledRules != (len(s.Rules.BundledFiles) != 0) {
+		return errors.New("adapter bundled rule arguments and files must agree")
+	}
+	return nil
+}
+
+func (s Spec) validateAttestation() error {
 	switch s.Attestation {
 	case AttestOutput:
 	case AttestGitleaksScanLog, AttestRuffFileListing:
@@ -190,24 +252,10 @@ func (s Spec) Validate() error {
 	default:
 		return errors.New("unknown adapter attestation")
 	}
-	if stagedDir != (s.Attestation == AttestGitleaksScanLog) {
-		return errors.New("staged input directory and the Gitleaks attestation must agree")
-	}
-	if s.Binary.PrivateWorkDir && paths {
-		return errors.New("private scanner workdir requires absolute input paths")
-	}
-	if strings.TrimSpace(s.Rules.Version) == "" {
-		return errors.New("adapter spec requires an exact rule version")
-	}
-	if s.gitleaks() {
-		label, _, ok := strings.Cut(s.Rules.Version, "@")
-		if !ok || label != "gitleaks-default-rules/"+s.Binary.Version {
-			return errors.New("Gitleaks rule-pack label version must match the pinned binary version")
-		}
-	}
-	if bundledRules != (len(s.Rules.BundledFiles) != 0) {
-		return errors.New("adapter bundled rule arguments and files must agree")
-	}
+	return nil
+}
+
+func (s Spec) validateRules() error {
 	ruleIDs := make(map[string]struct{}, len(s.Rules.RuleIDs))
 	for _, ruleID := range s.Rules.RuleIDs {
 		if !safeName(ruleID) {
@@ -218,6 +266,16 @@ func (s Spec) Validate() error {
 		}
 		ruleIDs[ruleID] = struct{}{}
 	}
+	if err := s.validateBundledRules(); err != nil {
+		return err
+	}
+	if len(s.Rules.BundledFiles) != 0 && len(s.Rules.RuleIDs) == 0 {
+		return errors.New("adapter bundled rules require declared rule IDs")
+	}
+	return nil
+}
+
+func (s Spec) validateBundledRules() error {
 	bundledPaths := make(map[string]struct{}, len(s.Rules.BundledFiles))
 	for _, path := range s.Rules.BundledFiles {
 		if err := validRelativePath(path); err != nil {
@@ -232,9 +290,10 @@ func (s Spec) Validate() error {
 		}
 		bundledPaths[path] = struct{}{}
 	}
-	if len(s.Rules.BundledFiles) != 0 && len(s.Rules.RuleIDs) == 0 {
-		return errors.New("adapter bundled rules require declared rule IDs")
-	}
+	return nil
+}
+
+func (s Spec) validateEligibility() error {
 	if s.Eligibility.AllLanguages == (len(s.Eligibility.Languages) != 0) {
 		return errors.New("eligibility must declare all languages or explicit languages")
 	}
@@ -253,17 +312,29 @@ func (s Spec) Validate() error {
 			return fmt.Errorf("invalid eligibility path prefix %q", prefix)
 		}
 	}
+	return nil
+}
+
+func (s Spec) validateBounds() error {
 	if s.Inputs.MaxFiles <= 0 || s.Inputs.MaxFileBytes <= 0 || s.Inputs.MaxTotalBytes <= 0 || s.Inputs.MaxManifestBytes <= 0 || s.Timeout <= 0 || s.MaxOutput <= 0 {
 		return errors.New("adapter spec requires positive input, timeout, and output bounds")
 	}
 	if s.Permissions.Network || !s.Permissions.ReadOnlySource {
 		return errors.New("adapter specs must deny network and require read-only source")
 	}
+	return s.validateDeclaredPaths()
+}
+
+func (s Spec) validateDeclaredPaths() error {
 	for _, path := range append(append(append([]string{}, s.Rules.Files...), s.Rules.ConfigFiles...), s.Inputs.ProjectFootprint...) {
 		if err := validRelativePath(path); err != nil {
 			return fmt.Errorf("adapter path: %w", err)
 		}
 	}
+	return nil
+}
+
+func (s Spec) validateOutput() error {
 	if s.Output.Format == OutputJSON && s.Output.SchemaVersion != "scout.adapter/v1" {
 		return errors.New("JSON adapters require schema scout.adapter/v1")
 	}
@@ -271,11 +342,15 @@ func (s Spec) Validate() error {
 		return errors.New("SARIF adapters require schema 2.1.0")
 	}
 	if s.Output.Format == OutputSemgrepJSON && s.Output.SchemaVersion != s.Binary.Version {
-		return errors.New("Semgrep JSON schema must match the pinned scanner version")
+		return errors.New("the Semgrep JSON schema must match the pinned scanner version")
 	}
 	if s.Output.Format != OutputJSON && s.Output.Format != OutputSARIF && s.Output.Format != OutputSemgrepJSON {
 		return errors.New("unsupported adapter output format")
 	}
+	return nil
+}
+
+func (s Spec) validateExitCodes() error {
 	if len(s.ExitCodes) == 0 {
 		return errors.New("adapter spec requires versioned exit code semantics")
 	}
@@ -295,35 +370,39 @@ func (s Spec) Applies(file domain.File) bool {
 	if !file.Eligible || file.Excluded {
 		return false
 	}
-	if len(s.Eligibility.PathPrefixes) != 0 {
-		matched := false
-		for _, prefix := range s.Eligibility.PathPrefixes {
-			if strings.HasPrefix(file.Path, prefix) {
-				matched = true
-				break
-			}
-		}
-		if !matched {
-			return false
+	return s.matchesPathPrefix(file.Path) && s.matchesLanguage(file.Language) && s.matchesExtension(file.Path)
+}
+
+func (s Spec) matchesPathPrefix(path string) bool {
+	if len(s.Eligibility.PathPrefixes) == 0 {
+		return true
+	}
+	for _, prefix := range s.Eligibility.PathPrefixes {
+		if strings.HasPrefix(path, prefix) {
+			return true
 		}
 	}
-	if !s.Eligibility.AllLanguages {
-		found := false
-		for _, language := range s.Eligibility.Languages {
-			if strings.EqualFold(language, file.Language) {
-				found = true
-				break
-			}
-		}
-		if !found {
-			return false
+	return false
+}
+
+func (s Spec) matchesLanguage(language string) bool {
+	if s.Eligibility.AllLanguages {
+		return true
+	}
+	for _, declared := range s.Eligibility.Languages {
+		if strings.EqualFold(declared, language) {
+			return true
 		}
 	}
+	return false
+}
+
+func (s Spec) matchesExtension(path string) bool {
 	if len(s.Eligibility.Extensions) == 0 {
 		return true
 	}
 	for _, extension := range s.Eligibility.Extensions {
-		if strings.EqualFold(extension, filepath.Ext(file.Path)) {
+		if strings.EqualFold(extension, filepath.Ext(path)) {
 			return true
 		}
 	}

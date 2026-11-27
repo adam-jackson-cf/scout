@@ -49,13 +49,7 @@ func runGuardCases(t *testing.T, cases []guardCase) {
 	t.Helper()
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			var fs []Finding
-			for _, f := range changesBetween(c.base, c.head) {
-				if f.CheckID == ScopedCheckID {
-					continue // report-only; asserted separately
-				}
-				fs = append(fs, f)
-			}
+			fs := unscopedFindings(changesBetween(c.base, c.head))
 			got := checkIDs(fs)
 			want := append([]string(nil), c.want...)
 			sort.Strings(want)
@@ -63,20 +57,36 @@ func runGuardCases(t *testing.T, cases []guardCase) {
 				t.Fatalf("check ids = %v, want %v\nfindings: %+v", got, want, fs)
 			}
 			for _, f := range fs {
-				if c.path != "" && f.Path != c.path {
-					t.Fatalf("finding on %q, want %q: %+v", f.Path, c.path, f)
-				}
-				if f.Evidence.Head == "" {
-					t.Fatalf("missing head evidence: %+v", f)
-				}
-				if strings.HasPrefix(f.CheckID, "guardrails.CONFIG.") && f.Evidence.Base == "" {
-					t.Fatalf("config finding without base evidence: %+v", f)
-				}
-				if !strings.HasSuffix(f.Version, "@1") || !strings.HasPrefix(f.Version, f.CheckID) {
-					t.Fatalf("version %q does not extend check id %q", f.Version, f.CheckID)
-				}
+				checkGuardFinding(t, c.path, f)
 			}
 		})
+	}
+}
+
+func unscopedFindings(all []Finding) []Finding {
+	var fs []Finding
+	for _, f := range all {
+		if f.CheckID == ScopedCheckID {
+			continue // report-only; asserted separately
+		}
+		fs = append(fs, f)
+	}
+	return fs
+}
+
+func checkGuardFinding(t *testing.T, wantPath string, f Finding) {
+	t.Helper()
+	if wantPath != "" && f.Path != wantPath {
+		t.Fatalf("finding on %q, want %q: %+v", f.Path, wantPath, f)
+	}
+	if f.Evidence.Head == "" {
+		t.Fatalf("missing head evidence: %+v", f)
+	}
+	if strings.HasPrefix(f.CheckID, "guardrails.CONFIG.") && f.Evidence.Base == "" {
+		t.Fatalf("config finding without base evidence: %+v", f)
+	}
+	if !strings.HasSuffix(f.Version, "@1") || !strings.HasPrefix(f.Version, f.CheckID) {
+		t.Fatalf("version %q does not extend check id %q", f.Version, f.CheckID)
 	}
 }
 

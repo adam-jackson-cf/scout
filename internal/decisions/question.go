@@ -64,6 +64,13 @@ func (q Question) Validate() error {
 	if q.ID == "" || strings.TrimSpace(q.Instructions) == "" || len(q.StateShape) == 0 {
 		return errors.New("question requires an id, instructions and a state shape")
 	}
+	if err := q.validateCriteria(); err != nil {
+		return err
+	}
+	return q.validateOrder()
+}
+
+func (q Question) validateCriteria() error {
 	switch q.Kind {
 	case KindNoul:
 		if len(q.Criteria) != 2 || q.Criteria["true"] == "" || q.Criteria["false"] == "" {
@@ -77,6 +84,10 @@ func (q Question) Validate() error {
 	default:
 		return fmt.Errorf("question %q has unknown kind %q", q.ID, q.Kind)
 	}
+	return nil
+}
+
+func (q Question) validateOrder() error {
 	switch q.Order.Rule {
 	case OrderFixed:
 		if q.Kind == KindChoice && !sameSet(q.Order.Options, q.Criteria) {

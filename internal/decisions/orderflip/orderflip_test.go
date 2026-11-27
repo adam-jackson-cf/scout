@@ -52,13 +52,18 @@ func TestAFirstOptionBiasFlipsEveryUnit(t *testing.T) {
 	if report.Measured != 5 || report.Flipped != 5 || report.FlipRate == nil || *report.FlipRate != 1 || bias.calls != 10 {
 		t.Fatalf("report %+v calls %d", report, bias.calls)
 	}
-	for _, r := range report.Reports {
+	assertReversedOrdersWithShift(t, report.Reports)
+	if report.CostUSD < 0.0009 {
+		t.Fatalf("cost %v", report.CostUSD)
+	}
+}
+
+func assertReversedOrdersWithShift(t *testing.T, reports []UnitReport) {
+	t.Helper()
+	for _, r := range reports {
 		if r.OrderA[0] != r.OrderB[len(r.OrderB)-1] || r.MaxShift < 0.39 {
 			t.Fatalf("orders must be reverses and the shift recorded: %+v", r)
 		}
-	}
-	if report.CostUSD < 0.0009 {
-		t.Fatalf("cost %v", report.CostUSD)
 	}
 }
 
@@ -84,6 +89,11 @@ func TestAFailedCallLeavesTheUnitUnmeasuredNotStable(t *testing.T) {
 	if report.Measured != 2 || report.Unmeasured != 1 || report.Flipped != 2 || *report.FlipRate != 1 || report.Reports[1].Failure == "" {
 		t.Fatalf("report %+v", report)
 	}
+	assertNothingMeasuredGivesNoRate(t)
+}
+
+func assertNothingMeasuredGivesNoRate(t *testing.T) {
+	t.Helper()
 	none, err := Run(context.Background(), &asker{pick: func([]string, string) (string, error) { return "", errors.New("down") }}, choice(), "m", units(2))
 	if err != nil || none.FlipRate != nil || none.Unmeasured != 2 {
 		t.Fatalf("nothing measured must give no rate: %+v %v", none, err)

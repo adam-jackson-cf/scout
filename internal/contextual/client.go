@@ -68,11 +68,16 @@ func NewClient(config Config) (*Client, error) {
 	if _, err := modelcli.Parse(config.CLI); err != nil {
 		return nil, err
 	}
+	config = config.withDefaults()
+	if err := config.validateLimits(); err != nil {
+		return nil, err
+	}
+	return &Client{config: config}, nil
+}
+
+func (config Config) withDefaults() Config {
 	if config.Timeout == 0 {
 		config.Timeout = defaultTimeout
-	}
-	if config.Timeout < time.Second || config.Timeout > maximumTimeout {
-		return nil, fmt.Errorf("contextual timeout must be between %s and %s", time.Second, maximumTimeout)
 	}
 	if config.PromptVersion == "" {
 		config.PromptVersion = defaultPromptVersion
@@ -83,19 +88,26 @@ func NewClient(config Config) (*Client, error) {
 	if config.MaxFileBytes == 0 {
 		config.MaxFileBytes = defaultFileBytes
 	}
-	if config.MaxContextBytes < 1 || config.MaxContextBytes > maximumContextBytes {
-		return nil, fmt.Errorf("contextual max context must be between 1 and %d bytes", maximumContextBytes)
-	}
-	if config.MaxFileBytes < 1 || config.MaxFileBytes > config.MaxContextBytes {
-		return nil, errors.New("contextual max file bytes must be positive and no greater than max context")
-	}
 	if config.MaxPromptBytes == 0 {
 		config.MaxPromptBytes = config.MaxContextBytes + defaultPromptSlack
 	}
-	if config.MaxPromptBytes < 1 || config.MaxPromptBytes > maximumPromptBytes {
-		return nil, fmt.Errorf("contextual max prompt must be between 1 and %d bytes", maximumPromptBytes)
+	return config
+}
+
+func (config Config) validateLimits() error {
+	if config.Timeout < time.Second || config.Timeout > maximumTimeout {
+		return fmt.Errorf("contextual timeout must be between %s and %s", time.Second, maximumTimeout)
 	}
-	return &Client{config: config}, nil
+	if config.MaxContextBytes < 1 || config.MaxContextBytes > maximumContextBytes {
+		return fmt.Errorf("contextual max context must be between 1 and %d bytes", maximumContextBytes)
+	}
+	if config.MaxFileBytes < 1 || config.MaxFileBytes > config.MaxContextBytes {
+		return errors.New("contextual max file bytes must be positive and no greater than max context")
+	}
+	if config.MaxPromptBytes < 1 || config.MaxPromptBytes > maximumPromptBytes {
+		return fmt.Errorf("contextual max prompt must be between 1 and %d bytes", maximumPromptBytes)
+	}
+	return nil
 }
 
 // ReviewRequest contains the canonical feature and only already-sanitized tool
@@ -187,10 +199,7 @@ func (c *Client) Review(ctx context.Context, request ReviewRequest) (ReviewResul
 		return ReviewResult{}, errors.New("contextual request prompt version differs from configured model policy")
 	}
 	request.PromptVersion = c.config.PromptVersion
-	for index := range sources {
-		sources[index].Reason = redactor.redact(sources[index].Reason)
-		sources[index].Text = redactor.redact(sources[index].Text)
-	}
+	redactSources(sources, redactor)
 	prompt, err := makePrompt(request, sources, safeManifest, redactor)
 	if err != nil {
 		coverage.Status, coverage.Reason = domain.CoverageIncomplete, "could not construct contextual model request"
@@ -212,8 +221,26 @@ func (c *Client) Review(ctx context.Context, request ReviewRequest) (ReviewResul
 		coverage.OmittedPaths = omissionPaths(manifest.Omissions)
 		return ReviewResult{Coverage: coverage, Manifest: safeManifest}, fmt.Errorf("%s: %w", coverage.Reason, err)
 	}
-	result, validationErr := validateModelResponse(request, answer, manifest, snapshotSources, record.ResolvedModel, request.PromptVersion)
-	result.Manifest = safeManifest
+	return assessAnswer(request, answer, record, reviewSnapshot{manifest: manifest, safeManifest: safeManifest, sources: snapshotSources})
+}
+
+type reviewSnapshot struct {
+	manifest     Manifest
+	safeManifest Manifest
+	sources      []promptSource
+}
+
+func redactSources(sources []promptSource, redactor secretRedactor) {
+	for index := range sources {
+		sources[index].Reason = redactor.redact(sources[index].Reason)
+		sources[index].Text = redactor.redact(sources[index].Text)
+	}
+}
+
+func assessAnswer(request ReviewRequest, answer []byte, record ModelRecord, snapshot reviewSnapshot) (ReviewResult, error) {
+	manifest := snapshot.manifest
+	result, validationErr := validateModelResponse(request, answer, manifest, snapshot.sources, answerProvenance{model: record.ResolvedModel, promptVersion: request.PromptVersion})
+	result.Manifest = snapshot.safeManifest
 	result.Model = &record
 	if validationErr != nil {
 		result.Coverage.Status, result.Coverage.Reason = domain.CoverageIncomplete, "contextual model answer failed evidence validation"
@@ -319,13 +346,9 @@ func readFeatureSources(root string, feature domain.Feature, maxContext, maxFile
 	refs := collectSourceRefs(feature)
 	manifest := Manifest{}
 	sources := make([]promptSource, 0, len(refs))
-	rootResolved, err := filepath.EvalSymlinks(root)
+	rootResolved, reason, err := resolveAssessmentRoot(root)
 	if err != nil {
-		return Manifest{Omissions: []ManifestOmission{{Reason: "assessment root is unreadable"}}}, nil
-	}
-	rootResolved, err = filepath.Abs(rootResolved)
-	if err != nil {
-		return Manifest{Omissions: []ManifestOmission{{Reason: "assessment root is invalid"}}}, nil
+		return Manifest{Omissions: []ManifestOmission{{Reason: reason}}}, nil
 	}
 	remaining := maxContext
 	for _, ref := range refs {
@@ -372,14 +395,22 @@ func sourceDigest(content []byte) string {
 	return hex.EncodeToString(sum[:])
 }
 
-func manifestSourceDrift(root string, manifest Manifest) ([]string, error) {
+func resolveAssessmentRoot(root string) (string, string, error) {
 	rootResolved, err := filepath.EvalSymlinks(root)
 	if err != nil {
-		return nil, fmt.Errorf("assessment root is unreadable: %w", err)
+		return "", "assessment root is unreadable", err
 	}
 	rootResolved, err = filepath.Abs(rootResolved)
 	if err != nil {
-		return nil, fmt.Errorf("assessment root is invalid: %w", err)
+		return "", "assessment root is invalid", err
+	}
+	return rootResolved, "", nil
+}
+
+func manifestSourceDrift(root string, manifest Manifest) ([]string, error) {
+	rootResolved, reason, err := resolveAssessmentRoot(root)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", reason, err)
 	}
 	var drifted []string
 	for _, entry := range manifest.Inspected {

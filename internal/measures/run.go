@@ -65,12 +65,7 @@ func Run(ctx context.Context, cfg Config) Result {
 	case rootErr != nil:
 		facts.LizardErr = "repository root is unavailable: " + rootErr.Error()
 	case len(candidates) > 0:
-		paths := make([]string, len(candidates))
-		for i, file := range candidates {
-			paths[i] = file.Path
-		}
-		sort.Strings(paths)
-		lizard, err := cfg.Tools.RunLizard(ctx, root, paths)
+		lizard, err := cfg.Tools.RunLizard(ctx, root, sortedPaths(candidates))
 		if err != nil {
 			facts.LizardErr = err.Error()
 		} else {
@@ -82,21 +77,7 @@ func Run(ctx context.Context, cfg Config) Result {
 	}
 	if facts.LizardErr == "" {
 		result.Measured = MeasuredPopulation(candidates, facts.Lizard)
-		if len(result.Measured) > 0 {
-			paths := make([]string, len(result.Measured))
-			for i, file := range result.Measured {
-				paths[i] = file.Path
-			}
-			sort.Strings(paths)
-			lines, err := lineCounts(root, paths)
-			if err == nil {
-				facts.Lines = lines
-				facts.Clones, err = cfg.Tools.RunJscpd(ctx, root, paths)
-			}
-			if err != nil {
-				facts.JscpdErr = err.Error()
-			}
-		}
+		cfg.Tools.addDuplicationFacts(ctx, root, result.Measured, &facts)
 	}
 	result.LizardErr, result.JscpdErr = facts.LizardErr, facts.JscpdErr
 	input := Input{
@@ -110,6 +91,30 @@ func Run(ctx context.Context, cfg Config) Result {
 	}
 	result.Signals = append(result.Signals, cycleMass(root, input, result.Measured, cfg.Files, graphFailure)...)
 	return result
+}
+
+func sortedPaths(files []domain.File) []string {
+	paths := make([]string, len(files))
+	for i, file := range files {
+		paths[i] = file.Path
+	}
+	sort.Strings(paths)
+	return paths
+}
+
+func (t Tools) addDuplicationFacts(ctx context.Context, root string, measured []domain.File, facts *Facts) {
+	if len(measured) == 0 {
+		return
+	}
+	paths := sortedPaths(measured)
+	lines, err := lineCounts(root, paths)
+	if err == nil {
+		facts.Lines = lines
+		facts.Clones, err = t.RunJscpd(ctx, root, paths)
+	}
+	if err != nil {
+		facts.JscpdErr = err.Error()
+	}
 }
 
 // lineCounts counts line positions as jscpd reads them: newline-separated

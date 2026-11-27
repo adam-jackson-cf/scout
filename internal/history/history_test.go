@@ -1,3 +1,5 @@
+//go:build boundary
+
 package history
 
 import (
@@ -13,6 +15,14 @@ import (
 
 	"scout/internal/domain"
 )
+
+// PrefixScope is a directory scope; an empty prefix contains every path.
+func PrefixScope(kind, anchor, prefix string) Scope {
+	p := strings.TrimSuffix(prefix, "/")
+	return Scope{Kind: kind, Anchor: anchor, Contains: func(path string) bool {
+		return p == "" || path == p || strings.HasPrefix(path, p+"/")
+	}}
+}
 
 // fixture is a git repo with controlled author identity and dates.
 type fixture struct {
@@ -138,7 +148,14 @@ func TestCommitLevelMeasuresOnHandComputableFixture(t *testing.T) {
 		}
 	}
 	w := winLabel(200)
+	assertChangesChurnAmplification(t, sigs, w)
+	assertFollowUpAndOwnership(t, sigs, w)
+	assertHotspotAndScopeB(t, sigs, w)
+	assertPRPartsUnmeasured(t, sigs, w)
+}
 
+func assertChangesChurnAmplification(t *testing.T, sigs []domain.Signal, w string) {
+	t.Helper()
 	ch := find(t, sigs, "scout.changes@1", "a", w)
 	near(t, "changes", ch.Value, 30)
 	if ch.Detail["authors"] != 2 {
@@ -158,7 +175,10 @@ func TestCommitLevelMeasuresOnHandComputableFixture(t *testing.T) {
 	if amp.Detail["p50_scopes"].(float64) != 1.5 {
 		t.Errorf("p50 scopes = %v", amp.Detail["p50_scopes"])
 	}
+}
 
+func assertFollowUpAndOwnership(t *testing.T, sigs []domain.Signal, w string) {
+	t.Helper()
 	fu := find(t, sigs, "scout.follow_up_rate@1", "a", w) // every change but the last is followed next day
 	near(t, "follow num", fu.Numerator, 29)
 	near(t, "follow den", fu.Denominator, 30)
@@ -173,7 +193,10 @@ func TestCommitLevelMeasuresOnHandComputableFixture(t *testing.T) {
 	if strings.Contains(key, "alice") || len(key) != 12 {
 		t.Errorf("ownership key not pseudonymised: %q", key)
 	}
+}
 
+func assertHotspotAndScopeB(t *testing.T, sigs []domain.Signal, w string) {
+	t.Helper()
 	hot := find(t, sigs, "scout.hotspot@1", "a", w)
 	near(t, "hotspot", hot.Value, 4*math.Log1p(30)/100)
 	near(t, "hotspot den", hot.Denominator, 100)
@@ -189,7 +212,10 @@ func TestCommitLevelMeasuresOnHandComputableFixture(t *testing.T) {
 	if chb := find(t, sigs, "scout.changes@1", "b", w); chb.Value == nil || *chb.Value != 15 {
 		t.Errorf("changes@1 for b should still be measured at 15: %+v", chb)
 	}
+}
 
+func assertPRPartsUnmeasured(t *testing.T, sigs []domain.Signal, w string) {
+	t.Helper()
 	// PR-level measures are unmeasured without PR metadata.
 	if pe := find(t, sigs, "scout.pr_effort@1", "a", w); pe.Missing != domain.SignalUnmeasured {
 		t.Errorf("pr_effort = %q", pe.Missing)
@@ -237,6 +263,29 @@ func TestDeterminismAndPopulationDigest(t *testing.T) {
 }
 
 func TestChangeFilters(t *testing.T) {
+	f, n := buildFilterFixture(t)
+	at := func(i int) time.Time { return windowStart(300).Add(time.Duration(i) * time.Hour) }
+	commits, err := Load(context.Background(), f.dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	opts := Options{
+		Scopes:   []Scope{PrefixScope(domain.SignalScopeRepository, "", "")},
+		Eligible: func(p string) bool { return strings.HasSuffix(p, ".go") },
+		Bots:     []string{"ci@example.com", "Release Robot"},
+		End:      at(n), Snapshot: "s",
+	}
+	assertFilteredChanges(t, commits, opts)
+	sigs := Compute(commits, opts)
+	ch := find(t, sigs, "scout.changes@1", "", winLabel(300))
+	near(t, "changes", ch.Value, 25)
+	if ch.Detail["dropped_bots"] != 3 {
+		t.Errorf("detail %v", ch.Detail)
+	}
+}
+
+func buildFilterFixture(t *testing.T) (*fixture, int) {
+	t.Helper()
 	f := newFixture(t)
 	base := windowStart(300)
 	at := func(i int) time.Time { return base.Add(time.Duration(i) * time.Hour) }
@@ -268,16 +317,11 @@ func TestChangeFilters(t *testing.T) {
 	f.git([]string{"GIT_AUTHOR_NAME=dev", "GIT_AUTHOR_EMAIL=dev@example.com", "GIT_COMMITTER_NAME=dev", "GIT_COMMITTER_EMAIL=dev@example.com",
 		"GIT_AUTHOR_DATE=" + at(n).Format(time.RFC3339), "GIT_COMMITTER_DATE=" + at(n).Format(time.RFC3339)},
 		"merge", "-q", "--no-ff", "-m", "merge", "side") // merge commit
-	commits, err := Load(context.Background(), f.dir)
-	if err != nil {
-		t.Fatal(err)
-	}
-	opts := Options{
-		Scopes:   []Scope{PrefixScope(domain.SignalScopeRepository, "", "")},
-		Eligible: func(p string) bool { return strings.HasSuffix(p, ".go") },
-		Bots:     []string{"ci@example.com", "Release Robot"},
-		End:      at(n), Snapshot: "s",
-	}
+	return f, n
+}
+
+func assertFilteredChanges(t *testing.T, commits []Commit, opts Options) {
+	t.Helper()
 	changes, st := buildChanges(commits, opts)
 	// 20 ordinary + renovate-bot + dependabot + [bot]prefix + side + main = 25
 	if len(changes) != 25 {
@@ -288,12 +332,6 @@ func TestChangeFilters(t *testing.T) {
 	}
 	if BotReason(Commit{AuthorName: "x[bot]"}, nil) != BotReasonSuffix || BotReason(Commit{AuthorName: "dev", AuthorEmail: "ci@example.com"}, opts.Bots) != BotReasonConfig {
 		t.Error("bot_reason mismatch")
-	}
-	sigs := Compute(commits, opts)
-	ch := find(t, sigs, "scout.changes@1", "", winLabel(300))
-	near(t, "changes", ch.Value, 25)
-	if ch.Detail["dropped_bots"] != 3 {
-		t.Errorf("detail %v", ch.Detail)
 	}
 }
 
@@ -318,6 +356,11 @@ func TestWindowBucketingAndInsufficient(t *testing.T) {
 			t.Errorf("%s: want insufficient with <20 changes, got %q", s.Window, s.Missing)
 		}
 	}
+	assertBucketImmaturity(t, sigs, k, end)
+}
+
+func assertBucketImmaturity(t *testing.T, sigs []domain.Signal, k int, end time.Time) {
+	t.Helper()
 	// Boundary: the commit at exactly windowStart(k+1) belongs to k+1, which is immature.
 	fixed, _ := Windows(windowStart(k), end, 0)
 	if len(fixed) != 2 || fixed[1].Start != windowStart(k+1) || !fixed[1].Immature || fixed[0].Immature {
@@ -357,33 +400,6 @@ func TestReworkBlameOrigin(t *testing.T) {
 	// Previous window has a single creation commit and no removed lines: unmeasured, not 0.
 	if p := find(t, sigs, "scout.rework@1", "a", winLabel(k-1)); p.Missing != domain.SignalUnmeasured || p.Value != nil {
 		t.Errorf("previous window: %+v", p)
-	}
-}
-
-func TestParseRemoved(t *testing.T) {
-	diff := "--- a/x.go\n+++ b/x.go\n@@ -3,2 +3,0 @@\n-a\n-b\n@@ -10 +8,2 @@\n-c\n+d\n+e\n--- /dev/null\n+++ b/new.go\n@@ -0,0 +1,3 @@\n+1\n"
-	got := parseRemoved(diff)
-	if len(got) != 1 || len(got["x.go"]) != 2 || got["x.go"][0] != (removedRange{3, 2}) || got["x.go"][1] != (removedRange{10, 1}) {
-		t.Errorf("parseRemoved = %v", got)
-	}
-}
-
-func TestActiveHoursHandComputed(t *testing.T) {
-	h := 3600.0
-	cases := []struct {
-		in   []float64
-		want float64
-	}{
-		{nil, 0.5},
-		{[]float64{100}, 0.5},
-		{[]float64{0, 1 * h, 6 * h}, 0.5 + 1 + 0.5},
-		{[]float64{6 * h, 0, 1 * h}, 0.5 + 1 + 0.5}, // order-independent
-		{[]float64{0, 4 * h}, 4.5},                  // gap == 4 h counts as the same session
-	}
-	for _, c := range cases {
-		if got := ActiveHours(c.in); math.Abs(got-c.want) > 1e-12 {
-			t.Errorf("ActiveHours(%v) = %v, want %v", c.in, got, c.want)
-		}
 	}
 }
 

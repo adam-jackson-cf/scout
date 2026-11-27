@@ -51,7 +51,7 @@ func TestStagedInputsRequireTheGitleaksAttestation(t *testing.T) {
 
 func TestExpandArgsSubstitutesDeclaredPlaceholdersOnly(t *testing.T) {
 	inputs := []ManifestInput{{Path: "a.py"}, {Path: "dir/b.py"}}
-	got, err := expandArgs([]string{"scan", "{input_paths}", "--rules", "{bundled_rule_files}", "--m", "{input_manifest}"}, "/repo", "/state/m.json", inputs, []string{"/rules/r.yaml"}, "")
+	got, err := expandArgs([]string{"scan", "{input_paths}", "--rules", "{bundled_rule_files}", "--m", "{input_manifest}"}, invocationValues{root: "/repo", manifest: "/state/m.json", inputs: inputs, bundledRules: []string{"/rules/r.yaml"}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -59,11 +59,11 @@ func TestExpandArgsSubstitutesDeclaredPlaceholdersOnly(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("args = %v, want %v", got, want)
 	}
-	absolute, err := expandArgs([]string{"{absolute_input_paths}"}, "/repo", "", inputs, nil, "")
+	absolute, err := expandArgs([]string{"{absolute_input_paths}"}, invocationValues{root: "/repo", inputs: inputs})
 	if err != nil || !reflect.DeepEqual(absolute, []string{"/repo/a.py", "/repo/dir/b.py"}) {
 		t.Fatalf("absolute args = %v, %v", absolute, err)
 	}
-	if _, err := expandArgs([]string{"{shell_command}"}, "/repo", "", inputs, nil, ""); err == nil {
+	if _, err := expandArgs([]string{"{shell_command}"}, invocationValues{root: "/repo", inputs: inputs}); err == nil {
 		t.Fatal("unknown placeholder was expanded")
 	}
 }

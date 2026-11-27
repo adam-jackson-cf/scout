@@ -44,25 +44,63 @@ type PRMetadataOptions struct {
 // inventory, and optionally the REQ-112–REQ-120 history signals, and records them. Both
 // lanes are signal-mode: a failure is reported in lane health and never fails
 // the run.
-func runMeasuresLanes(ctx context.Context, store *state.Store, root string, current inventory.ScanResult, features []domain.Feature, options Options) []domain.LaneHealth {
-	files := current.Files
-	if options.Measures.Only != nil {
-		keep := make(map[string]bool, len(options.Measures.Only))
-		for _, path := range options.Measures.Only {
-			keep[path] = true
-		}
-		files = nil
-		for _, file := range current.Files {
-			if keep[file.Path] {
-				files = append(files, file)
-			}
-		}
-	}
+func runMeasuresLanes(ctx context.Context, in measuresLaneInput) []domain.LaneHealth {
+	store, root, current, features, options := in.store, in.root, in.current, in.features, in.options
+	files := measuredFiles(current.Files, options.Measures.Only)
 	coverage, artifactNote := ingestArtifacts(ctx, store, root, current.Snapshot, options.Measures.Artifacts)
 	result := measures.Run(ctx, measures.Config{
 		Root: root, Snapshot: current.Snapshot, RunScope: string(options.Scope.Kind),
 		Files: files, Features: features, Tools: options.Measures.Tools, Coverage: coverage,
 	})
+	health := measuresLaneHealth(result)
+	if err := store.RecordSignals(ctx, result.Signals); err != nil {
+		health.Status, health.Reason = domain.LaneFailed, fmt.Sprintf("record signals: %v", err)
+	}
+	out := []domain.LaneHealth{health}
+	if options.Measures.History {
+		out = append(out, runHistoryLane(ctx, historyLaneInput{store: store, root: root, current: current, files: files, result: result, options: options}))
+	}
+	if artifactNote != "" && out[0].Reason == "" {
+		out[0].Reason = artifactNote
+	}
+	return out
+}
+
+type measuresLaneInput struct {
+	store    *state.Store
+	root     string
+	current  inventory.ScanResult
+	features []domain.Feature
+	options  Options
+}
+
+type historyLaneInput struct {
+	store   *state.Store
+	root    string
+	current inventory.ScanResult
+	files   []domain.File
+	result  measures.Result
+	options Options
+}
+
+func measuredFiles(all []domain.File, only []string) []domain.File {
+	if only == nil {
+		return all
+	}
+	keep := make(map[string]bool, len(only))
+	for _, path := range only {
+		keep[path] = true
+	}
+	var files []domain.File
+	for _, file := range all {
+		if keep[file.Path] {
+			files = append(files, file)
+		}
+	}
+	return files
+}
+
+func measuresLaneHealth(result measures.Result) domain.LaneHealth {
 	health := domain.LaneHealth{Lane: LaneMeasures, Units: len(result.Measured), Status: domain.LaneRan}
 	switch {
 	case result.Candidates == 0:
@@ -72,23 +110,14 @@ func runMeasuresLanes(ctx context.Context, store *state.Store, root string, curr
 	case result.JscpdErr != "":
 		health.Status, health.Reason = domain.LaneFailed, "jscpd: "+result.JscpdErr
 	}
-	if err := store.RecordSignals(ctx, result.Signals); err != nil {
-		health.Status, health.Reason = domain.LaneFailed, fmt.Sprintf("record signals: %v", err)
-	}
-	out := []domain.LaneHealth{health}
-	if options.Measures.History {
-		out = append(out, runHistoryLane(ctx, store, root, current, files, result, options))
-	}
-	if artifactNote != "" && out[0].Reason == "" {
-		out[0].Reason = artifactNote
-	}
-	return out
+	return health
 }
 
 // runHistoryLane computes exposure and interest measures per scope from git
 // history. Hotspot uses the per-file CC of the measures run; it is
 // `unmeasured` when lizard did not run.
-func runHistoryLane(ctx context.Context, store *state.Store, root string, current inventory.ScanResult, files []domain.File, result measures.Result, options Options) domain.LaneHealth {
+func runHistoryLane(ctx context.Context, in historyLaneInput) domain.LaneHealth {
+	store, root, current, files, result, options := in.store, in.root, in.current, in.files, in.result, in.options
 	health := domain.LaneHealth{Lane: LaneHistory, Status: domain.LaneRan}
 	commits, err := history.Load(ctx, root)
 	if err != nil {

@@ -29,7 +29,7 @@ go build ./... && go test ./...
 go install ./cmd/scout               # puts scout in $(go env GOPATH)/bin; add that to PATH
 ```
 
-`scripts/bootstrap-tools.sh` installs uv, a Python 3.11 venv with Semgrep, Ruff and lizard, Node with pnpm and jscpd, Gitleaks, and the patched Clawpatch bundle. Activation puts them on `PATH` and sets `SCOUT_CLAWPATCH_BINARY`, so you don't need to pass `--clawpatch`. `claude`, `codex` and `infisical` are optional: the bootstrap reports whether they are present but does not install them.
+`scripts/bootstrap-tools.sh` installs uv, a Python 3.11 venv with Semgrep, Ruff, lizard, mypy and setuptools, Node with pnpm, jscpd and Prettier, Gitleaks, golangci-lint, ShellCheck, shfmt, osv-scanner, go-test-coverage and the patched Clawpatch bundle, and selects the pinned Go toolchain through `GOTOOLCHAIN`. Activation puts them on `PATH` and sets `SCOUT_CLAWPATCH_BINARY`, so you don't need to pass `--clawpatch`. `claude`, `codex` and `infisical` are optional: the bootstrap reports whether they are present but does not install them.
 
 ## Quick Start
 

@@ -162,14 +162,6 @@ type ChainProof struct {
 	DestinationAncestor bool
 }
 
-// ShadowImportPlan separates verbatim restoration from material that still needs
-// destination authorization and CAS publication. Pending retains source provenance.
-type ShadowImportPlan struct {
-	BytePreserving bool
-	Adopt          ShadowLedger
-	Pending        ShadowLedger
-}
-
 // AuthorizedTriage is produced by trusted current-policy authorization.
 type AuthorizedTriage struct {
 	Row ShadowTriage

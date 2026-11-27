@@ -1,3 +1,5 @@
+//go:build boundary
+
 package engine
 
 import (
@@ -12,7 +14,7 @@ func TestResolveBaseUsesImportedBaselineOnlyWhenDigestsAndRevisionMatch(t *testi
 	plan := domain.Plan{ToolDigest: "tool", PolicyDigest: "policy"}
 	imported := &BaseState{Issues: []domain.Issue{issue("b", "ruff:E1", "a.py", "f", domain.IssueOpen)}, Revision: "mb", ToolDigest: "tool", PolicyDigest: "policy", Gaps: BaseGaps{}}
 	cfg := DiffConfig{Baseline: func(context.Context) (*BaseState, error) { return imported, nil }}
-	got, _, comparison, banners, err := resolveBase(context.Background(), cfg, t.TempDir(), "mb", plan, Result{})
+	got, _, comparison, banners, err := resolveBase(context.Background(), cfg, t.TempDir(), "mb", plan)
 	if err != nil || comparison != domain.ComparisonBaseline || len(got) != 1 || len(banners) != 0 {
 		t.Fatalf("matching baseline: %v %v %v %v", got, comparison, banners, err)
 	}
@@ -26,7 +28,7 @@ func TestResolveBaseUsesImportedBaselineOnlyWhenDigestsAndRevisionMatch(t *testi
 		changed := *imported
 		mutate(&changed)
 		cfg.Baseline = func(context.Context) (*BaseState, error) { return &changed, nil }
-		_, _, comparison, banners, err := resolveBase(context.Background(), cfg, t.TempDir(), "mb", plan, Result{})
+		_, _, comparison, banners, err := resolveBase(context.Background(), cfg, t.TempDir(), "mb", plan)
 		if err != nil || comparison != domain.ComparisonNone || len(banners) == 0 {
 			t.Fatalf("%s mismatch: %v %v %v", name, comparison, banners, err)
 		}

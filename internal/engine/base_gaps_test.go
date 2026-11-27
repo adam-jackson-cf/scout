@@ -103,7 +103,7 @@ func TestImportedBaselineGapsAttributeUnknown(t *testing.T) {
 		Gaps: BaseGaps{domain.FamilySecurity: "baseline family security not fully inspected: blocked: gitleaks missing"},
 	}
 	cfg := DiffConfig{Baseline: func(context.Context) (*BaseState, error) { return imported, nil }}
-	_, gaps, comparison, _, err := resolveBase(context.Background(), cfg, t.TempDir(), "mb", plan, Result{})
+	_, gaps, comparison, _, err := resolveBase(context.Background(), cfg, t.TempDir(), "mb", plan)
 	if err != nil || comparison != domain.ComparisonBaseline || len(gaps) != 1 {
 		t.Fatalf("imported partial baseline: gaps %v comparison %v err %v", gaps, comparison, err)
 	}
@@ -113,7 +113,7 @@ func TestImportedBaselineGapsAttributeUnknown(t *testing.T) {
 
 	// A fully inspected baseline (empty, non-nil gaps) keeps `introduced`.
 	imported.Gaps = BaseGaps{}
-	_, gaps, comparison, _, err = resolveBase(context.Background(), cfg, t.TempDir(), "mb", plan, Result{})
+	_, gaps, comparison, _, err = resolveBase(context.Background(), cfg, t.TempDir(), "mb", plan)
 	if err != nil || comparison != domain.ComparisonBaseline {
 		t.Fatalf("inspected imported baseline: %v %v", comparison, err)
 	}

@@ -91,11 +91,29 @@ func (o Options) ref() string { return "refs/heads/" + o.branch() }
 // again, up to MaxAttempts times. apply receives the actual fetched parent
 // (empty when absent), and must revalidate any provider authorization on retry.
 func Publish(ctx context.Context, opts Options, apply func(Parent) (Tree, error)) (Result, error) {
+	attempts, now, err := publishLimits(opts)
+	if err != nil {
+		return Result{}, err
+	}
+	p := publisher{g: git{dir: opts.Repo}, opts: opts, apply: apply, now: now}
+	for attempt := 1; attempt <= attempts; attempt++ {
+		result, retry, err := p.attempt(ctx, attempt)
+		if err != nil {
+			return Result{}, err
+		}
+		if !retry {
+			return result, nil
+		}
+	}
+	return Result{}, ErrContention
+}
+
+func publishLimits(opts Options) (int, func() time.Time, error) {
 	if !opts.Trusted {
-		return Result{}, ErrUntrusted
+		return 0, nil, ErrUntrusted
 	}
 	if opts.Repo == "" || opts.Remote == "" {
-		return Result{}, errors.New("repository and remote are required")
+		return 0, nil, errors.New("repository and remote are required")
 	}
 	attempts := opts.MaxAttempts
 	if attempts <= 0 {
@@ -105,65 +123,101 @@ func Publish(ctx context.Context, opts Options, apply func(Parent) (Tree, error)
 	if now == nil {
 		now = time.Now
 	}
-	g := git{dir: opts.Repo}
-	for attempt := 1; attempt <= attempts; attempt++ {
-		tip, current, err := fetchTip(ctx, g, opts)
-		if err != nil && !errors.Is(err, ErrNoState) {
-			return Result{}, err
-		}
-		if tip != "" {
-			if _, err := state.ValidateState(current); err != nil {
-				return Result{}, err
-			}
-		}
-		next, err := apply(Parent{Commit: tip, Tree: current})
-		if err != nil {
-			return Result{}, err
-		}
-		if err := validatePublishTree(next); err != nil {
-			return Result{}, err
-		}
-		treeSHA, err := writeTree(ctx, g, next)
-		if err != nil {
-			return Result{}, err
-		}
-		if tip != "" {
-			tipTree, err := g.output(ctx, nil, "rev-parse", tip+"^{tree}")
-			if err != nil {
-				return Result{}, err
-			}
-			if tipTree == treeSHA {
-				return Result{Commit: tip, Parent: tip, Attempts: attempt}, nil
-			}
-		}
-		stamp := strconv.FormatInt(now().Unix(), 10) + " +0000"
-		env := []string{
-			"GIT_AUTHOR_NAME=scout", "GIT_AUTHOR_EMAIL=scout@users.noreply.github.com", "GIT_AUTHOR_DATE=" + stamp,
-			"GIT_COMMITTER_NAME=scout", "GIT_COMMITTER_EMAIL=scout@users.noreply.github.com", "GIT_COMMITTER_DATE=" + stamp,
-		}
-		commitArgs := []string{"-c", "commit.gpgsign=false", "commit-tree", treeSHA, "-m", "scout: publish state"}
-		if tip != "" {
-			commitArgs = append(commitArgs, "-p", tip)
-		}
-		commit, err := g.output(ctx, env, commitArgs...)
-		if err != nil {
-			return Result{}, err
-		}
-		lease := "--force-with-lease=" + opts.ref() + ":" + tip
-		if _, err := g.output(ctx, nil, "push", "--quiet", lease, opts.Remote, commit+":"+opts.ref()); err != nil {
-			// A rejected lease means someone else moved the tip; anything else is real.
-			actual, lookupErr := remoteTip(ctx, g, opts)
-			if lookupErr == nil && actual != tip {
-				if err := backoff(ctx, attempt); err != nil {
-					return Result{}, err
-				}
-				continue
-			}
-			return Result{}, fmt.Errorf("push %s: %w", opts.ref(), err)
-		}
-		return Result{Commit: commit, Parent: tip, Attempts: attempt, Changed: true}, nil
+	return attempts, now, nil
+}
+
+type publisher struct {
+	g     git
+	opts  Options
+	apply func(Parent) (Tree, error)
+	now   func() time.Time
+}
+
+func (p publisher) attempt(ctx context.Context, attempt int) (Result, bool, error) {
+	tip, next, err := p.nextTree(ctx)
+	if err != nil {
+		return Result{}, false, err
 	}
-	return Result{}, ErrContention
+	treeSHA, err := writeTree(ctx, p.g, next)
+	if err != nil {
+		return Result{}, false, err
+	}
+	unchanged, err := p.tipHasTree(ctx, tip, treeSHA)
+	if err != nil {
+		return Result{}, false, err
+	}
+	if unchanged {
+		return Result{Commit: tip, Parent: tip, Attempts: attempt}, false, nil
+	}
+	commit, err := p.commit(ctx, tip, treeSHA)
+	if err != nil {
+		return Result{}, false, err
+	}
+	retry, err := p.push(ctx, tip, commit, attempt)
+	if err != nil || retry {
+		return Result{}, retry, err
+	}
+	return Result{Commit: commit, Parent: tip, Attempts: attempt, Changed: true}, false, nil
+}
+
+func (p publisher) nextTree(ctx context.Context) (string, Tree, error) {
+	tip, current, err := fetchTip(ctx, p.g, p.opts)
+	if err != nil && !errors.Is(err, ErrNoState) {
+		return "", nil, err
+	}
+	if tip != "" {
+		if _, err := state.ValidateState(current); err != nil {
+			return "", nil, err
+		}
+	}
+	next, err := p.apply(Parent{Commit: tip, Tree: current})
+	if err != nil {
+		return "", nil, err
+	}
+	if err := validatePublishTree(next); err != nil {
+		return "", nil, err
+	}
+	return tip, next, nil
+}
+
+func (p publisher) tipHasTree(ctx context.Context, tip, treeSHA string) (bool, error) {
+	if tip == "" {
+		return false, nil
+	}
+	tipTree, err := p.g.output(ctx, nil, "rev-parse", tip+"^{tree}")
+	if err != nil {
+		return false, err
+	}
+	return tipTree == treeSHA, nil
+}
+
+func (p publisher) commit(ctx context.Context, tip, treeSHA string) (string, error) {
+	stamp := strconv.FormatInt(p.now().Unix(), 10) + " +0000"
+	env := []string{
+		"GIT_AUTHOR_NAME=scout", "GIT_AUTHOR_EMAIL=scout@users.noreply.github.com", "GIT_AUTHOR_DATE=" + stamp,
+		"GIT_COMMITTER_NAME=scout", "GIT_COMMITTER_EMAIL=scout@users.noreply.github.com", "GIT_COMMITTER_DATE=" + stamp,
+	}
+	commitArgs := []string{"-c", "commit.gpgsign=false", "commit-tree", treeSHA, "-m", "scout: publish state"}
+	if tip != "" {
+		commitArgs = append(commitArgs, "-p", tip)
+	}
+	return p.g.output(ctx, env, commitArgs...)
+}
+
+func (p publisher) push(ctx context.Context, tip, commit string, attempt int) (bool, error) {
+	lease := "--force-with-lease=" + p.opts.ref() + ":" + tip
+	if _, err := p.g.output(ctx, nil, "push", "--quiet", lease, p.opts.Remote, commit+":"+p.opts.ref()); err != nil {
+		// A rejected lease means someone else moved the tip; anything else is real.
+		actual, lookupErr := remoteTip(ctx, p.g, p.opts)
+		if lookupErr == nil && actual != tip {
+			if err := backoff(ctx, attempt); err != nil {
+				return false, err
+			}
+			return true, nil
+		}
+		return false, fmt.Errorf("push %s: %w", p.opts.ref(), err)
+	}
+	return false, nil
 }
 
 // Fetch reads the remote branch tip and returns its state/v1 files without

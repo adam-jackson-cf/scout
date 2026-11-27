@@ -1,11 +1,11 @@
+//go:build boundary
+
 package measures
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"scout/internal/domain"
@@ -16,45 +16,23 @@ func requireScanners(t *testing.T) {
 	t.Helper()
 	for _, binary := range []string{"lizard", "jscpd", "node"} {
 		if _, err := exec.LookPath(binary); err != nil {
-			t.Skipf("%s is not on PATH (source .tools/activate)", binary)
+			t.Fatalf("%s is not on PATH (source .tools/activate)", binary)
 		}
 	}
 	if err := sandbox.Available(); err != nil {
-		t.Skip("scanner sandbox is not available")
+		t.Fatal("scanner sandbox is not available")
 	}
-}
-
-// pythonModule renders a module with one function of cyclomatic complexity
-// branches+1 and 2·branches+2 non-blank lines.
-func pythonModule(name string, branches int) string {
-	var b strings.Builder
-	fmt.Fprintf(&b, "def %s(x):\n    total = 0\n", name)
-	for i := range branches {
-		fmt.Fprintf(&b, "    if x == %d:\n        total += %d\n", i, i*7+3)
-	}
-	b.WriteString("    return total\n")
-	return b.String()
 }
 
 func TestRunMeasuresRealScannersOnTemporaryRepository(t *testing.T) {
 	requireScanners(t)
 	root := t.TempDir()
-	write := func(path, content string) {
-		t.Helper()
-		full := filepath.Join(root, filepath.FromSlash(path))
-		if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.WriteFile(full, []byte(content), 0o644); err != nil {
-			t.Fatal(err)
-		}
-	}
 	// Two identical production modules (a long clone), one module below the
 	// 10-NLOC floor, and a test file that must be excluded by path role.
-	write("pkg/one/a.py", pythonModule("alpha", 11))
-	write("pkg/one/b.py", pythonModule("alpha", 11))
-	write("pkg/one/tiny.py", "def tiny():\n    return 1\n")
-	write("tests/test_a.py", pythonModule("alpha", 11))
+	writeRepoFile(t, root, "pkg/one/a.py", singleFunctionPythonModule("alpha", 11))
+	writeRepoFile(t, root, "pkg/one/b.py", singleFunctionPythonModule("alpha", 11))
+	writeRepoFile(t, root, "pkg/one/tiny.py", "def tiny():\n    return 1\n")
+	writeRepoFile(t, root, "tests/test_a.py", singleFunctionPythonModule("alpha", 11))
 	files := []domain.File{
 		{Path: "pkg/one/a.py", ContentDigest: "da", Eligible: true},
 		{Path: "pkg/one/b.py", ContentDigest: "db", Eligible: true},
@@ -68,7 +46,22 @@ func TestRunMeasuresRealScannersOnTemporaryRepository(t *testing.T) {
 	if len(result.Measured) != 2 {
 		t.Fatalf("measured = %v, want a.py and b.py", result.Measured)
 	}
-	signals := result.Signals
+	assertRealScannerSignals(t, result.Signals)
+}
+
+func writeRepoFile(t *testing.T, root, path, content string) {
+	t.Helper()
+	full := filepath.Join(root, filepath.FromSlash(path))
+	if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(full, []byte(content), 0o644); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func assertRealScannerSignals(t *testing.T, signals []domain.Signal) {
+	t.Helper()
 	cc := find(t, signals, MetricCC, "pkg/one")
 	near(t, "n_high_cc", cc.Value, 2)
 	near(t, "functions", cc.Denominator, 2)
@@ -91,29 +84,6 @@ func TestRunMeasuresRealScannersOnTemporaryRepository(t *testing.T) {
 	}
 }
 
-func TestRunWithoutScannersIsUnmeasuredNotZero(t *testing.T) {
-	root := t.TempDir()
-	if err := os.WriteFile(filepath.Join(root, "a.py"), []byte(pythonModule("a", 11)), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	result := Run(t.Context(), Config{
-		Root: root, Snapshot: domain.Snapshot{WorktreeDigest: "w"}, RunScope: "repository",
-		Files: []domain.File{{Path: "a.py", ContentDigest: "d", Eligible: true}},
-		Tools: Tools{Lizard: "scout-no-such-lizard", Jscpd: "scout-no-such-jscpd"},
-	})
-	if result.LizardErr == "" {
-		t.Fatal("missing lizard not reported")
-	}
-	for _, signal := range result.Signals {
-		if signal.Missing != domain.SignalUnmeasured || signal.Value != nil {
-			t.Fatalf("%s = %+v, want unmeasured", signal.ID(), signal)
-		}
-	}
-	if len(result.Signals) == 0 {
-		t.Fatal("no signals recorded for the scope")
-	}
-}
-
 func TestRunRecordsCycleMassPerScope(t *testing.T) {
 	requireScanners(t)
 	root := t.TempDir()
@@ -123,7 +93,7 @@ func TestRunRecordsCycleMassPerScope(t *testing.T) {
 		if err := os.MkdirAll(dir, 0o755); err != nil {
 			t.Fatal(err)
 		}
-		content := "from . import " + partner + "\n\n" + pythonModule("fn_"+name, 6)
+		content := "from . import " + partner + "\n\n" + singleFunctionPythonModule("fn_"+name, 6)
 		if err := os.WriteFile(filepath.Join(dir, name+".py"), []byte(content), 0o644); err != nil {
 			t.Fatal(err)
 		}

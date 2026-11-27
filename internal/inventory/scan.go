@@ -71,40 +71,17 @@ func Scan(ctx context.Context, root string, options ScanOptions) (ScanResult, er
 	if err := options.Scope.Validate(); err != nil {
 		return result, fmt.Errorf("validate scope: %w", err)
 	}
-	resolvedRoot, err := filepath.Abs(root)
+	resolvedRoot, err := resolveRepositoryRoot(ctx, root, &result)
 	if err != nil {
-		return result, fmt.Errorf("resolve root: %w", err)
-	}
-	resolvedRoot, err = filepath.EvalSymlinks(filepath.Clean(resolvedRoot))
-	if err != nil {
-		return result, fmt.Errorf("resolve root symlinks: %w", err)
-	}
-	result.Root = resolvedRoot
-
-	gitRoot, err := gitOutput(ctx, resolvedRoot, "rev-parse", "--show-toplevel")
-	if err != nil {
-		result.Diagnostics = append(result.Diagnostics, diagnostic("git_unavailable", err.Error(), ""))
-		return result, fmt.Errorf("resolve Git repository: %w", err)
-	}
-	gitRootPath := filepath.Clean(strings.TrimSpace(string(gitRoot)))
-	if gitRootPath != resolvedRoot {
-		result.Diagnostics = append(result.Diagnostics, diagnostic("root_not_repository", "assessment root must be the Git repository root", ""))
-		return result, fmt.Errorf("assessment root %q is not Git root %q", resolvedRoot, gitRootPath)
+		return result, err
 	}
 
-	revision, revisionErr := gitOutput(ctx, resolvedRoot, "rev-parse", "--verify", "HEAD")
-	if revisionErr != nil && unbornHEAD(ctx, resolvedRoot) {
-		revisionErr = nil
-		result.Diagnostics = append(result.Diagnostics, diagnostic("revision_unavailable", "repository has no initial commit", ""))
-	}
-	selectedRevision := strings.TrimSpace(string(revision))
+	selectedRevision, revisionErr := headRevision(ctx, resolvedRoot, &result)
 	if options.Scope.Kind == domain.ScopeCommitRange {
-		to, err := gitOutput(ctx, resolvedRoot, "rev-parse", options.Scope.ToRevision)
+		selectedRevision, err = rangeEndRevision(ctx, resolvedRoot, options.Scope.ToRevision, &result)
 		if err != nil {
-			result.Diagnostics = append(result.Diagnostics, diagnostic("range_revision_unavailable", err.Error(), ""))
-			return result, fmt.Errorf("resolve range end: %w", err)
+			return result, err
 		}
-		selectedRevision = strings.TrimSpace(string(to))
 	}
 
 	ignoredDigest, ignoreDiagnostics := ignoreRulesDigest(ctx, resolvedRoot)
@@ -112,11 +89,7 @@ func Scan(ctx context.Context, root string, options ScanOptions) (ScanResult, er
 	exclusionDigest := digestStrings(append([]string{scoutStatePrefix}, normalizedExclusions(options.Exclusions)...))
 	result.ScopeDigest = scopeDigest(options.Scope, options.Exclusions)
 
-	worktreeStatus, statusErr := gitOutput(ctx, resolvedRoot, "status", "--porcelain=v1", "-z", "--untracked-files=all", "--", ".", ":(exclude).scout")
-	dirty := len(worktreeStatus) != 0
-	if statusErr != nil {
-		result.Diagnostics = append(result.Diagnostics, diagnostic("worktree_status_unavailable", statusErr.Error(), ""))
-	}
+	dirty, statusErr := worktreeDirty(ctx, resolvedRoot, &result)
 
 	candidates, removed, reader, listDiagnostics, err := scopeCandidates(ctx, resolvedRoot, options.Scope)
 	result.Diagnostics = append(result.Diagnostics, listDiagnostics...)
@@ -124,41 +97,8 @@ func Scan(ctx context.Context, root string, options ScanOptions) (ScanResult, er
 		return result, fmt.Errorf("resolve scope: %w", err)
 	}
 
-	var inputErrors []error
-	for _, path := range sortedUnique(candidates) {
-		if err := validateRepositoryPath(path); err != nil {
-			result.Diagnostics = append(result.Diagnostics, diagnostic("unsafe_git_path", "Git path is not a normalized repository-relative path", ""))
-			inputErrors = append(inputErrors, err)
-			continue
-		}
-		if IsScoutState(path) {
-			continue
-		}
-		file, omission, readErr := scanPath(path, reader, options.Exclusions)
-		if readErr != nil {
-			code, message := readDiagnostic(readErr)
-			result.Diagnostics = append(result.Diagnostics, diagnostic(code, message, path))
-		}
-		result.Files = append(result.Files, file)
-		if omission != nil {
-			result.Omissions = append(result.Omissions, *omission)
-		}
-	}
-	for _, path := range sortedUnique(removed) {
-		if err := validateRepositoryPath(path); err != nil {
-			result.Diagnostics = append(result.Diagnostics, diagnostic("unsafe_git_path", "Git path is not a normalized repository-relative path", ""))
-			inputErrors = append(inputErrors, err)
-			continue
-		}
-		if IsScoutState(path) {
-			continue
-		}
-		if excluded(path, options.Exclusions) {
-			result.Removed = append(result.Removed, domain.File{Path: path, Excluded: true, ExclusionReason: exclusionReason(path, options.Exclusions)})
-			continue
-		}
-		result.Removed = append(result.Removed, domain.File{Path: path, Eligible: candidateEligible(path)})
-	}
+	inputErrors := scanCandidates(&result, candidates, reader, options.Exclusions)
+	inputErrors = append(inputErrors, recordRemovedPaths(&result, removed, options.Exclusions)...)
 
 	linked, gaps, linkErr := LinkFeatures(result.Files, options.Features)
 	result.Files = linked
@@ -178,10 +118,101 @@ func Scan(ctx context.Context, root string, options ScanOptions) (ScanResult, er
 	if err := result.Snapshot.Validate(); err != nil {
 		return result, fmt.Errorf("build snapshot: %w", err)
 	}
-	if revisionErr != nil || statusErr != nil || linkErr != nil || len(inputErrors) != 0 {
-		return result, errors.Join(append(inputErrors, revisionErr, statusErr, linkErr)...)
+	return result, errors.Join(append(inputErrors, revisionErr, statusErr, linkErr)...)
+}
+
+func resolveRepositoryRoot(ctx context.Context, root string, result *ScanResult) (string, error) {
+	resolvedRoot, err := filepath.Abs(root)
+	if err != nil {
+		return "", fmt.Errorf("resolve root: %w", err)
 	}
-	return result, nil
+	resolvedRoot, err = filepath.EvalSymlinks(filepath.Clean(resolvedRoot))
+	if err != nil {
+		return "", fmt.Errorf("resolve root symlinks: %w", err)
+	}
+	result.Root = resolvedRoot
+
+	gitRoot, err := gitOutput(ctx, resolvedRoot, "rev-parse", "--show-toplevel")
+	if err != nil {
+		result.Diagnostics = append(result.Diagnostics, diagnostic("git_unavailable", err.Error(), ""))
+		return "", fmt.Errorf("resolve Git repository: %w", err)
+	}
+	gitRootPath := filepath.Clean(strings.TrimSpace(string(gitRoot)))
+	if gitRootPath != resolvedRoot {
+		result.Diagnostics = append(result.Diagnostics, diagnostic("root_not_repository", "assessment root must be the Git repository root", ""))
+		return "", fmt.Errorf("assessment root %q is not Git root %q", resolvedRoot, gitRootPath)
+	}
+	return resolvedRoot, nil
+}
+
+func headRevision(ctx context.Context, root string, result *ScanResult) (string, error) {
+	revision, revisionErr := gitOutput(ctx, root, "rev-parse", "--verify", "HEAD")
+	if revisionErr != nil && unbornHEAD(ctx, root) {
+		revisionErr = nil
+		result.Diagnostics = append(result.Diagnostics, diagnostic("revision_unavailable", "repository has no initial commit", ""))
+	}
+	return strings.TrimSpace(string(revision)), revisionErr
+}
+
+func rangeEndRevision(ctx context.Context, root, toRevision string, result *ScanResult) (string, error) {
+	to, err := gitOutput(ctx, root, "rev-parse", toRevision)
+	if err != nil {
+		result.Diagnostics = append(result.Diagnostics, diagnostic("range_revision_unavailable", err.Error(), ""))
+		return "", fmt.Errorf("resolve range end: %w", err)
+	}
+	return strings.TrimSpace(string(to)), nil
+}
+
+func worktreeDirty(ctx context.Context, root string, result *ScanResult) (bool, error) {
+	worktreeStatus, statusErr := gitOutput(ctx, root, "status", "--porcelain=v1", "-z", "--untracked-files=all", "--", ".", ":(exclude).scout")
+	if statusErr != nil {
+		result.Diagnostics = append(result.Diagnostics, diagnostic("worktree_status_unavailable", statusErr.Error(), ""))
+	}
+	return len(worktreeStatus) != 0, statusErr
+}
+
+func scanCandidates(result *ScanResult, candidates []string, reader contentReader, exclusions []string) []error {
+	var inputErrors []error
+	for _, path := range sortedUnique(candidates) {
+		if err := validateRepositoryPath(path); err != nil {
+			result.Diagnostics = append(result.Diagnostics, diagnostic("unsafe_git_path", "Git path is not a normalized repository-relative path", ""))
+			inputErrors = append(inputErrors, err)
+			continue
+		}
+		if IsScoutState(path) {
+			continue
+		}
+		file, omission, readErr := scanPath(path, reader, exclusions)
+		if readErr != nil {
+			code, message := readDiagnostic(readErr)
+			result.Diagnostics = append(result.Diagnostics, diagnostic(code, message, path))
+		}
+		result.Files = append(result.Files, file)
+		if omission != nil {
+			result.Omissions = append(result.Omissions, *omission)
+		}
+	}
+	return inputErrors
+}
+
+func recordRemovedPaths(result *ScanResult, removed, exclusions []string) []error {
+	var inputErrors []error
+	for _, path := range sortedUnique(removed) {
+		if err := validateRepositoryPath(path); err != nil {
+			result.Diagnostics = append(result.Diagnostics, diagnostic("unsafe_git_path", "Git path is not a normalized repository-relative path", ""))
+			inputErrors = append(inputErrors, err)
+			continue
+		}
+		if IsScoutState(path) {
+			continue
+		}
+		if excluded(path, exclusions) {
+			result.Removed = append(result.Removed, domain.File{Path: path, Excluded: true, ExclusionReason: exclusionReason(path, exclusions)})
+			continue
+		}
+		result.Removed = append(result.Removed, domain.File{Path: path, Eligible: candidateEligible(path)})
+	}
+	return inputErrors
 }
 
 // LinkFeatures attaches only canonical Clawpatch IDs to files. It neither
@@ -237,45 +268,36 @@ func scopeCandidates(ctx context.Context, root string, scope domain.Scope) ([]st
 		}
 		return filterScope(paths, scope), nil, workingTreeReader(root), nil, nil
 	case domain.ScopeStaged:
-		changes, err := nameStatus(ctx, root, "diff", "--cached", "--name-status", "-z", "--find-renames")
-		if err != nil {
-			return nil, nil, nil, nil, err
-		}
-		paths, removed, err := selectedChanges(changes)
-		if err != nil {
-			return nil, nil, nil, []Diagnostic{diagnostic("unsafe_git_path", "Git change path is not a normalized repository-relative path", "")}, err
-		}
-		return paths, removed, func(path string) (io.ReadCloser, error) {
-			if err := validateRepositoryPath(path); err != nil {
-				return nil, err
-			}
-			content, err := gitOutput(ctx, root, "show", ":"+path)
-			if err != nil {
-				return nil, err
-			}
-			return io.NopCloser(bytes.NewReader(content)), nil
-		}, nil, nil
+		return changeCandidates(ctx, root, []string{"diff", "--cached", "--name-status", "-z", "--find-renames"}, ":")
 	case domain.ScopeCommitRange:
-		changes, err := nameStatus(ctx, root, "diff", "--name-status", "-z", "--find-renames", scope.FromRevision, scope.ToRevision)
-		if err != nil {
-			return nil, nil, nil, nil, err
-		}
-		paths, removed, err := selectedChanges(changes)
-		if err != nil {
-			return nil, nil, nil, []Diagnostic{diagnostic("unsafe_git_path", "Git change path is not a normalized repository-relative path", "")}, err
-		}
-		return paths, removed, func(path string) (io.ReadCloser, error) {
-			if err := validateRepositoryPath(path); err != nil {
-				return nil, err
-			}
-			content, err := gitOutput(ctx, root, "show", scope.ToRevision+":"+path)
-			if err != nil {
-				return nil, err
-			}
-			return io.NopCloser(bytes.NewReader(content)), nil
-		}, nil, nil
+		return changeCandidates(ctx, root, []string{"diff", "--name-status", "-z", "--find-renames", scope.FromRevision, scope.ToRevision}, scope.ToRevision+":")
 	default:
 		return nil, nil, nil, nil, fmt.Errorf("unsupported scope %q", scope.Kind)
+	}
+}
+
+func changeCandidates(ctx context.Context, root string, diffArgs []string, objectPrefix string) ([]string, []string, contentReader, []Diagnostic, error) {
+	changes, err := nameStatus(ctx, root, diffArgs...)
+	if err != nil {
+		return nil, nil, nil, nil, err
+	}
+	paths, removed, err := selectedChanges(changes)
+	if err != nil {
+		return nil, nil, nil, []Diagnostic{diagnostic("unsafe_git_path", "Git change path is not a normalized repository-relative path", "")}, err
+	}
+	return paths, removed, gitObjectReader(ctx, root, objectPrefix), nil, nil
+}
+
+func gitObjectReader(ctx context.Context, root, objectPrefix string) contentReader {
+	return func(path string) (io.ReadCloser, error) {
+		if err := validateRepositoryPath(path); err != nil {
+			return nil, err
+		}
+		content, err := gitOutput(ctx, root, "show", objectPrefix+path)
+		if err != nil {
+			return nil, err
+		}
+		return io.NopCloser(bytes.NewReader(content)), nil
 	}
 }
 
@@ -442,13 +464,7 @@ func scanPath(path string, reader contentReader, patterns []string) (domain.File
 	if excluded(path, patterns) {
 		return domain.File{Path: path, Excluded: true, ExclusionReason: exclusionReason(path, patterns)}, nil, nil
 	}
-	source, err := reader(path)
-	var text bool
-	var digest string
-	if err == nil {
-		defer source.Close()
-		digest, text, err = digestText(source)
-	}
+	digest, text, err := readSource(path, reader)
 	if err != nil {
 		file := domain.File{Path: path, Language: languageFor(path), Eligible: candidateEligible(path)}
 		if !file.Eligible {
@@ -463,6 +479,19 @@ func scanPath(path string, reader contentReader, patterns []string) (domain.File
 		ContentDigest: digest,
 		Eligible:      text && candidateEligible(path),
 	}, nil, nil
+}
+
+func readSource(path string, reader contentReader) (digest string, text bool, err error) {
+	source, err := reader(path)
+	if err != nil {
+		return "", false, err
+	}
+	defer func() {
+		if closeErr := source.Close(); closeErr != nil {
+			err = errors.Join(err, closeErr)
+		}
+	}()
+	return digestText(source)
 }
 
 func digestText(reader io.Reader) (string, bool, error) {
@@ -503,37 +532,24 @@ func candidateEligible(path string) bool {
 	}
 }
 
+var languageByExtension = map[string]string{
+	".py": "python", ".pyi": "python",
+	".js": "javascript", ".jsx": "javascript", ".mjs": "javascript", ".cjs": "javascript",
+	".ts": "typescript", ".tsx": "typescript", ".mts": "typescript", ".cts": "typescript",
+	".go":   "go",
+	".rs":   "rust",
+	".java": "java",
+	".cs":   "csharp",
+	".sql":  "sql",
+	".yaml": "yaml", ".yml": "yaml",
+	".json": "json",
+	".toml": "toml",
+	".xml":  "xml",
+	".sh":   "shell",
+}
+
 func languageFor(path string) string {
-	switch strings.ToLower(filepath.Ext(path)) {
-	case ".py", ".pyi":
-		return "python"
-	case ".js", ".jsx", ".mjs", ".cjs":
-		return "javascript"
-	case ".ts", ".tsx", ".mts", ".cts":
-		return "typescript"
-	case ".go":
-		return "go"
-	case ".rs":
-		return "rust"
-	case ".java":
-		return "java"
-	case ".cs":
-		return "csharp"
-	case ".sql":
-		return "sql"
-	case ".yaml", ".yml":
-		return "yaml"
-	case ".json":
-		return "json"
-	case ".toml":
-		return "toml"
-	case ".xml":
-		return "xml"
-	case ".sh":
-		return "shell"
-	default:
-		return ""
-	}
+	return languageByExtension[strings.ToLower(filepath.Ext(path))]
 }
 
 // IsScoutState reports whether a repository-relative path is Scout-managed
@@ -578,44 +594,59 @@ func normalizedExclusions(patterns []string) []string {
 }
 
 func ignoreRulesDigest(ctx context.Context, root string) (string, []Diagnostic) {
-	parts := []string{}
-	var diagnostics []Diagnostic
-	_ = filepath.WalkDir(root, func(path string, entry fs.DirEntry, err error) error {
-		if err != nil {
-			diagnostics = append(diagnostics, diagnostic("ignore_rule_unreadable", err.Error(), path))
+	collector := &ignoreRuleCollector{root: root, parts: []string{}}
+	_ = filepath.WalkDir(root, collector.visit)
+	collector.addInfoExclude()
+	collector.addGlobalExcludes(ctx)
+	return digestStrings(collector.parts), collector.diagnostics
+}
+
+type ignoreRuleCollector struct {
+	root        string
+	parts       []string
+	diagnostics []Diagnostic
+}
+
+func (c *ignoreRuleCollector) visit(path string, entry fs.DirEntry, err error) error {
+	if err != nil {
+		c.diagnostics = append(c.diagnostics, diagnostic("ignore_rule_unreadable", err.Error(), path))
+		return nil
+	}
+	if entry.IsDir() && (entry.Name() == ".git" || entry.Name() == ".scout") {
+		return filepath.SkipDir
+	}
+	if !entry.IsDir() && entry.Name() == ".gitignore" {
+		content, readErr := os.ReadFile(path)
+		if readErr != nil {
+			c.diagnostics = append(c.diagnostics, diagnostic("ignore_rule_unreadable", readErr.Error(), path))
 			return nil
 		}
-		if entry.IsDir() && (entry.Name() == ".git" || entry.Name() == ".scout") {
-			return filepath.SkipDir
-		}
-		if !entry.IsDir() && entry.Name() == ".gitignore" {
-			content, readErr := os.ReadFile(path)
-			if readErr != nil {
-				diagnostics = append(diagnostics, diagnostic("ignore_rule_unreadable", readErr.Error(), path))
-				return nil
-			}
-			relative, _ := filepath.Rel(root, path)
-			parts = append(parts, filepath.ToSlash(relative)+"\x00"+digestBytes(content))
-		}
-		return nil
-	})
-	infoExclude := filepath.Join(root, ".git", "info", "exclude")
-	if content, err := os.ReadFile(infoExclude); err == nil {
-		parts = append(parts, filepath.ToSlash(strings.TrimPrefix(infoExclude, root+string(filepath.Separator)))+"\x00"+digestBytes(content))
-	} else if !errors.Is(err, os.ErrNotExist) {
-		diagnostics = append(diagnostics, diagnostic("ignore_rule_unreadable", err.Error(), infoExclude))
+		relative, _ := filepath.Rel(c.root, path)
+		c.parts = append(c.parts, filepath.ToSlash(relative)+"\x00"+digestBytes(content))
 	}
-	global, err := gitOutput(ctx, root, "config", "--path", "--get", "core.excludesFile")
+	return nil
+}
+
+func (c *ignoreRuleCollector) addInfoExclude() {
+	infoExclude := filepath.Join(c.root, ".git", "info", "exclude")
+	if content, err := os.ReadFile(infoExclude); err == nil {
+		c.parts = append(c.parts, filepath.ToSlash(strings.TrimPrefix(infoExclude, c.root+string(filepath.Separator)))+"\x00"+digestBytes(content))
+	} else if !errors.Is(err, os.ErrNotExist) {
+		c.diagnostics = append(c.diagnostics, diagnostic("ignore_rule_unreadable", err.Error(), infoExclude))
+	}
+}
+
+func (c *ignoreRuleCollector) addGlobalExcludes(ctx context.Context) {
+	global, err := gitOutput(ctx, c.root, "config", "--path", "--get", "core.excludesFile")
 	if err == nil && strings.TrimSpace(string(global)) != "" {
 		path := strings.TrimSpace(string(global))
 		content, readErr := os.ReadFile(path)
 		if readErr != nil {
-			diagnostics = append(diagnostics, diagnostic("global_ignore_unreadable", readErr.Error(), path))
+			c.diagnostics = append(c.diagnostics, diagnostic("global_ignore_unreadable", readErr.Error(), path))
 		} else {
-			parts = append(parts, "global\x00"+digestBytes(content))
+			c.parts = append(c.parts, "global\x00"+digestBytes(content))
 		}
 	}
-	return digestStrings(parts), diagnostics
 }
 
 func repositoryID(ctx context.Context, root string) string {

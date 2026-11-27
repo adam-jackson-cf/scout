@@ -34,13 +34,8 @@ type IssueMatch struct {
 // records evidence drift without touching the human disposition, and moves a
 // resolved issue to regressed. It is idempotent for an already-linked run.
 func (s *Store) RecordIssueMatch(ctx context.Context, match IssueMatch) (domain.Issue, error) {
-	if match.IssueID == "" || len(match.ObservationIDs) == 0 || match.Reason == "" {
-		return domain.Issue{}, errors.New("issue ID, observations, and audit reason are required")
-	}
-	for _, observationID := range match.ObservationIDs {
-		if observationID == "" {
-			return domain.Issue{}, errors.New("observation ID must not be empty")
-		}
+	if err := validateIssueMatch(match); err != nil {
+		return domain.Issue{}, err
 	}
 	var updated domain.Issue
 	err := s.withTransaction(ctx, func(tx *sql.Tx) error {
@@ -48,41 +43,12 @@ func (s *Store) RecordIssueMatch(ctx context.Context, match IssueMatch) (domain.
 		if err != nil {
 			return err
 		}
-		linked := make(map[string]struct{}, len(issue.ObservationIDs))
-		for _, observationID := range issue.ObservationIDs {
-			linked[observationID] = struct{}{}
-		}
-		newIDs := make([]string, 0, len(match.ObservationIDs))
-		for _, observationID := range uniqueSorted(match.ObservationIDs) {
-			if _, found := linked[observationID]; !found {
-				newIDs = append(newIDs, observationID)
-			}
-		}
+		newIDs := unlinkedObservationIDs(issue, match.ObservationIDs)
 		if len(newIDs) == 0 {
 			updated = issue
 			return nil
 		}
-		issue.ObservationIDs = append(issue.ObservationIDs, newIDs...)
-		issue.Anchor = match.Anchor
-		if len(match.Files) != 0 {
-			issue.Files = uniqueSorted(match.Files)
-		}
-		issue.FeatureIDs = uniqueSorted(match.FeatureIDs)
-		now := time.Now().UTC()
-		issue.UpdatedAt = now
-		previous := issue.State
-		current := issue.State
-		if match.Drift {
-			issue.History = append(issue.History, domain.IssueHistoryEntry{At: now, From: current, To: current, Event: domain.EventEvidenceDrift, Actor: match.Actor, Reason: "evidence fingerprint changed; disposition kept", ObservationIDs: newIDs})
-		}
-		if previous == domain.IssueResolved {
-			current = domain.IssueRegressed
-			issue.State = current
-			issue.Verification = nil
-			issue.History = append(issue.History, domain.IssueHistoryEntry{At: now, From: previous, To: current, Event: domain.EventRegressed, Actor: match.Actor, Reason: "failure mode reappeared after resolution", ObservationIDs: newIDs})
-		} else if !match.Drift {
-			issue.History = append(issue.History, domain.IssueHistoryEntry{At: now, From: current, To: current, Event: domain.EventMatched, Actor: match.Actor, Reason: match.Reason, ObservationIDs: newIDs})
-		}
+		applyIssueMatch(&issue, match, newIDs)
 		if err := issue.Validate(); err != nil {
 			return fmt.Errorf("updated issue: %w", err)
 		}
@@ -93,6 +59,56 @@ func (s *Store) RecordIssueMatch(ctx context.Context, match IssueMatch) (domain.
 		return nil
 	})
 	return updated, err
+}
+
+func validateIssueMatch(match IssueMatch) error {
+	if match.IssueID == "" || len(match.ObservationIDs) == 0 || match.Reason == "" {
+		return errors.New("issue ID, observations, and audit reason are required")
+	}
+	for _, observationID := range match.ObservationIDs {
+		if observationID == "" {
+			return errors.New("observation ID must not be empty")
+		}
+	}
+	return nil
+}
+
+func unlinkedObservationIDs(issue domain.Issue, observationIDs []string) []string {
+	linked := make(map[string]struct{}, len(issue.ObservationIDs))
+	for _, observationID := range issue.ObservationIDs {
+		linked[observationID] = struct{}{}
+	}
+	newIDs := make([]string, 0, len(observationIDs))
+	for _, observationID := range uniqueSorted(observationIDs) {
+		if _, found := linked[observationID]; !found {
+			newIDs = append(newIDs, observationID)
+		}
+	}
+	return newIDs
+}
+
+func applyIssueMatch(issue *domain.Issue, match IssueMatch, newIDs []string) {
+	issue.ObservationIDs = append(issue.ObservationIDs, newIDs...)
+	issue.Anchor = match.Anchor
+	if len(match.Files) != 0 {
+		issue.Files = uniqueSorted(match.Files)
+	}
+	issue.FeatureIDs = uniqueSorted(match.FeatureIDs)
+	now := time.Now().UTC()
+	issue.UpdatedAt = now
+	previous := issue.State
+	current := issue.State
+	if match.Drift {
+		issue.History = append(issue.History, domain.IssueHistoryEntry{At: now, From: current, To: current, Event: domain.EventEvidenceDrift, Actor: match.Actor, Reason: "evidence fingerprint changed; disposition kept", ObservationIDs: newIDs})
+	}
+	if previous == domain.IssueResolved {
+		current = domain.IssueRegressed
+		issue.State = current
+		issue.Verification = nil
+		issue.History = append(issue.History, domain.IssueHistoryEntry{At: now, From: previous, To: current, Event: domain.EventRegressed, Actor: match.Actor, Reason: "failure mode reappeared after resolution", ObservationIDs: newIDs})
+	} else if !match.Drift {
+		issue.History = append(issue.History, domain.IssueHistoryEntry{At: now, From: current, To: current, Event: domain.EventMatched, Actor: match.Actor, Reason: match.Reason, ObservationIDs: newIDs})
+	}
 }
 
 // MarkIssueAmbiguous records that issueID cannot be told apart from the other
@@ -158,17 +174,23 @@ func (s *Store) FollowIssueRename(ctx context.Context, issueID, path string) err
 	})
 }
 
+type Resolution struct {
+	IssueID      string
+	Verification domain.Verification
+	FollowPath   string
+	Actor        string
+	Reason       string
+}
+
 // ResolveIssue resolves an issue after a relevant successful re-check: the
 // verification run must hold inspected, covered or flagged coverage of the
 // issue's own file (followed to followPath when the file was renamed, empty
 // otherwise), family and category. Skipped, blocked, incomplete or reused
 // coverage never resolves. Dispositions false_positive and wont_fix are kept.
-func (s *Store) ResolveIssue(ctx context.Context, issueID string, verification domain.Verification, followPath, actor, reason string) (domain.Issue, error) {
-	if issueID == "" || reason == "" {
-		return domain.Issue{}, errors.New("issue ID and audit reason are required")
-	}
-	if err := verification.ValidateResolution(); err != nil {
-		return domain.Issue{}, fmt.Errorf("resolution verification: %w", err)
+func (s *Store) ResolveIssue(ctx context.Context, r Resolution) (domain.Issue, error) {
+	issueID, verification, followPath, actor, reason := r.IssueID, r.Verification, r.FollowPath, r.Actor, r.Reason
+	if err := validateResolveIssue(issueID, reason, verification); err != nil {
+		return domain.Issue{}, err
 	}
 	var updated domain.Issue
 	err := s.withTransaction(ctx, func(tx *sql.Tx) error {
@@ -183,10 +205,7 @@ func (s *Store) ResolveIssue(ctx context.Context, issueID string, verification d
 		if issue.State == domain.IssueFalsePositive || issue.State == domain.IssueWontFix {
 			return fmt.Errorf("issue %q keeps its %q disposition", issueID, issue.State)
 		}
-		if followPath != "" && followPath != issue.Anchor.Path {
-			issue.Anchor.Path = followPath
-			issue.Files = []string{followPath}
-		}
+		followIssuePath(&issue, followPath)
 		if verification.Reason != domain.ResolutionFileDeleted {
 			if err := verificationCoverageRelevantTx(ctx, tx, issue, verification); err != nil {
 				return err
@@ -207,6 +226,23 @@ func (s *Store) ResolveIssue(ctx context.Context, issueID string, verification d
 		return nil
 	})
 	return updated, err
+}
+
+func validateResolveIssue(issueID, reason string, verification domain.Verification) error {
+	if issueID == "" || reason == "" {
+		return errors.New("issue ID and audit reason are required")
+	}
+	if err := verification.ValidateResolution(); err != nil {
+		return fmt.Errorf("resolution verification: %w", err)
+	}
+	return nil
+}
+
+func followIssuePath(issue *domain.Issue, followPath string) {
+	if followPath != "" && followPath != issue.Anchor.Path {
+		issue.Anchor.Path = followPath
+		issue.Files = []string{followPath}
+	}
 }
 
 // fileDeletedTx proves from the run's own persisted inventory that the run was

@@ -4,7 +4,7 @@
 
 These apply to every Scout **product** experiment under `evaluation/` (design REQ-42: X1–X6, X9–X11) and to
 any other study run in this repository that produces evidence for Scout's design. Hypothesis studies about
-codebase inertia (H*, HA*, HQ*) are not run here: they belong to inertia-bench
+codebase inertia (H*, HA*, HQ\*) are not run here: they belong to inertia-bench
 (`~/Projects/tools/inertia-bench`), under that repository's rules, with Scout as a subject.
 
 1. **Innovation council sign-off before any experiment is conducted.** The innovation council must
@@ -17,7 +17,7 @@ codebase inertia (H*, HA*, HQ*) are not run here: they belong to inertia-bench
 3. **Preregister before analysis.** The preregistration fixes the question, units, outcomes,
    predictors, models, decision rules and threats before any predictor–outcome relationship is
    computed on real data. Measurement and construct checks on outcome or predictor
-   *distributions* are allowed during review, must be recorded in the review round, and must not
+   _distributions_ are allowed during review, must be recorded in the review round, and must not
    look at predictor–outcome associations.
 4. **Validate the implementation before the real run.** The pipeline must recover a planted effect
    and report no effect on a planted null, using synthetic or permuted data, and those checks are
@@ -59,6 +59,7 @@ codebase inertia (H*, HA*, HQ*) are not run here: they belong to inertia-bench
   - remove detached or scratch worktrees (including those under `/tmp`) when the task that created them ends.
 
   Keep a worktree only while it has an open PR, uncommitted work, a running job, or a signed experiment record that references its files: for example, X1's closure pins `scout-x1/.tools`, and X11a runs in `scout-x11`. Name such a reference in the PR or in the study record. Never remove a worktree that has uncommitted changes without first committing or recording them.
+
 - **Toolchain.** Work inside the pinned toolchain: `git submodule update --init`, `scripts/bootstrap-tools.sh`,
   `source .tools/activate`. Tool versions change only in `toolchain/versions.env` (Clawpatch: the
   `third_party/clawpatch` submodule); a scanner or Clawpatch version change needs a compatibility review.

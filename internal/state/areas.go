@@ -27,8 +27,7 @@ func (s *Store) ListAreas(ctx context.Context) ([]areas.Area, error) {
 		if err != nil {
 			return fmt.Errorf("list areas: %w", err)
 		}
-		defer rows.Close()
-		for rows.Next() {
+		return scanRows(rows, func(rows *sql.Rows) error {
 			var payload []byte
 			if err := rows.Scan(&payload); err != nil {
 				return fmt.Errorf("scan area: %w", err)
@@ -38,8 +37,8 @@ func (s *Store) ListAreas(ctx context.Context) ([]areas.Area, error) {
 				return err
 			}
 			result = append(result, area)
-		}
-		return rows.Err()
+			return nil
+		})
 	})
 	return result, err
 }

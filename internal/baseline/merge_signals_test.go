@@ -38,10 +38,10 @@ func TestMergeUnionsAppendOnlySignalsAndRegeneratesManifest(t *testing.T) {
 			Numerator: domain.Float(value), Denominator: domain.Float(10), Value: domain.Float(value), PopulationDigest: "p", ToolDigest: "t", ConfigDigest: "c", Claim: domain.ClaimDescriptive}
 	}
 	path := state.ExportSignalsDir + "scout.cc@1.jsonl"
-	current := ledger(t, "2026-10-01T00:00:00Z", "issue:a")
+	current := issueLedger(t, "2026-10-01T00:00:00Z", "issue:a")
 	current[path] = signalFile(t, signal("s1", 1), signal("s2", 2))
 	current[state.ExportManifest] = state.RenderManifest(state.ManifestMeta{RepositoryID: "repo", WouldBlock: state.WouldBlockPresent}, current)
-	local := ledger(t, "2026-10-01T00:00:00Z", "issue:a")
+	local := issueLedger(t, "2026-10-01T00:00:00Z", "issue:a")
 	local[path] = signalFile(t, signal("s2", 2), signal("s3", 3))
 	local[state.ExportManifest] = state.RenderManifest(state.ManifestMeta{RepositoryID: "repo", WouldBlock: state.WouldBlockPresent}, local)
 

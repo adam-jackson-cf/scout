@@ -14,8 +14,50 @@ import (
 	"scout/internal/clawpatch"
 	"scout/internal/domain"
 	"scout/internal/engine"
+	"scout/internal/policy"
 	"scout/internal/state"
 )
+
+func resolveMapInputs(flags *commonFlags, authorized bool) (engine.Config, policy.Policy, error) {
+	root, err := filepath.Abs(flags.root)
+	if err != nil {
+		return engine.Config{}, policy.Policy{}, err
+	}
+	flags.root = root
+	cfg, err := engineConfig(flags, authorized)
+	if err != nil {
+		return engine.Config{}, policy.Policy{}, err
+	}
+	pol, err := headPolicy(root)
+	if err != nil {
+		return engine.Config{}, policy.Policy{}, err
+	}
+	return cfg, pol, nil
+}
+
+type mapReconciler struct {
+	root, revision string
+	store          *state.Store
+	matchJaccard   float64
+	report         *areas.Report
+}
+
+func (r *mapReconciler) reconcile(ctx context.Context, mapped clawpatch.MapResult) error {
+	tree, err := exec.CommandContext(ctx, "git", "-C", r.root, "ls-tree", "-r", "--name-only", "-z", r.revision).Output()
+	if err != nil {
+		return fmt.Errorf("list mapped revision files: %w", err)
+	}
+	existing := make(map[string]bool)
+	for _, path := range strings.Split(string(tree), "\x00") {
+		existing[path] = true
+	}
+	report, err := reconcileAreas(ctx, r.store, mapped, areaSnapshot{matchJaccard: r.matchJaccard, revision: r.revision, exists: func(path string) bool { return existing[path] }})
+	if err != nil {
+		return err
+	}
+	r.report = &report
+	return nil
+}
 
 // mapCmd is `scout map`: the Clawpatch agent map runs only at onboarding (the
 // `--event` check, attempted until one map has completed) and on manual
@@ -35,24 +77,16 @@ func mapCmd(ctx context.Context, args []string) int {
 	if !force && event == "" {
 		return emit(flags, "unavailable", exitUnavailable, nil, errors.New("--event or --refresh is required"))
 	}
-	root, err := filepath.Abs(flags.root)
+	cfg, pol, err := resolveMapInputs(flags, authorized)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	flags.root = root
-	cfg, err := engineConfig(flags, authorized)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
-	pol, err := headPolicy(root)
-	if err != nil {
-		return emit(flags, "unavailable", exitUnavailable, nil, err)
-	}
+	root := flags.root
 	store, err := openStore(flags)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	defer store.Close()
+	defer closeStore(store)
 	client, err := clawpatch.New(root, clawpatch.Config{BinaryPath: cfg.ClawpatchBinary, EgressAuthorized: cfg.ClawpatchEgressAuthorized, Provider: cfg.ClawpatchProvider})
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
@@ -63,27 +97,8 @@ func mapCmd(ctx context.Context, args []string) int {
 		return emit(flags, "unavailable", exitUnavailable, nil, fmt.Errorf("resolve HEAD for the area snapshot: %w", err))
 	}
 	revision := strings.TrimSpace(string(head))
-	mapping := pol.Mapping()
-	var reconciled *areas.Report
-	refresher := &engine.Refresher{
-		Store: store, Mapper: client, Now: time.Now,
-		Reconcile: func(ctx context.Context, mapped clawpatch.MapResult) error {
-			tree, err := exec.CommandContext(ctx, "git", "-C", root, "ls-tree", "-r", "--name-only", "-z", revision).Output()
-			if err != nil {
-				return fmt.Errorf("list mapped revision files: %w", err)
-			}
-			existing := make(map[string]bool)
-			for _, path := range strings.Split(string(tree), "\x00") {
-				existing[path] = true
-			}
-			report, err := reconcileAreas(ctx, store, mapped, mapping.AreasMatchJaccard, revision, func(path string) bool { return existing[path] })
-			if err != nil {
-				return err
-			}
-			reconciled = &report
-			return nil
-		},
-	}
+	reconciler := &mapReconciler{root: root, revision: revision, store: store, matchJaccard: pol.Mapping().AreasMatchJaccard}
+	refresher := &engine.Refresher{Store: store, Mapper: client, Now: time.Now, Reconcile: reconciler.reconcile}
 	outcome, err := refresher.Run(ctx, run)
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
@@ -95,29 +110,31 @@ func mapCmd(ctx context.Context, args []string) int {
 	result := struct {
 		engine.RefreshOutcome
 		Areas *areas.Report `json:"areas,omitempty"`
-	}{outcome, reconciled}
+	}{outcome, reconciler.report}
 	return emit(flags, string(outcome.Status), code, result, nil)
+}
+
+type areaSnapshot struct {
+	matchJaccard float64
+	revision     string
+	exists       func(string) bool
 }
 
 // reconcileAreas folds a successful agent refresh into the stored areas and
 // returns what changed. Only the latest merged output decides heuristic
 // ownership.
-func reconcileAreas(ctx context.Context, store *state.Store, mapped clawpatch.MapResult, matchJaccard float64, revision string, exists ...func(string) bool) (areas.Report, error) {
+func reconcileAreas(ctx context.Context, store *state.Store, mapped clawpatch.MapResult, snapshot areaSnapshot) (areas.Report, error) {
 	prev, err := store.ListAreas(ctx)
 	if err != nil {
 		return areas.Report{}, err
 	}
 	active := mapped.Features // clawpatch returns only the latest map's (non-stale) records
-	next, report := areas.Reconcile(prev, active, areas.HeuristicOwner(active), areas.Config{MatchJaccard: matchJaccard, Snapshot: revision})
+	next, report := areas.Reconcile(prev, active, areas.HeuristicOwner(active), areas.Config{MatchJaccard: snapshot.matchJaccard, Snapshot: snapshot.revision})
 	records, err := store.ListAssociations(ctx)
 	if err != nil {
 		return report, err
 	}
-	var present func(string) bool
-	if len(exists) > 0 {
-		present = exists[0]
-	}
-	next, superseded := areas.Supersede(next, records, present)
+	next, superseded := areas.Supersede(next, records, snapshot.exists)
 	if err := store.ReplaceAreas(ctx, next); err != nil {
 		return report, err
 	}

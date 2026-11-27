@@ -1,3 +1,5 @@
+//go:build boundary
+
 package main
 
 import (
@@ -39,10 +41,20 @@ func TestInitYesWritesConsentThatPolicyLoadRoundTrips(t *testing.T) {
 		t.Fatalf("exit %d", code)
 	}
 	p := loadCommitted(t, root)
+	assertRecordedDecisions(t, p)
+	assertRecordedModelCLI(t, p)
+}
+
+func assertRecordedDecisions(t *testing.T, p policy.Policy) {
+	t.Helper()
 	d := p.Decisions()
 	if p.Profile() != policy.ProfileReport || !d.Enabled || d.Model != "jev-2026-10-01" || !d.EgressAcknowledged || d.MaxPerRun != policy.DefaultMaxPerRun {
 		t.Fatalf("profile/decisions not recorded: %s %+v", p.Profile(), d)
 	}
+}
+
+func assertRecordedModelCLI(t *testing.T, p policy.Policy) {
+	t.Helper()
 	if m := p.ModelCLI(); m.Provider != "claude" || !p.LaneOptedIn("contextual") || p.LaneOptedIn("clawpatch-review") || len(m.Lanes) != 1 {
 		t.Fatalf("model-cli opt-in not recorded: %+v", m)
 	}
@@ -63,14 +75,7 @@ func TestInitIsIdempotentAndNeverTouchesActivatedBlocking(t *testing.T) {
 	root := newInitRepo(t)
 	existing := `# maintainers own this file
 profile: guardian
-blocking:
-  shadow: {min_days: 14, min_pr_runs: 5}
-  checks:
-    - id: guardrails.SUPPRESS.added.unscoped
-      version: "1"
-      activated_at: 2026-01-01
-      evidence: {would_block: 2, warranted: 2, window_days: 15, pr_runs: 6, dossier_digest: "sha256:abc"}
-maintainers: [alice]
+` + activatedBlocking + `maintainers: [alice]
 `
 	writeRepoFile(t, root, policy.Path, existing)
 	args := initArgs(root, "--decisions", "--decisions-model", "jev-2026-10-01", "--acknowledge-egress")
@@ -78,24 +83,49 @@ maintainers: [alice]
 		t.Fatalf("exit %d", code)
 	}
 	path := filepath.Join(root, filepath.FromSlash(policy.Path))
-	first, _ := os.ReadFile(path)
+	first := readPolicyFile(t, path)
 	if code := runInit(args, strings.NewReader(""), os.Stderr); code != exitComplete {
 		t.Fatalf("second exit %d", code)
 	}
-	second, _ := os.ReadFile(path)
-	if string(first) != string(second) {
+	second := readPolicyFile(t, path)
+	if first != second {
 		t.Fatalf("re-running init changed the file:\n%s\n---\n%s", first, second)
 	}
 	p := loadCommitted(t, root)
+	assertGuardianActivationKept(t, p, second)
+	if !strings.Contains(second, "maintainers own this file") || !p.Decisions().Enabled {
+		t.Fatalf("comment lost or consent missing:\n%s", second)
+	}
+}
+
+func readPolicyFile(t *testing.T, path string) string {
+	t.Helper()
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(raw)
+}
+
+const activatedBlocking = `blocking:
+  shadow: {min_days: 14, min_pr_runs: 5}
+  checks:
+    - id: guardrails.SUPPRESS.added.unscoped
+      version: "1"
+      activated_at: 2026-01-01
+      evidence: {would_block: 2, warranted: 2, window_days: 15, pr_runs: 6, dossier_digest: "sha256:abc"}
+`
+
+func assertGuardianActivationKept(t *testing.T, p policy.Policy, written string) {
+	t.Helper()
 	if p.Profile() != policy.ProfileGuardian {
 		t.Fatalf("existing guardian profile was lowered to %s", p.Profile())
 	}
-	acts := p.Activations()
-	if len(acts) != 1 || acts[0].ID != "guardrails.SUPPRESS.added.unscoped" || acts[0].Version != "1" || acts[0].Evidence == nil || acts[0].Evidence.Warranted != 2 {
-		t.Fatalf("activated blocking entry altered: %+v", acts)
+	if got := p.CheckStatus("guardrails.SUPPRESS.added.unscoped", "1"); got != policy.Active {
+		t.Fatalf("activated check no longer active: %s", got)
 	}
-	if !strings.Contains(string(second), "maintainers own this file") || !p.Decisions().Enabled {
-		t.Fatalf("comment lost or consent missing:\n%s", second)
+	if !strings.Contains(written, activatedBlocking) {
+		t.Fatalf("activated blocking entry altered:\n%s", written)
 	}
 }
 

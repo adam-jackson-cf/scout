@@ -3,8 +3,9 @@ package shadow
 import (
 	"context"
 	"encoding/json"
-	"scout/internal/domain"
 	"time"
+
+	"scout/internal/domain"
 )
 
 // Provider supplies authenticated control-plane evidence, never scanner claims.

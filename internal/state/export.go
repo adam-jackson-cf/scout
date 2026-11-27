@@ -65,33 +65,9 @@ func (s *Store) Export(ctx context.Context) (map[string][]byte, error) {
 	}
 	sort.Slice(issues, func(i, j int) bool { return issues[i].IssueID < issues[j].IssueID })
 
-	var issueLines, dispositionLines [][]byte
-	for _, issue := range issues {
-		raw, err := json.Marshal(issue)
-		if err != nil {
-			return nil, fmt.Errorf("encode issue: %w", err)
-		}
-		row := map[string]any{}
-		if err := unmarshalNumbers(raw, &row); err != nil {
-			return nil, err
-		}
-		disposition := map[string]any{"issueId": issue.IssueID}
-		for _, key := range dispositionKeys {
-			if value, ok := row[key]; ok {
-				disposition[key] = value
-				delete(row, key)
-			}
-		}
-		issueLine, err := CanonicalLine(row)
-		if err != nil {
-			return nil, err
-		}
-		dispositionLine, err := CanonicalLine(disposition)
-		if err != nil {
-			return nil, err
-		}
-		issueLines = append(issueLines, issueLine)
-		dispositionLines = append(dispositionLines, dispositionLine)
+	issueLines, dispositionLines, err := exportIssueLines(issues)
+	if err != nil {
+		return nil, err
 	}
 
 	wouldBlock, wouldBlockStatus, err := s.exportWouldBlock(ctx)
@@ -118,50 +94,96 @@ func (s *Store) Export(ctx context.Context) (map[string][]byte, error) {
 		ExportWouldBlock:      joinLines(wouldBlock),
 		ExportCoverageSummary: summary,
 	}
+	if err := s.addLedgerExportFiles(ctx, files); err != nil {
+		return nil, err
+	}
+	if err := s.addAreaAndShadowExportFiles(ctx, files); err != nil {
+		return nil, err
+	}
+	files[ExportManifest] = RenderManifest(meta, files)
+	return files, nil
+}
+
+func exportIssueLines(issues []domain.Issue) ([][]byte, [][]byte, error) {
+	var issueLines, dispositionLines [][]byte
+	for _, issue := range issues {
+		raw, err := json.Marshal(issue)
+		if err != nil {
+			return nil, nil, fmt.Errorf("encode issue: %w", err)
+		}
+		row := map[string]any{}
+		if err := unmarshalNumbers(raw, &row); err != nil {
+			return nil, nil, err
+		}
+		disposition := map[string]any{"issueId": issue.IssueID}
+		for _, key := range dispositionKeys {
+			if value, ok := row[key]; ok {
+				disposition[key] = value
+				delete(row, key)
+			}
+		}
+		issueLine, err := CanonicalLine(row)
+		if err != nil {
+			return nil, nil, err
+		}
+		dispositionLine, err := CanonicalLine(disposition)
+		if err != nil {
+			return nil, nil, err
+		}
+		issueLines = append(issueLines, issueLine)
+		dispositionLines = append(dispositionLines, dispositionLine)
+	}
+	return issueLines, dispositionLines, nil
+}
+
+func (s *Store) addLedgerExportFiles(ctx context.Context, files map[string][]byte) error {
 	signalFiles, err := s.exportSignals(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	for path, data := range signalFiles {
 		files[path] = data
 	}
 	areaFile, err := s.exportAreas(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if areaFile != nil {
 		files[ExportAreas] = areaFile
 	}
 	associationFile, err := s.exportAssociations(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if associationFile != nil {
 		files[ExportAssociations] = associationFile
 	}
+	return nil
+}
+
+func (s *Store) addAreaAndShadowExportFiles(ctx context.Context, files map[string][]byte) error {
 	actions, err := s.metadataValue(ctx, metadataAreaActions)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if actions != "" {
 		files[ExportAreaActions] = []byte(actions)
 	}
 	refreshFile, err := s.ExportMappingRefreshFile(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if refreshFile != nil {
 		files[ExportMappingRefresh] = refreshFile
 	}
 	shadowFiles, err := s.exportShadow(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	for path, data := range shadowFiles {
 		files[path] = data
 	}
-	files[ExportManifest] = RenderManifest(meta, files)
-	return files, nil
+	return nil
 }
 
 // exportSignals renders the signals ledger as signals/<metric@version>.jsonl,
@@ -208,27 +230,42 @@ func (s *Store) exportWouldBlock(ctx context.Context) ([][]byte, string, error) 
 	}
 	preserved := map[string][]byte{}
 	if original != "" {
-		byID := make(map[string]domain.WouldBlock, len(rows))
-		for _, row := range rows {
-			byID[row.ID] = row
-		}
-		unchanged := len(SplitLines([]byte(original))) == len(rows)
-		for _, line := range bytes.SplitAfter([]byte(original), []byte{'\n'}) {
-			if len(bytes.TrimSpace(line)) == 0 {
-				continue
-			}
-			var prior domain.WouldBlock
-			if err := json.Unmarshal(line, &prior); err != nil || !sameHistory(prior, byID[prior.ID]) {
-				unchanged = false
-				continue
-			}
-			preserved[prior.ID] = line
-		}
+		var unchanged bool
+		preserved, unchanged = preservedWouldBlockLines(original, rows)
 		if unchanged {
 			return [][]byte{[]byte(original)}, WouldBlockPresent, nil
 		}
 	}
 	sort.Slice(rows, func(i, j int) bool { return rows[i].ID < rows[j].ID })
+	lines, err := encodeWouldBlockLines(rows, preserved)
+	if err != nil {
+		return nil, "", err
+	}
+	return lines, WouldBlockPresent, nil
+}
+
+func preservedWouldBlockLines(original string, rows []domain.WouldBlock) (map[string][]byte, bool) {
+	preserved := map[string][]byte{}
+	byID := make(map[string]domain.WouldBlock, len(rows))
+	for _, row := range rows {
+		byID[row.ID] = row
+	}
+	unchanged := len(SplitLines([]byte(original))) == len(rows)
+	for _, line := range bytes.SplitAfter([]byte(original), []byte{'\n'}) {
+		if len(bytes.TrimSpace(line)) == 0 {
+			continue
+		}
+		var prior domain.WouldBlock
+		if err := json.Unmarshal(line, &prior); err != nil || !sameHistory(prior, byID[prior.ID]) {
+			unchanged = false
+			continue
+		}
+		preserved[prior.ID] = line
+	}
+	return preserved, unchanged
+}
+
+func encodeWouldBlockLines(rows []domain.WouldBlock, preserved map[string][]byte) ([][]byte, error) {
 	lines := make([][]byte, 0, len(rows))
 	for _, row := range rows {
 		if line, ok := preserved[row.ID]; ok {
@@ -237,19 +274,19 @@ func (s *Store) exportWouldBlock(ctx context.Context) ([][]byte, string, error) 
 		}
 		raw, err := json.Marshal(row)
 		if err != nil {
-			return nil, "", fmt.Errorf("encode would_block: %w", err)
+			return nil, fmt.Errorf("encode would_block: %w", err)
 		}
 		fields := map[string]any{}
 		if err := unmarshalNumbers(raw, &fields); err != nil {
-			return nil, "", err
+			return nil, err
 		}
 		line, err := CanonicalLine(fields)
 		if err != nil {
-			return nil, "", err
+			return nil, err
 		}
 		lines = append(lines, line)
 	}
-	return lines, WouldBlockPresent, nil
+	return lines, nil
 }
 
 // ManifestMeta carries the manifest fields that are not derived from the files.
@@ -347,20 +384,19 @@ func uninspectedFamilies(ctx context.Context, db *sql.DB, runID string) ([]Unins
 	if err != nil {
 		return nil, fmt.Errorf("query base coverage gaps: %w", err)
 	}
-	defer rows.Close()
 	seen := map[domain.Family]bool{}
 	out := []UninspectedFamily{}
-	for rows.Next() {
+	err = scanRows(rows, func(rows *sql.Rows) error {
 		var payload []byte
 		if err := rows.Scan(&payload); err != nil {
-			return nil, fmt.Errorf("scan base coverage gap: %w", err)
+			return fmt.Errorf("scan base coverage gap: %w", err)
 		}
 		var row domain.Coverage
 		if err := decode(payload, &row); err != nil {
-			return nil, err
+			return err
 		}
 		if row.Key.FeatureID != "" || row.Key.Family == domain.FamilyClawpatch || seen[row.Key.Family] {
-			continue
+			return nil
 		}
 		seen[row.Key.Family] = true
 		reason := string(row.Status)
@@ -368,8 +404,9 @@ func uninspectedFamilies(ctx context.Context, db *sql.DB, runID string) ([]Unins
 			reason += ": " + row.Reason
 		}
 		out = append(out, UninspectedFamily{Family: row.Key.Family, Reason: reason})
-	}
-	if err := rows.Err(); err != nil {
+		return nil
+	})
+	if err != nil {
 		return nil, err
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Family < out[j].Family })
@@ -423,23 +460,32 @@ func (s *Store) baseInfo(ctx context.Context) (ManifestMeta, error) {
 	}
 	if !found {
 		meta.Uninspected = []UninspectedFamily{}
-		imported, err := s.metadataValue(ctx, metadataExportBase)
+		recorded, ok, err := s.recordedBaseInfo(ctx)
 		if err != nil {
 			return ManifestMeta{}, err
 		}
-		if imported != "" {
-			var recorded ManifestMeta
-			if err := json.Unmarshal([]byte(imported), &recorded); err != nil {
-				return ManifestMeta{}, fmt.Errorf("decode recorded base info: %w", err)
-			}
-			// A recorded base without lane health counts as none: identifiers are
-			// never re-emitted beside lane health they did not come with.
-			if recorded.Uninspected != nil {
-				return recorded, nil
-			}
+		if ok {
+			return recorded, nil
 		}
 	}
 	return meta, nil
+}
+
+func (s *Store) recordedBaseInfo(ctx context.Context) (ManifestMeta, bool, error) {
+	imported, err := s.metadataValue(ctx, metadataExportBase)
+	if err != nil {
+		return ManifestMeta{}, false, err
+	}
+	if imported == "" {
+		return ManifestMeta{}, false, nil
+	}
+	var recorded ManifestMeta
+	if err := json.Unmarshal([]byte(imported), &recorded); err != nil {
+		return ManifestMeta{}, false, fmt.Errorf("decode recorded base info: %w", err)
+	}
+	// A recorded base without lane health counts as none: identifiers are
+	// never re-emitted beside lane health they did not come with.
+	return recorded, recorded.Uninspected != nil, nil
 }
 
 // coverageSummary reports the latest accounted coverage per unit key. A store
@@ -464,9 +510,8 @@ func (s *Store) coverageSummary(ctx context.Context) ([]byte, error) {
 		if err != nil {
 			return fmt.Errorf("query coverage summary: %w", err)
 		}
-		defer rows.Close()
 		last := ""
-		for rows.Next() {
+		return scanRows(rows, func(rows *sql.Rows) error {
 			var u unit
 			if err := rows.Scan(&u.Key, &u.Status, &u.RunID); err != nil {
 				return fmt.Errorf("scan coverage summary: %w", err)
@@ -475,8 +520,8 @@ func (s *Store) coverageSummary(ctx context.Context) ([]byte, error) {
 				units = append(units, u)
 				last = u.Key
 			}
-		}
-		return rows.Err()
+			return nil
+		})
 	})
 	if err != nil {
 		return nil, err
@@ -524,16 +569,9 @@ func (s *Store) Import(ctx context.Context, files map[string][]byte) error {
 	if err != nil {
 		return err
 	}
-	var blocks []domain.WouldBlock
-	for number, line := range SplitLines(files[ExportWouldBlock]) {
-		var row domain.WouldBlock
-		if err := decode(line, &row); err != nil {
-			return fmt.Errorf("would_block.jsonl line %d: %w", number+1, err)
-		}
-		if err := row.Validate(); err != nil {
-			return fmt.Errorf("would_block.jsonl line %d: %w", number+1, err)
-		}
-		blocks = append(blocks, row)
+	blocks, err := decodeWouldBlock(files)
+	if err != nil {
+		return err
 	}
 	signals, err := decodeSignals(files)
 	if err != nil {
@@ -554,7 +592,22 @@ func (s *Store) Import(ctx context.Context, files map[string][]byte) error {
 	if err != nil {
 		return err
 	}
-	return s.importRows(ctx, meta, issues, blocks, signals, files[ExportCoverageSummary], areaList, associations, files[ExportMappingRefresh], files[ExportAreaActions], files[ExportWouldBlock], ledger, inputs)
+	return s.importRows(ctx, importSet{meta: meta, issues: issues, blocks: blocks, signals: signals, summary: files[ExportCoverageSummary], areaList: areaList, associations: associations, refresh: files[ExportMappingRefresh], actions: files[ExportAreaActions], legacy: files[ExportWouldBlock], ledger: ledger, inputs: inputs})
+}
+
+func decodeWouldBlock(files map[string][]byte) ([]domain.WouldBlock, error) {
+	var blocks []domain.WouldBlock
+	for number, line := range SplitLines(files[ExportWouldBlock]) {
+		var row domain.WouldBlock
+		if err := decode(line, &row); err != nil {
+			return nil, fmt.Errorf("would_block.jsonl line %d: %w", number+1, err)
+		}
+		if err := row.Validate(); err != nil {
+			return nil, fmt.Errorf("would_block.jsonl line %d: %w", number+1, err)
+		}
+		blocks = append(blocks, row)
+	}
+	return blocks, nil
 }
 
 // decodeSignals reads every signals/*.jsonl file of an export, validated, in
@@ -590,8 +643,28 @@ func DecodeIssues(files map[string][]byte) ([]domain.Issue, error) {
 	if err := verifyManifest(files); err != nil {
 		return nil, err
 	}
+	dispositions, err := decodeDispositions(files[ExportDispositions])
+	if err != nil {
+		return nil, err
+	}
+	var issues []domain.Issue
+	seen := map[string]bool{}
+	for number, line := range SplitLines(files[ExportIssues]) {
+		issue, err := decodeIssueRow(number, line, dispositions, seen)
+		if err != nil {
+			return nil, err
+		}
+		issues = append(issues, issue)
+	}
+	if len(seen) != len(dispositions) {
+		return nil, errors.New("dispositions.jsonl has rows without an issue")
+	}
+	return issues, nil
+}
+
+func decodeDispositions(data []byte) (map[string]map[string]any, error) {
 	dispositions := map[string]map[string]any{}
-	for number, line := range SplitLines(files[ExportDispositions]) {
+	for number, line := range SplitLines(data) {
 		row := map[string]any{}
 		if err := unmarshalNumbers(line, &row); err != nil {
 			return nil, fmt.Errorf("dispositions.jsonl line %d: %w", number+1, err)
@@ -602,120 +675,160 @@ func DecodeIssues(files map[string][]byte) ([]domain.Issue, error) {
 		}
 		dispositions[id] = row
 	}
-	var issues []domain.Issue
-	seen := map[string]bool{}
-	for number, line := range SplitLines(files[ExportIssues]) {
-		row := map[string]any{}
-		if err := unmarshalNumbers(line, &row); err != nil {
-			return nil, fmt.Errorf("issues.jsonl line %d: %w", number+1, err)
-		}
-		id, _ := row["issueId"].(string)
-		disposition, ok := dispositions[id]
-		if !ok || seen[id] {
-			return nil, fmt.Errorf("issues.jsonl line %d: issue %q has no unique disposition", number+1, id)
-		}
-		seen[id] = true
-		for key, value := range disposition {
-			row[key] = value
-		}
-		merged, err := json.Marshal(row)
-		if err != nil {
-			return nil, fmt.Errorf("encode imported issue: %w", err)
-		}
-		var issue domain.Issue
-		if err := decode(merged, &issue); err != nil {
-			return nil, err
-		}
-		if err := issue.Validate(); err != nil {
-			return nil, fmt.Errorf("imported issue %q: %w", id, err)
-		}
-		issues = append(issues, issue)
-	}
-	if len(seen) != len(dispositions) {
-		return nil, errors.New("dispositions.jsonl has rows without an issue")
-	}
-	return issues, nil
+	return dispositions, nil
 }
 
-func (s *Store) importRows(ctx context.Context, meta ManifestMeta, issues []domain.Issue, blocks []domain.WouldBlock, signals []domain.Signal, summary []byte, areaList []areas.Area, associations []domain.Association, refresh, actions, legacy []byte, ledger domain.ShadowLedger, inputs domain.ShadowInputs) error {
+func decodeIssueRow(number int, line []byte, dispositions map[string]map[string]any, seen map[string]bool) (domain.Issue, error) {
+	row := map[string]any{}
+	if err := unmarshalNumbers(line, &row); err != nil {
+		return domain.Issue{}, fmt.Errorf("issues.jsonl line %d: %w", number+1, err)
+	}
+	id, _ := row["issueId"].(string)
+	disposition, ok := dispositions[id]
+	if !ok || seen[id] {
+		return domain.Issue{}, fmt.Errorf("issues.jsonl line %d: issue %q has no unique disposition", number+1, id)
+	}
+	seen[id] = true
+	for key, value := range disposition {
+		row[key] = value
+	}
+	merged, err := json.Marshal(row)
+	if err != nil {
+		return domain.Issue{}, fmt.Errorf("encode imported issue: %w", err)
+	}
+	var issue domain.Issue
+	if err := decode(merged, &issue); err != nil {
+		return domain.Issue{}, err
+	}
+	if err := issue.Validate(); err != nil {
+		return domain.Issue{}, fmt.Errorf("imported issue %q: %w", id, err)
+	}
+	return issue, nil
+}
+
+type importSet struct {
+	meta         ManifestMeta
+	issues       []domain.Issue
+	blocks       []domain.WouldBlock
+	signals      []domain.Signal
+	summary      []byte
+	areaList     []areas.Area
+	associations []domain.Association
+	refresh      []byte
+	actions      []byte
+	legacy       []byte
+	ledger       domain.ShadowLedger
+	inputs       domain.ShadowInputs
+}
+
+func (s *Store) importRows(ctx context.Context, set importSet) error {
 	return s.withTransaction(ctx, func(tx *sql.Tx) error {
-		var count int
-		if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM issues`).Scan(&count); err != nil {
-			return fmt.Errorf("count issues: %w", err)
+		if err := ensureNoIssuesTx(ctx, tx); err != nil {
+			return err
 		}
-		if count != 0 {
-			return ErrImportNotEmpty
-		}
-		if meta.RepositoryID != "" {
-			if err := s.ensureRepositoryIdentity(ctx, tx, meta.RepositoryID); err != nil {
+		if set.meta.RepositoryID != "" {
+			if err := s.ensureRepositoryIdentity(ctx, tx, set.meta.RepositoryID); err != nil {
 				return err
 			}
 		}
-		if err := importShadow(ctx, tx, ledger, inputs); err != nil {
+		if err := importShadow(ctx, tx, set.ledger, set.inputs); err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES ('legacy_export_bytes',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`, string(legacy)); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES ('legacy_export_bytes',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`, string(set.legacy)); err != nil {
 			return err
 		}
-		for _, issue := range issues {
-			payload, err := encode(issue)
-			if err != nil {
-				return err
-			}
-			if _, err := tx.ExecContext(ctx, `INSERT INTO issues(issue_id, state, updated_at, payload) VALUES (?, ?, ?, ?)`, issue.IssueID, issue.State, unixMillis(issue.UpdatedAt), payload); err != nil {
-				return fmt.Errorf("import issue %q: %w", issue.IssueID, err)
-			}
-			if err := insertIssueHistoryTx(ctx, tx, issue); err != nil {
-				return err
-			}
-		}
-		for _, row := range blocks {
-			var triaged any
-			if row.TriagedAt != nil {
-				triaged = unixMillis(*row.TriagedAt)
-			}
-			if _, err := tx.ExecContext(ctx, `INSERT INTO would_block(id, head_revision, base_revision, issue_id, check_id, rule_version, path, attribution, profile, triage, triage_actor, triage_reason, recorded_at, triaged_at)
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-				row.ID, row.HeadRevision, row.BaseRevision, row.IssueID, row.CheckID, row.RuleVersion, row.Path, string(row.Attribution), row.Profile, row.Triage, row.TriageActor, row.TriageReason, unixMillis(row.RecordedAt), triaged); err != nil {
-				return fmt.Errorf("import would_block %q: %w", row.ID, err)
-			}
-		}
-		if err := insertSignals(ctx, tx, signals); err != nil {
+		if err := importLedgerRowsTx(ctx, tx, set); err != nil {
 			return err
 		}
-		if err := insertAreas(ctx, tx, areaList); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`, metadataAreaActions, string(set.actions)); err != nil {
 			return err
 		}
-		if err := insertAssociations(ctx, tx, associations); err != nil {
-			return err
-		}
-		if err := importMappingRefresh(ctx, tx, refresh); err != nil {
-			return err
-		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO metadata(key,value) VALUES (?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value`, metadataAreaActions, string(actions)); err != nil {
-			return err
-		}
-		// The comparison identifiers travel with lane health: a manifest that
-		// carries `uninspected` records both, any other manifest records none and
-		// clears a base left by an earlier import.
-		if meta.Uninspected != nil {
-			baseJSON, err := json.Marshal(meta)
-			if err != nil {
-				return fmt.Errorf("encode imported base info: %w", err)
-			}
-			if _, err := tx.ExecContext(ctx, `INSERT INTO metadata(key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`, metadataExportBase, string(baseJSON)); err != nil {
-				return fmt.Errorf("record imported base info: %w", err)
-			}
-		} else if _, err := tx.ExecContext(ctx, `DELETE FROM metadata WHERE key = ?`, metadataExportBase); err != nil {
-			return fmt.Errorf("clear imported base info: %w", err)
-		}
-		if len(summary) != 0 {
-			if _, err := tx.ExecContext(ctx, `INSERT INTO metadata(key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`, metadataCoverageSummary, string(summary)); err != nil {
-				return fmt.Errorf("record imported coverage summary: %w", err)
-			}
-		}
-		return nil
+		return recordImportedBaseTx(ctx, tx, set.meta, set.summary)
 	})
+}
+
+func ensureNoIssuesTx(ctx context.Context, tx *sql.Tx) error {
+	var count int
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM issues`).Scan(&count); err != nil {
+		return fmt.Errorf("count issues: %w", err)
+	}
+	if count != 0 {
+		return ErrImportNotEmpty
+	}
+	return nil
+}
+
+func importLedgerRowsTx(ctx context.Context, tx *sql.Tx, set importSet) error {
+	if err := importIssuesTx(ctx, tx, set.issues); err != nil {
+		return err
+	}
+	if err := importWouldBlockTx(ctx, tx, set.blocks); err != nil {
+		return err
+	}
+	if err := insertSignals(ctx, tx, set.signals); err != nil {
+		return err
+	}
+	if err := insertAreas(ctx, tx, set.areaList); err != nil {
+		return err
+	}
+	if err := insertAssociations(ctx, tx, set.associations); err != nil {
+		return err
+	}
+	return importMappingRefresh(ctx, tx, set.refresh)
+}
+
+func importIssuesTx(ctx context.Context, tx *sql.Tx, issues []domain.Issue) error {
+	for _, issue := range issues {
+		payload, err := encode(issue)
+		if err != nil {
+			return err
+		}
+		if _, err := tx.ExecContext(ctx, `INSERT INTO issues(issue_id, state, updated_at, payload) VALUES (?, ?, ?, ?)`, issue.IssueID, issue.State, unixMillis(issue.UpdatedAt), payload); err != nil {
+			return fmt.Errorf("import issue %q: %w", issue.IssueID, err)
+		}
+		if err := insertIssueHistoryTx(ctx, tx, issue); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func importWouldBlockTx(ctx context.Context, tx *sql.Tx, blocks []domain.WouldBlock) error {
+	for _, row := range blocks {
+		var triaged any
+		if row.TriagedAt != nil {
+			triaged = unixMillis(*row.TriagedAt)
+		}
+		if _, err := tx.ExecContext(ctx, `INSERT INTO would_block(id, head_revision, base_revision, issue_id, check_id, rule_version, path, attribution, profile, triage, triage_actor, triage_reason, recorded_at, triaged_at)
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+			row.ID, row.HeadRevision, row.BaseRevision, row.IssueID, row.CheckID, row.RuleVersion, row.Path, string(row.Attribution), row.Profile, row.Triage, row.TriageActor, row.TriageReason, unixMillis(row.RecordedAt), triaged); err != nil {
+			return fmt.Errorf("import would_block %q: %w", row.ID, err)
+		}
+	}
+	return nil
+}
+
+func recordImportedBaseTx(ctx context.Context, tx *sql.Tx, meta ManifestMeta, summary []byte) error {
+	// The comparison identifiers travel with lane health: a manifest that
+	// carries `uninspected` records both, any other manifest records none and
+	// clears a base left by an earlier import.
+	if meta.Uninspected != nil {
+		baseJSON, err := json.Marshal(meta)
+		if err != nil {
+			return fmt.Errorf("encode imported base info: %w", err)
+		}
+		if _, err := tx.ExecContext(ctx, `INSERT INTO metadata(key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`, metadataExportBase, string(baseJSON)); err != nil {
+			return fmt.Errorf("record imported base info: %w", err)
+		}
+	} else if _, err := tx.ExecContext(ctx, `DELETE FROM metadata WHERE key = ?`, metadataExportBase); err != nil {
+		return fmt.Errorf("clear imported base info: %w", err)
+	}
+	if len(summary) != 0 {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO metadata(key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`, metadataCoverageSummary, string(summary)); err != nil {
+			return fmt.Errorf("record imported coverage summary: %w", err)
+		}
+	}
+	return nil
 }
 
 // verifyManifest checks every listed file is present and matches its digest,
@@ -726,17 +839,33 @@ func verifyManifest(files map[string][]byte) error {
 		return errors.New("export has no manifest.json")
 	}
 	var parsed struct {
-		Schema string `json:"schema"`
-		Files  []struct {
-			Path    string `json:"path"`
-			SHA256  string `json:"sha256"`
-			Records int    `json:"records"`
-		} `json:"files"`
+		Schema string          `json:"schema"`
+		Files  []manifestEntry `json:"files"`
 	}
 	if err := json.Unmarshal(manifest, &parsed); err != nil {
 		return fmt.Errorf("decode manifest: %w", err)
 	}
-	switch parsed.Schema {
+	if err := checkExportSchema(parsed.Schema, files); err != nil {
+		return err
+	}
+	listed := map[string]bool{ExportManifest: true}
+	for _, entry := range parsed.Files {
+		if err := checkManifestEntry(entry, files, listed); err != nil {
+			return err
+		}
+		listed[entry.Path] = true
+	}
+	return checkManifestListing(files, listed)
+}
+
+type manifestEntry struct {
+	Path    string `json:"path"`
+	SHA256  string `json:"sha256"`
+	Records int    `json:"records"`
+}
+
+func checkExportSchema(schema string, files map[string][]byte) error {
+	switch schema {
 	case "scout.state/v1":
 		for _, path := range shadowExportPaths {
 			if _, ok := files[path]; ok {
@@ -750,30 +879,34 @@ func verifyManifest(files map[string][]byte) error {
 			}
 		}
 	default:
-		return fmt.Errorf("unsupported export schema %q: upgrade the writer; never overwrite it with an older snapshot", parsed.Schema)
+		return fmt.Errorf("unsupported export schema %q: upgrade the writer; never overwrite it with an older snapshot", schema)
 	}
-	listed := map[string]bool{ExportManifest: true}
-	for _, entry := range parsed.Files {
-		if listed[entry.Path] || !strings.HasPrefix(entry.Path, ExportDir+"/") {
-			return fmt.Errorf("invalid or duplicate manifest path %s", entry.Path)
-		}
-		data, ok := files[entry.Path]
-		if !ok {
-			return fmt.Errorf("export is missing %s", entry.Path)
-		}
-		sum := sha256.Sum256(data)
-		if hex.EncodeToString(sum[:]) != entry.SHA256 {
-			return fmt.Errorf("export file %s does not match its manifest digest", entry.Path)
-		}
-		records := len(SplitLines(data))
-		if strings.HasSuffix(entry.Path, ".json") {
-			records = 1
-		}
-		if entry.Records != records {
-			return fmt.Errorf("export file %s does not match its manifest record count", entry.Path)
-		}
-		listed[entry.Path] = true
+	return nil
+}
+
+func checkManifestEntry(entry manifestEntry, files map[string][]byte, listed map[string]bool) error {
+	if listed[entry.Path] || !strings.HasPrefix(entry.Path, ExportDir+"/") {
+		return fmt.Errorf("invalid or duplicate manifest path %s", entry.Path)
 	}
+	data, ok := files[entry.Path]
+	if !ok {
+		return fmt.Errorf("export is missing %s", entry.Path)
+	}
+	sum := sha256.Sum256(data)
+	if hex.EncodeToString(sum[:]) != entry.SHA256 {
+		return fmt.Errorf("export file %s does not match its manifest digest", entry.Path)
+	}
+	records := len(SplitLines(data))
+	if strings.HasSuffix(entry.Path, ".json") {
+		records = 1
+	}
+	if entry.Records != records {
+		return fmt.Errorf("export file %s does not match its manifest record count", entry.Path)
+	}
+	return nil
+}
+
+func checkManifestListing(files map[string][]byte, listed map[string]bool) error {
 	for path := range files {
 		if !listed[path] {
 			return fmt.Errorf("export file %s is not listed in the manifest", path)

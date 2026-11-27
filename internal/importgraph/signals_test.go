@@ -7,6 +7,14 @@ import (
 )
 
 func TestSignalsPerScope(t *testing.T) {
+	sigs := perScopeSignals(t)
+	x, y, lone, docs := sigs[0], sigs[1], sigs[2], sigs[3]
+	assertCycleScopes(t, x, y)
+	assertMissingScopes(t, lone, docs)
+}
+
+func perScopeSignals(t *testing.T) []domain.Signal {
+	t.Helper()
 	g := build(t, map[string]string{
 		"go.mod":    "module m\n",
 		"x/x.go":    "package x\nimport _ \"m/y\"\nimport _ \"m/z\"\n",
@@ -33,7 +41,11 @@ func TestSignalsPerScope(t *testing.T) {
 			t.Fatalf("identity %+v", s)
 		}
 	}
-	x, y, lone, docs := sigs[0], sigs[1], sigs[2], sigs[3]
+	return sigs
+}
+
+func assertCycleScopes(t *testing.T, x, y domain.Signal) {
+	t.Helper()
 	// x owns edges x->y (cycle) and x->z (not): 1 of 2
 	if *x.Numerator != 1 || *x.Denominator != 2 || *x.Value != 0.5 {
 		t.Fatalf("x: %v/%v=%v", *x.Numerator, *x.Denominator, *x.Value)
@@ -46,6 +58,10 @@ func TestSignalsPerScope(t *testing.T) {
 	if x.Detail["cross_boundary_cycles"] != 1 || y.Detail["cross_boundary_cycles"] != 1 {
 		t.Fatalf("cross: x=%v y=%v", x.Detail, y.Detail)
 	}
+}
+
+func assertMissingScopes(t *testing.T, lone, docs domain.Signal) {
+	t.Helper()
 	if lone.Missing != domain.SignalInsufficient || lone.Value != nil || lone.PopulationDigest != "pop-lone" {
 		t.Fatalf("lone must be insufficient, not 0: %+v", lone)
 	}

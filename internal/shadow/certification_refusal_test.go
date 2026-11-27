@@ -3,10 +3,11 @@ package shadow
 import (
 	"bytes"
 	"fmt"
-	"scout/internal/domain"
 	"strings"
 	"testing"
 	"time"
+
+	"scout/internal/domain"
 )
 
 // Each proof owns its fixtures so it can be overlaid and compiled alone.
@@ -110,52 +111,59 @@ func TestADR012CertificationRefusalScope(t *testing.T) {
 		}
 	})
 	for _, kind := range []string{"normal-post-C", "other-check-triage", "frontier-only", "publication-only", "other-check-late", "pending-local-late"} {
-		t.Run(kind, func(t *testing.T) {
-			l := p20Ledger()
-			want := 0
-			switch kind {
-			case "normal-post-C":
-				f := p20Fact("100", 31)
-				l.Facts = append(l.Facts, f)
-			case "other-check-triage":
-				f := p20Fact("100", 1)
-				f.CheckID = "other"
-				l.Facts = append(l.Facts, f)
-				p20Event(&l, f, "other-event", "warranted", 32)
-			case "frontier-only":
-				p20Advance(&l, 35)
-			case "publication-only":
-				l.Publications = append(l.Publications, domain.ShadowPublication{ID: "empty", ParentID: "sealed", RepositoryID: "repo", RecordedAt: p20Day(32)})
-			case "other-check-late", "pending-local-late":
-				f := p20Fact("100", 20)
-				f.CheckID = "other"
-				f.RecordedAt = p20Stamp(32)
-				if kind == "pending-local-late" {
-					f.RecordedAt = nil
-				}
-				l.Facts = append(l.Facts, f)
-				l.Publications = append(l.Publications, domain.ShadowPublication{ID: "late", ParentID: "sealed", RepositoryID: "repo", RecordedAt: p20Day(32), Facts: []domain.PRRunFact{f}})
-				want = 2
-			}
-			q := p20Query()
-			q.AsOf = p20Stamp(30)
-			old := p20Eval(t, p20Ledger(), q, 0)
-			p20Same(t, old, p20Eval(t, l, q, 0))
-			p20Eval(t, l, p20Query(), want)
-			if kind == "other-check-late" {
-				p20Advance(&l, 35)
-				p20Eval(t, l, p20Query(), 0)
-			}
-			if kind == "pending-local-late" {
-				p20Advance(&l, 35)
-				p20Eval(t, l, p20Query(), 2)
-				l.Facts[len(l.Facts)-1].RecordedAt = p20Stamp(36)
-				l.Publications[len(l.Publications)-1].Facts[0].RecordedAt = p20Stamp(36)
-				l.Publications[len(l.Publications)-1].RecordedAt = p20Day(36)
-				p20Advance(&l, 40)
-				p20Eval(t, l, p20Query(), 0)
-			}
-		})
+		t.Run(kind, func(t *testing.T) { p20CheckRefusalScope(t, kind) })
 	}
 
+}
+
+func p20RefusalScopeLedger(kind string) (domain.ShadowLedger, int) {
+	l := p20Ledger()
+	want := 0
+	switch kind {
+	case "normal-post-C":
+		f := p20Fact("100", 31)
+		l.Facts = append(l.Facts, f)
+	case "other-check-triage":
+		f := p20Fact("100", 1)
+		f.CheckID = "other"
+		l.Facts = append(l.Facts, f)
+		p20Event(&l, f, "other-event", "warranted", 32)
+	case "frontier-only":
+		p20Advance(&l, 35)
+	case "publication-only":
+		l.Publications = append(l.Publications, domain.ShadowPublication{ID: "empty", ParentID: "sealed", RepositoryID: "repo", RecordedAt: p20Day(32)})
+	case "other-check-late", "pending-local-late":
+		f := p20Fact("100", 20)
+		f.CheckID = "other"
+		f.RecordedAt = p20Stamp(32)
+		if kind == "pending-local-late" {
+			f.RecordedAt = nil
+		}
+		l.Facts = append(l.Facts, f)
+		l.Publications = append(l.Publications, domain.ShadowPublication{ID: "late", ParentID: "sealed", RepositoryID: "repo", RecordedAt: p20Day(32), Facts: []domain.PRRunFact{f}})
+		want = 2
+	}
+	return l, want
+}
+
+func p20CheckRefusalScope(t *testing.T, kind string) {
+	l, want := p20RefusalScopeLedger(kind)
+	q := p20Query()
+	q.AsOf = p20Stamp(30)
+	old := p20Eval(t, p20Ledger(), q, 0)
+	p20Same(t, old, p20Eval(t, l, q, 0))
+	p20Eval(t, l, p20Query(), want)
+	if kind == "other-check-late" {
+		p20Advance(&l, 35)
+		p20Eval(t, l, p20Query(), 0)
+	}
+	if kind == "pending-local-late" {
+		p20Advance(&l, 35)
+		p20Eval(t, l, p20Query(), 2)
+		l.Facts[len(l.Facts)-1].RecordedAt = p20Stamp(36)
+		l.Publications[len(l.Publications)-1].Facts[0].RecordedAt = p20Stamp(36)
+		l.Publications[len(l.Publications)-1].RecordedAt = p20Day(36)
+		p20Advance(&l, 40)
+		p20Eval(t, l, p20Query(), 0)
+	}
 }

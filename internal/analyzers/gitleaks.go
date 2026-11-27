@@ -66,30 +66,43 @@ func gitleaksEvents(stderr []byte, stageDir string) (scanned, empty map[string]i
 // bytes Gitleaks provably scanned. Missing or repeated totals, unknown paths or
 // a byte mismatch prove nothing; the caller then rescans those inputs singly.
 func attestGitleaksInput(parsed *parsedOutput, inputs map[string]sourceInput, stderr []byte, stageDir string) {
-	matches := gitleaksScannedBytes.FindAllSubmatch(stderr, 2)
-	if len(matches) != 1 {
-		parsed.success = false
-		return
-	}
-	total, err := strconv.ParseInt(string(matches[0][1]), 10, 64)
-	if err != nil {
+	total, ok := gitleaksScannedTotal(stderr)
+	if !ok {
 		parsed.success = false
 		return
 	}
 	scanned, empty, unambiguous := gitleaksEvents(stderr, stageDir)
-	if !unambiguous {
+	if !unambiguous || !allDeclared(scanned, inputs) || !allDeclared(empty, inputs) {
 		return
 	}
-	for path := range scanned {
+	proven, sum := gitleaksProvenInputs(inputs, scanned, empty)
+	if sum != total {
+		return
+	}
+	for _, path := range proven {
+		parsed.processed[path] = struct{}{}
+	}
+}
+
+func gitleaksScannedTotal(stderr []byte) (int64, bool) {
+	matches := gitleaksScannedBytes.FindAllSubmatch(stderr, 2)
+	if len(matches) != 1 {
+		return 0, false
+	}
+	total, err := strconv.ParseInt(string(matches[0][1]), 10, 64)
+	return total, err == nil
+}
+
+func allDeclared(events map[string]int, inputs map[string]sourceInput) bool {
+	for path := range events {
 		if _, known := inputs[path]; !known {
-			return
+			return false
 		}
 	}
-	for path := range empty {
-		if _, known := inputs[path]; !known {
-			return
-		}
-	}
+	return true
+}
+
+func gitleaksProvenInputs(inputs map[string]sourceInput, scanned, empty map[string]int) ([]string, int64) {
 	proven := make([]string, 0, len(inputs))
 	var sum int64
 	for path, input := range inputs {
@@ -99,12 +112,7 @@ func attestGitleaksInput(parsed *parsedOutput, inputs map[string]sourceInput, st
 			sum += size
 		}
 	}
-	if sum != total {
-		return
-	}
-	for _, path := range proven {
-		parsed.processed[path] = struct{}{}
-	}
+	return proven, sum
 }
 
 // stageGitleaksInputs copies each accepted input into a fresh private
@@ -125,12 +133,12 @@ func stageGitleaksInputs(root, state string, inputs map[string]sourceInput) (str
 	return stageDir, staged, nil
 }
 
-func stageInput(root, stageDir string, input sourceInput) error {
+func stageInput(root, stageDir string, input sourceInput) (err error) {
 	source, err := os.Open(filepath.Join(root, filepath.FromSlash(input.manifest.Path)))
 	if err != nil {
 		return err
 	}
-	defer source.Close()
+	defer func() { err = errors.Join(err, source.Close()) }()
 	destination := filepath.Join(stageDir, filepath.FromSlash(input.manifest.Path))
 	if err := os.MkdirAll(filepath.Dir(destination), 0700); err != nil {
 		return err
@@ -145,8 +153,7 @@ func stageInput(root, stageDir string, input sourceInput) error {
 		copyErr = closeErr
 	}
 	if copyErr != nil || written != input.manifest.Bytes || hex.EncodeToString(hash.Sum(nil)) != input.manifest.Digest {
-		os.Remove(destination)
-		return errors.New("staged input does not match its manifest")
+		return errors.Join(errors.New("staged input does not match its manifest"), os.Remove(destination))
 	}
 	return nil
 }

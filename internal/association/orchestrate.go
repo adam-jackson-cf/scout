@@ -28,14 +28,23 @@ type MergeResult struct {
 	Capped    []Cluster  // unresolved (pr_cap)
 }
 
+type RunInput struct {
+	Repo   Repo
+	Base   string
+	Head   string
+	Own    Ownership
+	Decide Decider
+}
+
 // Run classifies the first-parent merges of base..head, oldest first. Each
 // merge is classified with its own changes against an ownership view that
 // includes the inherited results, pending moves and decisions of the earlier
 // merges of this push, so a file decided once is an owner (and a modification
 // of it is not decided) afterwards. Clusters of earlier pushes are never
 // revisited: own must already contain their outcomes.
-func Run(ctx context.Context, repo Repo, base, head string, own Ownership, decide Decider) ([]MergeResult, error) {
-	merges, err := repo.Merges(ctx, base, head)
+func Run(ctx context.Context, in RunInput) ([]MergeResult, error) {
+	repo, own, decide := in.Repo, in.Own, in.Decide
+	merges, err := repo.Merges(ctx, in.Base, in.Head)
 	if err != nil {
 		return nil, err
 	}
@@ -120,14 +129,7 @@ func (o *overlay) own(p string, areas []string) {
 // instead of per round): deletions and renamed-away paths leave, inherited
 // files and decided clusters take their owners, pending moves carry the pending set.
 func (o *overlay) apply(changes []Change, mr MergeResult) {
-	for _, c := range changes {
-		switch c.Kind {
-		case Deleted:
-			o.drop(c.Path)
-		case Renamed:
-			o.drop(c.OldPath)
-		}
-	}
+	o.dropChanged(changes)
 	for _, in := range mr.Inherited {
 		o.own(in.Path, in.Areas)
 	}
@@ -139,17 +141,31 @@ func (o *overlay) apply(changes []Change, mr MergeResult) {
 		if i >= len(mr.Decisions) {
 			break
 		}
-		d := mr.Decisions[i]
-		owners := append([]string(nil), d.Owners...)
-		sort.Strings(owners)
-		for _, f := range c.Files {
-			switch {
-			case len(owners) > 0:
-				o.own(f, owners)
-			case d.Pending != "":
-				o.owners[f] = nil
-				o.pending[f] = []string{d.Pending}
-			}
+		o.decide(c, mr.Decisions[i])
+	}
+}
+
+func (o *overlay) dropChanged(changes []Change) {
+	for _, c := range changes {
+		switch c.Kind {
+		case Deleted:
+			o.drop(c.Path)
+		case Renamed:
+			o.drop(c.OldPath)
+		}
+	}
+}
+
+func (o *overlay) decide(c Cluster, d Decision) {
+	owners := append([]string(nil), d.Owners...)
+	sort.Strings(owners)
+	for _, f := range c.Files {
+		switch {
+		case len(owners) > 0:
+			o.own(f, owners)
+		case d.Pending != "":
+			o.owners[f] = nil
+			o.pending[f] = []string{d.Pending}
 		}
 	}
 }

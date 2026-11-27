@@ -10,8 +10,22 @@ import (
 )
 
 func TestCommittedJobSurvivesFreshStore(t *testing.T) {
-	ctx := context.Background()
 	root := t.TempDir()
+	plan, run, job, observation, artifact := seedCommittedArtifactJob(t, root)
+
+	fresh, err := Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer closeOrFail(t, fresh)
+	checkResumedCommit(t, fresh, run.RunID, job.JobID, observation.ObservationID)
+	pending := checkResumedArtifact(t, fresh, plan.PlanID, artifact)
+	checkPartialRunNotBaseline(t, fresh, pending, run.RunID)
+}
+
+func seedCommittedArtifactJob(t *testing.T, root string) (domain.Plan, domain.Run, domain.Job, domain.Observation, domain.SafeArtifactRef) {
+	t.Helper()
+	ctx := context.Background()
 	store, err := Open(root)
 	if err != nil {
 		t.Fatal(err)
@@ -33,27 +47,32 @@ func TestCommittedJobSurvivesFreshStore(t *testing.T) {
 	if err := store.Close(); err != nil {
 		t.Fatal(err)
 	}
+	return plan, run, job, observation, artifact
+}
 
-	fresh, err := Open(root)
+func checkResumedCommit(t *testing.T, fresh *Store, runID, jobID, observationID string) {
+	t.Helper()
+	ctx := context.Background()
+	commits, err := fresh.ListRunJobCommits(ctx, runID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer fresh.Close()
-	commits, err := fresh.ListRunJobCommits(ctx, run.RunID)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(commits) != 1 || commits[0].JobID != job.JobID {
+	if len(commits) != 1 || commits[0].JobID != jobID {
 		t.Fatalf("commits = %#v", commits)
 	}
-	observations, err := fresh.LoadObservations(ctx, run.RunID)
+	observations, err := fresh.LoadObservations(ctx, runID)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(observations) != 1 || observations[0].ObservationID != observation.ObservationID {
+	if len(observations) != 1 || observations[0].ObservationID != observationID {
 		t.Fatalf("observations = %#v", observations)
 	}
-	pending, err := fresh.LoadInProgressRun(ctx, plan.PlanID)
+}
+
+func checkResumedArtifact(t *testing.T, fresh *Store, planID string, artifact domain.SafeArtifactRef) domain.Run {
+	t.Helper()
+	ctx := context.Background()
+	pending, err := fresh.LoadInProgressRun(ctx, planID)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,6 +83,12 @@ func TestCommittedJobSurvivesFreshStore(t *testing.T) {
 	if err != nil || string(content) != "sanitized scanner evidence" {
 		t.Fatalf("committed artifact content = %q, err = %v", content, err)
 	}
+	return pending
+}
+
+func checkPartialRunNotBaseline(t *testing.T, fresh *Store, pending domain.Run, runID string) {
+	t.Helper()
+	ctx := context.Background()
 	if _, err := fresh.LatestFinalizedRun(ctx); !errors.Is(err, ErrNotFound) {
 		t.Fatalf("interrupted run became a baseline: %v", err)
 	}
@@ -73,7 +98,7 @@ func TestCommittedJobSurvivesFreshStore(t *testing.T) {
 		t.Fatal(err)
 	}
 	recorded, err := fresh.LatestRecordedRun(ctx)
-	if err != nil || recorded.RunID != run.RunID || recorded.State != domain.RunPartial {
+	if err != nil || recorded.RunID != runID || recorded.State != domain.RunPartial {
 		t.Fatalf("latest report run = %#v, err = %v", recorded, err)
 	}
 	if _, err := fresh.LatestFinalizedRun(ctx); !errors.Is(err, ErrNotFound) {
@@ -97,7 +122,7 @@ func TestOpenExistingReadOnlyDoesNotInitializeMissingState(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer readOnly.Close()
+	defer closeOrFail(t, readOnly)
 	if _, err := readOnly.StoreArtifact(context.Background(), []byte("safe"), "text/plain", func(raw []byte) ([]byte, error) { return raw, nil }); err == nil {
 		t.Fatal("read-only store wrote an artifact")
 	}
@@ -107,7 +132,7 @@ func TestStoreRejectsUnsanitizedCredentialArtifact(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer store.Close()
+	defer closeOrFail(t, store)
 	_, err = store.StoreArtifact(context.Background(), []byte("password=raw-secret-value"), "text/plain", func(raw []byte) ([]byte, error) { return raw, nil })
 	if err == nil {
 		t.Fatal("raw credential artifact was persisted")

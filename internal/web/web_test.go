@@ -13,21 +13,30 @@ import (
 	"scout/internal/state"
 )
 
-func TestFeaturesLoadsCanonicalClawpatchRecords(t *testing.T) {
+func openStoreWithFeature(t *testing.T, featureJSON string) *state.Store {
+	t.Helper()
 	root := t.TempDir()
 	store, err := state.Open(root)
 	if err != nil {
 		t.Fatalf("open state: %v", err)
 	}
-	defer store.Close()
-
+	t.Cleanup(func() {
+		if err := store.Close(); err != nil {
+			t.Errorf("close state: %v", err)
+		}
+	})
 	featuresDir := filepath.Join(root, ".scout", "clawpatch", "features")
 	if err := os.MkdirAll(featuresDir, 0o700); err != nil {
 		t.Fatalf("create canonical features directory: %v", err)
 	}
-	if err := os.WriteFile(filepath.Join(featuresDir, "feature-1.json"), []byte(`{"schemaVersion":1,"featureId":"feature-1","kind":"service","source":"node","confidence":"high"}`), 0o600); err != nil {
+	if err := os.WriteFile(filepath.Join(featuresDir, "feature-1.json"), []byte(featureJSON), 0o600); err != nil {
 		t.Fatalf("write canonical feature: %v", err)
 	}
+	return store
+}
+
+func TestFeaturesLoadsCanonicalClawpatchRecords(t *testing.T) {
+	store := openStoreWithFeature(t, `{"schemaVersion":1,"featureId":"feature-1","kind":"service","source":"node","confidence":"high"}`)
 
 	request := httptest.NewRequest(http.MethodGet, "/api/features", nil)
 	response := httptest.NewRecorder()
@@ -47,21 +56,19 @@ func TestFeaturesLoadsCanonicalClawpatchRecords(t *testing.T) {
 	}
 }
 
+func assertRedactedWithSecurityHeaders(t *testing.T, target string, response *httptest.ResponseRecorder, secret string) {
+	t.Helper()
+	if response.Code != http.StatusOK || strings.Contains(response.Body.String(), secret) {
+		t.Fatalf("%s = %d, secret visible: %v", target, response.Code, strings.Contains(response.Body.String(), secret))
+	}
+	if response.Header().Get("Content-Security-Policy") == "" || response.Header().Get("X-Content-Type-Options") != "nosniff" {
+		t.Fatalf("%s lacks security headers: %v", target, response.Header())
+	}
+}
+
 func TestHandlerRejectsUnsafeRequestsAndRedactsStateOutput(t *testing.T) {
-	root := t.TempDir()
-	store, err := state.Open(root)
-	if err != nil {
-		t.Fatalf("open state: %v", err)
-	}
-	defer store.Close()
-	featuresDir := filepath.Join(root, ".scout", "clawpatch", "features")
-	if err := os.MkdirAll(featuresDir, 0o700); err != nil {
-		t.Fatal(err)
-	}
 	const secret = "hunter2hunter2"
-	if err := os.WriteFile(filepath.Join(featuresDir, "feature-1.json"), []byte(`{"schemaVersion":1,"featureId":"feature-1","kind":"password=`+secret+`","source":"node","confidence":"high"}`), 0o600); err != nil {
-		t.Fatal(err)
-	}
+	store := openStoreWithFeature(t, `{"schemaVersion":1,"featureId":"feature-1","kind":"password=`+secret+`","source":"node","confidence":"high"}`)
 	serve := func(method, target string) *httptest.ResponseRecorder {
 		response := httptest.NewRecorder()
 		New(store).ServeHTTP(response, httptest.NewRequest(method, target, nil))
@@ -75,12 +82,6 @@ func TestHandlerRejectsUnsafeRequestsAndRedactsStateOutput(t *testing.T) {
 		t.Fatalf("invalid issue ID = %d, want 400", response.Code)
 	}
 	for _, target := range []string{"/api/features", "/features"} {
-		response := serve(http.MethodGet, target)
-		if response.Code != http.StatusOK || strings.Contains(response.Body.String(), secret) {
-			t.Fatalf("%s = %d, secret visible: %v", target, response.Code, strings.Contains(response.Body.String(), secret))
-		}
-		if response.Header().Get("Content-Security-Policy") == "" || response.Header().Get("X-Content-Type-Options") != "nosniff" {
-			t.Fatalf("%s lacks security headers: %v", target, response.Header())
-		}
+		assertRedactedWithSecurityHeaders(t, target, serve(http.MethodGet, target), secret)
 	}
 }

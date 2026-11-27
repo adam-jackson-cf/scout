@@ -110,68 +110,81 @@ func CompareOutcomes(corpus CorpusLoadResult, request EvaluationRequest) (Outcom
 	if err := validateEvaluationRequest(request); err != nil {
 		return OutcomeReport{}, err
 	}
+	entry, unevaluated, err := resolveCorpusEntry(corpus, request)
+	if err != nil {
+		return OutcomeReport{}, err
+	}
+	if unevaluated != nil {
+		return *unevaluated, nil
+	}
+	return decideParity(compareEntry(*entry, request.Observations), *entry, request.Assessment), nil
+}
+
+func resolveCorpusEntry(corpus CorpusLoadResult, request EvaluationRequest) (*CorpusEntry, *OutcomeReport, error) {
 	if corpus.Status == CorpusUnreadable {
-		return OutcomeReport{
+		return nil, &OutcomeReport{
 			Status: EvaluationIncomplete,
 			Parity: ParityIncomplete,
 			Reason: "reference corpus is unreadable",
 		}, nil
 	}
 	if corpus.Status != CorpusAvailable || corpus.Corpus == nil {
-		return OutcomeReport{
+		return nil, &OutcomeReport{
 			Status: EvaluationMissingCorpus,
 			Parity: ParityNotEvaluated,
 			Reason: "reference corpus is unavailable",
 		}, nil
 	}
 	if err := corpus.Corpus.Validate(); err != nil {
-		return OutcomeReport{}, fmt.Errorf("validate corpus before comparison: %w", err)
+		return nil, nil, fmt.Errorf("validate corpus before comparison: %w", err)
 	}
 
 	entry := selectCorpusEntry(*corpus.Corpus, request)
 	if entry == nil {
-		return OutcomeReport{
+		return nil, &OutcomeReport{
 			Status: EvaluationMissingCorpus,
 			Parity: ParityNotEvaluated,
 			Reason: "no corpus entry for the requested pinned target revision, language, and family",
 		}, nil
 	}
 	if !entry.Input.Supported || entry.AdjudicationStatus == ReferenceAssessmentUnsupported {
-		return OutcomeReport{
+		return nil, &OutcomeReport{
 			Status:        EvaluationUnsupportedInput,
 			Parity:        ParityNotEvaluated,
 			Reason:        entry.Input.Reason,
 			CorpusEntryID: entry.ID,
 		}, nil
 	}
+	return entry, nil, nil
+}
 
-	report := compareEntry(*entry, request.Observations)
-	if request.Assessment.Status == AssessmentEvidenceIncomplete {
+func decideParity(report OutcomeReport, entry CorpusEntry, assessment AssessmentEvidence) OutcomeReport {
+	if assessment.Status == AssessmentEvidenceIncomplete {
 		report.Status = EvaluationIncomplete
 		report.Parity = ParityIncomplete
-		report.Reason = request.Assessment.Reason
-		return report, nil
+		report.Reason = assessment.Reason
+		return report
 	}
 	if entry.AdjudicationStatus != ReferenceAssessmentAdjudicated {
 		report.Status = EvaluationIncomplete
 		report.Parity = ParityIncomplete
 		report.Reason = "reference corpus entry is not completely adjudicated"
-		return report, nil
+		return report
 	}
 	if len(report.Ambiguous) != 0 {
 		report.Status = EvaluationIncomplete
 		report.Parity = ParityIncomplete
 		report.Reason = "ambiguous mechanism/path matches require adjudication"
-		return report, nil
+		return report
 	}
 	if len(report.Misses) != 0 {
 		report.Status = EvaluationComplete
 		report.Parity = ParityFailed
-		return report, nil
+		return report
 	}
 	report.Status = EvaluationComplete
 	report.Parity = ParityMet
-	return report, nil
+	return report
 }
 
 func validateEvaluationRequest(request EvaluationRequest) error {

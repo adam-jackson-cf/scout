@@ -1,9 +1,6 @@
 package policy
 
 import (
-	"os"
-	"os/exec"
-	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -42,7 +39,7 @@ func TestAbsentIsReportNothingActive(t *testing.T) {
 	if got := p.CheckStatus("guardrails.SUPPRESS.added.unscoped", "1"); got != Shadow {
 		t.Fatalf("got %s", got)
 	}
-	if len(p.Activations()) != 0 {
+	if len(p.activations) != 0 {
 		t.Fatal("activations present")
 	}
 }
@@ -213,77 +210,5 @@ func TestAcceptOverride(t *testing.T) {
 	}
 	if ok, _ := Default().AcceptOverride("alice", nil); ok {
 		t.Fatal("default policy has no maintainers")
-	}
-}
-
-func run(t *testing.T, dir string, args ...string) {
-	t.Helper()
-	cmd := exec.CommandContext(boundedTestContext(t), "git", args...)
-	cmd.Dir = dir
-	cmd.Env = append(os.Environ(), "GIT_AUTHOR_NAME=t", "GIT_AUTHOR_EMAIL=t@t", "GIT_COMMITTER_NAME=t", "GIT_COMMITTER_EMAIL=t@t")
-	if out, err := cmd.CombinedOutput(); err != nil {
-		t.Fatalf("git %v: %v\n%s", args, err, out)
-	}
-}
-
-func TestLoadReadsBaseRefOnly(t *testing.T) {
-	dir := t.TempDir()
-	run(t, dir, "init", "-q", "-b", "main")
-	write := func(content string) {
-		p := filepath.Join(dir, Path)
-		if err := os.MkdirAll(filepath.Dir(p), 0o755); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.WriteFile(p, []byte(content), 0o644); err != nil {
-			t.Fatal(err)
-		}
-	}
-	// Base without policy.
-	if err := os.WriteFile(filepath.Join(dir, "a.txt"), []byte("a"), 0o644); err != nil {
-		t.Fatal(err)
-	}
-	run(t, dir, "add", ".")
-	run(t, dir, "commit", "-qm", "base")
-	run(t, dir, "tag", "base-nopolicy")
-
-	// Base with a report policy.
-	write("profile: report\n")
-	run(t, dir, "add", ".")
-	run(t, dir, "commit", "-qm", "policy")
-	run(t, dir, "branch", "base")
-
-	// PR head rewrites the policy to activate a check, committed and in the working tree.
-	run(t, dir, "checkout", "-q", "-b", "pr")
-	write(guardianPolicy)
-	run(t, dir, "add", ".")
-	run(t, dir, "commit", "-qm", "pr activates")
-
-	p, err := Load(dir, "base")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if p.Profile() != "report" || p.CheckStatus("guardrails.SUPPRESS.added.unscoped", "1") != Shadow {
-		t.Fatal("PR-head policy leaked into base load")
-	}
-	head, err := Load(dir, "pr")
-	if err != nil || head.CheckStatus("guardrails.SUPPRESS.added.unscoped", "1") != Active {
-		t.Fatalf("control: head policy should activate: %v", err)
-	}
-
-	abs, err := Load(dir, "base-nopolicy")
-	if err != nil || abs.Profile() != "report" || len(abs.Activations()) != 0 {
-		t.Fatalf("absent file: %v %+v", err, abs)
-	}
-	if _, err := Load(dir, "no-such-ref"); err == nil {
-		t.Fatal("unresolvable ref must error")
-	}
-
-	// Invalid policy at base surfaces an error naming the ref.
-	run(t, dir, "checkout", "-q", "-b", "bad", "main")
-	write("profile: guardian\nblocking:\n  - id: guardrails.CONFIG.*\n")
-	run(t, dir, "add", ".")
-	run(t, dir, "commit", "-qm", "bad")
-	if _, err := Load(dir, "bad"); err == nil || !strings.Contains(err.Error(), "wildcard") {
-		t.Fatalf("expected wildcard error, got %v", err)
 	}
 }

@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
-	"os"
 
 	"scout/internal/engine"
 )
@@ -19,6 +17,5 @@ func readinessMatrix(ctx context.Context, flags *commonFlags, cfg engine.Config)
 	if flags.json {
 		return emit(flags, "complete", exitComplete, matrix, nil)
 	}
-	fmt.Fprint(os.Stdout, matrix.Render())
-	return exitComplete
+	return printStdout(matrix.Render(), exitComplete)
 }

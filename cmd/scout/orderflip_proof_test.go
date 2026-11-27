@@ -1,8 +1,11 @@
+//go:build boundary
+
 package main
 
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"math"
 	"net/http"
 	"net/http/httptest"
@@ -38,6 +41,16 @@ func flipUnits(t *testing.T) string {
 		t.Fatal(err)
 	}
 	return path
+}
+
+func writeFlipAnswer(t *testing.T, w io.Writer, chosen string) {
+	pa, pb := .75, .25
+	if chosen == "b" {
+		pa, pb = .25, .75
+	}
+	if _, err := fmt.Fprintf(w, `{"model":"typesafe/jev-1.14-20261014","answers":{"q1":{"type":"choice","choice":%q,"confidence":0.75,"probabilities":{"a":%v,"b":%v}}},"usage":{"cost":0.125}}`, chosen, pa, pb); err != nil {
+		t.Error(err)
+	}
 }
 
 func flipServer(t *testing.T, fail bool) *atomic.Int64 {
@@ -78,11 +91,7 @@ func flipServer(t *testing.T, fail bool) *atomic.Int64 {
 		if req.State.Unit.Role == "flip" {
 			chosen = first.(string)
 		}
-		pa, pb := .75, .25
-		if chosen == "b" {
-			pa, pb = .25, .75
-		}
-		fmt.Fprintf(w, `{"model":"typesafe/jev-1.14-20261014","answers":{"q1":{"type":"choice","choice":%q,"confidence":0.75,"probabilities":{"a":%v,"b":%v}}},"usage":{"cost":0.125}}`, chosen, pa, pb)
+		writeFlipAnswer(t, w, chosen)
 	}))
 	t.Cleanup(server.Close)
 	target, err := url.Parse(server.URL)
@@ -128,26 +137,40 @@ func flipResult(t *testing.T, text string) (orderflip.Report, float64) {
 	return reply.Result.Report, reply.Result.MaxShift
 }
 
+func exactFlipReport(report orderflip.Report, shift float64) bool {
+	return report.Measured == 3 && report.Unmeasured == 0 && report.Flipped == 1 && report.FlipRate != nil && *report.FlipRate == 1.0/3 && report.CostUSD == .75 && shift == .5 && len(report.Reports) == 3
+}
+
+func assertFlipRow(t *testing.T, i int, row orderflip.UnitReport) {
+	t.Helper()
+	if row.ID != strings.Fields("flip stable failed")[i] || row.Flipped != (i == 0) || row.CostUSD != .25 || row.Failure != "" || len(row.OrderA) != 2 || row.OrderA[0] != row.OrderB[1] || row.OrderA[1] != row.OrderB[0] {
+		t.Fatalf("row %+v", row)
+	}
+	assertFlipRowChoice(t, i, row)
+}
+
+func assertFlipRowChoice(t *testing.T, i int, row orderflip.UnitReport) {
+	t.Helper()
+	if i == 0 {
+		if row.ChoiceA != row.OrderA[0] || row.ChoiceB != row.OrderB[0] || row.MaxShift != .5 {
+			t.Fatalf("flipped row %+v", row)
+		}
+	} else if row.ChoiceA != "a" || row.ChoiceB != "a" || row.MaxShift != 0 {
+		t.Fatalf("stable row %+v", row)
+	}
+}
+
 func TestOrderflipCLIExactMeasurement(t *testing.T) {
 	calls := flipServer(t, false)
 	t.Setenv("OPENROUTER_API_KEY", "fixture")
 	root, path := flipRepo(t, true), flipUnits(t)
 	text, code := flipCommand(t, root, path, "merge.which_area", true)
 	report, shift := flipResult(t, text)
-	if code != 0 || calls.Load() != 6 || report.Measured != 3 || report.Unmeasured != 0 || report.Flipped != 1 || report.FlipRate == nil || *report.FlipRate != 1.0/3 || report.CostUSD != .75 || shift != .5 || len(report.Reports) != 3 {
+	if code != 0 || calls.Load() != 6 || !exactFlipReport(report, shift) {
 		t.Fatalf("code %d calls %d report %+v shift %v output %s", code, calls.Load(), report, shift, text)
 	}
 	for i, row := range report.Reports {
-		if row.ID != strings.Fields("flip stable failed")[i] || row.Flipped != (i == 0) || row.CostUSD != .25 || row.Failure != "" || len(row.OrderA) != 2 || row.OrderA[0] != row.OrderB[1] || row.OrderA[1] != row.OrderB[0] {
-			t.Fatalf("row %+v", row)
-		}
-		if i == 0 {
-			if row.ChoiceA != row.OrderA[0] || row.ChoiceB != row.OrderB[0] || row.MaxShift != .5 {
-				t.Fatalf("flipped row %+v", row)
-			}
-		} else if row.ChoiceA != "a" || row.ChoiceB != "a" || row.MaxShift != 0 {
-			t.Fatalf("stable row %+v", row)
-		}
+		assertFlipRow(t, i, row)
 	}
 	summary, code := flipCommand(t, root, path, "merge.which_area", false)
 	if code != 0 || !strings.Contains(summary, "flip rate: 0.333333") || !strings.Contains(summary, "measured: 3") || !strings.Contains(summary, "max probability shift: 0.5") {

@@ -1,0 +1,230 @@
+[
+  {
+    "path": "evaluation/change-cost-v2/requirements.txt",
+    "reason": "frozen, digest-signed study record (CLAUDE.md experiment rule 5); it cannot be relocked with hashes without a new council review round",
+    "exposure": "documents the change-cost-v2 study environment; no Scout build, CI job or toolchain step installs it",
+    "expires": "2027-02-27"
+  },
+  {
+    "path": "tools/gate/testdata/canary/audit/violating/package-lock.json",
+    "reason": "deliberately vulnerable canary fixture that proves SECURITY.dependency-audit reports advisories; the supply.dependency-audit canary still audits it through --path",
+    "exposure": "test fixture only; never installed",
+    "expires": "2027-02-27"
+  },
+  {
+    "advisory": "GHSA-qxg6-89mg-rqv8",
+    "package": "@vitest/mocker",
+    "version": "5.0.0",
+    "lock": "third_party/clawpatch/pnpm-lock.yaml",
+    "reason": "third_party/clawpatch is the pinned upstream Clawpatch submodule, which Scout never edits; the fix arrives by moving the submodule pin to an upstream revision that relocks it, and a Clawpatch upgrade needs a compatibility review",
+    "exposure": "development dependency of Clawpatch's own test runner (vitest); scripts/build-clawpatch.sh installs it in a temporary build directory and runs only the TypeScript build",
+    "expires": "2027-02-27",
+    "vendored_in": "third_party/clawpatch"
+  },
+  {
+    "advisory": "GHSA-xp26-3454-mjgp",
+    "package": "@vitest/mocker",
+    "version": "5.0.0",
+    "lock": "third_party/clawpatch/pnpm-lock.yaml",
+    "reason": "third_party/clawpatch is the pinned upstream Clawpatch submodule, which Scout never edits; the fix arrives by moving the submodule pin to an upstream revision that relocks it, and a Clawpatch upgrade needs a compatibility review",
+    "exposure": "development dependency of Clawpatch's own test runner (vitest); scripts/build-clawpatch.sh installs it in a temporary build directory and runs only the TypeScript build",
+    "expires": "2027-02-27",
+    "vendored_in": "third_party/clawpatch"
+  },
+  {
+    "advisory": "GHSA-68fv-2mgg-jv7q",
+    "package": "source-map-js",
+    "version": "1.2.1",
+    "lock": "third_party/clawpatch/pnpm-lock.yaml",
+    "reason": "third_party/clawpatch is the pinned upstream Clawpatch submodule, which Scout never edits; the fix arrives by moving the submodule pin to an upstream revision that relocks it, and a Clawpatch upgrade needs a compatibility review",
+    "exposure": "development dependency of Clawpatch's own test runner (vitest); scripts/build-clawpatch.sh installs it in a temporary build directory and runs only the TypeScript build",
+    "expires": "2027-02-27",
+    "vendored_in": "third_party/clawpatch"
+  },
+  {
+    "advisory": "GHSA-5gmw-xhrv-c9v3",
+    "package": "tinypool",
+    "version": "2.1.0",
+    "lock": "third_party/clawpatch/pnpm-lock.yaml",
+    "reason": "third_party/clawpatch is the pinned upstream Clawpatch submodule, which Scout never edits; the fix arrives by moving the submodule pin to an upstream revision that relocks it, and a Clawpatch upgrade needs a compatibility review",
+    "exposure": "development dependency of Clawpatch's own test runner (vitest); scripts/build-clawpatch.sh installs it in a temporary build directory and runs only the TypeScript build",
+    "expires": "2027-02-27",
+    "vendored_in": "third_party/clawpatch"
+  },
+  {
+    "advisory": "GHSA-85c8-ppgw-ccpr",
+    "package": "tinypool",
+    "version": "2.1.0",
+    "lock": "third_party/clawpatch/pnpm-lock.yaml",
+    "reason": "third_party/clawpatch is the pinned upstream Clawpatch submodule, which Scout never edits; the fix arrives by moving the submodule pin to an upstream revision that relocks it, and a Clawpatch upgrade needs a compatibility review",
+    "exposure": "development dependency of Clawpatch's own test runner (vitest); scripts/build-clawpatch.sh installs it in a temporary build directory and runs only the TypeScript build",
+    "expires": "2027-02-27",
+    "vendored_in": "third_party/clawpatch"
+  },
+  {
+    "advisory": "GHSA-587h-7wmj-h5pm",
+    "package": "vite",
+    "version": "8.2.2",
+    "lock": "third_party/clawpatch/pnpm-lock.yaml",
+    "reason": "third_party/clawpatch is the pinned upstream Clawpatch submodule, which Scout never edits; the fix arrives by moving the submodule pin to an upstream revision that relocks it, and a Clawpatch upgrade needs a compatibility review",
+    "exposure": "development dependency of Clawpatch's own test runner (vitest); scripts/build-clawpatch.sh installs it in a temporary build directory and runs only the TypeScript build",
+    "expires": "2027-02-27",
+    "vendored_in": "third_party/clawpatch"
+  },
+  {
+    "advisory": "GHSA-698v-4r3x-3vcv",
+    "package": "vite",
+    "version": "8.2.2",
+    "lock": "third_party/clawpatch/pnpm-lock.yaml",
+    "reason": "third_party/clawpatch is the pinned upstream Clawpatch submodule, which Scout never edits; the fix arrives by moving the submodule pin to an upstream revision that relocks it, and a Clawpatch upgrade needs a compatibility review",
+    "exposure": "development dependency of Clawpatch's own test runner (vitest); scripts/build-clawpatch.sh installs it in a temporary build directory and runs only the TypeScript build",
+    "expires": "2027-02-27",
+    "vendored_in": "third_party/clawpatch"
+  },
+  {
+    "advisory": "GHSA-9jrq-w75r-8gcw",
+    "package": "vite",
+    "version": "8.2.2",
+    "lock": "third_party/clawpatch/pnpm-lock.yaml",
+    "reason": "third_party/clawpatch is the pinned upstream Clawpatch submodule, which Scout never edits; the fix arrives by moving the submodule pin to an upstream revision that relocks it, and a Clawpatch upgrade needs a compatibility review",
+    "exposure": "development dependency of Clawpatch's own test runner (vitest); scripts/build-clawpatch.sh installs it in a temporary build directory and runs only the TypeScript build",
+    "expires": "2027-02-27",
+    "vendored_in": "third_party/clawpatch"
+  },
+  {
+    "advisory": "GHSA-r825-w8mm-5pxw",
+    "package": "vite",
+    "version": "8.2.2",
+    "lock": "third_party/clawpatch/pnpm-lock.yaml",
+    "reason": "third_party/clawpatch is the pinned upstream Clawpatch submodule, which Scout never edits; the fix arrives by moving the submodule pin to an upstream revision that relocks it, and a Clawpatch upgrade needs a compatibility review",
+    "exposure": "development dependency of Clawpatch's own test runner (vitest); scripts/build-clawpatch.sh installs it in a temporary build directory and runs only the TypeScript build",
+    "expires": "2027-02-27",
+    "vendored_in": "third_party/clawpatch"
+  },
+  {
+    "advisory": "GHSA-rq7h-c2jc-7f22",
+    "package": "vite",
+    "version": "8.2.2",
+    "lock": "third_party/clawpatch/pnpm-lock.yaml",
+    "reason": "third_party/clawpatch is the pinned upstream Clawpatch submodule, which Scout never edits; the fix arrives by moving the submodule pin to an upstream revision that relocks it, and a Clawpatch upgrade needs a compatibility review",
+    "exposure": "development dependency of Clawpatch's own test runner (vitest); scripts/build-clawpatch.sh installs it in a temporary build directory and runs only the TypeScript build",
+    "expires": "2027-02-27",
+    "vendored_in": "third_party/clawpatch"
+  },
+  {
+    "advisory": "GHSA-vfpm-58rq-9qcg",
+    "package": "vite",
+    "version": "8.2.2",
+    "lock": "third_party/clawpatch/pnpm-lock.yaml",
+    "reason": "third_party/clawpatch is the pinned upstream Clawpatch submodule, which Scout never edits; the fix arrives by moving the submodule pin to an upstream revision that relocks it, and a Clawpatch upgrade needs a compatibility review",
+    "exposure": "development dependency of Clawpatch's own test runner (vitest); scripts/build-clawpatch.sh installs it in a temporary build directory and runs only the TypeScript build",
+    "expires": "2027-02-27",
+    "vendored_in": "third_party/clawpatch"
+  },
+  {
+    "advisory": "GHSA-mrhx-c7xc-m3w5",
+    "package": "zod",
+    "version": "4.5.4",
+    "lock": "third_party/clawpatch/pnpm-lock.yaml",
+    "reason": "third_party/clawpatch is the pinned upstream Clawpatch submodule, which Scout never edits; the fix arrives by moving the submodule pin to an upstream revision that relocks it, and a Clawpatch upgrade needs a compatibility review",
+    "exposure": "runtime dependency of the Clawpatch CLI that Scout's review lane runs",
+    "expires": "2027-02-27",
+    "vendored_in": "third_party/clawpatch"
+  },
+  {
+    "advisory": "GHSA-5h93-6whr-6q8j",
+    "package": "mcp",
+    "version": "1.29.0",
+    "lock": "toolchain/python-requirements.lock",
+    "reason": "semgrep 1.182.0, the pinned scanner, requires this exact range, and no fixed version satisfies it (semgrep 1.187.0, the newest release on 2026-11-27, keeps the same requirement); a semgrep pin change is a tool upgrade that needs a compatibility review",
+    "exposure": "installed only into the pinned scanner virtual environment (.tools/venv) as a semgrep dependency; not part of the Scout binary",
+    "expires": "2027-02-27",
+    "blocked_by": "semgrep@1.182.0",
+    "constraint": "semgrep==1.182.0 requires mcp==1.29.0",
+    "constraint_source": "https://pypi.org/project/semgrep/1.182.0/"
+  },
+  {
+    "advisory": "GHSA-84m7-p3x7-pcfv",
+    "package": "mcp",
+    "version": "1.29.0",
+    "lock": "toolchain/python-requirements.lock",
+    "reason": "semgrep 1.182.0, the pinned scanner, requires this exact range, and no fixed version satisfies it (semgrep 1.187.0, the newest release on 2026-11-27, keeps the same requirement); a semgrep pin change is a tool upgrade that needs a compatibility review",
+    "exposure": "installed only into the pinned scanner virtual environment (.tools/venv) as a semgrep dependency; not part of the Scout binary",
+    "expires": "2027-02-27",
+    "blocked_by": "semgrep@1.182.0",
+    "constraint": "semgrep==1.182.0 requires mcp==1.29.0",
+    "constraint_source": "https://pypi.org/project/semgrep/1.182.0/"
+  },
+  {
+    "advisory": "GHSA-qx49-fqc8-xw99",
+    "package": "mcp",
+    "version": "1.29.0",
+    "lock": "toolchain/python-requirements.lock",
+    "reason": "semgrep 1.182.0, the pinned scanner, requires this exact range, and no fixed version satisfies it (semgrep 1.187.0, the newest release on 2026-11-27, keeps the same requirement); a semgrep pin change is a tool upgrade that needs a compatibility review",
+    "exposure": "installed only into the pinned scanner virtual environment (.tools/venv) as a semgrep dependency; not part of the Scout binary",
+    "expires": "2027-02-27",
+    "blocked_by": "semgrep@1.182.0",
+    "constraint": "semgrep==1.182.0 requires mcp==1.29.0",
+    "constraint_source": "https://pypi.org/project/semgrep/1.182.0/"
+  },
+  {
+    "advisory": "GHSA-rwrf-2pqf-9j8j",
+    "package": "mcp",
+    "version": "1.29.0",
+    "lock": "toolchain/python-requirements.lock",
+    "reason": "semgrep 1.182.0, the pinned scanner, requires this exact range, and no fixed version satisfies it (semgrep 1.187.0, the newest release on 2026-11-27, keeps the same requirement); a semgrep pin change is a tool upgrade that needs a compatibility review",
+    "exposure": "installed only into the pinned scanner virtual environment (.tools/venv) as a semgrep dependency; not part of the Scout binary",
+    "expires": "2027-02-27",
+    "blocked_by": "semgrep@1.182.0",
+    "constraint": "semgrep==1.182.0 requires mcp==1.29.0",
+    "constraint_source": "https://pypi.org/project/semgrep/1.182.0/"
+  },
+  {
+    "advisory": "GHSA-w4fh-qvv9-3v23",
+    "package": "mcp",
+    "version": "1.29.0",
+    "lock": "toolchain/python-requirements.lock",
+    "reason": "semgrep 1.182.0, the pinned scanner, requires this exact range, and no fixed version satisfies it (semgrep 1.187.0, the newest release on 2026-11-27, keeps the same requirement); a semgrep pin change is a tool upgrade that needs a compatibility review",
+    "exposure": "installed only into the pinned scanner virtual environment (.tools/venv) as a semgrep dependency; not part of the Scout binary",
+    "expires": "2027-02-27",
+    "blocked_by": "semgrep@1.182.0",
+    "constraint": "semgrep==1.182.0 requires mcp==1.29.0",
+    "constraint_source": "https://pypi.org/project/semgrep/1.182.0/"
+  },
+  {
+    "advisory": "GHSA-mf5v-w3w3-f6cg",
+    "package": "opentelemetry-api",
+    "version": "1.37.0",
+    "lock": "toolchain/python-requirements.lock",
+    "reason": "semgrep 1.182.0, the pinned scanner, requires this exact range, and no fixed version satisfies it (semgrep 1.187.0, the newest release on 2026-11-27, keeps the same requirement); a semgrep pin change is a tool upgrade that needs a compatibility review",
+    "exposure": "installed only into the pinned scanner virtual environment (.tools/venv) as a semgrep dependency; not part of the Scout binary",
+    "expires": "2027-02-27",
+    "blocked_by": "semgrep@1.182.0",
+    "constraint": "semgrep==1.182.0 requires opentelemetry-api~=1.37.0",
+    "constraint_source": "https://pypi.org/project/semgrep/1.182.0/"
+  },
+  {
+    "advisory": "GHSA-xcq7-p3pf-p88h",
+    "package": "opentelemetry-api",
+    "version": "1.37.0",
+    "lock": "toolchain/python-requirements.lock",
+    "reason": "semgrep 1.182.0, the pinned scanner, requires this exact range, and no fixed version satisfies it (semgrep 1.187.0, the newest release on 2026-11-27, keeps the same requirement); a semgrep pin change is a tool upgrade that needs a compatibility review",
+    "exposure": "installed only into the pinned scanner virtual environment (.tools/venv) as a semgrep dependency; not part of the Scout binary",
+    "expires": "2027-02-27",
+    "blocked_by": "semgrep@1.182.0",
+    "constraint": "semgrep==1.182.0 requires opentelemetry-api~=1.37.0",
+    "constraint_source": "https://pypi.org/project/semgrep/1.182.0/"
+  },
+  {
+    "advisory": "GHSA-53pm-wgxf-c6qf",
+    "package": "wcmatch",
+    "version": "8.5.2",
+    "lock": "toolchain/python-requirements.lock",
+    "reason": "semgrep 1.182.0, the pinned scanner, requires this exact range, and no fixed version satisfies it (semgrep 1.187.0, the newest release on 2026-11-27, keeps the same requirement); a semgrep pin change is a tool upgrade that needs a compatibility review",
+    "exposure": "installed only into the pinned scanner virtual environment (.tools/venv) as a semgrep dependency; not part of the Scout binary",
+    "expires": "2027-02-27",
+    "blocked_by": "semgrep@1.182.0",
+    "constraint": "semgrep==1.182.0 requires wcmatch~=8.3",
+    "constraint_source": "https://pypi.org/project/semgrep/1.182.0/"
+  }
+]

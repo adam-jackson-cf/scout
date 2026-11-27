@@ -55,6 +55,11 @@ func TestRules(t *testing.T) {
 	if !reflect.DeepEqual(r.Inherited, wantIn) {
 		t.Fatalf("inherited %+v", r.Inherited)
 	}
+	assertRulesResidual(t, r)
+}
+
+func assertRulesResidual(t *testing.T, r Result) {
+	t.Helper()
 	if len(r.PendingMoves) != 2 || r.PendingMoves[0].New != "pooled2.go" || r.PendingMoves[1].New != "heur.go" {
 		t.Fatalf("pending moves %+v", r.PendingMoves)
 	}

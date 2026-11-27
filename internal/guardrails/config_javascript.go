@@ -61,15 +61,18 @@ func eslintLegacy(t Tree, p string, doc map[string]any, depth int) *facts {
 	if hasOpaque(doc) {
 		f.unknown = true
 	}
+	eslintExtends(f, t, p, doc, depth)
+	if rules := asMap(doc["rules"]); rules != nil {
+		eslintRules(f, "", rules)
+	}
+	f.addIgnores("ignorePatterns", strList(doc["ignorePatterns"]))
+	eslintOverrides(f, doc)
+	return f
+}
+
+func eslintExtends(f *facts, t Tree, p string, doc map[string]any, depth int) {
 	for _, ref := range strList(doc["extends"]) {
-		var parent *facts
-		if pp, ok := resolveRel(p, ref); ok && depth < maxExtendsDepth {
-			if pdoc, ok := loadDoc(t, pp); ok {
-				if m := asMap(pdoc); m != nil {
-					parent = eslintLegacy(t, pp, m, depth+1)
-				}
-			}
-		}
+		parent := eslintParent(t, p, ref, depth)
 		if parent == nil {
 			f.unknown = true // shareable/plugin configs are not resolvable statically
 			continue
@@ -83,10 +86,25 @@ func eslintLegacy(t Tree, p string, doc map[string]any, depth int) *facts {
 			}
 		}
 	}
-	if rules := asMap(doc["rules"]); rules != nil {
-		eslintRules(f, "", rules)
+}
+
+func eslintParent(t Tree, p, ref string, depth int) *facts {
+	pp, ok := resolveRel(p, ref)
+	if !ok || depth >= maxExtendsDepth {
+		return nil
 	}
-	f.addIgnores("ignorePatterns", strList(doc["ignorePatterns"]))
+	pdoc, ok := loadDoc(t, pp)
+	if !ok {
+		return nil
+	}
+	m := asMap(pdoc)
+	if m == nil {
+		return nil
+	}
+	return eslintLegacy(t, pp, m, depth+1)
+}
+
+func eslintOverrides(f *facts, doc map[string]any) {
 	for _, o := range asList(doc["overrides"]) {
 		om := asMap(o)
 		if om == nil {
@@ -97,7 +115,6 @@ func eslintLegacy(t Tree, p string, doc map[string]any, depth int) *facts {
 			eslintRules(f, "["+files+"] ", rules)
 		}
 	}
-	return f
 }
 
 func extractESLintLegacy(t Tree, p string) map[string]*facts {
@@ -183,12 +200,7 @@ func biomeSev(v any) (int, bool) {
 func biomeFacts(t Tree, p string, doc map[string]any, depth int) *facts {
 	f := newFacts()
 	for _, ref := range strList(doc["extends"]) {
-		var parent *facts
-		if pp, ok := resolveRel(p, ref); ok && depth < maxExtendsDepth {
-			if pdoc, ok := loadDoc(t, pp); ok && asMap(pdoc) != nil {
-				parent = biomeFacts(t, pp, asMap(pdoc), depth+1)
-			}
-		}
+		parent := biomeParent(t, p, ref, depth)
 		if parent == nil {
 			f.unknown = true
 			continue
@@ -199,6 +211,26 @@ func biomeFacts(t Tree, p string, doc map[string]any, depth int) *facts {
 	if v, ok := toBool(linter["enabled"]); ok && !v {
 		f.ignores["linter|enabled=false"] = true
 	}
+	biomeRuleSeverities(f, linter)
+	files := asMap(doc["files"])
+	f.addIgnores("files.ignore", strList(files["ignore"]))
+	f.addIgnores("linter.ignore", strList(linter["ignore"]))
+	biomeNegatedIncludes(f, files, linter)
+	return f
+}
+
+func biomeParent(t Tree, p, ref string, depth int) *facts {
+	pp, ok := resolveRel(p, ref)
+	if !ok || depth >= maxExtendsDepth {
+		return nil
+	}
+	if pdoc, ok := loadDoc(t, pp); ok && asMap(pdoc) != nil {
+		return biomeFacts(t, pp, asMap(pdoc), depth+1)
+	}
+	return nil
+}
+
+func biomeRuleSeverities(f *facts, linter map[string]any) {
 	for group, rules := range asMap(linter["rules"]) {
 		gm := asMap(rules)
 		for rule, v := range gm {
@@ -207,9 +239,9 @@ func biomeFacts(t Tree, p string, doc map[string]any, depth int) *facts {
 			}
 		}
 	}
-	files := asMap(doc["files"])
-	f.addIgnores("files.ignore", strList(files["ignore"]))
-	f.addIgnores("linter.ignore", strList(linter["ignore"]))
+}
+
+func biomeNegatedIncludes(f *facts, files, linter map[string]any) {
 	for _, set := range []struct {
 		name string
 		v    any
@@ -220,7 +252,6 @@ func biomeFacts(t Tree, p string, doc map[string]any, depth int) *facts {
 			}
 		}
 	}
-	return f
 }
 
 func extractBiome(t Tree, p string) map[string]*facts {
@@ -245,28 +276,12 @@ func tsResolve(t Tree, p string, doc map[string]any, depth int) tsEffective {
 	eff := tsEffective{opts: map[string]any{}}
 	exts := strList(doc["extends"])
 	for _, ref := range exts {
-		var parent tsEffective
-		found := false
-		if pp, ok := resolveRel(p, ref); ok && depth < maxExtendsDepth {
-			for _, cand := range []string{pp, pp + ".json"} {
-				if pdoc, ok := loadDoc(t, cand); ok && asMap(pdoc) != nil {
-					parent = tsResolve(t, cand, asMap(pdoc), depth+1)
-					found = true
-					break
-				}
-			}
-		}
+		parent, found := tsParent(t, p, ref, depth)
 		if !found {
 			eff.unknown = true // package extends (@tsconfig/...) are not resolvable
 			continue
 		}
-		for k, v := range parent.opts {
-			eff.opts[k] = v
-		}
-		if parent.hasExcl {
-			eff.exclude, eff.hasExcl = parent.exclude, true
-		}
-		eff.unknown = eff.unknown || parent.unknown
+		eff.inherit(parent)
 	}
 	for k, v := range asMap(doc["compilerOptions"]) {
 		eff.opts[k] = v
@@ -275,6 +290,29 @@ func tsResolve(t Tree, p string, doc map[string]any, depth int) tsEffective {
 		eff.exclude, eff.hasExcl = strList(v), true
 	}
 	return eff
+}
+
+func tsParent(t Tree, p, ref string, depth int) (tsEffective, bool) {
+	pp, ok := resolveRel(p, ref)
+	if !ok || depth >= maxExtendsDepth {
+		return tsEffective{}, false
+	}
+	for _, cand := range []string{pp, pp + ".json"} {
+		if pdoc, ok := loadDoc(t, cand); ok && asMap(pdoc) != nil {
+			return tsResolve(t, cand, asMap(pdoc), depth+1), true
+		}
+	}
+	return tsEffective{}, false
+}
+
+func (eff *tsEffective) inherit(parent tsEffective) {
+	for k, v := range parent.opts {
+		eff.opts[k] = v
+	}
+	if parent.hasExcl {
+		eff.exclude, eff.hasExcl = parent.exclude, true
+	}
+	eff.unknown = eff.unknown || parent.unknown
 }
 
 func extractTSConfig(t Tree, p string) map[string]*facts {
@@ -287,6 +325,11 @@ func extractTSConfig(t Tree, p string) map[string]*facts {
 	f := newFacts()
 	f.unknown = eff.unknown
 	f.addIgnores("exclude", eff.exclude)
+	tsStrictFlags(f, eff)
+	return map[string]*facts{"tsconfig": f}
+}
+
+func tsStrictFlags(f *facts, eff tsEffective) {
 	strict, strictSet := toBool(eff.opts["strict"])
 	if strictSet {
 		f.flags["strict"] = strict
@@ -308,7 +351,6 @@ func extractTSConfig(t Tree, p string) map[string]*facts {
 	} else if !eff.unknown {
 		f.flags["noUncheckedIndexedAccess"] = false
 	}
-	return map[string]*facts{"tsconfig": f}
 }
 
 // ---- jest ----
@@ -329,7 +371,12 @@ func extractJest(t Tree, p string) map[string]*facts {
 		}
 	}
 	f := newFacts()
-	for scope, v := range asMap(m["coverageThreshold"]) {
+	jestThresholds(f, asMap(m["coverageThreshold"]))
+	return map[string]*facts{"jest": f}
+}
+
+func jestThresholds(f *facts, thresholds map[string]any) {
+	for scope, v := range thresholds {
 		if n, ok := toNum(v); ok {
 			if n >= 0 { // negative thresholds are "max uncovered" counts
 				f.nums[scope] = n
@@ -342,5 +389,4 @@ func extractJest(t Tree, p string) map[string]*facts {
 			}
 		}
 	}
-	return map[string]*facts{"jest": f}
 }

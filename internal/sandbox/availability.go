@@ -40,7 +40,8 @@ func Available() error {
 // command wraps binary in the sandbox. Writes are permitted only beneath
 // state; rulesRoot, when set, is mounted read-only. The caller sets Env and
 // the output writers.
-func command(ctx context.Context, workDir, state, rulesRoot, binary string, args []string) (*exec.Cmd, error) {
+func command(ctx context.Context, request Request) (*exec.Cmd, error) {
+	workDir, state, rulesRoot, binary, args := request.WorkDir, request.State, request.RulesRoot, request.Binary, request.Args
 	sandbox, err := executable()
 	if err != nil {
 		return nil, err

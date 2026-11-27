@@ -27,8 +27,8 @@ func exportCmd(ctx context.Context, args []string) int {
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	defer store.Close()
 	files, err := store.Export(ctx)
+	err = errors.Join(err, store.Close())
 	if err == nil {
 		err = state.WriteExport(out, files)
 	}
@@ -62,8 +62,8 @@ func importFiles(ctx context.Context, flags *commonFlags, files map[string][]byt
 	if err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
-	defer store.Close()
-	if err := store.Import(ctx, files); err != nil {
+	importErr := store.Import(ctx, files)
+	if err := errors.Join(importErr, store.Close()); err != nil {
 		return emit(flags, "unavailable", exitUnavailable, nil, err)
 	}
 	return emit(flags, "complete", exitComplete, map[string]any{"files": len(files)}, nil)

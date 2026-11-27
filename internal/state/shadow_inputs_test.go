@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"reflect"
 	"testing"
@@ -9,6 +10,37 @@ import (
 
 	"scout/internal/domain"
 )
+
+// RecordShadowInputs atomically inserts supplemental control-plane inputs.
+// Exact replay is a no-op; every changed immutable identity is rejected. In
+// particular this does not authorize imports or resolve pending imports: those
+// decisions are represented by later trusted publications, never row updates.
+// Import refusals are trusted-writer records, so callers must authenticate their
+// source and current policy before passing them here.
+func (s *Store) RecordShadowInputs(ctx context.Context, inputs domain.ShadowInputs) error {
+	return s.withTransaction(ctx, func(tx *sql.Tx) error {
+		return recordShadowInputs(ctx, tx, inputs)
+	})
+}
+
+// ReadShadowInputs returns one consistent snapshot of the insert-only input
+// tables. Pending material is not published CI evidence, regardless of source
+// stamps. The consumer must prove ancestry or obtain current authorization.
+func (s *Store) ReadShadowInputs(ctx context.Context) (domain.ShadowInputs, error) {
+	var inputs domain.ShadowInputs
+	err := s.withRead(ctx, func(db *sql.DB) (err error) {
+		tx, err := db.BeginTx(ctx, &sql.TxOptions{ReadOnly: true})
+		if err != nil {
+			return err
+		}
+		defer rollbackUnlessDone(&err, tx)
+		if err := readShadowInputsTx(ctx, tx, &inputs); err != nil {
+			return err
+		}
+		return tx.Commit()
+	})
+	return inputs, err
+}
 
 func TestShadowSupplementalInputsImmutableAndAtomic(t *testing.T) {
 	ctx := context.Background()
@@ -35,21 +67,7 @@ func TestShadowSupplementalInputsImmutableAndAtomic(t *testing.T) {
 	}
 	for _, kind := range []string{"obligation", "refusal", "pending"} {
 		t.Run(kind, func(t *testing.T) {
-			changed := domain.ShadowInputs{}
-			switch kind {
-			case "obligation":
-				o := obligation
-				o.HeadCommit = "different-head"
-				changed.Obligations = []domain.ProviderEventObligation{o}
-			case "refusal":
-				r := refusal
-				r.Reason = "rewritten"
-				changed.ImportRefusals = []domain.ShadowImportRefusal{r}
-			case "pending":
-				p := pending
-				p.SourceLineage = "rewritten"
-				changed.PendingImports = []domain.ShadowPendingImport{p}
-			}
+			changed := changedShadowInputs(kind, input)
 			if err := s.RecordShadowInputs(ctx, changed); !errors.Is(err, ErrImmutable) {
 				t.Fatalf("want immutable: %v", err)
 			}
@@ -59,6 +77,31 @@ func TestShadowSupplementalInputsImmutableAndAtomic(t *testing.T) {
 			}
 		})
 	}
+	checkShadowInputsBatchRollsBack(t, s, obligation, accounting, before)
+}
+
+func changedShadowInputs(kind string, input domain.ShadowInputs) domain.ShadowInputs {
+	changed := domain.ShadowInputs{}
+	switch kind {
+	case "obligation":
+		o := input.Obligations[0]
+		o.HeadCommit = "different-head"
+		changed.Obligations = []domain.ProviderEventObligation{o}
+	case "refusal":
+		r := input.ImportRefusals[0]
+		r.Reason = "rewritten"
+		changed.ImportRefusals = []domain.ShadowImportRefusal{r}
+	case "pending":
+		p := input.PendingImports[0]
+		p.SourceLineage = "rewritten"
+		changed.PendingImports = []domain.ShadowPendingImport{p}
+	}
+	return changed
+}
+
+func checkShadowInputsBatchRollsBack(t *testing.T, s *Store, obligation domain.ProviderEventObligation, accounting domain.PRRunObligationLink, before domain.ShadowInputs) {
+	t.Helper()
+	ctx := context.Background()
 	// A later invalid link rolls back the earlier new obligation in this batch.
 	fresh := obligation
 	fresh.ID = "new-event"
@@ -79,14 +122,7 @@ func TestShadowSupplementalInputsImmutableAndAtomic(t *testing.T) {
 func TestShadowObligationAccountingBindingAndScope(t *testing.T) {
 	ctx := context.Background()
 	s := adr012Open(t, t.TempDir())
-	for _, scope := range []domain.ShadowScope{domain.ShadowScopeCI, domain.ShadowScopeLocal, domain.ShadowScopeLegacy} {
-		f := adr012Fact(scope, "999")
-		adr012Record(t, s, f, nil, nil)
-		o := domain.ProviderEventObligation{ID: "provider-event", RepositoryID: f.ID.RepositoryID, Scope: scope, PRNumber: f.PRNumber, HeadCommit: f.HeadCommit, EventAt: f.StartedAt, Selector: "selector", ProviderProof: "proof"}
-		if err := s.RecordShadowInputs(ctx, domain.ShadowInputs{Obligations: []domain.ProviderEventObligation{o}, Accounting: []domain.PRRunObligationLink{{AttemptID: f.ID, Scope: scope, CheckID: f.CheckID, ObligationID: o.ID}}}); err != nil {
-			t.Fatal(err)
-		}
-	}
+	seedScopedObligations(t, s)
 	before, err := s.ReadShadowInputs(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -97,19 +133,7 @@ func TestShadowObligationAccountingBindingAndScope(t *testing.T) {
 	for _, kind := range []string{"head", "PR", "future", "scope", "repository"} {
 		t.Run(kind, func(t *testing.T) {
 			f := adr012Fact(domain.ShadowScopeCI, "999")
-			o := domain.ProviderEventObligation{ID: "bad-" + kind, RepositoryID: f.ID.RepositoryID, Scope: f.Scope, PRNumber: f.PRNumber, HeadCommit: f.HeadCommit, EventAt: f.StartedAt, Selector: "selector", ProviderProof: "proof"}
-			switch kind {
-			case "head":
-				o.HeadCommit = "H2"
-			case "PR":
-				o.PRNumber = "18"
-			case "future":
-				o.EventAt = o.EventAt.Add(time.Millisecond)
-			case "scope":
-				o.Scope = domain.ShadowScopeLocal
-			case "repository":
-				o.RepositoryID = "foreign"
-			}
+			o := badBindingObligation(kind, f)
 			if err := s.RecordShadowInputs(ctx, domain.ShadowInputs{Obligations: []domain.ProviderEventObligation{o}, Accounting: []domain.PRRunObligationLink{{AttemptID: f.ID, Scope: f.Scope, CheckID: f.CheckID, ObligationID: o.ID}}}); err == nil {
 				t.Fatal("invalid binding accepted")
 			}
@@ -119,6 +143,42 @@ func TestShadowObligationAccountingBindingAndScope(t *testing.T) {
 			}
 		})
 	}
+	checkReadOnlyShadowInputs(t, s, before)
+}
+
+func seedScopedObligations(t *testing.T, s *Store) {
+	t.Helper()
+	ctx := context.Background()
+	for _, scope := range []domain.ShadowScope{domain.ShadowScopeCI, domain.ShadowScopeLocal, domain.ShadowScopeLegacy} {
+		f := adr012Fact(scope, "999")
+		adr012Record(t, s, f, nil, nil)
+		o := domain.ProviderEventObligation{ID: "provider-event", RepositoryID: f.ID.RepositoryID, Scope: scope, PRNumber: f.PRNumber, HeadCommit: f.HeadCommit, EventAt: f.StartedAt, Selector: "selector", ProviderProof: "proof"}
+		if err := s.RecordShadowInputs(ctx, domain.ShadowInputs{Obligations: []domain.ProviderEventObligation{o}, Accounting: []domain.PRRunObligationLink{{AttemptID: f.ID, Scope: scope, CheckID: f.CheckID, ObligationID: o.ID}}}); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func badBindingObligation(kind string, f domain.PRRunFact) domain.ProviderEventObligation {
+	o := domain.ProviderEventObligation{ID: "bad-" + kind, RepositoryID: f.ID.RepositoryID, Scope: f.Scope, PRNumber: f.PRNumber, HeadCommit: f.HeadCommit, EventAt: f.StartedAt, Selector: "selector", ProviderProof: "proof"}
+	switch kind {
+	case "head":
+		o.HeadCommit = "H2"
+	case "PR":
+		o.PRNumber = "18"
+	case "future":
+		o.EventAt = o.EventAt.Add(time.Millisecond)
+	case "scope":
+		o.Scope = domain.ShadowScopeLocal
+	case "repository":
+		o.RepositoryID = "foreign"
+	}
+	return o
+}
+
+func checkReadOnlyShadowInputs(t *testing.T, s *Store, before domain.ShadowInputs) {
+	t.Helper()
+	ctx := context.Background()
 	if err := s.Close(); err != nil {
 		t.Fatal(err)
 	}
@@ -126,7 +186,7 @@ func TestShadowObligationAccountingBindingAndScope(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer ro.Close()
+	defer closeOrFail(t, ro)
 	if err := ro.RecordShadowInputs(ctx, domain.ShadowInputs{}); err == nil {
 		t.Fatal("read-only input write accepted")
 	}

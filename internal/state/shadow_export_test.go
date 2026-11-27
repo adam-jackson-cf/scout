@@ -25,22 +25,7 @@ func TestShadowImportStagesUnprovenHistory(t *testing.T) {
 	adr012Record(t, destination, pending, nil, nil)
 	before := adr012Ledger(t, destination)
 	for range 2 {
-		if err := destination.Import(ctx, files); err != nil {
-			t.Fatal(err)
-		}
-		if got := adr012Ledger(t, destination); !reflect.DeepEqual(before, got) {
-			t.Fatal("unproven import altered destination evidence/stamps")
-		}
-		inputs, err := destination.ReadShadowInputs(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if len(inputs.PendingImports) != 1 || inputs.PendingImports[0].History == nil {
-			t.Fatalf("whole source not staged exactly once: %#v", inputs)
-		}
-		if !reflect.DeepEqual(*inputs.PendingImports[0].History, adr012Ledger(t, source)) {
-			t.Fatal("pending source history lost provenance")
-		}
+		checkUnprovenImportStaged(t, source, destination, files, before)
 	}
 	exported := adr012S2Export(t, destination)
 	restored := adr012Open(t, t.TempDir())
@@ -49,5 +34,26 @@ func TestShadowImportStagesUnprovenHistory(t *testing.T) {
 	}
 	if got := adr012S2Export(t, restored); !reflect.DeepEqual(got, exported) {
 		t.Fatal("pending whole-history import did not round trip")
+	}
+}
+
+func checkUnprovenImportStaged(t *testing.T, source, destination *Store, files map[string][]byte, before domain.ShadowLedger) {
+	t.Helper()
+	ctx := context.Background()
+	if err := destination.Import(ctx, files); err != nil {
+		t.Fatal(err)
+	}
+	if got := adr012Ledger(t, destination); !reflect.DeepEqual(before, got) {
+		t.Fatal("unproven import altered destination evidence/stamps")
+	}
+	inputs, err := destination.ReadShadowInputs(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(inputs.PendingImports) != 1 || inputs.PendingImports[0].History == nil {
+		t.Fatalf("whole source not staged exactly once: %#v", inputs)
+	}
+	if !reflect.DeepEqual(*inputs.PendingImports[0].History, adr012Ledger(t, source)) {
+		t.Fatal("pending source history lost provenance")
 	}
 }

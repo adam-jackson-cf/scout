@@ -21,27 +21,18 @@ func ParseLCOV(raw []byte, roots ...string) (Coverage, error) {
 		line := strings.TrimSpace(scanner.Text())
 		switch {
 		case strings.HasPrefix(line, "SF:"):
-			path := normalizePath(roots, line[3:])
-			if coverage[path] == nil {
-				coverage[path] = map[int]int{}
-			}
-			current = coverage[path]
+			current = coverage.file(normalizePath(roots, line[3:]))
 		case line == "end_of_record":
 			current = nil
 		case strings.HasPrefix(line, "DA:"):
 			if current == nil {
 				return nil, fmt.Errorf("lcov line %d: DA outside an SF record", number)
 			}
-			fields := strings.Split(line[3:], ",")
-			if len(fields) < 2 {
-				return nil, fmt.Errorf("lcov line %d: malformed DA record", number)
+			at, hits, err := parseDA(line[3:], number)
+			if err != nil {
+				return nil, err
 			}
-			at, errLine := strconv.Atoi(fields[0])
-			hits, errHits := strconv.ParseFloat(fields[1], 64)
-			if errLine != nil || errHits != nil || at < 1 || hits < 0 {
-				return nil, fmt.Errorf("lcov line %d: malformed DA record", number)
-			}
-			current[at] += int(hits)
+			current[at] += hits
 		}
 	}
 	if err := scanner.Err(); err != nil {
@@ -51,6 +42,19 @@ func ParseLCOV(raw []byte, roots ...string) (Coverage, error) {
 		return nil, fmt.Errorf("lcov: no SF record")
 	}
 	return coverage, nil
+}
+
+func parseDA(record string, number int) (int, int, error) {
+	fields := strings.Split(record, ",")
+	if len(fields) < 2 {
+		return 0, 0, fmt.Errorf("lcov line %d: malformed DA record", number)
+	}
+	at, errLine := strconv.Atoi(fields[0])
+	hits, errHits := strconv.ParseFloat(fields[1], 64)
+	if errLine != nil || errHits != nil || at < 1 || hits < 0 {
+		return 0, 0, fmt.Errorf("lcov line %d: malformed DA record", number)
+	}
+	return at, int(hits), nil
 }
 
 // ParseCobertura reads Cobertura XML: class `filename` joined to the
@@ -75,12 +79,7 @@ func ParseCobertura(raw []byte, roots ...string) (Coverage, error) {
 		if class.Filename == "" {
 			continue
 		}
-		path := resolveCoberturaPath(roots, document.Sources, class.Filename)
-		target := coverage[path]
-		if target == nil {
-			target = map[int]int{}
-			coverage[path] = target
-		}
+		target := coverage.file(resolveCoberturaPath(roots, document.Sources, class.Filename))
 		for _, line := range class.Lines {
 			if line.Number < 1 || line.Hits < 0 {
 				return nil, fmt.Errorf("cobertura: malformed line in %s", class.Filename)

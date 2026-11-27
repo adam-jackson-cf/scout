@@ -1,3 +1,5 @@
+//go:build boundary
+
 package main
 
 import (
@@ -39,7 +41,7 @@ func p22Store(t *testing.T, ready bool) (string, domain.ShadowLedger) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer s.Close()
+	defer closeOrFail(t, s)
 	stamp := p22Day(30)
 	p := domain.ShadowPublication{ID: "sealed", RepositoryID: "42", RecordedAt: stamp}
 	for v := 1; v <= 2; v++ {
@@ -113,12 +115,12 @@ func p22Run(t *testing.T, root string, extra ...string) (int, string, string) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer out.Close()
+	defer closeOrFail(t, out)
 	errout, err := os.CreateTemp(t.TempDir(), "stderr")
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer errout.Close()
+	defer closeOrFail(t, errout)
 	oldOut, oldErr := os.Stdout, os.Stderr
 	os.Stdout, os.Stderr = out, errout
 	defer func() { os.Stdout, os.Stderr = oldOut, oldErr }()
@@ -233,230 +235,276 @@ func p22JSON(t *testing.T, raw string, code int) p22Reply {
 	return reply
 }
 
+func p22NoStoreCase(t *testing.T) {
+	root := t.TempDir()
+	p22Hostile(t)
+	before := p22Snapshot(t, root)
+	code, stdout, stderr := p22Run(t, root, "--shadow", "--check", p22Check, "--json")
+	if after := p22Snapshot(t, root); !reflect.DeepEqual(before, after) {
+		t.Errorf("missing-store query initialized or mutated root: before=%v after=%v", before, after)
+	}
+	if code != 2 {
+		t.Fatalf("readiness --shadow without a store exit = %d, want 2; stdout=%q stderr=%q", code, stdout, stderr)
+	}
+	reply := p22JSON(t, stdout, code)
+	if reply.Status != "unmeasured" {
+		t.Errorf("missing-store status=%q, want unmeasured", reply.Status)
+	}
+}
+
+func p22CurrentQuery(t *testing.T, root string, ready bool) (p22Reply, string) {
+	t.Helper()
+	code, stdout, stderr := p22Run(t, root, "--shadow", "--check", p22Check, "--json")
+	if code != 0 {
+		t.Fatalf("computed shadow exit=%d, want 0; stdout=%q stderr=%q", code, stdout, stderr)
+	}
+	reply := p22JSON(t, stdout, code)
+	version, gotReady := p22Dossier(t, reply.Result.Dossier)
+	if version != "rule-2" || gotReady != ready {
+		t.Errorf("default version/readiness=%s/%t, want rule-2/%t", version, gotReady, ready)
+	}
+	sum := sha256.Sum256(reply.Result.Dossier)
+	digest := "sha256:" + hex.EncodeToString(sum[:])
+	if reply.Result.Digest != digest {
+		t.Errorf("dossierDigest=%q, want SHA-256 of exact canonical dossier bytes %q", reply.Result.Digest, digest)
+	}
+	if reply.Result.Mode != "current_window" || reply.Result.Live.Certification != "current" {
+		t.Errorf("default is not current certification: %+v", reply.Result)
+	}
+	return reply, digest
+}
+
+func p22HistoricalQuery(t *testing.T, root string, current p22Reply, digest string) {
+	t.Helper()
+	cutoff := p22Day(30).Format(time.RFC3339)
+	code, raw, stderr := p22Run(t, root, "--shadow", "--check", p22Check, "--as-of", cutoff, "--json")
+	if code != 0 {
+		t.Fatalf("explicit C exit=%d, want 0: %s %s", code, raw, stderr)
+	}
+	historical := p22JSON(t, raw, code)
+	if historical.Result.Mode != "historical_reproduction" || historical.Result.Live.Certification != "historical" || historical.Result.Digest != digest {
+		t.Errorf("explicit C must reproduce digest but never activation certification: %+v", historical.Result)
+	}
+	if !bytes.Equal(historical.Result.Dossier, current.Result.Dossier) {
+		t.Error("explicit C changed canonical dossier bytes")
+	}
+}
+
+func p22TextQuery(t *testing.T, root, digest string) {
+	t.Helper()
+	cutoff := p22Day(30).Format(time.RFC3339)
+	code, text, stderr := p22Run(t, root, "--shadow", "--check", p22Check)
+	if code != 0 {
+		t.Fatalf("text shadow exit=%d: %s %s", code, text, stderr)
+	}
+	for _, token := range []string{p22Check, "rule-2", cutoff, digest, "current_window", "current"} {
+		if !strings.Contains(text, token) {
+			t.Errorf("text output missing %q: %s", token, text)
+		}
+	}
+}
+
+func p22WriterLockedCase(t *testing.T, ready bool) {
+	root, _ := p22Store(t, ready)
+	// A live writer owns the exclusive lock. Open(), unlike
+	// OpenExistingReadOnly(), cannot serve this command successfully.
+	writer, err := state.Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer closeOrFail(t, writer)
+	if err := os.WriteFile(filepath.Join(root, ".scout", "policy.yaml"), []byte("invalid: ["), 0600); err != nil {
+		t.Fatal(err)
+	}
+	p22Hostile(t)
+	before := p22Snapshot(t, root)
+	reply, digest := p22CurrentQuery(t, root, ready)
+	p22HistoricalQuery(t, root, reply, digest)
+	p22TextQuery(t, root, digest)
+	if after := p22Snapshot(t, root); !reflect.DeepEqual(before, after) {
+		t.Errorf("query modified store/policy while writer held lock: before=%v after=%v", before, after)
+	}
+}
+
+func p22RecordLateFact(t *testing.T, root string, ledger domain.ShadowLedger) {
+	t.Helper()
+	s, err := state.Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	fact := ledger.Facts[len(ledger.Facts)-1]
+	fact.ID.RunID, fact.PRNumber = "999", "999"
+	fact.HeadCommit, fact.HeadTree = "late-head", "late-tree"
+	fact.CreatedAt, fact.StartedAt, fact.FinishedAt = p22Day(20), p22Day(20), p22Day(21)
+	fact.RecordedAt = nil
+	if err := s.RecordPRRun(t.Context(), fact, nil, nil); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.Close(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func p22PendingLateCase(t *testing.T) {
+	root, ledger := p22Store(t, true)
+	p22RecordLateFact(t, root, ledger)
+	p22Hostile(t)
+	code, raw, stderr := p22Run(t, root, "--shadow", "--check", p22Check, "--json")
+	if code != 2 {
+		t.Fatalf("default pending-late certification exit=%d, want 2: %s %s", code, raw, stderr)
+	}
+	current := p22JSON(t, raw, code)
+	if current.Result.Mode != "current_window" || current.Result.Live.Certification != "refused" {
+		t.Errorf("default must refuse current certification: %+v", current.Result)
+	}
+	code, raw, stderr = p22Run(t, root, "--shadow", "--check", p22Check, "--as-of", p22Day(30).Format(time.RFC3339), "--json")
+	if code != 0 {
+		t.Fatalf("explicit C historical exit=%d, want 0: %s %s", code, raw, stderr)
+	}
+	historical := p22JSON(t, raw, code)
+	if historical.Result.Mode != "historical_reproduction" || historical.Result.Live.Certification != "historical" || historical.Result.Digest != current.Result.Digest || !bytes.Equal(historical.Result.Dossier, current.Result.Dossier) {
+		t.Errorf("historical reproduction must retain refused current dossier without becoming activation evidence: current=%+v historical=%+v", current.Result, historical.Result)
+	}
+}
+
+func p22NoFrontierCase(t *testing.T) {
+	root := t.TempDir()
+	s, err := state.Open(root)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := s.Close(); err != nil {
+		t.Fatal(err)
+	}
+	p22Hostile(t)
+	code, raw, stderr := p22Run(t, root, "--shadow", "--check", p22Check, "--json")
+	if code != 2 {
+		t.Fatalf("no complete frontier exit=%d, want 2: %s %s", code, raw, stderr)
+	}
+	p22JSON(t, raw, code)
+}
+
+type p22FlagCase struct {
+	name    string
+	args    []string
+	code    int
+	version string
+}
+
+func p22FlagQuery(t *testing.T, root string, tc p22FlagCase) {
+	args := []string{"--shadow", "--json"}
+	if tc.name != "check-required" {
+		args = append(args, "--check", p22Check)
+	}
+	args = append(args, tc.args...)
+	code, raw, stderr := p22Run(t, root, args...)
+	if code != tc.code {
+		t.Fatalf("exit=%d, want %d; stdout=%q stderr=%q", code, tc.code, raw, stderr)
+	}
+	reply := p22JSON(t, raw, code)
+	if tc.version != "" {
+		version, _ := p22Dossier(t, reply.Result.Dossier)
+		if version != tc.version || reply.Result.Live.Certification != "historical" {
+			t.Errorf("explicit historical cohort ignored: %+v", reply.Result)
+		}
+	}
+}
+
+func p22FlagCases(t *testing.T) {
+	root, _ := p22Store(t, true)
+	p22Hostile(t)
+	for _, tc := range []p22FlagCase{
+		{"known-historical-version", []string{"--version", "rule-1", "--as-of", p22Day(30).Format(time.RFC3339)}, 0, "rule-1"},
+		{"unknown-exact-version", []string{"--version", "unknown"}, 3, ""},
+		{"invalid-time", []string{"--as-of", "not-a-time"}, 3, ""},
+		{"after-C-before-reader-now", []string{"--as-of", p22Day(31).Format(time.RFC3339)}, 2, ""},
+		{"after-both-C-and-reader-now", []string{"--as-of", "9999-01-01T00:00:00Z"}, 3, ""},
+		{"check-required", nil, 3, ""},
+		{"unknown-flag", []string{"--not-a-shadow-flag"}, 3, ""},
+		{"supported-encoding", []string{"--encoding", "scout.shadow/v1", "--version", "rule-1", "--as-of", p22Day(30).Format(time.RFC3339)}, 0, "rule-1"},
+		{"unsupported-encoding", []string{"--encoding", "scout.shadow/v999"}, 3, ""},
+	} {
+		t.Run(tc.name, func(t *testing.T) { p22FlagQuery(t, root, tc) })
+	}
+}
+
+func p22SchemaStore(t *testing.T, version int) string {
+	t.Helper()
+	root := t.TempDir()
+	if err := os.Mkdir(filepath.Join(root, ".scout"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	// Version preflight must refuse before reading tables or migrating.
+	db, err := sql.Open("sqlite", filepath.Join(root, ".scout", "state.sqlite"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := db.Exec(fmt.Sprintf("PRAGMA user_version=%d", version)); err != nil {
+		t.Fatal(err)
+	}
+	if err := db.Close(); err != nil {
+		t.Fatal(err)
+	}
+	return root
+}
+
+func p22UnsupportedSchemaCase(t *testing.T, version int) {
+	root := p22SchemaStore(t, version)
+	p22Hostile(t)
+	before := p22Snapshot(t, root)
+	code, raw, stderr := p22Run(t, root, "--shadow", "--check", p22Check, "--json")
+	if code != 3 {
+		t.Fatalf("schema %d exit=%d, want 3: %s %s", version, code, raw, stderr)
+	}
+	reply := p22JSON(t, raw, code)
+	if version == 13 && (!strings.Contains(reply.Error, "writable upgrade") || !strings.Contains(reply.Error, "preserve unpublished history") || strings.Contains(reply.Error, "re-baseline")) {
+		t.Errorf("v13 must name preservation-safe writable upgrade: %q", reply.Error)
+	}
+	if after := p22Snapshot(t, root); !reflect.DeepEqual(before, after) {
+		t.Errorf("schema refusal mutated store: before=%v after=%v", before, after)
+	}
+}
+
+func p22InvalidStorageCase(t *testing.T) {
+	root := t.TempDir()
+	if err := os.Mkdir(filepath.Join(root, ".scout"), 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(root, ".scout", "state.sqlite"), []byte("not a SQLite store"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	p22Hostile(t)
+	before := p22Snapshot(t, root)
+	code, raw, stderr := p22Run(t, root, "--shadow", "--check", p22Check, "--json")
+	if code != 3 {
+		t.Fatalf("invalid storage exit=%d, want 3: %s %s", code, raw, stderr)
+	}
+	p22JSON(t, raw, code)
+	if after := p22Snapshot(t, root); !reflect.DeepEqual(before, after) {
+		t.Error("invalid-storage refusal mutated root")
+	}
+}
+
 // P22 owns CLI parsing, output, exit mapping and the read-only boundary. It does
 // not duplicate S4 aggregation/visibility proofs or S3 provider authentication.
 func TestADR012ShadowCLIReadOnlyAndExits(t *testing.T) {
-	t.Run("no-store-no-initialization-tools-models-or-network", func(t *testing.T) {
-		root := t.TempDir()
-		p22Hostile(t)
-		before := p22Snapshot(t, root)
-		code, stdout, stderr := p22Run(t, root, "--shadow", "--check", p22Check, "--json")
-		if after := p22Snapshot(t, root); !reflect.DeepEqual(before, after) {
-			t.Errorf("missing-store query initialized or mutated root: before=%v after=%v", before, after)
-		}
-		if code != 2 {
-			t.Fatalf("readiness --shadow without a store exit = %d, want 2; stdout=%q stderr=%q", code, stdout, stderr)
-		}
-		reply := p22JSON(t, stdout, code)
-		if reply.Status != "unmeasured" {
-			t.Errorf("missing-store status=%q, want unmeasured", reply.Status)
-		}
-	})
+	t.Run("no-store-no-initialization-tools-models-or-network", p22NoStoreCase)
 
 	for _, ready := range []bool{true, false} {
-		t.Run(fmt.Sprintf("computed-ready-%t-read-only-while-writer-locked", ready), func(t *testing.T) {
-			root, _ := p22Store(t, ready)
-			// A live writer owns the exclusive lock. Open(), unlike
-			// OpenExistingReadOnly(), cannot serve this command successfully.
-			writer, err := state.Open(root)
-			if err != nil {
-				t.Fatal(err)
-			}
-			defer writer.Close()
-			if err := os.WriteFile(filepath.Join(root, ".scout", "policy.yaml"), []byte("invalid: ["), 0600); err != nil {
-				t.Fatal(err)
-			}
-			p22Hostile(t)
-			before := p22Snapshot(t, root)
-			code, stdout, stderr := p22Run(t, root, "--shadow", "--check", p22Check, "--json")
-			if code != 0 {
-				t.Fatalf("computed shadow exit=%d, want 0; stdout=%q stderr=%q", code, stdout, stderr)
-			}
-			reply := p22JSON(t, stdout, code)
-			version, gotReady := p22Dossier(t, reply.Result.Dossier)
-			if version != "rule-2" || gotReady != ready {
-				t.Errorf("default version/readiness=%s/%t, want rule-2/%t", version, gotReady, ready)
-			}
-			sum := sha256.Sum256(reply.Result.Dossier)
-			digest := "sha256:" + hex.EncodeToString(sum[:])
-			if reply.Result.Digest != digest {
-				t.Errorf("dossierDigest=%q, want SHA-256 of exact canonical dossier bytes %q", reply.Result.Digest, digest)
-			}
-			if reply.Result.Mode != "current_window" || reply.Result.Live.Certification != "current" {
-				t.Errorf("default is not current certification: %+v", reply.Result)
-			}
-			cutoff := p22Day(30).Format(time.RFC3339)
-			code, raw, stderr := p22Run(t, root, "--shadow", "--check", p22Check, "--as-of", cutoff, "--json")
-			if code != 0 {
-				t.Fatalf("explicit C exit=%d, want 0: %s %s", code, raw, stderr)
-			}
-			historical := p22JSON(t, raw, code)
-			if historical.Result.Mode != "historical_reproduction" || historical.Result.Live.Certification != "historical" || historical.Result.Digest != digest {
-				t.Errorf("explicit C must reproduce digest but never activation certification: %+v", historical.Result)
-			}
-			if !bytes.Equal(historical.Result.Dossier, reply.Result.Dossier) {
-				t.Error("explicit C changed canonical dossier bytes")
-			}
-			code, text, stderr := p22Run(t, root, "--shadow", "--check", p22Check)
-			if code != 0 {
-				t.Fatalf("text shadow exit=%d: %s %s", code, text, stderr)
-			}
-			for _, token := range []string{p22Check, "rule-2", cutoff, digest, "current_window", "current"} {
-				if !strings.Contains(text, token) {
-					t.Errorf("text output missing %q: %s", token, text)
-				}
-			}
-			if after := p22Snapshot(t, root); !reflect.DeepEqual(before, after) {
-				t.Errorf("query modified store/policy while writer held lock: before=%v after=%v", before, after)
-			}
-		})
+		t.Run(fmt.Sprintf("computed-ready-%t-read-only-while-writer-locked", ready), func(t *testing.T) { p22WriterLockedCase(t, ready) })
 	}
 
-	t.Run("pending-late-default-refused-explicit-C-historical", func(t *testing.T) {
-		root, ledger := p22Store(t, true)
-		s, err := state.Open(root)
-		if err != nil {
-			t.Fatal(err)
-		}
-		fact := ledger.Facts[len(ledger.Facts)-1]
-		fact.ID.RunID, fact.PRNumber = "999", "999"
-		fact.HeadCommit, fact.HeadTree = "late-head", "late-tree"
-		fact.CreatedAt, fact.StartedAt, fact.FinishedAt = p22Day(20), p22Day(20), p22Day(21)
-		fact.RecordedAt = nil
-		if err := s.RecordPRRun(t.Context(), fact, nil, nil); err != nil {
-			t.Fatal(err)
-		}
-		if err := s.Close(); err != nil {
-			t.Fatal(err)
-		}
-		p22Hostile(t)
-		code, raw, stderr := p22Run(t, root, "--shadow", "--check", p22Check, "--json")
-		if code != 2 {
-			t.Fatalf("default pending-late certification exit=%d, want 2: %s %s", code, raw, stderr)
-		}
-		current := p22JSON(t, raw, code)
-		if current.Result.Mode != "current_window" || current.Result.Live.Certification != "refused" {
-			t.Errorf("default must refuse current certification: %+v", current.Result)
-		}
-		code, raw, stderr = p22Run(t, root, "--shadow", "--check", p22Check, "--as-of", p22Day(30).Format(time.RFC3339), "--json")
-		if code != 0 {
-			t.Fatalf("explicit C historical exit=%d, want 0: %s %s", code, raw, stderr)
-		}
-		historical := p22JSON(t, raw, code)
-		if historical.Result.Mode != "historical_reproduction" || historical.Result.Live.Certification != "historical" || historical.Result.Digest != current.Result.Digest || !bytes.Equal(historical.Result.Dossier, current.Result.Dossier) {
-			t.Errorf("historical reproduction must retain refused current dossier without becoming activation evidence: current=%+v historical=%+v", current.Result, historical.Result)
-		}
-	})
+	t.Run("pending-late-default-refused-explicit-C-historical", p22PendingLateCase)
 
-	t.Run("existing-store-without-frontier-is-unmeasured", func(t *testing.T) {
-		root := t.TempDir()
-		s, err := state.Open(root)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if err := s.Close(); err != nil {
-			t.Fatal(err)
-		}
-		p22Hostile(t)
-		code, raw, stderr := p22Run(t, root, "--shadow", "--check", p22Check, "--json")
-		if code != 2 {
-			t.Fatalf("no complete frontier exit=%d, want 2: %s %s", code, raw, stderr)
-		}
-		p22JSON(t, raw, code)
-	})
+	t.Run("existing-store-without-frontier-is-unmeasured", p22NoFrontierCase)
 
-	t.Run("cutoffs-versions-and-exact-flags", func(t *testing.T) {
-		root, _ := p22Store(t, true)
-		p22Hostile(t)
-		for _, tc := range []struct {
-			name    string
-			args    []string
-			code    int
-			version string
-		}{
-			{"known-historical-version", []string{"--version", "rule-1", "--as-of", p22Day(30).Format(time.RFC3339)}, 0, "rule-1"},
-			{"unknown-exact-version", []string{"--version", "unknown"}, 3, ""},
-			{"invalid-time", []string{"--as-of", "not-a-time"}, 3, ""},
-			{"after-C-before-reader-now", []string{"--as-of", p22Day(31).Format(time.RFC3339)}, 2, ""},
-			{"after-both-C-and-reader-now", []string{"--as-of", "9999-01-01T00:00:00Z"}, 3, ""},
-			{"check-required", nil, 3, ""},
-			{"unknown-flag", []string{"--not-a-shadow-flag"}, 3, ""},
-			{"supported-encoding", []string{"--encoding", "scout.shadow/v1", "--version", "rule-1", "--as-of", p22Day(30).Format(time.RFC3339)}, 0, "rule-1"},
-			{"unsupported-encoding", []string{"--encoding", "scout.shadow/v999"}, 3, ""},
-		} {
-			t.Run(tc.name, func(t *testing.T) {
-				args := []string{"--shadow", "--json"}
-				if tc.name != "check-required" {
-					args = append(args, "--check", p22Check)
-				}
-				args = append(args, tc.args...)
-				code, raw, stderr := p22Run(t, root, args...)
-				if code != tc.code {
-					t.Fatalf("exit=%d, want %d; stdout=%q stderr=%q", code, tc.code, raw, stderr)
-				}
-				reply := p22JSON(t, raw, code)
-				if tc.version != "" {
-					version, _ := p22Dossier(t, reply.Result.Dossier)
-					if version != tc.version || reply.Result.Live.Certification != "historical" {
-						t.Errorf("explicit historical cohort ignored: %+v", reply.Result)
-					}
-				}
-			})
-		}
-	})
+	t.Run("cutoffs-versions-and-exact-flags", p22FlagCases)
 
 	for _, version := range []int{13, 999} {
-		t.Run(fmt.Sprintf("unsupported-schema-%d", version), func(t *testing.T) {
-			root := t.TempDir()
-			if err := os.Mkdir(filepath.Join(root, ".scout"), 0700); err != nil {
-				t.Fatal(err)
-			}
-			// Version preflight must refuse before reading tables or migrating.
-			db, err := sql.Open("sqlite", filepath.Join(root, ".scout", "state.sqlite"))
-			if err != nil {
-				t.Fatal(err)
-			}
-			if _, err := db.Exec(fmt.Sprintf("PRAGMA user_version=%d", version)); err != nil {
-				t.Fatal(err)
-			}
-			if err := db.Close(); err != nil {
-				t.Fatal(err)
-			}
-			p22Hostile(t)
-			before := p22Snapshot(t, root)
-			code, raw, stderr := p22Run(t, root, "--shadow", "--check", p22Check, "--json")
-			if code != 3 {
-				t.Fatalf("schema %d exit=%d, want 3: %s %s", version, code, raw, stderr)
-			}
-			reply := p22JSON(t, raw, code)
-			if version == 13 && (!strings.Contains(reply.Error, "writable upgrade") || !strings.Contains(reply.Error, "preserve unpublished history") || strings.Contains(reply.Error, "re-baseline")) {
-				t.Errorf("v13 must name preservation-safe writable upgrade: %q", reply.Error)
-			}
-			if after := p22Snapshot(t, root); !reflect.DeepEqual(before, after) {
-				t.Errorf("schema refusal mutated store: before=%v after=%v", before, after)
-			}
-		})
+		t.Run(fmt.Sprintf("unsupported-schema-%d", version), func(t *testing.T) { p22UnsupportedSchemaCase(t, version) })
 	}
 
-	t.Run("invalid-storage", func(t *testing.T) {
-		root := t.TempDir()
-		if err := os.Mkdir(filepath.Join(root, ".scout"), 0700); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.WriteFile(filepath.Join(root, ".scout", "state.sqlite"), []byte("not a SQLite store"), 0600); err != nil {
-			t.Fatal(err)
-		}
-		p22Hostile(t)
-		before := p22Snapshot(t, root)
-		code, raw, stderr := p22Run(t, root, "--shadow", "--check", p22Check, "--json")
-		if code != 3 {
-			t.Fatalf("invalid storage exit=%d, want 3: %s %s", code, raw, stderr)
-		}
-		p22JSON(t, raw, code)
-		if after := p22Snapshot(t, root); !reflect.DeepEqual(before, after) {
-			t.Error("invalid-storage refusal mutated root")
-		}
-	})
+	t.Run("invalid-storage", p22InvalidStorageCase)
 
 	t.Run("readiness-matrix-remains-compatible", func(t *testing.T) {
 		// Existing matrix owner exercises the real matrix path and REQ-18 rows.

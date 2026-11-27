@@ -1,0 +1,81 @@
+name: Repository gate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: gate
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Read pinned Go version
+        shell: bash
+        run: |
+          source toolchain/versions.env
+          printf 'GO_VERSION=%s\n' "$GO_VERSION" >> "$GITHUB_ENV"
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Provision and require scanner sandbox
+        run: bash scripts/ci-sandbox.sh --strict
+      - name: Bootstrap pinned tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          export SCOUT_TOOLS_DIR="$RUNNER_TEMP/scout-tools"
+          scripts/bootstrap-tools.sh
+          printf 'SCOUT_TOOLS_DIR=%s\n' "$SCOUT_TOOLS_DIR" >> "$GITHUB_ENV"
+      - name: Run the repository gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          source "$SCOUT_TOOLS_DIR/activate"
+          go run ./tools/gate ci --base origin/main
+
+  proofs:
+    name: proofs
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: Read pinned Go version
+        shell: bash
+        run: |
+          source toolchain/versions.env
+          printf 'GO_VERSION=%s\n' "$GO_VERSION" >> "$GITHUB_ENV"
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Provision and require scanner sandbox
+        run: bash scripts/ci-sandbox.sh --strict
+      - name: Bootstrap pinned tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          export SCOUT_TOOLS_DIR="$RUNNER_TEMP/scout-tools"
+          scripts/bootstrap-tools.sh
+          printf 'SCOUT_TOOLS_DIR=%s\n' "$SCOUT_TOOLS_DIR" >> "$GITHUB_ENV"
+      - name: Install the hook as every committing clone does
+        run: git config core.hooksPath .githooks
+      - name: Validate proofs.toml claims and canaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          source "$SCOUT_TOOLS_DIR/activate"
+          python3 tools/validate_rule_coverage.py --root .

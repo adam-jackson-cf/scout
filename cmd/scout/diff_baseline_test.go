@@ -1,3 +1,5 @@
+//go:build boundary
+
 package main
 
 import (
@@ -10,29 +12,26 @@ import (
 	"testing"
 )
 
-// A trusted main run publishes scout/state; a fresh clone's PR diff must use
-// that baseline when nothing changed and fall back, with a reason, when the
-// baseline's tool digest no longer matches (a rule/tool version bump).
-func TestDiffUsesPublishedBaselineUnlessDigestsDiffer(t *testing.T) {
-	for _, tool := range []string{"ruff", "gitleaks", "semgrep"} {
-		if _, err := exec.LookPath(tool); err != nil {
-			t.Skipf("%s is not installed (source .tools/activate)", tool)
-		}
-	}
-	t.Setenv("SCOUT_CLAWPATCH_BINARY", pinnedClawpatch(t))
-	work := t.TempDir()
+func bareOrigin(t *testing.T, work string) string {
+	t.Helper()
 	origin := filepath.Join(work, "origin.git")
 	if out, err := exec.CommandContext(boundedTestContext(t), "git", "init", "-q", "--bare", "-b", "main", origin).CombinedOutput(); err != nil {
 		t.Fatalf("%v\n%s", err, out)
 	}
-	clone := func(name string) string {
-		dir := filepath.Join(work, name)
-		if out, err := exec.CommandContext(boundedTestContext(t), "git", "clone", "-q", origin, dir).CombinedOutput(); err != nil {
-			t.Fatalf("%v\n%s", err, out)
-		}
-		return dir
+	return origin
+}
+
+func cloneInto(t *testing.T, work, origin, name string) string {
+	t.Helper()
+	dir := filepath.Join(work, name)
+	if out, err := exec.CommandContext(boundedTestContext(t), "git", "clone", "-q", origin, dir).CombinedOutput(); err != nil {
+		t.Fatalf("%v\n%s", err, out)
 	}
-	main := clone("main")
+	return dir
+}
+
+func publishMainBaseline(t *testing.T, main, origin string) {
+	t.Helper()
 	commitFiles(t, main, "base", map[string]string{"pkg/legacy.py": complexFn("legacy", 12), "README.md": "demo\n"})
 	gitIn(t, main, "push", "-q", "origin", "main")
 	ctx := context.Background()
@@ -42,8 +41,42 @@ func TestDiffUsesPublishedBaselineUnlessDigestsDiffer(t *testing.T) {
 	if code := run(ctx, []string{"state", "publish", "--root", main, "--remote", origin, "--trusted"}); code != 0 {
 		t.Fatalf("publish exit %d", code)
 	}
+}
 
-	pr := clone("pr")
+func readManifest(t *testing.T, manifestPath string) map[string]any {
+	t.Helper()
+	raw, err := os.ReadFile(manifestPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var manifest map[string]any
+	if err := json.Unmarshal(raw, &manifest); err != nil {
+		t.Fatal(err)
+	}
+	return manifest
+}
+
+func pushManifest(t *testing.T, state, message string, manifest map[string]any) {
+	t.Helper()
+	raw, err := json.Marshal(manifest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	commitFiles(t, state, message, map[string]string{"state/v1/manifest.json": string(raw)})
+	gitIn(t, state, "push", "-q", "origin", "scout/state")
+}
+
+// A trusted main run publishes scout/state; a fresh clone's PR diff must use
+// that baseline when nothing changed and fall back, with a reason, when the
+// baseline's tool digest no longer matches (a rule/tool version bump).
+func TestDiffUsesPublishedBaselineUnlessDigestsDiffer(t *testing.T) {
+	requireTools(t, "ruff", "gitleaks", "semgrep")
+	t.Setenv("SCOUT_CLAWPATCH_BINARY", pinnedClawpatch(t))
+	work := t.TempDir()
+	origin := bareOrigin(t, work)
+	publishMainBaseline(t, cloneInto(t, work, origin, "main"), origin)
+
+	pr := cloneInto(t, work, origin, "pr")
 	gitIn(t, pr, "checkout", "-q", "-b", "feature")
 	commitFiles(t, pr, "pr", map[string]string{"pkg/new.py": "import os  # noqa\n\n\ndef helper():\n    return os.getcwd()\n"})
 
@@ -53,21 +86,11 @@ func TestDiffUsesPublishedBaselineUnlessDigestsDiffer(t *testing.T) {
 	}
 
 	// Simulate a tool/rule version bump: the published manifest's tool digest changes.
-	state := clone("state")
+	state := cloneInto(t, work, origin, "state")
 	gitIn(t, state, "checkout", "-q", "scout/state")
-	manifestPath := filepath.Join(state, "state", "v1", "manifest.json")
-	raw, err := os.ReadFile(manifestPath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	var manifest map[string]any
-	if err := json.Unmarshal(raw, &manifest); err != nil {
-		t.Fatal(err)
-	}
+	manifest := readManifest(t, filepath.Join(state, "state", "v1", "manifest.json"))
 	manifest["toolDigest"] = "bumped-rule-pack"
-	raw, _ = json.Marshal(manifest)
-	commitFiles(t, state, "bump", map[string]string{"state/v1/manifest.json": string(raw)})
-	gitIn(t, state, "push", "-q", "origin", "scout/state")
+	pushManifest(t, state, "bump", manifest)
 
 	_, report = runDiffJSON(t, pr, "--base", "origin/main", "--baseline-remote", origin)
 	reason, _ := report["comparison_reason"].(string)
@@ -79,9 +102,7 @@ func TestDiffUsesPublishedBaselineUnlessDigestsDiffer(t *testing.T) {
 	// baseline: the differential run ends unavailable (exit 3), naming the
 	// cause and remedy, instead of recomputing around it.
 	delete(manifest, "uninspected")
-	raw, _ = json.Marshal(manifest)
-	commitFiles(t, state, "stale", map[string]string{"state/v1/manifest.json": string(raw)})
-	gitIn(t, state, "push", "-q", "origin", "scout/state")
+	pushManifest(t, state, "stale", manifest)
 	code, report := runDiffJSON(t, pr, "--base", "origin/main", "--baseline-remote", origin)
 	encoded, _ := json.Marshal(report)
 	if code != exitUnavailable || !strings.Contains(string(encoded), "scout/state manifest carries no lane health; re-baseline") {

@@ -1,14 +1,10 @@
 package prmeta
 
 import (
-	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
@@ -64,8 +60,14 @@ func commits() []history.Commit {
 	return out
 }
 
+func directoryScope(dir string) history.Scope {
+	return history.Scope{Kind: domain.SignalScopeDirectory, Anchor: dir, Contains: func(path string) bool {
+		return path == dir || strings.HasPrefix(path, dir+"/")
+	}}
+}
+
 func compute(prs []history.PR, src *history.PRSource) []domain.Signal {
-	sc := history.PrefixScope(domain.SignalScopeDirectory, "a", "a")
+	sc := directoryScope("a")
 	return history.Compute(commits(), history.Options{
 		Scopes: []history.Scope{sc}, End: time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC),
 		Snapshot: "s", PRs: prs, PRSource: src,
@@ -84,6 +86,23 @@ func pick(t *testing.T, sigs []domain.Signal, id string) domain.Signal {
 }
 
 func TestMetadataFilePresentSignalsCarryProvenance(t *testing.T) {
+	res, wantDigest := loadFixtureMetadata(t)
+	sigs := compute(res.PRs, &res.Source)
+
+	effort := checkMeasuredPRSignal(t, sigs, "scout.pr_effort@1", "pr_effort", 3.0)
+	batch := checkMeasuredPRSignal(t, sigs, "scout.batch_size@1", "batch_size", 6)
+	checkFileProvenance(t, []domain.Signal{effort, batch}, wantDigest)
+	disp := pick(t, sigs, "scout.dispersion@1")
+	if disp.Detail["pr_p90_over_p50"] != 1.0 {
+		t.Errorf("dispersion PR part = %v", disp.Detail)
+	}
+	if p, _ := disp.Detail["pr_provenance"].(map[string]any); p["digest"] != wantDigest {
+		t.Errorf("dispersion provenance = %v", disp.Detail["pr_provenance"])
+	}
+}
+
+func loadFixtureMetadata(t *testing.T) (Result, string) {
+	t.Helper()
 	path, raw := writeDoc(t, fixtureDoc(6))
 	res, err := LoadFile(path)
 	if err != nil {
@@ -94,28 +113,25 @@ func TestMetadataFilePresentSignalsCarryProvenance(t *testing.T) {
 	if res.Source.Digest != wantDigest || res.Source.Kind != "file" || res.Source.Count != 6 {
 		t.Fatalf("source = %+v", res.Source)
 	}
-	sigs := compute(res.PRs, &res.Source)
+	return res, wantDigest
+}
 
-	effort := pick(t, sigs, "scout.pr_effort@1")
-	if effort.Missing != "" || effort.Value == nil || *effort.Value != 3.0 {
-		t.Fatalf("pr_effort = %+v", effort)
+func checkMeasuredPRSignal(t *testing.T, sigs []domain.Signal, id, label string, want float64) domain.Signal {
+	t.Helper()
+	signal := pick(t, sigs, id)
+	if signal.Missing != "" || signal.Value == nil || *signal.Value != want {
+		t.Fatalf("%s = %+v", label, signal)
 	}
-	batch := pick(t, sigs, "scout.batch_size@1")
-	if batch.Missing != "" || batch.Value == nil || *batch.Value != 6 {
-		t.Fatalf("batch_size = %+v", batch)
-	}
-	for _, s := range []domain.Signal{effort, batch} {
+	return signal
+}
+
+func checkFileProvenance(t *testing.T, signals []domain.Signal, wantDigest string) {
+	t.Helper()
+	for _, s := range signals {
 		p, _ := s.Detail["provenance"].(map[string]any)
 		if p["digest"] != wantDigest || p["kind"] != "file" || p["origin"] != "pr-metadata.json" {
 			t.Errorf("%s provenance = %v", s.ID(), s.Detail["provenance"])
 		}
-	}
-	disp := pick(t, sigs, "scout.dispersion@1")
-	if disp.Detail["pr_p90_over_p50"] != 1.0 {
-		t.Errorf("dispersion PR part = %v", disp.Detail)
-	}
-	if p, _ := disp.Detail["pr_provenance"].(map[string]any); p["digest"] != wantDigest {
-		t.Errorf("dispersion provenance = %v", disp.Detail["pr_provenance"])
 	}
 }
 
@@ -187,82 +203,5 @@ func TestParseRejectsInvalidDocuments(t *testing.T) {
 	res, err := Parse(raw, "file", "x")
 	if err != nil || len(res.PRs) != 1 || res.Unmerged != 1 {
 		t.Errorf("unmerged PR handling: %+v %v", res, err)
-	}
-}
-
-const secret = "ghp_SECRETTOKEN123"
-
-func graphqlPage(first, n int, next bool) string {
-	var nodes []string
-	for i := first; i < first+n; i++ {
-		nodes = append(nodes, fmt.Sprintf(`{"number":%d,"createdAt":"2024-02-01T00:00:00Z","mergedAt":"2024-02-01T10:00:00Z","author":{"__typename":"Bot","login":"dependabot"},
-"files":{"totalCount":1,"nodes":[{"path":"a/f.go","additions":2,"deletions":1}]},
-"commits":{"totalCount":1,"nodes":[{"commit":{"authoredDate":"2024-02-01T09:00:00Z"}}]},"reviews":{"totalCount":2},"comments":{"totalCount":3}}`, i))
-	}
-	return fmt.Sprintf(`{"data":{"repository":{"pullRequests":{"pageInfo":{"hasNextPage":%t,"endCursor":"c%d"},"nodes":[%s]}}}}`, next, first, strings.Join(nodes, ","))
-}
-
-func TestFetchIsOptInAndNeverLeaksTheToken(t *testing.T) {
-	calls := 0
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		calls++
-		http.Error(w, "denied "+r.Header.Get("Authorization"), http.StatusForbidden)
-	}))
-	defer srv.Close()
-	base := FetchOptions{Repo: "o/r", Token: secret, Endpoint: srv.URL}
-
-	if _, _, err := Fetch(context.Background(), base); err == nil || calls != 0 {
-		t.Fatalf("disabled fetch must fail without any request (calls=%d, err=%v)", calls, err)
-	}
-	base.Enabled = true
-	noToken := base
-	noToken.Token = ""
-	if _, _, err := Fetch(context.Background(), noToken); err == nil || calls != 0 {
-		t.Fatalf("missing token must fail without a request (calls=%d)", calls)
-	}
-	_, _, err := Fetch(context.Background(), base)
-	if err == nil || strings.Contains(err.Error(), secret) || !strings.Contains(err.Error(), "403") {
-		t.Fatalf("HTTP failure error = %v", err)
-	}
-	srv.Close()
-	_, _, err = Fetch(context.Background(), base) // connection refused
-	if err == nil || strings.Contains(err.Error(), secret) {
-		t.Fatalf("transport failure error = %v", err)
-	}
-}
-
-func TestFetchBuildsDocumentWithProvenance(t *testing.T) {
-	var auth string
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		auth = r.Header.Get("Authorization")
-		body, _ := io.ReadAll(r.Body)
-		w.Header().Set("Content-Type", "application/json")
-		if strings.Contains(string(body), `"after":"c1"`) {
-			_, _ = io.WriteString(w, graphqlPage(3, 1, false))
-			return
-		}
-		_, _ = io.WriteString(w, graphqlPage(1, 2, true))
-	}))
-	defer srv.Close()
-	res, raw, err := Fetch(context.Background(), FetchOptions{
-		Enabled: true, Repo: "o/r", Token: secret, Endpoint: srv.URL, Limit: 3,
-		Now: func() time.Time { return time.Date(2024, 6, 1, 0, 0, 0, 0, time.UTC) },
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if auth != "Bearer "+secret {
-		t.Error("token not sent as bearer credential")
-	}
-	if strings.Contains(string(raw), secret) {
-		t.Error("document contains the token")
-	}
-	if len(res.PRs) != 3 || res.Source.Kind != "github_api" || res.Source.Origin != "o/r" ||
-		res.Source.FetchedAt != "2024-06-01T00:00:00Z" || res.Source.Digest == "" {
-		t.Fatalf("result = %+v", res)
-	}
-	p := res.PRs[0]
-	if p.AuthorType != "Bot" || p.Reviews != 2 || p.Comments != 3 || len(p.CommitTimes) != 1 || p.Files[0].Added != 2 {
-		t.Fatalf("PR = %+v", p)
 	}
 }

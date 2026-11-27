@@ -39,7 +39,7 @@ func testAssociations() []domain.Association {
 func TestAssociationCatalogueStaleIsOutputOnly(t *testing.T) {
 	ctx := context.Background()
 	store := seedLedger(t, ctx, t.TempDir())
-	defer store.Close()
+	defer closeOrFail(t, store)
 	rows := testAssociations()
 	for i := range rows {
 		rows[i].CatalogueStale = true
@@ -71,7 +71,7 @@ func TestAssociationCatalogueStaleIsOutputOnly(t *testing.T) {
 func TestAssociationsAndPendingAreasRoundTripByteIdentical(t *testing.T) {
 	ctx := context.Background()
 	source := seedLedger(t, ctx, t.TempDir())
-	defer source.Close()
+	defer closeOrFail(t, source)
 	before, err := source.Export(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -79,7 +79,22 @@ func TestAssociationsAndPendingAreasRoundTripByteIdentical(t *testing.T) {
 	if _, ok := before[ExportAssociations]; ok || !strings.Contains(string(before[ExportManifest]), ExportAssociations) {
 		t.Fatal("associations.jsonl must be absent and listed under absent while the store holds none")
 	}
+	seedAssociationsAndAreas(t, source)
+	checkAssociationOrderAndFlags(t, source)
 
+	first, err := source.Export(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bytes.Contains(first[ExportAssociations], []byte(`\u003c`)) || len(SplitLines(first[ExportAssociations])) != 3 {
+		t.Fatalf("bad associations.jsonl: %s", first[ExportAssociations])
+	}
+	checkAssociationsRoundTrip(t, first)
+}
+
+func seedAssociationsAndAreas(t *testing.T, source *Store) {
+	t.Helper()
+	ctx := context.Background()
 	accepted := time.Date(2026, 11, 1, 10, 0, 0, 0, time.UTC)
 	list := []areas.Area{
 		{ScoutAreaID: "area-1", Title: "One", FileSet: []string{"a.go"}, Origin: areas.OriginAgent, FirstSeenSnapshot: "s", ClawpatchIDs: []string{"cp"}},
@@ -104,8 +119,11 @@ func TestAssociationsAndPendingAreasRoundTripByteIdentical(t *testing.T) {
 	if err := source.MarkAssociationsStale(ctx, []string{"missing"}); err == nil {
 		t.Fatal("marking an unknown association must fail")
 	}
+}
 
-	got, err := source.ListAssociations(ctx)
+func checkAssociationOrderAndFlags(t *testing.T, source *Store) {
+	t.Helper()
+	got, err := source.ListAssociations(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -119,22 +137,12 @@ func TestAssociationsAndPendingAreasRoundTripByteIdentical(t *testing.T) {
 	if !got[1].Stale || got[0].Stale || !got[0].Superseded {
 		t.Fatalf("flags = %+v", got)
 	}
+}
 
-	first, err := source.Export(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if bytes.Contains(first[ExportAssociations], []byte(`\u003c`)) || len(SplitLines(first[ExportAssociations])) != 3 {
-		t.Fatalf("bad associations.jsonl: %s", first[ExportAssociations])
-	}
-	target, err := Open(t.TempDir())
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer target.Close()
-	if err := target.Import(ctx, first); err != nil {
-		t.Fatal(err)
-	}
+func checkAssociationsRoundTrip(t *testing.T, first map[string][]byte) {
+	t.Helper()
+	ctx := context.Background()
+	target := importedStore(t, first)
 	second, err := target.Export(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -156,7 +164,7 @@ func TestAssociationsAndPendingAreasRoundTripByteIdentical(t *testing.T) {
 func TestPreAssociationExportImportsAsNoAssociations(t *testing.T) {
 	ctx := context.Background()
 	source := seedLedger(t, ctx, t.TempDir())
-	defer source.Close()
+	defer closeOrFail(t, source)
 	files, err := source.Export(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -168,7 +176,7 @@ func TestPreAssociationExportImportsAsNoAssociations(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer target.Close()
+	defer closeOrFail(t, target)
 	if err := target.Import(ctx, files); err != nil {
 		t.Fatal(err)
 	}

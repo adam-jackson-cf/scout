@@ -92,16 +92,7 @@ func gateInput(p policy.Policy) GateInput {
 }
 
 func TestEvaluateActiveVersusShadow(t *testing.T) {
-	out := Evaluate(gateInput(guardianPolicy(t, guardrailsVersion)))
-	if out.Gate.ExitCode != ExitGated || len(out.Gate.Blocking) != 1 || out.Gate.Blocking[0] != "sup" {
-		t.Fatalf("active check: %+v", out.Gate)
-	}
-	if len(out.WouldBlock) != 1 || out.WouldBlock[0].IssueID != "pat" {
-		t.Fatalf("PAT must stay would_block, got %+v", out.WouldBlock)
-	}
-	if out.Pre != 1 {
-		t.Fatalf("pre-existing = %d, want 1", out.Pre)
-	}
+	assertActiveGuardrailsCheckGates(t, Evaluate(gateInput(guardianPolicy(t, guardrailsVersion))))
 	bumped := Evaluate(gateInput(guardianPolicy(t, guardrailsID+"@0")))
 	if bumped.Gate.ExitCode != ExitClean || len(bumped.WouldBlock) != 2 {
 		t.Fatalf("version bump must return to shadow: exit %d, would_block %d", bumped.Gate.ExitCode, len(bumped.WouldBlock))
@@ -112,6 +103,19 @@ func TestEvaluateActiveVersusShadow(t *testing.T) {
 	}
 }
 
+func assertActiveGuardrailsCheckGates(t *testing.T, out GateOutput) {
+	t.Helper()
+	if out.Gate.ExitCode != ExitGated || len(out.Gate.Blocking) != 1 || out.Gate.Blocking[0] != "sup" {
+		t.Fatalf("active check: %+v", out.Gate)
+	}
+	if len(out.WouldBlock) != 1 || out.WouldBlock[0].IssueID != "pat" {
+		t.Fatalf("PAT must stay would_block, got %+v", out.WouldBlock)
+	}
+	if out.Pre != 1 {
+		t.Fatalf("pre-existing = %d, want 1", out.Pre)
+	}
+}
+
 func TestEvaluateOverrides(t *testing.T) {
 	request := ParseOverrides("hello\nscout:allow " + guardrailsID + " reason=legacy shim ref=#42\n")
 	if len(request) != 1 || request[0].CheckID != guardrailsID || request[0].Reason != "legacy shim" || request[0].Ref != "#42" {
@@ -119,17 +123,25 @@ func TestEvaluateOverrides(t *testing.T) {
 	}
 	in := gateInput(guardianPolicy(t, guardrailsVersion))
 	in.Overrides, in.OverrideActor = request, "mallory"
-	rejected := Evaluate(in)
+	assertNonMaintainerOverrideIsRejected(t, Evaluate(in))
+	in.OverrideActor = "alice"
+	assertMaintainerOverrideIsAccepted(t, Evaluate(in))
+	if got := ParseOverrides("scout-override"); len(got) != 1 || !got[0].All {
+		t.Fatalf("label not parsed: %+v", got)
+	}
+}
+
+func assertNonMaintainerOverrideIsRejected(t *testing.T, rejected GateOutput) {
+	t.Helper()
 	if rejected.Gate.ExitCode != ExitGated || len(rejected.Accepted) != 0 || len(rejected.Gate.Overrides) != 1 || rejected.Gate.Overrides[0].Accepted {
 		t.Fatalf("non-maintainer override: %+v", rejected.Gate)
 	}
-	in.OverrideActor = "alice"
-	accepted := Evaluate(in)
+}
+
+func assertMaintainerOverrideIsAccepted(t *testing.T, accepted GateOutput) {
+	t.Helper()
 	if accepted.Gate.ExitCode != ExitClean || len(accepted.Accepted) != 1 || accepted.Accepted[0].IssueID != "sup" || accepted.Accepted[0].Ref != "#42" {
 		t.Fatalf("maintainer override: %+v %+v", accepted.Gate, accepted.Accepted)
-	}
-	if got := ParseOverrides("scout-override"); len(got) != 1 || !got[0].All {
-		t.Fatalf("label not parsed: %+v", got)
 	}
 }
 
@@ -174,7 +186,7 @@ func TestSummaryIsBounded(t *testing.T) {
 		issues = append(issues, domain.AttributedIssue{IssueID: "i", CheckID: "c", Attribution: domain.AttributionIntroduced, Title: "t"})
 		rows = append(rows, domain.WouldBlock{CheckID: "c", Path: "p", Triage: "undecided"})
 	}
-	out := Summary(domain.Gate{Status: "gated", ExitCode: 1, Reasons: strings.Split(strings.Repeat("r\n", 100), "\n")}, DeterministicRanking(issues, "decisions not enabled"), issues, rows, 5, LaneHealthOf(domain.TriggerPR, domain.Run{}, nil), nil, association.GuardState{})
+	out := Summary(SummaryInput{Gate: domain.Gate{Status: "gated", ExitCode: 1, Reasons: strings.Split(strings.Repeat("r\n", 100), "\n")}, Ranking: DeterministicRanking(issues, "decisions not enabled"), Issues: issues, WouldBlock: rows, PreExisting: 5, Health: LaneHealthOf(domain.TriggerPR, domain.Run{}, nil)})
 	if n := strings.Count(out, "\n"); n > 60 {
 		t.Fatalf("summary has %d lines", n)
 	}
@@ -183,14 +195,14 @@ func TestSummaryIsBounded(t *testing.T) {
 func TestSummaryCatalogueGuardSurvivesTruncation(t *testing.T) {
 	guard := association.GuardState{CatalogueStale: true, Recommendation: "Run scout map --refresh"}
 	gate := domain.Gate{Reasons: strings.Split(strings.Repeat("reason\n", 100), "\n")}
-	text := Summary(gate, Ranking{}, nil, nil, 0, nil, nil, guard)
+	text := Summary(SummaryInput{Gate: gate, Guard: guard})
 	if !strings.Contains(text, "catalogue-stale") || !strings.Contains(text, guard.Recommendation) {
 		t.Fatalf("summary dropped catalogue guard: %s", text)
 	}
 	if strings.Count(text, "\n") > 60 {
 		t.Fatalf("guard exceeded summary bound: %s", text)
 	}
-	healthy := Summary(domain.Gate{}, Ranking{}, nil, nil, 0, nil, nil, association.GuardState{})
+	healthy := Summary(SummaryInput{})
 	if strings.Contains(healthy, "catalogue-stale") || strings.Contains(healthy, "scout map --refresh") {
 		t.Fatalf("healthy summary recommends refresh: %s", healthy)
 	}
