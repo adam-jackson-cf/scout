@@ -1,6 +1,6 @@
 # Contributing
 
-## Install pinned tools and native hooks
+## Install pinned tools
 
 Install a Go bootstrap toolchain first (for example, `mise use go@1.26.11`).
 The installer fails clearly if Go is unavailable; Go's toolchain downloader
@@ -10,11 +10,8 @@ then selects the version in `toolchain/versions.env`.
 git submodule update --init
 scripts/bootstrap-tools.sh
 source .tools/activate
-git config core.hooksPath .githooks
 ```
 
-The last command installs this checkout's tracked native hooks. It is an explicit
-local setup step, not a side effect of running checks. No hook bypass is supported.
 Tool pins live only in `toolchain/versions.env`; when changing an allowed developer
 tool pin, update its package metadata and run `scripts/bootstrap-tools.sh --relock`.
 Scanner and Clawpatch upgrades require their compatibility review.
@@ -78,84 +75,3 @@ export X2D_SRC=/tmp/scout-x2c-smoke/_src/fastapi
 
 The pilot's files at `8c7148c` are frozen (experiment rule 5); do not edit them.
 
-## One gate locally and in CI
-
-```sh
-bash scripts/gate.sh ci
-bash scripts/gate.sh commit
-bash scripts/gate.sh path internal/domain/types.go
-```
-
-The pre-commit hook runs `bash scripts/gate.sh commit`. CI's required `gate` job
-runs `bash scripts/gate.sh ci` on pushes and pull requests, without modifying
-sources. Failures propagate. CI reads the Go pin from `toolchain/versions.env`
-before setup-go and runs `bash scripts/ci-sandbox.sh --strict` before bootstrap.
-The shared script installs Linux bubblewrap and handles the Ubuntu user-namespace
-restriction; an unusable sandbox blocks the gate immediately. Guardian
-provisioning calls the same script without `--strict`, preserving its
-warning-only behavior when the probe fails.
-
-The gate's checks live in `scripts/gate/`:
-
-- `run.py` checks every maintained path against `scripts/gate/structure.json`.
-  The `path` mode reports structure, naming and test placement using the same
-  policy as commit and CI. Findings give the corrected name or owner destination.
-  Python modules and symbols, Go files and declarations, shell script names and
-  asset names follow explicit patterns. Go imports, local Python imports and
-  shell source edges must follow declared dependency directions; both ends must
-  have an owner mapping. `imports.go` parses Go packages, declarations and imports.
-  Grab-bag folders are refused. Go tests live beside their package with `_test.go`
-  names and a valid `fast` or `seam` mapping in `test-tiers.json`; gate Python
-  boundary tests use `test_*.py` and the seam owner in `structure.json`.
-  Tests are named for behaviour, without ticket, version or date tokens.
-  Fixtures live in their owner's `testdata`; shared state-test support lives in
-  `internal/state/statetest`. Existing runtime assets and catalogue layouts have
-  reasons in the policy. Frozen studies and third-party sources keep their
-  original names and are never renamed by checks.
-- `tests.py` runs the Go test tiers declared in `scripts/gate/test-tiers.json`:
-  `fast` packages on every commit (even with an empty index) and in CI. Commits
-  select affected `seam` packages; unknown ownership selects all seam packages.
-  Every package with tests must declare a tier. The fast tier enforces the
-  declared coverage floor. Both modes also run every `scripts/gate/test_*.py`
-  checker boundary suite.
-- `python.py` runs pinned Ruff (lint and format check) and strict mypy over all
-  maintained Python in both modes, including gate scripts and the association
-  fixture generator. Mypy follows imports normally. `structure.json`'s `python`
-  section declares maintained roots/packages, class limits, canonical test groups,
-  process wrappers, dynamic-import adapters and analyzer ownership/seams. The gate
-  rejects package/import-root drift, oversized classes, deeply nested loops and
-  excessive architectural fanout. Every mypy module override needs evidence in
-  `mypy_overrides`; prefer published stubs or `follow_untyped_imports`.
-  New Ruff ignores and `noqa` comments require an exact suppression key and reason
-  in `ruff_approvals`, compared with the target branch (or fixture parent).
-- `infrastructure.py` checks toolchain pin parity (`toolchain-pin`,
-  `tool-inventory`, `install-guidance`), the CI workflow (`ci-parity`), Prettier
-  formatting of maintained Markdown/YAML (`prettier-pin`, `prettier-format`),
-  and (in CI) a strict `govulncheck` dependency audit (`dependency-audit`).
-
-Each finding prints as `path: rule: fix`.
-
-Commit checks enumerate tracked and non-ignored untracked files once per checker
-through the shared `scripts/gate/inventory.py`, without walking excluded trees.
-Static checks cover the whole inventory, including unstaged changes and an empty
-index. Escaping source symlinks are rejected; `.tools`, vendor and frozen-study
-trees are not source inputs.
-
-The pre-commit hook transfers the staged index in bulk into an independent shared
-clone and overlays other working-tree inputs. Partially staged files are checked
-as committed, not as edited, without modifying local edits. Secret
-scanning uses the original staged index, including Git's alternate index. Deleted
-files do not become formatter inputs. Every snapshot has its own Git directory,
-index, refs and config, and checker/test subprocesses receive no inherited
-`GIT_*` variables. There is no pre-push hook or push-range runner: CI owns the
-complete fast and seam suite. Failed tests print concise failure blocks and a
-`go test JSON:` path to the full temporary JSON log.
-
-Prettier 3.6.2 checks maintained tracked and non-ignored untracked Markdown/YAML. All `evaluation/**`,
-scanner rule assets under `internal/analyzers/rules/**`, the design and ledger documents, third-party
-code, instruction/migration files and `.codegraph` directories remain excluded.
-Markdown fixtures under `internal/**/testdata` are also excluded. Checks never run
-frozen studies. The dependency audit is strict: unavailable tooling/network and
-vulnerability findings both fail.
-
-Branch protection on the default branch requires the `gate` check.
