@@ -1,0 +1,173 @@
+{
+  "authority": {
+    "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-reviews/execution-implementation-round-4.md",
+    "sha256": "b16e442a68143029b8fac7e2618d30b805c4712f6ab079124f279ab40fafb26b",
+    "bytes": 18981
+  },
+  "implementation_receipt": {
+    "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/reviews/implementation.json",
+    "sha256": "ac3ccf3791a3423f38913a2c85f3c86926cede2af3fb9573021eba3c10fbf773",
+    "bytes": 2581
+  },
+  "results": {
+    "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/RESULTS.md",
+    "sha256": "e7c3908128602e75c647f4b36367e44f793a7546c4c6b41009e397402d5b6e34",
+    "bytes": 15122
+  },
+  "commands": [
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1prep/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "-c",
+        "import sys,json,re\nfrom pathlib import Path\nsys.path.insert(0,\"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution\")\nfrom verify_inputs import pin,exclusive_json\nfrom preparation import review_receipt\nstudy=Path(\"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking\")\nrecord=study/\"preparation-reviews/execution-implementation-round-4.md\"\nassert pin(record)[\"sha256\"]==\"b16e442a68143029b8fac7e2618d30b805c4712f6ab079124f279ab40fafb26b\"\ntext=record.read_text();marker=\"Signed-off scope: execution-implementation\"\nassert text.count(marker)==1\nrows=[]\nfor path,size,digest in re.findall(r\"^- `(/[^`]+)` \u2014 ([0-9]+) bytes \u2014 `([a-f0-9]{64})`$\",text.split(marker,1)[1],re.M):\n expected=dict(path=path,sha256=digest,bytes=int(size));actual=pin(path)\n assert actual==expected,\"scope pin mismatch: \"+path\n rows.append(actual)\nassert len(rows)==9 and len({row[\"path\"] for row in rows})==9\nreceipt=study/\"preparation-run/reviews/implementation.json\"\nexclusive_json(receipt,dict(scope=\"execution-implementation\",record=pin(record),reviewed=rows))\nvalidated=review_receipt(receipt,\"execution-implementation\",study=study)\nassert set(validated)=={\"scope\",\"record\",\"reviewed\"} and len(validated[\"reviewed\"])==9\nprint(json.dumps({\"receipt\":pin(receipt),\"reviewed_count\":len(rows),\"validated\":True},sort_keys=True))\n"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T19:10:01.405419+00:00",
+      "ended_at": "2026-11-10T19:10:01.494313+00:00",
+      "exit_code": 0,
+      "stdout": "{\"receipt\": {\"bytes\": 2581, \"path\": \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/reviews/implementation.json\", \"sha256\": \"ac3ccf3791a3423f38913a2c85f3c86926cede2af3fb9573021eba3c10fbf773\"}, \"reviewed_count\": 9, \"validated\": true}\n",
+      "stderr": "",
+      "stdout_sha256": "1f2a2a211358ed5eaf10d62f2d1c7d94f1bea2b90e5d78f01edf0b13f4fe5393",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.08892137499060482
+    },
+    {
+      "argv": [
+        "/usr/bin/sw_vers"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T19:10:34.927958+00:00",
+      "ended_at": "2026-11-10T19:10:34.969936+00:00",
+      "exit_code": 0,
+      "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6\nBuildVersion:\t\t25G72\n",
+      "stderr": "",
+      "stdout_sha256": "46c87c2b8fd5d25040390e531128cd533d199bde1b50a51790375ab5984c99bb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.042032542056404054
+    },
+    {
+      "argv": [
+        "/usr/sbin/sysctl",
+        "-n",
+        "kern.bootsessionuuid",
+        "kern.boottime",
+        "kern.osversion"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T19:10:34.970259+00:00",
+      "ended_at": "2026-11-10T19:10:34.987362+00:00",
+      "exit_code": 0,
+      "stdout": "828B2ACD-3537-4CE7-8CBA-1F3FDB4C28FE\n{ sec = 1793784351, usec = 368234 } Wed Nov  4 09:25:51 2026\n25G72\n",
+      "stderr": "",
+      "stdout_sha256": "f9a1754a0e6de695b52e9cf6e765b931c572e5c203c1fa8955612c8f42b7e84d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.01716479193419218
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "-c",
+        "import ctypes,json,uuid\nfrom pathlib import Path\nroot=Path('/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld')\ngetter=ctypes.CDLL(None)._dyld_get_shared_cache_uuid\ngetter.argtypes=[ctypes.c_void_p];getter.restype=ctypes.c_bool\nbuffer=(ctypes.c_ubyte*16)()\nif not getter(buffer):raise ValueError('active cache UUID unavailable')\nactive=str(uuid.UUID(bytes=bytes(buffer)))\nmain=root/'dyld_shared_cache_arm64e'\nwith main.open('rb') as stream:header=stream.read(104)\ncache=str(uuid.UUID(bytes=header[88:104]))\nif active!='d64a142b-8533-3e09-968a-6ad3e176e3f6' or active!=cache:raise ValueError('active cache UUID mismatch')\nfamily=[str(path) for path in sorted(root.iterdir()) if path.is_file() and (path.name==main.name or path.name.startswith(main.name+'.'))]\nprint(json.dumps({'active_cache_uuid':active,'cache_header_uuid':cache,'cache_magic':header[:16].decode('ascii'),'family':family},sort_keys=True))\n"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T19:10:34.987646+00:00",
+      "ended_at": "2026-11-10T19:10:35.141005+00:00",
+      "exit_code": 0,
+      "stdout": "{\"active_cache_uuid\": \"d64a142b-8533-3e09-968a-6ad3e176e3f6\", \"cache_header_uuid\": \"d64a142b-8533-3e09-968a-6ad3e176e3f6\", \"cache_magic\": \"dyld_v1  arm64e\\u0000\", \"family\": [\"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.01\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.02.dylddata\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.03.dyldreadonly\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.04.dyldlinkedit\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.05\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.06.dylddata\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.07.dyldreadonly\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.08.dyldlinkedit\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.09\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.10.dylddata\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.11\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.12.dyldlinkedit\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.atlas\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.map\"]}\n",
+      "stderr": "",
+      "stdout_sha256": "284cdac914c25fbf8f3251a380458f96481069a8bcaef377f0de42e8300b3414",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.15338841697666794
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1prep/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/binding/acceptance.py",
+        "--config",
+        "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/run-config.json",
+        "--clock",
+        "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/clock.json",
+        "--fixture",
+        "synthetic",
+        "--rehearsal",
+        "--output",
+        "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal-2/report.json"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T19:10:43.077411+00:00",
+      "ended_at": "2026-11-10T19:29:11.419425+00:00",
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 1108.3345514159882
+    }
+  ],
+  "environment": {
+    "TERM_PROGRAM": "Orca",
+    "TERM": "xterm-256color",
+    "SHELL": "/bin/zsh",
+    "TMPDIR": "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/",
+    "TERM_PROGRAM_VERSION": "1.4.247",
+    "USER": "adamjackson",
+    "SSH_AUTH_SOCK": "/var/run/com.apple.launchd.MmiHYULSLm/Listeners",
+    "PATH": "/Applications/Orca.app/Contents/Resources/bin:/Users/adamjackson/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/adamjackson/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Applications/Privileges.app/Contents/MacOS:/opt/homebrew/bin:/Users/adamjackson/.local/bin:/Applications/Orca.app/Contents/Resources/bin:/opt/homebrew/sbin:/Users/adamjackson/.volta/bin:/Users/adamjackson/.asdf/shims:/Users/adamjackson/.fnm/aliases/default/bin:/Users/adamjackson/.local/share/mise/shims:/Users/adamjackson/Library/pnpm:/Users/adamjackson/.yarn/bin:/Users/adamjackson/.bun/bin:/usr/local/sbin:/nix/var/nix/profiles/default/bin:/Users/adamjackson/bin:/Users/adamjackson/.nix-profile/bin:/Users/adamjackson/.opencode/bin:/Users/adamjackson/.vite-plus/bin:/Users/adamjackson/.grok/bin",
+    "LANG": "en_US.UTF-8",
+    "HOME": "/Users/adamjackson",
+    "LOGNAME": "adamjackson",
+    "PI_SESSION_FILE": "/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/X1PrepBinding.jsonl",
+    "PI_ARTIFACTS_DIR": "/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4",
+    "PI_TOOL_BRIDGE_URL": "http://127.0.0.1:54503",
+    "PI_TOOL_BRIDGE_TOKEN": {
+      "present": true,
+      "value_recorded": false
+    },
+    "PI_TOOL_BRIDGE_SESSION": "python:session:/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/X1PrepBinding.jsonl:cwd:/Users/adamjackson/Projects/work/scout",
+    "PI_EVAL_LOCAL_ROOTS": "{\"local\":\"/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/local\",\"artifact\":\"/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4\"}",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "__CF_USER_TEXT_ENCODING": "0x1F5:0:2",
+    "MPLBACKEND": "Agg"
+  },
+  "OPENROUTER_API_KEY_present": false,
+  "scratch_precheck": {
+    "at": "2026-11-10T19:10:35.143051+00:00",
+    "output": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal-2/report.json",
+    "work": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal-2/report.json.work",
+    "both_absent": true
+  },
+  "status": "rehearsal-failed; stopped",
+  "session_evidence": {
+    "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-reviews/binding-v2-rehearsal-2-session-2026-11-10.json",
+    "sha256": "2013e0fad120daae6098f243a3b32b2441f8735527ac2949b236832a46738771",
+    "bytes": 10702
+  },
+  "report": {
+    "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal-2/report.json",
+    "sha256": "1d8442d33aecbde84abd041a67a314419065766f02b3b0041dd1bdf99a0a2de7",
+    "bytes": 484729
+  },
+  "report_summary": {
+    "schema": "scout.x1.binding-rehearsal.v2",
+    "status": "rehearsal",
+    "fixture": "synthetic",
+    "failures": [
+      "InterlockFailure: frontend/scanner exited nonzero"
+    ],
+    "acceptance_predicate": {
+      "deterministic_model_free_proof": false,
+      "exact_nonempty_issue_id_parity": false,
+      "policy_bound_both_revisions": false,
+      "positive_control_expected_failure": false,
+      "scanner_health_complete": false,
+      "zero_model_attempts": false
+    }
+  }
+}

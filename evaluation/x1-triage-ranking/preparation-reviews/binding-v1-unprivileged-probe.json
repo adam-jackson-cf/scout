@@ -1,0 +1,16 @@
+{
+  "schema": "scout.x1.binding-observer-probe.v1",
+  "host": "darwin 25.6.0 arm64",
+  "privilege": "unprivileged worker",
+  "probes": [
+    {"argv": ["/usr/bin/eslogger", "exec", "fork", "exit"], "exit_code": 1, "result": "ES_NEW_CLIENT_RESULT_ERR_NOT_PRIVILEGED; need to be superuser"},
+    {"argv": ["/usr/sbin/dtrace", "-n", "proc:::exec-success { trace(execname); }", "-c", "/usr/bin/true"], "exit_code": 1, "result": "SIP enabled; DTrace requires additional privileges"},
+    {"argv": ["/usr/bin/sandbox-exec", "-p", "(version 1)(allow default)(deny process-exec)", "/usr/bin/true"], "exit_code": 71, "result": "execvp failed: Operation not permitted; execution denial works, not an argv observer"},
+    {"argv": ["/usr/bin/log", "stream", "--style", "ndjson", "--timeout", "1", "--predicate", "subsystem == \"com.apple.sandbox.reporting\""], "exit_code": 77, "result": "Must be admin to run stream command"},
+    {"argv": ["/usr/bin/log", "stream", "--style", "ndjson", "--timeout", "1", "--predicate", "sender == \"Sandbox\""], "exit_code": 77, "result": "Must be admin to run stream command"},
+    {"argv": ["/usr/bin/sandbox-exec", "-p", "(version 1)(allow default)", "/usr/bin/sandbox-exec", "-p", "(version 1)(allow default)", "/usr/bin/true"], "exit_code": 0, "stdout": "", "stderr": "", "result": "Exact requested allow-default nesting probe succeeded on this host; outer sandbox is nevertheless removed per scoped R1-01, and no nested-sandbox failure is claimed."}
+  ],
+  "selection": "eslogger in a separate process group for successful descendant exec/fork/exit, gated on sudo plus Full Disk Access and schema/sequence/argv synthetic proof",
+  "complete_unprivileged_observation": false,
+  "remaining_prerequisite": "Owner grants responsible-launcher TCC Full Disk Access and a temporary sudoers drop-in limited to /usr/bin/eslogger exec fork exit. One ES NOTIFY session per acceptance operation plus a pinned synthetic observer proof captures actual descendant starts/argv; logging stubs first on PATH, configured paths and CLAWPATCH_CLAUDE_BIN capture model attempts. No log-stream, AUTH-exec, DTrace, SIP change or denied-exec-argv gate is required under scoped round-1 interpretation."
+}

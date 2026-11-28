@@ -1,0 +1,160 @@
+{
+  "authority": {
+    "bytes": 48864,
+    "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-reviews/closure-preflight-remedy-round-2.md",
+    "sha256": "6ebcc683fc32f960d275c4786b40a5e8bd50354f9b11075e25f2261dc268fa01"
+  },
+  "automatic_update_settings": "Not inspected: M7 was not reached after the M4 failure.",
+  "first_failure": {
+    "argv": [
+      "/usr/bin/dyld_info",
+      "-help"
+    ],
+    "check": "M4-help",
+    "exit_code": 1,
+    "reason": "Installed dyld_info rejects the exact signed capability-check argument; stopped rather than substituting another capability probe or skipping the census.",
+    "stderr": "dyld_info: unknown option: -help\n"
+  },
+  "informational": [
+    "M2: exit 0, empty stdout, missing-image diagnostics on stderr as expected"
+  ],
+  "journal_ids": [],
+  "measurements": [
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "-c",
+        "import sys,json;sys.path.insert(0,'/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution');from preparation import review_receipt;print(json.dumps(review_receipt('/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/reviews/operation-recovery-082476b0335b4deebe7390ca6b426c0a.json','operation-recovery'),sort_keys=True))"
+      ],
+      "check": "Step0-recovery",
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "ended_at": "2026-11-10T16:39:49.363256+00:00",
+      "exit_code": 0,
+      "started_at": "2026-11-10T16:39:49.251070+00:00",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "{\"record\": {\"bytes\": 48864, \"path\": \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-reviews/closure-preflight-remedy-round-2.md\", \"sha256\": \"6ebcc683fc32f960d275c4786b40a5e8bd50354f9b11075e25f2261dc268fa01\"}, \"reviewed\": [{\"bytes\": 20718, \"path\": \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/journal/082476b0335b4deebe7390ca6b426c0a.start.json\", \"sha256\": \"3a13295dd6e4579ccd1ec5e86377227b7a9cf0bfe51406e4a6435e491885bd16\"}, {\"bytes\": 21596, \"path\": \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/journal/082476b0335b4deebe7390ca6b426c0a.json\", \"sha256\": \"808dfd0d762e64ac21bb32fd30b14666c29a97932376704c4f3544fbc74d1933\"}, {\"bytes\": 69649, \"path\": \"/Users/adamjackson/Projects/work/x1-preparation-scratch/closure-preflight/082476b0335b4deebe7390ca6b426c0a.json\", \"sha256\": \"d62fbe0483903f0742eb1c5dff83fb71d50b4b85a2d8b8d38bb9283bdff9c20f\"}, {\"bytes\": 3895, \"path\": \"/Users/adamjackson/Projects/work/x1-preparation-scratch/closure/082476b0335b4deebe7390ca6b426c0a/commands/000267.json\", \"sha256\": \"1d088008b0a0a0903b458dabe9de5937d5f5ffb0c88bee4640a3ad227f3ba06a\"}, {\"bytes\": 3084, \"path\": \"/Users/adamjackson/Projects/work/x1-preparation-scratch/closure/082476b0335b4deebe7390ca6b426c0a/commands/000271.json\", \"sha256\": \"9d48746ed4f1b0a7d441a8d449495ba061916f8e512001c69da821f2b97c61a6\"}, {\"bytes\": 1827, \"path\": \"/Users/adamjackson/Projects/work/x1-preparation-scratch/closure/082476b0335b4deebe7390ca6b426c0a/commands/000272.json\", \"sha256\": \"4cc9758dd0c31bbbc01c8cbdb5c2f6369404081907c7f6a92a639925ec71b034\"}], \"scope\": \"operation-recovery\"}\n",
+      "stdout_sha256": "26f2492921c3a73fac35cbd3b0e5a95919496767d4b5bb79f880d3cc09c63508"
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "-c",
+        "import ctypes,json;library=ctypes.CDLL(None);fn=library._dyld_shared_cache_contains_path;fn.argtypes=[ctypes.c_char_p];fn.restype=ctypes.c_bool;names=['/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework/Versions/A/RemoteProcessingBlock', '/System/Library/Frameworks/CoreAudio.framework/Versions/A/CoreAudio', '/System/Library/PrivateFrameworks/AudioDSPGraph.framework/Versions/A/AudioDSPGraph', '/System/Library/PrivateFrameworks/TCC.framework/Versions/A/TCC'];values={name:bool(fn(name.encode())) for name in names};print(json.dumps(values,sort_keys=True));assert not values[names[0]] and all(values[name] for name in names[1:])"
+      ],
+      "check": "M1",
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "ended_at": "2026-11-10T16:39:49.395503+00:00",
+      "exit_code": 0,
+      "started_at": "2026-11-10T16:39:49.363749+00:00",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "{\"/System/Library/Frameworks/CoreAudio.framework/Versions/A/CoreAudio\": true, \"/System/Library/PrivateFrameworks/AudioDSPGraph.framework/Versions/A/AudioDSPGraph\": true, \"/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework/Versions/A/RemoteProcessingBlock\": false, \"/System/Library/PrivateFrameworks/TCC.framework/Versions/A/TCC\": true}\n",
+      "stdout_sha256": "4bf2c2b8b50c144c56733d1bb684de99379216bdf0e9990d12e70b765336d669"
+    },
+    {
+      "argv": [
+        "/usr/bin/dyld_info",
+        "-uuid",
+        "-linked_dylibs",
+        "/System/Library/PrivateFrameworks/X1ProbeAbsent.framework/Versions/A/X1ProbeAbsent"
+      ],
+      "check": "M2",
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "ended_at": "2026-11-10T16:40:12.908242+00:00",
+      "exit_code": 0,
+      "started_at": "2026-11-10T16:40:12.892424+00:00",
+      "stderr": "non-mach-o in fat file '/System/Library/PrivateFrameworks/X1ProbeAbsent.framework/Versions/A/X1ProbeAbsent'\ndyld_info: '/System/Library/PrivateFrameworks/X1ProbeAbsent.framework/Versions/A/X1ProbeAbsent' file not found\n",
+      "stderr_sha256": "d00406359dfdffaf5550bfdde7a77302bd19bc1b5d477ed30364a68f24783004",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "-c",
+        "import os,json\nparents=['/System/Cryptexes','/System/Volumes/Preboot/Cryptexes']\nroots=[]\nfor parent in parents:\n    try:\n        with os.scandir(parent) as children:\n            roots.extend(sorted(child.path for child in children if child.is_dir()))\n    except FileNotFoundError:pass\nremote='/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework'\naudio='/System/Library/PrivateFrameworks/AudioDSPGraph.framework'\nresult=[]\nfor name in (remote,remote+'/Versions/A/RemoteProcessingBlock',audio,audio+'/Versions/A/AudioDSPGraph'):\n    for prefix in ['',*roots]:\n        path=prefix+name\n        try:\n            info=os.lstat(path);entry={'path':path,'exists':True,'mode':info.st_mode}\n        except (FileNotFoundError,NotADirectoryError):entry={'path':path,'exists':False}\n        result.append(entry)\n        assert not (name.startswith(remote) and entry['exists']), 'RemoteProcessingBlock entry exists: '+path\nprint(json.dumps({'overlay_roots':roots,'entries':result},sort_keys=True))\n"
+      ],
+      "check": "M3",
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "ended_at": "2026-11-10T16:40:12.928076+00:00",
+      "exit_code": 0,
+      "started_at": "2026-11-10T16:40:12.911260+00:00",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "{\"entries\": [{\"exists\": false, \"path\": \"/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework\"}, {\"exists\": false, \"path\": \"/System/Cryptexes/App/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework\"}, {\"exists\": false, \"path\": \"/System/Cryptexes/ExclaveOS/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework\"}, {\"exists\": false, \"path\": \"/System/Cryptexes/OS/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/App/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/ExclaveOS/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/Incoming/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework\"}, {\"exists\": false, \"path\": \"/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework/Versions/A/RemoteProcessingBlock\"}, {\"exists\": false, \"path\": \"/System/Cryptexes/App/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework/Versions/A/RemoteProcessingBlock\"}, {\"exists\": false, \"path\": \"/System/Cryptexes/ExclaveOS/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework/Versions/A/RemoteProcessingBlock\"}, {\"exists\": false, \"path\": \"/System/Cryptexes/OS/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework/Versions/A/RemoteProcessingBlock\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/App/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework/Versions/A/RemoteProcessingBlock\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/ExclaveOS/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework/Versions/A/RemoteProcessingBlock\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/Incoming/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework/Versions/A/RemoteProcessingBlock\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/PrivateFrameworks/RemoteProcessingBlock.framework/Versions/A/RemoteProcessingBlock\"}, {\"exists\": true, \"mode\": 16877, \"path\": \"/System/Library/PrivateFrameworks/AudioDSPGraph.framework\"}, {\"exists\": false, \"path\": \"/System/Cryptexes/App/System/Library/PrivateFrameworks/AudioDSPGraph.framework\"}, {\"exists\": false, \"path\": \"/System/Cryptexes/ExclaveOS/System/Library/PrivateFrameworks/AudioDSPGraph.framework\"}, {\"exists\": false, \"path\": \"/System/Cryptexes/OS/System/Library/PrivateFrameworks/AudioDSPGraph.framework\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/App/System/Library/PrivateFrameworks/AudioDSPGraph.framework\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/ExclaveOS/System/Library/PrivateFrameworks/AudioDSPGraph.framework\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/Incoming/System/Library/PrivateFrameworks/AudioDSPGraph.framework\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/PrivateFrameworks/AudioDSPGraph.framework\"}, {\"exists\": false, \"path\": \"/System/Library/PrivateFrameworks/AudioDSPGraph.framework/Versions/A/AudioDSPGraph\"}, {\"exists\": false, \"path\": \"/System/Cryptexes/App/System/Library/PrivateFrameworks/AudioDSPGraph.framework/Versions/A/AudioDSPGraph\"}, {\"exists\": false, \"path\": \"/System/Cryptexes/ExclaveOS/System/Library/PrivateFrameworks/AudioDSPGraph.framework/Versions/A/AudioDSPGraph\"}, {\"exists\": false, \"path\": \"/System/Cryptexes/OS/System/Library/PrivateFrameworks/AudioDSPGraph.framework/Versions/A/AudioDSPGraph\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/App/System/Library/PrivateFrameworks/AudioDSPGraph.framework/Versions/A/AudioDSPGraph\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/ExclaveOS/System/Library/PrivateFrameworks/AudioDSPGraph.framework/Versions/A/AudioDSPGraph\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/Incoming/System/Library/PrivateFrameworks/AudioDSPGraph.framework/Versions/A/AudioDSPGraph\"}, {\"exists\": false, \"path\": \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/PrivateFrameworks/AudioDSPGraph.framework/Versions/A/AudioDSPGraph\"}], \"overlay_roots\": [\"/System/Cryptexes/App\", \"/System/Cryptexes/ExclaveOS\", \"/System/Cryptexes/OS\", \"/System/Volumes/Preboot/Cryptexes/App\", \"/System/Volumes/Preboot/Cryptexes/ExclaveOS\", \"/System/Volumes/Preboot/Cryptexes/Incoming\", \"/System/Volumes/Preboot/Cryptexes/OS\"]}\n",
+      "stdout_sha256": "1488c5e423b5fde50b67de47861c58bb1e83c08cd9ae1ac7cdb9b22e9dae1e22"
+    },
+    {
+      "argv": [
+        "/usr/bin/dyld_info",
+        "-help"
+      ],
+      "check": "M4-help",
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "ended_at": "2026-11-10T16:40:19.634007+00:00",
+      "exit_code": 1,
+      "started_at": "2026-11-10T16:40:19.619927+00:00",
+      "stderr": "dyld_info: unknown option: -help\n",
+      "stderr_sha256": "e4ffd171576e2b38ff4b158269797af4c6931593085100c5f8e806f4a6e8f29a",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "new_execution_files_written": false,
+  "not_run": [
+    "M4 all-cache census",
+    "M5",
+    "M6",
+    "M7",
+    "Step2 implementation",
+    "full execution suite",
+    "real-byte tests",
+    "GR",
+    "preflight",
+    "canonical closure"
+  ],
+  "passed": [
+    "Step0-recovery",
+    "M1",
+    "M3"
+  ],
+  "privilege_escalation_attempted": false,
+  "recovery_receipt": {
+    "bytes": 1875,
+    "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/reviews/operation-recovery-082476b0335b4deebe7390ca6b426c0a.json",
+    "sha256": "d27f95c8d45492028ecadc0390896903491991d16d428e060a736912a17c85a7"
+  },
+  "recovery_validated": true,
+  "retained_measurement_records": [
+    {
+      "bytes": 1534,
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/closure-remedy-checks/r2-m1/command.json",
+      "sha256": "60893d2277196b16c4b319d32d4231467ba6353bfb8f4765dc39740d7d2c0942"
+    },
+    {
+      "bytes": 792,
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/closure-remedy-checks/r2-m2/command.json",
+      "sha256": "6e78bb94df370d3c4597c7c84ba501dcd7d4bdbe0eff2cb1fc37f03ed2a77075"
+    },
+    {
+      "bytes": 6376,
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/closure-remedy-checks/r2-m3/command.json",
+      "sha256": "8a0f598277b1c26519a68252141d3afa74fc0d46571faf21b36d867c6d40d6e6"
+    },
+    {
+      "bytes": 498,
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/closure-remedy-checks/r2-m4/help-command.json",
+      "sha256": "d3ec417d74d687df65c02935154ed7d2982d4d4fdc31c199a831bb4dc32cafa3"
+    }
+  ],
+  "schema": "scout.x1.closure-weaklink-prescan.v1",
+  "signed_files_edited": false,
+  "status": "stopped-at-first-failure"
+}

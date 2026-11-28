@@ -1,0 +1,1974 @@
+{
+  "schema": "scout.x1.binding-rehearsal-run.v1",
+  "authority": {
+    "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-reviews/execution-implementation-round-2.md",
+    "sha256": "d547b10382b03920373e431e506f711511bab336169473e01860fc292f40338d",
+    "bytes": 19175
+  },
+  "commands": [
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1prep/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "-c",
+        "import sys,json,re\nfrom pathlib import Path\nsys.path.insert(0,\"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution\")\nfrom verify_inputs import pin,exclusive_json\nfrom preparation import review_receipt\nstudy=Path(\"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking\")\nrecord=study/\"preparation-reviews/execution-implementation-round-2.md\"\nassert pin(record)[\"sha256\"]==\"d547b10382b03920373e431e506f711511bab336169473e01860fc292f40338d\"\ntext=record.read_text();marker=\"Signed-off scope: execution-implementation\"\nassert text.count(marker)==1\nrows=[]\nfor path,size,digest in re.findall(r\"^- `(/[^`]+)` \u2014 ([0-9]+) bytes \u2014 `([a-f0-9]{64})`$\",text.split(marker,1)[1],re.M):\n    expected=dict(path=path,sha256=digest,bytes=int(size));actual=pin(path)\n    assert actual==expected,\"scope pin mismatch: \"+path\n    rows.append(actual)\nassert len(rows)==9 and len({row[\"path\"] for row in rows})==9\nreceipt=study/\"preparation-run/reviews/implementation.json\"\nexclusive_json(receipt,dict(scope=\"execution-implementation\",record=pin(record),reviewed=rows))\nvalidated=review_receipt(receipt,\"execution-implementation\",study=study)\nassert set(validated)=={\"scope\",\"record\",\"reviewed\"} and len(validated[\"reviewed\"])==9\nprint(json.dumps({\"receipt\":pin(receipt),\"reviewed_count\":len(rows),\"validated\":True},sort_keys=True))\n"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T18:27:01.479422+00:00",
+      "ended_at": "2026-11-10T18:27:01.570102+00:00",
+      "wall_seconds": 0.09059937496203929,
+      "exit_code": 0,
+      "stdout": "{\"receipt\": {\"bytes\": 2581, \"path\": \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/reviews/implementation.json\", \"sha256\": \"8711ffaecc7662609f6afa75a9e50ba6ff1fcf8f1b9d41312a0639efed11a0d4\"}, \"reviewed_count\": 9, \"validated\": true}\n",
+      "stderr": "",
+      "stdout_sha256": "f0cbc7a8fd3e22f3baa89698a6562019ab02ed99e14824eb2c1ca429df431ea6",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/sw_vers"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T18:27:28.070184+00:00",
+      "ended_at": "2026-11-10T18:27:28.085228+00:00",
+      "wall_seconds": 0.015059083001688123,
+      "exit_code": 0,
+      "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6\nBuildVersion:\t\t25G72\n",
+      "stderr": "",
+      "stdout_sha256": "46c87c2b8fd5d25040390e531128cd533d199bde1b50a51790375ab5984c99bb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "P3-D-session-1",
+      "environment": {
+        "HOME": "/Users/adamjackson",
+        "LANG": "en_US.UTF-8",
+        "LOGNAME": "adamjackson",
+        "MPLBACKEND": "Agg",
+        "PATH": "/Applications/Orca.app/Contents/Resources/bin:/Users/adamjackson/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/adamjackson/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Applications/Privileges.app/Contents/MacOS:/opt/homebrew/bin:/Users/adamjackson/.local/bin:/Applications/Orca.app/Contents/Resources/bin:/opt/homebrew/sbin:/Users/adamjackson/.volta/bin:/Users/adamjackson/.asdf/shims:/Users/adamjackson/.fnm/aliases/default/bin:/Users/adamjackson/.local/share/mise/shims:/Users/adamjackson/Library/pnpm:/Users/adamjackson/.yarn/bin:/Users/adamjackson/.bun/bin:/usr/local/sbin:/nix/var/nix/profiles/default/bin:/Users/adamjackson/bin:/Users/adamjackson/.nix-profile/bin:/Users/adamjackson/.opencode/bin:/Users/adamjackson/.vite-plus/bin:/Users/adamjackson/.grok/bin",
+        "PI_ARTIFACTS_DIR": "/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4",
+        "PI_EVAL_LOCAL_ROOTS": "{\"local\":\"/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/local\",\"artifact\":\"/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4\"}",
+        "PI_SESSION_FILE": "/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/X1PrepBinding.jsonl",
+        "PI_TOOL_BRIDGE_SESSION": "python:session:/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/X1PrepBinding.jsonl:cwd:/Users/adamjackson/Projects/work/scout",
+        "PI_TOOL_BRIDGE_TOKEN": {
+          "present": true,
+          "value_recorded": false
+        },
+        "PI_TOOL_BRIDGE_URL": "http://127.0.0.1:54503",
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUNBUFFERED": "1",
+        "SHELL": "/bin/zsh",
+        "SSH_AUTH_SOCK": "/var/run/com.apple.launchd.MmiHYULSLm/Listeners",
+        "TERM": "xterm-256color",
+        "TERM_PROGRAM": "Orca",
+        "TERM_PROGRAM_VERSION": "1.4.247",
+        "TMPDIR": "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/",
+        "USER": "adamjackson",
+        "__CF_USER_TEXT_ENCODING": "0x1F5:0:2"
+      },
+      "matches_O0": true
+    },
+    {
+      "argv": [
+        "/usr/sbin/sysctl",
+        "-n",
+        "kern.bootsessionuuid",
+        "kern.boottime",
+        "kern.osversion"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T18:27:28.085430+00:00",
+      "ended_at": "2026-11-10T18:27:28.091289+00:00",
+      "wall_seconds": 0.005874374997802079,
+      "exit_code": 0,
+      "stdout": "828B2ACD-3537-4CE7-8CBA-1F3FDB4C28FE\n{ sec = 1793784351, usec = 368234 } Wed Nov  4 09:25:51 2026\n25G72\n",
+      "stderr": "",
+      "stdout_sha256": "f9a1754a0e6de695b52e9cf6e765b931c572e5c203c1fa8955612c8f42b7e84d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "P3-D-session-2",
+      "environment": {
+        "HOME": "/Users/adamjackson",
+        "LANG": "en_US.UTF-8",
+        "LOGNAME": "adamjackson",
+        "MPLBACKEND": "Agg",
+        "PATH": "/Applications/Orca.app/Contents/Resources/bin:/Users/adamjackson/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/adamjackson/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Applications/Privileges.app/Contents/MacOS:/opt/homebrew/bin:/Users/adamjackson/.local/bin:/Applications/Orca.app/Contents/Resources/bin:/opt/homebrew/sbin:/Users/adamjackson/.volta/bin:/Users/adamjackson/.asdf/shims:/Users/adamjackson/.fnm/aliases/default/bin:/Users/adamjackson/.local/share/mise/shims:/Users/adamjackson/Library/pnpm:/Users/adamjackson/.yarn/bin:/Users/adamjackson/.bun/bin:/usr/local/sbin:/nix/var/nix/profiles/default/bin:/Users/adamjackson/bin:/Users/adamjackson/.nix-profile/bin:/Users/adamjackson/.opencode/bin:/Users/adamjackson/.vite-plus/bin:/Users/adamjackson/.grok/bin",
+        "PI_ARTIFACTS_DIR": "/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4",
+        "PI_EVAL_LOCAL_ROOTS": "{\"local\":\"/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/local\",\"artifact\":\"/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4\"}",
+        "PI_SESSION_FILE": "/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/X1PrepBinding.jsonl",
+        "PI_TOOL_BRIDGE_SESSION": "python:session:/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/X1PrepBinding.jsonl:cwd:/Users/adamjackson/Projects/work/scout",
+        "PI_TOOL_BRIDGE_TOKEN": {
+          "present": true,
+          "value_recorded": false
+        },
+        "PI_TOOL_BRIDGE_URL": "http://127.0.0.1:54503",
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUNBUFFERED": "1",
+        "SHELL": "/bin/zsh",
+        "SSH_AUTH_SOCK": "/var/run/com.apple.launchd.MmiHYULSLm/Listeners",
+        "TERM": "xterm-256color",
+        "TERM_PROGRAM": "Orca",
+        "TERM_PROGRAM_VERSION": "1.4.247",
+        "TMPDIR": "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/",
+        "USER": "adamjackson",
+        "__CF_USER_TEXT_ENCODING": "0x1F5:0:2"
+      },
+      "matches_O0": true
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "-c",
+        "import ctypes,json,uuid\nfrom pathlib import Path\nroot=Path('/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld')\ngetter=ctypes.CDLL(None)._dyld_get_shared_cache_uuid\ngetter.argtypes=[ctypes.c_void_p];getter.restype=ctypes.c_bool\nbuffer=(ctypes.c_ubyte*16)()\nif not getter(buffer):raise ValueError('active cache UUID unavailable')\nactive=str(uuid.UUID(bytes=bytes(buffer)))\nmain=root/'dyld_shared_cache_arm64e'\nwith main.open('rb') as stream:header=stream.read(104)\ncache=str(uuid.UUID(bytes=header[88:104]))\nif active!='d64a142b-8533-3e09-968a-6ad3e176e3f6' or active!=cache:raise ValueError('active cache UUID mismatch')\nfamily=[str(path) for path in sorted(root.iterdir()) if path.is_file() and (path.name==main.name or path.name.startswith(main.name+'.'))]\nprint(json.dumps({'active_cache_uuid':active,'cache_header_uuid':cache,'cache_magic':header[:16].decode('ascii'),'family':family},sort_keys=True))\n"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T18:27:28.091463+00:00",
+      "ended_at": "2026-11-10T18:27:28.193805+00:00",
+      "wall_seconds": 0.10236129199620336,
+      "exit_code": 0,
+      "stdout": "{\"active_cache_uuid\": \"d64a142b-8533-3e09-968a-6ad3e176e3f6\", \"cache_header_uuid\": \"d64a142b-8533-3e09-968a-6ad3e176e3f6\", \"cache_magic\": \"dyld_v1  arm64e\\u0000\", \"family\": [\"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.01\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.02.dylddata\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.03.dyldreadonly\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.04.dyldlinkedit\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.05\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.06.dylddata\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.07.dyldreadonly\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.08.dyldlinkedit\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.09\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.10.dylddata\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.11\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.12.dyldlinkedit\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.atlas\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.map\"]}\n",
+      "stderr": "",
+      "stdout_sha256": "284cdac914c25fbf8f3251a380458f96481069a8bcaef377f0de42e8300b3414",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "step": "P3-D-session-3",
+      "environment": {
+        "HOME": "/Users/adamjackson",
+        "LANG": "en_US.UTF-8",
+        "LOGNAME": "adamjackson",
+        "MPLBACKEND": "Agg",
+        "PATH": "/Applications/Orca.app/Contents/Resources/bin:/Users/adamjackson/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/adamjackson/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Applications/Privileges.app/Contents/MacOS:/opt/homebrew/bin:/Users/adamjackson/.local/bin:/Applications/Orca.app/Contents/Resources/bin:/opt/homebrew/sbin:/Users/adamjackson/.volta/bin:/Users/adamjackson/.asdf/shims:/Users/adamjackson/.fnm/aliases/default/bin:/Users/adamjackson/.local/share/mise/shims:/Users/adamjackson/Library/pnpm:/Users/adamjackson/.yarn/bin:/Users/adamjackson/.bun/bin:/usr/local/sbin:/nix/var/nix/profiles/default/bin:/Users/adamjackson/bin:/Users/adamjackson/.nix-profile/bin:/Users/adamjackson/.opencode/bin:/Users/adamjackson/.vite-plus/bin:/Users/adamjackson/.grok/bin",
+        "PI_ARTIFACTS_DIR": "/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4",
+        "PI_EVAL_LOCAL_ROOTS": "{\"local\":\"/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/local\",\"artifact\":\"/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4\"}",
+        "PI_SESSION_FILE": "/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/X1PrepBinding.jsonl",
+        "PI_TOOL_BRIDGE_SESSION": "python:session:/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/X1PrepBinding.jsonl:cwd:/Users/adamjackson/Projects/work/scout",
+        "PI_TOOL_BRIDGE_TOKEN": {
+          "present": true,
+          "value_recorded": false
+        },
+        "PI_TOOL_BRIDGE_URL": "http://127.0.0.1:54503",
+        "PYTHONIOENCODING": "utf-8",
+        "PYTHONUNBUFFERED": "1",
+        "SHELL": "/bin/zsh",
+        "SSH_AUTH_SOCK": "/var/run/com.apple.launchd.MmiHYULSLm/Listeners",
+        "TERM": "xterm-256color",
+        "TERM_PROGRAM": "Orca",
+        "TERM_PROGRAM_VERSION": "1.4.247",
+        "TMPDIR": "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/",
+        "USER": "adamjackson",
+        "__CF_USER_TEXT_ENCODING": "0x1F5:0:2"
+      },
+      "matches_O0": true
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1prep/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/binding/acceptance.py",
+        "--config",
+        "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/run-config.json",
+        "--clock",
+        "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/clock.json",
+        "--fixture",
+        "synthetic",
+        "--rehearsal",
+        "--output",
+        "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T18:28:03.005432+00:00",
+      "ended_at": "2026-11-10T18:33:30.434784+00:00",
+      "wall_seconds": 327.4244385000784,
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "status": "rehearsal-failed; stopped",
+  "P3_D_baseline": {
+    "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-reviews/closure-weaklink-gates-2026-11-10.json",
+    "sha256": "9e34808c05b3a521e98ee286c22446a34e61c78a28255887a3df4cb253170426",
+    "bytes": 645464
+  },
+  "outer_environment": {
+    "HOME": "/Users/adamjackson",
+    "LANG": "en_US.UTF-8",
+    "LOGNAME": "adamjackson",
+    "MPLBACKEND": "Agg",
+    "PATH": "/Applications/Orca.app/Contents/Resources/bin:/Users/adamjackson/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/adamjackson/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Applications/Privileges.app/Contents/MacOS:/opt/homebrew/bin:/Users/adamjackson/.local/bin:/Applications/Orca.app/Contents/Resources/bin:/opt/homebrew/sbin:/Users/adamjackson/.volta/bin:/Users/adamjackson/.asdf/shims:/Users/adamjackson/.fnm/aliases/default/bin:/Users/adamjackson/.local/share/mise/shims:/Users/adamjackson/Library/pnpm:/Users/adamjackson/.yarn/bin:/Users/adamjackson/.bun/bin:/usr/local/sbin:/nix/var/nix/profiles/default/bin:/Users/adamjackson/bin:/Users/adamjackson/.nix-profile/bin:/Users/adamjackson/.opencode/bin:/Users/adamjackson/.vite-plus/bin:/Users/adamjackson/.grok/bin",
+    "PI_ARTIFACTS_DIR": "/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4",
+    "PI_EVAL_LOCAL_ROOTS": "{\"local\":\"/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/local\",\"artifact\":\"/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4\"}",
+    "PI_SESSION_FILE": "/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/X1PrepBinding.jsonl",
+    "PI_TOOL_BRIDGE_SESSION": "python:session:/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/X1PrepBinding.jsonl:cwd:/Users/adamjackson/Projects/work/scout",
+    "PI_TOOL_BRIDGE_TOKEN": {
+      "present": true,
+      "value_recorded": false
+    },
+    "PI_TOOL_BRIDGE_URL": "http://127.0.0.1:54503",
+    "PYTHONIOENCODING": "utf-8",
+    "PYTHONUNBUFFERED": "1",
+    "SHELL": "/bin/zsh",
+    "SSH_AUTH_SOCK": "/var/run/com.apple.launchd.MmiHYULSLm/Listeners",
+    "TERM": "xterm-256color",
+    "TERM_PROGRAM": "Orca",
+    "TERM_PROGRAM_VERSION": "1.4.247",
+    "TMPDIR": "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/",
+    "USER": "adamjackson",
+    "__CF_USER_TEXT_ENCODING": "0x1F5:0:2"
+  },
+  "OPENROUTER_API_KEY_present": false,
+  "session_checks_passed": true,
+  "scratch_precheck": {
+    "checked_at": "2026-11-10T18:27:54.794863+00:00",
+    "requested": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json",
+    "output": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json",
+    "work": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work",
+    "output_absent": true,
+    "work_absent": true,
+    "alternative_selected": false
+  },
+  "implementation_receipt": {
+    "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/reviews/implementation.json",
+    "sha256": "8711ffaecc7662609f6afa75a9e50ba6ff1fcf8f1b9d41312a0639efed11a0d4",
+    "bytes": 2581
+  },
+  "session_evidence": {
+    "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-reviews/binding-v2-rehearsal-session-2026-11-10.json",
+    "sha256": "084e61cd1534d2e84334039ed9a0159fe569aafb9cfdb7bf1aa6a0277ae3d28f",
+    "bytes": 19476
+  },
+  "rehearsal_report": {
+    "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json",
+    "sha256": "4bb73d07e7e8dce2318a187ae6a6985108ed6207cd1e6b7ee8b837615790d65d",
+    "bytes": 264168
+  },
+  "rehearsal_summary": {
+    "schema": "scout.x1.binding-rehearsal.v2",
+    "status": "rehearsal",
+    "fixture": "synthetic",
+    "failures": [
+      "ValueError: installed runtime file/link/mode set drift"
+    ],
+    "acceptance_predicate": {
+      "deterministic_model_free_proof": false,
+      "exact_nonempty_issue_id_parity": false,
+      "policy_bound_both_revisions": false,
+      "positive_control_expected_failure": false,
+      "scanner_health_complete": false,
+      "zero_model_attempts": false
+    }
+  },
+  "work_files": [
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/HEAD",
+      "sha256": "97cd72322a1f8deaf1aa178a2aa4c8b0f5fa42edbf8caa41ef8b882bbe648639",
+      "bytes": 19
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/config",
+      "sha256": "cae33efdb02cf774435c1ff9cb16bcc1014606908530c6e1dc727615fe3e8cda",
+      "bytes": 137
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/index",
+      "sha256": "2de1855a9443c1f5cfc5cb9253454f4c985dc88f113f9a67d7d624b5d025891b",
+      "bytes": 640
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/logs/HEAD",
+      "sha256": "6cbe49ea4b6d03def241e7ab49b680f0da9246cc97f902414297c212f06d573b",
+      "bytes": 141
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/logs/refs/heads/x1",
+      "sha256": "6cbe49ea4b6d03def241e7ab49b680f0da9246cc97f902414297c212f06d573b",
+      "bytes": 141
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/objects/1e/1026f989b2a0bf3014c31ec9934332102d85fc",
+      "sha256": "e15993d6c3150065546d225cb2e0cd64039330c59dfbc60900e294eaafedc1cb",
+      "bytes": 76
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/objects/84/966a3f74ede536f32d786c261fc035680102d1",
+      "sha256": "0f0164f2bb97fcd7836197f86fc17684334c58eb4add4d3028da341111b5c777",
+      "bytes": 163
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/objects/8a/8a17bc47c3dec23964a4614bae7f9ca064b860",
+      "sha256": "313e21a9416fe8fe3d3f24768de105ae82b53ea303fbe75a4c23da7865034fed",
+      "bytes": 245
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/objects/8d/f6def486ca2dd73b33896d3eb203bb6309f0b3",
+      "sha256": "e41103633af391f456767ca0b8aaa992f156ffb034f4f5333faacf7ee0825934",
+      "bytes": 81
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/objects/99/7ee189b05b18904a5f6680f0a9893029ff7902",
+      "sha256": "261f8bba2d723c157ed1999b50eb35fa7623a547e9bcbc8559708b0efd84c383",
+      "bytes": 175
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/objects/bc/35a3badcb9cf860396ca2c9e2a65121734064d",
+      "sha256": "5060d758ed2f8107173a113be37c01b2e03cc3f745b32ac8b29f6e795741e044",
+      "bytes": 182
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/objects/bd/cb42874a107e1b820847d687cebbd3d954079b",
+      "sha256": "30452f2e3e3049ffb957cb1345aab98bf0f17b6ba8890f7ff25010b5b79e3ab2",
+      "bytes": 69
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/objects/e7/adc6700af70b1a2d4efa9691c0b6d588856067",
+      "sha256": "4bcbaf891e23d18f422ed576e043bbfecfbc957cf06d53780246793b9f0d7ee9",
+      "bytes": 42
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/objects/eb/f4a34828a6feeaf6dbe4ad7fa56d1318a83c52",
+      "sha256": "e14a8206225451e2a8c29a56ef4073f6d065a0fc22595b053b210edce156c5b5",
+      "bytes": 80
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/objects/ee/04e32f7c11b9e9556e166a49682ed3f21e2af9",
+      "sha256": "dff1a36143d6f2de82eeb66c64c6925890df3cef1f68be6abeb48e006830508b",
+      "bytes": 56
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.git/refs/heads/x1",
+      "sha256": "3e9314eacde77bbac23b95d755f11116300f2abb119031eaf752eb2a9bf16ec8",
+      "bytes": 41
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/.scout/policy.yaml",
+      "sha256": "6189fea6ad039f0eb0206a7986aa94a44e3bdf46669184298b8a558d06fa7255",
+      "bytes": 234
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/changed.py",
+      "sha256": "0950bd4989dfc76b1c8ed8641c91b4994cefee6bc5bb6d5105510f99f25ec109",
+      "bytes": 558
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/go.mod",
+      "sha256": "ec75b6e87719a439d7ec4959302e25fd588319c7f7cfd1e6e20b39a324aff0b0",
+      "bytes": 26
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/index.js",
+      "sha256": "2fa9c2c5a47269dd22d1da68d24423b1a2d3a2da635c4c60798c59e17ade5d23",
+      "bytes": 82
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/main.go",
+      "sha256": "d37528f6027aa09adca50fa54e40ffc247c5597ffb7d4effa633ccba6134536c",
+      "bytes": 65
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/package.json",
+      "sha256": "514ef8299051029ada3268f1fb2eba8b698548d59bb6d438d71c42c03a627f9e",
+      "bytes": 57
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/head/unchanged.py",
+      "sha256": "534f740e38f9a8c5e7226a676a427bc5b44ec64ab605c33c595a68aedf5a97c4",
+      "bytes": 79
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/HEAD",
+      "sha256": "97cd72322a1f8deaf1aa178a2aa4c8b0f5fa42edbf8caa41ef8b882bbe648639",
+      "bytes": 19
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/config",
+      "sha256": "cae33efdb02cf774435c1ff9cb16bcc1014606908530c6e1dc727615fe3e8cda",
+      "bytes": 137
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/index",
+      "sha256": "7a1ab59e683fbec9dc0ea38a6a8819ef20b09935cbe4a8f59ddf6ca46957e022",
+      "bytes": 640
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/logs/HEAD",
+      "sha256": "349cd538180b02364b3b492f9d5238cab3a38c5ea78317e1a8f1cdf2082b064e",
+      "bytes": 141
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/logs/refs/heads/x1",
+      "sha256": "349cd538180b02364b3b492f9d5238cab3a38c5ea78317e1a8f1cdf2082b064e",
+      "bytes": 141
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/objects/1e/1026f989b2a0bf3014c31ec9934332102d85fc",
+      "sha256": "e15993d6c3150065546d225cb2e0cd64039330c59dfbc60900e294eaafedc1cb",
+      "bytes": 76
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/objects/4d/7aa952b8432b643f1c80b6e77e89f856f3287e",
+      "sha256": "e6b916a1fe064373cb599bb1bed2f99f9756a46b1391916859f311aedb00d77b",
+      "bytes": 245
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/objects/8d/f6def486ca2dd73b33896d3eb203bb6309f0b3",
+      "sha256": "e41103633af391f456767ca0b8aaa992f156ffb034f4f5333faacf7ee0825934",
+      "bytes": 81
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/objects/b5/cfc70cc2ffdecafa430590a446118c3be459a3",
+      "sha256": "9f194e8be6a63b1ee8d1973713b2e5d7eb69ad34b627accee2a479a6319ffc54",
+      "bytes": 176
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/objects/bd/cb42874a107e1b820847d687cebbd3d954079b",
+      "sha256": "30452f2e3e3049ffb957cb1345aab98bf0f17b6ba8890f7ff25010b5b79e3ab2",
+      "bytes": 69
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/objects/c5/a8277fd55ddf5d5516054de747047ba275c22b",
+      "sha256": "b1994c4be1d44cf7faa19e8a03d69ee2d1244e642c6b239d90f9626e0fe9cb1d",
+      "bytes": 135
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/objects/cc/8e57f35bb7cc2b07e454723e2aa170ce66b851",
+      "sha256": "5671f9b4e75462ceda2cb6f14306bfd2cc163aacd6a4041e4bedee77cce243bc",
+      "bytes": 87
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/objects/e7/adc6700af70b1a2d4efa9691c0b6d588856067",
+      "sha256": "4bcbaf891e23d18f422ed576e043bbfecfbc957cf06d53780246793b9f0d7ee9",
+      "bytes": 42
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/objects/e8/74169d3b9ab29fff71ed3d2b343c66d3a88dfb",
+      "sha256": "44592991626b9b73aa81236415898f8b0c663bc8e71116481cc700332cd52019",
+      "bytes": 56
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/objects/eb/f4a34828a6feeaf6dbe4ad7fa56d1318a83c52",
+      "sha256": "e14a8206225451e2a8c29a56ef4073f6d065a0fc22595b053b210edce156c5b5",
+      "bytes": 80
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.git/refs/heads/x1",
+      "sha256": "1df0626ab007b22dc791f958ccfcc821d332ba409b0df01231498748aa79f890",
+      "bytes": 41
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/.scout/policy.yaml",
+      "sha256": "3d3dae7d063c4fe94127de4e67ae9315e1495e4fa510ea587ae4c5a058604ec3",
+      "bytes": 235
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/changed.py",
+      "sha256": "0ecf4e2fd0b76f8305f0729807a67bc7d2eeabe27ed637a98bda8b9d87738e3b",
+      "bytes": 109
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/go.mod",
+      "sha256": "ec75b6e87719a439d7ec4959302e25fd588319c7f7cfd1e6e20b39a324aff0b0",
+      "bytes": 26
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/index.js",
+      "sha256": "2fa9c2c5a47269dd22d1da68d24423b1a2d3a2da635c4c60798c59e17ade5d23",
+      "bytes": 82
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/main.go",
+      "sha256": "d37528f6027aa09adca50fa54e40ffc247c5597ffb7d4effa633ccba6134536c",
+      "bytes": 65
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/package.json",
+      "sha256": "514ef8299051029ada3268f1fb2eba8b698548d59bb6d438d71c42c03a627f9e",
+      "bytes": 57
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/boundroute/parent/unchanged.py",
+      "sha256": "534f740e38f9a8c5e7226a676a427bc5b44ec64ab605c33c595a68aedf5a97c4",
+      "bytes": 79
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/logs/positive/parent/effective.json",
+      "sha256": "2466166cee1d01eaee2e275e0ffabe3dde79162d32097d33cc182c7b990faeca",
+      "bytes": 16182
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/logs/positive/parent/home/Library/Application Support/go/telemetry/local/go@go1.26.10-go1.26.10-darwin-arm64-2026-11-10.v1.count",
+      "sha256": "b35eaffc911b6c048c809d7b30b3f9fde5c323cb2df8d4fdde9cb7e7fcaaed1d",
+      "bytes": 16384
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/logs/positive/parent/home/Library/Application Support/go/telemetry/local/upload.token",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/logs/positive/parent/home/Library/Application Support/go/telemetry/local/weekends",
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+      "bytes": 2
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/logs/positive/parent/home/Library/Caches/go-build/README",
+      "sha256": "a3262e677c9d569d3fa9da7a2255f4584dc7e81409952ce924e9073a1df48fc7",
+      "bytes": 218
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/logs/positive/parent/home/Library/Caches/go-build/ab/ab5c71935767e3cc724698aabc24495a67202830ab12c9a49eeef4e61c44913f-a",
+      "sha256": "5514b894fe85267ae73d861bacd5a0ccca8ef395e9e2f983eccc1cf84aa51550",
+      "bytes": 175
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/logs/positive/parent/home/Library/Caches/go-build/cc/ccd5949e4aeb687469b3682226107255724fc9dc52a4f2ec3e1de8b2e3b9d06c-d",
+      "sha256": "ccd5949e4aeb687469b3682226107255724fc9dc52a4f2ec3e1de8b2e3b9d06c",
+      "bytes": 114
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/logs/positive/parent/result.json",
+      "sha256": "5c4e3d69d85c1372c6772c592025221e5489826fc6269d20375fc165a315f9a4",
+      "bytes": 77984
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/logs/positive/parent/stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/logs/positive/parent/stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/logs/positive/parent/stubs/attempts.jsonl",
+      "sha256": "ef9a3c118b9df76d06c54fd2b1dccfa29735782fb721c6c7dfb9847a98ea31ed",
+      "bytes": 160640
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/logs/positive/parent/stubs/claude",
+      "sha256": "67ef175a0617c68a1531eb74025e088ba531907eec0e4c5a22344743633511b3",
+      "bytes": 489
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/logs/positive/parent/stubs/codex",
+      "sha256": "67ef175a0617c68a1531eb74025e088ba531907eec0e4c5a22344743633511b3",
+      "bytes": 489
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/HEAD",
+      "sha256": "97cd72322a1f8deaf1aa178a2aa4c8b0f5fa42edbf8caa41ef8b882bbe648639",
+      "bytes": 19
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/config",
+      "sha256": "3c5cc3e72b5473d08433171d50fc687ac3aa2a6a3f4c20b97f5b66f581b0fec9",
+      "bytes": 111
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/objects/1e/1026f989b2a0bf3014c31ec9934332102d85fc",
+      "sha256": "e15993d6c3150065546d225cb2e0cd64039330c59dfbc60900e294eaafedc1cb",
+      "bytes": 76
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/objects/4d/7aa952b8432b643f1c80b6e77e89f856f3287e",
+      "sha256": "e6b916a1fe064373cb599bb1bed2f99f9756a46b1391916859f311aedb00d77b",
+      "bytes": 245
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/objects/84/966a3f74ede536f32d786c261fc035680102d1",
+      "sha256": "0f0164f2bb97fcd7836197f86fc17684334c58eb4add4d3028da341111b5c777",
+      "bytes": 163
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/objects/8a/8a17bc47c3dec23964a4614bae7f9ca064b860",
+      "sha256": "313e21a9416fe8fe3d3f24768de105ae82b53ea303fbe75a4c23da7865034fed",
+      "bytes": 245
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/objects/8d/f6def486ca2dd73b33896d3eb203bb6309f0b3",
+      "sha256": "e41103633af391f456767ca0b8aaa992f156ffb034f4f5333faacf7ee0825934",
+      "bytes": 81
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/objects/99/7ee189b05b18904a5f6680f0a9893029ff7902",
+      "sha256": "261f8bba2d723c157ed1999b50eb35fa7623a547e9bcbc8559708b0efd84c383",
+      "bytes": 175
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/objects/b5/cfc70cc2ffdecafa430590a446118c3be459a3",
+      "sha256": "9f194e8be6a63b1ee8d1973713b2e5d7eb69ad34b627accee2a479a6319ffc54",
+      "bytes": 176
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/objects/bc/35a3badcb9cf860396ca2c9e2a65121734064d",
+      "sha256": "5060d758ed2f8107173a113be37c01b2e03cc3f745b32ac8b29f6e795741e044",
+      "bytes": 182
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/objects/bd/cb42874a107e1b820847d687cebbd3d954079b",
+      "sha256": "30452f2e3e3049ffb957cb1345aab98bf0f17b6ba8890f7ff25010b5b79e3ab2",
+      "bytes": 69
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/objects/c5/a8277fd55ddf5d5516054de747047ba275c22b",
+      "sha256": "b1994c4be1d44cf7faa19e8a03d69ee2d1244e642c6b239d90f9626e0fe9cb1d",
+      "bytes": 135
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/objects/cc/8e57f35bb7cc2b07e454723e2aa170ce66b851",
+      "sha256": "5671f9b4e75462ceda2cb6f14306bfd2cc163aacd6a4041e4bedee77cce243bc",
+      "bytes": 87
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/objects/e7/adc6700af70b1a2d4efa9691c0b6d588856067",
+      "sha256": "4bcbaf891e23d18f422ed576e043bbfecfbc957cf06d53780246793b9f0d7ee9",
+      "bytes": 42
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/objects/e8/74169d3b9ab29fff71ed3d2b343c66d3a88dfb",
+      "sha256": "44592991626b9b73aa81236415898f8b0c663bc8e71116481cc700332cd52019",
+      "bytes": 56
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/objects/eb/f4a34828a6feeaf6dbe4ad7fa56d1318a83c52",
+      "sha256": "e14a8206225451e2a8c29a56ef4073f6d065a0fc22595b053b210edce156c5b5",
+      "bytes": 80
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/objects/ee/04e32f7c11b9e9556e166a49682ed3f21e2af9",
+      "sha256": "dff1a36143d6f2de82eeb66c64c6925890df3cef1f68be6abeb48e006830508b",
+      "bytes": 56
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/objects.git/refs/heads/x1",
+      "sha256": "3e9314eacde77bbac23b95d755f11116300f2abb119031eaf752eb2a9bf16ec8",
+      "bytes": 41
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/HEAD",
+      "sha256": "97cd72322a1f8deaf1aa178a2aa4c8b0f5fa42edbf8caa41ef8b882bbe648639",
+      "bytes": 19
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/config",
+      "sha256": "cae33efdb02cf774435c1ff9cb16bcc1014606908530c6e1dc727615fe3e8cda",
+      "bytes": 137
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/index",
+      "sha256": "2de1855a9443c1f5cfc5cb9253454f4c985dc88f113f9a67d7d624b5d025891b",
+      "bytes": 640
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/logs/HEAD",
+      "sha256": "6cbe49ea4b6d03def241e7ab49b680f0da9246cc97f902414297c212f06d573b",
+      "bytes": 141
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/logs/refs/heads/x1",
+      "sha256": "6cbe49ea4b6d03def241e7ab49b680f0da9246cc97f902414297c212f06d573b",
+      "bytes": 141
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/objects/1e/1026f989b2a0bf3014c31ec9934332102d85fc",
+      "sha256": "e15993d6c3150065546d225cb2e0cd64039330c59dfbc60900e294eaafedc1cb",
+      "bytes": 76
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/objects/84/966a3f74ede536f32d786c261fc035680102d1",
+      "sha256": "0f0164f2bb97fcd7836197f86fc17684334c58eb4add4d3028da341111b5c777",
+      "bytes": 163
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/objects/8a/8a17bc47c3dec23964a4614bae7f9ca064b860",
+      "sha256": "313e21a9416fe8fe3d3f24768de105ae82b53ea303fbe75a4c23da7865034fed",
+      "bytes": 245
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/objects/8d/f6def486ca2dd73b33896d3eb203bb6309f0b3",
+      "sha256": "e41103633af391f456767ca0b8aaa992f156ffb034f4f5333faacf7ee0825934",
+      "bytes": 81
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/objects/99/7ee189b05b18904a5f6680f0a9893029ff7902",
+      "sha256": "261f8bba2d723c157ed1999b50eb35fa7623a547e9bcbc8559708b0efd84c383",
+      "bytes": 175
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/objects/bc/35a3badcb9cf860396ca2c9e2a65121734064d",
+      "sha256": "5060d758ed2f8107173a113be37c01b2e03cc3f745b32ac8b29f6e795741e044",
+      "bytes": 182
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/objects/bd/cb42874a107e1b820847d687cebbd3d954079b",
+      "sha256": "30452f2e3e3049ffb957cb1345aab98bf0f17b6ba8890f7ff25010b5b79e3ab2",
+      "bytes": 69
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/objects/e7/adc6700af70b1a2d4efa9691c0b6d588856067",
+      "sha256": "4bcbaf891e23d18f422ed576e043bbfecfbc957cf06d53780246793b9f0d7ee9",
+      "bytes": 42
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/objects/eb/f4a34828a6feeaf6dbe4ad7fa56d1318a83c52",
+      "sha256": "e14a8206225451e2a8c29a56ef4073f6d065a0fc22595b053b210edce156c5b5",
+      "bytes": 80
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/objects/ee/04e32f7c11b9e9556e166a49682ed3f21e2af9",
+      "sha256": "dff1a36143d6f2de82eeb66c64c6925890df3cef1f68be6abeb48e006830508b",
+      "bytes": 56
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.git/refs/heads/x1",
+      "sha256": "3e9314eacde77bbac23b95d755f11116300f2abb119031eaf752eb2a9bf16ec8",
+      "bytes": 41
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/.scout/policy.yaml",
+      "sha256": "6189fea6ad039f0eb0206a7986aa94a44e3bdf46669184298b8a558d06fa7255",
+      "bytes": 234
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/changed.py",
+      "sha256": "0950bd4989dfc76b1c8ed8641c91b4994cefee6bc5bb6d5105510f99f25ec109",
+      "bytes": 558
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/go.mod",
+      "sha256": "ec75b6e87719a439d7ec4959302e25fd588319c7f7cfd1e6e20b39a324aff0b0",
+      "bytes": 26
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/index.js",
+      "sha256": "2fa9c2c5a47269dd22d1da68d24423b1a2d3a2da635c4c60798c59e17ade5d23",
+      "bytes": 82
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/main.go",
+      "sha256": "d37528f6027aa09adca50fa54e40ffc247c5597ffb7d4effa633ccba6134536c",
+      "bytes": 65
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/package.json",
+      "sha256": "514ef8299051029ada3268f1fb2eba8b698548d59bb6d438d71c42c03a627f9e",
+      "bytes": 57
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/head/unchanged.py",
+      "sha256": "534f740e38f9a8c5e7226a676a427bc5b44ec64ab605c33c595a68aedf5a97c4",
+      "bytes": 79
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/HEAD",
+      "sha256": "97cd72322a1f8deaf1aa178a2aa4c8b0f5fa42edbf8caa41ef8b882bbe648639",
+      "bytes": 19
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/config",
+      "sha256": "cae33efdb02cf774435c1ff9cb16bcc1014606908530c6e1dc727615fe3e8cda",
+      "bytes": 137
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/index",
+      "sha256": "b1a8c5e6e4ccb887f02654bae13184476cebf7b85a7d0474b4d94ece894aef60",
+      "bytes": 640
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/logs/HEAD",
+      "sha256": "349cd538180b02364b3b492f9d5238cab3a38c5ea78317e1a8f1cdf2082b064e",
+      "bytes": 141
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/logs/refs/heads/x1",
+      "sha256": "349cd538180b02364b3b492f9d5238cab3a38c5ea78317e1a8f1cdf2082b064e",
+      "bytes": 141
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/objects/1e/1026f989b2a0bf3014c31ec9934332102d85fc",
+      "sha256": "e15993d6c3150065546d225cb2e0cd64039330c59dfbc60900e294eaafedc1cb",
+      "bytes": 76
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/objects/4d/7aa952b8432b643f1c80b6e77e89f856f3287e",
+      "sha256": "e6b916a1fe064373cb599bb1bed2f99f9756a46b1391916859f311aedb00d77b",
+      "bytes": 245
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/objects/8d/f6def486ca2dd73b33896d3eb203bb6309f0b3",
+      "sha256": "e41103633af391f456767ca0b8aaa992f156ffb034f4f5333faacf7ee0825934",
+      "bytes": 81
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/objects/b5/cfc70cc2ffdecafa430590a446118c3be459a3",
+      "sha256": "9f194e8be6a63b1ee8d1973713b2e5d7eb69ad34b627accee2a479a6319ffc54",
+      "bytes": 176
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/objects/bd/cb42874a107e1b820847d687cebbd3d954079b",
+      "sha256": "30452f2e3e3049ffb957cb1345aab98bf0f17b6ba8890f7ff25010b5b79e3ab2",
+      "bytes": 69
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/objects/c5/a8277fd55ddf5d5516054de747047ba275c22b",
+      "sha256": "b1994c4be1d44cf7faa19e8a03d69ee2d1244e642c6b239d90f9626e0fe9cb1d",
+      "bytes": 135
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/objects/cc/8e57f35bb7cc2b07e454723e2aa170ce66b851",
+      "sha256": "5671f9b4e75462ceda2cb6f14306bfd2cc163aacd6a4041e4bedee77cce243bc",
+      "bytes": 87
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/objects/e7/adc6700af70b1a2d4efa9691c0b6d588856067",
+      "sha256": "4bcbaf891e23d18f422ed576e043bbfecfbc957cf06d53780246793b9f0d7ee9",
+      "bytes": 42
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/objects/e8/74169d3b9ab29fff71ed3d2b343c66d3a88dfb",
+      "sha256": "44592991626b9b73aa81236415898f8b0c663bc8e71116481cc700332cd52019",
+      "bytes": 56
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/objects/eb/f4a34828a6feeaf6dbe4ad7fa56d1318a83c52",
+      "sha256": "e14a8206225451e2a8c29a56ef4073f6d065a0fc22595b053b210edce156c5b5",
+      "bytes": 80
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.git/refs/heads/x1",
+      "sha256": "1df0626ab007b22dc791f958ccfcc821d332ba409b0df01231498748aa79f890",
+      "bytes": 41
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/00/cbf7f77c5a17dc2d4ad17f500914178794d9960ebdb203753c8ee9009b120a",
+      "sha256": "00cbf7f77c5a17dc2d4ad17f500914178794d9960ebdb203753c8ee9009b120a",
+      "bytes": 432
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/01/1ad0bbe2e640327d0631612f4d90775ed7d7525dd29efcce6e689c53bc545d",
+      "sha256": "011ad0bbe2e640327d0631612f4d90775ed7d7525dd29efcce6e689c53bc545d",
+      "bytes": 739
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/01/fba8216d9c4bd8e379a477c69f0baad849db7f6cb0960281a51b55443237f3",
+      "sha256": "01fba8216d9c4bd8e379a477c69f0baad849db7f6cb0960281a51b55443237f3",
+      "bytes": 718
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/02/a15eb696f502e23385381829b99ed820d51a1564fc00c31b2c37ff32b34c5e",
+      "sha256": "02a15eb696f502e23385381829b99ed820d51a1564fc00c31b2c37ff32b34c5e",
+      "bytes": 662
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/04/8f7185d78c1e53f45c528f03ce4fb60792fe15eff8c1ef8baaf20824b1ee00",
+      "sha256": "048f7185d78c1e53f45c528f03ce4fb60792fe15eff8c1ef8baaf20824b1ee00",
+      "bytes": 436
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/07/192cb6234a13cc921f747dd4fa66563ef22bba2c87fb50c85b1d6c8374f457",
+      "sha256": "07192cb6234a13cc921f747dd4fa66563ef22bba2c87fb50c85b1d6c8374f457",
+      "bytes": 605
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/07/755bf466d31ca68b042e375a78a3b53e52b4be2cb94675791b7ceea63487bd",
+      "sha256": "07755bf466d31ca68b042e375a78a3b53e52b4be2cb94675791b7ceea63487bd",
+      "bytes": 434
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/08/30ab0c603cd18905ede8084b7b509387e48566b0b699ce578386538cd1c504",
+      "sha256": "0830ab0c603cd18905ede8084b7b509387e48566b0b699ce578386538cd1c504",
+      "bytes": 435
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/0c/5a38a411ada9cf58e877686de6e0d20b7f3734b350908a1d232960f2bbf58f",
+      "sha256": "0c5a38a411ada9cf58e877686de6e0d20b7f3734b350908a1d232960f2bbf58f",
+      "bytes": 748
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/0c/d2bf7a76960695fde03e7e1a7822fc927ac20aab940f83365beb739040dfe1",
+      "sha256": "0cd2bf7a76960695fde03e7e1a7822fc927ac20aab940f83365beb739040dfe1",
+      "bytes": 711
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/0c/efb634a5642b5233287e3abffe564dad1a6fad8ecfb3b534fde5b1582fa36b",
+      "sha256": "0cefb634a5642b5233287e3abffe564dad1a6fad8ecfb3b534fde5b1582fa36b",
+      "bytes": 424
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/0e/a4a3429643a3a59e416d59de49a60f4a3b944f05f59d0f6ff346ac9cde408c",
+      "sha256": "0ea4a3429643a3a59e416d59de49a60f4a3b944f05f59d0f6ff346ac9cde408c",
+      "bytes": 437
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/11/7e38a375df9ea24efb2a3a315b8a85dee31224e21fc4cdc61782a08bd9bcda",
+      "sha256": "117e38a375df9ea24efb2a3a315b8a85dee31224e21fc4cdc61782a08bd9bcda",
+      "bytes": 448
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/13/52f45da5150df47d9c1e00a4eabaa0fd13427b21b86e06d63792b170c29a51",
+      "sha256": "1352f45da5150df47d9c1e00a4eabaa0fd13427b21b86e06d63792b170c29a51",
+      "bytes": 440
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/13/6e2fe112b8c3a29559153cf9d96368bbbe339471994213f84bb36adda75ad5",
+      "sha256": "136e2fe112b8c3a29559153cf9d96368bbbe339471994213f84bb36adda75ad5",
+      "bytes": 437
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/15/8876174cf17c441960c7f53b6fd2504ccd11cb30d84df63ffa040107a0045c",
+      "sha256": "158876174cf17c441960c7f53b6fd2504ccd11cb30d84df63ffa040107a0045c",
+      "bytes": 669
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/15/9923295cfc382d33bd222a9ce2b8a76d39e9c34a5d585367e5b27237286dca",
+      "sha256": "159923295cfc382d33bd222a9ce2b8a76d39e9c34a5d585367e5b27237286dca",
+      "bytes": 727
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/16/07e03657edd29c5c35f16c9386e76db11d7c8e14cbe156a83143fc84e2b4fc",
+      "sha256": "1607e03657edd29c5c35f16c9386e76db11d7c8e14cbe156a83143fc84e2b4fc",
+      "bytes": 440
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/16/4873369804f35988af479b3980b97a4faf4c34cca935e68d001a6433c67c6b",
+      "sha256": "164873369804f35988af479b3980b97a4faf4c34cca935e68d001a6433c67c6b",
+      "bytes": 664
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/19/361d0ce86c464f6315615cdd819b656090c2353d01973718017b7d2d17e343",
+      "sha256": "19361d0ce86c464f6315615cdd819b656090c2353d01973718017b7d2d17e343",
+      "bytes": 746
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/1c/3193e0ef5074666850302008e53d17f25546766597a0221e4763ac1e0c2b8f",
+      "sha256": "1c3193e0ef5074666850302008e53d17f25546766597a0221e4763ac1e0c2b8f",
+      "bytes": 432
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/1e/846e0c69554d79958efe045874f35b40d6f24dcf0b20b489ced6a5bc36f21e",
+      "sha256": "1e846e0c69554d79958efe045874f35b40d6f24dcf0b20b489ced6a5bc36f21e",
+      "bytes": 748
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/1f/8c7acb0986a34f2d74ebb5e22f4c14df7eda84e9d3cfc68afc9d8ab1fac816",
+      "sha256": "1f8c7acb0986a34f2d74ebb5e22f4c14df7eda84e9d3cfc68afc9d8ab1fac816",
+      "bytes": 661
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/21/550137ab4ff205bcb046d56e29af9d917a868436f4e584337f083dc589c7b0",
+      "sha256": "21550137ab4ff205bcb046d56e29af9d917a868436f4e584337f083dc589c7b0",
+      "bytes": 735
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/25/0a2c5fb729a171934efb0493dc4b3f3ec52e74f433b0e36474da4f97f6c376",
+      "sha256": "250a2c5fb729a171934efb0493dc4b3f3ec52e74f433b0e36474da4f97f6c376",
+      "bytes": 723
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/26/23ab89f3839ab1c20b016034daabc1efb28b6d374fa8ea7d44cddb8c4b157b",
+      "sha256": "2623ab89f3839ab1c20b016034daabc1efb28b6d374fa8ea7d44cddb8c4b157b",
+      "bytes": 719
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/26/ef2ecbf6872add74d9c70e15bb2cdf8945e4d027019a957ea86f3b08b9a2d7",
+      "sha256": "26ef2ecbf6872add74d9c70e15bb2cdf8945e4d027019a957ea86f3b08b9a2d7",
+      "bytes": 444
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/27/63949932c9b690ee3b5a810a33549fb47c5b901926515c9c7162a0705ed6e7",
+      "sha256": "2763949932c9b690ee3b5a810a33549fb47c5b901926515c9c7162a0705ed6e7",
+      "bytes": 905
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/27/cc2b398171fac7827c5d4d4ecc9c00597080df7e2c0d8e9a6425756b505bfb",
+      "sha256": "27cc2b398171fac7827c5d4d4ecc9c00597080df7e2c0d8e9a6425756b505bfb",
+      "bytes": 600
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/2a/e184617390721fe731bb539f8c9fa28037863884526a95d5e958d9fdf48ce6",
+      "sha256": "2ae184617390721fe731bb539f8c9fa28037863884526a95d5e958d9fdf48ce6",
+      "bytes": 432
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/2e/0c025a3f94aac7b7e4fe7d5e84709d67090efb4d91729e9e8bd0c4515883c2",
+      "sha256": "2e0c025a3f94aac7b7e4fe7d5e84709d67090efb4d91729e9e8bd0c4515883c2",
+      "bytes": 652
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/30/9ba05ce835dce4b167c535486147bf8a0e798b69b2638a4846d1ab01bae592",
+      "sha256": "309ba05ce835dce4b167c535486147bf8a0e798b69b2638a4846d1ab01bae592",
+      "bytes": 440
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/35/e546485115102dbbac0ec25d81b99c3a527bf0d8a2fc50a9f7394d96a93732",
+      "sha256": "35e546485115102dbbac0ec25d81b99c3a527bf0d8a2fc50a9f7394d96a93732",
+      "bytes": 739
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/37/96d7311074c95045ab92440b0fc102e1869c79c7afd253d92772065c397719",
+      "sha256": "3796d7311074c95045ab92440b0fc102e1869c79c7afd253d92772065c397719",
+      "bytes": 437
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/38/347626f736f29e0a9be561bcebdb1994e4cd3f2deed359db8371b8b68cee20",
+      "sha256": "38347626f736f29e0a9be561bcebdb1994e4cd3f2deed359db8371b8b68cee20",
+      "bytes": 441
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/3b/c6928733d3e0ef094df67d5bb2a74842e17423f835284fd82035cb552f6119",
+      "sha256": "3bc6928733d3e0ef094df67d5bb2a74842e17423f835284fd82035cb552f6119",
+      "bytes": 651
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/3c/fe19e0891b6f99b131559b80f3a0fe314a7473f44cd9975860ac6570e34ce3",
+      "sha256": "3cfe19e0891b6f99b131559b80f3a0fe314a7473f44cd9975860ac6570e34ce3",
+      "bytes": 435
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/3d/8a944aa0bc01eb367cf0b8170689ef75aafb07bd6310efa7d2b7700a24ad82",
+      "sha256": "3d8a944aa0bc01eb367cf0b8170689ef75aafb07bd6310efa7d2b7700a24ad82",
+      "bytes": 433
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/3d/bcb824ac6724aba904d69d0c8708a089b2d502188d1633d5314144dbe10db8",
+      "sha256": "3dbcb824ac6724aba904d69d0c8708a089b2d502188d1633d5314144dbe10db8",
+      "bytes": 713
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/43/ff592c66ae549d5755c86444b781d31c2f107749c79bed6a1bbce542ac445f",
+      "sha256": "43ff592c66ae549d5755c86444b781d31c2f107749c79bed6a1bbce542ac445f",
+      "bytes": 440
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/44/335b646bfa6e4e6e9db2b084e6141c90d5413c93c5e62133ae77d40c7a398b",
+      "sha256": "44335b646bfa6e4e6e9db2b084e6141c90d5413c93c5e62133ae77d40c7a398b",
+      "bytes": 427
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/45/9ab1eadda5333c868cdea88446c75270df4619a2368f879f6f0b150f084c6b",
+      "sha256": "459ab1eadda5333c868cdea88446c75270df4619a2368f879f6f0b150f084c6b",
+      "bytes": 437
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/46/5c33aec21ead3456119fd2a15c467cea7adaedbf9627efa247c797a7b645c4",
+      "sha256": "465c33aec21ead3456119fd2a15c467cea7adaedbf9627efa247c797a7b645c4",
+      "bytes": 654
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/46/7b0e0f4d0c002788d9b88066ec0ce316d1b9914458af9ba573660c632c029b",
+      "sha256": "467b0e0f4d0c002788d9b88066ec0ce316d1b9914458af9ba573660c632c029b",
+      "bytes": 598
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/46/d48ced3b2cbde1ed4fb85365372ba652fd771046b87ead4b31c628134589ef",
+      "sha256": "46d48ced3b2cbde1ed4fb85365372ba652fd771046b87ead4b31c628134589ef",
+      "bytes": 427
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/47/0fb19005c378b3229fcecb18ec208c484a9cde4e679ab2435fa7b9e472a144",
+      "sha256": "470fb19005c378b3229fcecb18ec208c484a9cde4e679ab2435fa7b9e472a144",
+      "bytes": 719
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/47/b2e529b877befaaa532ca4ef18b5bb1366fda56b80468781f037b918f99992",
+      "sha256": "47b2e529b877befaaa532ca4ef18b5bb1366fda56b80468781f037b918f99992",
+      "bytes": 431
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/48/0b78792dbce51e81034bc4b561969e9a26acd5547da87d42a4d7c67c151e97",
+      "sha256": "480b78792dbce51e81034bc4b561969e9a26acd5547da87d42a4d7c67c151e97",
+      "bytes": 434
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/48/e0d8290cd38a7e52c55614c4ea3f54dc72e4a85c72aa966f29484bcd5a0353",
+      "sha256": "48e0d8290cd38a7e52c55614c4ea3f54dc72e4a85c72aa966f29484bcd5a0353",
+      "bytes": 433
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/4b/bf04710e032abe8aae97fa1a23590ddc62f2223745edddb75b9eb83cd7517a",
+      "sha256": "4bbf04710e032abe8aae97fa1a23590ddc62f2223745edddb75b9eb83cd7517a",
+      "bytes": 439
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/4c/5cbcee3e11c0e11864397315f0d5de8d07262ac3cbe3a59213711647c6ec42",
+      "sha256": "4c5cbcee3e11c0e11864397315f0d5de8d07262ac3cbe3a59213711647c6ec42",
+      "bytes": 661
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/4c/8f389e0141e97d4561d91a9c84078e709920a766c3b4f59c60d701935d061c",
+      "sha256": "4c8f389e0141e97d4561d91a9c84078e709920a766c3b4f59c60d701935d061c",
+      "bytes": 717
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/4f/1b14bf00f8d55f7726bfdb8a02f868238a9ec2c5fe8561e98eb5eac966fd37",
+      "sha256": "4f1b14bf00f8d55f7726bfdb8a02f868238a9ec2c5fe8561e98eb5eac966fd37",
+      "bytes": 434
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/50/b4f521ed5aba8b43740da25fdc4547ee945dbd8fba050edb19f6fd971ee8c9",
+      "sha256": "50b4f521ed5aba8b43740da25fdc4547ee945dbd8fba050edb19f6fd971ee8c9",
+      "bytes": 717
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/51/d0077c853fdda8e02f76c63e613501c079a7f0279c92f08324062b467f9d96",
+      "sha256": "51d0077c853fdda8e02f76c63e613501c079a7f0279c92f08324062b467f9d96",
+      "bytes": 440
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/53/79ea6f6be1cd1977e3988b02a5d5b2db78df06feb3f8ed035d43cb5a2d7c6a",
+      "sha256": "5379ea6f6be1cd1977e3988b02a5d5b2db78df06feb3f8ed035d43cb5a2d7c6a",
+      "bytes": 441
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/60/04f6ab21321d95d0263ef3a6e00706d86f6107415fcfeadf0f4d8c90f3a98d",
+      "sha256": "6004f6ab21321d95d0263ef3a6e00706d86f6107415fcfeadf0f4d8c90f3a98d",
+      "bytes": 737
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/61/ba96e4b7bbfecfa8eaa1900ae6eac569780d1224d48235677174dd10189da9",
+      "sha256": "61ba96e4b7bbfecfa8eaa1900ae6eac569780d1224d48235677174dd10189da9",
+      "bytes": 664
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/64/25bf7ccae26b59b43e8b0e14875a930021bfbfeed24f7ee29957ee5abccfa7",
+      "sha256": "6425bf7ccae26b59b43e8b0e14875a930021bfbfeed24f7ee29957ee5abccfa7",
+      "bytes": 599
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/65/a7be2c5efad280201c0daa4c46d8561b39ad4ac964dc49cb72ef2ab5acc463",
+      "sha256": "65a7be2c5efad280201c0daa4c46d8561b39ad4ac964dc49cb72ef2ab5acc463",
+      "bytes": 426
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/67/c3866d048b61e5d9557856d8994b108b1c30fc6c98fe67fa2109523a383de1",
+      "sha256": "67c3866d048b61e5d9557856d8994b108b1c30fc6c98fe67fa2109523a383de1",
+      "bytes": 657
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/6c/915708430481ae72a3c51f548df385dabf13d1e5ff8d615330f7b9b177011d",
+      "sha256": "6c915708430481ae72a3c51f548df385dabf13d1e5ff8d615330f7b9b177011d",
+      "bytes": 443
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/6f/d43d6d1ec439583e80789eeaa0be3061f4e761866f66a3d4c7cfe35b3f8bd4",
+      "sha256": "6fd43d6d1ec439583e80789eeaa0be3061f4e761866f66a3d4c7cfe35b3f8bd4",
+      "bytes": 788
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/71/b4b0e493d007ba4e5f6d33c8712eaa17b2f371bcf6b032335715e7870d7216",
+      "sha256": "71b4b0e493d007ba4e5f6d33c8712eaa17b2f371bcf6b032335715e7870d7216",
+      "bytes": 427
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/77/a223eb31f28850a1568f5b592641d90ca6d01a7d3b0425d5fdf89ab99cc093",
+      "sha256": "77a223eb31f28850a1568f5b592641d90ca6d01a7d3b0425d5fdf89ab99cc093",
+      "bytes": 657
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/79/d6a9ccb789c7a039395eddae14f4eb5a13b14bc6d2717df4e9b854800b70a6",
+      "sha256": "79d6a9ccb789c7a039395eddae14f4eb5a13b14bc6d2717df4e9b854800b70a6",
+      "bytes": 724
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/7b/afaf0d1f85197bb85377699d60af82cef1c7a0040f7ce52e5b83bc8c415461",
+      "sha256": "7bafaf0d1f85197bb85377699d60af82cef1c7a0040f7ce52e5b83bc8c415461",
+      "bytes": 735
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/7f/96593c3eb78cff6763cdfb8830555d283e5704e794e76e6f6ee45f38f9f171",
+      "sha256": "7f96593c3eb78cff6763cdfb8830555d283e5704e794e76e6f6ee45f38f9f171",
+      "bytes": 735
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/81/f79f590efeb019ab353ea447d72d2dcc9b97493ae25b9f514e997fa38d5c7e",
+      "sha256": "81f79f590efeb019ab353ea447d72d2dcc9b97493ae25b9f514e997fa38d5c7e",
+      "bytes": 742
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/84/bd021ae4e1ee6e896ca66c8445566ce2d263bf9fbc9799b78c907027bb2e9d",
+      "sha256": "84bd021ae4e1ee6e896ca66c8445566ce2d263bf9fbc9799b78c907027bb2e9d",
+      "bytes": 445
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/85/a885e0b9a99379d2457e09830f125295515c3a101aaa6bc6936dbd9c332929",
+      "sha256": "85a885e0b9a99379d2457e09830f125295515c3a101aaa6bc6936dbd9c332929",
+      "bytes": 614
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/85/ba0adf5d86ee3a02d8faebdcafdb0380f20017541d49a497008ec4507a19ba",
+      "sha256": "85ba0adf5d86ee3a02d8faebdcafdb0380f20017541d49a497008ec4507a19ba",
+      "bytes": 743
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/8a/d4da8f5ccc56705c650c1c54a3101a3257f4b9c0e5e15609b07cbe65cc0c1e",
+      "sha256": "8ad4da8f5ccc56705c650c1c54a3101a3257f4b9c0e5e15609b07cbe65cc0c1e",
+      "bytes": 439
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/8a/dd0e9d1c717486a6390d0003ec7013acb88efd77544c890a1b5b131356dbf8",
+      "sha256": "8add0e9d1c717486a6390d0003ec7013acb88efd77544c890a1b5b131356dbf8",
+      "bytes": 604
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/90/b79f98660241606bd737f3f249aa495828d464aedde2e65153b148c1c229eb",
+      "sha256": "90b79f98660241606bd737f3f249aa495828d464aedde2e65153b148c1c229eb",
+      "bytes": 729
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/95/dfe3f259c2f7200292a0822bf39d05f996d5f7e14cd459ee94708f6f374218",
+      "sha256": "95dfe3f259c2f7200292a0822bf39d05f996d5f7e14cd459ee94708f6f374218",
+      "bytes": 723
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/98/5c24bf1c76c4207d40eb820cccee848e7ce32e3c4a2108b979a54c25ea47f6",
+      "sha256": "985c24bf1c76c4207d40eb820cccee848e7ce32e3c4a2108b979a54c25ea47f6",
+      "bytes": 744
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/98/dea6bce8ba398ac47ddae9889097d1a40ce65846ac1b95726578d511ed693a",
+      "sha256": "98dea6bce8ba398ac47ddae9889097d1a40ce65846ac1b95726578d511ed693a",
+      "bytes": 662
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/99/8e908429abd4f0e7d2c62b47a0ec98c44b2bae0f409d4ebd228d1b73a0dc7d",
+      "sha256": "998e908429abd4f0e7d2c62b47a0ec98c44b2bae0f409d4ebd228d1b73a0dc7d",
+      "bytes": 432
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/9b/85b2e17e12a9483eb5384364c18b00cdec33a809c4c177d89baed3af424676",
+      "sha256": "9b85b2e17e12a9483eb5384364c18b00cdec33a809c4c177d89baed3af424676",
+      "bytes": 440
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/a2/ac0af7a16427d843f95931a164bd3f619abbe277f4f4292adda20c8770c7ff",
+      "sha256": "a2ac0af7a16427d843f95931a164bd3f619abbe277f4f4292adda20c8770c7ff",
+      "bytes": 421
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/a7/1d7b5bce586d22e4cf83a5141682b5774875745de13874c5989a3b15ea2853",
+      "sha256": "a71d7b5bce586d22e4cf83a5141682b5774875745de13874c5989a3b15ea2853",
+      "bytes": 445
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/aa/a99f52889c8ac66fe72aa30e9f7aa1798400fe929defabe8f4265d1b2943aa",
+      "sha256": "aaa99f52889c8ac66fe72aa30e9f7aa1798400fe929defabe8f4265d1b2943aa",
+      "bytes": 431
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/ae/d21ac123cf9bc871df53a6335dbec8eafdf462eeb9ae51c0976ebdb5460909",
+      "sha256": "aed21ac123cf9bc871df53a6335dbec8eafdf462eeb9ae51c0976ebdb5460909",
+      "bytes": 620
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/b0/d6ff994c59bf5f828fe162d0541de8dcb0ff1f9471fa5f6c033185861fb5ee",
+      "sha256": "b0d6ff994c59bf5f828fe162d0541de8dcb0ff1f9471fa5f6c033185861fb5ee",
+      "bytes": 658
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/b1/bee27388798d3b03304bbb989d90904d777cde7caadc1192f0b7407d8c4fdd",
+      "sha256": "b1bee27388798d3b03304bbb989d90904d777cde7caadc1192f0b7407d8c4fdd",
+      "bytes": 715
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/b2/d9e3a4c2f21ca561649a97f11f2e3534246ecd96a6940c6a4a45f0727280b8",
+      "sha256": "b2d9e3a4c2f21ca561649a97f11f2e3534246ecd96a6940c6a4a45f0727280b8",
+      "bytes": 737
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/b3/d9168d74b9c705333f52e12bc1da2d4c0a858af9b790d5dc1a378075df7aa0",
+      "sha256": "b3d9168d74b9c705333f52e12bc1da2d4c0a858af9b790d5dc1a378075df7aa0",
+      "bytes": 606
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/b4/641e9ea24ff5a65955956dcf57708a8b7cc7de0d4c663ae8fcab6a401a5fe5",
+      "sha256": "b4641e9ea24ff5a65955956dcf57708a8b7cc7de0d4c663ae8fcab6a401a5fe5",
+      "bytes": 430
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/b5/3d195051bd7004f5d8c280ecfb48ebd59109951ffcaeeff0326e660c3b5507",
+      "sha256": "b53d195051bd7004f5d8c280ecfb48ebd59109951ffcaeeff0326e660c3b5507",
+      "bytes": 610
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/b6/7f5b9398c236e5f936be219f649b27b9e84da5aecfdd229fd9526e542c68cc",
+      "sha256": "b67f5b9398c236e5f936be219f649b27b9e84da5aecfdd229fd9526e542c68cc",
+      "bytes": 447
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/b7/03a56b8139cd8da63d8cb9e7682e25321222f00de59d9d2c88c4f1f0dc045a",
+      "sha256": "b703a56b8139cd8da63d8cb9e7682e25321222f00de59d9d2c88c4f1f0dc045a",
+      "bytes": 444
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/b7/26b4cb8b0aa94624cc2c4b6c102a560f7f6565f39f4cce2d3e5b1653b71c0e",
+      "sha256": "b726b4cb8b0aa94624cc2c4b6c102a560f7f6565f39f4cce2d3e5b1653b71c0e",
+      "bytes": 428
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/b7/ee4f962f03b3e9593d9d2da7e5d21400fce3cee6bc2013408e3b8964d59d49",
+      "sha256": "b7ee4f962f03b3e9593d9d2da7e5d21400fce3cee6bc2013408e3b8964d59d49",
+      "bytes": 433
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/ba/b45f5936ec1feede9662b8b8e0b346c376e609079b7a52b61d282574e764fe",
+      "sha256": "bab45f5936ec1feede9662b8b8e0b346c376e609079b7a52b61d282574e764fe",
+      "bytes": 422
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/ba/d66737501e74e3fac433ea7714f2dee23ac0afdfaefa7899f62ddbf3d944b3",
+      "sha256": "bad66737501e74e3fac433ea7714f2dee23ac0afdfaefa7899f62ddbf3d944b3",
+      "bytes": 428
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/bc/36134d6943a1e3ebf5a6ea9b6f067ab90e64e43fbdba2357d6f36074ebbd4d",
+      "sha256": "bc36134d6943a1e3ebf5a6ea9b6f067ab90e64e43fbdba2357d6f36074ebbd4d",
+      "bytes": 431
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/be/f509b12d1de2f1f754257eee0c73fb5712574acee4b9528dfd170431c3c6d3",
+      "sha256": "bef509b12d1de2f1f754257eee0c73fb5712574acee4b9528dfd170431c3c6d3",
+      "bytes": 421
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/c1/9e51ef43d7529993ba83993447326dea18c8268d9b6936a7a3d98a374e8a3e",
+      "sha256": "c19e51ef43d7529993ba83993447326dea18c8268d9b6936a7a3d98a374e8a3e",
+      "bytes": 727
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/c1/ad41815e376f7c2f570320967380432cfa63e1a0a148c6996ef22083db2777",
+      "sha256": "c1ad41815e376f7c2f570320967380432cfa63e1a0a148c6996ef22083db2777",
+      "bytes": 438
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/c4/fd2e7e3e3cba4da94fd6d4395d4a4883da030e3ae03a31316562517af70a6b",
+      "sha256": "c4fd2e7e3e3cba4da94fd6d4395d4a4883da030e3ae03a31316562517af70a6b",
+      "bytes": 733
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/c5/54ab90585df4630da1fe0f166aeed9fc9cd3851f6bac33ff1bae34779fbe71",
+      "sha256": "c554ab90585df4630da1fe0f166aeed9fc9cd3851f6bac33ff1bae34779fbe71",
+      "bytes": 445
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/c5/ba2cf8dacd085d34e792c5604b1e4e76ca0939b28f5c879472b0b978a979ec",
+      "sha256": "c5ba2cf8dacd085d34e792c5604b1e4e76ca0939b28f5c879472b0b978a979ec",
+      "bytes": 441
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/c5/dcb8773e86b6b2e1e5e68299250c4fefda52eddea576fe26247d32ddbff0ec",
+      "sha256": "c5dcb8773e86b6b2e1e5e68299250c4fefda52eddea576fe26247d32ddbff0ec",
+      "bytes": 430
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/cc/140a6d25ace552276b24171e42fae56da33209e0f84593658647f975cc6a0f",
+      "sha256": "cc140a6d25ace552276b24171e42fae56da33209e0f84593658647f975cc6a0f",
+      "bytes": 709
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/cc/27b9552a3f659bc6e54032027cd0d0dedf3eaa0604b7581773621e8e8c17ef",
+      "sha256": "cc27b9552a3f659bc6e54032027cd0d0dedf3eaa0604b7581773621e8e8c17ef",
+      "bytes": 434
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/cd/12a77121c5a0158168bc9204f7e71cce0c17faa150581f868ce6e578370bbe",
+      "sha256": "cd12a77121c5a0158168bc9204f7e71cce0c17faa150581f868ce6e578370bbe",
+      "bytes": 715
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/d1/0ede65a6c72afe0d7bf6b3b6f0ca44d2801469c75ef377aa57c3b9a568c941",
+      "sha256": "d10ede65a6c72afe0d7bf6b3b6f0ca44d2801469c75ef377aa57c3b9a568c941",
+      "bytes": 438
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/d2/a9a2218b18ed07ac7743d6aaed21517967d5d3c7a227d2f75c589e52002046",
+      "sha256": "d2a9a2218b18ed07ac7743d6aaed21517967d5d3c7a227d2f75c589e52002046",
+      "bytes": 710
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/d4/21af7dcfa71a194bf07b434023550805ea94b89f704c572317e4093b74d954",
+      "sha256": "d421af7dcfa71a194bf07b434023550805ea94b89f704c572317e4093b74d954",
+      "bytes": 434
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/d5/34ba920d3ef61b5ecf40472cb290d8a8b8a64127bad480deaabbb826cf76ac",
+      "sha256": "d534ba920d3ef61b5ecf40472cb290d8a8b8a64127bad480deaabbb826cf76ac",
+      "bytes": 729
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/d6/9abe2b7af337aa29c65ac28f7ae968038c158d156acf747039871673390a78",
+      "sha256": "d69abe2b7af337aa29c65ac28f7ae968038c158d156acf747039871673390a78",
+      "bytes": 656
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/da/8b4922a0eb70587ca129e9b06fe7d7c99a295c395bc7920bf7a117915c5c6f",
+      "sha256": "da8b4922a0eb70587ca129e9b06fe7d7c99a295c395bc7920bf7a117915c5c6f",
+      "bytes": 427
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/da/ee020e0d25a03c27c9fb3eeadffae7a497e3c9cf7583311e0db2ebd4f521a2",
+      "sha256": "daee020e0d25a03c27c9fb3eeadffae7a497e3c9cf7583311e0db2ebd4f521a2",
+      "bytes": 426
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/de/ee364a2797eabde97d99f78905b32b791020ccd251675a22875bafaab495f0",
+      "sha256": "deee364a2797eabde97d99f78905b32b791020ccd251675a22875bafaab495f0",
+      "bytes": 436
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/e3/2d5fa0a6dbf0d198d6b189c921bdcd7a59adcbd8350595e0400a9e5dcdb7c1",
+      "sha256": "e32d5fa0a6dbf0d198d6b189c921bdcd7a59adcbd8350595e0400a9e5dcdb7c1",
+      "bytes": 604
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/e6/d156d7098d4a741899cf75b35bc011942c0a5b7b24627ebd145618714bbfa9",
+      "sha256": "e6d156d7098d4a741899cf75b35bc011942c0a5b7b24627ebd145618714bbfa9",
+      "bytes": 730
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/e8/885a0627b349cc64f45038686c9e76db662088afe16303c4a0c9695fed2252",
+      "sha256": "e8885a0627b349cc64f45038686c9e76db662088afe16303c4a0c9695fed2252",
+      "bytes": 656
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/e8/c4a84fe50b05fdccfa85c10d7a9835352b12b913194bdd6b5c03dc081c7654",
+      "sha256": "e8c4a84fe50b05fdccfa85c10d7a9835352b12b913194bdd6b5c03dc081c7654",
+      "bytes": 733
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/e9/9117d19ab3c5ab1bce925778142c24fda75fd02ccb7c9ee45d0c41fd95843f",
+      "sha256": "e99117d19ab3c5ab1bce925778142c24fda75fd02ccb7c9ee45d0c41fd95843f",
+      "bytes": 610
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/eb/07949a354d71da14ff74639a09db77068b1b5dda18fdcaa2c6ae8939e0e831",
+      "sha256": "eb07949a354d71da14ff74639a09db77068b1b5dda18fdcaa2c6ae8939e0e831",
+      "bytes": 443
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/ed/65f0092b1bd68332fd886e0735eece874a7b0329c5a12955278b2fc60cd424",
+      "sha256": "ed65f0092b1bd68332fd886e0735eece874a7b0329c5a12955278b2fc60cd424",
+      "bytes": 435
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/f2/f34690a67a7c014f80d19f83c28bae761250f2df315cc3a42444207d4285c2",
+      "sha256": "f2f34690a67a7c014f80d19f83c28bae761250f2df315cc3a42444207d4285c2",
+      "bytes": 651
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/f3/6fab1d5a11ef2b7bebad7ce8e4c6893f3f98c6c895812a6031bf5caa66d63b",
+      "sha256": "f36fab1d5a11ef2b7bebad7ce8e4c6893f3f98c6c895812a6031bf5caa66d63b",
+      "bytes": 430
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/f4/af39c72a942948551b97cfba017012096308c10093ee6f6485d4eb51634134",
+      "sha256": "f4af39c72a942948551b97cfba017012096308c10093ee6f6485d4eb51634134",
+      "bytes": 452
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/f6/2aefdf07557dee4041649b5cb3ed97a30a2c93a50003503a3dada27bed8c08",
+      "sha256": "f62aefdf07557dee4041649b5cb3ed97a30a2c93a50003503a3dada27bed8c08",
+      "bytes": 439
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/f9/2d5b8eb5735d4287702d5078e91d5d12a18f105dbac0a212c44fb1f7a4cbfe",
+      "sha256": "f92d5b8eb5735d4287702d5078e91d5d12a18f105dbac0a212c44fb1f7a4cbfe",
+      "bytes": 447
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/artifacts/fe/0aab32e92af2cd585a82187b20ae2b60b784cfa80b72ac8e4dde97457fadc4",
+      "sha256": "fe0aab32e92af2cd585a82187b20ae2b60b784cfa80b72ac8e4dde97457fadc4",
+      "bytes": 734
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/clawpatch/config.json",
+      "sha256": "b611af4c752f1d8288db12464d5d9ac24366045b74fc69267a7a7348d1e778e6",
+      "bytes": 881
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/clawpatch/features/feat_config_3d18bcf3a8.json",
+      "sha256": "3b85b6bcc00cda7a7f8d0771f0bdb9583fdf24b27c91f38ee770a8f12fa8c7d0",
+      "bytes": 794
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/clawpatch/features/feat_config_7528cb5b98.json",
+      "sha256": "a9b0744bc614571c2d5721e34ee087a7f563b8736fef427694437fb7102d0143",
+      "bytes": 818
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/clawpatch/features/feat_library_2527bff5a3.json",
+      "sha256": "ab83d6c852578be4e60d73c610398b65e89884aa58469ebaea99ca952d027ac5",
+      "bytes": 869
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/clawpatch/features/feat_library_25faef2bc4.json",
+      "sha256": "c20dc6fc575a43e82fc624e707672433691a6a46db688ca249e88ccaaa10d5fe",
+      "bytes": 847
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/clawpatch/features/feat_library_6f43d560b8.json",
+      "sha256": "94f6ae60d387979407a3d8600f033d141318bb7704ea12560717ab90ee55f075",
+      "bytes": 749
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/clawpatch/project.json",
+      "sha256": "8c833398c29e65e1e7d9a11e759d89e58b6e7afcf08ba8ff1a9f2be2a42a1d58",
+      "bytes": 792
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/policy.yaml",
+      "sha256": "3d3dae7d063c4fe94127de4e67ae9315e1495e4fa510ea587ae4c5a058604ec3",
+      "bytes": 235
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/state.sqlite",
+      "sha256": "4c0c5c620573050860f6f3364e0bdfd7743826bd8a7230dfbffa054c68f14822",
+      "bytes": 811008
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/.scout/writer.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/changed.py",
+      "sha256": "0ecf4e2fd0b76f8305f0729807a67bc7d2eeabe27ed637a98bda8b9d87738e3b",
+      "bytes": 109
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/go.mod",
+      "sha256": "ec75b6e87719a439d7ec4959302e25fd588319c7f7cfd1e6e20b39a324aff0b0",
+      "bytes": 26
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/index.js",
+      "sha256": "2fa9c2c5a47269dd22d1da68d24423b1a2d3a2da635c4c60798c59e17ade5d23",
+      "bytes": 82
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/main.go",
+      "sha256": "d37528f6027aa09adca50fa54e40ffc247c5597ffb7d4effa633ccba6134536c",
+      "bytes": 65
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/package.json",
+      "sha256": "514ef8299051029ada3268f1fb2eba8b698548d59bb6d438d71c42c03a627f9e",
+      "bytes": 57
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/positiveXX/parent/unchanged.py",
+      "sha256": "534f740e38f9a8c5e7226a676a427bc5b44ec64ab605c33c595a68aedf5a97c4",
+      "bytes": 79
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/HEAD",
+      "sha256": "97cd72322a1f8deaf1aa178a2aa4c8b0f5fa42edbf8caa41ef8b882bbe648639",
+      "bytes": 19
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/config",
+      "sha256": "cae33efdb02cf774435c1ff9cb16bcc1014606908530c6e1dc727615fe3e8cda",
+      "bytes": 137
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/index",
+      "sha256": "2de1855a9443c1f5cfc5cb9253454f4c985dc88f113f9a67d7d624b5d025891b",
+      "bytes": 640
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/logs/HEAD",
+      "sha256": "6cbe49ea4b6d03def241e7ab49b680f0da9246cc97f902414297c212f06d573b",
+      "bytes": 141
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/logs/refs/heads/x1",
+      "sha256": "6cbe49ea4b6d03def241e7ab49b680f0da9246cc97f902414297c212f06d573b",
+      "bytes": 141
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/objects/1e/1026f989b2a0bf3014c31ec9934332102d85fc",
+      "sha256": "e15993d6c3150065546d225cb2e0cd64039330c59dfbc60900e294eaafedc1cb",
+      "bytes": 76
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/objects/84/966a3f74ede536f32d786c261fc035680102d1",
+      "sha256": "0f0164f2bb97fcd7836197f86fc17684334c58eb4add4d3028da341111b5c777",
+      "bytes": 163
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/objects/8a/8a17bc47c3dec23964a4614bae7f9ca064b860",
+      "sha256": "313e21a9416fe8fe3d3f24768de105ae82b53ea303fbe75a4c23da7865034fed",
+      "bytes": 245
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/objects/8d/f6def486ca2dd73b33896d3eb203bb6309f0b3",
+      "sha256": "e41103633af391f456767ca0b8aaa992f156ffb034f4f5333faacf7ee0825934",
+      "bytes": 81
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/objects/99/7ee189b05b18904a5f6680f0a9893029ff7902",
+      "sha256": "261f8bba2d723c157ed1999b50eb35fa7623a547e9bcbc8559708b0efd84c383",
+      "bytes": 175
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/objects/bc/35a3badcb9cf860396ca2c9e2a65121734064d",
+      "sha256": "5060d758ed2f8107173a113be37c01b2e03cc3f745b32ac8b29f6e795741e044",
+      "bytes": 182
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/objects/bd/cb42874a107e1b820847d687cebbd3d954079b",
+      "sha256": "30452f2e3e3049ffb957cb1345aab98bf0f17b6ba8890f7ff25010b5b79e3ab2",
+      "bytes": 69
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/objects/e7/adc6700af70b1a2d4efa9691c0b6d588856067",
+      "sha256": "4bcbaf891e23d18f422ed576e043bbfecfbc957cf06d53780246793b9f0d7ee9",
+      "bytes": 42
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/objects/eb/f4a34828a6feeaf6dbe4ad7fa56d1318a83c52",
+      "sha256": "e14a8206225451e2a8c29a56ef4073f6d065a0fc22595b053b210edce156c5b5",
+      "bytes": 80
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/objects/ee/04e32f7c11b9e9556e166a49682ed3f21e2af9",
+      "sha256": "dff1a36143d6f2de82eeb66c64c6925890df3cef1f68be6abeb48e006830508b",
+      "bytes": 56
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.git/refs/heads/x1",
+      "sha256": "3e9314eacde77bbac23b95d755f11116300f2abb119031eaf752eb2a9bf16ec8",
+      "bytes": 41
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/.scout/policy.yaml",
+      "sha256": "6189fea6ad039f0eb0206a7986aa94a44e3bdf46669184298b8a558d06fa7255",
+      "bytes": 234
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/changed.py",
+      "sha256": "0950bd4989dfc76b1c8ed8641c91b4994cefee6bc5bb6d5105510f99f25ec109",
+      "bytes": 558
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/go.mod",
+      "sha256": "ec75b6e87719a439d7ec4959302e25fd588319c7f7cfd1e6e20b39a324aff0b0",
+      "bytes": 26
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/index.js",
+      "sha256": "2fa9c2c5a47269dd22d1da68d24423b1a2d3a2da635c4c60798c59e17ade5d23",
+      "bytes": 82
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/main.go",
+      "sha256": "d37528f6027aa09adca50fa54e40ffc247c5597ffb7d4effa633ccba6134536c",
+      "bytes": 65
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/package.json",
+      "sha256": "514ef8299051029ada3268f1fb2eba8b698548d59bb6d438d71c42c03a627f9e",
+      "bytes": 57
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/head/unchanged.py",
+      "sha256": "534f740e38f9a8c5e7226a676a427bc5b44ec64ab605c33c595a68aedf5a97c4",
+      "bytes": 79
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/HEAD",
+      "sha256": "97cd72322a1f8deaf1aa178a2aa4c8b0f5fa42edbf8caa41ef8b882bbe648639",
+      "bytes": 19
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/config",
+      "sha256": "cae33efdb02cf774435c1ff9cb16bcc1014606908530c6e1dc727615fe3e8cda",
+      "bytes": 137
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/index",
+      "sha256": "7a1ab59e683fbec9dc0ea38a6a8819ef20b09935cbe4a8f59ddf6ca46957e022",
+      "bytes": 640
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/logs/HEAD",
+      "sha256": "349cd538180b02364b3b492f9d5238cab3a38c5ea78317e1a8f1cdf2082b064e",
+      "bytes": 141
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/logs/refs/heads/x1",
+      "sha256": "349cd538180b02364b3b492f9d5238cab3a38c5ea78317e1a8f1cdf2082b064e",
+      "bytes": 141
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/objects/1e/1026f989b2a0bf3014c31ec9934332102d85fc",
+      "sha256": "e15993d6c3150065546d225cb2e0cd64039330c59dfbc60900e294eaafedc1cb",
+      "bytes": 76
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/objects/4d/7aa952b8432b643f1c80b6e77e89f856f3287e",
+      "sha256": "e6b916a1fe064373cb599bb1bed2f99f9756a46b1391916859f311aedb00d77b",
+      "bytes": 245
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/objects/8d/f6def486ca2dd73b33896d3eb203bb6309f0b3",
+      "sha256": "e41103633af391f456767ca0b8aaa992f156ffb034f4f5333faacf7ee0825934",
+      "bytes": 81
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/objects/b5/cfc70cc2ffdecafa430590a446118c3be459a3",
+      "sha256": "9f194e8be6a63b1ee8d1973713b2e5d7eb69ad34b627accee2a479a6319ffc54",
+      "bytes": 176
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/objects/bd/cb42874a107e1b820847d687cebbd3d954079b",
+      "sha256": "30452f2e3e3049ffb957cb1345aab98bf0f17b6ba8890f7ff25010b5b79e3ab2",
+      "bytes": 69
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/objects/c5/a8277fd55ddf5d5516054de747047ba275c22b",
+      "sha256": "b1994c4be1d44cf7faa19e8a03d69ee2d1244e642c6b239d90f9626e0fe9cb1d",
+      "bytes": 135
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/objects/cc/8e57f35bb7cc2b07e454723e2aa170ce66b851",
+      "sha256": "5671f9b4e75462ceda2cb6f14306bfd2cc163aacd6a4041e4bedee77cce243bc",
+      "bytes": 87
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/objects/e7/adc6700af70b1a2d4efa9691c0b6d588856067",
+      "sha256": "4bcbaf891e23d18f422ed576e043bbfecfbc957cf06d53780246793b9f0d7ee9",
+      "bytes": 42
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/objects/e8/74169d3b9ab29fff71ed3d2b343c66d3a88dfb",
+      "sha256": "44592991626b9b73aa81236415898f8b0c663bc8e71116481cc700332cd52019",
+      "bytes": 56
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/objects/eb/f4a34828a6feeaf6dbe4ad7fa56d1318a83c52",
+      "sha256": "e14a8206225451e2a8c29a56ef4073f6d065a0fc22595b053b210edce156c5b5",
+      "bytes": 80
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.git/refs/heads/x1",
+      "sha256": "1df0626ab007b22dc791f958ccfcc821d332ba409b0df01231498748aa79f890",
+      "bytes": 41
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/.scout/policy.yaml",
+      "sha256": "3d3dae7d063c4fe94127de4e67ae9315e1495e4fa510ea587ae4c5a058604ec3",
+      "bytes": 235
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/changed.py",
+      "sha256": "0ecf4e2fd0b76f8305f0729807a67bc7d2eeabe27ed637a98bda8b9d87738e3b",
+      "bytes": 109
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/go.mod",
+      "sha256": "ec75b6e87719a439d7ec4959302e25fd588319c7f7cfd1e6e20b39a324aff0b0",
+      "bytes": 26
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/index.js",
+      "sha256": "2fa9c2c5a47269dd22d1da68d24423b1a2d3a2da635c4c60798c59e17ade5d23",
+      "bytes": 82
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/main.go",
+      "sha256": "d37528f6027aa09adca50fa54e40ffc247c5597ffb7d4effa633ccba6134536c",
+      "bytes": 65
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/package.json",
+      "sha256": "514ef8299051029ada3268f1fb2eba8b698548d59bb6d438d71c42c03a627f9e",
+      "bytes": 57
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/referencer/parent/unchanged.py",
+      "sha256": "534f740e38f9a8c5e7226a676a427bc5b44ec64ab605c33c595a68aedf5a97c4",
+      "bytes": 79
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/bound/head/effective.json",
+      "sha256": "85154733ed98dcdeca9768fd6545311601bbbd4a90e6af7f905ddb53002406cc",
+      "bytes": 16023
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/bound/head/stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/bound/head/stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/bound/head/stubs/attempts.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/bound/head/stubs/claude",
+      "sha256": "7dd16c83a3c289e5a068e8a7472a556d84c5d1174e7ef45679279f83f73bcee9",
+      "bytes": 487
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/bound/head/stubs/codex",
+      "sha256": "7dd16c83a3c289e5a068e8a7472a556d84c5d1174e7ef45679279f83f73bcee9",
+      "bytes": 487
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/bound/parent/effective.json",
+      "sha256": "3e2711ce1cb2cba0f2d81c05a98b10a524d8b1af4471e34bcc702b040ebc8eb7",
+      "bytes": 16026
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/bound/parent/stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/bound/parent/stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/bound/parent/stubs/attempts.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/bound/parent/stubs/claude",
+      "sha256": "aec91d77c21db9db070ac177d95ec1f53b25c524fb6d71d970b18475990d2e73",
+      "bytes": 489
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/bound/parent/stubs/codex",
+      "sha256": "aec91d77c21db9db070ac177d95ec1f53b25c524fb6d71d970b18475990d2e73",
+      "bytes": 489
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/reference/head/effective.json",
+      "sha256": "63d81f5a2ad0323b599705c03161b6240fc20b4332061bf470fefdd776125cd7",
+      "bytes": 15573
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/reference/head/stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/reference/head/stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/reference/head/stubs/attempts.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/reference/head/stubs/claude",
+      "sha256": "843b20e42f7b702376e427c5494c015be7294c71a00cfc2a2706fbdfb77209cc",
+      "bytes": 491
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/reference/head/stubs/codex",
+      "sha256": "843b20e42f7b702376e427c5494c015be7294c71a00cfc2a2706fbdfb77209cc",
+      "bytes": 491
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/reference/parent/effective.json",
+      "sha256": "31094580020c4018d3231306dece76901978b65b892d97b206184119dffcd746",
+      "bytes": 15576
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/reference/parent/stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/reference/parent/stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/reference/parent/stubs/attempts.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/reference/parent/stubs/claude",
+      "sha256": "210235127f4b3ade5edd1baffc906853fe4846331cba896d653d8af2b6bbf6ef",
+      "bytes": 493
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/reference/parent/stubs/codex",
+      "sha256": "210235127f4b3ade5edd1baffc906853fe4846331cba896d653d8af2b6bbf6ef",
+      "bytes": 493
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/synthetic-unbound/head/effective.json",
+      "sha256": "5f8d6c14401b7e96903100d7bfb5c56a36cc69df1e2bfcedae921f8e6e393616",
+      "bytes": 16176
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/synthetic-unbound/head/stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/synthetic-unbound/head/stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/synthetic-unbound/head/stubs/attempts.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/synthetic-unbound/head/stubs/claude",
+      "sha256": "c8d1636da79ce4b5d36cb78a7ba9894d73bb3ea5cc2464fc03cf71c803ac1d92",
+      "bytes": 499
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/synthetic-unbound/head/stubs/codex",
+      "sha256": "c8d1636da79ce4b5d36cb78a7ba9894d73bb3ea5cc2464fc03cf71c803ac1d92",
+      "bytes": 499
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/synthetic-unbound/parent/effective.json",
+      "sha256": "2466166cee1d01eaee2e275e0ffabe3dde79162d32097d33cc182c7b990faeca",
+      "bytes": 16182
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/synthetic-unbound/parent/stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/synthetic-unbound/parent/stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/synthetic-unbound/parent/stubs/attempts.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/synthetic-unbound/parent/stubs/claude",
+      "sha256": "d694266697b249515d1b3414beaf63250b16d247561f939539cddb9a5dd5a2e6",
+      "bytes": 501
+    },
+    {
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal/report.json.work/resolve/synthetic-unbound/parent/stubs/codex",
+      "sha256": "d694266697b249515d1b3414beaf63250b16d247561f939539cddb9a5dd5a2e6",
+      "bytes": 501
+    }
+  ]
+}

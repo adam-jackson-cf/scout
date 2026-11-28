@@ -1,0 +1,239 @@
+{
+  "canonical_run": false,
+  "commands": [
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "-c",
+        "import sys,json;from pathlib import Path;sys.path.insert(0,'/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution');from preparation import config_digest;configuration=json.loads(Path('/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/run-config.json').read_bytes());journal=json.loads(Path('/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/journal/906389d7212a401b8c7f781d37960d84.json').read_bytes());observed=journal['effective_configuration']['sha256'];expected=config_digest(configuration);print(json.dumps({'recorded':observed,'expected':expected,'equal':observed==expected},sort_keys=True));assert observed==expected"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "exit_code": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "{\"equal\": true, \"expected\": \"f205a99125ee0f3cf04a425c80f3ae1de1f17d83ae0e000e710161cefa8d8d31\", \"recorded\": \"f205a99125ee0f3cf04a425c80f3ae1de1f17d83ae0e000e710161cefa8d8d31\"}\n",
+      "stdout_sha256": "e90b636667c6a4e09fb44fd6ef2a446bbf630639f23f9601aa4afd38e049ff06"
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/tests/test_binding_contract.py",
+        "-v"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "exit_code": 0,
+      "stderr": "test_actual_lane_reasons_and_structural_absence (__main__.ModelFreeContractTests.test_actual_lane_reasons_and_structural_absence) ... ok\ntest_control_cannot_claim_bound_model_proof (__main__.ModelFreeContractTests.test_control_cannot_claim_bound_model_proof) ... ok\ntest_exact_record_routes (__main__.ModelFreeContractTests.test_exact_record_routes) ... ok\ntest_flipped_association_nil_refuses_bound_policy (__main__.ModelFreeContractTests.test_flipped_association_nil_refuses_bound_policy) ... ok\ntest_missing_model_proof_key_refuses_policies_and_receipts (__main__.ModelFreeContractTests.test_missing_model_proof_key_refuses_policies_and_receipts) ... ok\ntest_real_effective_and_receipt_proofs_pass (__main__.ModelFreeContractTests.test_real_effective_and_receipt_proofs_pass) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.003s\n\nOK\n",
+      "stderr_sha256": "257deee1105ef2d86076114c55b60f56e3c5677daeeba62f81f7b64645d853fa",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/bin/bash",
+        "-c",
+        "source /Users/adamjackson/Projects/work/scout-x1prep/.tools/activate && /usr/bin/env GOPROXY=off GOSUMDB=off GOTOOLCHAIN=local GOFLAGS=-mod=readonly GOWORK=off GOENV=off CGO_ENABLED=0 /Users/adamjackson/.local/share/mise/installs/go/1.26.10/bin/go test -count=1 -v /Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/model_free"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "exit_code": 0,
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "=== RUN   TestFrozenDigestAndModelFreeBoundaries\n=== RUN   TestFrozenDigestAndModelFreeBoundaries/signed_bytes\n=== RUN   TestFrozenDigestAndModelFreeBoundaries/wrong_expected_digest\n=== RUN   TestFrozenDigestAndModelFreeBoundaries/changed_bytes\n=== RUN   TestFrozenDigestAndModelFreeBoundaries/disabled\n=== RUN   TestFrozenDigestAndModelFreeBoundaries/decisions_enabled\n=== RUN   TestFrozenDigestAndModelFreeBoundaries/contextual_enabled\n=== RUN   TestFrozenDigestAndModelFreeBoundaries/review_enabled\n=== RUN   TestFrozenDigestAndModelFreeBoundaries/association_enabled\n=== RUN   TestFrozenDigestAndModelFreeBoundaries/wrong_profile\n--- PASS: TestFrozenDigestAndModelFreeBoundaries (0.00s)\n    --- PASS: TestFrozenDigestAndModelFreeBoundaries/signed_bytes (0.00s)\n    --- PASS: TestFrozenDigestAndModelFreeBoundaries/wrong_expected_digest (0.00s)\n    --- PASS: TestFrozenDigestAndModelFreeBoundaries/changed_bytes (0.00s)\n    --- PASS: TestFrozenDigestAndModelFreeBoundaries/disabled (0.00s)\n    --- PASS: TestFrozenDigestAndModelFreeBoundaries/decisions_enabled (0.00s)\n    --- PASS: TestFrozenDigestAndModelFreeBoundaries/contextual_enabled (0.00s)\n    --- PASS: TestFrozenDigestAndModelFreeBoundaries/review_enabled (0.00s)\n    --- PASS: TestFrozenDigestAndModelFreeBoundaries/association_enabled (0.00s)\n    --- PASS: TestFrozenDigestAndModelFreeBoundaries/wrong_profile (0.00s)\n=== RUN   TestKeyPresenceAndControlBoundaries\n=== RUN   TestKeyPresenceAndControlBoundaries/authorized_enabled\n=== RUN   TestKeyPresenceAndControlBoundaries/absent_authorization\n=== RUN   TestKeyPresenceAndControlBoundaries/nonexact_authorization\n=== RUN   TestKeyPresenceAndControlBoundaries/decisions_disabled\n=== RUN   TestKeyPresenceAndControlBoundaries/lane_absent\n=== RUN   TestKeyPresenceAndControlBoundaries/review_alone\n--- PASS: TestKeyPresenceAndControlBoundaries (0.00s)\n    --- PASS: TestKeyPresenceAndControlBoundaries/authorized_enabled (0.00s)\n    --- PASS: TestKeyPresenceAndControlBoundaries/absent_authorization (0.00s)\n    --- PASS: TestKeyPresenceAndControlBoundaries/nonexact_authorization (0.00s)\n    --- PASS: TestKeyPresenceAndControlBoundaries/decisions_disabled (0.00s)\n    --- PASS: TestKeyPresenceAndControlBoundaries/lane_absent (0.00s)\n    --- PASS: TestKeyPresenceAndControlBoundaries/review_alone (0.00s)\n=== RUN   TestPresentKeyRefusesBeforePolicyAccess\n--- PASS: TestPresentKeyRefusesBeforePolicyAccess (0.00s)\n=== RUN   TestInvalidRouteRefuses\n--- PASS: TestInvalidRouteRefuses (0.00s)\n=== RUN   TestOccurrenceKeyIndependentExpectedValues\n=== RUN   TestOccurrenceKeyIndependentExpectedValues/literal_full_tuple\n=== RUN   TestOccurrenceKeyIndependentExpectedValues/category\n=== RUN   TestOccurrenceKeyIndependentExpectedValues/line\n=== RUN   TestOccurrenceKeyIndependentExpectedValues/byte\n=== RUN   TestOccurrenceKeyIndependentExpectedValues/rule_version\n=== RUN   TestOccurrenceKeyIndependentExpectedValues/family\n=== RUN   TestOccurrenceKeyIndependentExpectedValues/symbol\n=== RUN   TestOccurrenceKeyIndependentExpectedValues/path\n=== RUN   TestOccurrenceKeyIndependentExpectedValues/rule\n=== RUN   TestOccurrenceKeyIndependentExpectedValues/cosmetic_text\n=== RUN   TestOccurrenceKeyIndependentExpectedValues/no_evidence\n=== RUN   TestOccurrenceKeyIndependentExpectedValues/empty_category\n--- PASS: TestOccurrenceKeyIndependentExpectedValues (0.00s)\n    --- PASS: TestOccurrenceKeyIndependentExpectedValues/literal_full_tuple (0.00s)\n    --- PASS: TestOccurrenceKeyIndependentExpectedValues/category (0.00s)\n    --- PASS: TestOccurrenceKeyIndependentExpectedValues/line (0.00s)\n    --- PASS: TestOccurrenceKeyIndependentExpectedValues/byte (0.00s)\n    --- PASS: TestOccurrenceKeyIndependentExpectedValues/rule_version (0.00s)\n    --- PASS: TestOccurrenceKeyIndependentExpectedValues/family (0.00s)\n    --- PASS: TestOccurrenceKeyIndependentExpectedValues/symbol (0.00s)\n    --- PASS: TestOccurrenceKeyIndependentExpectedValues/path (0.00s)\n    --- PASS: TestOccurrenceKeyIndependentExpectedValues/rule (0.00s)\n    --- PASS: TestOccurrenceKeyIndependentExpectedValues/cosmetic_text (0.00s)\n    --- PASS: TestOccurrenceKeyIndependentExpectedValues/no_evidence (0.00s)\n    --- PASS: TestOccurrenceKeyIndependentExpectedValues/empty_category (0.00s)\n=== RUN   TestDurableLinkBoundaries\n=== RUN   TestDurableLinkBoundaries/fresh_bijection\n=== RUN   TestDurableLinkBoundaries/duplicate_multiplicity_same_issue\n=== RUN   TestDurableLinkBoundaries/head_carried_ID\n=== RUN   TestDurableLinkBoundaries/unlinked_observation\n=== RUN   TestDurableLinkBoundaries/multiply_linked_observation\n=== RUN   TestDurableLinkBoundaries/fresh_extra_durable_issue\n=== RUN   TestDurableLinkBoundaries/fresh_two_occurrences_one_issue\n--- PASS: TestDurableLinkBoundaries (0.00s)\n    --- PASS: TestDurableLinkBoundaries/fresh_bijection (0.00s)\n    --- PASS: TestDurableLinkBoundaries/duplicate_multiplicity_same_issue (0.00s)\n    --- PASS: TestDurableLinkBoundaries/head_carried_ID (0.00s)\n    --- PASS: TestDurableLinkBoundaries/unlinked_observation (0.00s)\n    --- PASS: TestDurableLinkBoundaries/multiply_linked_observation (0.00s)\n    --- PASS: TestDurableLinkBoundaries/fresh_extra_durable_issue (0.00s)\n    --- PASS: TestDurableLinkBoundaries/fresh_two_occurrences_one_issue (0.00s)\n=== RUN   TestSharedScannerHealthBoundaries\n=== RUN   TestSharedScannerHealthBoundaries/inspected\n=== RUN   TestSharedScannerHealthBoundaries/reused\n=== RUN   TestSharedScannerHealthBoundaries/not_applicable\n=== RUN   TestSharedScannerHealthBoundaries/covered\n=== RUN   TestSharedScannerHealthBoundaries/flagged\n=== RUN   TestSharedScannerHealthBoundaries/skipped\n=== RUN   TestSharedScannerHealthBoundaries/blocked\n=== RUN   TestSharedScannerHealthBoundaries/incomplete\n=== RUN   TestSharedScannerHealthBoundaries/requires_manual_verification\n=== RUN   TestSharedScannerHealthBoundaries/unknown\n=== RUN   TestSharedScannerHealthBoundaries/missing_adapter\n=== RUN   TestSharedScannerHealthBoundaries/adapter_failure\n=== RUN   TestSharedScannerHealthBoundaries/missing_expected_row\n=== RUN   TestSharedScannerHealthBoundaries/duplicate_row\n=== RUN   TestSharedScannerHealthBoundaries/map_blocked\n=== RUN   TestSharedScannerHealthBoundaries/map_absent\n=== RUN   TestSharedScannerHealthBoundaries/map_reused\n=== RUN   TestSharedScannerHealthBoundaries/partial_map\n=== RUN   TestSharedScannerHealthBoundaries/omissions_and_gaps_recorded\n=== RUN   TestSharedScannerHealthBoundaries/model_rows_do_not_change_scanner_health\n=== RUN   TestSharedScannerHealthBoundaries/inventory_failure\n=== RUN   TestSharedScannerHealthBoundaries/source_drift\n=== RUN   TestSharedScannerHealthBoundaries/scanner_failure\n=== RUN   TestSharedScannerHealthBoundaries/mapping_failure\n=== RUN   TestSharedScannerHealthBoundaries/positive_control_contextual_failure_is_not_scanner_failure\n=== RUN   TestSharedScannerHealthBoundaries/inventory_diagnostic\n=== RUN   TestSharedScannerHealthBoundaries/execution_error\n=== RUN   TestSharedScannerHealthBoundaries/completed\n=== RUN   TestSharedScannerHealthBoundaries/no_applicable_input\n=== RUN   TestSharedScannerHealthBoundaries/missing_tool\n=== RUN   TestSharedScannerHealthBoundaries/failed\n=== RUN   TestSharedScannerHealthBoundaries/partial\n=== RUN   TestSharedScannerHealthBoundaries/timed_out\n=== RUN   TestSharedScannerHealthBoundaries/ineligible\n--- PASS: TestSharedScannerHealthBoundaries (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/inspected (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/reused (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/not_applicable (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/covered (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/flagged (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/skipped (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/blocked (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/incomplete (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/requires_manual_verification (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/unknown (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/missing_adapter (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/adapter_failure (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/missing_expected_row (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/duplicate_row (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/map_blocked (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/map_absent (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/map_reused (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/partial_map (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/omissions_and_gaps_recorded (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/model_rows_do_not_change_scanner_health (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/inventory_failure (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/source_drift (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/scanner_failure (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/mapping_failure (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/positive_control_contextual_failure_is_not_scanner_failure (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/inventory_diagnostic (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/execution_error (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/completed (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/no_applicable_input (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/missing_tool (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/failed (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/partial (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/timed_out (0.00s)\n    --- PASS: TestSharedScannerHealthBoundaries/ineligible (0.00s)\n=== RUN   TestBindingRowsBoundaries\n=== RUN   TestBindingRowsBoundaries/no_features\n=== RUN   TestBindingRowsBoundaries/skipped_contextual\n=== RUN   TestBindingRowsBoundaries/skipped_review\n=== RUN   TestBindingRowsBoundaries/missing_planned_row\n=== RUN   TestBindingRowsBoundaries/missing_review_row\n=== RUN   TestBindingRowsBoundaries/wrong_reason\n=== RUN   TestBindingRowsBoundaries/model_ran\n=== RUN   TestBindingRowsBoundaries/malformed_job\n--- PASS: TestBindingRowsBoundaries (0.00s)\n    --- PASS: TestBindingRowsBoundaries/no_features (0.00s)\n    --- PASS: TestBindingRowsBoundaries/skipped_contextual (0.00s)\n    --- PASS: TestBindingRowsBoundaries/skipped_review (0.00s)\n    --- PASS: TestBindingRowsBoundaries/missing_planned_row (0.00s)\n    --- PASS: TestBindingRowsBoundaries/missing_review_row (0.00s)\n    --- PASS: TestBindingRowsBoundaries/wrong_reason (0.00s)\n    --- PASS: TestBindingRowsBoundaries/model_ran (0.00s)\n    --- PASS: TestBindingRowsBoundaries/malformed_job (0.00s)\n=== RUN   TestPlannerInputsAndScannerManifest\n--- PASS: TestPlannerInputsAndScannerManifest (0.00s)\n=== RUN   TestResolveOnlyRequiredArguments\n=== RUN   TestResolveOnlyRequiredArguments/resolve_without_output\n=== RUN   TestResolveOnlyRequiredArguments/scan_needs_output\n=== RUN   TestResolveOnlyRequiredArguments/resolve_needs_effective\n=== RUN   TestResolveOnlyRequiredArguments/resolve_needs_root\n=== RUN   TestResolveOnlyRequiredArguments/resolve_needs_revision\n=== RUN   TestResolveOnlyRequiredArguments/resolve_needs_mapper\n=== RUN   TestResolveOnlyRequiredArguments/scan_complete\n--- PASS: TestResolveOnlyRequiredArguments (0.00s)\n    --- PASS: TestResolveOnlyRequiredArguments/resolve_without_output (0.00s)\n    --- PASS: TestResolveOnlyRequiredArguments/scan_needs_output (0.00s)\n    --- PASS: TestResolveOnlyRequiredArguments/resolve_needs_effective (0.00s)\n    --- PASS: TestResolveOnlyRequiredArguments/resolve_needs_root (0.00s)\n    --- PASS: TestResolveOnlyRequiredArguments/resolve_needs_revision (0.00s)\n    --- PASS: TestResolveOnlyRequiredArguments/resolve_needs_mapper (0.00s)\n    --- PASS: TestResolveOnlyRequiredArguments/scan_complete (0.00s)\n=== RUN   TestResolveOnlyWritesExclusiveMatchingRecordWithoutScanner\n=== RUN   TestResolveOnlyWritesExclusiveMatchingRecordWithoutScanner/bound\n=== RUN   TestResolveOnlyWritesExclusiveMatchingRecordWithoutScanner/reference\n--- PASS: TestResolveOnlyWritesExclusiveMatchingRecordWithoutScanner (0.10s)\n    --- PASS: TestResolveOnlyWritesExclusiveMatchingRecordWithoutScanner/bound (0.04s)\n    --- PASS: TestResolveOnlyWritesExclusiveMatchingRecordWithoutScanner/reference (0.03s)\n=== RUN   TestFrozenPolicyWiresDisabledLanes\n--- PASS: TestFrozenPolicyWiresDisabledLanes (0.00s)\n=== RUN   TestSecretOccurrenceKeyIndependentExpectedValue\n--- PASS: TestSecretOccurrenceKeyIndependentExpectedValue (0.00s)\n=== RUN   TestOneOccurrenceCannotLinkToTwoIssues\n--- PASS: TestOneOccurrenceCannotLinkToTwoIssues (0.00s)\n=== RUN   TestDuplicateBindingRowsRefuse\n--- PASS: TestDuplicateBindingRowsRefuse (0.00s)\n=== RUN   TestBoundActualInputBoundaries\n=== RUN   TestBoundActualInputBoundaries/unknown_lane\n=== RUN   TestBoundActualInputBoundaries/contextual\n=== RUN   TestBoundActualInputBoundaries/review\n=== RUN   TestBoundActualInputBoundaries/fallback\n=== RUN   TestBoundActualInputBoundaries/contextual_egress\n=== RUN   TestBoundActualInputBoundaries/clawpatch_egress\n=== RUN   TestBoundActualInputBoundaries/provider_mismatch\n=== RUN   TestBoundActualInputBoundaries/invalid_provider\n=== RUN   TestBoundActualInputBoundaries/provider_model\n=== RUN   TestBoundActualInputBoundaries/provider_limits\n=== RUN   TestBoundActualInputBoundaries/provider_prompt\n=== RUN   TestBoundActualInputBoundaries/provider_timeout\n=== RUN   TestBoundActualInputBoundaries/provider_context_limit\n=== RUN   TestBoundActualInputBoundaries/provider_file_limit\n=== RUN   TestBoundActualInputBoundaries/dependencies\n=== RUN   TestBoundActualInputBoundaries/association\n=== RUN   TestBoundActualInputBoundaries/measures\n=== RUN   TestBoundActualInputBoundaries/inline_history\n=== RUN   TestBoundActualInputBoundaries/scope\n=== RUN   TestBoundActualInputBoundaries/trigger\n=== RUN   TestBoundActualInputBoundaries/force_full\n=== RUN   TestBoundActualInputBoundaries/exclusions\n=== RUN   TestBoundActualInputBoundaries/root\n=== RUN   TestBoundActualInputBoundaries/mapper\n=== RUN   TestBoundActualInputBoundaries/guard\n--- PASS: TestBoundActualInputBoundaries (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/unknown_lane (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/contextual (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/review (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/fallback (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/contextual_egress (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/clawpatch_egress (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/provider_mismatch (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/invalid_provider (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/provider_model (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/provider_limits (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/provider_prompt (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/provider_timeout (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/provider_context_limit (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/provider_file_limit (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/dependencies (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/association (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/measures (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/inline_history (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/scope (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/trigger (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/force_full (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/exclusions (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/root (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/mapper (0.00s)\n    --- PASS: TestBoundActualInputBoundaries/guard (0.00s)\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/contextualran\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/contextualfailed\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/contextualblocked\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/contextualreused\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/clawpatch-reviewran\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/clawpatch-reviewfailed\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/clawpatch-reviewblocked\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/clawpatch-reviewreused\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/associationran\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/associationfailed\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/associationblocked\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/associationreused\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/association-fallbackran\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/association-fallbackfailed\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/association-fallbackblocked\n=== RUN   TestRuntimeProofRequiresActualDisabledHealth/association-fallbackreused\n--- PASS: TestRuntimeProofRequiresActualDisabledHealth (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/contextualran (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/contextualfailed (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/contextualblocked (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/contextualreused (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/clawpatch-reviewran (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/clawpatch-reviewfailed (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/clawpatch-reviewblocked (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/clawpatch-reviewreused (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/associationran (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/associationfailed (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/associationblocked (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/associationreused (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/association-fallbackran (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/association-fallbackfailed (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/association-fallbackblocked (0.00s)\n    --- PASS: TestRuntimeProofRequiresActualDisabledHealth/association-fallbackreused (0.00s)\n=== RUN   TestEffectiveRecordEnumeratesActualAPIFields\n--- PASS: TestEffectiveRecordEnumeratesActualAPIFields (0.00s)\n=== RUN   TestRuntimeProofNoEligibleUnitsAndMissingResult\n--- PASS: TestRuntimeProofNoEligibleUnitsAndMissingResult (0.00s)\n=== RUN   TestRealIneligibleRunnerHealth\n=== RUN   TestRealIneligibleRunnerHealth/bound/nonapplicable\n=== RUN   TestRealIneligibleRunnerHealth/bound/failure\n=== RUN   TestRealIneligibleRunnerHealth/bound/incomplete\n=== RUN   TestRealIneligibleRunnerHealth/bound/footprint_failure\n=== RUN   TestRealIneligibleRunnerHealth/bound/inspected\n=== RUN   TestRealIneligibleRunnerHealth/reference/nonapplicable\n=== RUN   TestRealIneligibleRunnerHealth/reference/failure\n=== RUN   TestRealIneligibleRunnerHealth/reference/incomplete\n=== RUN   TestRealIneligibleRunnerHealth/reference/footprint_failure\n=== RUN   TestRealIneligibleRunnerHealth/reference/inspected\n--- PASS: TestRealIneligibleRunnerHealth (0.00s)\n    --- PASS: TestRealIneligibleRunnerHealth/bound/nonapplicable (0.00s)\n    --- PASS: TestRealIneligibleRunnerHealth/bound/failure (0.00s)\n    --- PASS: TestRealIneligibleRunnerHealth/bound/incomplete (0.00s)\n    --- PASS: TestRealIneligibleRunnerHealth/bound/footprint_failure (0.00s)\n    --- PASS: TestRealIneligibleRunnerHealth/bound/inspected (0.00s)\n    --- PASS: TestRealIneligibleRunnerHealth/reference/nonapplicable (0.00s)\n    --- PASS: TestRealIneligibleRunnerHealth/reference/failure (0.00s)\n    --- PASS: TestRealIneligibleRunnerHealth/reference/incomplete (0.00s)\n    --- PASS: TestRealIneligibleRunnerHealth/reference/footprint_failure (0.00s)\n    --- PASS: TestRealIneligibleRunnerHealth/reference/inspected (0.00s)\n=== RUN   TestReferenceOffFileObservationFiltering\n--- PASS: TestReferenceOffFileObservationFiltering (0.00s)\n=== RUN   TestActualLaneReportMissingDuplicateAndUnexpectedRowsRefuse\n--- PASS: TestActualLaneReportMissingDuplicateAndUnexpectedRowsRefuse (0.00s)\n=== RUN   TestRuntimeProofRequiresActualHeuristicMapping\n--- PASS: TestRuntimeProofRequiresActualHeuristicMapping (0.00s)\n=== RUN   TestModelFreeCrossLanguageContractGolden\n--- PASS: TestModelFreeCrossLanguageContractGolden (0.00s)\nPASS\nok  \tscout/evaluation/x1-triage-ranking/execution/model_free\t0.468s\n",
+      "stdout_sha256": "c9b741569d0162eef1f37c1e48c809f570cf52e7b67f52c73ed6015d8d5c0453"
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "-c",
+        "import sys,json,struct,hashlib\nfrom pathlib import Path\nsys.path.insert(0,'/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution')\nimport attest_closure as c\nfrom closure.native import image_filetype\nimport preparation\nruntime=Path('/Users/adamjackson/Projects/work/scout-x1')\nconfig_path=Path('/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/run-config.json')\nconfig=c.load_config(config_path)\np=c.paths(config)\nassert 'OPENROUTER_API_KEY' not in c.os.environ\npins_path=p['STUDY']/'preparation/pins.json'\nc.checked(pins_path,{'sha256':c.PINS_SHA})\npins=json.loads(pins_path.read_bytes())\nruntime_path=p['STUDY']/'preparation/runtime-attestation-rev6.json'\nc.checked(runtime_path,{'sha256':c.RUNTIME_SHA})\nrt=json.loads(runtime_path.read_bytes())\nc.runtime_python(runtime,rt)\nfor root in (runtime,p['ROOT']):\n    for row in pins['source']['files']:\n        c.checked(root/row['path'],row)\nidentity,git_root,_=c.object_git(config)\nreviewed,authority=c.reviewed_go_sources(p['ROOT'],p['OUT'])\nreceipt=git_root/'INSTALL_RECEIPT.json'\ndeps=json.loads(receipt.read_bytes())['runtime_dependencies']\nexternal=[Path('/opt/homebrew/Cellar')/row['full_name']/row['pkg_version'] for row in deps]\nassert len(external)==16\nexternal.extend([Path('/opt/homebrew/Caskroom/claude-code/2.1.311'),Path('/opt/homebrew/Caskroom/codex/0.166.0')])\ngoroot=Path(rt['go']['binary']).parent.parent\nos_tools=[Path(x) for x in ['/usr/bin/sandbox-exec','/bin/sh','/bin/bash','/usr/bin/env',identity['path'],'/usr/bin/otool','/usr/bin/dyld_info','/usr/bin/sw_vers']]\nroots=[runtime/'.tools',Path(sys.base_prefix),goroot,Path('/Users/adamjackson/Projects/work/x1-preparation-scratch/closure-modules'),git_root,*external,*os_tools]\nprint(json.dumps({'stage':'all-roots-dry-check','canonical_writes':False,'journal':None,'roots':[str(r) for r in roots],'git_identity':identity,'source_checks':len(pins['source']['files'])*2,'go_authority_pins':authority},sort_keys=True),flush=True)\ninventory=c.Inventory(roots)\ntry:\n    enumeration=inventory.collect()\nexcept Exception as error:\n    print(json.dumps({'status':'refused','phase':'enumeration','error':str(error)},sort_keys=True),flush=True)\n    raise\ncounts={str(root):{'regular_files':0,'mach_o_images':0,'non_native':0} for root in inventory.roots}\njava=[]\nfor name,row in sorted(inventory.files.items()):\n    path=Path(name)\n    with path.open('rb') as stream:\n        header=stream.read(8)\n        if header[:4]==b'\\xca\\xfe\\xba\\xbe':\n            # The exact signed classifier decides; this only records its branch.\n            word=struct.unpack('>I',header[4:])[0]\n            minor,major=struct.unpack('>HH',header[4:])\n            decision='normal-fat'\n            if 45<=major<=100:\n                decision='table-bound'\n                if 8+20*word<=row['bytes']:\n                    decision='refusal'\n                    for index in range(word):\n                        entry=stream.read(20)\n                        offset,size=struct.unpack_from('>II',entry,8)\n                        if offset>row['bytes'] or size>row['bytes']-offset:\n                            decision='slice-escape'\n                            break\n            event={'path':name,'sha256':row['sha256'],'bytes':row['bytes'],'version_word':word,'minor':minor,'major':major,'exit':decision}\n            java.append(event)\n            print(json.dumps({'cafebabe':event},sort_keys=True),flush=True)\n    try:\n        kind=image_filetype(path)\n    except Exception as error:\n        print(json.dumps({'status':'refused','phase':'classification','file':row,'error':str(error),'counts_so_far':counts},sort_keys=True),flush=True)\n        raise\n    for root in inventory.roots:\n        if path.is_relative_to(root):\n            counts[str(root)]['regular_files']+=1\n            counts[str(root)]['mach_o_images' if kind is not None else 'non_native']+=1\nprint(json.dumps({'status':'passed','unique_regular_files':len(inventory.files),'counts':counts,'cafebabe':java,'enumeration_sha256':hashlib.sha256(c.canonical(enumeration)).hexdigest(),'canonical_writes':False,'journal':None},sort_keys=True),flush=True)\n"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "exit_code": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 64, in <module>\n  File \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/closure/native.py\", line 39, in image_filetype\n    return thin(0, length)[1]\n           ^^^^^^^^^^^^^^^\n  File \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/closure/native.py\", line 31, in thin\n    raise ValueError('truncated Mach-O header')\nValueError: truncated Mach-O header\n",
+      "stderr_sha256": "fb866a63b2c2a73dc4cc8badccd634b01b220e2bf86d58de5fa258c526044def",
+      "stdout": "{\"canonical_writes\": false, \"git_identity\": {\"bytes\": 3758960, \"path\": \"/opt/homebrew/Cellar/git/2.56.0_2/bin/git\", \"sha256\": \"371fc6bfbfea4d9ace7d122feefe100503d24f827bc94f54ab3973583ffea11f\", \"version\": \"git version 2.56.0\"}, \"go_authority_pins\": [{\"bytes\": 563, \"path\": \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/reviews/closure-model-free.json\", \"sha256\": \"baddb17350575bb118e734606ad846897d6d376c7ba4e40d964d57405d3fe804\"}, {\"bytes\": 24703, \"path\": \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-reviews/binding-closure-confirm-round-2.md\", \"sha256\": \"c2bf06cff7830cc085b4a5f0496b4835394047332019ddfa3a76d0e7278ff944\"}], \"journal\": null, \"roots\": [\"/Users/adamjackson/Projects/work/scout-x1/.tools\", \"/Users/adamjackson/Projects/work/scout-x1/.tools/python/cpython-3.11.11-macos-aarch64-none\", \"/Users/adamjackson/.local/share/mise/installs/go/1.26.10\", \"/Users/adamjackson/Projects/work/x1-preparation-scratch/closure-modules\", \"/opt/homebrew/Cellar/git/2.56.0_2\", \"/opt/homebrew/Cellar/brotli/1.2.1\", \"/opt/homebrew/Cellar/libnghttp2/1.71.0\", \"/opt/homebrew/Cellar/libnghttp3/1.19.0\", \"/opt/homebrew/Cellar/ca-certificates/2026-10-20\", \"/opt/homebrew/Cellar/openssl@4/4.1.0\", \"/opt/homebrew/Cellar/libngtcp2/1.25.0_1\", \"/opt/homebrew/Cellar/libpsl/0.23.3\", \"/opt/homebrew/Cellar/libssh2/1.11.1_7\", \"/opt/homebrew/Cellar/lz4/1.10.0\", \"/opt/homebrew/Cellar/xz/5.8.4\", \"/opt/homebrew/Cellar/zstd/1.5.7_1\", \"/opt/homebrew/Cellar/curl/8.23.0\", \"/opt/homebrew/Cellar/pcre2/10.49\", \"/opt/homebrew/Cellar/json-c/0.19\", \"/opt/homebrew/Cellar/libunistring/1.5\", \"/opt/homebrew/Cellar/gettext/1.0\", \"/opt/homebrew/Caskroom/claude-code/2.1.311\", \"/opt/homebrew/Caskroom/codex/0.166.0\", \"/usr/bin/sandbox-exec\", \"/bin/sh\", \"/bin/bash\", \"/usr/bin/env\", \"/opt/homebrew/Cellar/git/2.56.0_2/bin/git\", \"/usr/bin/otool\", \"/usr/bin/dyld_info\", \"/usr/bin/sw_vers\"], \"source_checks\": 1154, \"stage\": \"all-roots-dry-check\"}\n{\"cafebabe\": {\"bytes\": 638418, \"exit\": \"normal-fat\", \"major\": 2, \"minor\": 0, \"path\": \"/Users/adamjackson/Projects/work/scout-x1/.tools/cache/uv/archive-v0/h0FajMambpTG7Ar9/google/_upb/_message.abi3.so\", \"sha256\": \"101d92937e105cae51373d0d9071f86fc23561f744a6f7fb004c1e3933398cef\", \"version_word\": 2}}\n{\"cafebabe\": {\"bytes\": 315392, \"exit\": \"normal-fat\", \"major\": 2, \"minor\": 0, \"path\": \"/Users/adamjackson/Projects/work/scout-x1/.tools/cache/uv/archive-v0/z274EMySPymWDop0/charset_normalizer/cd.cpython-311-darwin.so\", \"sha256\": \"2efe543f3c375b8c4423580ef0654bf46d760e3add8ff8d449b2b56c4fa33572\", \"version_word\": 2}}\n{\"cafebabe\": {\"bytes\": 584816, \"exit\": \"normal-fat\", \"major\": 2, \"minor\": 0, \"path\": \"/Users/adamjackson/Projects/work/scout-x1/.tools/cache/uv/archive-v0/z274EMySPymWDop0/charset_normalizer/md.cpython-311-darwin.so\", \"sha256\": \"240c838382682bfdb372296da965d3583d683eb33db652cdd80ae545daf97a2c\", \"version_word\": 2}}\n{\"cafebabe\": {\"bytes\": 163626, \"exit\": \"normal-fat\", \"major\": 2, \"minor\": 0, \"path\": \"/Users/adamjackson/Projects/work/scout-x1/.tools/clawpatch/734f81bc1514b52a0627edb0c24ebe1a18b36105/node_modules/.pnpm/fsevents@2.3.3/node_modules/fsevents/fsevents.node\", \"sha256\": \"40f2f51199e4f5fc46fa6b985fb3461bb63e6cd86c62bfa9bcee45ed4438d5fb\", \"version_word\": 2}}\n{\"cafebabe\": {\"bytes\": 315392, \"exit\": \"normal-fat\", \"major\": 2, \"minor\": 0, \"path\": \"/Users/adamjackson/Projects/work/scout-x1/.tools/venv/lib/python3.11/site-packages/charset_normalizer/cd.cpython-311-darwin.so\", \"sha256\": \"2efe543f3c375b8c4423580ef0654bf46d760e3add8ff8d449b2b56c4fa33572\", \"version_word\": 2}}\n{\"cafebabe\": {\"bytes\": 584816, \"exit\": \"normal-fat\", \"major\": 2, \"minor\": 0, \"path\": \"/Users/adamjackson/Projects/work/scout-x1/.tools/venv/lib/python3.11/site-packages/charset_normalizer/md.cpython-311-darwin.so\", \"sha256\": \"240c838382682bfdb372296da965d3583d683eb33db652cdd80ae545daf97a2c\", \"version_word\": 2}}\n{\"cafebabe\": {\"bytes\": 638418, \"exit\": \"normal-fat\", \"major\": 2, \"minor\": 0, \"path\": \"/Users/adamjackson/Projects/work/scout-x1/.tools/venv/lib/python3.11/site-packages/google/_upb/_message.abi3.so\", \"sha256\": \"101d92937e105cae51373d0d9071f86fc23561f744a6f7fb004c1e3933398cef\", \"version_word\": 2}}\n{\"counts_so_far\": {\"/Users/adamjackson/.local/share/mise/installs/go/1.26.10\": {\"mach_o_images\": 14, \"non_native\": 15031, \"regular_files\": 15045}, \"/Users/adamjackson/Projects/work/scout-x1/.tools\": {\"mach_o_images\": 513, \"non_native\": 20157, \"regular_files\": 20670}, \"/Users/adamjackson/Projects/work/scout-x1/.tools/python/cpython-3.11.11-macos-aarch64-none\": {\"mach_o_images\": 4, \"non_native\": 2448, \"regular_files\": 2452}, \"/Users/adamjackson/Projects/work/x1-preparation-scratch/closure-modules\": {\"mach_o_images\": 4, \"non_native\": 295, \"regular_files\": 299}, \"/bin/bash\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/bin/sh\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Caskroom/claude-code/2.1.311\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Caskroom/codex/0.166.0\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/brotli/1.2.1\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/ca-certificates/2026-10-20\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/curl/8.23.0\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/gettext/1.0\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/git/2.56.0_2\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/git/2.56.0_2/bin/git\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/json-c/0.19\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/libnghttp2/1.71.0\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/libnghttp3/1.19.0\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/libngtcp2/1.25.0_1\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/libpsl/0.23.3\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/libssh2/1.11.1_7\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/libunistring/1.5\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/lz4/1.10.0\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/openssl@4/4.1.0\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/pcre2/10.49\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/xz/5.8.4\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/opt/homebrew/Cellar/zstd/1.5.7_1\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/usr/bin/dyld_info\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/usr/bin/env\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/usr/bin/otool\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/usr/bin/sandbox-exec\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}, \"/usr/bin/sw_vers\": {\"mach_o_images\": 0, \"non_native\": 0, \"regular_files\": 0}}, \"error\": \"truncated Mach-O header\", \"file\": {\"bytes\": 12, \"path\": \"/Users/adamjackson/Projects/work/x1-preparation-scratch/closure-modules/github.com/google/pprof@v0.0.0-20250317173921-a4b03ec1a45e/internal/binutils/testdata/malformed_macho\", \"sha256\": \"b63ea8aeefdad6f27c58444f1528e198525a6656372ac8723498f7152160cfec\"}, \"phase\": \"classification\", \"status\": \"refused\"}\n",
+      "stdout_sha256": "162b8587f51074a968459335da6f4867216318e08afb477597a7efc9411137ce"
+    }
+  ],
+  "dry_check_module_scope": "The whole existing closure-modules cache was enumerated as a conservative superset of selected Go module roots. The failed pprof fixture has not been established as part of the selected frontend module closure; no further command was run after the refusal.",
+  "first_failure": {
+    "counts_so_far": {
+      "/Users/adamjackson/.local/share/mise/installs/go/1.26.10": {
+        "mach_o_images": 14,
+        "non_native": 15031,
+        "regular_files": 15045
+      },
+      "/Users/adamjackson/Projects/work/scout-x1/.tools": {
+        "mach_o_images": 513,
+        "non_native": 20157,
+        "regular_files": 20670
+      },
+      "/Users/adamjackson/Projects/work/scout-x1/.tools/python/cpython-3.11.11-macos-aarch64-none": {
+        "mach_o_images": 4,
+        "non_native": 2448,
+        "regular_files": 2452
+      },
+      "/Users/adamjackson/Projects/work/x1-preparation-scratch/closure-modules": {
+        "mach_o_images": 4,
+        "non_native": 295,
+        "regular_files": 299
+      },
+      "/bin/bash": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/bin/sh": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Caskroom/claude-code/2.1.311": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Caskroom/codex/0.166.0": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/brotli/1.2.1": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/ca-certificates/2026-10-20": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/curl/8.23.0": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/gettext/1.0": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/git/2.56.0_2": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/git/2.56.0_2/bin/git": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/json-c/0.19": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/libnghttp2/1.71.0": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/libnghttp3/1.19.0": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/libngtcp2/1.25.0_1": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/libpsl/0.23.3": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/libssh2/1.11.1_7": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/libunistring/1.5": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/lz4/1.10.0": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/openssl@4/4.1.0": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/pcre2/10.49": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/xz/5.8.4": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/opt/homebrew/Cellar/zstd/1.5.7_1": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/usr/bin/dyld_info": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/usr/bin/env": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/usr/bin/otool": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/usr/bin/sandbox-exec": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      },
+      "/usr/bin/sw_vers": {
+        "mach_o_images": 0,
+        "non_native": 0,
+        "regular_files": 0
+      }
+    },
+    "error": "truncated Mach-O header",
+    "file": {
+      "bytes": 12,
+      "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/closure-modules/github.com/google/pprof@v0.0.0-20250317173921-a4b03ec1a45e/internal/binutils/testdata/malformed_macho",
+      "sha256": "b63ea8aeefdad6f27c58444f1528e198525a6656372ac8723498f7152160cfec"
+    },
+    "phase": "classification",
+    "status": "refused"
+  },
+  "frontend_sha256": "edb37ec2a2b8efb16c6f38bb4c5ec10a299a6e4ce9b7fcd0424bfa2845265078",
+  "journal_ids": [],
+  "preflight_run": false,
+  "runtime_installation": "/Users/adamjackson/Projects/work/scout-x1/.tools",
+  "runtime_project_root_expected_by_attestor": "/Users/adamjackson/Projects/work/scout-x1",
+  "schema": "scout.x1.closure-p4-attempt.v1",
+  "signed_files_edited": false,
+  "status": "stopped-at-first-failure"
+}
