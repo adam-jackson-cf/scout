@@ -33,6 +33,7 @@ rule = "TEST.no-evasion"
 path = "engine/engine_test.go"
 reason = "conformance case approved-static-skip"
 approved_by = "conformance fixture"
+expires = "2999-12-31"
 `
 
 func repoRoot(t *testing.T) string {

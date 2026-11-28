@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import argparse
+import datetime
 import json
+import os
 import re
 import subprocess
 import sys
@@ -114,12 +116,26 @@ def _contains(root: Path, path: object, text: object, owner: str, label: str) ->
         raise CoverageError(f"{owner}: {path} lacks {label}: {needle}")
 
 
+def _child_env() -> dict[str, str]:
+    return {
+        key: value
+        for key, value in os.environ.items()
+        if not key.startswith("GIT_") or key == "GIT_CEILING_DIRECTORIES"
+    }
+
+
 def _run(
     argv: list[str], root: Path, owner: str, timeout: int
 ) -> subprocess.CompletedProcess[str]:
     try:
         return subprocess.run(
-            argv, cwd=root, capture_output=True, text=True, check=False, timeout=timeout
+            argv,
+            cwd=root,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=timeout,
+            env=_child_env(),
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
         raise CoverageError(f"{owner}: command could not complete: {argv[0]}") from exc
@@ -301,6 +317,7 @@ def _origin_repository(root: Path) -> str | None:
             text=True,
             check=False,
             timeout=30,
+            env=_child_env(),
         )
     except (OSError, subprocess.TimeoutExpired):
         return None
@@ -394,12 +411,25 @@ def _exclusion(root: Path, value: object, index: int, *, live: bool) -> dict[str
 def _exceptions(value: object) -> None:
     for index, item in enumerate(value if isinstance(value, list) else [value]):
         owner = f"exception[{index}]"
-        allowed = {"rule", "path", "reason", "approved_by", "check"}
+        allowed = {"rule", "path", "reason", "approved_by", "check", "expires"}
         entry = _table(item, owner, "exception", allowed)
         for field in ("rule", "path", "reason", "approved_by"):
             _text(entry.get(field), owner, field)
         if "check" in entry:
             _text(entry["check"], owner, "check")
+        _expiry(entry.get("expires"), owner)
+
+
+def _expiry(value: object, owner: str) -> None:
+    text = _text(value, owner, "expires")
+    try:
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", text):
+            raise ValueError(text)
+        expires = datetime.date.fromisoformat(text)
+    except ValueError as exc:
+        raise CoverageError(f"{owner}: expires must be YYYY-MM-DD: {text}") from exc
+    if expires < datetime.datetime.now(datetime.UTC).date():
+        raise CoverageError(f"{owner}: expired on {text}; renew or remove it")
 
 
 def _shape(proofs: dict[str, Any]) -> list[str]:
@@ -584,7 +614,9 @@ def _toml(data: dict[str, Any], prefix: tuple[str, ...] = ()) -> list[str]:
 
 
 def _fixture(root: Path) -> dict[str, Any]:
-    subprocess.run(["git", "init", "-q", str(root)], check=True, timeout=30)
+    subprocess.run(
+        ["git", "init", "-q", str(root)], check=True, timeout=30, env=_child_env()
+    )
     subprocess.run(
         [
             "git",
@@ -597,6 +629,7 @@ def _fixture(root: Path) -> dict[str, Any]:
         ],
         check=True,
         timeout=30,
+        env=_child_env(),
     )
     (root / "check.py").write_text(
         "import sys, pathlib\npath = pathlib.Path(sys.argv[1])\n"
@@ -686,6 +719,7 @@ def _fixture(root: Path) -> dict[str, Any]:
                 "path": "legacy/**",
                 "reason": "owner choice",
                 "approved_by": "owner",
+                "expires": "2999-12-31",
             }
         ],
         "layout": {"support_dir": "tests/support"},
@@ -934,6 +968,24 @@ def _cases(
             _edit(base, ("exception", 0, "approved_by"), None),
             {},
             ["exception[0]: missing approved_by"],
+        ),
+        (
+            "exception expiry",
+            _edit(base, ("exception", 0, "expires"), None),
+            {},
+            ["exception[0]: missing expires"],
+        ),
+        (
+            "exception expired",
+            _edit(base, ("exception", 0, "expires"), "2000-01-01"),
+            {},
+            ["exception[0]: expired on 2000-01-01; renew or remove it"],
+        ),
+        (
+            "exception expiry format",
+            _edit(base, ("exception", 0, "expires"), "2999-1-1"),
+            {},
+            ["exception[0]: expires must be YYYY-MM-DD: 2999-1-1"],
         ),
         (
             "missing rule",
