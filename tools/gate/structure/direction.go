@@ -94,7 +94,7 @@ func readership(c Config, g *graph, dirs []string) []check.Finding {
 					Fix:     "keep these packages inside their one reader until a second part reads the tier, or add the second reader in this change"})
 			}
 		}
-		if rs := sortedKeys(g.readers[dir]); len(rs) == 1 {
+		if rs := sortedKeys(g.readers[dir]); len(rs) == 1 && !g.excluded[rs[0]] {
 			out = append(out, check.Finding{File: file, Rule: ruleSingleOwner,
 				Problem: fmt.Sprintf("shared-tier package %s is read only by %s", dir, rs[0]),
 				Fix:     fmt.Sprintf("move it under its owner as %s/%s", rs[0], path.Base(dir))})

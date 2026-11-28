@@ -48,12 +48,13 @@ func goSource(p string, fixture bool) bool {
 }
 
 type graph struct {
-	readers map[string]map[string]bool
-	files   map[string]string
+	readers  map[string]map[string]bool
+	files    map[string]string
+	excluded map[string]bool
 }
 
 func buildGraph(s *pathscope.Scope, module string) (*graph, error) {
-	g := &graph{readers: map[string]map[string]bool{}, files: map[string]string{}}
+	g := &graph{readers: map[string]map[string]bool{}, files: map[string]string{}, excluded: map[string]bool{}}
 	files, err := s.HeadFiles()
 	if err != nil {
 		return nil, err
@@ -64,6 +65,9 @@ func buildGraph(s *pathscope.Scope, module string) (*graph, error) {
 		return nil, err
 	}
 	for _, f := range wanted {
+		if s.Fixture == "" && s.Excluded(f) {
+			g.excluded[path.Dir(f)] = true
+		}
 		if err := g.add(f, srcs[f], module); err != nil {
 			return nil, err
 		}
@@ -74,7 +78,7 @@ func buildGraph(s *pathscope.Scope, module string) (*graph, error) {
 func graphSources(s *pathscope.Scope, files []string) []string {
 	var wanted []string
 	for _, f := range files {
-		if goSource(f, s.Fixture != "") && !strings.HasSuffix(f, "_test.go") && (s.Fixture != "" || !s.Excluded(f)) {
+		if goSource(f, s.Fixture != "") && !strings.HasSuffix(f, "_test.go") {
 			wanted = append(wanted, f)
 		}
 	}
