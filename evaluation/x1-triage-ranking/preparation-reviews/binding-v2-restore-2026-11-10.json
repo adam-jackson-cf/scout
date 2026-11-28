@@ -1,0 +1,149 @@
+{
+  "authority": {
+    "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-reviews/execution-implementation-round-3.md",
+    "sha256": "c3e2b9febb91d5361f227447e295f6976f3fe07b0e8b2a53f9ada6502e18f28e",
+    "bytes": 32831
+  },
+  "script": {
+    "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-restore/restore_pyc.py",
+    "sha256": "93901ccc3c9ff0a545b0bf819b831be7e2ca0071c5ebf242761b0b83b5e4e9ed",
+    "bytes": 2893
+  },
+  "restore_stdout": {
+    "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-restore/restore.json",
+    "sha256": "5d1264abfcdc3193c70ca3393b73ed0e2fda338dd7fd34bed512398200f90777",
+    "bytes": 1781
+  },
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/sw_vers"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T18:53:54.344337+00:00",
+      "ended_at": "2026-11-10T18:53:54.379394+00:00",
+      "exit_code": 0,
+      "stdout": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6\nBuildVersion:\t\t25G72\n",
+      "stderr": "",
+      "stdout_sha256": "46c87c2b8fd5d25040390e531128cd533d199bde1b50a51790375ab5984c99bb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.03411875001620501
+    },
+    {
+      "argv": [
+        "/usr/sbin/sysctl",
+        "-n",
+        "kern.bootsessionuuid",
+        "kern.boottime",
+        "kern.osversion"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T18:53:54.379575+00:00",
+      "ended_at": "2026-11-10T18:53:54.393260+00:00",
+      "exit_code": 0,
+      "stdout": "828B2ACD-3537-4CE7-8CBA-1F3FDB4C28FE\n{ sec = 1793784351, usec = 368234 } Wed Nov  4 09:25:51 2026\n25G72\n",
+      "stderr": "",
+      "stdout_sha256": "f9a1754a0e6de695b52e9cf6e765b931c572e5c203c1fa8955612c8f42b7e84d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.013723458047024906
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "-c",
+        "import ctypes,json,uuid\nfrom pathlib import Path\nroot=Path('/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld')\ngetter=ctypes.CDLL(None)._dyld_get_shared_cache_uuid\ngetter.argtypes=[ctypes.c_void_p];getter.restype=ctypes.c_bool\nbuffer=(ctypes.c_ubyte*16)()\nif not getter(buffer):raise ValueError('active cache UUID unavailable')\nactive=str(uuid.UUID(bytes=bytes(buffer)))\nmain=root/'dyld_shared_cache_arm64e'\nwith main.open('rb') as stream:header=stream.read(104)\ncache=str(uuid.UUID(bytes=header[88:104]))\nif active!='d64a142b-8533-3e09-968a-6ad3e176e3f6' or active!=cache:raise ValueError('active cache UUID mismatch')\nfamily=[str(path) for path in sorted(root.iterdir()) if path.is_file() and (path.name==main.name or path.name.startswith(main.name+'.'))]\nprint(json.dumps({'active_cache_uuid':active,'cache_header_uuid':cache,'cache_magic':header[:16].decode('ascii'),'family':family},sort_keys=True))\n"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T18:53:54.393419+00:00",
+      "ended_at": "2026-11-10T18:53:54.545455+00:00",
+      "exit_code": 0,
+      "stdout": "{\"active_cache_uuid\": \"d64a142b-8533-3e09-968a-6ad3e176e3f6\", \"cache_header_uuid\": \"d64a142b-8533-3e09-968a-6ad3e176e3f6\", \"cache_magic\": \"dyld_v1  arm64e\\u0000\", \"family\": [\"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.01\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.02.dylddata\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.03.dyldreadonly\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.04.dyldlinkedit\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.05\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.06.dylddata\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.07.dyldreadonly\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.08.dyldlinkedit\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.09\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.10.dylddata\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.11\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.12.dyldlinkedit\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.atlas\", \"/System/Volumes/Preboot/Cryptexes/OS/System/Library/dyld/dyld_shared_cache_arm64e.map\"]}\n",
+      "stderr": "",
+      "stdout_sha256": "284cdac914c25fbf8f3251a380458f96481069a8bcaef377f0de42e8300b3414",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.15207675006240606
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1prep/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-restore/restore_pyc.py"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T18:54:01.237133+00:00",
+      "ended_at": "2026-11-10T18:54:01.552323+00:00",
+      "exit_code": 0,
+      "stdout": "{\n  \"after\": {\n    \"bytes\": 12015,\n    \"ctime_ns\": 1794336841536494227,\n    \"inode\": 441352178,\n    \"mode\": 420,\n    \"mtime_ns\": 1794336841536494227,\n    \"path\": \"/Users/adamjackson/Projects/work/scout-x1/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/site-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc\",\n    \"regular\": true,\n    \"sha256\": \"71093d3edaad0475b353d8b8515d0888fe84fbe74f0fac3080a907dbc5b01d12\"\n  },\n  \"before\": {\n    \"bytes\": 12018,\n    \"ctime_ns\": 1794335579202602939,\n    \"inode\": 441352178,\n    \"mode\": 420,\n    \"mtime_ns\": 1794335579202503730,\n    \"path\": \"/Users/adamjackson/Projects/work/scout-x1/.tools/python/cpython-3.11.11-macos-aarch64-none/lib/python3.11/site-packages/_distutils_hack/__pycache__/__init__.cpython-311.pyc\",\n    \"regular\": true,\n    \"sha256\": \"9c815f6bb55ad4e93c1b74a6c729e234f3838ef8067f201a2441c32cfffdabaf\"\n  },\n  \"drifted_copy\": {\n    \"bytes\": 12018,\n    \"ctime_ns\": 1794336841534581842,\n    \"inode\": 442831735,\n    \"mode\": 292,\n    \"mtime_ns\": 1794336841531897119,\n    \"path\": \"/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-restore/drifted/9c815f6bb55ad4e93c1b74a6c729e234f3838ef8067f201a2441c32cfffdabaf\",\n    \"regular\": true,\n    \"sha256\": \"9c815f6bb55ad4e93c1b74a6c729e234f3838ef8067f201a2441c32cfffdabaf\"\n  },\n  \"retained\": {\n    \"bytes\": 12015,\n    \"ctime_ns\": 1794332554121189427,\n    \"inode\": 437805685,\n    \"mode\": 292,\n    \"mtime_ns\": 1794332554121017258,\n    \"path\": \"/Users/adamjackson/Projects/work/x1-preparation-scratch/closure-retained/sha256/71093d3edaad0475b353d8b8515d0888fe84fbe74f0fac3080a907dbc5b01d12\",\n    \"regular\": true,\n    \"sha256\": \"71093d3edaad0475b353d8b8515d0888fe84fbe74f0fac3080a907dbc5b01d12\"\n  },\n  \"schema\": \"scout.x1.closure-file-restore.v1\"\n}\n",
+      "stderr": "",
+      "stdout_sha256": "5d1264abfcdc3193c70ca3393b73ed0e2fda338dd7fd34bed512398200f90777",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 0.315245124977082
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1prep/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "-c",
+        "import sys,json,time; from pathlib import Path; sys.path.insert(0,\"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution\"); import attest_closure,preparation; p=Path(\"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/closure.json\"); t=time.monotonic(); attest_closure.verify_installed_closure(p); print(json.dumps({\"check\":\"verify_installed_closure\",\"passed\":True,\"seconds\":time.monotonic()-t}),flush=True); t=time.monotonic(); rows=preparation.verify_tree_pins(json.loads(p.read_bytes())); print(json.dumps({\"check\":\"verify_tree_pins\",\"passed\":True,\"pin_count\":len(rows),\"seconds\":time.monotonic()-t}),flush=True)"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T18:54:01.612897+00:00",
+      "ended_at": "2026-11-10T18:55:32.065013+00:00",
+      "exit_code": 0,
+      "stdout": "{\"check\": \"verify_installed_closure\", \"passed\": true, \"seconds\": 58.5880555419717}\n{\"check\": \"verify_tree_pins\", \"passed\": true, \"pin_count\": 92066, \"seconds\": 31.623745874967426}\n",
+      "stderr": "",
+      "stdout_sha256": "171fc16d3f2f59959b2cb76903a9241913fbdc3c685ab58a0aa004ad4f6570c4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 90.45165658299811
+    },
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1prep/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal-diag/compare_enumeration.py"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T18:55:32.065231+00:00",
+      "ended_at": "2026-11-10T18:55:54.837497+00:00",
+      "exit_code": 0,
+      "stdout": "{\n  \"actual_record_count\": 63459,\n  \"closure\": {\n    \"bytes\": 61479449,\n    \"path\": \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/closure.json\",\n    \"sha256\": \"b5df46b1b92a3cc9ef2905589db120a008881bc6b5519f37b6d38e3705cc35b2\"\n  },\n  \"closure_ended_at\": \"2026-11-10T17:43:07.187450Z\",\n  \"differences\": [],\n  \"ended_at\": \"2026-11-10T18:55:54.792763+00:00\",\n  \"expected_record_count\": 63459,\n  \"rehearsal_ended_at\": \"2026-11-10T18:33:30.434784+00:00\",\n  \"rehearsal_run\": {\n    \"bytes\": 122517,\n    \"path\": \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-reviews/binding-v2-rehearsal-run-2026-11-10.json\",\n    \"sha256\": \"58d8856b2b79e5518b39d9a95158879d4421746f280123a97a338bd85a50d1de\"\n  },\n  \"rehearsal_started_at\": \"2026-11-10T18:28:03.005432+00:00\",\n  \"root_count\": 32,\n  \"root_summary\": {},\n  \"schema\": \"scout.x1.read-only-enumeration-diagnostic.v1\",\n  \"script\": {\n    \"bytes\": 4603,\n    \"path\": \"/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-rehearsal-diag/compare_enumeration.py\",\n    \"sha256\": \"5b23f2388c99186c46ec0edd8d850114a89eb0d1d6407529eecad25fc76d8453\"\n  },\n  \"started_at\": \"2026-11-10T18:55:32.222555+00:00\",\n  \"summary\": {}\n}\n",
+      "stderr": "",
+      "stdout_sha256": "4f11542257763117ec5368524019438e5d792f621735532a4e7f7d5518a2f9b8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "wall_seconds": 22.772180791944265
+    }
+  ],
+  "environment": {
+    "TERM_PROGRAM": "Orca",
+    "TERM": "xterm-256color",
+    "SHELL": "/bin/zsh",
+    "TMPDIR": "/var/folders/g5/r809r2p97nz9gtj25s1c37t80000gn/T/",
+    "TERM_PROGRAM_VERSION": "1.4.247",
+    "USER": "adamjackson",
+    "SSH_AUTH_SOCK": "/var/run/com.apple.launchd.MmiHYULSLm/Listeners",
+    "PATH": "/Applications/Orca.app/Contents/Resources/bin:/Users/adamjackson/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Users/adamjackson/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Applications/Privileges.app/Contents/MacOS:/opt/homebrew/bin:/Users/adamjackson/.local/bin:/Applications/Orca.app/Contents/Resources/bin:/opt/homebrew/sbin:/Users/adamjackson/.volta/bin:/Users/adamjackson/.asdf/shims:/Users/adamjackson/.fnm/aliases/default/bin:/Users/adamjackson/.local/share/mise/shims:/Users/adamjackson/Library/pnpm:/Users/adamjackson/.yarn/bin:/Users/adamjackson/.bun/bin:/usr/local/sbin:/nix/var/nix/profiles/default/bin:/Users/adamjackson/bin:/Users/adamjackson/.nix-profile/bin:/Users/adamjackson/.opencode/bin:/Users/adamjackson/.vite-plus/bin:/Users/adamjackson/.grok/bin",
+    "LANG": "en_US.UTF-8",
+    "HOME": "/Users/adamjackson",
+    "LOGNAME": "adamjackson",
+    "PI_SESSION_FILE": "/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/X1PrepBinding.jsonl",
+    "PI_ARTIFACTS_DIR": "/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4",
+    "PI_TOOL_BRIDGE_URL": "http://127.0.0.1:54503",
+    "PI_TOOL_BRIDGE_TOKEN": {
+      "present": true,
+      "value_recorded": false
+    },
+    "PI_TOOL_BRIDGE_SESSION": "python:session:/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/X1PrepBinding.jsonl:cwd:/Users/adamjackson/Projects/work/scout",
+    "PI_EVAL_LOCAL_ROOTS": "{\"local\":\"/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4/local\",\"artifact\":\"/Users/adamjackson/.omp/agent/sessions/-Projects-work-scout/2026-11-05T13-02-15-644Z_01a1abcd-865c-72fe-9940-a595cd0d64d4\"}",
+    "PYTHONUNBUFFERED": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "__CF_USER_TEXT_ENCODING": "0x1F5:0:2",
+    "MPLBACKEND": "Agg"
+  },
+  "OPENROUTER_API_KEY_present": false,
+  "status": "passed"
+}

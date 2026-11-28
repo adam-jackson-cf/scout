@@ -1,0 +1,3119 @@
+{
+  "effective": {
+    "bound": {
+      "association_nil": true,
+      "clawpatch_egress": false,
+      "config": {
+        "AssociationGuard": {
+          "WindowMerges": 20,
+          "MinClusters": 20,
+          "FallbackRateMax": 0.4,
+          "PendingNewRateMax": 0.2
+        },
+        "ClawpatchBinary": "/synthetic/x1-model-free-contract/bin/clawpatch",
+        "ClawpatchEgressAuthorized": false,
+        "ClawpatchProvider": "",
+        "Dependencies": null,
+        "ModelLanes": [],
+        "Provider": {
+          "CLI": "",
+          "Model": "",
+          "PromptVersion": "",
+          "EgressAuthorized": false,
+          "Timeout": 0,
+          "MaxContextBytes": 0,
+          "MaxFileBytes": 0,
+          "MaxPromptBytes": 0
+        },
+        "Registry": {
+          "sha256": "feb92d4d04bdfdff2b036d6daba782a1e1ebfc852910b8d82babba273e2e454e",
+          "specs": [
+            {
+              "id": "performance.semgrep.css-layout-height-transition",
+              "family": "performance",
+              "category": "frontend-layout-animation",
+              "binary": {
+                "path": "semgrep",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "1.100.0",
+                "args": [
+                  "scan",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--disable-version-check",
+                  "--metrics=off",
+                  "--no-git-ignore",
+                  "--json",
+                  "--error",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "scout-semgrep-css-height-transition/v3@sha256:1181a0a5393c91fc63bbe72a8417e00093069179ed93a60eacd4aab5685fb5b8",
+                "bundledFiles": [
+                  "performance/semgrep-css-height-transition.yaml"
+                ],
+                "ruleIds": [
+                  "scout.performance.css.layout-height-transition"
+                ]
+              },
+              "eligibility": {
+                "extensions": [
+                  ".css"
+                ],
+                "allLanguages": true
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "semgrep_json",
+                "schemaVersion": "1.100.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "13": "failure",
+                "2": "failure",
+                "3": "failure",
+                "4": "failure",
+                "5": "failure",
+                "7": "failure",
+                "8": "failure",
+                "99": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              }
+            },
+            {
+              "id": "performance:ruff",
+              "family": "performance",
+              "category": "micro-optimization",
+              "binary": {
+                "path": "ruff",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "0.15.8",
+                "args": [
+                  "check",
+                  "--isolated",
+                  "--no-cache",
+                  "--select",
+                  "PERF",
+                  "--output-format",
+                  "sarif",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "ruff/PERF@0.15.8"
+              },
+              "eligibility": {
+                "languages": [
+                  "Python"
+                ],
+                "extensions": [
+                  ".py",
+                  ".pyi"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "sarif",
+                "schemaVersion": "2.1.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "2": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              },
+              "attestation": "ruff-file-listing"
+            },
+            {
+              "id": "quality.ruff.complexity",
+              "family": "quality",
+              "category": "complexity",
+              "binary": {
+                "path": "ruff",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "0.15.8",
+                "args": [
+                  "check",
+                  "--isolated",
+                  "--no-cache",
+                  "--select",
+                  "C90",
+                  "--output-format",
+                  "sarif",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "ruff/C90@0.15.8"
+              },
+              "eligibility": {
+                "languages": [
+                  "Python"
+                ],
+                "extensions": [
+                  ".py",
+                  ".pyi"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "sarif",
+                "schemaVersion": "2.1.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "2": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              },
+              "attestation": "ruff-file-listing"
+            },
+            {
+              "id": "security.gitleaks.default-credentials",
+              "family": "security",
+              "category": "credential-leakage",
+              "binary": {
+                "path": "gitleaks",
+                "versionArgs": [
+                  "version"
+                ],
+                "version": "8.30.1",
+                "args": [
+                  "dir",
+                  "--no-banner",
+                  "--no-color",
+                  "--log-level",
+                  "trace",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--ignore-gitleaks-allow",
+                  "--gitleaks-ignore-path",
+                  "/dev/null",
+                  "--redact=100",
+                  "--max-target-megabytes",
+                  "8",
+                  "--report-format",
+                  "sarif",
+                  "--report-path",
+                  "-",
+                  "--exit-code",
+                  "1",
+                  "{staged_input_dir}"
+                ],
+                "privateWorkDir": true
+              },
+              "rules": {
+                "version": "gitleaks-default-rules/8.30.1@sha256:e163e53b9e7e8a8511e77271e2b323ed057759542a6d988258afe3a1fa329caf",
+                "bundledFiles": [
+                  "security/gitleaks-default.toml"
+                ],
+                "ruleIds": [
+                  "1password-secret-key",
+                  "1password-service-account-token",
+                  "adafruit-api-key",
+                  "adobe-client-id",
+                  "adobe-client-secret",
+                  "age-secret-key",
+                  "airtable-api-key",
+                  "airtable-personnal-access-token",
+                  "algolia-api-key",
+                  "alibaba-access-key-id",
+                  "alibaba-secret-key",
+                  "anthropic-admin-api-key",
+                  "anthropic-api-key",
+                  "artifactory-api-key",
+                  "artifactory-reference-token",
+                  "asana-client-id",
+                  "asana-client-secret",
+                  "atlassian-api-token",
+                  "authress-service-client-access-key",
+                  "aws-access-token",
+                  "aws-amazon-bedrock-api-key-long-lived",
+                  "aws-amazon-bedrock-api-key-short-lived",
+                  "azure-ad-client-secret",
+                  "beamer-api-token",
+                  "bitbucket-client-id",
+                  "bitbucket-client-secret",
+                  "bittrex-access-key",
+                  "bittrex-secret-key",
+                  "cisco-meraki-api-key",
+                  "clickhouse-cloud-api-secret-key",
+                  "clojars-api-token",
+                  "cloudflare-api-key",
+                  "cloudflare-global-api-key",
+                  "cloudflare-origin-ca-key",
+                  "codecov-access-token",
+                  "cohere-api-token",
+                  "coinbase-access-token",
+                  "confluent-access-token",
+                  "confluent-secret-key",
+                  "contentful-delivery-api-token",
+                  "curl-auth-header",
+                  "curl-auth-user",
+                  "databricks-api-token",
+                  "datadog-access-token",
+                  "defined-networking-api-token",
+                  "digitalocean-access-token",
+                  "digitalocean-pat",
+                  "digitalocean-refresh-token",
+                  "discord-api-token",
+                  "discord-client-id",
+                  "discord-client-secret",
+                  "doppler-api-token",
+                  "droneci-access-token",
+                  "dropbox-api-token",
+                  "dropbox-long-lived-api-token",
+                  "dropbox-short-lived-api-token",
+                  "duffel-api-token",
+                  "dynatrace-api-token",
+                  "easypost-api-token",
+                  "easypost-test-api-token",
+                  "etsy-access-token",
+                  "facebook-access-token",
+                  "facebook-page-access-token",
+                  "facebook-secret",
+                  "fastly-api-token",
+                  "finicity-api-token",
+                  "finicity-client-secret",
+                  "finnhub-access-token",
+                  "flickr-access-token",
+                  "flutterwave-encryption-key",
+                  "flutterwave-public-key",
+                  "flutterwave-secret-key",
+                  "flyio-access-token",
+                  "frameio-api-token",
+                  "freemius-secret-key",
+                  "freshbooks-access-token",
+                  "gcp-api-key",
+                  "generic-api-key",
+                  "github-app-token",
+                  "github-fine-grained-pat",
+                  "github-oauth",
+                  "github-pat",
+                  "github-refresh-token",
+                  "gitlab-cicd-job-token",
+                  "gitlab-deploy-token",
+                  "gitlab-feature-flag-client-token",
+                  "gitlab-feed-token",
+                  "gitlab-incoming-mail-token",
+                  "gitlab-kubernetes-agent-token",
+                  "gitlab-oauth-app-secret",
+                  "gitlab-pat",
+                  "gitlab-pat-routable",
+                  "gitlab-ptt",
+                  "gitlab-rrt",
+                  "gitlab-runner-authentication-token",
+                  "gitlab-runner-authentication-token-routable",
+                  "gitlab-scim-token",
+                  "gitlab-session-cookie",
+                  "gitter-access-token",
+                  "gocardless-api-token",
+                  "grafana-api-key",
+                  "grafana-cloud-api-token",
+                  "grafana-service-account-token",
+                  "harness-api-key",
+                  "hashicorp-tf-api-token",
+                  "hashicorp-tf-password",
+                  "heroku-api-key",
+                  "heroku-api-key-v2",
+                  "hubspot-api-key",
+                  "huggingface-access-token",
+                  "huggingface-organization-api-token",
+                  "infracost-api-token",
+                  "intercom-api-key",
+                  "intra42-client-secret",
+                  "jfrog-api-key",
+                  "jfrog-identity-token",
+                  "jwt",
+                  "jwt-base64",
+                  "kraken-access-token",
+                  "kubernetes-secret-yaml",
+                  "kucoin-access-token",
+                  "kucoin-secret-key",
+                  "launchdarkly-access-token",
+                  "linear-api-key",
+                  "linear-client-secret",
+                  "linkedin-client-id",
+                  "linkedin-client-secret",
+                  "lob-api-key",
+                  "lob-pub-api-key",
+                  "looker-client-id",
+                  "looker-client-secret",
+                  "mailchimp-api-key",
+                  "mailgun-private-api-token",
+                  "mailgun-pub-key",
+                  "mailgun-signing-key",
+                  "mapbox-api-token",
+                  "mattermost-access-token",
+                  "maxmind-license-key",
+                  "messagebird-api-token",
+                  "messagebird-client-id",
+                  "microsoft-teams-webhook",
+                  "netlify-access-token",
+                  "new-relic-browser-api-token",
+                  "new-relic-insert-key",
+                  "new-relic-user-api-id",
+                  "new-relic-user-api-key",
+                  "notion-api-token",
+                  "npm-access-token",
+                  "nuget-config-password",
+                  "nytimes-access-token",
+                  "octopus-deploy-api-key",
+                  "okta-access-token",
+                  "openai-api-key",
+                  "openshift-user-token",
+                  "perplexity-api-key",
+                  "pkcs12-file",
+                  "plaid-api-token",
+                  "plaid-client-id",
+                  "plaid-secret-key",
+                  "planetscale-api-token",
+                  "planetscale-oauth-token",
+                  "planetscale-password",
+                  "postman-api-token",
+                  "prefect-api-token",
+                  "private-key",
+                  "privateai-api-token",
+                  "pulumi-api-token",
+                  "pypi-upload-token",
+                  "rapidapi-access-token",
+                  "readme-api-token",
+                  "rubygems-api-token",
+                  "scalingo-api-token",
+                  "sendbird-access-id",
+                  "sendbird-access-token",
+                  "sendgrid-api-token",
+                  "sendinblue-api-token",
+                  "sentry-access-token",
+                  "sentry-org-token",
+                  "sentry-user-token",
+                  "settlemint-application-access-token",
+                  "settlemint-personal-access-token",
+                  "settlemint-service-access-token",
+                  "shippo-api-token",
+                  "shopify-access-token",
+                  "shopify-custom-access-token",
+                  "shopify-private-app-access-token",
+                  "shopify-shared-secret",
+                  "sidekiq-secret",
+                  "sidekiq-sensitive-url",
+                  "slack-app-token",
+                  "slack-bot-token",
+                  "slack-config-access-token",
+                  "slack-config-refresh-token",
+                  "slack-legacy-bot-token",
+                  "slack-legacy-token",
+                  "slack-legacy-workspace-token",
+                  "slack-user-token",
+                  "slack-webhook-url",
+                  "snyk-api-token",
+                  "sonar-api-token",
+                  "sourcegraph-access-token",
+                  "square-access-token",
+                  "squarespace-access-token",
+                  "stripe-access-token",
+                  "sumologic-access-id",
+                  "sumologic-access-token",
+                  "telegram-bot-api-token",
+                  "travisci-access-token",
+                  "twilio-api-key",
+                  "twitch-api-token",
+                  "twitter-access-secret",
+                  "twitter-access-token",
+                  "twitter-api-key",
+                  "twitter-api-secret",
+                  "twitter-bearer-token",
+                  "typeform-api-token",
+                  "vault-batch-token",
+                  "vault-service-token",
+                  "yandex-access-token",
+                  "yandex-api-key",
+                  "yandex-aws-access-token",
+                  "zendesk-secret-key"
+                ]
+              },
+              "eligibility": {
+                "languages": [
+                  "csharp",
+                  "go",
+                  "java",
+                  "javascript",
+                  "python",
+                  "rust",
+                  "shell",
+                  "typescript",
+                  "yaml",
+                  "json",
+                  "toml",
+                  "xml"
+                ],
+                "extensions": [
+                  ".cs",
+                  ".go",
+                  ".java",
+                  ".js",
+                  ".jsx",
+                  ".mjs",
+                  ".cjs",
+                  ".ts",
+                  ".tsx",
+                  ".mts",
+                  ".cts",
+                  ".py",
+                  ".pyi",
+                  ".rs",
+                  ".sh",
+                  ".yaml",
+                  ".yml",
+                  ".json",
+                  ".toml",
+                  ".xml"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 200,
+                "maxFileBytes": 8388608,
+                "maxTotalBytes": 33554432,
+                "maxManifestBytes": 262144
+              },
+              "output": {
+                "format": "sarif",
+                "schemaVersion": "2.1.0",
+                "secretDiagnostics": true
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              },
+              "attestation": "gitleaks-scan-log"
+            },
+            {
+              "id": "security.semgrep.actions-mutable-ref",
+              "family": "security",
+              "category": "workflow-supply-chain",
+              "binary": {
+                "path": "semgrep",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "1.100.0",
+                "args": [
+                  "scan",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--disable-version-check",
+                  "--metrics=off",
+                  "--no-git-ignore",
+                  "--json",
+                  "--error",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "scout-semgrep-actions/v1@sha256:25790a46d68968667f58f0be5fe9d9379858ba2b99017e89f8683723fa0d60fc",
+                "bundledFiles": [
+                  "security/semgrep-actions-mutable-ref.yaml"
+                ],
+                "ruleIds": [
+                  "scout.security.actions.mutable-ref"
+                ]
+              },
+              "eligibility": {
+                "languages": [
+                  "yaml"
+                ],
+                "extensions": [
+                  ".yaml",
+                  ".yml"
+                ],
+                "pathPrefixes": [
+                  ".github/workflows/"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "semgrep_json",
+                "schemaVersion": "1.100.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "13": "failure",
+                "2": "failure",
+                "3": "failure",
+                "4": "failure",
+                "5": "failure",
+                "7": "failure",
+                "8": "failure",
+                "99": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              }
+            },
+            {
+              "id": "security.semgrep.javascript-current-script-dom-clobbering",
+              "family": "security",
+              "category": "dom-clobbering",
+              "binary": {
+                "path": "semgrep",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "1.100.0",
+                "args": [
+                  "scan",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--disable-version-check",
+                  "--metrics=off",
+                  "--no-git-ignore",
+                  "--json",
+                  "--error",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "scout-semgrep-current-script/v1@sha256:47d4c1818fa6b3a22c23d6fc1fc8ad5922dfe255a9a32780773e17851a43a457",
+                "bundledFiles": [
+                  "security/semgrep-javascript-current-script-dom-clobbering.yaml"
+                ],
+                "ruleIds": [
+                  "scout.security.javascript.current-script-dom-clobbering"
+                ]
+              },
+              "eligibility": {
+                "languages": [
+                  "javascript"
+                ],
+                "extensions": [
+                  ".js",
+                  ".mjs",
+                  ".cjs"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "semgrep_json",
+                "schemaVersion": "1.100.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "13": "failure",
+                "2": "failure",
+                "3": "failure",
+                "4": "failure",
+                "5": "failure",
+                "7": "failure",
+                "8": "failure",
+                "99": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              }
+            },
+            {
+              "id": "security.semgrep.python-multipart-cve-2024-24762",
+              "family": "security",
+              "category": "dependency-vulnerability",
+              "binary": {
+                "path": "semgrep",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "1.100.0",
+                "args": [
+                  "scan",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--disable-version-check",
+                  "--metrics=off",
+                  "--no-git-ignore",
+                  "--json",
+                  "--error",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "scout-semgrep-python-multipart/v1@sha256:9c0a8465c628cda3fb102339cb85ced19343e6cabd567d2f9bc3ba154e5d745a",
+                "bundledFiles": [
+                  "security/semgrep-python-multipart-cve-2024-24762.yaml"
+                ],
+                "ruleIds": [
+                  "scout.security.python-multipart-cve-2024-24762"
+                ]
+              },
+              "eligibility": {
+                "languages": [
+                  "toml"
+                ],
+                "extensions": [
+                  ".toml"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "semgrep_json",
+                "schemaVersion": "1.100.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "13": "failure",
+                "2": "failure",
+                "3": "failure",
+                "4": "failure",
+                "5": "failure",
+                "7": "failure",
+                "8": "failure",
+                "99": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              }
+            },
+            {
+              "id": "security.semgrep.python-unsafe-yaml-load",
+              "family": "security",
+              "category": "dangerous-deserialization",
+              "binary": {
+                "path": "semgrep",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "1.100.0",
+                "args": [
+                  "scan",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--disable-version-check",
+                  "--metrics=off",
+                  "--no-git-ignore",
+                  "--json",
+                  "--error",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "scout-semgrep-security/v1@sha256:5395708e0a5f4f593f58d62eb55b8f4a261aeafbdff42979b60bd6646d3df6bb",
+                "bundledFiles": [
+                  "security/semgrep-python-unsafe-yaml-load.yaml"
+                ],
+                "ruleIds": [
+                  "scout.security.python.yaml-unsafe-load"
+                ]
+              },
+              "eligibility": {
+                "languages": [
+                  "python"
+                ],
+                "extensions": [
+                  ".py"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "semgrep_json",
+                "schemaVersion": "1.100.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "13": "failure",
+                "2": "failure",
+                "3": "failure",
+                "4": "failure",
+                "5": "failure",
+                "7": "failure",
+                "8": "failure",
+                "99": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              }
+            }
+          ]
+        },
+        "Root": "/synthetic/x1-model-free-contract"
+      },
+      "contextual_egress": false,
+      "effective_policy": {
+        "profile": "report",
+        "decisions": {
+          "enabled": false,
+          "resolved": {
+            "Enabled": false,
+            "Provider": "jev",
+            "Model": "",
+            "MaxPerRun": 2000,
+            "MaxCostUSD": 0.5,
+            "EgressAcknowledged": false
+          }
+        },
+        "model_cli": {
+          "lanes": [],
+          "provider": ""
+        },
+        "mapping": {
+          "association": {
+            "enabled": false
+          },
+          "resolved": {
+            "AreasMatchJaccard": 0.5,
+            "Association": {
+              "Enabled": false,
+              "CoveredScore": 0.6,
+              "TChoice": 0.535,
+              "MaxPendingPerRun": 10,
+              "Fallback": {
+                "Model": "gpt-6.1-terra",
+                "Effort": "high",
+                "Timeout": 900000000000,
+                "MaxPerRun": 40
+              },
+              "Guard": {
+                "WindowMerges": 20,
+                "MinClusters": 20,
+                "FallbackRateMax": 0.4,
+                "PendingNewRateMax": 0.2
+              }
+            }
+          }
+        }
+      },
+      "history_stage": "absent",
+      "key_present": false,
+      "mapping_argv": [
+        "map",
+        "--source",
+        "heuristic"
+      ],
+      "measures_nil": true,
+      "model_call_impossible": true,
+      "model_lanes": [],
+      "model_proof": {
+        "association_disabled": true,
+        "effective_config_bound": true,
+        "heuristic_only": true,
+        "jev_disabled": true,
+        "model_lanes_disabled": true,
+        "pr_metadata_absent": true
+      },
+      "model_stages": "disabled",
+      "options": {
+        "Scope": {
+          "kind": "repository",
+          "selectedFamilies": [
+            "architecture",
+            "security",
+            "quality",
+            "performance"
+          ]
+        },
+        "ForceFull": true,
+        "Exclusions": null,
+        "Trigger": "push",
+        "Inline": null,
+        "Measures": null,
+        "Association": null
+      },
+      "original_policy": {
+        "profile": "report",
+        "decisions": {
+          "enabled": true,
+          "resolved": {
+            "Enabled": true,
+            "Provider": "jev",
+            "Model": "typesafe/jev-1.14-20261014",
+            "MaxPerRun": 2000,
+            "MaxCostUSD": 0.5,
+            "EgressAcknowledged": true
+          }
+        },
+        "model_cli": {
+          "lanes": [
+            "contextual"
+          ],
+          "provider": "claude"
+        },
+        "mapping": {
+          "association": {
+            "enabled": false
+          },
+          "resolved": {
+            "AreasMatchJaccard": 0.5,
+            "Association": {
+              "Enabled": false,
+              "CoveredScore": 0.6,
+              "TChoice": 0.535,
+              "MaxPendingPerRun": 10,
+              "Fallback": {
+                "Model": "gpt-6.1-terra",
+                "Effort": "high",
+                "Timeout": 900000000000,
+                "MaxPerRun": 40
+              },
+              "Guard": {
+                "WindowMerges": 20,
+                "MinClusters": 20,
+                "FallbackRateMax": 0.4,
+                "PendingNewRateMax": 0.2
+              }
+            }
+          }
+        }
+      },
+      "pr_metadata_fetch": {
+        "present": false,
+        "reason": "no PR metadata fetch API call in frontend"
+      },
+      "ranking_stage": "absent",
+      "revision": "contract-revision",
+      "route": "bound",
+      "scope": {
+        "kind": "repository",
+        "selectedFamilies": [
+          "architecture",
+          "security",
+          "quality",
+          "performance"
+        ]
+      }
+    },
+    "reference": {
+      "association_nil": true,
+      "clawpatch_egress": false,
+      "config": {
+        "AssociationGuard": {
+          "WindowMerges": 0,
+          "MinClusters": 0,
+          "FallbackRateMax": 0,
+          "PendingNewRateMax": 0
+        },
+        "ClawpatchBinary": "/synthetic/x1-model-free-contract/bin/clawpatch",
+        "ClawpatchEgressAuthorized": false,
+        "ClawpatchProvider": "",
+        "Dependencies": null,
+        "ModelLanes": [],
+        "Provider": {
+          "CLI": "",
+          "Model": "",
+          "PromptVersion": "",
+          "EgressAuthorized": false,
+          "Timeout": 0,
+          "MaxContextBytes": 0,
+          "MaxFileBytes": 0,
+          "MaxPromptBytes": 0
+        },
+        "Registry": {
+          "sha256": "feb92d4d04bdfdff2b036d6daba782a1e1ebfc852910b8d82babba273e2e454e",
+          "specs": [
+            {
+              "id": "performance.semgrep.css-layout-height-transition",
+              "family": "performance",
+              "category": "frontend-layout-animation",
+              "binary": {
+                "path": "semgrep",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "1.100.0",
+                "args": [
+                  "scan",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--disable-version-check",
+                  "--metrics=off",
+                  "--no-git-ignore",
+                  "--json",
+                  "--error",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "scout-semgrep-css-height-transition/v3@sha256:1181a0a5393c91fc63bbe72a8417e00093069179ed93a60eacd4aab5685fb5b8",
+                "bundledFiles": [
+                  "performance/semgrep-css-height-transition.yaml"
+                ],
+                "ruleIds": [
+                  "scout.performance.css.layout-height-transition"
+                ]
+              },
+              "eligibility": {
+                "extensions": [
+                  ".css"
+                ],
+                "allLanguages": true
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "semgrep_json",
+                "schemaVersion": "1.100.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "13": "failure",
+                "2": "failure",
+                "3": "failure",
+                "4": "failure",
+                "5": "failure",
+                "7": "failure",
+                "8": "failure",
+                "99": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              }
+            },
+            {
+              "id": "performance:ruff",
+              "family": "performance",
+              "category": "micro-optimization",
+              "binary": {
+                "path": "ruff",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "0.15.8",
+                "args": [
+                  "check",
+                  "--isolated",
+                  "--no-cache",
+                  "--select",
+                  "PERF",
+                  "--output-format",
+                  "sarif",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "ruff/PERF@0.15.8"
+              },
+              "eligibility": {
+                "languages": [
+                  "Python"
+                ],
+                "extensions": [
+                  ".py",
+                  ".pyi"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "sarif",
+                "schemaVersion": "2.1.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "2": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              },
+              "attestation": "ruff-file-listing"
+            },
+            {
+              "id": "quality.ruff.complexity",
+              "family": "quality",
+              "category": "complexity",
+              "binary": {
+                "path": "ruff",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "0.15.8",
+                "args": [
+                  "check",
+                  "--isolated",
+                  "--no-cache",
+                  "--select",
+                  "C90",
+                  "--output-format",
+                  "sarif",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "ruff/C90@0.15.8"
+              },
+              "eligibility": {
+                "languages": [
+                  "Python"
+                ],
+                "extensions": [
+                  ".py",
+                  ".pyi"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "sarif",
+                "schemaVersion": "2.1.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "2": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              },
+              "attestation": "ruff-file-listing"
+            },
+            {
+              "id": "security.gitleaks.default-credentials",
+              "family": "security",
+              "category": "credential-leakage",
+              "binary": {
+                "path": "gitleaks",
+                "versionArgs": [
+                  "version"
+                ],
+                "version": "8.30.1",
+                "args": [
+                  "dir",
+                  "--no-banner",
+                  "--no-color",
+                  "--log-level",
+                  "trace",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--ignore-gitleaks-allow",
+                  "--gitleaks-ignore-path",
+                  "/dev/null",
+                  "--redact=100",
+                  "--max-target-megabytes",
+                  "8",
+                  "--report-format",
+                  "sarif",
+                  "--report-path",
+                  "-",
+                  "--exit-code",
+                  "1",
+                  "{staged_input_dir}"
+                ],
+                "privateWorkDir": true
+              },
+              "rules": {
+                "version": "gitleaks-default-rules/8.30.1@sha256:e163e53b9e7e8a8511e77271e2b323ed057759542a6d988258afe3a1fa329caf",
+                "bundledFiles": [
+                  "security/gitleaks-default.toml"
+                ],
+                "ruleIds": [
+                  "1password-secret-key",
+                  "1password-service-account-token",
+                  "adafruit-api-key",
+                  "adobe-client-id",
+                  "adobe-client-secret",
+                  "age-secret-key",
+                  "airtable-api-key",
+                  "airtable-personnal-access-token",
+                  "algolia-api-key",
+                  "alibaba-access-key-id",
+                  "alibaba-secret-key",
+                  "anthropic-admin-api-key",
+                  "anthropic-api-key",
+                  "artifactory-api-key",
+                  "artifactory-reference-token",
+                  "asana-client-id",
+                  "asana-client-secret",
+                  "atlassian-api-token",
+                  "authress-service-client-access-key",
+                  "aws-access-token",
+                  "aws-amazon-bedrock-api-key-long-lived",
+                  "aws-amazon-bedrock-api-key-short-lived",
+                  "azure-ad-client-secret",
+                  "beamer-api-token",
+                  "bitbucket-client-id",
+                  "bitbucket-client-secret",
+                  "bittrex-access-key",
+                  "bittrex-secret-key",
+                  "cisco-meraki-api-key",
+                  "clickhouse-cloud-api-secret-key",
+                  "clojars-api-token",
+                  "cloudflare-api-key",
+                  "cloudflare-global-api-key",
+                  "cloudflare-origin-ca-key",
+                  "codecov-access-token",
+                  "cohere-api-token",
+                  "coinbase-access-token",
+                  "confluent-access-token",
+                  "confluent-secret-key",
+                  "contentful-delivery-api-token",
+                  "curl-auth-header",
+                  "curl-auth-user",
+                  "databricks-api-token",
+                  "datadog-access-token",
+                  "defined-networking-api-token",
+                  "digitalocean-access-token",
+                  "digitalocean-pat",
+                  "digitalocean-refresh-token",
+                  "discord-api-token",
+                  "discord-client-id",
+                  "discord-client-secret",
+                  "doppler-api-token",
+                  "droneci-access-token",
+                  "dropbox-api-token",
+                  "dropbox-long-lived-api-token",
+                  "dropbox-short-lived-api-token",
+                  "duffel-api-token",
+                  "dynatrace-api-token",
+                  "easypost-api-token",
+                  "easypost-test-api-token",
+                  "etsy-access-token",
+                  "facebook-access-token",
+                  "facebook-page-access-token",
+                  "facebook-secret",
+                  "fastly-api-token",
+                  "finicity-api-token",
+                  "finicity-client-secret",
+                  "finnhub-access-token",
+                  "flickr-access-token",
+                  "flutterwave-encryption-key",
+                  "flutterwave-public-key",
+                  "flutterwave-secret-key",
+                  "flyio-access-token",
+                  "frameio-api-token",
+                  "freemius-secret-key",
+                  "freshbooks-access-token",
+                  "gcp-api-key",
+                  "generic-api-key",
+                  "github-app-token",
+                  "github-fine-grained-pat",
+                  "github-oauth",
+                  "github-pat",
+                  "github-refresh-token",
+                  "gitlab-cicd-job-token",
+                  "gitlab-deploy-token",
+                  "gitlab-feature-flag-client-token",
+                  "gitlab-feed-token",
+                  "gitlab-incoming-mail-token",
+                  "gitlab-kubernetes-agent-token",
+                  "gitlab-oauth-app-secret",
+                  "gitlab-pat",
+                  "gitlab-pat-routable",
+                  "gitlab-ptt",
+                  "gitlab-rrt",
+                  "gitlab-runner-authentication-token",
+                  "gitlab-runner-authentication-token-routable",
+                  "gitlab-scim-token",
+                  "gitlab-session-cookie",
+                  "gitter-access-token",
+                  "gocardless-api-token",
+                  "grafana-api-key",
+                  "grafana-cloud-api-token",
+                  "grafana-service-account-token",
+                  "harness-api-key",
+                  "hashicorp-tf-api-token",
+                  "hashicorp-tf-password",
+                  "heroku-api-key",
+                  "heroku-api-key-v2",
+                  "hubspot-api-key",
+                  "huggingface-access-token",
+                  "huggingface-organization-api-token",
+                  "infracost-api-token",
+                  "intercom-api-key",
+                  "intra42-client-secret",
+                  "jfrog-api-key",
+                  "jfrog-identity-token",
+                  "jwt",
+                  "jwt-base64",
+                  "kraken-access-token",
+                  "kubernetes-secret-yaml",
+                  "kucoin-access-token",
+                  "kucoin-secret-key",
+                  "launchdarkly-access-token",
+                  "linear-api-key",
+                  "linear-client-secret",
+                  "linkedin-client-id",
+                  "linkedin-client-secret",
+                  "lob-api-key",
+                  "lob-pub-api-key",
+                  "looker-client-id",
+                  "looker-client-secret",
+                  "mailchimp-api-key",
+                  "mailgun-private-api-token",
+                  "mailgun-pub-key",
+                  "mailgun-signing-key",
+                  "mapbox-api-token",
+                  "mattermost-access-token",
+                  "maxmind-license-key",
+                  "messagebird-api-token",
+                  "messagebird-client-id",
+                  "microsoft-teams-webhook",
+                  "netlify-access-token",
+                  "new-relic-browser-api-token",
+                  "new-relic-insert-key",
+                  "new-relic-user-api-id",
+                  "new-relic-user-api-key",
+                  "notion-api-token",
+                  "npm-access-token",
+                  "nuget-config-password",
+                  "nytimes-access-token",
+                  "octopus-deploy-api-key",
+                  "okta-access-token",
+                  "openai-api-key",
+                  "openshift-user-token",
+                  "perplexity-api-key",
+                  "pkcs12-file",
+                  "plaid-api-token",
+                  "plaid-client-id",
+                  "plaid-secret-key",
+                  "planetscale-api-token",
+                  "planetscale-oauth-token",
+                  "planetscale-password",
+                  "postman-api-token",
+                  "prefect-api-token",
+                  "private-key",
+                  "privateai-api-token",
+                  "pulumi-api-token",
+                  "pypi-upload-token",
+                  "rapidapi-access-token",
+                  "readme-api-token",
+                  "rubygems-api-token",
+                  "scalingo-api-token",
+                  "sendbird-access-id",
+                  "sendbird-access-token",
+                  "sendgrid-api-token",
+                  "sendinblue-api-token",
+                  "sentry-access-token",
+                  "sentry-org-token",
+                  "sentry-user-token",
+                  "settlemint-application-access-token",
+                  "settlemint-personal-access-token",
+                  "settlemint-service-access-token",
+                  "shippo-api-token",
+                  "shopify-access-token",
+                  "shopify-custom-access-token",
+                  "shopify-private-app-access-token",
+                  "shopify-shared-secret",
+                  "sidekiq-secret",
+                  "sidekiq-sensitive-url",
+                  "slack-app-token",
+                  "slack-bot-token",
+                  "slack-config-access-token",
+                  "slack-config-refresh-token",
+                  "slack-legacy-bot-token",
+                  "slack-legacy-token",
+                  "slack-legacy-workspace-token",
+                  "slack-user-token",
+                  "slack-webhook-url",
+                  "snyk-api-token",
+                  "sonar-api-token",
+                  "sourcegraph-access-token",
+                  "square-access-token",
+                  "squarespace-access-token",
+                  "stripe-access-token",
+                  "sumologic-access-id",
+                  "sumologic-access-token",
+                  "telegram-bot-api-token",
+                  "travisci-access-token",
+                  "twilio-api-key",
+                  "twitch-api-token",
+                  "twitter-access-secret",
+                  "twitter-access-token",
+                  "twitter-api-key",
+                  "twitter-api-secret",
+                  "twitter-bearer-token",
+                  "typeform-api-token",
+                  "vault-batch-token",
+                  "vault-service-token",
+                  "yandex-access-token",
+                  "yandex-api-key",
+                  "yandex-aws-access-token",
+                  "zendesk-secret-key"
+                ]
+              },
+              "eligibility": {
+                "languages": [
+                  "csharp",
+                  "go",
+                  "java",
+                  "javascript",
+                  "python",
+                  "rust",
+                  "shell",
+                  "typescript",
+                  "yaml",
+                  "json",
+                  "toml",
+                  "xml"
+                ],
+                "extensions": [
+                  ".cs",
+                  ".go",
+                  ".java",
+                  ".js",
+                  ".jsx",
+                  ".mjs",
+                  ".cjs",
+                  ".ts",
+                  ".tsx",
+                  ".mts",
+                  ".cts",
+                  ".py",
+                  ".pyi",
+                  ".rs",
+                  ".sh",
+                  ".yaml",
+                  ".yml",
+                  ".json",
+                  ".toml",
+                  ".xml"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 200,
+                "maxFileBytes": 8388608,
+                "maxTotalBytes": 33554432,
+                "maxManifestBytes": 262144
+              },
+              "output": {
+                "format": "sarif",
+                "schemaVersion": "2.1.0",
+                "secretDiagnostics": true
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              },
+              "attestation": "gitleaks-scan-log"
+            },
+            {
+              "id": "security.semgrep.actions-mutable-ref",
+              "family": "security",
+              "category": "workflow-supply-chain",
+              "binary": {
+                "path": "semgrep",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "1.100.0",
+                "args": [
+                  "scan",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--disable-version-check",
+                  "--metrics=off",
+                  "--no-git-ignore",
+                  "--json",
+                  "--error",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "scout-semgrep-actions/v1@sha256:25790a46d68968667f58f0be5fe9d9379858ba2b99017e89f8683723fa0d60fc",
+                "bundledFiles": [
+                  "security/semgrep-actions-mutable-ref.yaml"
+                ],
+                "ruleIds": [
+                  "scout.security.actions.mutable-ref"
+                ]
+              },
+              "eligibility": {
+                "languages": [
+                  "yaml"
+                ],
+                "extensions": [
+                  ".yaml",
+                  ".yml"
+                ],
+                "pathPrefixes": [
+                  ".github/workflows/"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "semgrep_json",
+                "schemaVersion": "1.100.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "13": "failure",
+                "2": "failure",
+                "3": "failure",
+                "4": "failure",
+                "5": "failure",
+                "7": "failure",
+                "8": "failure",
+                "99": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              }
+            },
+            {
+              "id": "security.semgrep.javascript-current-script-dom-clobbering",
+              "family": "security",
+              "category": "dom-clobbering",
+              "binary": {
+                "path": "semgrep",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "1.100.0",
+                "args": [
+                  "scan",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--disable-version-check",
+                  "--metrics=off",
+                  "--no-git-ignore",
+                  "--json",
+                  "--error",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "scout-semgrep-current-script/v1@sha256:47d4c1818fa6b3a22c23d6fc1fc8ad5922dfe255a9a32780773e17851a43a457",
+                "bundledFiles": [
+                  "security/semgrep-javascript-current-script-dom-clobbering.yaml"
+                ],
+                "ruleIds": [
+                  "scout.security.javascript.current-script-dom-clobbering"
+                ]
+              },
+              "eligibility": {
+                "languages": [
+                  "javascript"
+                ],
+                "extensions": [
+                  ".js",
+                  ".mjs",
+                  ".cjs"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "semgrep_json",
+                "schemaVersion": "1.100.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "13": "failure",
+                "2": "failure",
+                "3": "failure",
+                "4": "failure",
+                "5": "failure",
+                "7": "failure",
+                "8": "failure",
+                "99": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              }
+            },
+            {
+              "id": "security.semgrep.python-multipart-cve-2024-24762",
+              "family": "security",
+              "category": "dependency-vulnerability",
+              "binary": {
+                "path": "semgrep",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "1.100.0",
+                "args": [
+                  "scan",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--disable-version-check",
+                  "--metrics=off",
+                  "--no-git-ignore",
+                  "--json",
+                  "--error",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "scout-semgrep-python-multipart/v1@sha256:9c0a8465c628cda3fb102339cb85ced19343e6cabd567d2f9bc3ba154e5d745a",
+                "bundledFiles": [
+                  "security/semgrep-python-multipart-cve-2024-24762.yaml"
+                ],
+                "ruleIds": [
+                  "scout.security.python-multipart-cve-2024-24762"
+                ]
+              },
+              "eligibility": {
+                "languages": [
+                  "toml"
+                ],
+                "extensions": [
+                  ".toml"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "semgrep_json",
+                "schemaVersion": "1.100.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "13": "failure",
+                "2": "failure",
+                "3": "failure",
+                "4": "failure",
+                "5": "failure",
+                "7": "failure",
+                "8": "failure",
+                "99": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              }
+            },
+            {
+              "id": "security.semgrep.python-unsafe-yaml-load",
+              "family": "security",
+              "category": "dangerous-deserialization",
+              "binary": {
+                "path": "semgrep",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "1.100.0",
+                "args": [
+                  "scan",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--disable-version-check",
+                  "--metrics=off",
+                  "--no-git-ignore",
+                  "--json",
+                  "--error",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "scout-semgrep-security/v1@sha256:5395708e0a5f4f593f58d62eb55b8f4a261aeafbdff42979b60bd6646d3df6bb",
+                "bundledFiles": [
+                  "security/semgrep-python-unsafe-yaml-load.yaml"
+                ],
+                "ruleIds": [
+                  "scout.security.python.yaml-unsafe-load"
+                ]
+              },
+              "eligibility": {
+                "languages": [
+                  "python"
+                ],
+                "extensions": [
+                  ".py"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "semgrep_json",
+                "schemaVersion": "1.100.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "13": "failure",
+                "2": "failure",
+                "3": "failure",
+                "4": "failure",
+                "5": "failure",
+                "7": "failure",
+                "8": "failure",
+                "99": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              }
+            }
+          ]
+        },
+        "Root": "/synthetic/x1-model-free-contract"
+      },
+      "contextual_egress": false,
+      "effective_policy": {
+        "association_stage": "absent",
+        "decisions_stage": "absent",
+        "model_stage": "absent",
+        "scanner_only": true
+      },
+      "history_stage": "absent",
+      "key_present": false,
+      "mapping_argv": [
+        "map",
+        "--source",
+        "heuristic"
+      ],
+      "measures_nil": true,
+      "model_call_impossible": true,
+      "model_lanes": [],
+      "model_proof": {
+        "association_disabled": true,
+        "effective_config_bound": true,
+        "heuristic_only": true,
+        "jev_disabled": true,
+        "model_lanes_disabled": true,
+        "pr_metadata_absent": true
+      },
+      "model_stages": "structurally_absent",
+      "options": {
+        "Scope": {
+          "kind": "repository",
+          "selectedFamilies": [
+            "architecture",
+            "security",
+            "quality",
+            "performance"
+          ]
+        },
+        "ForceFull": true,
+        "Exclusions": null,
+        "Trigger": "push",
+        "Inline": null,
+        "Measures": null,
+        "Association": null
+      },
+      "original_policy": {
+        "profile": "report",
+        "decisions": {
+          "enabled": true,
+          "resolved": {
+            "Enabled": true,
+            "Provider": "jev",
+            "Model": "typesafe/jev-1.14-20261014",
+            "MaxPerRun": 2000,
+            "MaxCostUSD": 0.5,
+            "EgressAcknowledged": true
+          }
+        },
+        "model_cli": {
+          "lanes": [
+            "contextual"
+          ],
+          "provider": "claude"
+        },
+        "mapping": {
+          "association": {
+            "enabled": false
+          },
+          "resolved": {
+            "AreasMatchJaccard": 0.5,
+            "Association": {
+              "Enabled": false,
+              "CoveredScore": 0.6,
+              "TChoice": 0.535,
+              "MaxPendingPerRun": 10,
+              "Fallback": {
+                "Model": "gpt-6.1-terra",
+                "Effort": "high",
+                "Timeout": 900000000000,
+                "MaxPerRun": 40
+              },
+              "Guard": {
+                "WindowMerges": 20,
+                "MinClusters": 20,
+                "FallbackRateMax": 0.4,
+                "PendingNewRateMax": 0.2
+              }
+            }
+          }
+        }
+      },
+      "pr_metadata_fetch": {
+        "present": false,
+        "reason": "no PR metadata fetch API call in frontend"
+      },
+      "ranking_stage": "absent",
+      "revision": "contract-revision",
+      "route": "reference",
+      "scope": {
+        "kind": "repository",
+        "selectedFamilies": [
+          "architecture",
+          "security",
+          "quality",
+          "performance"
+        ]
+      }
+    },
+    "synthetic-unbound": {
+      "association_nil": true,
+      "clawpatch_egress": false,
+      "config": {
+        "AssociationGuard": {
+          "WindowMerges": 20,
+          "MinClusters": 20,
+          "FallbackRateMax": 0.4,
+          "PendingNewRateMax": 0.2
+        },
+        "ClawpatchBinary": "/synthetic/x1-model-free-contract/bin/clawpatch",
+        "ClawpatchEgressAuthorized": false,
+        "ClawpatchProvider": "claude",
+        "Dependencies": null,
+        "ModelLanes": [
+          "contextual"
+        ],
+        "Provider": {
+          "CLI": "claude",
+          "Model": "",
+          "PromptVersion": "",
+          "EgressAuthorized": true,
+          "Timeout": 0,
+          "MaxContextBytes": 0,
+          "MaxFileBytes": 0,
+          "MaxPromptBytes": 0
+        },
+        "Registry": {
+          "sha256": "feb92d4d04bdfdff2b036d6daba782a1e1ebfc852910b8d82babba273e2e454e",
+          "specs": [
+            {
+              "id": "performance.semgrep.css-layout-height-transition",
+              "family": "performance",
+              "category": "frontend-layout-animation",
+              "binary": {
+                "path": "semgrep",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "1.100.0",
+                "args": [
+                  "scan",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--disable-version-check",
+                  "--metrics=off",
+                  "--no-git-ignore",
+                  "--json",
+                  "--error",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "scout-semgrep-css-height-transition/v3@sha256:1181a0a5393c91fc63bbe72a8417e00093069179ed93a60eacd4aab5685fb5b8",
+                "bundledFiles": [
+                  "performance/semgrep-css-height-transition.yaml"
+                ],
+                "ruleIds": [
+                  "scout.performance.css.layout-height-transition"
+                ]
+              },
+              "eligibility": {
+                "extensions": [
+                  ".css"
+                ],
+                "allLanguages": true
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "semgrep_json",
+                "schemaVersion": "1.100.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "13": "failure",
+                "2": "failure",
+                "3": "failure",
+                "4": "failure",
+                "5": "failure",
+                "7": "failure",
+                "8": "failure",
+                "99": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              }
+            },
+            {
+              "id": "performance:ruff",
+              "family": "performance",
+              "category": "micro-optimization",
+              "binary": {
+                "path": "ruff",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "0.15.8",
+                "args": [
+                  "check",
+                  "--isolated",
+                  "--no-cache",
+                  "--select",
+                  "PERF",
+                  "--output-format",
+                  "sarif",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "ruff/PERF@0.15.8"
+              },
+              "eligibility": {
+                "languages": [
+                  "Python"
+                ],
+                "extensions": [
+                  ".py",
+                  ".pyi"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "sarif",
+                "schemaVersion": "2.1.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "2": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              },
+              "attestation": "ruff-file-listing"
+            },
+            {
+              "id": "quality.ruff.complexity",
+              "family": "quality",
+              "category": "complexity",
+              "binary": {
+                "path": "ruff",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "0.15.8",
+                "args": [
+                  "check",
+                  "--isolated",
+                  "--no-cache",
+                  "--select",
+                  "C90",
+                  "--output-format",
+                  "sarif",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "ruff/C90@0.15.8"
+              },
+              "eligibility": {
+                "languages": [
+                  "Python"
+                ],
+                "extensions": [
+                  ".py",
+                  ".pyi"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "sarif",
+                "schemaVersion": "2.1.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "2": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              },
+              "attestation": "ruff-file-listing"
+            },
+            {
+              "id": "security.gitleaks.default-credentials",
+              "family": "security",
+              "category": "credential-leakage",
+              "binary": {
+                "path": "gitleaks",
+                "versionArgs": [
+                  "version"
+                ],
+                "version": "8.30.1",
+                "args": [
+                  "dir",
+                  "--no-banner",
+                  "--no-color",
+                  "--log-level",
+                  "trace",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--ignore-gitleaks-allow",
+                  "--gitleaks-ignore-path",
+                  "/dev/null",
+                  "--redact=100",
+                  "--max-target-megabytes",
+                  "8",
+                  "--report-format",
+                  "sarif",
+                  "--report-path",
+                  "-",
+                  "--exit-code",
+                  "1",
+                  "{staged_input_dir}"
+                ],
+                "privateWorkDir": true
+              },
+              "rules": {
+                "version": "gitleaks-default-rules/8.30.1@sha256:e163e53b9e7e8a8511e77271e2b323ed057759542a6d988258afe3a1fa329caf",
+                "bundledFiles": [
+                  "security/gitleaks-default.toml"
+                ],
+                "ruleIds": [
+                  "1password-secret-key",
+                  "1password-service-account-token",
+                  "adafruit-api-key",
+                  "adobe-client-id",
+                  "adobe-client-secret",
+                  "age-secret-key",
+                  "airtable-api-key",
+                  "airtable-personnal-access-token",
+                  "algolia-api-key",
+                  "alibaba-access-key-id",
+                  "alibaba-secret-key",
+                  "anthropic-admin-api-key",
+                  "anthropic-api-key",
+                  "artifactory-api-key",
+                  "artifactory-reference-token",
+                  "asana-client-id",
+                  "asana-client-secret",
+                  "atlassian-api-token",
+                  "authress-service-client-access-key",
+                  "aws-access-token",
+                  "aws-amazon-bedrock-api-key-long-lived",
+                  "aws-amazon-bedrock-api-key-short-lived",
+                  "azure-ad-client-secret",
+                  "beamer-api-token",
+                  "bitbucket-client-id",
+                  "bitbucket-client-secret",
+                  "bittrex-access-key",
+                  "bittrex-secret-key",
+                  "cisco-meraki-api-key",
+                  "clickhouse-cloud-api-secret-key",
+                  "clojars-api-token",
+                  "cloudflare-api-key",
+                  "cloudflare-global-api-key",
+                  "cloudflare-origin-ca-key",
+                  "codecov-access-token",
+                  "cohere-api-token",
+                  "coinbase-access-token",
+                  "confluent-access-token",
+                  "confluent-secret-key",
+                  "contentful-delivery-api-token",
+                  "curl-auth-header",
+                  "curl-auth-user",
+                  "databricks-api-token",
+                  "datadog-access-token",
+                  "defined-networking-api-token",
+                  "digitalocean-access-token",
+                  "digitalocean-pat",
+                  "digitalocean-refresh-token",
+                  "discord-api-token",
+                  "discord-client-id",
+                  "discord-client-secret",
+                  "doppler-api-token",
+                  "droneci-access-token",
+                  "dropbox-api-token",
+                  "dropbox-long-lived-api-token",
+                  "dropbox-short-lived-api-token",
+                  "duffel-api-token",
+                  "dynatrace-api-token",
+                  "easypost-api-token",
+                  "easypost-test-api-token",
+                  "etsy-access-token",
+                  "facebook-access-token",
+                  "facebook-page-access-token",
+                  "facebook-secret",
+                  "fastly-api-token",
+                  "finicity-api-token",
+                  "finicity-client-secret",
+                  "finnhub-access-token",
+                  "flickr-access-token",
+                  "flutterwave-encryption-key",
+                  "flutterwave-public-key",
+                  "flutterwave-secret-key",
+                  "flyio-access-token",
+                  "frameio-api-token",
+                  "freemius-secret-key",
+                  "freshbooks-access-token",
+                  "gcp-api-key",
+                  "generic-api-key",
+                  "github-app-token",
+                  "github-fine-grained-pat",
+                  "github-oauth",
+                  "github-pat",
+                  "github-refresh-token",
+                  "gitlab-cicd-job-token",
+                  "gitlab-deploy-token",
+                  "gitlab-feature-flag-client-token",
+                  "gitlab-feed-token",
+                  "gitlab-incoming-mail-token",
+                  "gitlab-kubernetes-agent-token",
+                  "gitlab-oauth-app-secret",
+                  "gitlab-pat",
+                  "gitlab-pat-routable",
+                  "gitlab-ptt",
+                  "gitlab-rrt",
+                  "gitlab-runner-authentication-token",
+                  "gitlab-runner-authentication-token-routable",
+                  "gitlab-scim-token",
+                  "gitlab-session-cookie",
+                  "gitter-access-token",
+                  "gocardless-api-token",
+                  "grafana-api-key",
+                  "grafana-cloud-api-token",
+                  "grafana-service-account-token",
+                  "harness-api-key",
+                  "hashicorp-tf-api-token",
+                  "hashicorp-tf-password",
+                  "heroku-api-key",
+                  "heroku-api-key-v2",
+                  "hubspot-api-key",
+                  "huggingface-access-token",
+                  "huggingface-organization-api-token",
+                  "infracost-api-token",
+                  "intercom-api-key",
+                  "intra42-client-secret",
+                  "jfrog-api-key",
+                  "jfrog-identity-token",
+                  "jwt",
+                  "jwt-base64",
+                  "kraken-access-token",
+                  "kubernetes-secret-yaml",
+                  "kucoin-access-token",
+                  "kucoin-secret-key",
+                  "launchdarkly-access-token",
+                  "linear-api-key",
+                  "linear-client-secret",
+                  "linkedin-client-id",
+                  "linkedin-client-secret",
+                  "lob-api-key",
+                  "lob-pub-api-key",
+                  "looker-client-id",
+                  "looker-client-secret",
+                  "mailchimp-api-key",
+                  "mailgun-private-api-token",
+                  "mailgun-pub-key",
+                  "mailgun-signing-key",
+                  "mapbox-api-token",
+                  "mattermost-access-token",
+                  "maxmind-license-key",
+                  "messagebird-api-token",
+                  "messagebird-client-id",
+                  "microsoft-teams-webhook",
+                  "netlify-access-token",
+                  "new-relic-browser-api-token",
+                  "new-relic-insert-key",
+                  "new-relic-user-api-id",
+                  "new-relic-user-api-key",
+                  "notion-api-token",
+                  "npm-access-token",
+                  "nuget-config-password",
+                  "nytimes-access-token",
+                  "octopus-deploy-api-key",
+                  "okta-access-token",
+                  "openai-api-key",
+                  "openshift-user-token",
+                  "perplexity-api-key",
+                  "pkcs12-file",
+                  "plaid-api-token",
+                  "plaid-client-id",
+                  "plaid-secret-key",
+                  "planetscale-api-token",
+                  "planetscale-oauth-token",
+                  "planetscale-password",
+                  "postman-api-token",
+                  "prefect-api-token",
+                  "private-key",
+                  "privateai-api-token",
+                  "pulumi-api-token",
+                  "pypi-upload-token",
+                  "rapidapi-access-token",
+                  "readme-api-token",
+                  "rubygems-api-token",
+                  "scalingo-api-token",
+                  "sendbird-access-id",
+                  "sendbird-access-token",
+                  "sendgrid-api-token",
+                  "sendinblue-api-token",
+                  "sentry-access-token",
+                  "sentry-org-token",
+                  "sentry-user-token",
+                  "settlemint-application-access-token",
+                  "settlemint-personal-access-token",
+                  "settlemint-service-access-token",
+                  "shippo-api-token",
+                  "shopify-access-token",
+                  "shopify-custom-access-token",
+                  "shopify-private-app-access-token",
+                  "shopify-shared-secret",
+                  "sidekiq-secret",
+                  "sidekiq-sensitive-url",
+                  "slack-app-token",
+                  "slack-bot-token",
+                  "slack-config-access-token",
+                  "slack-config-refresh-token",
+                  "slack-legacy-bot-token",
+                  "slack-legacy-token",
+                  "slack-legacy-workspace-token",
+                  "slack-user-token",
+                  "slack-webhook-url",
+                  "snyk-api-token",
+                  "sonar-api-token",
+                  "sourcegraph-access-token",
+                  "square-access-token",
+                  "squarespace-access-token",
+                  "stripe-access-token",
+                  "sumologic-access-id",
+                  "sumologic-access-token",
+                  "telegram-bot-api-token",
+                  "travisci-access-token",
+                  "twilio-api-key",
+                  "twitch-api-token",
+                  "twitter-access-secret",
+                  "twitter-access-token",
+                  "twitter-api-key",
+                  "twitter-api-secret",
+                  "twitter-bearer-token",
+                  "typeform-api-token",
+                  "vault-batch-token",
+                  "vault-service-token",
+                  "yandex-access-token",
+                  "yandex-api-key",
+                  "yandex-aws-access-token",
+                  "zendesk-secret-key"
+                ]
+              },
+              "eligibility": {
+                "languages": [
+                  "csharp",
+                  "go",
+                  "java",
+                  "javascript",
+                  "python",
+                  "rust",
+                  "shell",
+                  "typescript",
+                  "yaml",
+                  "json",
+                  "toml",
+                  "xml"
+                ],
+                "extensions": [
+                  ".cs",
+                  ".go",
+                  ".java",
+                  ".js",
+                  ".jsx",
+                  ".mjs",
+                  ".cjs",
+                  ".ts",
+                  ".tsx",
+                  ".mts",
+                  ".cts",
+                  ".py",
+                  ".pyi",
+                  ".rs",
+                  ".sh",
+                  ".yaml",
+                  ".yml",
+                  ".json",
+                  ".toml",
+                  ".xml"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 200,
+                "maxFileBytes": 8388608,
+                "maxTotalBytes": 33554432,
+                "maxManifestBytes": 262144
+              },
+              "output": {
+                "format": "sarif",
+                "schemaVersion": "2.1.0",
+                "secretDiagnostics": true
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              },
+              "attestation": "gitleaks-scan-log"
+            },
+            {
+              "id": "security.semgrep.actions-mutable-ref",
+              "family": "security",
+              "category": "workflow-supply-chain",
+              "binary": {
+                "path": "semgrep",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "1.100.0",
+                "args": [
+                  "scan",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--disable-version-check",
+                  "--metrics=off",
+                  "--no-git-ignore",
+                  "--json",
+                  "--error",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "scout-semgrep-actions/v1@sha256:25790a46d68968667f58f0be5fe9d9379858ba2b99017e89f8683723fa0d60fc",
+                "bundledFiles": [
+                  "security/semgrep-actions-mutable-ref.yaml"
+                ],
+                "ruleIds": [
+                  "scout.security.actions.mutable-ref"
+                ]
+              },
+              "eligibility": {
+                "languages": [
+                  "yaml"
+                ],
+                "extensions": [
+                  ".yaml",
+                  ".yml"
+                ],
+                "pathPrefixes": [
+                  ".github/workflows/"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "semgrep_json",
+                "schemaVersion": "1.100.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "13": "failure",
+                "2": "failure",
+                "3": "failure",
+                "4": "failure",
+                "5": "failure",
+                "7": "failure",
+                "8": "failure",
+                "99": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              }
+            },
+            {
+              "id": "security.semgrep.javascript-current-script-dom-clobbering",
+              "family": "security",
+              "category": "dom-clobbering",
+              "binary": {
+                "path": "semgrep",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "1.100.0",
+                "args": [
+                  "scan",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--disable-version-check",
+                  "--metrics=off",
+                  "--no-git-ignore",
+                  "--json",
+                  "--error",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "scout-semgrep-current-script/v1@sha256:47d4c1818fa6b3a22c23d6fc1fc8ad5922dfe255a9a32780773e17851a43a457",
+                "bundledFiles": [
+                  "security/semgrep-javascript-current-script-dom-clobbering.yaml"
+                ],
+                "ruleIds": [
+                  "scout.security.javascript.current-script-dom-clobbering"
+                ]
+              },
+              "eligibility": {
+                "languages": [
+                  "javascript"
+                ],
+                "extensions": [
+                  ".js",
+                  ".mjs",
+                  ".cjs"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "semgrep_json",
+                "schemaVersion": "1.100.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "13": "failure",
+                "2": "failure",
+                "3": "failure",
+                "4": "failure",
+                "5": "failure",
+                "7": "failure",
+                "8": "failure",
+                "99": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              }
+            },
+            {
+              "id": "security.semgrep.python-multipart-cve-2024-24762",
+              "family": "security",
+              "category": "dependency-vulnerability",
+              "binary": {
+                "path": "semgrep",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "1.100.0",
+                "args": [
+                  "scan",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--disable-version-check",
+                  "--metrics=off",
+                  "--no-git-ignore",
+                  "--json",
+                  "--error",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "scout-semgrep-python-multipart/v1@sha256:9c0a8465c628cda3fb102339cb85ced19343e6cabd567d2f9bc3ba154e5d745a",
+                "bundledFiles": [
+                  "security/semgrep-python-multipart-cve-2024-24762.yaml"
+                ],
+                "ruleIds": [
+                  "scout.security.python-multipart-cve-2024-24762"
+                ]
+              },
+              "eligibility": {
+                "languages": [
+                  "toml"
+                ],
+                "extensions": [
+                  ".toml"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "semgrep_json",
+                "schemaVersion": "1.100.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "13": "failure",
+                "2": "failure",
+                "3": "failure",
+                "4": "failure",
+                "5": "failure",
+                "7": "failure",
+                "8": "failure",
+                "99": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              }
+            },
+            {
+              "id": "security.semgrep.python-unsafe-yaml-load",
+              "family": "security",
+              "category": "dangerous-deserialization",
+              "binary": {
+                "path": "semgrep",
+                "versionArgs": [
+                  "--version"
+                ],
+                "version": "1.100.0",
+                "args": [
+                  "scan",
+                  "--config",
+                  "{bundled_rule_files}",
+                  "--disable-version-check",
+                  "--metrics=off",
+                  "--no-git-ignore",
+                  "--json",
+                  "--error",
+                  "{input_paths}"
+                ]
+              },
+              "rules": {
+                "version": "scout-semgrep-security/v1@sha256:5395708e0a5f4f593f58d62eb55b8f4a261aeafbdff42979b60bd6646d3df6bb",
+                "bundledFiles": [
+                  "security/semgrep-python-unsafe-yaml-load.yaml"
+                ],
+                "ruleIds": [
+                  "scout.security.python.yaml-unsafe-load"
+                ]
+              },
+              "eligibility": {
+                "languages": [
+                  "python"
+                ],
+                "extensions": [
+                  ".py"
+                ]
+              },
+              "inputs": {
+                "maxFiles": 10000,
+                "maxFileBytes": 2097152,
+                "maxTotalBytes": 268435456,
+                "maxManifestBytes": 4194304
+              },
+              "output": {
+                "format": "semgrep_json",
+                "schemaVersion": "1.100.0"
+              },
+              "exitCodes": {
+                "0": "success",
+                "1": "findings",
+                "13": "failure",
+                "2": "failure",
+                "3": "failure",
+                "4": "failure",
+                "5": "failure",
+                "7": "failure",
+                "8": "failure",
+                "99": "failure"
+              },
+              "timeout": 120000000000,
+              "maxOutput": 33554432,
+              "permissions": {
+                "readOnlySource": true,
+                "network": false
+              }
+            }
+          ]
+        },
+        "Root": "/synthetic/x1-model-free-contract"
+      },
+      "contextual_egress": true,
+      "effective_policy": {
+        "profile": "report",
+        "decisions": {
+          "enabled": true,
+          "resolved": {
+            "Enabled": true,
+            "Provider": "jev",
+            "Model": "typesafe/jev-1.14-20261014",
+            "MaxPerRun": 2000,
+            "MaxCostUSD": 0.5,
+            "EgressAcknowledged": true
+          }
+        },
+        "model_cli": {
+          "lanes": [
+            "contextual"
+          ],
+          "provider": "claude"
+        },
+        "mapping": {
+          "association": {
+            "enabled": false
+          },
+          "resolved": {
+            "AreasMatchJaccard": 0.5,
+            "Association": {
+              "Enabled": false,
+              "CoveredScore": 0.6,
+              "TChoice": 0.535,
+              "MaxPendingPerRun": 10,
+              "Fallback": {
+                "Model": "gpt-6.1-terra",
+                "Effort": "high",
+                "Timeout": 900000000000,
+                "MaxPerRun": 40
+              },
+              "Guard": {
+                "WindowMerges": 20,
+                "MinClusters": 20,
+                "FallbackRateMax": 0.4,
+                "PendingNewRateMax": 0.2
+              }
+            }
+          }
+        }
+      },
+      "history_stage": "absent",
+      "key_present": false,
+      "mapping_argv": [
+        "map",
+        "--source",
+        "heuristic"
+      ],
+      "measures_nil": true,
+      "model_call_impossible": false,
+      "model_lanes": [
+        "contextual"
+      ],
+      "model_proof": {
+        "association_disabled": false,
+        "effective_config_bound": false,
+        "heuristic_only": false,
+        "jev_disabled": false,
+        "model_lanes_disabled": false,
+        "pr_metadata_absent": false
+      },
+      "model_stages": "enabled_control",
+      "options": {
+        "Scope": {
+          "kind": "repository",
+          "selectedFamilies": [
+            "architecture",
+            "security",
+            "quality",
+            "performance"
+          ]
+        },
+        "ForceFull": true,
+        "Exclusions": null,
+        "Trigger": "push",
+        "Inline": null,
+        "Measures": null,
+        "Association": null
+      },
+      "original_policy": {
+        "profile": "report",
+        "decisions": {
+          "enabled": true,
+          "resolved": {
+            "Enabled": true,
+            "Provider": "jev",
+            "Model": "typesafe/jev-1.14-20261014",
+            "MaxPerRun": 2000,
+            "MaxCostUSD": 0.5,
+            "EgressAcknowledged": true
+          }
+        },
+        "model_cli": {
+          "lanes": [
+            "contextual"
+          ],
+          "provider": "claude"
+        },
+        "mapping": {
+          "association": {
+            "enabled": false
+          },
+          "resolved": {
+            "AreasMatchJaccard": 0.5,
+            "Association": {
+              "Enabled": false,
+              "CoveredScore": 0.6,
+              "TChoice": 0.535,
+              "MaxPendingPerRun": 10,
+              "Fallback": {
+                "Model": "gpt-6.1-terra",
+                "Effort": "high",
+                "Timeout": 900000000000,
+                "MaxPerRun": 40
+              },
+              "Guard": {
+                "WindowMerges": 20,
+                "MinClusters": 20,
+                "FallbackRateMax": 0.4,
+                "PendingNewRateMax": 0.2
+              }
+            }
+          }
+        }
+      },
+      "pr_metadata_fetch": {
+        "present": false,
+        "reason": "no PR metadata fetch API call in frontend"
+      },
+      "ranking_stage": "absent",
+      "revision": "contract-revision",
+      "route": "synthetic-unbound",
+      "scope": {
+        "kind": "repository",
+        "selectedFamilies": [
+          "architecture",
+          "security",
+          "quality",
+          "performance"
+        ]
+      }
+    }
+  },
+  "receipts": {
+    "bound": {
+      "route": "bound",
+      "revision": "contract-revision",
+      "original_policy": {
+        "profile": "report",
+        "decisions": {
+          "enabled": true,
+          "resolved": {
+            "Enabled": true,
+            "Provider": "jev",
+            "Model": "typesafe/jev-1.14-20261014",
+            "MaxPerRun": 2000,
+            "MaxCostUSD": 0.5,
+            "EgressAcknowledged": true
+          }
+        },
+        "model_cli": {
+          "lanes": [
+            "contextual"
+          ],
+          "provider": "claude"
+        },
+        "mapping": {
+          "association": {
+            "enabled": false
+          },
+          "resolved": {
+            "AreasMatchJaccard": 0.5,
+            "Association": {
+              "Enabled": false,
+              "CoveredScore": 0.6,
+              "TChoice": 0.535,
+              "MaxPendingPerRun": 10,
+              "Fallback": {
+                "Model": "gpt-6.1-terra",
+                "Effort": "high",
+                "Timeout": 900000000000,
+                "MaxPerRun": 40
+              },
+              "Guard": {
+                "WindowMerges": 20,
+                "MinClusters": 20,
+                "FallbackRateMax": 0.4,
+                "PendingNewRateMax": 0.2
+              }
+            }
+          }
+        }
+      },
+      "effective": {
+        "profile": "report",
+        "decisions": {
+          "enabled": false,
+          "resolved": {
+            "Enabled": false,
+            "Provider": "jev",
+            "Model": "",
+            "MaxPerRun": 2000,
+            "MaxCostUSD": 0.5,
+            "EgressAcknowledged": false
+          }
+        },
+        "model_cli": {
+          "lanes": [],
+          "provider": ""
+        },
+        "mapping": {
+          "association": {
+            "enabled": false
+          },
+          "resolved": {
+            "AreasMatchJaccard": 0.5,
+            "Association": {
+              "Enabled": false,
+              "CoveredScore": 0.6,
+              "TChoice": 0.535,
+              "MaxPendingPerRun": 10,
+              "Fallback": {
+                "Model": "gpt-6.1-terra",
+                "Effort": "high",
+                "Timeout": 900000000000,
+                "MaxPerRun": 40
+              },
+              "Guard": {
+                "WindowMerges": 20,
+                "MinClusters": 20,
+                "FallbackRateMax": 0.4,
+                "PendingNewRateMax": 0.2
+              }
+            }
+          }
+        }
+      },
+      "issue_ids": [],
+      "multiplicity": {},
+      "durable_issue_count": 0,
+      "durable_links": {},
+      "carried_issue_ids": [],
+      "adapters": null,
+      "coverage": null,
+      "accounted_coverage": null,
+      "scanner_inputs": {},
+      "omissions": [],
+      "mapping_gaps": [],
+      "mapping": {
+        "Status": "mapped",
+        "Source": "heuristic",
+        "Features": null,
+        "Reason": "",
+        "ExplorationIncomplete": false
+      },
+      "scanner_health_complete": false,
+      "binding_rows_complete": true,
+      "model_proof": {
+        "association_disabled": true,
+        "effective_config_bound": true,
+        "heuristic_only": true,
+        "jev_disabled": true,
+        "model_lanes_disabled": true,
+        "pr_metadata_absent": true
+      },
+      "lane_report": [
+        {
+          "lane": "contextual",
+          "mode": "",
+          "requires": "",
+          "required": false,
+          "status": "skipped",
+          "units": 1,
+          "reason": "skipped (not opted in)"
+        },
+        {
+          "lane": "clawpatch-review",
+          "mode": "",
+          "requires": "",
+          "required": false,
+          "status": "skipped",
+          "units": 1,
+          "reason": "skipped (not opted in)"
+        },
+        {
+          "lane": "association",
+          "mode": "",
+          "requires": "",
+          "required": false,
+          "status": "skipped",
+          "units": 0,
+          "reason": "disabled"
+        },
+        {
+          "lane": "association-fallback",
+          "mode": "",
+          "requires": "",
+          "required": false,
+          "status": "skipped",
+          "units": 0,
+          "reason": "disabled"
+        }
+      ],
+      "model_call_impossible": true,
+      "model_stages": "disabled",
+      "association_result": "disabled",
+      "association_health": [
+        {
+          "lane": "association",
+          "mode": "",
+          "requires": "",
+          "required": false,
+          "status": "skipped",
+          "units": 0,
+          "reason": "disabled"
+        },
+        {
+          "lane": "association-fallback",
+          "mode": "",
+          "requires": "",
+          "required": false,
+          "status": "skipped",
+          "units": 0,
+          "reason": "disabled"
+        }
+      ],
+      "jev_result": "absent"
+    },
+    "reference": {
+      "route": "reference",
+      "revision": "contract-revision",
+      "original_policy": {
+        "profile": "report",
+        "decisions": {
+          "enabled": true,
+          "resolved": {
+            "Enabled": true,
+            "Provider": "jev",
+            "Model": "typesafe/jev-1.14-20261014",
+            "MaxPerRun": 2000,
+            "MaxCostUSD": 0.5,
+            "EgressAcknowledged": true
+          }
+        },
+        "model_cli": {
+          "lanes": [
+            "contextual"
+          ],
+          "provider": "claude"
+        },
+        "mapping": {
+          "association": {
+            "enabled": false
+          },
+          "resolved": {
+            "AreasMatchJaccard": 0.5,
+            "Association": {
+              "Enabled": false,
+              "CoveredScore": 0.6,
+              "TChoice": 0.535,
+              "MaxPendingPerRun": 10,
+              "Fallback": {
+                "Model": "gpt-6.1-terra",
+                "Effort": "high",
+                "Timeout": 900000000000,
+                "MaxPerRun": 40
+              },
+              "Guard": {
+                "WindowMerges": 20,
+                "MinClusters": 20,
+                "FallbackRateMax": 0.4,
+                "PendingNewRateMax": 0.2
+              }
+            }
+          }
+        }
+      },
+      "effective": {
+        "association_stage": "absent",
+        "decisions_stage": "absent",
+        "model_stage": "absent",
+        "scanner_only": true
+      },
+      "issue_ids": [],
+      "multiplicity": {},
+      "durable_issue_count": 0,
+      "durable_links": {},
+      "carried_issue_ids": [],
+      "adapters": null,
+      "coverage": null,
+      "accounted_coverage": null,
+      "scanner_inputs": {},
+      "omissions": [],
+      "mapping_gaps": [],
+      "mapping": {
+        "Status": "mapped",
+        "Source": "heuristic",
+        "Features": null,
+        "Reason": "",
+        "ExplorationIncomplete": false
+      },
+      "scanner_health_complete": false,
+      "binding_rows_complete": true,
+      "model_proof": {
+        "association_disabled": true,
+        "effective_config_bound": true,
+        "heuristic_only": true,
+        "jev_disabled": true,
+        "model_lanes_disabled": true,
+        "pr_metadata_absent": true
+      },
+      "lane_report": null,
+      "model_call_impossible": true,
+      "model_stages": "structurally_absent",
+      "association_result": "structurally_absent",
+      "association_health": null,
+      "jev_result": "absent"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "scout.x1.run-config-amendment.v1",
+  "amends": {
+    "path": "execution/run-config.json",
+    "sha256": "c817f6789f1cd112242664c33ddd9bb4193510869c14027bb269ce7a23feee54"
+  },
+  "reason": "Prospective binding v2 clean cutover to deterministic model-free proof. Not authority to run acceptance before the matching zero-issue rule-5 review.",
+  "authority": {
+    "path": "preparation-run/reviews/binding-v2-amendment.json",
+    "scope": "model-free-binding-v2-amendment"
+  },
+  "changes": {
+    "binding_recipe": "preparation/model-free-binding-check-v2.json",
+    "binding_record_kind": "scout.x1.binding-acceptance.v2",
+    "binding_acceptance_keys": [
+      "policy_bound_both_revisions",
+      "deterministic_model_free_proof",
+      "zero_model_attempts",
+      "exact_nonempty_issue_id_parity",
+      "positive_control_expected_failure",
+      "scanner_health_complete"
+    ],
+    "binding_producer_contract": "Requires newly signed-off model-free-binding-check-v2.json amendment before acceptance; key_present false; runtime_closure is the closure.json pin; acceptance has exactly policy_bound_both_revisions, deterministic_model_free_proof, zero_model_attempts, exact_nonempty_issue_id_parity, positive_control_expected_failure, scanner_health_complete (all true). Django revisions is {head,parent}, bound to its object receipt."
+  }
+}

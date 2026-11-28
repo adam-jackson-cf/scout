@@ -1,0 +1,145 @@
+{
+  "schema": "scout.x1.run-config.v1",
+  "paths": {
+    "ROOT": "/Users/adamjackson/Projects/work/scout-x1prep",
+    "STUDY": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking",
+    "OUT": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run",
+    "EXEC": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution",
+    "CAND": "/Users/adamjackson/Projects/work/x1-candidates",
+    "SCRATCH": "/Users/adamjackson/Projects/work/x1-preparation-scratch"
+  },
+  "execution_commit": "5a8c0a155cca6bc2cbb9e71c83c7284598adc6e0",
+  "historical_path_mapping": {
+    "/Users/adamjackson/Projects/work/scout-x1": "/Users/adamjackson/Projects/work/scout-x1prep"
+  },
+  "repositories": [
+    {
+      "repository": "django/django",
+      "url": "https://github.com/django/django",
+      "directory": "django.git",
+      "c0": "d88ec42bd0a37340c8477a6f20bf26e58bd84735",
+      "tip": "a05e16a7230fe33d3f43f4a3aaed103cebb42efc",
+      "role": "test"
+    },
+    {
+      "repository": "microsoft/TypeScript",
+      "url": "https://github.com/microsoft/TypeScript",
+      "directory": "TypeScript.git",
+      "c0": "f2e9ebd1b7e6f8e11ab23631f7b2df4346708535",
+      "tip": "6161772c1370bdd4a82f808e6823bd755eb1870d",
+      "role": "test"
+    },
+    {
+      "repository": "prometheus/prometheus",
+      "url": "https://github.com/prometheus/prometheus",
+      "directory": "prometheus.git",
+      "c0": "756202aa4fc09c4fdc756a8c5b1976d709cd3939",
+      "tip": "ef78ff64267724c8ecd1a1283cad49b365a8b67f",
+      "role": "test"
+    },
+    {
+      "repository": "fastapi/fastapi",
+      "url": "https://github.com/fastapi/fastapi",
+      "directory": "fastapi.git",
+      "c0": null,
+      "tip": "d666ccb62216e45ca78643b52c235ba0d2c53986",
+      "role": "development"
+    },
+    {
+      "repository": "tokio-rs/axum",
+      "url": "https://github.com/tokio-rs/axum",
+      "directory": "axum.git",
+      "c0": null,
+      "tip": "562fa206f09514e7503e898decf73024f5ce6fd4",
+      "role": "development"
+    }
+  ],
+  "required_records": [
+    {
+      "path": "objects/django__django.json",
+      "kind": "scout.x1.objects.v1"
+    },
+    {
+      "path": "objects/microsoft__TypeScript.json",
+      "kind": "scout.x1.objects.v1"
+    },
+    {
+      "path": "objects/prometheus__prometheus.json",
+      "kind": "scout.x1.objects.v1"
+    },
+    {
+      "path": "objects/fastapi__fastapi.json",
+      "kind": "scout.x1.objects.v1"
+    },
+    {
+      "path": "objects/tokio-rs__axum.json",
+      "kind": "scout.x1.objects.v1"
+    },
+    {
+      "path": "closure.json",
+      "kind": "scout.x1.installed-closure.v1"
+    },
+    {
+      "path": "binding/synthetic.json",
+      "kind": "scout.x1.binding-acceptance.v1"
+    },
+    {
+      "path": "binding/django.json",
+      "kind": "scout.x1.binding-acceptance.v1"
+    },
+    {
+      "path": "identifiers/manifest.json",
+      "kind": "scout.x1.identifier-manifest.v1"
+    },
+    {
+      "path": "identifiers/source-coverage.json",
+      "kind": "scout.x1.source-coverage.v1"
+    },
+    {
+      "path": "identifiers/delta-review.json",
+      "kind": "scout.x1.delta-review.v1"
+    },
+    {
+      "path": "identifiers/unresolved.json",
+      "kind": "scout.x1.unresolved.v1"
+    }
+  ],
+  "required_files": [
+    "identifiers/familiarity.jsonl"
+  ],
+  "required_reviews": [
+    {
+      "path": "reviews/implementation.json",
+      "scope": "execution-implementation"
+    },
+    {
+      "path": "reviews/boundaries.json",
+      "scope": "resolved-development-boundaries"
+    },
+    {
+      "path": "reviews/binding.json",
+      "scope": "binding-acceptance"
+    },
+    {
+      "path": "reviews/identifiers.json",
+      "scope": "identifier-completeness-delta"
+    }
+  ],
+  "deferred_to_b_contract": {
+    "pin_source": "evaluation/x1-triage-ranking/preparation/pins.json",
+    "gitlink": "734f81bc1514b52a0627edb0c24ebe1a18b36105",
+    "working_file_count": 176,
+    "closure_field": "deferred_working_files_verified",
+    "requirement": "Every input-verification deferred_to_b row must have a byte-identical path/sha256/bytes record in closure.json after clocked submodule initialization. Seal rechecks all rows and refuses any outstanding row."
+  },
+  "producer_contracts": {
+    "all_required_records": "schema as required_records.kind, status passed, clock {path,sha256,bytes}; all referenced file pins use absolute path/sha256/bytes. Nonempty failures or unmeasured values refuse.",
+    "closure": "complete true; retained_files is the full nonempty absolute path/sha256/bytes set for immutable read-only retained runtime bytes, in addition to full enumeration and dependency records. deferred_working_files_verified resolves the input gate deferrals.",
+    "binding": "key_present false; runtime_closure is the closure.json pin; acceptance has exactly policy_bound_both_revisions, complete_process_observation, zero_model_attempts, exact_nonempty_issue_id_parity, positive_control_expected_failure, scanner_health_complete (all true). Django revisions is {head,parent}, bound to its object receipt.",
+    "source_manifest": "files is the complete absolute path/sha256/bytes set for every execution file, including config and synthetic tests.",
+    "journal": "Use preparation.Journal under preparation.operation_lock; terminal records verify start records and source/output pins. The journal subcommand runs a command in a clean allowlisted environment.",
+    "seal": "Canonical reservation remains on any refusal/crash and requires reviewed recovery. Seal records preparation evidence only; it never grants inventory authority."
+  },
+  "review_contract": "Review JSON contains scope, record {path,sha256}, and reviewed [{path,sha256}]. The human-readable authentic council record must state Zero issues and Signed off and name every reviewed SHA-256; booleans are not authority.",
+  "source_manifest": "execution-source-manifest.json"
+}

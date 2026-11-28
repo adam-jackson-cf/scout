@@ -1,0 +1,87 @@
+{
+  "authority": {
+    "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-reviews/execution-implementation-round-5.md",
+    "sha256": "a268e56b9ea225d5be607d79557cd1d98b0fa70a244a254c52e5a3f3c2cf17ea",
+    "bytes": 20341
+  },
+  "commands": [
+    {
+      "argv": [
+        "/Users/adamjackson/Projects/work/scout-x1prep/.tools/venv/bin/python",
+        "-I",
+        "-B",
+        "-c",
+        "import sys,json; from pathlib import Path; sys.path.insert(0,\"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution\"); from preparation import load_config; from verify_inputs import pin,exclusive_json; c=load_config(\"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/run-config.json\"); e=Path(c[\"paths\"][\"EXEC\"]); files=[pin(p) for p in sorted(e.rglob(\"*\")) if p.is_file() and \"__pycache__\" not in p.parts]; required=[e/\"attest_closure_v2.py\",e/\"closure/native_v2.py\",e/\"tests/test_closure_weak_links.py\",e/\"run-config-amendments/001-binding-v2.json\"]; found={r[\"path\"] for r in files}; assert all(str(p.absolute()) in found for p in required), \"I6/adopted source missing\"; target=Path(c[\"paths\"][\"OUT\"])/c[\"source_manifest\"]; exclusive_json(target,{\"files\":files}); print(json.dumps({\"manifest\":pin(target),\"file_count\":len(files),\"I6_and_adopted\":[pin(p) for p in required]},sort_keys=True))"
+      ],
+      "cwd": "/Users/adamjackson/Projects/work/scout-x1prep",
+      "started_at": "2026-11-10T19:48:51.584118+00:00",
+      "ended_at": "2026-11-10T19:48:51.741979+00:00",
+      "wall_seconds": 0.1578779590781778,
+      "exit_code": 0,
+      "stdout": "{\"I6_and_adopted\": [{\"bytes\": 1168, \"path\": \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/attest_closure_v2.py\", \"sha256\": \"c28a9853f826d46e05ddebbd207ac85cc112aec90179a84b7a0800aeecfd6d84\"}, {\"bytes\": 15849, \"path\": \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/closure/native_v2.py\", \"sha256\": \"5e320ed37a5b106e3a37984e6137e78f87422aa525792018032117d66f4dee09\"}, {\"bytes\": 35588, \"path\": \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/tests/test_closure_weak_links.py\", \"sha256\": \"2a7ee81554000968590cfbcd8ce4649a757a346f3ed24f496db37345e6b89c87\"}, {\"bytes\": 1358, \"path\": \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/run-config-amendments/001-binding-v2.json\", \"sha256\": \"88eb95a55c65d415a3ca4ef50b43f2513231c72fe5008820631d07527575f121\"}], \"file_count\": 46, \"manifest\": {\"bytes\": 11373, \"path\": \"/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/execution-source-manifest.json\", \"sha256\": \"4d078a5a25c3aca06ba9e6ea89a47529703eafc47583ba56566bbf8ac9587a0d\"}}\n",
+      "stderr": "",
+      "stdout_sha256": "eb2e383a21f699786e2f06954a15c6ac014e09f09f0d15ae2cae612d284656f8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "moved": [
+    {
+      "before": {
+        "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/execution-source-manifest.json",
+        "sha256": "50e8c2b16907513f10cefd74232e93166b2363ca1375e37e080c85a17058a4ce",
+        "bytes": 11373
+      },
+      "after": {
+        "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-build/superseded-r3/execution-source-manifest.json",
+        "sha256": "50e8c2b16907513f10cefd74232e93166b2363ca1375e37e080c85a17058a4ce",
+        "bytes": 11373
+      }
+    },
+    {
+      "before": {
+        "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/reviews/implementation.json",
+        "sha256": "ac3ccf3791a3423f38913a2c85f3c86926cede2af3fb9573021eba3c10fbf773",
+        "bytes": 2581
+      },
+      "after": {
+        "path": "/Users/adamjackson/Projects/work/x1-preparation-scratch/binding-v2-build/superseded-r3/implementation.json",
+        "sha256": "ac3ccf3791a3423f38913a2c85f3c86926cede2af3fb9573021eba3c10fbf773",
+        "bytes": 2581
+      }
+    }
+  ],
+  "old_count": 46,
+  "new_count": 46,
+  "changed_rows": [
+    {
+      "before": {
+        "bytes": 6956,
+        "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/binding/fixtures.py",
+        "sha256": "48552a2bd5f8492b83237f147916bde12f2137a6aee6fbae99b01cda9e40381b"
+      },
+      "after": {
+        "bytes": 7278,
+        "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/binding/fixtures.py",
+        "sha256": "5f70b543b9bff5170269fc7b834e0f626a620d5b2ca9eca665ccfbcc27129a70"
+      }
+    },
+    {
+      "before": {
+        "bytes": 33253,
+        "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/tests/test_binding.py",
+        "sha256": "5f008766807c973084f9b760cccc74857a43fcef7924e89061dea89af360f9ee"
+      },
+      "after": {
+        "bytes": 39365,
+        "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/execution/tests/test_binding.py",
+        "sha256": "22eb67ba83cebf361c931587a791c2cfdccd7b13be1e84eeda5524899aa3ec57"
+      }
+    }
+  ],
+  "runtime_unchanged": {
+    "path": "/Users/adamjackson/Projects/work/scout-x1prep/evaluation/x1-triage-ranking/preparation-run/binding/runtime.json",
+    "sha256": "647381c553c78516fe19fe7d83e7401be1692e6a6922e93f4218606b52ebbc6d",
+    "bytes": 4891
+  },
+  "status": "passed"
+}
