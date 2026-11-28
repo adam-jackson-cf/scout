@@ -90,13 +90,7 @@ func (s *session) environment(r *check.Run) ([]string, error) {
 		return nil, err
 	}
 	skip := map[string]bool{"HOME": true, "XDG_CONFIG_HOME": true, "XDG_CACHE_HOME": true, "XDG_DATA_HOME": true, "XDG_STATE_HOME": true, "GOTMPDIR": true, "GOFLAGS": true, "GOCACHE": true, "GOMODCACHE": true, "GOPATH": true, "GOENV": true}
-	var env []string
-	for _, kv := range os.Environ() {
-		if k, _, _ := strings.Cut(kv, "="); !skip[k] {
-			env = append(env, kv)
-		}
-	}
-	env = append(env, "HOME="+home, "XDG_CONFIG_HOME="+filepath.Join(home, ".config"), "XDG_CACHE_HOME="+filepath.Join(home, ".cache"),
+	env := append(inheritedEnv(skip), "HOME="+home, "XDG_CONFIG_HOME="+filepath.Join(home, ".config"), "XDG_CACHE_HOME="+filepath.Join(home, ".cache"),
 		"XDG_DATA_HOME="+filepath.Join(home, ".local", "share"), "XDG_STATE_HOME="+filepath.Join(home, ".local", "state"),
 		"GOTMPDIR="+goTmp, "GOCACHE="+vals["GOCACHE"], "GOMODCACHE="+vals["GOMODCACHE"], "GOPATH="+vals["GOPATH"], "GOENV="+vals["GOENV"], "GOWORK=off")
 	tmp, err := realPath(r.TempDir)
@@ -105,6 +99,18 @@ func (s *session) environment(r *check.Run) ([]string, error) {
 	}
 	s.guard, err = t1Guard(tmp, goTmp, s.realHome)
 	return env, err
+}
+
+func inheritedEnv(skip map[string]bool) []string {
+	var env []string
+	for _, kv := range os.Environ() {
+		k, _, _ := strings.Cut(kv, "=")
+		if skip[k] || strings.HasPrefix(k, "GIT_") && k != "GIT_CEILING_DIRECTORIES" {
+			continue
+		}
+		env = append(env, kv)
+	}
+	return env
 }
 
 func (s *session) tiersFor(r *check.Run) ([]string, error) {

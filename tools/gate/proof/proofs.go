@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"time"
 
 	"github.com/BurntSushi/toml"
 )
@@ -15,6 +16,7 @@ type Exception struct {
 	Reason     string `toml:"reason"`
 	ApprovedBy string `toml:"approved_by"`
 	Check      string `toml:"check"`
+	Expires    string `toml:"expires"`
 }
 
 type Scope struct {
@@ -28,6 +30,7 @@ type File struct {
 	Exceptions []Exception `toml:"exception"`
 	raw        map[string]toml.Primitive
 	meta       toml.MetaData
+	today      string
 }
 
 func Load(file string) (*File, error) {
@@ -48,6 +51,12 @@ func Load(file string) (*File, error) {
 		return nil, fmt.Errorf("%s: %w", file, err)
 	}
 	f.raw, f.meta = raw, meta
+	for i, e := range f.Exceptions {
+		if _, err := time.Parse(time.DateOnly, e.Expires); err != nil || len(e.Expires) != len(time.DateOnly) {
+			return nil, fmt.Errorf("%s: [[exception]] %d (%s %s) needs expires = \"YYYY-MM-DD\", got %q", file, i+1, e.Rule, e.Path, e.Expires)
+		}
+	}
+	f.today = time.Now().UTC().Format(time.DateOnly)
 	return &f, nil
 }
 
@@ -61,7 +70,7 @@ func (f *File) Section(name string, v any) (bool, error) {
 
 func (f *File) Excepted(rule, file, check string) bool {
 	for _, e := range f.Exceptions {
-		if e.Rule != rule || (e.Check != "" && e.Check != check) {
+		if e.Rule != rule || (e.Check != "" && e.Check != check) || e.expired(f.today) {
 			continue
 		}
 		if ok, _ := path.Match(e.Path, file); ok || matchPrefix(e.Path, file) {
@@ -69,6 +78,10 @@ func (f *File) Excepted(rule, file, check string) bool {
 		}
 	}
 	return false
+}
+
+func (e Exception) expired(today string) bool {
+	return e.Expires != "" && today != "" && e.Expires < today
 }
 
 func matchPrefix(pattern, file string) bool {

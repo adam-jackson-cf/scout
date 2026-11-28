@@ -74,6 +74,21 @@ func TestReadershipNeedsTwoReaders(t *testing.T) {
 	}
 }
 
+func TestReadershipCountsExcludedReadersWithoutMovingIntoThem(t *testing.T) {
+	g := &graph{
+		readers:  map[string]map[string]bool{"internal/domain": {"evaluation/study": true, "cmd/scout": true}},
+		files:    map[string]string{"internal/domain": "internal/domain/a.go"},
+		excluded: map[string]bool{"evaluation/study": true},
+	}
+	if fs := readership(config(), g, []string{"internal/domain"}); len(fs) != 0 {
+		t.Fatalf("an excluded reader is a second reader, got %v", fs)
+	}
+	delete(g.readers["internal/domain"], "cmd/scout")
+	if fs := readership(config(), g, []string{"internal/domain"}); rules(fs) != ruleReadership {
+		t.Fatalf("a package read only by excluded code must not be moved into it, got %v", fs)
+	}
+}
+
 func TestPlacementRejectsUnownedAndGrabBagPaths(t *testing.T) {
 	fs := placement(config(), SkillLayout{}, pathscope.Entry{Path: "misc/notes.md"})
 	if rules(fs) != rulePlacement+","+rulePlacement {

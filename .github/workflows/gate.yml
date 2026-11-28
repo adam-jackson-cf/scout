@@ -44,6 +44,12 @@ jobs:
           set -euo pipefail
           source "$SCOUT_TOOLS_DIR/activate"
           go run ./tools/gate ci --base origin/main
+      - name: Commit through the installed hook from a linked worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          source "$SCOUT_TOOLS_DIR/activate"
+          go run ./tools/gate/hookscenario
 
   proofs:
     name: proofs
