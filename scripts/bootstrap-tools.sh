@@ -244,7 +244,7 @@ link_tools() {
   local target name
   for target in ../uv/uv ../node/bin/node ../node/bin/npm ../node/bin/npx ../gitleaks/gitleaks \
     ../node-tools/node_modules/.bin/pnpm ../node-tools/node_modules/.bin/jscpd ../node-tools/node_modules/.bin/prettier \
-    ../venv/bin/semgrep ../venv/bin/pysemgrep ../venv/bin/ruff ../venv/bin/lizard ../venv/bin/mypy \
+    ../venv/bin/python3 ../venv/bin/semgrep ../venv/bin/pysemgrep ../venv/bin/ruff ../venv/bin/lizard ../venv/bin/mypy \
     ../golangci-lint/golangci-lint ../shellcheck/shellcheck ../osv-scanner/osv-scanner ../go-test-coverage/go-test-coverage; do
     name="${target##*/}"
     [[ -e "$tools/bin/$target" ]] || die "expected tool is missing after install: $target"
