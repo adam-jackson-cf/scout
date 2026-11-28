@@ -65,35 +65,53 @@ func scenario(root, plant string) (problems []string, err error) {
 		return nil, err
 	}
 	defer func() { err = errors.Join(err, os.RemoveAll(tmp)) }()
+	if tmp, err = filepath.EvalSymlinks(tmp); err != nil {
+		return nil, err
+	}
 	r, err := prepare(ctx, root, tmp)
 	if err != nil {
 		return nil, err
 	}
-	if plant != "" {
-		abs, err := filepath.Abs(plant)
-		if err != nil {
-			return nil, err
-		}
-		if _, err := git(ctx, r.wt, "apply", abs); err != nil {
-			return nil, err
-		}
+	if err := applyPlant(ctx, r.wt, plant); err != nil {
+		return nil, err
+	}
+	if err := stageRootChange(ctx, r.wt); err != nil {
+		return nil, err
 	}
 	before, err := snapshot(ctx, r)
 	if err != nil {
 		return nil, err
 	}
-	out, commitErr := git(ctx, r.wt, "commit", "--allow-empty", "-q", "-m", "hookscenario: commit through the installed hook")
-	if commitErr != nil {
-		return []string{"the commit through the hook failed: " + tail(commitErr.Error(), 4000)}, nil
-	}
-	if !strings.Contains(out, "gate: commit:") {
-		problems = append(problems, "the installed hook did not run the gate; output: "+tail(out, 2000))
-	}
+	problems, committed := commitThroughHook(ctx, r.wt)
 	after, err := snapshot(ctx, r)
 	if err != nil {
 		return nil, err
 	}
-	return append(problems, compare(ctx, r, before, after)...), nil
+	return append(problems, compare(ctx, r, before, after, committed)...), nil
+}
+
+func applyPlant(ctx context.Context, wt, plant string) error {
+	if plant == "" {
+		return nil
+	}
+	abs, err := filepath.Abs(plant)
+	if err != nil {
+		return err
+	}
+	_, err = git(ctx, wt, "apply", abs)
+	return err
+}
+
+func commitThroughHook(ctx context.Context, wt string) ([]string, bool) {
+	out, err := git(ctx, wt, "commit", "-q", "-m", "hookscenario: commit through the installed hook")
+	if err != nil {
+		return []string{"the commit through the hook failed: " + tail(err.Error(), 4000)}, false
+	}
+	fmt.Print(tail(out, 2000))
+	if !strings.Contains(out, "gate: commit:") {
+		return []string{"the installed hook did not run the gate; output: " + tail(out, 2000)}, true
+	}
+	return nil, true
 }
 
 func prepare(ctx context.Context, root, tmp string) (repos, error) {
@@ -125,6 +143,19 @@ func prepare(ctx context.Context, root, tmp string) (repos, error) {
 		}
 	}
 	return r, checkoutSubmodules(ctx, r.wt)
+}
+
+func stageRootChange(ctx context.Context, wt string) error {
+	f, err := os.OpenFile(filepath.Join(wt, ".gitignore"), os.O_APPEND|os.O_WRONLY, 0)
+	if err != nil {
+		return err
+	}
+	_, werr := f.WriteString("/.hookscenario\n")
+	if err := errors.Join(werr, f.Close()); err != nil {
+		return err
+	}
+	_, err = git(ctx, wt, "add", ".gitignore")
+	return err
 }
 
 func submodules(ctx context.Context, root, clone string) ([]string, error) {
@@ -201,24 +232,14 @@ func describe(ctx context.Context, s map[string]string, name, dir string) error 
 	return nil
 }
 
-func compare(ctx context.Context, r repos, before, after map[string]string) []string {
+func compare(ctx context.Context, r repos, before, after map[string]string, committed bool) []string {
 	ref := "refs/heads/" + branch
 	old, now := refValue(before["refs"], ref), refValue(after["refs"], ref)
-	var problems []string
-	if old == now {
-		problems = append(problems, ref+" did not move; no commit was made")
-	} else if parent, err := git(ctx, r.clone, "rev-parse", now+"^"); err != nil || strings.TrimSpace(parent) != old {
-		problems = append(problems, ref+" moved to "+now+", which is not a child of "+old)
+	problems := refMove(ctx, r.clone, move{ref: ref, old: old, now: now, committed: committed})
+	if !committed {
+		now = old
 	}
-	expect := map[string]string{}
-	for k, v := range before {
-		expect[k] = v
-	}
-	expect["refs"] = strings.Replace(before["refs"], ref+" "+old, ref+" "+now, 1)
-	expect["worktrees"] = strings.Replace(before["worktrees"], "HEAD "+old, "HEAD "+now, 1)
-	expect["wt HEAD"] = strings.Replace(before["wt HEAD"], old, now, 1)
-	expect["clone local-refs"] = expect["refs"]
-	expect["wt local-refs"] = expect["refs"]
+	expect := expected(before, r.wt, ref, old, now)
 	keys := make([]string, 0, len(expect))
 	for k := range expect {
 		keys = append(keys, k)
@@ -230,6 +251,49 @@ func compare(ctx context.Context, r repos, before, after map[string]string) []st
 		}
 	}
 	return problems
+}
+
+type move struct {
+	ref, old, now string
+	committed     bool
+}
+
+func refMove(ctx context.Context, clone string, m move) []string {
+	switch {
+	case !m.committed && m.now != m.old:
+		return []string{m.ref + " moved although the commit failed"}
+	case !m.committed:
+		return nil
+	case m.old == m.now:
+		return []string{m.ref + " did not move; no commit was made"}
+	}
+	if parent, err := git(ctx, clone, "rev-parse", m.now+"^"); err != nil || strings.TrimSpace(parent) != m.old {
+		return []string{m.ref + " moved to " + m.now + ", which is not a child of " + m.old}
+	}
+	return nil
+}
+
+func expected(before map[string]string, wt, ref, old, now string) map[string]string {
+	expect := map[string]string{}
+	for k, v := range before {
+		expect[k] = v
+	}
+	expect["refs"] = strings.Replace(before["refs"], ref+" "+old, ref+" "+now, 1)
+	expect["worktrees"] = moveWorktreeHead(before["worktrees"], wt, old, now)
+	expect["wt HEAD"] = strings.Replace(before["wt HEAD"], old, now, 1)
+	expect["clone local-refs"] = expect["refs"]
+	expect["wt local-refs"] = expect["refs"]
+	return expect
+}
+
+func moveWorktreeHead(porcelain, wt, old, now string) string {
+	blocks := strings.Split(porcelain, "\n\n")
+	for i, b := range blocks {
+		if strings.HasPrefix(b, "worktree "+wt+"\n") || strings.Contains(b, "worktree "+wt+"\n") {
+			blocks[i] = strings.Replace(b, "HEAD "+old, "HEAD "+now, 1)
+		}
+	}
+	return strings.Join(blocks, "\n\n")
 }
 
 func refValue(refs, name string) string {
